@@ -76,7 +76,9 @@ class BufferSelectionTool(FlatCAMTool):
         self.buffer_tools_box.addLayout(form_layout)
 
         # Buffer distance
-        self.buffer_distance_entry = FCEntry()
+        self.buffer_distance_entry = FCDoubleSpinner()
+        self.buffer_distance_entry.set_precision(4)
+        self.buffer_distance_entry.set_range(0.0000, 999999.9999)
         form_layout.addRow(_("Buffer distance:"), self.buffer_distance_entry)
         self.buffer_corner_lbl = QtWidgets.QLabel(_("Buffer corner:"))
         self.buffer_corner_lbl.setToolTip(
@@ -2358,10 +2360,6 @@ class FCSelect(DrawTool):
 
     def click_release(self, point):
 
-        self.select_shapes(point)
-        return ""
-
-    def select_shapes(self, pos):
         # list where we store the overlapped shapes under our mouse left click position
         over_shape_list = []
 
@@ -2381,7 +2379,7 @@ class FCSelect(DrawTool):
 
             # 3rd method of click selection -> inconvenient
             try:
-                _, closest_shape = self.storage.nearest(pos)
+                _, closest_shape = self.storage.nearest(point)
             except StopIteration:
                 return ""
 
@@ -2400,30 +2398,28 @@ class FCSelect(DrawTool):
                 obj_to_add = over_shape_list[int(FlatCAMGeoEditor.draw_shape_idx)]
 
                 key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                if self.draw_app.app.defaults["global_mselect_key"] == 'Control':
-                    # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
+
+                if key_modifier == QtCore.Qt.ShiftModifier:
+                    mod_key = 'Shift'
+                elif key_modifier == QtCore.Qt.ControlModifier:
+                    mod_key = 'Control'
+                else:
+                    mod_key = None
+
+                if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+                    # if modifier key is pressed then we add to the selected list the current shape but if it's already
                     # in the selected list, we removed it. Therefore first click selects, second deselects.
-                    if key_modifier == Qt.ControlModifier:
-                        if obj_to_add in self.draw_app.selected:
-                            self.draw_app.selected.remove(obj_to_add)
-                        else:
-                            self.draw_app.selected.append(obj_to_add)
+                    if obj_to_add in self.draw_app.selected:
+                        self.draw_app.selected.remove(obj_to_add)
                     else:
-                        self.draw_app.selected = []
                         self.draw_app.selected.append(obj_to_add)
                 else:
-                    if key_modifier == Qt.ShiftModifier:
-                        if obj_to_add in self.draw_app.selected:
-                            self.draw_app.selected.remove(obj_to_add)
-                        else:
-                            self.draw_app.selected.append(obj_to_add)
-                    else:
-                        self.draw_app.selected = []
-                        self.draw_app.selected.append(obj_to_add)
-
+                    self.draw_app.selected = []
+                    self.draw_app.selected.append(obj_to_add)
         except Exception as e:
             log.error("[ERROR] Something went bad. %s" % str(e))
             raise
+        return ""
 
 
 class FCMove(FCShapeTool):
@@ -2633,15 +2629,20 @@ class FCText(FCShapeTool):
         # Create new geometry
         dx = point[0]
         dy = point[1]
-        try:
-            self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
-        except Exception as e:
-            log.debug("Font geometry is empty or incorrect: %s" % str(e))
-            self.draw_app.app.inform.emit(_("[ERROR]Font not supported. Only Regular, Bold, Italic and BoldItalic are "
-                                          "supported. Error: %s") % str(e))
-            self.text_gui.text_path = []
-            self.text_gui.hide_tool()
-            self.draw_app.select_tool('select')
+
+        if self.text_gui.text_path:
+            try:
+                self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
+            except Exception as e:
+                log.debug("Font geometry is empty or incorrect: %s" % str(e))
+                self.draw_app.app.inform.emit(_("[ERROR]Font not supported. Only Regular, Bold, Italic and BoldItalic are "
+                                              "supported. Error: %s") % str(e))
+                self.text_gui.text_path = []
+                self.text_gui.hide_tool()
+                self.draw_app.select_tool('select')
+                return
+        else:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] No text to add."))
             return
 
         self.text_gui.text_path = []
@@ -2703,11 +2704,13 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
-        self.draw_app.buffer(buffer_distance, join_style)
+        ret_val = self.draw_app.buffer(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, _("Tools"))
         self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
+        if ret_val == 'fail':
+            return
         self.draw_app.app.inform.emit(_("[success] Done. Buffer Tool completed."))
 
     def on_buffer_int(self):
@@ -2729,11 +2732,13 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
-        self.draw_app.buffer_int(buffer_distance, join_style)
+        ret_val = self.draw_app.buffer_int(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, _("Tools"))
         self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
+        if ret_val == 'fail':
+            return
         self.draw_app.app.inform.emit(_("[success] Done. Buffer Int Tool completed."))
 
     def on_buffer_ext(self):
@@ -2755,11 +2760,13 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
-        self.draw_app.buffer_ext(buffer_distance, join_style)
+        ret_val = self.draw_app.buffer_ext(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, _("Tools"))
         self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
+        if ret_val == 'fail':
+            return
         self.draw_app.app.inform.emit(_("[success] Done. Buffer Ext Tool completed."))
 
     def activate(self):
@@ -2912,14 +2919,14 @@ class FCTransform(FCShapeTool):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.draw_app.app.infrom.emit(_("Shape transformations ..."))
+        self.draw_app.app.inform.emit(_("Shape transformations ..."))
         self.origin = (0, 0)
         self.draw_app.transform_tool.run()
 
 
-# ##################### ##
-# # ## Main Application # ##
-# ##################### ##
+# ###############################################
+# ################ Main Application #############
+# ###############################################
 class FlatCAMGeoEditor(QtCore.QObject):
 
     transform_complete = QtCore.pyqtSignal()
@@ -3113,6 +3120,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
+        log.debug("Initialization of the FlatCAM Geometry Editor is finished ...")
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -3169,6 +3177,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # Tell the App that the editor is active
         self.editor_active = True
+        log.debug("Finished activating the Geometry Editor...")
 
     def deactivate(self):
         try:
@@ -3248,6 +3257,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Show original geometry
         if self.fcgeometry:
             self.fcgeometry.visible = True
+        log.debug("Finished deactivating the Geometry Editor...")
 
     def connect_canvas_event_handlers(self):
         # Canvas events
@@ -3277,7 +3287,22 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Geometry Editor
         self.app.ui.draw_line.triggered.connect(self.draw_tool_path)
         self.app.ui.draw_rect.triggered.connect(self.draw_tool_rectangle)
+
+        self.app.ui.draw_circle.triggered.connect(lambda: self.select_tool('circle'))
+        self.app.ui.draw_poly.triggered.connect(lambda: self.select_tool('polygon'))
+        self.app.ui.draw_arc.triggered.connect(lambda: self.select_tool('arc'))
+
+        self.app.ui.draw_text.triggered.connect(lambda: self.select_tool('text'))
+        self.app.ui.draw_buffer.triggered.connect(lambda: self.select_tool('buffer'))
+        self.app.ui.draw_paint.triggered.connect(lambda: self.select_tool('paint'))
+        self.app.ui.draw_eraser.triggered.connect(lambda: self.select_tool('eraser'))
+
+        self.app.ui.draw_union.triggered.connect(self.union)
+        self.app.ui.draw_intersect.triggered.connect(self.intersection)
+        self.app.ui.draw_substract.triggered.connect(self.subtract)
         self.app.ui.draw_cut.triggered.connect(self.cutpath)
+        self.app.ui.draw_transform.triggered.connect(lambda: self.select_tool('transform'))
+
         self.app.ui.draw_move.triggered.connect(self.on_move)
 
     def disconnect_canvas_event_handlers(self):
@@ -3329,6 +3354,62 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         try:
             self.app.ui.draw_move.triggered.disconnect(self.on_move)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_circle.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_poly.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_arc.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+
+        try:
+            self.app.ui.draw_text.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_buffer.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_paint.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_eraser.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_union.triggered.disconnect(self.union)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_intersect.triggered.disconnect(self.intersection)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_substract.triggered.disconnect(self.subtract)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_transform.triggered.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -3495,9 +3576,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return: None
         """
 
-        self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+        self.pos = self.canvas.translate_coords(event.pos)
 
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -3507,7 +3588,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.pos = (self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = False
 
-        if event.button is 1:
+        if event.button == 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
@@ -3536,21 +3617,18 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 if isinstance(self.active_tool, FCSelect):
                     # self.app.log.debug("Replotting after click.")
                     self.replot()
-
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
     def on_canvas_move(self, event):
         """
         Called on 'mouse_move' event
-
         event.pos have canvas screen coordinates
 
         :param event: Event object dispatched by VisPy SceneCavas
         :return: None
         """
-
-        pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+        pos = self.canvas.translate_coords(event.pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
         self.x = event.xdata
@@ -3559,8 +3637,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2 and event.is_dragging == 1:
-            self.app.ui.popMenu.mouse_is_panning = True
+        if event.button == 2:
+            if event.is_dragging:
+                self.app.ui.popMenu.mouse_is_panning = True
+                # return
+            else:
+                self.app.ui.popMenu.mouse_is_panning = False
+
+        if self.active_tool is None:
             return
 
         try:
@@ -3569,11 +3653,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except TypeError:
             return
 
-        if self.active_tool is None:
-            return
-
-        # # ## Snap coordinates
-        if self.app.grid_status():
+        # ### Snap coordinates ###
+        if self.app.grid_status() == True:
             x, y = self.snap(x, y)
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -3597,19 +3678,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        if event.button == 1 and event.is_dragging == 1 and isinstance(self.active_tool, FCEraser):
+        if event.button == 1 and event.is_dragging and isinstance(self.active_tool, FCEraser):
             pass
         else:
-            # # ## Utility geometry (animated)
+            # ### Utility geometry (animated) ###
             geo = self.active_tool.utility_geometry(data=(x, y))
             if isinstance(geo, DrawToolShape) and geo.geo is not None:
                 # Remove any previous utility shape
                 self.tool_shape.clear(update=True)
                 self.draw_utility_geometry(geo=geo)
 
-        # # ## Selection area on canvas section # ##
+        # ### Selection area on canvas section ###
         dx = pos[0] - self.pos[0]
-        if event.is_dragging == 1 and event.button == 1:
+        if event.is_dragging and event.button == 1:
             self.app.delete_selection_shape()
             if dx < 0:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
@@ -3623,9 +3704,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.app.selection_type = None
 
     def on_geo_click_release(self, event):
-        pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
+        pos_canvas = self.canvas.translate_coords(event.pos)
 
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             pos = self.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -3633,8 +3714,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
         try:
-            if event.button == 2:  # right click
-                if self.app.ui.popMenu.mouse_is_panning is False:
+            # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
+            # selection and then select a type of selection ("enclosing" or "touching")
+            if event.button == 1:  # left click
+                if self.app.selection_type is not None:
+                    self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
+                    self.app.selection_type = None
+                elif isinstance(self.active_tool, FCSelect):
+                    # Dispatch event to active_tool
+                    # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
+                    self.active_tool.click_release((self.pos[0], self.pos[1]))
+                    # self.app.inform.emit(msg)
+                    self.replot()
+            elif event.button == 2:  # right click
+                if self.app.ui.popMenu.mouse_is_panning == False:
                     if self.in_action is False:
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -3661,38 +3754,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
                                 self.on_shape_complete()
                                 self.app.inform.emit(_("[success] Done."))
                                 self.select_tool(self.active_tool.name)
-
-                                # MS: always return to the Select Tool if modifier key is not pressed
-                                # else return to the current tool
-                                # key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                                # if self.app.defaults["global_mselect_key"] == 'Control':
-                                #     modifier_to_use = Qt.ControlModifier
-                                # else:
-                                #     modifier_to_use = Qt.ShiftModifier
-                                #
-                                # if key_modifier == modifier_to_use:
-                                #     self.select_tool(self.active_tool.name)
-                                # else:
-                                #     self.select_tool("select")
-
-        except Exception as e:
-            log.warning("Error: %s" % str(e))
-            return
-
-        # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
-        # selection and then select a type of selection ("enclosing" or "touching")
-        try:
-            if event.button == 1:  # left click
-                if self.app.selection_type is not None:
-                    self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
-                    self.app.selection_type = None
-                elif isinstance(self.active_tool, FCSelect):
-                    # Dispatch event to active_tool
-                    # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
-                    self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    # self.app.inform.emit(msg)
-                    self.replot()
-
         except Exception as e:
             log.warning("Error: %s" % str(e))
             return
@@ -3707,19 +3768,34 @@ class FlatCAMGeoEditor(QtCore.QObject):
         """
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
         self.app.delete_selection_shape()
+
+        sel_objects_list = []
         for obj in self.storage.get_objects():
             if (sel_type is True and poly_selection.contains(obj.geo)) or (sel_type is False and
                                                                            poly_selection.intersects(obj.geo)):
-                    if self.key == self.app.defaults["global_mselect_key"]:
-                        if obj in self.selected:
-                            self.selected.remove(obj)
-                        else:
-                            # add the object to the selected shapes
-                            self.selected.append(obj)
-                    else:
-                        if obj not in self.selected:
-                            self.selected.append(obj)
+                sel_objects_list.append(obj)
+
+        if mod_key == self.app.defaults["global_mselect_key"]:
+            for obj in sel_objects_list:
+                if obj in self.selected:
+                    self.selected.remove(obj)
+                else:
+                    # add the object to the selected shapes
+                    self.selected.append(obj)
+        else:
+            self.selected = []
+            self.selected = sel_objects_list
+
         self.replot()
 
     def draw_utility_geometry(self, geo):
@@ -4107,8 +4183,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
         try:
             tools = selected[1:]
-            toolgeo = unary_union([shp.geo for shp in tools])
-            result = selected[0].geo.difference(toolgeo)
+            toolgeo = unary_union([shp.geo for shp in tools]).buffer(0.0000001)
+            target = selected[0].geo
+            target = target.buffer(0.0000001)
+            result = target.difference(toolgeo)
 
             for_deletion = [s for s in self.get_selected()]
             for shape in for_deletion:
@@ -4169,11 +4247,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
         if len(selected) == 0:
             self.app.inform.emit(_("[WARNING_NOTCL] Nothing selected for buffering."))
-            return
+            return 'fail'
 
         if not isinstance(buf_distance, float):
             self.app.inform.emit(_("[WARNING_NOTCL] Invalid distance for buffering."))
@@ -4181,17 +4259,32 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
-        pre_buffer = cascaded_union([t.geo for t in selected])
-        results = pre_buffer.buffer(buf_distance - 1e-10, resolution=32, join_style=join_style)
-        if results.is_empty:
+        results = []
+        for t in selected:
+            if isinstance(t.geo, Polygon) and not t.geo.is_empty:
+                results.append((t.geo.exterior).buffer(
+                    buf_distance - 1e-10,
+                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                    join_style=join_style)
+                )
+            else:
+                results.append(t.geo.buffer(
+                    buf_distance - 1e-10,
+                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                    join_style=join_style)
+                )
+
+        if not results:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
-            return
-        self.add_shape(DrawToolShape(results))
+            return 'fail'
+
+        for sha in results:
+            self.add_shape(DrawToolShape(sha))
 
         self.replot()
         self.app.inform.emit(_("[success] Full buffer geometry created."))
@@ -4201,77 +4294,48 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if buf_distance < 0:
             self.app.inform.emit(
-                _("[ERROR_NOTCL] Negative buffer value is not accepted. "
-                  "Use Buffer interior to generate an 'inside' shape")
+                _("[ERROR_NOTCL] Negative buffer value is not accepted.")
             )
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
         if len(selected) == 0:
             self.app.inform.emit(_("[WARNING_NOTCL] Nothing selected for buffering."))
-            return
+            return 'fail'
 
         if not isinstance(buf_distance, float):
             self.app.inform.emit(_("[WARNING_NOTCL] Invalid distance for buffering."))
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
-        pre_buffer = cascaded_union([t.geo for t in selected])
-        results = pre_buffer.buffer(buf_distance + 1e-10, resolution=32, join_style=join_style)
+        results = []
+        for t in selected:
+            if isinstance(t.geo, LinearRing):
+                t.geo = Polygon(t.geo)
 
-        if results.is_empty:
+            if isinstance(t.geo, Polygon) and not t.geo.is_empty:
+                results.append((t.geo).buffer(
+                    -buf_distance + 1e-10,
+                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                    join_style=join_style)
+                )
+
+        if not results:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a smaller buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
-        if type(results) == MultiPolygon:
-            for poly in results:
-                for interior in poly.interiors:
-                    self.add_shape(DrawToolShape(interior))
-        else:
-            for interior in results:
-                self.add_shape(DrawToolShape(interior))
+        for sha in results:
+            self.add_shape(DrawToolShape(sha))
 
         self.replot()
         self.app.inform.emit(_("[success] Interior buffer geometry created."))
-        # selected = self.get_selected()
-        #
-        # if len(selected) == 0:
-        #     self.app.inform.emit("[WARNING] Nothing selected for buffering.")
-        #     return
-        #
-        # if not isinstance(buf_distance, float):
-        #     self.app.inform.emit("[WARNING] Invalid distance for buffering.")
-        #     return
-        #
-        # pre_buffer = cascaded_union([t.geo for t in selected])
-        # results = pre_buffer.buffer(buf_distance)
-        # if results.is_empty:
-        #     self.app.inform.emit("Failed. Choose a smaller buffer value.")
-        #     return
-        #
-        # int_geo = []
-        # if type(results) == MultiPolygon:
-        #     for poly in results:
-        #         for g in poly.interiors:
-        #             int_geo.append(g)
-        #         res = cascaded_union(int_geo)
-        #         self.add_shape(DrawToolShape(res))
-        # else:
-        #     print(results.interiors)
-        #     for g in results.interiors:
-        #         int_geo.append(g)
-        #     res = cascaded_union(int_geo)
-        #     self.add_shape(DrawToolShape(res))
-        #
-        # self.replot()
-        # self.app.inform.emit("Interior buffer geometry created.")
 
     def buffer_ext(self, buf_distance, join_style):
         selected = self.get_selected()
@@ -4295,19 +4359,27 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.replot()
             return
 
-        pre_buffer = cascaded_union([t.geo for t in selected])
-        results = pre_buffer.buffer(buf_distance - 1e-10, resolution=32, join_style=join_style)
-        if results.is_empty:
+        results = []
+        for t in selected:
+            if isinstance(t.geo, LinearRing):
+                t.geo = Polygon(t.geo)
+
+            if isinstance(t.geo, Polygon) and not t.geo.is_empty:
+                results.append((t.geo).buffer(
+                    buf_distance,
+                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                    join_style=join_style)
+                )
+
+        if not results:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
             return
-        if type(results) == MultiPolygon:
-            for poly in results:
-                self.add_shape(DrawToolShape(poly.exterior))
-        else:
-            self.add_shape(DrawToolShape(results.exterior))
+
+        for sha in results:
+            self.add_shape(DrawToolShape(sha))
 
         self.replot()
         self.app.inform.emit(_("[success] Exterior buffer geometry created."))

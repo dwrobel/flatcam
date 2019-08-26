@@ -16,7 +16,6 @@ if '_' not in builtins.__dict__:
 class CutOut(FlatCAMTool):
 
     toolName = _("Cutout PCB")
-    gapFinished = pyqtSignal()
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -51,7 +50,7 @@ class CutOut(FlatCAMTool):
         # self.type_obj_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.type_obj_combo_label = QtWidgets.QLabel(_("Obj Type:"))
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be cutout.\n"
               "It can be of type: Gerber or Geometry.\n"
@@ -67,14 +66,14 @@ class CutOut(FlatCAMTool):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(1)
 
-        self.object_label = QtWidgets.QLabel(_("Object:"))
+        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
         self.object_label.setToolTip(
             _("Object to be cutout.                        ")
         )
         form_layout.addRow(self.object_label, self.obj_combo)
 
         # Object kind
-        self.kindlabel = QtWidgets.QLabel(_('Obj kind:'))
+        self.kindlabel = QtWidgets.QLabel('%s:' % _('Obj kind'))
         self.kindlabel.setToolTip(
             _("Choice of what kind the object we want to cutout is.<BR>"
               "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
@@ -89,7 +88,7 @@ class CutOut(FlatCAMTool):
 
         # Tool Diameter
         self.dia = FCEntry()
-        self.dia_label = QtWidgets.QLabel(_("Tool Dia:"))
+        self.dia_label = QtWidgets.QLabel('%s:' % _("Tool dia"))
         self.dia_label.setToolTip(
            _("Diameter of the tool used to cutout\n"
              "the PCB shape out of the surrounding material.")
@@ -98,7 +97,7 @@ class CutOut(FlatCAMTool):
 
         # Margin
         self.margin = FCEntry()
-        self.margin_label = QtWidgets.QLabel(_("Margin:"))
+        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin:"))
         self.margin_label.setToolTip(
            _("Margin over bounds. A positive value here\n"
              "will make the cutout of the PCB further from\n"
@@ -108,7 +107,7 @@ class CutOut(FlatCAMTool):
 
         # Gapsize
         self.gapsize = FCEntry()
-        self.gapsize_label = QtWidgets.QLabel(_("Gap size:"))
+        self.gapsize_label = QtWidgets.QLabel('%s:' % _("Gap size:"))
         self.gapsize_label.setToolTip(
            _("The size of the bridge gaps in the cutout\n"
              "used to keep the board connected to\n"
@@ -127,7 +126,7 @@ class CutOut(FlatCAMTool):
 
         # Surrounding convex box shape
         self.convex_box = FCCheckBox()
-        self.convex_box_label = QtWidgets.QLabel(_("Convex Sh.:"))
+        self.convex_box_label = QtWidgets.QLabel('%s:' % _("Convex Sh."))
         self.convex_box_label.setToolTip(
             _("Create a convex shape surrounding the entire PCB.\n"
               "Used only if the source object type is Gerber.")
@@ -146,11 +145,12 @@ class CutOut(FlatCAMTool):
         self.layout.addLayout(form_layout_2)
 
         # Gaps
-        gaps_label = QtWidgets.QLabel(_('Gaps:'))
+        gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
         gaps_label.setToolTip(
             _("Number of gaps used for the Automatic cutout.\n"
               "There can be maximum 8 bridges/gaps.\n"
               "The choices are:\n"
+              "- None  - no gaps\n"
               "- lr    - left + right\n"
               "- tb    - top + bottom\n"
               "- 4     - left + right +top + bottom\n"
@@ -161,7 +161,7 @@ class CutOut(FlatCAMTool):
         gaps_label.setMinimumWidth(60)
 
         self.gaps = FCComboBox()
-        gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
+        gaps_items = ['None', 'LR', 'TB', '4', '2LR', '2TB', '8']
         for it in gaps_items:
             self.gaps.addItem(it)
             self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
@@ -171,7 +171,7 @@ class CutOut(FlatCAMTool):
         hlay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay)
 
-        title_ff_label = QtWidgets.QLabel("<b>%s</b>" % _('FreeForm:'))
+        title_ff_label = QtWidgets.QLabel("<b>%s:</b>" % _('FreeForm'))
         title_ff_label.setToolTip(
             _("The cutout shape can be of ny shape.\n"
               "Useful when the PCB has a non-rectangular shape.")
@@ -191,7 +191,7 @@ class CutOut(FlatCAMTool):
         hlay2 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay2)
 
-        title_rct_label = QtWidgets.QLabel("<b>%s</b>" % _('Rectangular:'))
+        title_rct_label = QtWidgets.QLabel("<b>%s:</b>" % _('Rectangular'))
         title_rct_label.setToolTip(
             _("The resulting cutout shape is\n"
               "always a rectangle shape and it will be\n"
@@ -228,7 +228,7 @@ class CutOut(FlatCAMTool):
         self.man_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.man_object_combo.setCurrentIndex(1)
 
-        self.man_object_label = QtWidgets.QLabel(_("Geo Obj:"))
+        self.man_object_label = QtWidgets.QLabel('%s:' % _("Geo Obj"))
         self.man_object_label.setToolTip(
             _("Geometry object used to create the manual cutout.")
         )
@@ -241,7 +241,7 @@ class CutOut(FlatCAMTool):
         hlay3 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay3)
 
-        self.man_geo_label = QtWidgets.QLabel(_("Manual Geo:"))
+        self.man_geo_label = QtWidgets.QLabel('%s:' % _("Manual Geo"))
         self.man_geo_label.setToolTip(
             _("If the object to be cutout is a Gerber\n"
               "first create a Geometry that surrounds it,\n"
@@ -263,7 +263,7 @@ class CutOut(FlatCAMTool):
         hlay4 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay4)
 
-        self.man_bridge_gaps_label = QtWidgets.QLabel(_("Manual Add Bridge Gaps:"))
+        self.man_bridge_gaps_label = QtWidgets.QLabel('%s:' % _("Manual Add Bridge Gaps"))
         self.man_bridge_gaps_label.setToolTip(
             _("Use the left mouse button (LMB) click\n"
               "to create a bridge gap to separate the PCB from\n"
@@ -292,6 +292,16 @@ class CutOut(FlatCAMTool):
 
         self.flat_geometry = []
 
+        # this is the Geometry object generated in this class to be used for adding manual gaps
+        self.man_cutout_obj = None
+
+        # if mouse is dragging set the object True
+        self.mouse_is_dragging = False
+
+        # hold the mouse position here
+        self.x_pos = None
+        self.y_pos = None
+
         # Signals
         self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
         self.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
@@ -315,7 +325,12 @@ class CutOut(FlatCAMTool):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:
@@ -339,8 +354,6 @@ class CutOut(FlatCAMTool):
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
         self.gaps.set_value(self.app.defaults["tools_gaps_ff"])
         self.convex_box.set_value(self.app.defaults['tools_cutout_convexshape'])
-
-        self.gapFinished.connect(self.on_gap_finished)
 
     def on_freeform_cutout(self):
 
@@ -410,8 +423,9 @@ class CutOut(FlatCAMTool):
             self.app.inform.emit(_("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
             return
 
-        if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+        if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
+            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: "
+                                   "'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                    "Fill in a correct value and retry. "))
             return
 
@@ -446,44 +460,46 @@ class CutOut(FlatCAMTool):
                 leny = (ymax - ymin) + (margin * 2)
 
                 proc_geometry = []
+                if gaps == 'None':
+                    pass
+                else:
+                    if gaps == '8' or gaps == '2LR':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,  # botleft_x
+                                                           py - gapsize + leny / 4,  # botleft_y
+                                                           xmax + gapsize,  # topright_x
+                                                           py + gapsize + leny / 4)  # topright_y
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,
+                                                           py - gapsize - leny / 4,
+                                                           xmax + gapsize,
+                                                           py + gapsize - leny / 4)
 
-                if gaps == '8' or gaps == '2LR':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,  # botleft_x
-                                                       py - gapsize + leny / 4,  # botleft_y
-                                                       xmax + gapsize,  # topright_x
-                                                       py + gapsize + leny / 4)  # topright_y
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,
-                                                       py - gapsize - leny / 4,
-                                                       xmax + gapsize,
-                                                       py + gapsize - leny / 4)
+                    if gaps == '8' or gaps == '2TB':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize + lenx / 4,
+                                                           ymin - gapsize,
+                                                           px + gapsize + lenx / 4,
+                                                           ymax + gapsize)
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize - lenx / 4,
+                                                           ymin - gapsize,
+                                                           px + gapsize - lenx / 4,
+                                                           ymax + gapsize)
 
-                if gaps == '8' or gaps == '2TB':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize + lenx / 4,
-                                                       ymin - gapsize,
-                                                       px + gapsize + lenx / 4,
-                                                       ymax + gapsize)
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize - lenx / 4,
-                                                       ymin - gapsize,
-                                                       px + gapsize - lenx / 4,
-                                                       ymax + gapsize)
+                    if gaps == '4' or gaps == 'LR':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,
+                                                           py - gapsize,
+                                                           xmax + gapsize,
+                                                           py + gapsize)
 
-                if gaps == '4' or gaps == 'LR':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,
-                                                       py - gapsize,
-                                                       xmax + gapsize,
-                                                       py + gapsize)
-
-                if gaps == '4' or gaps == 'TB':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize,
-                                                       ymin - gapsize,
-                                                       px + gapsize,
-                                                       ymax + gapsize)
+                    if gaps == '4' or gaps == 'TB':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize,
+                                                           ymin - gapsize,
+                                                           px + gapsize,
+                                                           ymax + gapsize)
 
                 try:
                     for g in geom:
@@ -603,8 +619,9 @@ class CutOut(FlatCAMTool):
             self.app.inform.emit(_("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
             return
 
-        if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+        if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
+            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: "
+                                   "'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                    "Fill in a correct value and retry. "))
             return
 
@@ -630,43 +647,46 @@ class CutOut(FlatCAMTool):
                 lenx = (xmax - xmin) + (margin * 2)
                 leny = (ymax - ymin) + (margin * 2)
 
-                if gaps == '8' or gaps == '2LR':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,  # botleft_x
-                                                       py - gapsize + leny / 4,  # botleft_y
-                                                       xmax + gapsize,  # topright_x
-                                                       py + gapsize + leny / 4)  # topright_y
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,
-                                                       py - gapsize - leny / 4,
-                                                       xmax + gapsize,
-                                                       py + gapsize - leny / 4)
+                if gaps == 'None':
+                    pass
+                else:
+                    if gaps == '8' or gaps == '2LR':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,  # botleft_x
+                                                           py - gapsize + leny / 4,  # botleft_y
+                                                           xmax + gapsize,  # topright_x
+                                                           py + gapsize + leny / 4)  # topright_y
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,
+                                                           py - gapsize - leny / 4,
+                                                           xmax + gapsize,
+                                                           py + gapsize - leny / 4)
 
-                if gaps == '8' or gaps == '2TB':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize + lenx / 4,
-                                                       ymin - gapsize,
-                                                       px + gapsize + lenx / 4,
-                                                       ymax + gapsize)
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize - lenx / 4,
-                                                       ymin - gapsize,
-                                                       px + gapsize - lenx / 4,
-                                                       ymax + gapsize)
+                    if gaps == '8' or gaps == '2TB':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize + lenx / 4,
+                                                           ymin - gapsize,
+                                                           px + gapsize + lenx / 4,
+                                                           ymax + gapsize)
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize - lenx / 4,
+                                                           ymin - gapsize,
+                                                           px + gapsize - lenx / 4,
+                                                           ymax + gapsize)
 
-                if gaps == '4' or gaps == 'LR':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,
-                                                       py - gapsize,
-                                                       xmax + gapsize,
-                                                       py + gapsize)
+                    if gaps == '4' or gaps == 'LR':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,
+                                                           py - gapsize,
+                                                           xmax + gapsize,
+                                                           py + gapsize)
 
-                if gaps == '4' or gaps == 'TB':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize,
-                                                       ymin - gapsize,
-                                                       px + gapsize,
-                                                       ymax + gapsize)
+                    if gaps == '4' or gaps == 'TB':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize,
+                                                           ymin - gapsize,
+                                                           px + gapsize,
+                                                           ymax + gapsize)
                 try:
                     for g in geom:
                         proc_geometry.append(g)
@@ -743,65 +763,49 @@ class CutOut(FlatCAMTool):
                                      "Add it and retry."))
                 return
 
+        name = self.man_object_combo.currentText()
+        # Get Geometry source object to be used as target for Manual adding Gaps
+        try:
+            self.man_cutout_obj = self.app.collection.get_by_name(str(name))
+        except Exception as e:
+            log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Geometry object: %s") % name)
+            return "Could not retrieve object: %s" % name
+
         self.app.plotcanvas.vis_disconnect('key_press', self.app.ui.keyPressEvent)
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('key_press', self.on_key_press)
         self.app.plotcanvas.vis_connect('mouse_move', self.on_mouse_move)
-        self.app.plotcanvas.vis_connect('mouse_release', self.doit)
-
-    # To be called after clicking on the plot.
-    def doit(self, event):
-        # do paint single only for left mouse clicks
-        if event.button == 1:
-            self.app.inform.emit(_("Making manual bridge gap..."))
-            pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
-            self.on_manual_cutout(click_pos=pos)
-
-            self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
-            self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
-            self.app.plotcanvas.vis_disconnect('mouse_release', self.doit)
-            self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
-            self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-
-            self.app.geo_editor.tool_shape.clear(update=True)
-            self.app.geo_editor.tool_shape.enabled = False
-            self.gapFinished.emit()
+        self.app.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release)
 
     def on_manual_cutout(self, click_pos):
         name = self.man_object_combo.currentText()
 
         # Get source object.
         try:
-            cutout_obj = self.app.collection.get_by_name(str(name))
+            self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Geometry object: %s") % name)
             return "Could not retrieve object: %s" % name
 
-        if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Geometry object for manual cutout not found: %s") % cutout_obj)
+        if self.man_cutout_obj is None:
+            self.app.inform.emit(
+                _("[ERROR_NOTCL] Geometry object for manual cutout not found: %s") % self.man_cutout_obj)
             return
 
         # use the snapped position as reference
         snapped_pos = self.app.geo_editor.snap(click_pos[0], click_pos[1])
 
         cut_poly = self.cutting_geo(pos=(snapped_pos[0], snapped_pos[1]))
-        cutout_obj.subtract_polygon(cut_poly)
+        self.man_cutout_obj.subtract_polygon(cut_poly)
 
-        cutout_obj.plot()
+        self.man_cutout_obj.plot()
         self.app.inform.emit(_("[success] Added manual Bridge Gap."))
 
         self.app.should_we_save = True
-
-    def on_gap_finished(self):
-        # if CTRL key modifier is pressed then repeat the bridge gap cut
-        key_modifier = QtWidgets.QApplication.keyboardModifiers()
-        if key_modifier == Qt.ControlModifier:
-            self.on_manual_gap_click()
 
     def on_manual_geo(self):
         name = self.obj_combo.currentText()
@@ -864,9 +868,17 @@ class CutOut(FlatCAMTool):
                 geo = geo_union.convex_hull
                 geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
             elif kind == 'single':
-                x0, y0, x1, y1 = geo_union.bounds
-                geo = box(x0, y0, x1, y1)
-                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+                if isinstance(geo_union, Polygon) or \
+                        (isinstance(geo_union, list) and len(geo_union) == 1) or \
+                        (isinstance(geo_union, MultiPolygon) and len(geo_union) == 1):
+                    geo_obj.solid_geometry = geo_union.buffer(margin + abs(dia / 2)).exterior
+                elif isinstance(geo_union, MultiPolygon):
+                    x0, y0, x1, y1 = geo_union.bounds
+                    geo = box(x0, y0, x1, y1)
+                    geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+                else:
+                    self.app.inform.emit(_("[ERROR_NOTCL] Geometry not supported for cutout: %s") % type(geo_union))
+                    return 'fail'
             else:
                 geo = geo_union
                 geo = geo.buffer(margin + abs(dia / 2))
@@ -896,12 +908,52 @@ class CutOut(FlatCAMTool):
         cut_poly = box(xmin, ymin, xmax, ymax)
         return cut_poly
 
+    # To be called after clicking on the plot.
+    def on_mouse_click_release(self, event):
+
+        # do paint single only for left mouse clicks
+        if event.button == 1:
+            self.app.inform.emit(_("Making manual bridge gap..."))
+            pos = self.app.plotcanvas.translate_coords(event.pos)
+            self.on_manual_cutout(click_pos=pos)
+
+            # self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
+            # self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
+            # self.app.plotcanvas.vis_disconnect('mouse_release', self.on_mouse_click_release)
+            # self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
+            # self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+            # self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            # self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+
+            # self.app.geo_editor.tool_shape.clear(update=True)
+            # self.app.geo_editor.tool_shape.enabled = False
+            # self.gapFinished.emit()
+
+        # if RMB then we exit
+        elif event.button == 2 and self.mouse_is_dragging is False:
+            self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
+            self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
+            self.app.plotcanvas.vis_disconnect('mouse_release', self.on_mouse_click_release)
+            self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
+            self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+
+            # Remove any previous utility shape
+            self.app.geo_editor.tool_shape.clear(update=True)
+            self.app.geo_editor.tool_shape.enabled = False
+
     def on_mouse_move(self, event):
 
         self.app.on_mouse_move_over_plot(event=event)
 
-        pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+        pos = self.canvas.translate_coords(event.pos)
         event.xdata, event.ydata = pos[0], pos[1]
+
+        if event.is_dragging is True:
+            self.mouse_is_dragging = True
+        else:
+            self.mouse_is_dragging = False
 
         try:
             x = float(event.xdata)
@@ -909,13 +961,74 @@ class CutOut(FlatCAMTool):
         except TypeError:
             return
 
-        snap_x, snap_y = self.app.geo_editor.snap(x, y)
+        if self.app.grid_status() == True:
+            snap_x, snap_y = self.app.geo_editor.snap(x, y)
+        else:
+            snap_x, snap_y = x, y
 
-        geo = self.cutting_geo(pos=(snap_x, snap_y))
+        self.x_pos, self.y_pos = snap_x, snap_y
+
+        # #################################################
+        # ### This section makes the cutting geo to #######
+        # ### rotate if it intersects the target geo ######
+        # #################################################
+        cut_geo = self.cutting_geo(pos=(snap_x, snap_y))
+        man_geo = self.man_cutout_obj.solid_geometry
+
+        def get_angle(geo):
+            line = cut_geo.intersection(geo)
+
+            try:
+                pt1_x = line.coords[0][0]
+                pt1_y = line.coords[0][1]
+                pt2_x = line.coords[1][0]
+                pt2_y = line.coords[1][1]
+                dx = pt1_x - pt2_x
+                dy = pt1_y - pt2_y
+
+                if dx == 0 or dy == 0:
+                    angle = 0
+                else:
+                    radian = math.atan(dx / dy)
+                    angle = radian * 180 / math.pi
+            except Exception as e:
+                angle = 0
+            return angle
+
+        try:
+            rot_angle = 0
+            for geo_el in man_geo:
+                if isinstance(geo_el, Polygon):
+                    work_geo = geo_el.exterior
+                    if cut_geo.intersects(work_geo):
+                        rot_angle = get_angle(geo=work_geo)
+                    else:
+                        rot_angle = 0
+                else:
+                    rot_angle = 0
+                    if cut_geo.intersects(geo_el):
+                        rot_angle = get_angle(geo=geo_el)
+                if rot_angle != 0:
+                    break
+        except TypeError:
+            if isinstance(man_geo, Polygon):
+                work_geo = man_geo.exterior
+                if cut_geo.intersects(work_geo):
+                    rot_angle = get_angle(geo=work_geo)
+                else:
+                    rot_angle = 0
+            else:
+                rot_angle = 0
+                if cut_geo.intersects(man_geo):
+                    rot_angle = get_angle(geo=man_geo)
+
+        # rotate only if there is an angle to rotate to
+        if rot_angle != 0:
+            cut_geo = affinity.rotate(cut_geo, -rot_angle)
 
         # Remove any previous utility shape
         self.app.geo_editor.tool_shape.clear(update=True)
-        self.draw_utility_geometry(geo=geo)
+        self.draw_utility_geometry(geo=cut_geo)
 
     def draw_utility_geometry(self, geo):
         self.app.geo_editor.tool_shape.add(
@@ -941,7 +1054,7 @@ class CutOut(FlatCAMTool):
         if key == QtCore.Qt.Key_Escape or key == 'Escape':
             self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
             self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
-            self.app.plotcanvas.vis_disconnect('mouse_release', self.doit)
+            self.app.plotcanvas.vis_disconnect('mouse_release', self.on_mouse_click_release)
             self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
             self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -950,6 +1063,17 @@ class CutOut(FlatCAMTool):
             # Remove any previous utility shape
             self.app.geo_editor.tool_shape.clear(update=True)
             self.app.geo_editor.tool_shape.enabled = False
+
+        # Grid toggle
+        if key == QtCore.Qt.Key_G or key == 'G':
+            self.app.ui.grid_snap_btn.trigger()
+
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            l_x, l_y = self.app.on_jump_to()
+            self.app.geo_editor.tool_shape.clear(update=True)
+            geo = self.cutting_geo(pos=(l_x, l_y))
+            self.draw_utility_geometry(geo=geo)
 
     def subtract_poly_from_geo(self, solid_geo, x0, y0, x1, y1):
         """

@@ -40,7 +40,7 @@ class Measurement(FlatCAMTool):
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 
-        self.units_label = QtWidgets.QLabel(_("Units:"))
+        self.units_label = QtWidgets.QLabel('%s:' % _("Units"))
         self.units_label.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_value = QtWidgets.QLabel("%s" % str({'mm': _("METRIC (mm)"), 'in': _("INCH (in)")}[self.units]))
         self.units_value.setDisabled(True)
@@ -51,10 +51,10 @@ class Measurement(FlatCAMTool):
         self.stop_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_('Stop'), _('Coords')))
         self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
 
-        self.distance_x_label = QtWidgets.QLabel(_("Dx:"))
+        self.distance_x_label = QtWidgets.QLabel('%s:' % _("Dx"))
         self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
 
-        self.distance_y_label = QtWidgets.QLabel(_("Dy:"))
+        self.distance_y_label = QtWidgets.QLabel('%s:' % _("Dy"))
         self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
 
         self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))
@@ -113,7 +113,7 @@ class Measurement(FlatCAMTool):
         self.original_call_source = 'app'
 
         # VisPy visuals
-        self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene, layers=1)
+        self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
 
         self.measure_btn.clicked.connect(self.activate_measure_tool)
 
@@ -247,9 +247,9 @@ class Measurement(FlatCAMTool):
         log.debug("Measuring Tool --> mouse click release")
 
         if event.button == 1:
-            pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
+            pos_canvas = self.canvas.translate_coords(event.pos)
             # if GRID is active we need to get the snapped positions
-            if self.app.grid_status():
+            if self.app.grid_status() == True:
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
             else:
                 pos = pos_canvas[0], pos_canvas[1]
@@ -286,8 +286,8 @@ class Measurement(FlatCAMTool):
 
     def on_mouse_move_meas(self, event):
         try:  # May fail in case mouse not within axes
-            pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
-            if self.app.grid_status():
+            pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
+            if self.app.grid_status() == True:
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                 self.app.app_cursor.enabled = True
                 # Update cursor

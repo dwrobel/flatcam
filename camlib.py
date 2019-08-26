@@ -229,7 +229,8 @@ class Geometry(object):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("Geometry->bounds()")
+        log.debug("camlib.Geometry.bounds()")
+
         if self.solid_geometry is None:
             log.debug("solid_geometry is None")
             return 0, 0, 0, 0
@@ -554,22 +555,18 @@ class Geometry(object):
             if follow:
                 geo_iso = self.follow_geometry
             else:
-                if corner is None:
-                    try:
-                        __ = iter(self.solid_geometry)
-                        for el in self.solid_geometry:
-                            geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-                    except TypeError:
-                        geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                if isinstance(self.solid_geometry, list):
+                    temp_geo = cascaded_union(self.solid_geometry)
                 else:
-                    try:
-                        __ = iter(self.solid_geometry)
-                        for el in self.solid_geometry:
-                            geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                                                     join_style=corner))
-                    except TypeError:
-                        geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                                                             join_style=corner)
+                    temp_geo = self.solid_geometry
+
+                # Remember: do not make a buffer for each element in the solid_geometry because it will cut into
+                # other copper features
+                if corner is None:
+                    geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                else:
+                    geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                              join_style=corner)
 
         # end of replaced block
         if follow:
@@ -1282,7 +1279,7 @@ class Geometry(object):
         :return: Scaling factor resulting from unit change.
         :rtype: float
         """
-        log.debug("Geometry.convert_units()")
+        log.debug("camlib.Geometry.convert_units()")
 
         if units.upper() == self.units.upper():
             return 1.0
@@ -1382,6 +1379,7 @@ class Geometry(object):
         :type point: list
         :return: None
         """
+        log.debug("camlib.Geometry.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -1393,7 +1391,10 @@ class Geometry(object):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         try:
             if self.multigeo is True:
@@ -1421,6 +1422,7 @@ class Geometry(object):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.Geometry.rotate()")
 
         px, py = point
 
@@ -1431,7 +1433,10 @@ class Geometry(object):
                     new_obj.append(rotate_geom(g))
                 return new_obj
             else:
-                return affinity.rotate(obj, angle, origin=(px, py))
+                try:
+                    return affinity.rotate(obj, angle, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         try:
             if self.multigeo is True:
@@ -1458,6 +1463,8 @@ class Geometry(object):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.Geometry.skew()")
+
         px, py = point
 
         def skew_geom(obj):
@@ -1467,7 +1474,10 @@ class Geometry(object):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                try:
+                    return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         try:
             if self.multigeo is True:
@@ -2362,7 +2372,7 @@ class Gerber (Geometry):
                         "D-no zero suppression)" % self.gerber_zeros)
                     log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
-                    self.gerber_units = match.group(1)
+                    self.gerber_units = match.group(5)
                     log.debug("Gerber units found = %s" % self.gerber_units)
                     # Changed for issue #80
                     self.convert_units(match.group(5))
@@ -3293,7 +3303,8 @@ class Gerber (Geometry):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("Gerber->bounds()")
+        log.debug("camlib.Gerber.bounds()")
+
         if self.solid_geometry is None:
             log.debug("solid_geometry is None")
             return 0, 0, 0, 0
@@ -3384,7 +3395,10 @@ class Gerber (Geometry):
                     new_obj.append(scale_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = scale_geom(self.solid_geometry)
         self.follow_geometry = scale_geom(self.follow_geometry)
@@ -3434,6 +3448,8 @@ class Gerber (Geometry):
         :type vect: tuple
         :return: None
         """
+        log.debug("camlib.Gerber.offset()")
+
         try:
             dx, dy = vect
         except TypeError:
@@ -3448,7 +3464,10 @@ class Gerber (Geometry):
                     new_obj.append(offset_geom(g))
                 return new_obj
             else:
-                return affinity.translate(obj, xoff=dx, yoff=dy)
+                try:
+                    return affinity.translate(obj, xoff=dx, yoff=dy)
+                except AttributeError:
+                    return obj
 
         # ## Solid geometry
         self.solid_geometry = offset_geom(self.solid_geometry)
@@ -3493,6 +3512,7 @@ class Gerber (Geometry):
         :type point: list
         :return: None
         """
+        log.debug("camlib.Gerber.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -3504,7 +3524,10 @@ class Gerber (Geometry):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = mirror_geom(self.solid_geometry)
         self.follow_geometry = mirror_geom(self.follow_geometry)
@@ -3540,6 +3563,7 @@ class Gerber (Geometry):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.Gerber.skew()")
 
         px, py = point
 
@@ -3550,7 +3574,10 @@ class Gerber (Geometry):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                try:
+                    return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = skew_geom(self.solid_geometry)
         self.follow_geometry = skew_geom(self.follow_geometry)
@@ -3579,6 +3606,7 @@ class Gerber (Geometry):
         :param point:
         :return:
         """
+        log.debug("camlib.Gerber.rotate()")
 
         px, py = point
 
@@ -3589,7 +3617,10 @@ class Gerber (Geometry):
                     new_obj.append(rotate_geom(g))
                 return new_obj
             else:
-                return affinity.rotate(obj, angle, origin=(px, py))
+                try:
+                    return affinity.rotate(obj, angle, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = rotate_geom(self.solid_geometry)
         self.follow_geometry = rotate_geom(self.follow_geometry)
@@ -3983,10 +4014,10 @@ class Excellon(Geometry):
                         ':' + str(self.excellon_format_lower_in))
                     continue
 
-                #### Body ## ##
+                # ### Body ####
                 if not in_header:
 
-                    # ## Tool change # ##
+                    # ## Tool change ###
                     match = self.toolsel_re.search(eline)
                     if match:
                         current_tool = str(int(match.group(1)))
@@ -4026,7 +4057,7 @@ class Excellon(Geometry):
 
                         continue
 
-                    # ## Allegro Type Tool change # ##
+                    # ## Allegro Type Tool change ###
                     if allegro_warning is True:
                         match = self.absinc_re.search(eline)
                         match1 = self.stop_re.search(eline)
@@ -4118,7 +4149,7 @@ class Excellon(Geometry):
                             )
                             continue
 
-                        # Slot coordinates with period: Use literally. # ##
+                        # Slot coordinates with period: Use literally. ###
                         # get the coordinates for slot start and for slot stop into variables
                         start_coords_period = self.coordsperiod_re.search(start_coords_match)
                         stop_coords_period = self.coordsperiod_re.search(stop_coords_match)
@@ -4278,7 +4309,6 @@ class Excellon(Geometry):
                     if match:
                         # signal that there are drill operations
                         self.defaults['excellon_drills'] = True
-
                         try:
                             x = float(match.group(1))
                             repeating_x = current_x
@@ -4350,7 +4380,7 @@ class Excellon(Geometry):
                             # log.debug("{:15} {:8} {:8}".format(eline, x, y))
                             continue
 
-                #### Header ## ##
+                # ### Header ####
                 if in_header:
 
                     # ## Tool definitions # ##
@@ -4488,7 +4518,7 @@ class Excellon(Geometry):
         match = self.leadingzeros_re.search(number_str)
         nr_length = len(match.group(1)) + len(match.group(2))
         try:
-            if self.zeros == "L" or self.zeros == "LZ":
+            if self.zeros == "L" or self.zeros == "LZ": # Leading
                 # With leading zeros, when you type in a coordinate,
                 # the leading zeros must always be included.  Trailing zeros
                 # are unneeded and may be left off. The CNC-7 will automatically add them.
@@ -4609,10 +4639,10 @@ class Excellon(Geometry):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("Excellon() -> bounds()")
-        # if self.solid_geometry is None:
-        #     log.debug("solid_geometry is None")
-        #     return 0, 0, 0, 0
+        log.debug("camlib.Excellon.bounds()")
+        if self.solid_geometry is None:
+            log.debug("solid_geometry is None")
+            return 0, 0, 0, 0
 
         def bounds_rec(obj):
             if type(obj) is list:
@@ -4669,6 +4699,8 @@ class Excellon(Geometry):
         :type str: IN or MM
         :return:
         """
+        log.debug("camlib.Excellon.convert_units()")
+
         factor = Geometry.convert_units(self, units)
 
         # Tools
@@ -4689,6 +4721,8 @@ class Excellon(Geometry):
         :return: None
         :rtype: NOne
         """
+        log.debug("camlib.Excellon.scale()")
+
         if yfactor is None:
             yfactor = xfactor
 
@@ -4705,8 +4739,10 @@ class Excellon(Geometry):
                     new_obj.append(scale_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xfactor,
-                                             yfactor, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         # Drills
         for drill in self.drills:
@@ -4731,6 +4767,7 @@ class Excellon(Geometry):
         :type vect: tuple
         :return: None
         """
+        log.debug("camlib.Excellon.offset()")
 
         dx, dy = vect
 
@@ -4741,7 +4778,10 @@ class Excellon(Geometry):
                     new_obj.append(offset_geom(g))
                 return new_obj
             else:
-                return affinity.translate(obj, xoff=dx, yoff=dy)
+                try:
+                    return affinity.translate(obj, xoff=dx, yoff=dy)
+                except AttributeError:
+                    return obj
 
         # Drills
         for drill in self.drills:
@@ -4768,6 +4808,8 @@ class Excellon(Geometry):
         :type point: list
         :return: None
         """
+        log.debug("camlib.Excellon.mirror()")
+
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
@@ -4778,7 +4820,10 @@ class Excellon(Geometry):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         # Modify data
         # Drills
@@ -4812,6 +4857,8 @@ class Excellon(Geometry):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.Excellon.skew()")
+
         if angle_x is None:
             angle_x = 0.0
 
@@ -4825,7 +4872,10 @@ class Excellon(Geometry):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                try:
+                    return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         if point is None:
             px, py = 0, 0
@@ -4867,6 +4917,7 @@ class Excellon(Geometry):
         :param point: tuple of coordinates (x, y)
         :return:
         """
+        log.debug("camlib.Excellon.rotate()")
 
         def rotate_geom(obj, origin=None):
             if type(obj) is list:
@@ -4876,9 +4927,15 @@ class Excellon(Geometry):
                 return new_obj
             else:
                 if origin:
-                    return affinity.rotate(obj, angle, origin=origin)
+                    try:
+                        return affinity.rotate(obj, angle, origin=origin)
+                    except AttributeError:
+                        return obj
                 else:
-                    return affinity.rotate(obj, angle, origin=(px, py))
+                    try:
+                        return affinity.rotate(obj, angle, origin=(px, py))
+                    except AttributeError:
+                        return obj
 
         if point is None:
             # Drills
@@ -5026,6 +5083,11 @@ class CNCjob(Geometry):
 
         self.tool = 0.0
 
+        # here store the travelled distance
+        self.travel_distance = 0.0
+        # here store the routing time
+        self.routing_time = 0.0
+
         # used for creating drill CCode geometry; will be updated in the generate_from_excellon_by_tool()
         self.exc_drills = None
         self.exc_tools = None
@@ -5048,8 +5110,9 @@ class CNCjob(Geometry):
         return self.__dict__
 
     def convert_units(self, units):
+        log.debug("camlib.CNCJob.convert_units()")
+
         factor = Geometry.convert_units(self, units)
-        log.debug("CNCjob.convert_units()")
 
         self.z_cut = float(self.z_cut) * factor
         self.z_move *= factor
@@ -5287,7 +5350,10 @@ class CNCjob(Geometry):
             self.oldx = 0.0
             self.oldy = 0.0
 
-        measured_distance = 0
+        measured_distance = 0.0
+        measured_down_distance = 0.0
+        measured_up_to_zero_distance = 0.0
+        measured_lift_distance = 0.0
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
@@ -5384,8 +5450,16 @@ class CNCjob(Geometry):
 
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 if self.f_retract is False:
                                     gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                    measured_up_to_zero_distance += abs(self.z_cut)
+                                    measured_lift_distance += abs(self.z_move)
+                                else:
+                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -5479,10 +5553,19 @@ class CNCjob(Geometry):
                             for k in node_list:
                                 locx = locations[k][0]
                                 locy = locations[k][1]
+
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 if self.f_retract is False:
                                     gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                    measured_up_to_zero_distance += abs(self.z_cut)
+                                    measured_lift_distance += abs(self.z_move)
+                                else:
+                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -5539,8 +5622,16 @@ class CNCjob(Geometry):
                         for point in self.optimized_travelling_salesman(altPoints):
                             gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
                             gcode += self.doformat(p.down_code, x=point[0], y=point[1])
+
+                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
                             if self.f_retract is False:
                                 gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
+                                measured_up_to_zero_distance += abs(self.z_cut)
+                                measured_lift_distance += abs(self.z_move)
+                            else:
+                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
                             gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
                             measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
                             self.oldx = point[0]
@@ -5559,6 +5650,15 @@ class CNCjob(Geometry):
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
         self.travel_distance = measured_distance
+
+        # I use the value of self.feedrate_rapid for the feadrate in case of the measure_lift_distance and for
+        # traveled_time because it is not always possible to determine the feedrate that the CNC machine uses
+        # for G0 move (the fastest speed available to the CNC router). Although self.feedrate_rapids is used only with
+        # Marlin postprocessor and derivatives.
+        self.routing_time = (measured_down_distance + measured_up_to_zero_distance) / self.feedrate
+        lift_time = measured_lift_distance / self.feedrate_rapid
+        traveled_time = measured_distance / self.feedrate_rapid
+        self.routing_time += lift_time + traveled_time
 
         self.gcode = gcode
         return 'OK'
@@ -5664,6 +5764,10 @@ class CNCjob(Geometry):
                                  "There will be no cut, skipping %s file") % self.options['name'])
             return 'fail'
 
+        # made sure that depth_per_cut is no more then the z_cut
+        if self.z_cut < self.z_depthpercut:
+            self.z_depthpercut = self.z_cut
+
         if self.z_move is None:
             self.app.inform.emit(_("[ERROR_NOTCL] Travel Z parameter is None or zero."))
             return 'fail'
@@ -5734,6 +5838,9 @@ class CNCjob(Geometry):
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
 
+        total_travel = 0.0
+        total_cut = 0.0
+
         # ## Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
         path_count = 0
@@ -5755,20 +5862,40 @@ class CNCjob(Geometry):
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
+                    # calculate the cut distance
+                    total_cut = total_cut + geo.length
+
                     self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
 
                 # --------- Multi-pass ---------
                 else:
+                    # calculate the cut distance
+                    # due of the number of cuts (multi depth) it has to multiplied by the number of cuts
+                    nr_cuts = 0
+                    depth = abs(self.z_cut)
+                    while depth > 0:
+                        nr_cuts += 1
+                        depth -= float(self.z_depthpercut)
+
+                    total_cut += (geo.length * nr_cuts)
+
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
 
+                # calculate the total distance
+                total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
-                pt, geo = storage.nearest(current_pt) # Next
 
+                pt, geo = storage.nearest(current_pt) # Next
         except StopIteration:  # Nothing found in storage.
             pass
 
         log.debug("Finishing G-Code... %s paths traced." % path_count)
+
+        # add move to end position
+        total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
+        self.travel_distance += total_travel + total_cut
+        self.routing_time += total_cut / self.feedrate
 
         # Finish
         self.gcode += self.doformat(p.spindle_stop_code)
@@ -5874,7 +6001,10 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        self.tooldia = float(tooldia) if tooldia else None
+        try:
+            self.tooldia = float(tooldia) if tooldia else None
+        except ValueError:
+            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia else None
 
         self.z_cut = float(z_cut) if z_cut else None
         self.z_move = float(z_move) if z_move else None
@@ -6000,6 +6130,9 @@ class CNCjob(Geometry):
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
 
+        total_travel = 0.0
+        total_cut = 0.0
+
         # Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
         path_count = 0
@@ -6019,20 +6152,39 @@ class CNCjob(Geometry):
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
+                    # calculate the cut distance
+                    total_cut += geo.length
                     self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
 
                 # --------- Multi-pass ---------
                 else:
+                    # calculate the cut distance
+                    # due of the number of cuts (multi depth) it has to multiplied by the number of cuts
+                    nr_cuts = 0
+                    depth = abs(self.z_cut)
+                    while depth > 0:
+                        nr_cuts += 1
+                        depth -= float(self.z_depthpercut)
+
+                    total_cut += (geo.length * nr_cuts)
+
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
 
+                # calculate the travel distance
+                total_travel += abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
-                pt, geo = storage.nearest(current_pt) # Next
 
+                pt, geo = storage.nearest(current_pt) # Next
         except StopIteration:  # Nothing found in storage.
             pass
 
         log.debug("Finishing G-Code... %s paths traced." % path_count)
+
+        # add move to end position
+        total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
+        self.travel_distance += total_travel + total_cut
+        self.routing_time += total_cut / self.feedrate
 
         # Finish
         self.gcode += self.doformat(p.spindle_stop_code)
@@ -6520,6 +6672,10 @@ class CNCjob(Geometry):
         if tooldia is None:
             tooldia = self.tooldia
 
+        # this should be unlikely unless when upstream the tooldia is a tuple made by one dia and a comma like (2.4,)
+        if isinstance(tooldia, list):
+            tooldia = tooldia[0] if tooldia[0] is not None else self.tooldia
+
         if tooldia == 0:
             for geo in gcode_parsed:
                 if kind == 'all':
@@ -6570,10 +6726,12 @@ class CNCjob(Geometry):
                     if geo['kind'][0] == 'C':
                         obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                                       visible=visible, layer=1)
-
-            obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
-                               font_size=self.app.defaults["cncjob_annotation_fontsize"],
-                               color=self.app.defaults["cncjob_annotation_fontcolor"])
+            try:
+                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                   font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                   color=self.app.defaults["cncjob_annotation_fontcolor"])
+            except Exception as e:
+                pass
 
     def create_geometry(self):
         # TODO: This takes forever. Too much data?
@@ -6855,6 +7013,8 @@ class CNCjob(Geometry):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
+        log.debug("camlib.CNCJob.bounds()")
+
         def bounds_rec(obj):
             if type(obj) is list:
                 minx = Inf
@@ -6889,7 +7049,10 @@ class CNCjob(Geometry):
 
             bounds_coords = bounds_rec(self.solid_geometry)
         else:
-
+            minx = Inf
+            miny = Inf
+            maxx = -Inf
+            maxy = -Inf
             for k, v in self.cnc_tools.items():
                 minx = Inf
                 miny = Inf
@@ -6926,6 +7089,7 @@ class CNCjob(Geometry):
         :return: None
         :rtype: None
         """
+        log.debug("camlib.CNCJob.scale()")
 
         if yfactor is None:
             yfactor = xfactor
@@ -7044,7 +7208,10 @@ class CNCjob(Geometry):
             self.gcode = scale_g(self.gcode)
             # offset geometry
             for g in self.gcode_parsed:
-                g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                try:
+                    g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return g['geom']
             self.create_geometry()
         else:
             for k, v in self.cnc_tools.items():
@@ -7052,9 +7219,11 @@ class CNCjob(Geometry):
                 v['gcode'] = scale_g(v['gcode'])
                 # scale gcode_parsed
                 for g in v['gcode_parsed']:
-                    g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                    try:
+                        g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                    except AttributeError:
+                        return g['geom']
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
-
         self.create_geometry()
 
     def offset(self, vect):
@@ -7070,6 +7239,8 @@ class CNCjob(Geometry):
         :type vect: tuple
         :return: None
         """
+        log.debug("camlib.CNCJob.offset()")
+
         dx, dy = vect
 
         def offset_g(g):
@@ -7110,7 +7281,10 @@ class CNCjob(Geometry):
             self.gcode = offset_g(self.gcode)
             # offset geometry
             for g in self.gcode_parsed:
-                g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                try:
+                    g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                except AttributeError:
+                    return g['geom']
             self.create_geometry()
         else:
             for k, v in self.cnc_tools.items():
@@ -7118,7 +7292,10 @@ class CNCjob(Geometry):
                 v['gcode'] = offset_g(v['gcode'])
                 # offset gcode_parsed
                 for g in v['gcode_parsed']:
-                    g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                    try:
+                        g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                    except AttributeError:
+                        return g['geom']
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
 
     def mirror(self, axis, point):
@@ -7128,12 +7305,16 @@ class CNCjob(Geometry):
         :param point: tupple of coordinates (x,y)
         :return:
         """
+        log.debug("camlib.CNCJob.mirror()")
+
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
         for g in self.gcode_parsed:
-            g['geom'] = affinity.scale(g['geom'], xscale, yscale, origin=(px, py))
-
+            try:
+                g['geom'] = affinity.scale(g['geom'], xscale, yscale, origin=(px, py))
+            except AttributeError:
+                return g['geom']
         self.create_geometry()
 
     def skew(self, angle_x, angle_y, point):
@@ -7151,12 +7332,15 @@ class CNCjob(Geometry):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.CNCJob.skew()")
+
         px, py = point
 
         for g in self.gcode_parsed:
-            g['geom'] = affinity.skew(g['geom'], angle_x, angle_y,
-                                      origin=(px, py))
-
+            try:
+                g['geom'] = affinity.skew(g['geom'], angle_x, angle_y, origin=(px, py))
+            except AttributeError:
+                return g['geom']
         self.create_geometry()
 
     def rotate(self, angle, point):
@@ -7166,12 +7350,15 @@ class CNCjob(Geometry):
         :param point: tupple of coordinates (x,y)
         :return:
         """
+        log.debug("camlib.CNCJob.rotate()")
 
         px, py = point
 
         for g in self.gcode_parsed:
-            g['geom'] = affinity.rotate(g['geom'], angle, origin=(px, py))
-
+            try:
+                g['geom'] = affinity.rotate(g['geom'], angle, origin=(px, py))
+            except AttributeError:
+                return g['geom']
         self.create_geometry()
 
 

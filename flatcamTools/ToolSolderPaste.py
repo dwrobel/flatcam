@@ -139,7 +139,7 @@ class SolderPaste(FlatCAMTool):
         grid0_1 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0_1)
 
-        step1_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 1:'))
+        step1_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 1'))
         step1_lbl.setToolTip(
             _("First step is to select a number of nozzle tools for usage\n"
               "and then optionally modify the GCode parameters bellow.")
@@ -163,7 +163,7 @@ class SolderPaste(FlatCAMTool):
 
         # Z dispense start
         self.z_start_entry = FCEntry()
-        self.z_start_label = QtWidgets.QLabel(_("Z Dispense Start:"))
+        self.z_start_label = QtWidgets.QLabel('%s:' % _("Z Dispense Start"))
         self.z_start_label.setToolTip(
             _("The height (Z) when solder paste dispensing starts.")
         )
@@ -171,7 +171,7 @@ class SolderPaste(FlatCAMTool):
 
         # Z dispense
         self.z_dispense_entry = FCEntry()
-        self.z_dispense_label = QtWidgets.QLabel(_("Z Dispense:"))
+        self.z_dispense_label = QtWidgets.QLabel('%s:' % _("Z Dispense"))
         self.z_dispense_label.setToolTip(
             _("The height (Z) when doing solder paste dispensing.")
         )
@@ -179,7 +179,7 @@ class SolderPaste(FlatCAMTool):
 
         # Z dispense stop
         self.z_stop_entry = FCEntry()
-        self.z_stop_label = QtWidgets.QLabel(_("Z Dispense Stop:"))
+        self.z_stop_label = QtWidgets.QLabel('%s:' % _("Z Dispense Stop"))
         self.z_stop_label.setToolTip(
             _("The height (Z) when solder paste dispensing stops.")
         )
@@ -187,7 +187,7 @@ class SolderPaste(FlatCAMTool):
 
         # Z travel
         self.z_travel_entry = FCEntry()
-        self.z_travel_label = QtWidgets.QLabel(_("Z Travel:"))
+        self.z_travel_label = QtWidgets.QLabel('%s:' % _("Z Travel"))
         self.z_travel_label.setToolTip(
            _("The height (Z) for travel between pads\n"
              "(without dispensing solder paste).")
@@ -196,7 +196,7 @@ class SolderPaste(FlatCAMTool):
 
         # Z toolchange location
         self.z_toolchange_entry = FCEntry()
-        self.z_toolchange_label = QtWidgets.QLabel(_("Z Toolchange:"))
+        self.z_toolchange_label = QtWidgets.QLabel('%s:' % _("Z Toolchange"))
         self.z_toolchange_label.setToolTip(
            _("The height (Z) for tool (nozzle) change.")
         )
@@ -204,7 +204,7 @@ class SolderPaste(FlatCAMTool):
 
         # X,Y Toolchange location
         self.xy_toolchange_entry = FCEntry()
-        self.xy_toolchange_label = QtWidgets.QLabel(_("XY Toolchange:"))
+        self.xy_toolchange_label = QtWidgets.QLabel('%s:' % _("Toolchange X-Y"))
         self.xy_toolchange_label.setToolTip(
             _("The X,Y location for tool (nozzle) change.\n"
               "The format is (x, y) where x and y are real numbers.")
@@ -213,7 +213,7 @@ class SolderPaste(FlatCAMTool):
 
         # Feedrate X-Y
         self.frxy_entry = FCEntry()
-        self.frxy_label = QtWidgets.QLabel(_("Feedrate X-Y:"))
+        self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
         self.frxy_label.setToolTip(
            _("Feedrate (speed) while moving on the X-Y plane.")
         )
@@ -221,7 +221,7 @@ class SolderPaste(FlatCAMTool):
 
         # Feedrate Z
         self.frz_entry = FCEntry()
-        self.frz_label = QtWidgets.QLabel(_("Feedrate Z:"))
+        self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
         self.frz_label.setToolTip(
             _("Feedrate (speed) while moving vertically\n"
               "(on Z plane).")
@@ -230,7 +230,7 @@ class SolderPaste(FlatCAMTool):
 
         # Feedrate Z Dispense
         self.frz_dispense_entry = FCEntry()
-        self.frz_dispense_label = QtWidgets.QLabel(_("Feedrate Z Dispense:"))
+        self.frz_dispense_label = QtWidgets.QLabel('%s:' % _("Feedrate Z Dispense"))
         self.frz_dispense_label.setToolTip(
            _("Feedrate (speed) while moving up vertically\n"
              " to Dispense position (on Z plane).")
@@ -239,7 +239,7 @@ class SolderPaste(FlatCAMTool):
 
         # Spindle Speed Forward
         self.speedfwd_entry = FCEntry()
-        self.speedfwd_label = QtWidgets.QLabel(_("Spindle Speed FWD:"))
+        self.speedfwd_label = QtWidgets.QLabel('%s:' % _("Spindle Speed FWD"))
         self.speedfwd_label.setToolTip(
            _("The dispenser speed while pushing solder paste\n"
              "through the dispenser nozzle.")
@@ -248,7 +248,7 @@ class SolderPaste(FlatCAMTool):
 
         # Dwell Forward
         self.dwellfwd_entry = FCEntry()
-        self.dwellfwd_label = QtWidgets.QLabel(_("Dwell FWD:"))
+        self.dwellfwd_label = QtWidgets.QLabel('%s:' % _("Dwell FWD"))
         self.dwellfwd_label.setToolTip(
             _("Pause after solder dispensing.")
         )
@@ -256,7 +256,7 @@ class SolderPaste(FlatCAMTool):
 
         # Spindle Speed Reverse
         self.speedrev_entry = FCEntry()
-        self.speedrev_label = QtWidgets.QLabel(_("Spindle Speed REV:"))
+        self.speedrev_label = QtWidgets.QLabel('%s:' % _("Spindle Speed REV"))
         self.speedrev_label.setToolTip(
            _("The dispenser speed while retracting solder paste\n"
              "through the dispenser nozzle.")
@@ -265,7 +265,7 @@ class SolderPaste(FlatCAMTool):
 
         # Dwell Reverse
         self.dwellrev_entry = FCEntry()
-        self.dwellrev_label = QtWidgets.QLabel(_("Dwell REV:"))
+        self.dwellrev_label = QtWidgets.QLabel('%s:' % _("Dwell REV"))
         self.dwellrev_label.setToolTip(
             _("Pause after solder paste dispenser retracted,\n"
               "to allow pressure equilibrium.")
@@ -273,7 +273,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.dwellrev_label, self.dwellrev_entry)
 
         # Postprocessors
-        pp_label = QtWidgets.QLabel(_('PostProcessors:'))
+        pp_label = QtWidgets.QLabel('%s:' % _('PostProcessor'))
         pp_label.setToolTip(
             _("Files that control the GCode generation.")
         )
@@ -303,7 +303,7 @@ class SolderPaste(FlatCAMTool):
         grid2 = QtWidgets.QGridLayout()
         self.generation_box.addLayout(grid2)
 
-        step2_lbl = QtWidgets.QLabel("<b>%s</b>" % _('STEP 2:'))
+        step2_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 2'))
         step2_lbl.setToolTip(
             _("Second step is to create a solder paste dispensing\n"
               "geometry out of an Solder Paste Mask Gerber file.")
@@ -321,7 +321,7 @@ class SolderPaste(FlatCAMTool):
         self.geo_obj_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.geo_obj_combo.setCurrentIndex(1)
 
-        self.geo_object_label = QtWidgets.QLabel(_("Geo Result:"))
+        self.geo_object_label = QtWidgets.QLabel('%s:' % _("Geo Result"))
         self.geo_object_label.setToolTip(
            _("Geometry Solder Paste object.\n"
              "The name of the object has to end in:\n"
@@ -332,7 +332,7 @@ class SolderPaste(FlatCAMTool):
         grid3 = QtWidgets.QGridLayout()
         self.generation_box.addLayout(grid3)
 
-        step3_lbl = QtWidgets.QLabel("<b>%s</b>" % _('STEP 3:'))
+        step3_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 3'))
         step3_lbl.setToolTip(
            _("Third step is to select a solder paste dispensing geometry,\n"
              "and then generate a CNCJob object.\n\n"
@@ -354,7 +354,7 @@ class SolderPaste(FlatCAMTool):
         self.cnc_obj_combo.setRootModelIndex(self.app.collection.index(3, 0, QtCore.QModelIndex()))
         self.cnc_obj_combo.setCurrentIndex(1)
 
-        self.cnc_object_label = QtWidgets.QLabel(_("CNC Result:"))
+        self.cnc_object_label = QtWidgets.QLabel('%s:' % _("CNC Result"))
         self.cnc_object_label.setToolTip(
            _("CNCJob Solder paste object.\n"
              "In order to enable the GCode save section,\n"
@@ -378,7 +378,7 @@ class SolderPaste(FlatCAMTool):
              "on PCB pads, to a file.")
         )
 
-        step4_lbl = QtWidgets.QLabel("<b>%s</b>" % _('STEP 4:'))
+        step4_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 4'))
         step4_lbl.setToolTip(
            _("Fourth step (and last) is to select a CNCJob made from \n"
              "a solder paste dispensing geometry, and then view/save it's GCode.")
@@ -436,7 +436,12 @@ class SolderPaste(FlatCAMTool):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:

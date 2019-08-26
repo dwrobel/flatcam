@@ -55,7 +55,8 @@ class TclCommandAddPolygon(TclCommandSignaled):
         if len(unnamed_args) % 2 != 0:
             self.raise_tcl_error("Incomplete coordinates.")
 
-        points = [[float(unnamed_args[2*i]), float(unnamed_args[2*i+1])] for i in range(len(unnamed_args)/2)]
+        nr_points = int(len(unnamed_args) / 2)
+        points = [[float(unnamed_args[2*i]), float(unnamed_args[2*i+1])] for i in range(nr_points)]
 
         obj.add_polygon(points)
         obj.plot()

@@ -32,7 +32,7 @@ class TclCommandVersion(TclCommand):
         'args': collections.OrderedDict([
 
         ]),
-        'examples': []
+        'examples': ['version']
     }
 
     def execute(self, args, unnamed_args):

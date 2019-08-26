@@ -73,7 +73,7 @@ class FlatCAMObj(QtCore.QObject):
 
         self.kind = None  # Override with proper name
 
-        # self.shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene)
+        # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene)
         self.shapes = self.app.plotcanvas.new_shape_group()
 
         # self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
@@ -136,7 +136,6 @@ class FlatCAMObj(QtCore.QObject):
     def on_options_change(self, key):
         # Update form on programmatically options change
         self.set_form_item(key)
-
         # Set object visibility
         if key == 'plot':
             self.visible = self.options['plot']
@@ -358,7 +357,7 @@ class FlatCAMObj(QtCore.QObject):
                 pass
 
         if threaded is False:
-            worker_task(self)
+            worker_task(app_obj=self)
         else:
             self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
@@ -774,7 +773,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
-            obj.follow()
+            obj.follow_geo()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
             obj.ui.plot_cb.toggle()
         else:
@@ -786,7 +785,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
-            obj.follow()
+            obj.follow_geo()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
             obj.ui.plot_cb.toggle()
         else:
@@ -879,23 +878,48 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             if invert:
                 try:
-                    if type(geom) is MultiPolygon:
+                    try:
                         pl = []
                         for p in geom:
                             if p is not None:
-                                pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                                if isinstance(p, Polygon):
+                                    pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                                elif isinstance(p, LinearRing):
+                                    pl.append(Polygon(p.coords[::-1]))
                         geom = MultiPolygon(pl)
-                    elif type(geom) is Polygon and geom is not None:
-                        geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-                    else:
-                        log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry")
+                    except TypeError:
+                        if isinstance(geom, Polygon) and geom is not None:
+                            geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                        elif isinstance(geom, LinearRing) and geom is not None:
+                            geom = Polygon(geom.coords[::-1])
+                        else:
+                            log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
+                                      type(geom))
                 except Exception as e:
                     log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
                     return 'fail'
             return geom
 
-        if float(self.options["isotooldia"]) < 0:
-            self.options["isotooldia"] = -self.options["isotooldia"]
+            # if invert:
+            #     try:
+            #         if type(geom) is MultiPolygon:
+            #             pl = []
+            #             for p in geom:
+            #                 if p is not None:
+            #                     pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+            #             geom = MultiPolygon(pl)
+            #         elif type(geom) is Polygon and geom is not None:
+            #             geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+            #         else:
+            #             log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
+            #                       type(geom))
+            #     except Exception as e:
+            #         log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
+            #         return 'fail'
+            # return geom
+
+        # if float(self.options["isotooldia"]) < 0:
+        #     self.options["isotooldia"] = -self.options["isotooldia"]
 
         if combine:
             if self.iso_type == 0:
@@ -983,7 +1007,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
-                geo_obj.multigeo = True
+
+                # even if combine is checked, one pass is still singlegeo
+                if passes > 1:
+                    geo_obj.multigeo = True
+                else:
+                    geo_obj.multigeo = False
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init)
@@ -1100,6 +1129,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return: None
         :rtype: None
         """
+        log.debug("FlatCAMObj.FlatCAMGerber.convert_units()")
 
         factor = Gerber.convert_units(self, units)
 
@@ -2082,6 +2112,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # Fill form fields
         self.to_form()
 
+        # update the changes in UI depending on the selected postprocessor in Preferences
+        # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
+        # self.ui.pp_excellon_name_cb combobox
+        self.on_pp_changed()
+
         # initialize the dict that holds the tools offset
         t_default_offset = self.app.defaults["excellon_offset"]
         if not self.tool_offset:
@@ -2207,7 +2242,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             item[0] = str(item[0])
         return table_tools_items
 
-    def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1):
+    def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1, slot_type='routing'):
         """
         Returns two values, first is a boolean , if 1 then the file has slots and second contain the Excellon code
         :return: has_slots and Excellon_code
@@ -2273,6 +2308,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             if self.slots:
                 has_slots = 1
                 for tool in self.tools:
+                    excellon_code += 'G05\n'
+
                     if int(tool) < 10:
                         excellon_code += 'T0' + str(tool) + '\n'
                     else:
@@ -2284,13 +2321,17 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                             start_slot_y = slot['start'].y * factor
                             stop_slot_x = slot['stop'].x * factor
                             stop_slot_y = slot['stop'].y * factor
-
-                            excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM15\n".format(start_slot_x,
-                                                                                       start_slot_y,
-                                                                                       dec=fract)
-                            excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM16\n".format(stop_slot_x,
-                                                                                       stop_slot_y,
-                                                                                       dec=fract)
+                            if slot_type == 'routing':
+                                excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM15\n".format(start_slot_x,
+                                                                                           start_slot_y,
+                                                                                           dec=fract)
+                                excellon_code += "G01X{:.{dec}f}Y{:.{dec}f}\nM16\n".format(stop_slot_x,
+                                                                                           stop_slot_y,
+                                                                                           dec=fract)
+                            elif slot_type == 'drilling':
+                                excellon_code += "X{:.{dec}f}Y{:.{dec}f}G85X{:.{dec}f}Y{:.{dec}f}\nG05\n".format(
+                                    start_slot_x, start_slot_y, stop_slot_x, stop_slot_y, dec=fract
+                                )
 
                         elif e_zeros == 'LZ' and tool == slot['tool']:
                             start_slot_x = slot['start'].x * factor
@@ -2322,10 +2363,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                             stop_slot_x_formatted = stop_x_whole + stop_slot_x_formatted[2]
                             stop_slot_y_formatted = stop_y_whole + stop_slot_y_formatted[2]
 
-                            excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
-                                                                                   ystart=start_slot_y_formatted)
-                            excellon_code += "G00X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
-                                                                                 ystop=stop_slot_y_formatted)
+                            if slot_type == 'routing':
+                                excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
+                                                                                       ystart=start_slot_y_formatted)
+                                excellon_code += "G01X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
+                                                                                     ystop=stop_slot_y_formatted)
+                            elif slot_type == 'drilling':
+                                excellon_code += "{xstart}Y{ystart}G85X{xstop}Y{ystop}\nG05\n".format(
+                                    xstart=start_slot_x_formatted, ystart=start_slot_y_formatted,
+                                    xstop=stop_slot_x_formatted, ystop=stop_slot_y_formatted
+                                )
                         elif tool == slot['tool']:
                             start_slot_x = slot['start'].x * factor
                             start_slot_y = slot['start'].y * factor
@@ -2344,10 +2391,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                             stop_slot_x_formatted.ljust(length, '0')
                             stop_slot_y_formatted.ljust(length, '0')
 
-                            excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
-                                                                                   ystart=start_slot_y_formatted)
-                            excellon_code += "G00X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
-                                                                                 ystop=stop_slot_y_formatted)
+                            if slot_type == 'routing':
+                                excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
+                                                                                       ystart=start_slot_y_formatted)
+                                excellon_code += "G01X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
+                                                                                     ystop=stop_slot_y_formatted)
+                            elif slot_type == 'drilling':
+                                excellon_code += "{xstart}Y{ystart}G85X{xstop}Y{ystop}\nG05\n".format(
+                                    xstart=start_slot_x_formatted, ystart=start_slot_y_formatted,
+                                    xstop=stop_slot_x_formatted, ystop=stop_slot_y_formatted
+                                )
         except Exception as e:
             log.debug(str(e))
 
@@ -2721,8 +2774,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def convert_units(self, units):
-        factor = Excellon.convert_units(self, units)
+        log.debug("FlatCAMObj.FlatCAMExcellon.convert_units()")
 
+        factor = Excellon.convert_units(self, units)
         self.options['drillz'] = float(self.options['drillz']) * factor
         self.options['travelz'] = float(self.options['travelz']) * factor
         self.options['feedrate'] = float(self.options['feedrate']) * factor
@@ -3060,8 +3114,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # engine of FlatCAM. Most likely are generated by some of tools and are special cases of geometries.
         self. special_group = None
 
-        self.old_pp_state = ''
-        self.old_toolchangeg_state = ''
+        self.old_pp_state = self.app.defaults["geometry_multidepth"]
+        self.old_toolchangeg_state = self.app.defaults["geometry_toolchange"]
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -3251,6 +3305,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Fill form fields only on object create
         self.to_form()
 
+        # update the changes in UI depending on the selected postprocessor in Preferences
+        # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
+        # self.ui.pp_geometry_name_cb combobox
+        self.on_pp_changed()
+
         self.ui.tipdialabel.hide()
         self.ui.tipdia_entry.hide()
         self.ui.tipanglelabel.hide()
@@ -3375,7 +3434,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.level.setText(_(
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
-
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
@@ -4910,6 +4968,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :return: None
         :rtype: None
         """
+        log.debug("FlatCAMObj.FlatCAMGeometry.scale()")
 
         try:
             xfactor = float(xfactor)
@@ -4952,14 +5011,20 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     geoms.append(scale_recursion(local_geom))
                 return geoms
             else:
-                return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+                try:
+                    return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return geom
 
         if self.multigeo is True:
             for tool in self.tools:
                 self.tools[tool]['solid_geometry'] = scale_recursion(self.tools[tool]['solid_geometry'])
         else:
-            self.solid_geometry = scale_recursion(self.solid_geometry)
-
+            try:
+                self.solid_geometry = scale_recursion(self.solid_geometry)
+            except AttributeError:
+                self.solid_geometry = []
+                return
         self.app.inform.emit(_(
             "[success] Geometry Scale done."
         ))
@@ -4973,6 +5038,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :return: None
         :rtype: None
         """
+        log.debug("FlatCAMObj.FlatCAMGeometry.offset()")
 
         try:
             dx, dy = vect
@@ -4990,7 +5056,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     geoms.append(translate_recursion(local_geom))
                 return geoms
             else:
-                return affinity.translate(geom, xoff=dx, yoff=dy)
+                try:
+                    return affinity.translate(geom, xoff=dx, yoff=dy)
+                except AttributeError:
+                    return geom
 
         if self.multigeo is True:
             for tool in self.tools:
@@ -5000,6 +5069,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.app.inform.emit(_("[success] Geometry Offset done."))
 
     def convert_units(self, units):
+        log.debug("FlatCAMObj.FlatCAMGeometry.convert_units()")
+
         self.ui_disconnect()
 
         factor = Geometry.convert_units(self, units)
@@ -5146,11 +5217,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 for tooluid_key in self.tools:
                     solid_geometry = self.tools[tooluid_key]['solid_geometry']
                     self.plot_element(solid_geometry, visible=visible)
-
-            # plot solid geometry that may be an direct attribute of the geometry object
-            # for SingleGeo
-            if self.solid_geometry:
-                self.plot_element(self.solid_geometry, visible=visible)
+            else:
+                # plot solid geometry that may be an direct attribute of the geometry object
+                # for SingleGeo
+                if self.solid_geometry:
+                    self.plot_element(self.solid_geometry, visible=visible)
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
             self.shapes.redraw()
@@ -5160,8 +5231,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
             return
-        self.plot()
         self.read_form_item('plot')
+        self.plot()
 
         self.ui_disconnect()
         cb_flag = self.ui.plot_cb.isChecked()
@@ -5315,7 +5386,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
 
-        self.annotation = self.app.plotcanvas.new_text_group()
+        self.text_col = self.app.plotcanvas.new_text_collection()
+        self.text_col.enabled = True
+        self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
 
     def build_ui(self):
         self.ui_disconnect()
@@ -5456,7 +5529,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # Fill form fields only on object create
         self.to_form()
 
-        # this means that the object that created this CNCJob was an Excellon
+        # this means that the object that created this CNCJob was an Excellon or Geometry
         try:
             if self.travel_distance:
                 self.ui.t_distance_label.show()
@@ -5465,6 +5538,19 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.ui.t_distance_entry.set_value('%.4f' % float(self.travel_distance))
                 self.ui.units_label.setText(str(self.units).lower())
                 self.ui.units_label.setDisabled(True)
+
+                self.ui.t_time_label.show()
+                self.ui.t_time_entry.setVisible(True)
+                self.ui.t_time_entry.setDisabled(True)
+                # if time is more than 1 then we have minutes, else we have seconds
+                if self.routing_time > 1:
+                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(self.routing_time)))
+                    self.ui.units_time_label.setText('min')
+                else:
+                    time_r = self.routing_time * 60
+                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(time_r)))
+                    self.ui.units_time_label.setText('sec')
+                self.ui.units_time_label.setDisabled(True)
         except AttributeError:
             pass
 
@@ -5922,9 +6008,20 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         visible = visible if visible else self.options['plot']
 
+        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+            self.text_col.enabled = True
+        else:
+            self.text_col.enabled = False
+        self.annotation.redraw()
+
         try:
             if self.multitool is False:  # single tool usage
-                self.plot2(tooldia=float(self.options["tooldia"]), obj=self, visible=visible, kind=kind)
+                try:
+                    dia_plot = float(self.options["tooldia"])
+                except ValueError:
+                    # we may have a tuple with only one element and a comma
+                    dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
+                self.plot2(dia_plot, obj=self, visible=visible, kind=kind)
             else:
                 # multiple tools usage
                 for tooluid_key in self.cnc_tools:
@@ -5936,23 +6033,19 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.shapes.clear(update=True)
             self.annotation.clear(update=True)
 
-        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.app.plotcanvas.text_collection.enabled = True
-        else:
-            self.app.plotcanvas.text_collection.enabled = False
-
     def on_annotation_change(self):
         if self.ui.annotation_cb.get_value():
-            self.app.plotcanvas.text_collection.enabled = True
+            self.text_col.enabled = True
         else:
-            self.app.plotcanvas.text_collection.enabled = False
+            self.text_col.enabled = False
         # kind = self.ui.cncplot_method_combo.get_value()
         # self.plot(kind=kind)
         self.annotation.redraw()
 
     def convert_units(self, units):
+        log.debug("FlatCAMObj.FlatCAMECNCjob.convert_units()")
+
         factor = CNCjob.convert_units(self, units)
-        FlatCAMApp.App.log.debug("FlatCAMCNCjob.convert_units()")
         self.options["tooldia"] = float(self.options["tooldia"]) * factor
 
         param_list = ['cutz', 'depthperpass', 'travelz', 'feedrate', 'feedrate_z', 'feedrate_rapid',

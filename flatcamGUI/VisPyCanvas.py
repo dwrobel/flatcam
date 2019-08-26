@@ -8,12 +8,13 @@
 
 import numpy as np
 from PyQt5.QtGui import QPalette
+from PyQt5.QtCore import QSettings
 import vispy.scene as scene
 from vispy.scene.cameras.base_camera import BaseCamera
 from vispy.color import Color
 import time
 
-white = Color("#ffffff" )
+white = Color("#ffffff")
 black = Color("#000000")
 
 
@@ -35,12 +36,19 @@ class VisPyCanvas(scene.SceneCanvas):
         top_padding = self.grid_widget.add_widget(row=0, col=0, col_span=2)
         top_padding.height_max = 0
 
-        self.yaxis = scene.AxisWidget(orientation='left', axis_color='black', text_color='black', font_size=8)
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("axis_font_size"):
+            a_fsize = settings.value('axis_font_size', type=int)
+        else:
+            a_fsize = 8
+
+        self.yaxis = scene.AxisWidget(orientation='left', axis_color='black', text_color='black', font_size=a_fsize)
         self.yaxis.width_max = 55
         self.grid_widget.add_widget(self.yaxis, row=1, col=0)
 
-        self.xaxis = scene.AxisWidget(orientation='bottom', axis_color='black', text_color='black', font_size=8)
-        self.xaxis.height_max = 25
+        self.xaxis = scene.AxisWidget(orientation='bottom', axis_color='black', text_color='black', font_size=a_fsize,
+                                      anchors=['center', 'bottom'])
+        self.xaxis.height_max = 30
         self.grid_widget.add_widget(self.xaxis, row=2, col=1)
 
         right_padding = self.grid_widget.add_widget(row=0, col=2, row_span=2)
@@ -48,7 +56,7 @@ class VisPyCanvas(scene.SceneCanvas):
         right_padding.width_max = 0
 
         view = self.grid_widget.add_view(row=1, col=1, border_color='black', bgcolor='white')
-        view.camera = Camera(aspect=1, rect=(-25,-25,150,150))
+        view.camera = Camera(aspect=1, rect=(-25, -25, 150, 150))
 
         # Following function was removed from 'prepare_draw()' of 'Grid' class by patch,
         # it is necessary to call manually

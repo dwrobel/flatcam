@@ -6,12 +6,15 @@
 # MIT Licence                                               #
 # ###########################################################
 
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import getopt
 import random
 import simplejson as json
 import lzma
 import threading
+import shutil
 
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
@@ -19,7 +22,6 @@ import subprocess
 import tkinter as tk
 from PyQt5 import QtPrintSupport
 
-import urllib.request, urllib.parse, urllib.error
 from contextlib import contextmanager
 import gc
 
@@ -96,8 +98,8 @@ class App(QtCore.QObject):
     # ####################################
     # Version and VERSION DATE ###########
     # ####################################
-    version = 8.93
-    version_date = "2019/08/10"
+    version = 8.97
+    version_date = "2019/08/31"
     beta = True
 
     # current date now
@@ -181,6 +183,9 @@ class App(QtCore.QObject):
     # in the worker task.
     thread_exception = QtCore.pyqtSignal(object)
 
+    # used to signal that there are arguments for the app
+    args_at_startup = QtCore.pyqtSignal()
+
     def __init__(self, user_defaults=True, post_gui=None):
         """
         Starts the application.
@@ -193,9 +198,11 @@ class App(QtCore.QObject):
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
 
-        # ################ ##
-        # # ## OS-specific # ##
-        # ################ ##
+        # #######################
+        # # ## OS-specific ######
+        # #######################
+
+        portable = False
 
         # Folder for user settings.
         if sys.platform == 'win32':
@@ -205,7 +212,28 @@ class App(QtCore.QObject):
             else:
                 App.log.debug("Win64!")
 
-            self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\FlatCAM'
+            config_file = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config\\configuration.txt'
+            try:
+                with open(config_file, 'r') as f:
+                    try:
+                        for line in f:
+                            param = str(line).rpartition('=')
+                            if param[0] == 'portable':
+                                try:
+                                    portable = eval(param[2])
+                                except NameError:
+                                    portable = False
+                    except Exception as e:
+                        log.debug('App.__init__() -->%s' % str(e))
+                        return
+            except FileNotFoundError:
+                pass
+
+            if portable is False:
+                self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\\FlatCAM'
+            else:
+                self.data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config'
+
             self.os = 'windows'
         else:  # Linux/Unix/MacOS
             self.data_path = os.path.expanduser('~') + '/.FlatCAM'
@@ -221,7 +249,7 @@ class App(QtCore.QObject):
             os.makedirs(os.path.join(self.data_path, 'postprocessors'))
             App.log.debug('Created data postprocessors folder: ' + os.path.join(self.data_path, 'postprocessors'))
 
-        self.postprocessorpaths = os.path.join(self.data_path,'postprocessors')
+        self.postprocessorpaths = os.path.join(self.data_path, 'postprocessors')
         if not os.path.exists(self.postprocessorpaths):
             os.makedirs(self.postprocessorpaths)
             App.log.debug('Created postprocessors folder: ' + self.postprocessorpaths)
@@ -295,7 +323,6 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
         self.ui = FlatCAMGUI(self.version, self.beta, self)
-        self.set_ui_title(name="New Project")
 
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
@@ -320,6 +347,7 @@ class App(QtCore.QObject):
             # General App
             "units": self.ui.general_defaults_form.general_app_group.units_radio,
             "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
+            "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
             "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
 
             "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
@@ -335,6 +363,7 @@ class App(QtCore.QObject):
             "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
 
             "global_open_style": self.ui.general_defaults_form.general_app_group.open_style_cb,
+            "global_delete_confirmation": self.ui.general_defaults_form.general_app_group.delete_conf_cb,
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
@@ -362,6 +391,7 @@ class App(QtCore.QObject):
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
             "global_selection_shape": self.ui.general_defaults_form.general_gui_set_group.selection_cb,
+
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
@@ -393,14 +423,33 @@ class App(QtCore.QObject):
 
             # Gerber Editor
             "gerber_editor_sel_limit": self.ui.gerber_defaults_form.gerber_editor_group.sel_limit_entry,
+            "gerber_editor_newcode": self.ui.gerber_defaults_form.gerber_editor_group.addcode_entry,
+            "gerber_editor_newsize": self.ui.gerber_defaults_form.gerber_editor_group.addsize_entry,
+            "gerber_editor_newtype": self.ui.gerber_defaults_form.gerber_editor_group.addtype_combo,
+            "gerber_editor_newdim": self.ui.gerber_defaults_form.gerber_editor_group.adddim_entry,
+            "gerber_editor_array_size": self.ui.gerber_defaults_form.gerber_editor_group.grb_array_size_entry,
+            "gerber_editor_lin_axis": self.ui.gerber_defaults_form.gerber_editor_group.grb_axis_radio,
+            "gerber_editor_lin_pitch": self.ui.gerber_defaults_form.gerber_editor_group.grb_pitch_entry,
+            "gerber_editor_lin_angle": self.ui.gerber_defaults_form.gerber_editor_group.grb_angle_entry,
+            "gerber_editor_circ_dir": self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_dir_radio,
+            "gerber_editor_circ_angle":
+                self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_angle_entry,
+            "gerber_editor_scale_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_scale_entry,
+            "gerber_editor_buff_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_buff_entry,
+            "gerber_editor_ma_low": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_low_entry,
+            "gerber_editor_ma_high": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_high_entry,
 
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
             "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
-            "excellon_format_upper_in": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
-            "excellon_format_lower_in": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
-            "excellon_format_upper_mm": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
-            "excellon_format_lower_mm": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
+            "excellon_format_upper_in":
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
+            "excellon_format_lower_in":
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
+            "excellon_format_upper_mm":
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
+            "excellon_format_lower_mm":
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
             "excellon_zeros": self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
             "excellon_units": self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
             "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
@@ -438,6 +487,7 @@ class App(QtCore.QObject):
             "excellon_exp_integer": self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
             "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
             "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
+            "excellon_exp_slot_type": self.ui.excellon_defaults_form.excellon_exp_group.slot_type_radio,
 
             # Excellon Editor
             "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
@@ -449,6 +499,25 @@ class App(QtCore.QObject):
             "excellon_editor_circ_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
             "excellon_editor_circ_angle":
                 self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
+            # Excellon Slots
+            "excellon_editor_slot_direction":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_axis_radio,
+            "excellon_editor_slot_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_angle_spinner,
+            "excellon_editor_slot_length":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_length_entry,
+            # Excellon Slots
+            "excellon_editor_slot_array_size":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_size_entry,
+            "excellon_editor_slot_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.slot_array_axis_radio,
+            "excellon_editor_slot_lin_pitch":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_pitch_entry,
+            "excellon_editor_slot_lin_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_angle_entry,
+            "excellon_editor_slot_circ_dir":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_dir_radio,
+            "excellon_editor_slot_circ_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
             # Geometry General
             "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
@@ -507,12 +576,15 @@ class App(QtCore.QObject):
 
             # NCC Tool
             "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
+            "tools_nccorder": self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
             "tools_nccoverlap": self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
             "tools_nccmargin": self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
             "tools_nccmethod": self.ui.tools_defaults_form.tools_ncc_group.ncc_method_radio,
             "tools_nccconnect": self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
             "tools_ncccontour": self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
             "tools_nccrest": self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
+            "tools_ncc_offset_choice": self.ui.tools_defaults_form.tools_ncc_group.ncc_choice_offset_cb,
+            "tools_ncc_offset_value": self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
             "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.reference_radio,
 
             # CutOut Tool
@@ -525,6 +597,7 @@ class App(QtCore.QObject):
 
             # Paint Area Tool
             "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
+            "tools_paintorder": self.ui.tools_defaults_form.tools_paint_group.paint_order_radio,
             "tools_paintoverlap": self.ui.tools_defaults_form.tools_paint_group.paintoverlap_entry,
             "tools_paintmargin": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
             "tools_paintmethod": self.ui.tools_defaults_form.tools_paint_group.paintmethod_combo,
@@ -590,7 +663,8 @@ class App(QtCore.QObject):
             "tools_solderpaste_dwellfwd": self.ui.tools_defaults_form.tools_solderpaste_group.dwellfwd_entry,
             "tools_solderpaste_speedrev": self.ui.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
             "tools_solderpaste_dwellrev": self.ui.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
-            "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo
+            "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
+            "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb
 
         }
 
@@ -627,8 +701,10 @@ class App(QtCore.QObject):
             # Global APP Preferences
             "global_serial": 0,
             "global_stats": {},
+            "global_tabs_detachable": True,
             "units": "IN",
             "global_app_level": 'b',
+            "global_portable": False,
             "global_language": 'English',
             "global_version_check": True,
             "global_send_stats": True,
@@ -640,6 +716,7 @@ class App(QtCore.QObject):
             "global_worker_number": 2,
             "global_tolerance": 0.01,
             "global_open_style": True,
+            "global_delete_confirmation": True,
             "global_compression_level": 3,
             "global_save_compressed": True,
 
@@ -684,6 +761,7 @@ class App(QtCore.QObject):
             "global_def_win_w": 1024,
             "global_def_win_h": 650,
             "global_def_notebook_width": 1,
+
             # Constants...
             "global_defaults_save_period_ms": 20000,  # Time between default saves.
             "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
@@ -702,20 +780,21 @@ class App(QtCore.QObject):
             "global_hover": False,
             "global_selection_shape": True,
             "global_layout": "compact",
+
             # Gerber General
             "gerber_plot": True,
             "gerber_solid": True,
             "gerber_multicolored": False,
-            "gerber_isotooldia": 0.016,
+            "gerber_isotooldia": 0.00787402,
             "gerber_isopasses": 1,
-            "gerber_isooverlap": 0.15,
+            "gerber_isooverlap": 0.00393701,
 
             # Gerber Options
             "gerber_combine_passes": False,
             "gerber_milling_type": "cl",
-            "gerber_noncoppermargin": 0.1,
+            "gerber_noncoppermargin": 0.00393701,
             "gerber_noncopperrounded": False,
-            "gerber_bboxmargin": 0.1,
+            "gerber_bboxmargin": 0.00393701,
             "gerber_bboxrounded": False,
             "gerber_circle_steps": 128,
             "gerber_use_buffer_for_union": True,
@@ -734,6 +813,20 @@ class App(QtCore.QObject):
 
             # Gerber Editor
             "gerber_editor_sel_limit": 30,
+            "gerber_editor_newcode": 10,
+            "gerber_editor_newsize": 0.8,
+            "gerber_editor_newtype": 'C',
+            "gerber_editor_newdim": "0.5, 0.5",
+            "gerber_editor_array_size": 5,
+            "gerber_editor_lin_axis": 'X',
+            "gerber_editor_lin_pitch": 1,
+            "gerber_editor_lin_angle": 0.0,
+            "gerber_editor_circ_dir": 'CW',
+            "gerber_editor_circ_angle": 0.0,
+            "gerber_editor_scale_f": 1.0,
+            "gerber_editor_buff_f": 0.1,
+            "gerber_editor_ma_low": 0.0,
+            "gerber_editor_ma_high": 1.0,
 
             # Excellon General
             "excellon_plot": True,
@@ -748,9 +841,9 @@ class App(QtCore.QObject):
             "excellon_search_time": 3,
 
             # Excellon Options
-            "excellon_drillz": -0.1,
-            "excellon_travelz": 0.1,
-            "excellon_feedrate": 3.0,
+            "excellon_drillz": -0.0590551,
+            "excellon_travelz": 0.0787402,
+            "excellon_feedrate": 3.14961,
             "excellon_spindlespeed": None,
             "excellon_spindledir": 'CW',
             "excellon_dwell": False,
@@ -758,8 +851,8 @@ class App(QtCore.QObject):
             "excellon_toolchange": False,
             "excellon_toolchangez": 0.5,
             "excellon_ppname_e": 'default',
-            "excellon_tooldia": 0.016,
-            "excellon_slot_tooldia": 0.016,
+            "excellon_tooldia": 0.0314961,
+            "excellon_slot_tooldia": 0.0708661,
             "excellon_gcode_type": "drills",
 
             # Excellon Advanced Options
@@ -767,9 +860,9 @@ class App(QtCore.QObject):
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_startz": None,
             "excellon_endz": 0.5,
-            "excellon_feedrate_rapid": 3.0,
+            "excellon_feedrate_rapid": 31.4961,
             "excellon_z_pdepth": -0.02,
-            "excellon_feedrate_probe": 3.0,
+            "excellon_feedrate_probe": 3.14961,
             "excellon_f_plunge": False,
             "excellon_f_retract": False,
 
@@ -779,6 +872,7 @@ class App(QtCore.QObject):
             "excellon_exp_integer": 2,
             "excellon_exp_decimals": 4,
             "excellon_exp_zeros": 'LZ',
+            "excellon_exp_slot_type": 'routing',
 
             # Excellon Editor
             "excellon_editor_sel_limit": 30,
@@ -789,23 +883,34 @@ class App(QtCore.QObject):
             "excellon_editor_lin_angle": 0.0,
             "excellon_editor_circ_dir": 'CW',
             "excellon_editor_circ_angle": 12,
+            # Excellon Slots
+            "excellon_editor_slot_direction": 'X',
+            "excellon_editor_slot_angle": 0.0,
+            "excellon_editor_slot_length": 5.0,
+            # Excellon Slot Array
+            "excellon_editor_slot_array_size": 5,
+            "excellon_editor_slot_lin_dir":  'X',
+            "excellon_editor_slot_lin_pitch": 0.1,
+            "excellon_editor_slot_lin_angle": 0.0,
+            "excellon_editor_slot_circ_dir": 'CW',
+            "excellon_editor_slot_circ_angle": 0.0,
 
             # Geometry General
             "geometry_plot": True,
             "geometry_circle_steps": 128,
-            "geometry_cnctooldia": "0.016",
+            "geometry_cnctooldia": "0.0944882",
 
             # Geometry Options
-            "geometry_cutz": -0.002,
+            "geometry_cutz": -0.0944882,
             "geometry_vtipdia": 0.1,
             "geometry_vtipangle": 30,
             "geometry_multidepth": False,
-            "geometry_depthperpass": 0.002,
-            "geometry_travelz": 0.1,
+            "geometry_depthperpass": 0.0314961,
+            "geometry_travelz": 0.0787402,
             "geometry_toolchange": False,
             "geometry_toolchangez": 0.5,
-            "geometry_feedrate": 3.0,
-            "geometry_feedrate_z": 3.0,
+            "geometry_feedrate": 3.14961,
+            "geometry_feedrate_z": 3.14961,
             "geometry_spindlespeed": None,
             "geometry_spindledir": 'CW',
             "geometry_dwell": False,
@@ -816,11 +921,11 @@ class App(QtCore.QObject):
             "geometry_toolchangexy": "0.0, 0.0",
             "geometry_startz": None,
             "geometry_endz": 0.5,
-            "geometry_feedrate_rapid": 3.0,
+            "geometry_feedrate_rapid": 3.14961,
             "geometry_extracut": False,
             "geometry_z_pdepth": -0.02,
             "geometry_f_plunge": False,
-            "geometry_feedrate_probe": 3.0,
+            "geometry_feedrate_probe": 3.14961,
             "geometry_segx": 0.0,
             "geometry_segy": 0.0,
 
@@ -847,23 +952,27 @@ class App(QtCore.QObject):
             "cncjob_toolchange_macro_enable": False,
 
             "tools_ncctools": "0.0393701, 0.019685",
+            "tools_nccorder": 'rev',
             "tools_nccoverlap": 0.015748,
-            "tools_nccmargin": 0.00393701,
+            "tools_nccmargin": 0.0393701,
             "tools_nccmethod": "seed",
             "tools_nccconnect": True,
             "tools_ncccontour": True,
             "tools_nccrest": False,
+            "tools_ncc_offset_choice": False,
+            "tools_ncc_offset_value": 0.0000,
             "tools_nccref": 'itself',
 
-            "tools_cutouttooldia": 0.00393701,
+            "tools_cutouttooldia": 0.0944882,
             "tools_cutoutkind": "single",
             "tools_cutoutmargin": 0.00393701,
-            "tools_cutoutgapsize": 0.005905512,
-            "tools_gaps_ff": "8",
+            "tools_cutoutgapsize": 0.15748,
+            "tools_gaps_ff": "4",
             "tools_cutout_convexshape": False,
 
-            "tools_painttooldia": 0.07,
-            "tools_paintoverlap": 0.15,
+            "tools_painttooldia": 0.023622,
+            "tools_paintorder": 'rev',
+            "tools_paintoverlap": 0.015748,
             "tools_paintmargin": 0.0,
             "tools_paintmethod": "seed",
             "tools_selectmethod": "single",
@@ -922,7 +1031,9 @@ class App(QtCore.QObject):
             "tools_solderpaste_dwellfwd": 1,
             "tools_solderpaste_speedrev": 10,
             "tools_solderpaste_dwellrev": 1,
-            "tools_solderpaste_pp": 'Paste_1'
+            "tools_solderpaste_pp": 'Paste_1',
+
+            "tools_sub_close_paths": True
         })
 
         # ##############################
@@ -1217,12 +1328,7 @@ class App(QtCore.QObject):
         self.tools_form = None
         self.on_options_combo_change(0)  # Will show the initial form
 
-        # ### Define OBJECT COLLECTION ###
-        self.collection = ObjectCollection(self)
-        self.ui.project_tab_layout.addWidget(self.collection.view)
         # ################################
-
-        self.log.debug("Finished creating Object Collection.")
 
         # ### Initialize the color box's color in Preferences -> Global -> Color
         # Init Plot Colors
@@ -1295,53 +1401,52 @@ class App(QtCore.QObject):
             "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
         # ### End of Data ####
 
-        # ### Plot Area ####
+        # ###############################################
+        # ############# SETUP Plot Area #################
+        # ###############################################
+
         start_plot_time = time.time()   # debug
-        self.plotcanvas = PlotCanvas(self.ui.right_layout, self)
-
-        self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
-        self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
-        self.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release_over_plot)
-        self.plotcanvas.vis_connect('mouse_double_click', self.on_double_click_over_plot)
-
-        # Keys over plot enabled
-        self.plotcanvas.vis_connect('key_press', self.ui.keyPressEvent)
+        self.plotcanvas = None
+        self.app_cursor = None
+        self.hover_shapes = None
+        self.on_plotcanvas_setup()
+        end_plot_time = time.time()
+        self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
 
         self.ui.splitter.setStretchFactor(1, 2)
-
-        # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
-
-        self.app_cursor = self.plotcanvas.new_cursor()
-        self.app_cursor.enabled = False
 
         # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
         # depending on from where those tools are called different actions can be done
         self.call_source = 'app'
 
-        end_plot_time = time.time()
-        self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
+        # ##############################################
+        # ######### SETUP OBJECT COLLECTION ############
+        # ##############################################
 
-        # ### EDITOR section
-        self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
-        self.exc_editor = FlatCAMExcEditor(self)
-        self.grb_editor = FlatCAMGrbEditor(self)
+        self.collection = ObjectCollection(self)
+        self.ui.project_tab_layout.addWidget(self.collection.view)
 
         # ### Adjust tabs width ## ##
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
         #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
         self.collection.view.setMinimumWidth(290)
+        self.log.debug("Finished creating Object Collection.")
 
-        self.log.debug("Finished adding FlatCAM Editor's.")
+        # ###############################################
+        # ############# Worker SETUP ####################
+        # ###############################################
 
-        # ### Worker ####
         if self.defaults["global_worker_number"]:
             self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
         else:
             self.workers = WorkerStack(workers_number=2)
         self.worker_task.connect(self.workers.add_task)
+        self.log.debug("Finished creating Workers crew.")
 
-        # ### Signal handling ###
+        # ################################################
+        # ############### Signal handling ################
+        # ################################################
+
         # ### Custom signals  ###
         self.inform.connect(self.info)
         self.app_quit.connect(self.quit_application)
@@ -1390,6 +1495,10 @@ class App(QtCore.QObject):
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
         self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
+
+        self.ui.menufileexportpref.triggered.connect(self.on_export_preferences)
+        self.ui.menufileimportpref.triggered.connect(self.on_import_preferences)
+
         self.ui.menufile_exit.triggered.connect(self.final_save)
 
         self.ui.menueditedit.triggered.connect(lambda: self.object2editor())
@@ -1436,12 +1545,8 @@ class App(QtCore.QObject):
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
 
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
-        self.ui.menuview_zoom_in.triggered.connect(
-            lambda: self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))
-        )
-        self.ui.menuview_zoom_out.triggered.connect(
-            lambda: self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
-        )
+        self.ui.menuview_zoom_in.triggered.connect(self.on_zoom_in)
+        self.ui.menuview_zoom_out.triggered.connect(self.on_zoom_out)
 
         self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
@@ -1474,6 +1579,15 @@ class App(QtCore.QObject):
 
         # ToolBar signals
         self.connect_toolbar_signals()
+
+        # Notebook signals
+        # make the right click on the notebook tab connect to a function
+        self.ui.notebook.setupContextMenu()
+        self.ui.notebook.addContextMenu(
+            _("Detachable Tabs"), self.on_notebook_tab_rmb_click,
+            initial_checked=self.defaults["global_tabs_detachable"])
+        # activate initial state
+        self.on_notebook_tab_rmb_click(self.defaults["global_tabs_detachable"])
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
@@ -1512,7 +1626,6 @@ class App(QtCore.QObject):
         )
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
-
 
         # ##############################
         # ### GUI PREFERENCES SIGNALS ##
@@ -1599,6 +1712,9 @@ class App(QtCore.QObject):
         self.ui.buttonFind.clicked.connect(self.handleFindGCode)
         self.ui.buttonReplace.clicked.connect(self.handleReplaceGCode)
 
+        # portability changed
+        self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
+
         # Object list
         self.collection.view.activated.connect(self.on_row_activated)
 
@@ -1613,6 +1729,10 @@ class App(QtCore.QObject):
         self.ui.excellon_options_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
             self.on_excellon_options_button)
 
+        # when there are arguments at application startup this get launched
+        self.args_at_startup.connect(self.on_startup_args)
+        self.log.debug("Finished connecting Signals.")
+
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
         self.tool_tab_locked = False
 
@@ -1622,229 +1742,237 @@ class App(QtCore.QObject):
         else:
             self.ui.splitter.setSizes([0, 1])
 
-        # ###################
-        # ### Other setups ##
-        # ###################
+        # ###########################################
+        # ################# Other setups ############
+        # ###########################################
+
         # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
         self.setup_obj_classes()
         self.setup_recent_items()
         self.setup_component_editor()
 
-        # ############
-        # ### Shell ##
-        # ############
-
-        # #########################
-        # Auto-complete KEYWORDS ##
-        # #########################
+        # ###########################################
+        # #######Auto-complete KEYWORDS #############
+        # ###########################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
-                                  'aligndrill', 'clear',
-                                  'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob',
-                                  'export_gcode',
-                                  'export_svg', 'ext', 'exteriors', 'follow', 'geo_union', 'geocutout', 'get_names',
-                                  'get_sys', 'getsys', 'help', 'import_svg', 'interiors', 'isolate', 'join_excellon',
-                                  'join_excellons', 'join_geometries', 'join_geometry', 'list_sys', 'listsys', 'mill',
-                                  'millholes', 'mirror', 'new', 'new_geometry', 'offset', 'open_excellon', 'open_gcode',
-                                  'open_gerber', 'open_project', 'options', 'paint', 'pan', 'panel', 'panelize', 'plot',
-                                  'save', 'save_project', 'save_sys', 'scale', 'set_active', 'set_sys', 'setsys',
-                                  'skew', 'subtract_poly', 'subtract_rectangle', 'version', 'write_gcode'
+                                  'aligndrill', 'aligndrillgrid', 'bbox', 'bounding_box', 'clear', 'cncjob', 'cutout',
+                                  'delete', 'drillcncjob', 'export_gcode', 'export_svg', 'ext', 'exteriors', 'follow',
+                                  'geo_union', 'geocutout', 'get_names', 'get_sys', 'getsys', 'help', 'import_svg',
+                                  'interiors', 'isolate', 'join_excellon', 'join_excellons', 'join_geometries',
+                                  'join_geometry', 'list_sys', 'listsys', 'mill', 'millholes', 'mirror', 'ncc',
+                                  'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
+                                  'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'paint',
+                                  'pan', 'panel', 'panelize', 'plot', 'save', 'save_project', 'save_sys', 'scale',
+                                  'set_active', 'set_sys', 'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
+                                  'version', 'write_gcode'
                                   ]
 
-        self.ordinary_keywords = ['name', 'center_x', 'center_y', 'radius', 'x0', 'y0', 'x1', 'y1', 'box', 'axis',
-                                  'holes', 'grid', 'minoffset', 'gridoffset', 'axisoffset', 'dia', 'dist',
-                                  'gridoffsetx', 'gridoffsety', 'columns', 'rows', 'z_cut', 'z_move', 'feedrate',
-                                  'feedrate_rapid', 'tooldia', 'multidepth', 'extracut', 'depthperpass', 'ppname_g',
-                                  'outname', 'margin', 'gaps', 'gapsize', 'tools', 'drillz', 'travelz', 'spindlespeed',
-                                  'toolchange', 'toolchangez', 'endz', 'ppname_e', 'opt_type', 'preamble', 'postamble',
-                                  'filename', 'scale_factor', 'type', 'passes', 'overlap', 'combine', 'use_threads',
-                                  'x', 'y', 'follow', 'all', 'spacing_columns', 'spacing_rows', 'factor', 'value',
-                                  'angle_x', 'angle_y', 'gridx', 'gridy', 'True', 'False'
+
+        self.ordinary_keywords = ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
+                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'dist', 'drillz',
+                                  'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
+                                  'filename', 'follow', 'gaps', 'gapsize', 'grid', 'gridoffset', 'gridoffsetx',
+                                  'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
+                                  'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
+                                  'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
+                                  'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
+                                  'toolchange', 'toolchangez', 'tooldia', 'tools', 'travelz', 'True', 'true', 'type',
+                                  'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
                                   ]
 
         self.tcl_keywords = [
-            "after", "append", "apply", "array", "auto_execok", "auto_import", "auto_load", "auto_mkindex",
-            "auto_qualify", "auto_reset", "bgerror", "binary", "break", "case", "catch", "cd", "chan", "clock", "close",
-            "concat", "continue", "coroutine", "dict", "encoding", "eof", "error", "eval", "exec", "exit", "expr",
-            "fblocked", "fconfigure", "fcopy", "file", "fileevent", "flush", "for", "foreach", "format", "gets", "glob",
-            "global", "history", "if", "incr", "info", "interp", "join", "lappend", "lassign", "lindex", "linsert",
-            "list", "llength", "load", "lrange", "lrepeat", "lreplace", "lreverse", "lsearch", "lset", "lsort",
-            "mathfunc", "mathop", "memory", "my", "namespace", "next", "nextto", "open", "package", "parray", "pid",
-            "pkg_mkIndex", "platform", "proc", "puts", "pwd", "read", "refchan", "regexp", "regsub", "rename", "return",
-            "scan", "seek", "self", "set", "socket", "source", "split", "string", "subst", "switch", "tailcall",
-            "tcl_endOfWord", "tcl_findLibrary", "tcl_startOfNextWord", "tcl_startOfPreviousWord", "tcl_wordBreakAfter",
-            "tcl_wordBreakBefore", "tell", "throw", "time", "tm", "trace", "transchan", "try", "unknown", "unload",
-            "unset", "update", "uplevel", "upvar", "variable", "vwait", "while", "yield", "yieldto", "zlib",
-            "attemptckalloc", "attemptckrealloc", "ckalloc", "ckfree", "ckrealloc", "Tcl_Access", "Tcl_AddErrorInfo",
-            "Tcl_AddObjErrorInfo", "Tcl_AlertNotifier", "Tcl_Alloc", "Tcl_AllocStatBuf", "Tcl_AllowExceptions",
-            "Tcl_AppendAllObjTypes", "Tcl_AppendElement", "Tcl_AppendExportList", "Tcl_AppendFormatToObj",
-            "Tcl_AppendLimitedToObj", "Tcl_AppendObjToErrorInfo", "Tcl_AppendObjToObj", "Tcl_AppendPrintfToObj",
-            "Tcl_AppendResult", "Tcl_AppendResultVA", "Tcl_AppendStringsToObj", "Tcl_AppendStringsToObjVA",
-            "Tcl_AppendToObj", "Tcl_AppendUnicodeToObj", "Tcl_AppInit", "Tcl_AsyncCreate", "Tcl_AsyncDelete",
-            "Tcl_AsyncInvoke", "Tcl_AsyncMark", "Tcl_AsyncReady", "Tcl_AttemptAlloc", "Tcl_AttemptRealloc",
-            "Tcl_AttemptSetObjLength", "Tcl_BackgroundError", "Tcl_BackgroundException", "Tcl_Backslash",
-            "Tcl_BadChannelOption", "Tcl_CallWhenDeleted", "Tcl_Canceled", "Tcl_CancelEval", "Tcl_CancelIdleCall",
-            "Tcl_ChannelBlockModeProc", "Tcl_ChannelBuffered", "Tcl_ChannelClose2Proc", "Tcl_ChannelCloseProc",
-            "Tcl_ChannelFlushProc", "Tcl_ChannelGetHandleProc", "Tcl_ChannelGetOptionProc", "Tcl_ChannelHandlerProc",
-            "Tcl_ChannelInputProc", "Tcl_ChannelName", "Tcl_ChannelOutputProc", "Tcl_ChannelSeekProc",
-            "Tcl_ChannelSetOptionProc", "Tcl_ChannelThreadActionProc", "Tcl_ChannelTruncateProc", "Tcl_ChannelVersion",
-            "Tcl_ChannelWatchProc", "Tcl_ChannelWideSeekProc", "Tcl_Chdir", "Tcl_ClassGetMetadata",
-            "Tcl_ClassSetConstructor", "Tcl_ClassSetDestructor", "Tcl_ClassSetMetadata", "Tcl_ClearChannelHandlers",
-            "Tcl_Close", "Tcl_CommandComplete", "Tcl_CommandTraceInfo", "Tcl_Concat", "Tcl_ConcatObj",
-            "Tcl_ConditionFinalize", "Tcl_ConditionNotify", "Tcl_ConditionWait", "Tcl_ConvertCountedElement",
-            "Tcl_ConvertElement", "Tcl_ConvertToType", "Tcl_CopyObjectInstance", "Tcl_CreateAlias",
-            "Tcl_CreateAliasObj", "Tcl_CreateChannel", "Tcl_CreateChannelHandler", "Tcl_CreateCloseHandler",
-            "Tcl_CreateCommand", "Tcl_CreateEncoding", "Tcl_CreateEnsemble", "Tcl_CreateEventSource",
-            "Tcl_CreateExitHandler", "Tcl_CreateFileHandler", "Tcl_CreateHashEntry", "Tcl_CreateInterp",
-            "Tcl_CreateMathFunc", "Tcl_CreateNamespace", "Tcl_CreateObjCommand", "Tcl_CreateObjTrace",
-            "Tcl_CreateSlave", "Tcl_CreateThread", "Tcl_CreateThreadExitHandler", "Tcl_CreateTimerHandler",
-            "Tcl_CreateTrace", "Tcl_CutChannel", "Tcl_DecrRefCount", "Tcl_DeleteAssocData", "Tcl_DeleteChannelHandler",
-            "Tcl_DeleteCloseHandler", "Tcl_DeleteCommand", "Tcl_DeleteCommandFromToken", "Tcl_DeleteEvents",
-            "Tcl_DeleteEventSource", "Tcl_DeleteExitHandler", "Tcl_DeleteFileHandler", "Tcl_DeleteHashEntry",
-            "Tcl_DeleteHashTable", "Tcl_DeleteInterp", "Tcl_DeleteNamespace", "Tcl_DeleteThreadExitHandler",
-            "Tcl_DeleteTimerHandler", "Tcl_DeleteTrace", "Tcl_DetachChannel", "Tcl_DetachPids", "Tcl_DictObjDone",
-            "Tcl_DictObjFirst", "Tcl_DictObjGet", "Tcl_DictObjNext", "Tcl_DictObjPut", "Tcl_DictObjPutKeyList",
-            "Tcl_DictObjRemove", "Tcl_DictObjRemoveKeyList", "Tcl_DictObjSize", "Tcl_DiscardInterpState",
-            "Tcl_DiscardResult", "Tcl_DontCallWhenDeleted", "Tcl_DoOneEvent", "Tcl_DoWhenIdle", "Tcl_DStringAppend",
-            "Tcl_DStringAppendElement", "Tcl_DStringEndSublist", "Tcl_DStringFree", "Tcl_DStringGetResult",
-            "Tcl_DStringInit", "Tcl_DStringLength", "Tcl_DStringResult", "Tcl_DStringSetLength",
-            "Tcl_DStringStartSublist", "Tcl_DStringTrunc", "Tcl_DStringValue", "Tcl_DumpActiveMemory",
-            "Tcl_DuplicateObj", "Tcl_Eof", "Tcl_ErrnoId", "Tcl_ErrnoMsg", "Tcl_Eval", "Tcl_EvalEx", "Tcl_EvalFile",
-            "Tcl_EvalObjEx", "Tcl_EvalObjv", "Tcl_EvalTokens", "Tcl_EvalTokensStandard", "Tcl_EventuallyFree",
-            "Tcl_Exit", "Tcl_ExitThread", "Tcl_Export", "Tcl_ExposeCommand", "Tcl_ExprBoolean", "Tcl_ExprBooleanObj",
-            "Tcl_ExprDouble", "Tcl_ExprDoubleObj", "Tcl_ExprLong", "Tcl_ExprLongObj", "Tcl_ExprObj", "Tcl_ExprString",
-            "Tcl_ExternalToUtf", "Tcl_ExternalToUtfDString", "Tcl_Finalize", "Tcl_FinalizeNotifier",
-            "Tcl_FinalizeThread", "Tcl_FindCommand", "Tcl_FindEnsemble", "Tcl_FindExecutable", "Tcl_FindHashEntry",
-            "Tcl_FindNamespace", "Tcl_FirstHashEntry", "Tcl_Flush", "Tcl_ForgetImport", "Tcl_Format",
-            "Tcl_Free· Tcl_FreeEncoding", "Tcl_FreeParse", "Tcl_FreeResult", "Tcl_FSAccess", "Tcl_FSChdir",
-            "Tcl_FSConvertToPathType", "Tcl_FSCopyDirectory", "Tcl_FSCopyFile", "Tcl_FSCreateDirectory", "Tcl_FSData",
-            "Tcl_FSDeleteFile", "Tcl_FSEqualPaths", "Tcl_FSEvalFile", "Tcl_FSEvalFileEx", "Tcl_FSFileAttrsGet",
-            "Tcl_FSFileAttrsSet", "Tcl_FSFileAttrStrings", "Tcl_FSFileSystemInfo", "Tcl_FSGetCwd",
-            "Tcl_FSGetFileSystemForPath", "Tcl_FSGetInternalRep", "Tcl_FSGetNativePath", "Tcl_FSGetNormalizedPath",
-            "Tcl_FSGetPathType", "Tcl_FSGetTranslatedPath", "Tcl_FSGetTranslatedStringPath", "Tcl_FSJoinPath",
-            "Tcl_FSJoinToPath", "Tcl_FSLink· Tcl_FSListVolumes", "Tcl_FSLoadFile", "Tcl_FSLstat",
-            "Tcl_FSMatchInDirectory", "Tcl_FSMountsChanged", "Tcl_FSNewNativePath", "Tcl_FSOpenFileChannel",
-            "Tcl_FSPathSeparator", "Tcl_FSRegister", "Tcl_FSRemoveDirectory", "Tcl_FSRenameFile", "Tcl_FSSplitPath",
-            "Tcl_FSStat", "Tcl_FSUnloadFile", "Tcl_FSUnregister", "Tcl_FSUtime", "Tcl_GetAccessTimeFromStat",
-            "Tcl_GetAlias", "Tcl_GetAliasObj", "Tcl_GetAssocData", "Tcl_GetBignumFromObj", "Tcl_GetBlocksFromStat",
-            "Tcl_GetBlockSizeFromStat", "Tcl_GetBoolean", "Tcl_GetBooleanFromObj", "Tcl_GetByteArrayFromObj",
-            "Tcl_GetChangeTimeFromStat", "Tcl_GetChannel", "Tcl_GetChannelBufferSize", "Tcl_GetChannelError",
-            "Tcl_GetChannelErrorInterp", "Tcl_GetChannelHandle", "Tcl_GetChannelInstanceData", "Tcl_GetChannelMode",
-            "Tcl_GetChannelName", "Tcl_GetChannelNames", "Tcl_GetChannelNamesEx", "Tcl_GetChannelOption",
-            "Tcl_GetChannelThread", "Tcl_GetChannelType", "Tcl_GetCharLength", "Tcl_GetClassAsObject",
-            "Tcl_GetCommandFromObj", "Tcl_GetCommandFullName", "Tcl_GetCommandInfo", "Tcl_GetCommandInfoFromToken",
-            "Tcl_GetCommandName", "Tcl_GetCurrentNamespace", "Tcl_GetCurrentThread", "Tcl_GetCwd",
-            "Tcl_GetDefaultEncodingDir", "Tcl_GetDeviceTypeFromStat", "Tcl_GetDouble", "Tcl_GetDoubleFromObj",
-            "Tcl_GetEncoding", "Tcl_GetEncodingFromObj", "Tcl_GetEncodingName", "Tcl_GetEncodingNameFromEnvironment",
-            "Tcl_GetEncodingNames", "Tcl_GetEncodingSearchPath", "Tcl_GetEnsembleFlags", "Tcl_GetEnsembleMappingDict",
-            "Tcl_GetEnsembleNamespace", "Tcl_GetEnsembleParameterList", "Tcl_GetEnsembleSubcommandList",
-            "Tcl_GetEnsembleUnknownHandler", "Tcl_GetErrno", "Tcl_GetErrorLine", "Tcl_GetFSDeviceFromStat",
-            "Tcl_GetFSInodeFromStat", "Tcl_GetGlobalNamespace", "Tcl_GetGroupIdFromStat", "Tcl_GetHashKey",
-            "Tcl_GetHashValue", "Tcl_GetHostName", "Tcl_GetIndexFromObj", "Tcl_GetIndexFromObjStruct", "Tcl_GetInt",
-            "Tcl_GetInterpPath", "Tcl_GetIntFromObj", "Tcl_GetLinkCountFromStat", "Tcl_GetLongFromObj", "Tcl_GetMaster",
-            "Tcl_GetMathFuncInfo", "Tcl_GetModeFromStat", "Tcl_GetModificationTimeFromStat", "Tcl_GetNameOfExecutable",
-            "Tcl_GetNamespaceUnknownHandler", "Tcl_GetObjectAsClass", "Tcl_GetObjectCommand", "Tcl_GetObjectFromObj",
-            "Tcl_GetObjectName", "Tcl_GetObjectNamespace", "Tcl_GetObjResult", "Tcl_GetObjType", "Tcl_GetOpenFile",
-            "Tcl_GetPathType", "Tcl_GetRange", "Tcl_GetRegExpFromObj", "Tcl_GetReturnOptions", "Tcl_Gets",
-            "Tcl_GetServiceMode", "Tcl_GetSizeFromStat", "Tcl_GetSlave", "Tcl_GetsObj", "Tcl_GetStackedChannel",
-            "Tcl_GetStartupScript", "Tcl_GetStdChannel", "Tcl_GetString", "Tcl_GetStringFromObj", "Tcl_GetStringResult",
-            "Tcl_GetThreadData", "Tcl_GetTime", "Tcl_GetTopChannel", "Tcl_GetUniChar", "Tcl_GetUnicode",
-            "Tcl_GetUnicodeFromObj", "Tcl_GetUserIdFromStat", "Tcl_GetVar", "Tcl_GetVar2", "Tcl_GetVar2Ex",
-            "Tcl_GetVersion", "Tcl_GetWideIntFromObj", "Tcl_GlobalEval", "Tcl_GlobalEvalObj", "Tcl_HashStats",
-            "Tcl_HideCommand", "Tcl_Import", "Tcl_IncrRefCount", "Tcl_Init", "Tcl_InitCustomHashTable",
-            "Tcl_InitHashTable", "Tcl_InitMemory", "Tcl_InitNotifier", "Tcl_InitObjHashTable", "Tcl_InitStubs",
-            "Tcl_InputBlocked", "Tcl_InputBuffered", "Tcl_InterpActive", "Tcl_InterpDeleted", "Tcl_InvalidateStringRep",
-            "Tcl_IsChannelExisting", "Tcl_IsChannelRegistered", "Tcl_IsChannelShared", "Tcl_IsEnsemble", "Tcl_IsSafe",
-            "Tcl_IsShared", "Tcl_IsStandardChannel", "Tcl_JoinPath", "Tcl_JoinThread", "Tcl_LimitAddHandler",
-            "Tcl_LimitCheck", "Tcl_LimitExceeded", "Tcl_LimitGetCommands", "Tcl_LimitGetGranularity",
-            "Tcl_LimitGetTime", "Tcl_LimitReady", "Tcl_LimitRemoveHandler", "Tcl_LimitSetCommands",
-            "Tcl_LimitSetGranularity", "Tcl_LimitSetTime", "Tcl_LimitTypeEnabled", "Tcl_LimitTypeExceeded",
-            "Tcl_LimitTypeReset", "Tcl_LimitTypeSet", "Tcl_LinkVar", "Tcl_ListMathFuncs", "Tcl_ListObjAppendElement",
-            "Tcl_ListObjAppendList", "Tcl_ListObjGetElements", "Tcl_ListObjIndex", "Tcl_ListObjLength",
-            "Tcl_ListObjReplace", "Tcl_LogCommandInfo", "Tcl_Main", "Tcl_MakeFileChannel", "Tcl_MakeSafe",
-            "Tcl_MakeTcpClientChannel", "Tcl_Merge", "Tcl_MethodDeclarerClass", "Tcl_MethodDeclarerObject",
-            "Tcl_MethodIsPublic", "Tcl_MethodIsType", "Tcl_MethodName", "Tcl_MutexFinalize", "Tcl_MutexLock",
-            "Tcl_MutexUnlock", "Tcl_NewBignumObj", "Tcl_NewBooleanObj", "Tcl_NewByteArrayObj", "Tcl_NewDictObj",
-            "Tcl_NewDoubleObj", "Tcl_NewInstanceMethod", "Tcl_NewIntObj", "Tcl_NewListObj", "Tcl_NewLongObj",
-            "Tcl_NewMethod", "Tcl_NewObj", "Tcl_NewObjectInstance", "Tcl_NewStringObj", "Tcl_NewUnicodeObj",
-            "Tcl_NewWideIntObj", "Tcl_NextHashEntry", "Tcl_NotifyChannel", "Tcl_NRAddCallback", "Tcl_NRCallObjProc",
-            "Tcl_NRCmdSwap", "Tcl_NRCreateCommand", "Tcl_NREvalObj", "Tcl_NREvalObjv", "Tcl_NumUtfChars",
-            "Tcl_ObjectContextInvokeNext", "Tcl_ObjectContextIsFiltering", "Tcl_ObjectContextMethod",
-            "Tcl_ObjectContextObject", "Tcl_ObjectContextSkippedArgs", "Tcl_ObjectDeleted", "Tcl_ObjectGetMetadata",
-            "Tcl_ObjectGetMethodNameMapper", "Tcl_ObjectSetMetadata", "Tcl_ObjectSetMethodNameMapper", "Tcl_ObjGetVar2",
-            "Tcl_ObjPrintf", "Tcl_ObjSetVar2", "Tcl_OpenCommandChannel", "Tcl_OpenFileChannel", "Tcl_OpenTcpClient",
-            "Tcl_OpenTcpServer", "Tcl_OutputBuffered", "Tcl_Panic", "Tcl_PanicVA", "Tcl_ParseArgsObjv",
-            "Tcl_ParseBraces", "Tcl_ParseCommand", "Tcl_ParseExpr", "Tcl_ParseQuotedString", "Tcl_ParseVar",
-            "Tcl_ParseVarName", "Tcl_PkgPresent", "Tcl_PkgPresentEx", "Tcl_PkgProvide", "Tcl_PkgProvideEx",
-            "Tcl_PkgRequire", "Tcl_PkgRequireEx", "Tcl_PkgRequireProc", "Tcl_PosixError", "Tcl_Preserve",
-            "Tcl_PrintDouble", "Tcl_PutEnv", "Tcl_QueryTimeProc", "Tcl_QueueEvent", "Tcl_Read", "Tcl_ReadChars",
-            "Tcl_ReadRaw", "Tcl_Realloc", "Tcl_ReapDetachedProcs", "Tcl_RecordAndEval", "Tcl_RecordAndEvalObj",
-            "Tcl_RegExpCompile", "Tcl_RegExpExec", "Tcl_RegExpExecObj", "Tcl_RegExpGetInfo", "Tcl_RegExpMatch",
-            "Tcl_RegExpMatchObj", "Tcl_RegExpRange", "Tcl_RegisterChannel", "Tcl_RegisterConfig", "Tcl_RegisterObjType",
-            "Tcl_Release", "Tcl_ResetResult", "Tcl_RestoreInterpState", "Tcl_RestoreResult", "Tcl_SaveInterpState",
-            "Tcl_SaveResult", "Tcl_ScanCountedElement", "Tcl_ScanElement", "Tcl_Seek", "Tcl_ServiceAll",
-            "Tcl_ServiceEvent", "Tcl_ServiceModeHook", "Tcl_SetAssocData", "Tcl_SetBignumObj", "Tcl_SetBooleanObj",
-            "Tcl_SetByteArrayLength", "Tcl_SetByteArrayObj", "Tcl_SetChannelBufferSize", "Tcl_SetChannelError",
-            "Tcl_SetChannelErrorInterp", "Tcl_SetChannelOption", "Tcl_SetCommandInfo", "Tcl_SetCommandInfoFromToken",
-            "Tcl_SetDefaultEncodingDir", "Tcl_SetDoubleObj", "Tcl_SetEncodingSearchPath", "Tcl_SetEnsembleFlags",
-            "Tcl_SetEnsembleMappingDict", "Tcl_SetEnsembleParameterList", "Tcl_SetEnsembleSubcommandList",
-            "Tcl_SetEnsembleUnknownHandler", "Tcl_SetErrno", "Tcl_SetErrorCode", "Tcl_SetErrorCodeVA",
-            "Tcl_SetErrorLine", "Tcl_SetExitProc", "Tcl_SetHashValue", "Tcl_SetIntObj", "Tcl_SetListObj",
-            "Tcl_SetLongObj", "Tcl_SetMainLoop", "Tcl_SetMaxBlockTime", "Tcl_SetNamespaceUnknownHandler",
-            "Tcl_SetNotifier", "Tcl_SetObjErrorCode", "Tcl_SetObjLength", "Tcl_SetObjResult", "Tcl_SetPanicProc",
-            "Tcl_SetRecursionLimit", "Tcl_SetResult", "Tcl_SetReturnOptions", "Tcl_SetServiceMode",
-            "Tcl_SetStartupScript", "Tcl_SetStdChannel", "Tcl_SetStringObj", "Tcl_SetSystemEncoding", "Tcl_SetTimeProc",
-            "Tcl_SetTimer", "Tcl_SetUnicodeObj", "Tcl_SetVar", "Tcl_SetVar2", "Tcl_SetVar2Ex", "Tcl_SetWideIntObj",
-            "Tcl_SignalId", "Tcl_SignalMsg", "Tcl_Sleep", "Tcl_SourceRCFile", "Tcl_SpliceChannel", "Tcl_SplitList",
-            "Tcl_SplitPath", "Tcl_StackChannel", "Tcl_StandardChannels", "Tcl_Stat", "Tcl_StaticPackage",
-            "Tcl_StringCaseMatch", "Tcl_StringMatch", "Tcl_SubstObj", "Tcl_TakeBignumFromObj", "Tcl_Tell",
-            "Tcl_ThreadAlert", "Tcl_ThreadQueueEvent", "Tcl_TraceCommand", "Tcl_TraceVar", "Tcl_TraceVar2",
-            "Tcl_TransferResult", "Tcl_TranslateFileName", "Tcl_TruncateChannel", "Tcl_Ungets", "Tcl_UniChar",
-            "Tcl_UniCharAtIndex", "Tcl_UniCharCaseMatch", "Tcl_UniCharIsAlnum", "Tcl_UniCharIsAlpha",
-            "Tcl_UniCharIsControl", "Tcl_UniCharIsDigit", "Tcl_UniCharIsGraph", "Tcl_UniCharIsLower",
-            "Tcl_UniCharIsPrint", "Tcl_UniCharIsPunct", "Tcl_UniCharIsSpace", "Tcl_UniCharIsUpper",
-            "Tcl_UniCharIsWordChar", "Tcl_UniCharLen", "Tcl_UniCharNcasecmp", "Tcl_UniCharNcmp", "Tcl_UniCharToLower",
-            "Tcl_UniCharToTitle", "Tcl_UniCharToUpper", "Tcl_UniCharToUtf", "Tcl_UniCharToUtfDString", "Tcl_UnlinkVar",
-            "Tcl_UnregisterChannel", "Tcl_UnsetVar", "Tcl_UnsetVar2", "Tcl_UnstackChannel", "Tcl_UntraceCommand",
-            "Tcl_UntraceVar", "Tcl_UntraceVar2", "Tcl_UpdateLinkedVar", "Tcl_UpVar", "Tcl_UpVar2", "Tcl_UtfAtIndex",
-            "Tcl_UtfBackslash", "Tcl_UtfCharComplete", "Tcl_UtfFindFirst", "Tcl_UtfFindLast", "Tcl_UtfNext",
-            "Tcl_UtfPrev", "Tcl_UtfToExternal", "Tcl_UtfToExternalDString", "Tcl_UtfToLower", "Tcl_UtfToTitle",
-            "Tcl_UtfToUniChar", "Tcl_UtfToUniCharDString", "Tcl_UtfToUpper", "Tcl_ValidateAllMemory", "Tcl_VarEval",
-            "Tcl_VarEvalVA", "Tcl_VarTraceInfo", "Tcl_VarTraceInfo2", "Tcl_WaitForEvent", "Tcl_WaitPid",
-            "Tcl_WinTCharToUtf", "Tcl_WinUtfToTChar", "Tcl_Write", "Tcl_WriteChars", "Tcl_WriteObj", "Tcl_WriteRaw",
-            "Tcl_WrongNumArgs", "Tcl_ZlibAdler32", "Tcl_ZlibCRC32", "Tcl_ZlibDeflate", "Tcl_ZlibInflate",
-            "Tcl_ZlibStreamChecksum", "Tcl_ZlibStreamClose", "Tcl_ZlibStreamEof", "Tcl_ZlibStreamGet",
-            "Tcl_ZlibStreamGetCommandName", "Tcl_ZlibStreamInit", "Tcl_ZlibStreamPut", "dde", "http", "msgcat",
-            "registry", "tcltest", "Tcl_AllocHashEntryProc", "Tcl_AppInitProc", "Tcl_ArgvInfo", "Tcl_AsyncProc",
-            "Tcl_ChannelProc", "Tcl_ChannelType", "Tcl_CloneProc", "Tcl_CloseProc", "Tcl_CmdDeleteProc", "Tcl_CmdInfo",
-            "Tcl_CmdObjTraceDeleteProc", "Tcl_CmdObjTraceProc", "Tcl_CmdProc", "Tcl_CmdTraceProc",
-            "Tcl_CommandTraceProc", "Tcl_CompareHashKeysProc", "Tcl_Config", "Tcl_DriverBlockModeProc",
-            "Tcl_DriverClose2Proc", "Tcl_DriverCloseProc", "Tcl_DriverFlushProc", "Tcl_DriverGetHandleProc",
-            "Tcl_DriverGetOptionProc", "Tcl_DriverHandlerProc", "Tcl_DriverInputProc", "Tcl_DriverOutputProc",
-            "Tcl_DriverSeekProc", "Tcl_DriverSetOptionProc", "Tcl_DriverThreadActionProc", "Tcl_DriverTruncateProc",
-            "Tcl_DriverWatchProc", "Tcl_DriverWideSeekProc", "Tcl_DupInternalRepProc", "Tcl_EncodingConvertProc",
-            "Tcl_EncodingFreeProc", "Tcl_EncodingType", "Tcl_Event", "Tcl_EventCheckProc", "Tcl_EventDeleteProc",
-            "Tcl_EventProc", "Tcl_EventSetupProc", "Tcl_ExitProc", "Tcl_FileProc", "Tcl_Filesystem",
-            "Tcl_FreeHashEntryProc", "Tcl_FreeInternalRepProc", "Tcl_FreeProc", "Tcl_FSAccessProc", "Tcl_FSChdirProc",
-            "Tcl_FSCopyDirectoryProc", "Tcl_FSCopyFileProc", "Tcl_FSCreateDirectoryProc", "Tcl_FSCreateInternalRepProc",
-            "Tcl_FSDeleteFileProc", "Tcl_FSDupInternalRepProc", "Tcl_FSFileAttrsGetProc", "Tcl_FSFileAttrsSetProc",
-            "Tcl_FSFilesystemPathTypeProc", "Tcl_FSFilesystemSeparatorProc", "Tcl_FSFreeInternalRepProc",
-            "Tcl_FSGetCwdProc", "Tcl_FSInternalToNormalizedProc", "Tcl_FSLinkProc", "Tcl_FSListVolumesProc",
-            "Tcl_FSLoadFileProc", "Tcl_FSLstatProc", "Tcl_FSMatchInDirectoryProc", "Tcl_FSNormalizePathProc",
-            "Tcl_FSOpenFileChannelProc", "Tcl_FSPathInFilesystemProc", "Tcl_FSRemoveDirectoryProc",
-            "Tcl_FSRenameFileProc", "Tcl_FSStatProc", "Tcl_FSUnloadFileProc", "Tcl_FSUtimeProc", "Tcl_GlobTypeData",
-            "Tcl_HashKeyType", "Tcl_IdleProc", "Tcl_Interp", "Tcl_InterpDeleteProc", "Tcl_LimitHandlerDeleteProc",
-            "Tcl_LimitHandlerProc", "Tcl_MainLoopProc", "Tcl_MathProc", "Tcl_MethodCallProc", "Tcl_MethodDeleteProc",
-            "Tcl_MethodType", "Tcl_NamespaceDeleteProc", "Tcl_NotifierProcs", "Tcl_Obj", "Tcl_ObjCmdProc",
-            "Tcl_ObjectMapMethodNameProc", "Tcl_ObjectMetadataDeleteProc", "Tcl_ObjType", "Tcl_PackageInitProc",
-            "Tcl_PackageUnloadProc", "Tcl_PanicProc", "Tcl_RegExpIndices", "Tcl_RegExpInfo", "Tcl_ScaleTimeProc",
-            "Tcl_SetFromAnyProc", "Tcl_TcpAcceptProc", "Tcl_Time", "Tcl_TimerProc", "Tcl_Token", "Tcl_UpdateStringProc",
-            "Tcl_Value", "Tcl_VarTraceProc", "argc", "argv", "argv0", "auto_path", "env", "errorCode", "errorInfo",
-            "filename", "re_syntax", "safe", "Tcl", "tcl_interactive", "tcl_library", "TCL_MEM_DEBUG",
-            "tcl_nonwordchars", "tcl_patchLevel", "tcl_pkgPath", "tcl_platform", "tcl_precision", "tcl_rcFileName",
-            "tcl_traceCompile", "tcl_traceEval", "tcl_version", "tcl_wordchars"
+            'after', 'append', 'apply', 'argc', 'argv', 'argv0', 'array', 'attemptckalloc', 'attemptckrealloc',
+            'auto_execok', 'auto_import', 'auto_load', 'auto_mkindex', 'auto_path', 'auto_qualify', 'auto_reset',
+            'bgerror', 'binary', 'break', 'case', 'catch', 'cd', 'chan', 'ckalloc', 'ckfree', 'ckrealloc', 'clock',
+            'close', 'concat', 'continue', 'coroutine', 'dde', 'dict', 'encoding', 'env', 'eof', 'error', 'errorCode',
+            'errorInfo', 'eval', 'exec', 'exit', 'expr', 'fblocked', 'fconfigure', 'fcopy', 'file', 'fileevent',
+            'filename', 'flush', 'for', 'foreach', 'format', 'gets', 'glob', 'global', 'history', 'http', 'if', 'incr',
+            'info', 'interp', 'join', 'lappend', 'lassign', 'lindex', 'linsert', 'list', 'llength', 'load', 'lrange',
+            'lrepeat', 'lreplace', 'lreverse', 'lsearch', 'lset', 'lsort', 'mathfunc', 'mathop', 'memory', 'msgcat',
+            'my', 'namespace', 'next', 'nextto', 'open', 'package', 'parray', 'pid', 'pkg_mkIndex', 'platform',
+            'proc', 'puts', 'pwd', 're_syntax', 'read', 'refchan', 'regexp', 'registry', 'regsub', 'rename', 'return',
+            'safe', 'scan', 'seek', 'self', 'set', 'socket', 'source', 'split', 'string', 'subst', 'switch',
+            'tailcall', 'Tcl', 'Tcl_Access', 'Tcl_AddErrorInfo', 'Tcl_AddObjErrorInfo', 'Tcl_AlertNotifier',
+            'Tcl_Alloc', 'Tcl_AllocHashEntryProc', 'Tcl_AllocStatBuf', 'Tcl_AllowExceptions', 'Tcl_AppendAllObjTypes',
+            'Tcl_AppendElement', 'Tcl_AppendExportList', 'Tcl_AppendFormatToObj', 'Tcl_AppendLimitedToObj',
+            'Tcl_AppendObjToErrorInfo', 'Tcl_AppendObjToObj', 'Tcl_AppendPrintfToObj', 'Tcl_AppendResult',
+            'Tcl_AppendResultVA', 'Tcl_AppendStringsToObj', 'Tcl_AppendStringsToObjVA', 'Tcl_AppendToObj',
+            'Tcl_AppendUnicodeToObj', 'Tcl_AppInit', 'Tcl_AppInitProc', 'Tcl_ArgvInfo', 'Tcl_AsyncCreate',
+            'Tcl_AsyncDelete', 'Tcl_AsyncInvoke', 'Tcl_AsyncMark', 'Tcl_AsyncProc', 'Tcl_AsyncReady',
+            'Tcl_AttemptAlloc', 'Tcl_AttemptRealloc', 'Tcl_AttemptSetObjLength', 'Tcl_BackgroundError',
+            'Tcl_BackgroundException', 'Tcl_Backslash', 'Tcl_BadChannelOption', 'Tcl_CallWhenDeleted', 'Tcl_Canceled',
+            'Tcl_CancelEval', 'Tcl_CancelIdleCall', 'Tcl_ChannelBlockModeProc', 'Tcl_ChannelBuffered',
+            'Tcl_ChannelClose2Proc', 'Tcl_ChannelCloseProc', 'Tcl_ChannelFlushProc', 'Tcl_ChannelGetHandleProc',
+            'Tcl_ChannelGetOptionProc', 'Tcl_ChannelHandlerProc', 'Tcl_ChannelInputProc', 'Tcl_ChannelName',
+            'Tcl_ChannelOutputProc', 'Tcl_ChannelProc', 'Tcl_ChannelSeekProc', 'Tcl_ChannelSetOptionProc',
+            'Tcl_ChannelThreadActionProc', 'Tcl_ChannelTruncateProc', 'Tcl_ChannelType', 'Tcl_ChannelVersion',
+            'Tcl_ChannelWatchProc', 'Tcl_ChannelWideSeekProc', 'Tcl_Chdir', 'Tcl_ClassGetMetadata',
+            'Tcl_ClassSetConstructor', 'Tcl_ClassSetDestructor', 'Tcl_ClassSetMetadata', 'Tcl_ClearChannelHandlers',
+            'Tcl_CloneProc', 'Tcl_Close', 'Tcl_CloseProc', 'Tcl_CmdDeleteProc', 'Tcl_CmdInfo',
+            'Tcl_CmdObjTraceDeleteProc', 'Tcl_CmdObjTraceProc', 'Tcl_CmdProc', 'Tcl_CmdTraceProc',
+            'Tcl_CommandComplete', 'Tcl_CommandTraceInfo', 'Tcl_CommandTraceProc', 'Tcl_CompareHashKeysProc',
+            'Tcl_Concat', 'Tcl_ConcatObj', 'Tcl_ConditionFinalize', 'Tcl_ConditionNotify', 'Tcl_ConditionWait',
+            'Tcl_Config', 'Tcl_ConvertCountedElement', 'Tcl_ConvertElement', 'Tcl_ConvertToType',
+            'Tcl_CopyObjectInstance', 'Tcl_CreateAlias', 'Tcl_CreateAliasObj', 'Tcl_CreateChannel',
+            'Tcl_CreateChannelHandler', 'Tcl_CreateCloseHandler', 'Tcl_CreateCommand', 'Tcl_CreateEncoding',
+            'Tcl_CreateEnsemble', 'Tcl_CreateEventSource', 'Tcl_CreateExitHandler', 'Tcl_CreateFileHandler',
+            'Tcl_CreateHashEntry', 'Tcl_CreateInterp', 'Tcl_CreateMathFunc', 'Tcl_CreateNamespace',
+            'Tcl_CreateObjCommand', 'Tcl_CreateObjTrace', 'Tcl_CreateSlave', 'Tcl_CreateThread',
+            'Tcl_CreateThreadExitHandler', 'Tcl_CreateTimerHandler', 'Tcl_CreateTrace',
+            'Tcl_CutChannel', 'Tcl_DecrRefCount', 'Tcl_DeleteAssocData', 'Tcl_DeleteChannelHandler',
+            'Tcl_DeleteCloseHandler', 'Tcl_DeleteCommand', 'Tcl_DeleteCommandFromToken', 'Tcl_DeleteEvents',
+            'Tcl_DeleteEventSource', 'Tcl_DeleteExitHandler', 'Tcl_DeleteFileHandler', 'Tcl_DeleteHashEntry',
+            'Tcl_DeleteHashTable', 'Tcl_DeleteInterp', 'Tcl_DeleteNamespace', 'Tcl_DeleteThreadExitHandler',
+            'Tcl_DeleteTimerHandler', 'Tcl_DeleteTrace', 'Tcl_DetachChannel', 'Tcl_DetachPids', 'Tcl_DictObjDone',
+            'Tcl_DictObjFirst', 'Tcl_DictObjGet', 'Tcl_DictObjNext', 'Tcl_DictObjPut', 'Tcl_DictObjPutKeyList',
+            'Tcl_DictObjRemove', 'Tcl_DictObjRemoveKeyList', 'Tcl_DictObjSize', 'Tcl_DiscardInterpState',
+            'Tcl_DiscardResult', 'Tcl_DontCallWhenDeleted', 'Tcl_DoOneEvent', 'Tcl_DoWhenIdle',
+            'Tcl_DriverBlockModeProc', 'Tcl_DriverClose2Proc', 'Tcl_DriverCloseProc', 'Tcl_DriverFlushProc',
+            'Tcl_DriverGetHandleProc', 'Tcl_DriverGetOptionProc', 'Tcl_DriverHandlerProc', 'Tcl_DriverInputProc',
+            'Tcl_DriverOutputProc', 'Tcl_DriverSeekProc', 'Tcl_DriverSetOptionProc', 'Tcl_DriverThreadActionProc',
+            'Tcl_DriverTruncateProc', 'Tcl_DriverWatchProc', 'Tcl_DriverWideSeekProc', 'Tcl_DStringAppend',
+            'Tcl_DStringAppendElement', 'Tcl_DStringEndSublist', 'Tcl_DStringFree', 'Tcl_DStringGetResult',
+            'Tcl_DStringInit', 'Tcl_DStringLength', 'Tcl_DStringResult', 'Tcl_DStringSetLength',
+            'Tcl_DStringStartSublist', 'Tcl_DStringTrunc', 'Tcl_DStringValue', 'Tcl_DumpActiveMemory',
+            'Tcl_DupInternalRepProc', 'Tcl_DuplicateObj', 'Tcl_EncodingConvertProc', 'Tcl_EncodingFreeProc',
+            'Tcl_EncodingType', 'tcl_endOfWord', 'Tcl_Eof', 'Tcl_ErrnoId', 'Tcl_ErrnoMsg', 'Tcl_Eval', 'Tcl_EvalEx',
+            'Tcl_EvalFile', 'Tcl_EvalObjEx', 'Tcl_EvalObjv', 'Tcl_EvalTokens', 'Tcl_EvalTokensStandard', 'Tcl_Event',
+            'Tcl_EventCheckProc', 'Tcl_EventDeleteProc', 'Tcl_EventProc', 'Tcl_EventSetupProc', 'Tcl_EventuallyFree',
+            'Tcl_Exit', 'Tcl_ExitProc', 'Tcl_ExitThread', 'Tcl_Export', 'Tcl_ExposeCommand', 'Tcl_ExprBoolean',
+            'Tcl_ExprBooleanObj', 'Tcl_ExprDouble', 'Tcl_ExprDoubleObj', 'Tcl_ExprLong', 'Tcl_ExprLongObj',
+            'Tcl_ExprObj', 'Tcl_ExprString', 'Tcl_ExternalToUtf', 'Tcl_ExternalToUtfDString', 'Tcl_FileProc',
+            'Tcl_Filesystem', 'Tcl_Finalize', 'Tcl_FinalizeNotifier', 'Tcl_FinalizeThread', 'Tcl_FindCommand',
+            'Tcl_FindEnsemble', 'Tcl_FindExecutable', 'Tcl_FindHashEntry', 'tcl_findLibrary', 'Tcl_FindNamespace',
+            'Tcl_FirstHashEntry', 'Tcl_Flush', 'Tcl_ForgetImport', 'Tcl_Format', 'Tcl_FreeHashEntryProc',
+            'Tcl_FreeInternalRepProc', 'Tcl_FreeParse', 'Tcl_FreeProc', 'Tcl_FreeResult',
+            'Tcl_Free·\xa0Tcl_FreeEncoding', 'Tcl_FSAccess', 'Tcl_FSAccessProc', 'Tcl_FSChdir',
+            'Tcl_FSChdirProc', 'Tcl_FSConvertToPathType', 'Tcl_FSCopyDirectory', 'Tcl_FSCopyDirectoryProc',
+            'Tcl_FSCopyFile', 'Tcl_FSCopyFileProc', 'Tcl_FSCreateDirectory', 'Tcl_FSCreateDirectoryProc',
+            'Tcl_FSCreateInternalRepProc', 'Tcl_FSData', 'Tcl_FSDeleteFile', 'Tcl_FSDeleteFileProc',
+            'Tcl_FSDupInternalRepProc', 'Tcl_FSEqualPaths', 'Tcl_FSEvalFile', 'Tcl_FSEvalFileEx',
+            'Tcl_FSFileAttrsGet', 'Tcl_FSFileAttrsGetProc', 'Tcl_FSFileAttrsSet', 'Tcl_FSFileAttrsSetProc',
+            'Tcl_FSFileAttrStrings', 'Tcl_FSFileSystemInfo', 'Tcl_FSFilesystemPathTypeProc',
+            'Tcl_FSFilesystemSeparatorProc', 'Tcl_FSFreeInternalRepProc', 'Tcl_FSGetCwd', 'Tcl_FSGetCwdProc',
+            'Tcl_FSGetFileSystemForPath', 'Tcl_FSGetInternalRep', 'Tcl_FSGetNativePath', 'Tcl_FSGetNormalizedPath',
+            'Tcl_FSGetPathType', 'Tcl_FSGetTranslatedPath', 'Tcl_FSGetTranslatedStringPath',
+            'Tcl_FSInternalToNormalizedProc', 'Tcl_FSJoinPath', 'Tcl_FSJoinToPath', 'Tcl_FSLinkProc',
+            'Tcl_FSLink·\xa0Tcl_FSListVolumes', 'Tcl_FSListVolumesProc', 'Tcl_FSLoadFile', 'Tcl_FSLoadFileProc',
+            'Tcl_FSLstat', 'Tcl_FSLstatProc', 'Tcl_FSMatchInDirectory', 'Tcl_FSMatchInDirectoryProc',
+            'Tcl_FSMountsChanged', 'Tcl_FSNewNativePath', 'Tcl_FSNormalizePathProc', 'Tcl_FSOpenFileChannel',
+            'Tcl_FSOpenFileChannelProc', 'Tcl_FSPathInFilesystemProc', 'Tcl_FSPathSeparator', 'Tcl_FSRegister',
+            'Tcl_FSRemoveDirectory', 'Tcl_FSRemoveDirectoryProc', 'Tcl_FSRenameFile', 'Tcl_FSRenameFileProc',
+            'Tcl_FSSplitPath', 'Tcl_FSStat', 'Tcl_FSStatProc', 'Tcl_FSUnloadFile', 'Tcl_FSUnloadFileProc',
+            'Tcl_FSUnregister', 'Tcl_FSUtime', 'Tcl_FSUtimeProc', 'Tcl_GetAccessTimeFromStat', 'Tcl_GetAlias',
+            'Tcl_GetAliasObj', 'Tcl_GetAssocData', 'Tcl_GetBignumFromObj', 'Tcl_GetBlocksFromStat',
+            'Tcl_GetBlockSizeFromStat', 'Tcl_GetBoolean', 'Tcl_GetBooleanFromObj', 'Tcl_GetByteArrayFromObj',
+            'Tcl_GetChangeTimeFromStat', 'Tcl_GetChannel', 'Tcl_GetChannelBufferSize', 'Tcl_GetChannelError',
+            'Tcl_GetChannelErrorInterp', 'Tcl_GetChannelHandle', 'Tcl_GetChannelInstanceData', 'Tcl_GetChannelMode',
+            'Tcl_GetChannelName', 'Tcl_GetChannelNames', 'Tcl_GetChannelNamesEx', 'Tcl_GetChannelOption',
+            'Tcl_GetChannelThread', 'Tcl_GetChannelType', 'Tcl_GetCharLength', 'Tcl_GetClassAsObject',
+            'Tcl_GetCommandFromObj', 'Tcl_GetCommandFullName', 'Tcl_GetCommandInfo', 'Tcl_GetCommandInfoFromToken',
+            'Tcl_GetCommandName', 'Tcl_GetCurrentNamespace', 'Tcl_GetCurrentThread', 'Tcl_GetCwd',
+            'Tcl_GetDefaultEncodingDir', 'Tcl_GetDeviceTypeFromStat', 'Tcl_GetDouble', 'Tcl_GetDoubleFromObj',
+            'Tcl_GetEncoding', 'Tcl_GetEncodingFromObj', 'Tcl_GetEncodingName', 'Tcl_GetEncodingNameFromEnvironment',
+            'Tcl_GetEncodingNames', 'Tcl_GetEncodingSearchPath', 'Tcl_GetEnsembleFlags', 'Tcl_GetEnsembleMappingDict',
+            'Tcl_GetEnsembleNamespace', 'Tcl_GetEnsembleParameterList', 'Tcl_GetEnsembleSubcommandList',
+            'Tcl_GetEnsembleUnknownHandler', 'Tcl_GetErrno', 'Tcl_GetErrorLine', 'Tcl_GetFSDeviceFromStat',
+            'Tcl_GetFSInodeFromStat', 'Tcl_GetGlobalNamespace', 'Tcl_GetGroupIdFromStat', 'Tcl_GetHashKey',
+            'Tcl_GetHashValue', 'Tcl_GetHostName', 'Tcl_GetIndexFromObj', 'Tcl_GetIndexFromObjStruct', 'Tcl_GetInt',
+            'Tcl_GetInterpPath', 'Tcl_GetIntFromObj', 'Tcl_GetLinkCountFromStat', 'Tcl_GetLongFromObj',
+            'Tcl_GetMaster', 'Tcl_GetMathFuncInfo', 'Tcl_GetModeFromStat', 'Tcl_GetModificationTimeFromStat',
+            'Tcl_GetNameOfExecutable', 'Tcl_GetNamespaceUnknownHandler', 'Tcl_GetObjectAsClass', 'Tcl_GetObjectCommand',
+            'Tcl_GetObjectFromObj', 'Tcl_GetObjectName', 'Tcl_GetObjectNamespace', 'Tcl_GetObjResult', 'Tcl_GetObjType',
+            'Tcl_GetOpenFile', 'Tcl_GetPathType', 'Tcl_GetRange', 'Tcl_GetRegExpFromObj', 'Tcl_GetReturnOptions',
+            'Tcl_Gets', 'Tcl_GetServiceMode', 'Tcl_GetSizeFromStat', 'Tcl_GetSlave', 'Tcl_GetsObj',
+            'Tcl_GetStackedChannel', 'Tcl_GetStartupScript', 'Tcl_GetStdChannel', 'Tcl_GetString',
+            'Tcl_GetStringFromObj', 'Tcl_GetStringResult', 'Tcl_GetThreadData', 'Tcl_GetTime', 'Tcl_GetTopChannel',
+            'Tcl_GetUniChar', 'Tcl_GetUnicode', 'Tcl_GetUnicodeFromObj', 'Tcl_GetUserIdFromStat', 'Tcl_GetVar',
+            'Tcl_GetVar2', 'Tcl_GetVar2Ex', 'Tcl_GetVersion', 'Tcl_GetWideIntFromObj', 'Tcl_GlobalEval',
+            'Tcl_GlobalEvalObj', 'Tcl_GlobTypeData', 'Tcl_HashKeyType', 'Tcl_HashStats', 'Tcl_HideCommand',
+            'Tcl_IdleProc', 'Tcl_Import', 'Tcl_IncrRefCount', 'Tcl_Init', 'Tcl_InitCustomHashTable',
+            'Tcl_InitHashTable', 'Tcl_InitMemory', 'Tcl_InitNotifier', 'Tcl_InitObjHashTable', 'Tcl_InitStubs',
+            'Tcl_InputBlocked', 'Tcl_InputBuffered', 'tcl_interactive', 'Tcl_Interp', 'Tcl_InterpActive',
+            'Tcl_InterpDeleted', 'Tcl_InterpDeleteProc', 'Tcl_InvalidateStringRep', 'Tcl_IsChannelExisting',
+            'Tcl_IsChannelRegistered', 'Tcl_IsChannelShared', 'Tcl_IsEnsemble', 'Tcl_IsSafe', 'Tcl_IsShared',
+            'Tcl_IsStandardChannel', 'Tcl_JoinPath', 'Tcl_JoinThread', 'tcl_library', 'Tcl_LimitAddHandler',
+            'Tcl_LimitCheck', 'Tcl_LimitExceeded', 'Tcl_LimitGetCommands', 'Tcl_LimitGetGranularity',
+            'Tcl_LimitGetTime', 'Tcl_LimitHandlerDeleteProc', 'Tcl_LimitHandlerProc', 'Tcl_LimitReady',
+            'Tcl_LimitRemoveHandler', 'Tcl_LimitSetCommands', 'Tcl_LimitSetGranularity', 'Tcl_LimitSetTime',
+            'Tcl_LimitTypeEnabled', 'Tcl_LimitTypeExceeded', 'Tcl_LimitTypeReset', 'Tcl_LimitTypeSet',
+            'Tcl_LinkVar', 'Tcl_ListMathFuncs', 'Tcl_ListObjAppendElement', 'Tcl_ListObjAppendList',
+            'Tcl_ListObjGetElements', 'Tcl_ListObjIndex', 'Tcl_ListObjLength', 'Tcl_ListObjReplace',
+            'Tcl_LogCommandInfo', 'Tcl_Main', 'Tcl_MainLoopProc', 'Tcl_MakeFileChannel', 'Tcl_MakeSafe',
+            'Tcl_MakeTcpClientChannel', 'Tcl_MathProc', 'TCL_MEM_DEBUG', 'Tcl_Merge', 'Tcl_MethodCallProc',
+            'Tcl_MethodDeclarerClass', 'Tcl_MethodDeclarerObject', 'Tcl_MethodDeleteProc', 'Tcl_MethodIsPublic',
+            'Tcl_MethodIsType', 'Tcl_MethodName', 'Tcl_MethodType', 'Tcl_MutexFinalize', 'Tcl_MutexLock',
+            'Tcl_MutexUnlock', 'Tcl_NamespaceDeleteProc', 'Tcl_NewBignumObj', 'Tcl_NewBooleanObj',
+            'Tcl_NewByteArrayObj', 'Tcl_NewDictObj', 'Tcl_NewDoubleObj', 'Tcl_NewInstanceMethod', 'Tcl_NewIntObj',
+            'Tcl_NewListObj', 'Tcl_NewLongObj', 'Tcl_NewMethod', 'Tcl_NewObj', 'Tcl_NewObjectInstance',
+            'Tcl_NewStringObj', 'Tcl_NewUnicodeObj', 'Tcl_NewWideIntObj', 'Tcl_NextHashEntry', 'tcl_nonwordchars',
+            'Tcl_NotifierProcs', 'Tcl_NotifyChannel', 'Tcl_NRAddCallback', 'Tcl_NRCallObjProc', 'Tcl_NRCmdSwap',
+            'Tcl_NRCreateCommand', 'Tcl_NREvalObj', 'Tcl_NREvalObjv', 'Tcl_NumUtfChars', 'Tcl_Obj', 'Tcl_ObjCmdProc',
+            'Tcl_ObjectContextInvokeNext', 'Tcl_ObjectContextIsFiltering', 'Tcl_ObjectContextMethod',
+            'Tcl_ObjectContextObject', 'Tcl_ObjectContextSkippedArgs', 'Tcl_ObjectDeleted', 'Tcl_ObjectGetMetadata',
+            'Tcl_ObjectGetMethodNameMapper', 'Tcl_ObjectMapMethodNameProc', 'Tcl_ObjectMetadataDeleteProc',
+            'Tcl_ObjectSetMetadata', 'Tcl_ObjectSetMethodNameMapper', 'Tcl_ObjGetVar2', 'Tcl_ObjPrintf',
+            'Tcl_ObjSetVar2', 'Tcl_ObjType', 'Tcl_OpenCommandChannel', 'Tcl_OpenFileChannel', 'Tcl_OpenTcpClient',
+            'Tcl_OpenTcpServer', 'Tcl_OutputBuffered', 'Tcl_PackageInitProc', 'Tcl_PackageUnloadProc', 'Tcl_Panic',
+            'Tcl_PanicProc', 'Tcl_PanicVA', 'Tcl_ParseArgsObjv', 'Tcl_ParseBraces', 'Tcl_ParseCommand', 'Tcl_ParseExpr',
+            'Tcl_ParseQuotedString', 'Tcl_ParseVar', 'Tcl_ParseVarName', 'tcl_patchLevel', 'tcl_pkgPath',
+            'Tcl_PkgPresent', 'Tcl_PkgPresentEx', 'Tcl_PkgProvide', 'Tcl_PkgProvideEx', 'Tcl_PkgRequire',
+            'Tcl_PkgRequireEx', 'Tcl_PkgRequireProc', 'tcl_platform', 'Tcl_PosixError', 'tcl_precision',
+            'Tcl_Preserve', 'Tcl_PrintDouble', 'Tcl_PutEnv', 'Tcl_QueryTimeProc', 'Tcl_QueueEvent', 'tcl_rcFileName',
+            'Tcl_Read', 'Tcl_ReadChars', 'Tcl_ReadRaw', 'Tcl_Realloc', 'Tcl_ReapDetachedProcs', 'Tcl_RecordAndEval',
+            'Tcl_RecordAndEvalObj', 'Tcl_RegExpCompile', 'Tcl_RegExpExec', 'Tcl_RegExpExecObj', 'Tcl_RegExpGetInfo',
+            'Tcl_RegExpIndices', 'Tcl_RegExpInfo', 'Tcl_RegExpMatch', 'Tcl_RegExpMatchObj', 'Tcl_RegExpRange',
+            'Tcl_RegisterChannel', 'Tcl_RegisterConfig', 'Tcl_RegisterObjType', 'Tcl_Release', 'Tcl_ResetResult',
+            'Tcl_RestoreInterpState', 'Tcl_RestoreResult', 'Tcl_SaveInterpState', 'Tcl_SaveResult', 'Tcl_ScaleTimeProc',
+            'Tcl_ScanCountedElement', 'Tcl_ScanElement', 'Tcl_Seek', 'Tcl_ServiceAll', 'Tcl_ServiceEvent',
+            'Tcl_ServiceModeHook', 'Tcl_SetAssocData', 'Tcl_SetBignumObj', 'Tcl_SetBooleanObj',
+            'Tcl_SetByteArrayLength', 'Tcl_SetByteArrayObj', 'Tcl_SetChannelBufferSize', 'Tcl_SetChannelError',
+            'Tcl_SetChannelErrorInterp', 'Tcl_SetChannelOption', 'Tcl_SetCommandInfo', 'Tcl_SetCommandInfoFromToken',
+            'Tcl_SetDefaultEncodingDir', 'Tcl_SetDoubleObj', 'Tcl_SetEncodingSearchPath', 'Tcl_SetEnsembleFlags',
+            'Tcl_SetEnsembleMappingDict', 'Tcl_SetEnsembleParameterList', 'Tcl_SetEnsembleSubcommandList',
+            'Tcl_SetEnsembleUnknownHandler', 'Tcl_SetErrno', 'Tcl_SetErrorCode', 'Tcl_SetErrorCodeVA',
+            'Tcl_SetErrorLine', 'Tcl_SetExitProc', 'Tcl_SetFromAnyProc', 'Tcl_SetHashValue', 'Tcl_SetIntObj',
+            'Tcl_SetListObj', 'Tcl_SetLongObj', 'Tcl_SetMainLoop', 'Tcl_SetMaxBlockTime',
+            'Tcl_SetNamespaceUnknownHandler', 'Tcl_SetNotifier', 'Tcl_SetObjErrorCode', 'Tcl_SetObjLength',
+            'Tcl_SetObjResult', 'Tcl_SetPanicProc', 'Tcl_SetRecursionLimit', 'Tcl_SetResult', 'Tcl_SetReturnOptions',
+            'Tcl_SetServiceMode', 'Tcl_SetStartupScript', 'Tcl_SetStdChannel', 'Tcl_SetStringObj',
+            'Tcl_SetSystemEncoding', 'Tcl_SetTimeProc', 'Tcl_SetTimer', 'Tcl_SetUnicodeObj', 'Tcl_SetVar',
+            'Tcl_SetVar2', 'Tcl_SetVar2Ex', 'Tcl_SetWideIntObj', 'Tcl_SignalId', 'Tcl_SignalMsg', 'Tcl_Sleep',
+            'Tcl_SourceRCFile', 'Tcl_SpliceChannel', 'Tcl_SplitList', 'Tcl_SplitPath', 'Tcl_StackChannel',
+            'Tcl_StandardChannels', 'tcl_startOfNextWord', 'tcl_startOfPreviousWord', 'Tcl_Stat', 'Tcl_StaticPackage',
+            'Tcl_StringCaseMatch', 'Tcl_StringMatch', 'Tcl_SubstObj', 'Tcl_TakeBignumFromObj', 'Tcl_TcpAcceptProc',
+            'Tcl_Tell', 'Tcl_ThreadAlert', 'Tcl_ThreadQueueEvent', 'Tcl_Time', 'Tcl_TimerProc', 'Tcl_Token',
+            'Tcl_TraceCommand', 'tcl_traceCompile', 'tcl_traceEval', 'Tcl_TraceVar', 'Tcl_TraceVar2',
+            'Tcl_TransferResult', 'Tcl_TranslateFileName', 'Tcl_TruncateChannel', 'Tcl_Ungets', 'Tcl_UniChar',
+            'Tcl_UniCharAtIndex', 'Tcl_UniCharCaseMatch', 'Tcl_UniCharIsAlnum', 'Tcl_UniCharIsAlpha',
+            'Tcl_UniCharIsControl', 'Tcl_UniCharIsDigit', 'Tcl_UniCharIsGraph', 'Tcl_UniCharIsLower',
+            'Tcl_UniCharIsPrint', 'Tcl_UniCharIsPunct', 'Tcl_UniCharIsSpace', 'Tcl_UniCharIsUpper',
+            'Tcl_UniCharIsWordChar', 'Tcl_UniCharLen', 'Tcl_UniCharNcasecmp', 'Tcl_UniCharNcmp', 'Tcl_UniCharToLower',
+            'Tcl_UniCharToTitle', 'Tcl_UniCharToUpper', 'Tcl_UniCharToUtf', 'Tcl_UniCharToUtfDString', 'Tcl_UnlinkVar',
+            'Tcl_UnregisterChannel', 'Tcl_UnsetVar', 'Tcl_UnsetVar2', 'Tcl_UnstackChannel', 'Tcl_UntraceCommand',
+            'Tcl_UntraceVar', 'Tcl_UntraceVar2', 'Tcl_UpdateLinkedVar', 'Tcl_UpdateStringProc', 'Tcl_UpVar',
+            'Tcl_UpVar2', 'Tcl_UtfAtIndex', 'Tcl_UtfBackslash', 'Tcl_UtfCharComplete', 'Tcl_UtfFindFirst',
+            'Tcl_UtfFindLast', 'Tcl_UtfNext', 'Tcl_UtfPrev', 'Tcl_UtfToExternal', 'Tcl_UtfToExternalDString',
+            'Tcl_UtfToLower', 'Tcl_UtfToTitle', 'Tcl_UtfToUniChar', 'Tcl_UtfToUniCharDString', 'Tcl_UtfToUpper',
+            'Tcl_ValidateAllMemory', 'Tcl_Value', 'Tcl_VarEval', 'Tcl_VarEvalVA', 'Tcl_VarTraceInfo',
+            'Tcl_VarTraceInfo2', 'Tcl_VarTraceProc', 'tcl_version', 'Tcl_WaitForEvent', 'Tcl_WaitPid',
+            'Tcl_WinTCharToUtf', 'Tcl_WinUtfToTChar', 'tcl_wordBreakAfter', 'tcl_wordBreakBefore', 'tcl_wordchars',
+            'Tcl_Write', 'Tcl_WriteChars', 'Tcl_WriteObj', 'Tcl_WriteRaw', 'Tcl_WrongNumArgs', 'Tcl_ZlibAdler32',
+            'Tcl_ZlibCRC32', 'Tcl_ZlibDeflate', 'Tcl_ZlibInflate', 'Tcl_ZlibStreamChecksum', 'Tcl_ZlibStreamClose',
+            'Tcl_ZlibStreamEof', 'Tcl_ZlibStreamGet', 'Tcl_ZlibStreamGetCommandName', 'Tcl_ZlibStreamInit',
+            'Tcl_ZlibStreamPut', 'tcltest', 'tell', 'throw', 'time', 'tm', 'trace', 'transchan', 'try', 'unknown',
+            'unload', 'unset', 'update', 'uplevel', 'upvar', 'variable', 'vwait', 'while', 'yield', 'yieldto', 'zlib'
         ]
 
+
         self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
+
+        # ###########################################
+        # ########### Shell SETUP ###################
+        # ###########################################
 
         self.shell = FCShell(self, version=self.version)
         self.shell._edit.set_model_data(self.myKeywords)
@@ -1872,9 +2000,9 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.hide()
 
-        # ########################
-        # ### Tools and Plugins ##
-        # ########################
+        # ###########################################
+        # ######### Tools and Plugins ###############
+        # ###########################################
 
         self.dblsidedtool = None
         self.measurement_tool = None
@@ -1900,6 +2028,10 @@ class App(QtCore.QObject):
         # self.f_parse = ParseFont(self)
         # self.parse_system_fonts()
 
+        # ###############################################
+        # ######## START-UP ARGUMENTS ###################
+        # ###############################################
+
         # test if the program was started with a script as parameter
         if self.cmd_line_shellfile:
             try:
@@ -1910,9 +2042,9 @@ class App(QtCore.QObject):
                 print("ERROR: ", ext)
                 sys.exit(2)
 
-        # ##########################
-        # ### Check for updates ####
-        # ##########################
+        # ###############################################
+        # ############# Check for updates ###############
+        # ###############################################
 
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
@@ -1925,9 +2057,9 @@ class App(QtCore.QObject):
                                    'params': []})
             self.thr2.start(QtCore.QThread.LowPriority)
 
-        # ###################################
-        # ### Variables for global usage ####
-        # ###################################
+        # ################################################
+        # ######### Variables for global usage ###########
+        # ################################################
 
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
@@ -1992,13 +2124,13 @@ class App(QtCore.QObject):
         self.dxf_list = ['dxf']
         self.pdf_list = ['pdf']
         self.prj_list = ['flatprj']
+        self.conf_list = ['flatconfig']
 
         # global variable used by NCC Tool to signal that some polygons could not be cleared, if True
         # flag for polygons not cleared
         self.poly_not_cleared = False
 
         # VisPy visuals
-        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=1)
         self.isHovering = False
         self.notHovering = True
 
@@ -2026,6 +2158,17 @@ class App(QtCore.QObject):
         filename_factory = self.data_path + '/factory_defaults.FlatConfig'
         os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
 
+        ####################################################
+        # ### ADDING FlatCAM EDITORS section ###############
+        ####################################################
+
+        # watch out for the position of the editors instantiation ... if it is done before a save of the default values
+        # at the first launch of the App , the editors will not be functional.
+        self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+        self.exc_editor = FlatCAMExcEditor(self)
+        self.grb_editor = FlatCAMGrbEditor(self)
+        self.log.debug("Finished adding FlatCAM Editor's.")
+
         # Post-GUI initialization: Experimental attempt
         # to perform unit tests on the GUI.
         # if post_gui is not None:
@@ -2033,8 +2176,33 @@ class App(QtCore.QObject):
 
         App.log.debug("END of constructor. Releasing control.")
 
-        # accept a project file as command line parameter
+        self.set_ui_title(name=_("New Project - Not saved"))
+
+        # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
+        if App.args:
+            self.args_at_startup.emit()
+
+
+    @staticmethod
+    def copy_and_overwrite(from_path, to_path):
+        """
+        From here:
+        https://stackoverflow.com/questions/12683834/how-to-copy-directory-recursively-in-python-and-overwrite-all
+        :param from_path: source path
+        :param to_path: destination path
+        :return: None
+        """
+        if os.path.exists(to_path):
+            shutil.rmtree(to_path)
+        try:
+            shutil.copytree(from_path, to_path)
+        except FileNotFoundError:
+            from_new_path = os.path.dirname(os.path.realpath(__file__)) + '\\flatcamGUI\\VisPyData\\data'
+            shutil.copytree(from_new_path, to_path)
+
+    def on_startup_args(self):
+        log.debug("Application was started with an argument. Processing ...")
         for argument in App.args:
             if '.FlatPrj' in argument:
                 try:
@@ -2045,12 +2213,13 @@ class App(QtCore.QObject):
                     else:
                         # self.open_project(project_name)
                         run_from_arg = True
-                        self.worker_task.emit({'fcn': self.open_project,
-                                               'params': [project_name, run_from_arg]})
+                        # self.worker_task.emit({'fcn': self.open_project,
+                        #                        'params': [project_name, run_from_arg]})
+                        self.open_project(filename=project_name, run_from_arg=run_from_arg)
                 except Exception as e:
                     log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
 
-            if '.FlatConfig' in argument:
+            elif '.FlatConfig' in argument:
                 try:
                     file_name = str(argument)
 
@@ -2064,7 +2233,7 @@ class App(QtCore.QObject):
                 except Exception as e:
                     log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
-            if '.FlatScript' in argument:
+            elif '.FlatScript' in argument:
                 try:
                     file_name = str(argument)
 
@@ -2084,7 +2253,7 @@ class App(QtCore.QObject):
                                 ('BETA' if self.beta else ''),
                                 platform.architecture()[0],
                                 name)
-                            )
+                               )
 
     def defaults_read_form(self):
         for option in self.defaults_form_fields:
@@ -2282,6 +2451,9 @@ class App(QtCore.QObject):
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
 
+            # we set the notebook to hidden
+            self.ui.splitter.setSizes([0, 1])
+
             if edited_object.multigeo is True:
                 edited_tools = [int(x.text()) for x in edited_object.ui.geo_tools_table.selectedItems()]
                 if len(edited_tools) > 1:
@@ -2303,35 +2475,34 @@ class App(QtCore.QObject):
             else:
                 self.geo_editor.edit_fcgeometry(edited_object)
 
-            # we set the notebook to hidden
-            self.ui.splitter.setSizes([0, 1])
-
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
 
         elif isinstance(edited_object, FlatCAMExcellon):
             # store the Excellon Editor Toolbar visibility before entering in the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
+
+            if self.ui.splitter.sizes()[0] == 0:
+                self.ui.splitter.setSizes([1, 1])
+
             self.exc_editor.edit_fcexcellon(edited_object)
 
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
 
-            if self.ui.splitter.sizes()[0] == 0:
-                self.ui.splitter.setSizes([1, 1])
-
         elif isinstance(edited_object, FlatCAMGerber):
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
+
+            if self.ui.splitter.sizes()[0] == 0:
+                self.ui.splitter.setSizes([1, 1])
+
             self.grb_editor.edit_fcgerber(edited_object)
 
             # set call source to the Editor we go into
             self.call_source = 'grb_editor'
 
-            if self.ui.splitter.sizes()[0] == 0:
-                self.ui.splitter.setSizes([1, 1])
-
-        # # make sure that we can't select another object while in Editor Mode:
+        # make sure that we can't select another object while in Editor Mode:
         # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.ui.project_frame.setDisabled(True)
 
@@ -2514,7 +2685,7 @@ class App(QtCore.QObject):
         :param show: Opens the shell.
         :param error: Shows the message as an error.
         :param warning: Shows the message as an warning.
-        :param warning: Shows the message as an success.
+        :param success: Shows the message as an success.
         :param selected: Indicate that something was selected on canvas
         :return: None
         """
@@ -2907,7 +3078,7 @@ class App(QtCore.QObject):
             # Save update options
             try:
                 f = open(filename, "w")
-                json.dump(defaults_from_file, f)
+                json.dump(defaults_from_file, f, default=to_dict, indent=2, sort_keys=True)
                 f.close()
             except:
                 self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
@@ -3007,6 +3178,11 @@ class App(QtCore.QObject):
         :param initialize: Function to run after creation of the object but before it is attached to the application.
         The function is called with 2 parameters: the new object and the App instance.
         :type initialize: function
+        :param active:
+        :param fit:
+        :param plot: If to plot the resulting object
+        :param autoselected: if the resulting object is autoselected in the Project tab and therefore in the
+        self.colleaction
         :return: None
         :rtype: None
         """
@@ -3090,11 +3266,9 @@ class App(QtCore.QObject):
             obj.options['ymin'] = ymin
             obj.options['xmax'] = xmax
             obj.options['ymax'] = ymax
-        except:
-            log.warning("The object has no bounds properties.")
-            # don't plot objects with no bounds, there is nothing to plot
-            self.plot = False
-            pass
+        except Exception as e:
+            log.warning("The object has no bounds properties. %s" % str(e))
+            return "fail"
 
         FlatCAMApp.App.log.debug("Moving new object back to main thread.")
 
@@ -3339,7 +3513,7 @@ class App(QtCore.QObject):
     #     log.debug("Application defaults saved ... Exit event.")
     #     QtWidgets.qApp.quit()
 
-    def save_defaults(self, silent=False):
+    def save_defaults(self, silent=False, data_path=None):
         """
         Saves application default options
         ``self.defaults`` to current_defaults.FlatConfig.
@@ -3348,9 +3522,12 @@ class App(QtCore.QObject):
         """
         self.report_usage("save_defaults")
 
+        if data_path is None:
+            data_path = self.data_path
+
         # Read options from file
         try:
-            f = open(self.data_path + "/current_defaults.FlatConfig")
+            f = open(data_path + "/current_defaults.FlatConfig")
             defaults_file_content = f.read()
             f.close()
         except:
@@ -3407,7 +3584,7 @@ class App(QtCore.QObject):
 
         # Save update options
         try:
-            f = open(self.data_path + "/current_defaults.FlatConfig", "w")
+            f = open(data_path + "/current_defaults.FlatConfig", "w")
             json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
             f.close()
         except:
@@ -3417,7 +3594,7 @@ class App(QtCore.QObject):
         if not silent:
             self.inform.emit(_("[success] Defaults saved."))
 
-    def save_factory_defaults(self, silent=False):
+    def save_factory_defaults(self, silent=False, data_path=None):
         """
                 Saves application factory default options
                 ``self.defaults`` to factory_defaults.FlatConfig.
@@ -3427,9 +3604,12 @@ class App(QtCore.QObject):
                 """
         self.report_usage("save_factory_defaults")
 
+        if data_path is None:
+            data_path = self.data_path
+
         # Read options from file
         try:
-            f_f_def = open(self.data_path + "/factory_defaults.FlatConfig")
+            f_f_def = open(data_path + "/factory_defaults.FlatConfig")
             factory_defaults_file_content = f_f_def.read()
             f_f_def.close()
         except:
@@ -3455,7 +3635,7 @@ class App(QtCore.QObject):
 
         # Save update options
         try:
-            f_f_def_s = open(self.data_path + "/factory_defaults.FlatConfig", "w")
+            f_f_def_s = open(data_path + "/factory_defaults.FlatConfig", "w")
             json.dump(factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
             f_f_def_s.close()
         except:
@@ -3504,11 +3684,100 @@ class App(QtCore.QObject):
         settings.setValue('saved_gui_state', self.ui.saveState())
         settings.setValue('maximized_gui', self.ui.isMaximized())
         settings.setValue('language', self.ui.general_defaults_form.general_app_group.language_cb.get_value())
+        settings.setValue('notebook_font_size',
+                          self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value())
+        settings.setValue('axis_font_size',
+                          self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value())
+
+        settings.setValue('toolbar_lock', self.ui.lock_action.isChecked())
 
         # This will write the setting to the platform specific storage.
         del settings
         log.debug("App.final_save() --> App UI state saved.")
         QtWidgets.qApp.quit()
+
+    def on_portable_checked(self, state):
+        line_no = 0
+        data = None
+
+        if sys.platform != 'win32':
+            # this won't work in Linux or MacOS
+            return
+
+        # test if the app was frozen and choose the path for the configuration file
+        if getattr(sys, "frozen", False) is True:
+            current_data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config'
+        else:
+            current_data_path = os.path.dirname(os.path.realpath(__file__)) + '\\config'
+
+        config_file = current_data_path  + '\\configuration.txt'
+        try:
+            with open(config_file, 'r') as f:
+                try:
+                    data = f.readlines()
+                except Exception as e:
+                    log.debug('App.__init__() -->%s' % str(e))
+                    return
+        except FileNotFoundError:
+            pass
+
+        for line in data:
+            line = line.strip('\n')
+            param = str(line).rpartition('=')
+            if param[0] == 'portable':
+                break
+            line_no += 1
+
+        if state:
+            data[line_no] = 'portable=True\n'
+            # create the new defauults files
+            # create current_defaults.FlatConfig file if there is none
+            try:
+                f = open(current_data_path + '/current_defaults.FlatConfig')
+                f.close()
+            except IOError:
+                App.log.debug('Creating empty current_defaults.FlatConfig')
+                f = open(current_data_path + '/current_defaults.FlatConfig', 'w')
+                json.dump({}, f)
+                f.close()
+
+            # create factory_defaults.FlatConfig file if there is none
+            try:
+                f = open(current_data_path + '/factory_defaults.FlatConfig')
+                f.close()
+            except IOError:
+                App.log.debug('Creating empty factory_defaults.FlatConfig')
+                f = open(current_data_path + '/factory_defaults.FlatConfig', 'w')
+                json.dump({}, f)
+                f.close()
+
+            try:
+                f = open(current_data_path + '/recent.json')
+                f.close()
+            except IOError:
+                App.log.debug('Creating empty recent.json')
+                f = open(current_data_path + '/recent.json', 'w')
+                json.dump([], f)
+                f.close()
+
+            try:
+                fp = open(current_data_path + '/recent_projects.json')
+                fp.close()
+            except IOError:
+                App.log.debug('Creating empty recent_projects.json')
+                fp = open(current_data_path + '/recent_projects.json', 'w')
+                json.dump([], fp)
+                fp.close()
+
+            # save the current defaults to the new defaults file
+            self.save_defaults(silent=True, data_path=current_data_path)
+            self.save_factory_defaults(silent=True, data_path=current_data_path)
+
+        else:
+            data[line_no] = 'portable=False\n'
+
+        with open(config_file, 'w') as f:
+            f.writelines(data)
 
     def on_toggle_shell(self):
         """
@@ -3907,7 +4176,7 @@ class App(QtCore.QObject):
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon('share/toggle_units32.png'))
-        msgbox.setText(_("<B>Change project units ...</B>"))
+        msgbox.setText("<B>%s</B>" % _("Change project units ..."))
         msgbox.setInformativeText(_("Changing the units of the project causes all geometrical "
                                     "properties of all objects to be scaled accordingly.\nContinue?"))
         bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
@@ -4150,8 +4419,9 @@ class App(QtCore.QObject):
 
     # Setting plot colors handlers
     def on_pf_color_entry(self):
-        self.defaults['global_plot_fill'] = self.ui.general_defaults_form.general_gui_group.pf_color_entry.get_value()[:7] + \
-                                            self.defaults['global_plot_fill'][7:9]
+        self.defaults['global_plot_fill'] = \
+            self.ui.general_defaults_form.general_gui_group.pf_color_entry.get_value()[:7] + \
+            self.defaults['global_plot_fill'][7:9]
         self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_fill'])[:7])
 
@@ -4174,18 +4444,21 @@ class App(QtCore.QObject):
     def on_pf_color_spinner(self):
         spinner_value = self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.value()
         self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(spinner_value)
-        self.defaults['global_plot_fill'] = self.defaults['global_plot_fill'][:7] + \
-                                            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.defaults['global_plot_line'] = self.defaults['global_plot_line'][:7] + \
-                                            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_plot_fill'] = \
+            self.defaults['global_plot_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_plot_line'] = \
+            self.defaults['global_plot_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_pf_color_slider(self):
         slider_value = self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value()
         self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.setValue(slider_value)
 
     def on_pl_color_entry(self):
-        self.defaults['global_plot_line'] = self.ui.general_defaults_form.general_gui_group.pl_color_entry.get_value()[:7] + \
-                                            self.defaults['global_plot_line'][7:9]
+        self.defaults['global_plot_line'] = \
+            self.ui.general_defaults_form.general_gui_group.pl_color_entry.get_value()[:7] + \
+            self.defaults['global_plot_line'][7:9]
         self.ui.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_line'])[:7])
 
@@ -4208,8 +4481,9 @@ class App(QtCore.QObject):
 
     # Setting selection colors (left - right) handlers
     def on_sf_color_entry(self):
-        self.defaults['global_sel_fill'] = self.ui.general_defaults_form.general_gui_group.sf_color_entry.get_value()[:7] + \
-                                            self.defaults['global_sel_fill'][7:9]
+        self.defaults['global_sel_fill'] = \
+            self.ui.general_defaults_form.general_gui_group.sf_color_entry.get_value()[:7] + \
+            self.defaults['global_sel_fill'][7:9]
         self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_fill'])[:7])
 
@@ -4232,18 +4506,21 @@ class App(QtCore.QObject):
     def on_sf_color_spinner(self):
         spinner_value = self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.value()
         self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(spinner_value)
-        self.defaults['global_sel_fill'] = self.defaults['global_sel_fill'][:7] + \
-                                            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.defaults['global_sel_line'] = self.defaults['global_sel_line'][:7] + \
-                                            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_sel_fill'] = \
+            self.defaults['global_sel_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_sel_line'] = \
+            self.defaults['global_sel_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_sf_color_slider(self):
         slider_value = self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.value()
         self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.setValue(slider_value)
 
     def on_sl_color_entry(self):
-        self.defaults['global_sel_line'] = self.ui.general_defaults_form.general_gui_group.sl_color_entry.get_value()[:7] + \
-                                            self.defaults['global_sel_line'][7:9]
+        self.defaults['global_sel_line'] = \
+            self.ui.general_defaults_form.general_gui_group.sl_color_entry.get_value()[:7] + \
+            self.defaults['global_sel_line'][7:9]
         self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
 
@@ -4289,10 +4566,12 @@ class App(QtCore.QObject):
     def on_alt_sf_color_spinner(self):
         spinner_value = self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.value()
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(spinner_value)
-        self.defaults['global_alt_sel_fill'] = self.defaults['global_alt_sel_fill'][:7] + \
-                                               (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.defaults['global_alt_sel_line'] = self.defaults['global_alt_sel_line'][:7] + \
-                                               (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_alt_sel_fill'] = \
+            self.defaults['global_alt_sel_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_alt_sel_line'] = \
+            self.defaults['global_alt_sel_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_alt_sf_color_slider(self):
         slider_value = self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.value()
@@ -4431,6 +4710,13 @@ class App(QtCore.QObject):
         new_val_sel = str(annotation_color.name())
         self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.set_value(new_val_sel)
         self.defaults['global_proj_item_dis_color'] = new_val_sel
+
+    def on_notebook_tab_rmb_click(self, checked):
+        self.ui.notebook.set_detachable(val=checked)
+        self.defaults["global_tabs_detachable"] = checked
+
+        self.ui.plot_tab_area.set_detachable(val=checked)
+        self.defaults["global_tabs_detachable"] = checked
 
     def on_deselect_all(self):
         self.collection.set_all_inactive()
@@ -4598,6 +4884,18 @@ class App(QtCore.QObject):
         self.load_defaults(filename='current_defaults')
         # Re-fresh project options
         self.on_options_app2project()
+
+        # save the notebook font size
+        settings = QSettings("Open Source", "FlatCAM")
+        fsize = self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value()
+        settings.setValue('notebook_font_size', fsize)
+
+        # save the axis font size
+        g_fsize = self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value()
+        settings.setValue('axis_font_size', g_fsize)
+
+        # This will write the setting to the platform specific storage.
+        del settings
 
     def handlePrint(self):
         self.report_usage("handlePrint()")
@@ -4813,7 +5111,6 @@ class App(QtCore.QObject):
                     self.inform.emit(
                         _("[WARNING_NOTCL] Adding Tool cancelled ..."))
 
-
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
     # See description bellow.
     def on_delete_keypress(self):
@@ -4855,27 +5152,52 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_delete()")
 
+        response = None
+        bt_ok = None
+
         # Make sure that the deletion will happen only after the Editor is no longer active otherwise we might delete
         # a geometry object before we update it.
-        if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False:
-            if self.collection.get_active():
-                self.log.debug("App.on_delete()")
+        if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False \
+                and self.grb_editor.editor_active is False:
+            if self.defaults["global_delete_confirmation"] is True:
+                msgbox = QtWidgets.QMessageBox()
+                msgbox.setWindowTitle(_("Delete objects"))
+                msgbox.setWindowIcon(QtGui.QIcon('share/deleteshape32.png'))
+                # msgbox.setText("<B>%s</B>" % _("Change project units ..."))
+                msgbox.setText(_("Are you sure you want to permanently delete\n"
+                                 "the selected objects?"))
+                bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-                while (self.collection.get_active()):
-                    obj_active = self.collection.get_active()
-                    # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
-                    if isinstance(obj_active, FlatCAMGerber):
-                        for el in obj_active.mark_shapes:
-                            obj_active.mark_shapes[el].clear(update=True)
-                            obj_active.mark_shapes[el].enabled = False
-                            obj_active.mark_shapes[el] = None
-                    self.delete_first_selected()
+                msgbox.setDefaultButton(bt_ok)
+                msgbox.exec_()
+                response = msgbox.clickedButton()
 
-                self.inform.emit(_("Object(s) deleted ..."))
-                # make sure that the selection shape is deleted, too
-                self.delete_selection_shape()
-            else:
-                self.inform.emit(_("Failed. No object(s) selected..."))
+            if response == bt_ok or self.defaults["global_delete_confirmation"] is False:
+                if self.collection.get_active():
+                    self.log.debug("App.on_delete()")
+
+                    while self.collection.get_active():
+                        obj_active = self.collection.get_active()
+                        # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
+                        if isinstance(obj_active, FlatCAMGerber):
+                            for el in obj_active.mark_shapes:
+                                obj_active.mark_shapes[el].clear(update=True)
+                                obj_active.mark_shapes[el].enabled = False
+                                obj_active.mark_shapes[el] = None
+                        elif isinstance(obj_active, FlatCAMCNCjob):
+                            try:
+                                obj_active.annotation.clear(update=True)
+                                obj_active.annotation.enabled = False
+                            except AttributeError:
+                                pass
+                        self.delete_first_selected()
+
+                    self.inform.emit(_("Object(s) deleted ..."))
+                    # make sure that the selection shape is deleted, too
+                    self.delete_selection_shape()
+                else:
+                    self.inform.emit(_("Failed. No object(s) selected..."))
         else:
             self.inform.emit(_("Save the work in Editor and try again ..."))
 
@@ -4888,15 +5210,11 @@ class App(QtCore.QObject):
             self.log.debug("Nothing selected for deletion")
             return
 
-        # Remove plot
-        # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
-        # self.plotcanvas.auto_adjust_axes()
+        # Remove from dictionary
+        self.collection.delete_active()
 
         # Clear form
         self.setup_component_editor()
-
-        # Remove from dictionary
-        self.collection.delete_active()
 
         self.inform.emit("Object deleted: %s" % name)
 
@@ -4945,11 +5263,12 @@ class App(QtCore.QObject):
 
         cursor = QtGui.QCursor()
 
-        canvas_origin = self.plotcanvas.vispy_canvas.native.mapToGlobal(QtCore.QPoint(0, 0))
-        jump_loc = self.plotcanvas.vispy_canvas.translate_coords_2((location[0], location[1]))
+        canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+        jump_loc = self.plotcanvas.translate_coords_2((location[0], location[1]))
 
         cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
         self.inform.emit(_("[success] Done."))
+        return location
 
     def on_copy_object(self):
         self.report_usage("on_copy_object()")
@@ -4986,9 +5305,9 @@ class App(QtCore.QObject):
             try:
                 if isinstance(obj, FlatCAMExcellon):
                     self.new_object("excellon", str(obj_name) + "_copy", initialize_excellon)
-                elif isinstance(obj,FlatCAMGerber):
+                elif isinstance(obj, FlatCAMGerber):
                     self.new_object("gerber", str(obj_name) + "_copy", initialize)
-                elif isinstance(obj,FlatCAMGeometry):
+                elif isinstance(obj, FlatCAMGeometry):
                     self.new_object("geometry", str(obj_name) + "_copy", initialize)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -5030,9 +5349,9 @@ class App(QtCore.QObject):
             try:
                 if isinstance(obj, FlatCAMExcellon):
                     self.new_object("excellon", str(obj_name) + custom_name, initialize_excellon)
-                elif isinstance(obj,FlatCAMGerber):
+                elif isinstance(obj, FlatCAMGerber):
                     self.new_object("gerber", str(obj_name) + custom_name, initialize_gerber)
-                elif isinstance(obj,FlatCAMGeometry):
+                elif isinstance(obj, FlatCAMGeometry):
                     self.new_object("geometry", str(obj_name) + custom_name, initialize_geometry)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -5167,9 +5486,9 @@ class App(QtCore.QObject):
                 return "Operation failed: %s" % str(e)
 
     def on_set_zero_click(self, event):
-        #this function will be available only for mouse left click
-        pos =[]
-        pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        # this function will be available only for mouse left click
+        pos = []
+        pos_canvas = self.plotcanvas.translate_coords(event.pos)
         if event.button == 1:
             if self.grid_status() == True:
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -5179,7 +5498,7 @@ class App(QtCore.QObject):
             x = 0 - pos[0]
             y = 0 - pos[1]
             for obj in self.collection.get_list():
-                obj.offset((x,y))
+                obj.offset((x, y))
                 self.object_changed.emit(obj)
                 obj.plot()
                 # Update the object bounding box options
@@ -5322,7 +5641,7 @@ class App(QtCore.QObject):
 
             if response == bt_yes:
                 self.on_save_button()
-                self.inform.emit(_("[success] Defaults saved."))
+                self.inform.emit(_("[success] Preferences saved."))
             else:
                 self.preferences_changed_flag = False
                 return
@@ -5524,9 +5843,10 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
+        self.plotcanvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
         self.collection.update_view()
+        # self.inform.emit(_("Plots updated ..."))
 
     # TODO: Rework toolbar 'clear', 'replot' functions
     def on_toolbar_replot(self):
@@ -5555,9 +5875,9 @@ class App(QtCore.QObject):
 
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():
-            return 1
+            return True
         else:
-            return 0
+            return False
 
     def populate_cmenu_grids(self):
         units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
@@ -5567,7 +5887,7 @@ class App(QtCore.QObject):
 
         grid_toggle = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), _("Grid On/Off"))
         grid_toggle.setCheckable(True)
-        if self.grid_status():
+        if self.grid_status() == True:
             grid_toggle.setChecked(True)
         else:
             grid_toggle.setChecked(False)
@@ -5696,17 +6016,18 @@ class App(QtCore.QObject):
         self.pos = []
 
         # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.plotcanvas.native.setFocus()
         # Set the mouse button for panning
-        self.plotcanvas.vispy_canvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
+        self.plotcanvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
 
-        self.pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
-        self.pos = (self.pos_canvas[0], self.pos_canvas[1])
-        self.app_cursor.enabled = False
+        self.pos_canvas = self.plotcanvas.translate_coords(event.pos)
 
-        if self.grid_status():
+        if self.grid_status() == True:
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
             self.app_cursor.enabled = True
+        else:
+            self.pos = (self.pos_canvas[0], self.pos_canvas[1])
+            self.app_cursor.enabled = False
 
         try:
             modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -5745,7 +6066,7 @@ class App(QtCore.QObject):
         """
 
         # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.plotcanvas.native.setFocus()
         self.pos_jump = event.pos
 
         self.ui.popMenu.mouse_is_panning = False
@@ -5758,7 +6079,7 @@ class App(QtCore.QObject):
 
         if self.rel_point1 is not None:
             try:  # May fail in case mouse not within axes
-                pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                pos_canvas = self.plotcanvas.translate_coords(event.pos)
                 if self.grid_status() == True:
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                     self.app_cursor.enabled = True
@@ -5831,26 +6152,20 @@ class App(QtCore.QObject):
         :param event: contains information about the event.
         :return:
         """
-
-        pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
-        if self.grid_status():
+        pos = 0, 0
+        pos_canvas = self.plotcanvas.translate_coords(event.pos)
+        if self.grid_status() == True:
             pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
 
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
-        try:
-            if event.button == 2:  # right click
-                if self.ui.popMenu.mouse_is_panning is False:
-
-                    self.cursor = QtGui.QCursor()
-                    self.populate_cmenu_grids()
-                    self.ui.popMenu.popup(self.cursor.pos())
-
-        except Exception as e:
-            log.warning("Error: %s" % str(e))
-            return
+        if event.button == 2:  # right click
+            if self.ui.popMenu.mouse_is_panning is False:
+                self.cursor = QtGui.QCursor()
+                self.populate_cmenu_grids()
+                self.ui.popMenu.popup(self.cursor.pos())
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
         # selection and then select a type of selection ("enclosing" or "touching")
@@ -5866,7 +6181,6 @@ class App(QtCore.QObject):
                         # delete the selection shape(S) as it may be in the way
                         self.delete_selection_shape()
                         self.delete_hover_shape()
-
                 else:
                     if self.selection_type is not None:
                         self.selection_area_handler(self.pos, pos, self.selection_type)
@@ -5971,7 +6285,7 @@ class App(QtCore.QObject):
             else:
                 # case when there is only an object under the click and we toggle it
                 if len(objects_under_the_click_list) == 1:
-                    if self.collection.get_active() is None :
+                    if self.collection.get_active() is None:
                         self.collection.set_active(objects_under_the_click_list[0])
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
@@ -6071,7 +6385,7 @@ class App(QtCore.QObject):
                     # curr_sel_obj.plot(color=self.FC_dark_blue, face_color=self.FC_light_blue)
 
                     # TODO: on selected objects change the object colors and do not draw the selection box
-                    # self.plotcanvas.vispy_canvas.update() # this updates the canvas
+                    # self.plotcanvas.update() # this updates the canvas
         except Exception as e:
             log.error("[ERROR] Something went bad. %s" % str(e))
             return
@@ -6143,8 +6457,12 @@ class App(QtCore.QObject):
             face = Color(self.defaults['global_sel_fill'], alpha=0.2)
             outline = Color(self.defaults['global_sel_line'], alpha=0.8)
 
-        self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect, color=outline,
-                                                               face_color=face, update=True, layer=0, tolerance=None))
+        self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect,
+                                                                   color=outline,
+                                                                   face_color=face,
+                                                                   update=True,
+                                                                   layer=0,
+                                                                   tolerance=None))
 
     def draw_moving_selection_shape(self, old_coords, coords, **kwargs):
         """
@@ -6187,8 +6505,8 @@ class App(QtCore.QObject):
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
             msgbox.setText(_("There are files/objects opened in FlatCAM.\n"
-                           "Creating a New project will delete them.\n"
-                           "Do you want to Save the project?"))
+                             "Creating a New project will delete them.\n"
+                             "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
@@ -6282,8 +6600,7 @@ class App(QtCore.QObject):
         # take the focus of the Notebook on Project Tab.
         self.ui.notebook.setCurrentWidget(self.ui.project_tab)
 
-        self.set_ui_title(name="New Project")
-
+        self.set_ui_title(name=_("New Project - Not saved"))
 
     def obj_properties(self):
         self.report_usage("obj_properties()")
@@ -6328,7 +6645,7 @@ class App(QtCore.QObject):
 
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                   directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"), filter=_filter_)
 
@@ -6357,7 +6674,7 @@ class App(QtCore.QObject):
 
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                   directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"), filter=_filter_)
 
@@ -6387,7 +6704,7 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                   directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"), filter=_filter_)
 
@@ -6413,9 +6730,9 @@ class App(QtCore.QObject):
         _filter_ = "FlatCAM Project (*.FlatPrj);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Project"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                 directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Project"), filter = _filter_)
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Project"), filter=_filter_)
 
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
@@ -6443,10 +6760,10 @@ class App(QtCore.QObject):
         _filter_ = "FlatCAM Config (*.FlatConfig);;FlatCAM Config (*.json);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Configuration File"),
-                                                         directory=self.data_path, filter=_filter_)
+                                                                 directory=self.data_path, filter=_filter_)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Configuration File"),
-                                                                 filter = _filter_)
+                                                                 filter=_filter_)
 
         if filename == "":
             self.inform.emit(_("[WARNING_NOTCL] Open Config cancelled."))
@@ -6488,14 +6805,14 @@ class App(QtCore.QObject):
 
         name = obj.options["name"]
 
-        filter = "SVG File (*.svg);;All Files (*.*)"
+        _filter = "SVG File (*.svg);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export SVG"),
                 directory=self.get_last_save_folder() + '/' + str(name),
-                filter=filter)
+                filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=_filter)
 
         filename = str(filename)
 
@@ -6563,14 +6880,14 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
+        _filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption="Save Gerber source file",
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=filter)
+                filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Gerber source file"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Gerber source file"), filter=_filter)
 
         filename = str(filename)
 
@@ -6604,14 +6921,14 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
+        _filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Excellon source file"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=filter)
+                filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Excellon source file"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Excellon source file"), filter=_filter)
 
         filename = str(filename)
 
@@ -6645,14 +6962,14 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
+        _filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export Excellon"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=filter)
+                filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Excellon"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Excellon"), filter=_filter)
 
         filename = str(filename)
 
@@ -6823,9 +7140,9 @@ class App(QtCore.QObject):
                     self.worker_task.emit({'fcn': self.import_dxf,
                                            'params': [filename, type_of_obj]})
 
-    # ################################################################################################################ ##
-    # # ## The following section has the functions that are displayed and call the Editor tab CNCJob Tab ############### ##
-    # ################################################################################################################ ##
+    # ###############################################################################################################
+    # ### The following section has the functions that are displayed and call the Editor tab CNCJob Tab #############
+    # ###############################################################################################################
 
     def init_code_editor(self, name):
         # Signals section
@@ -6979,7 +7296,7 @@ class App(QtCore.QObject):
             _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
             try:
                 filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"),
-                                                             directory=self.get_last_folder(), filter=_filter_)
+                                                                     directory=self.get_last_folder(), filter=_filter_)
             except TypeError:
                 filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"), filter=_filter_)
 
@@ -7023,12 +7340,15 @@ class App(QtCore.QObject):
 
         self.should_we_save = False
 
-    def on_file_saveprojectas(self, make_copy=False, thread=True, quit=False):
+    def on_file_saveprojectas(self, make_copy=False, use_thread=True, quit_action=False):
         """
         Callback for menu item File->Save Project As... Opens a file
         chooser and saves the project to the given file via
         ``self.save_project()``.
 
+        :param make_copy if to be create a copy of the project; boolean
+        :param use_thread: if to be run in a separate thread; boolean
+        :param quit_action: if to be followed by quiting the application; boolean
         :return: None
         """
 
@@ -7059,16 +7379,17 @@ class App(QtCore.QObject):
         except IOError:
             pass
 
-        if thread is True:
+        if use_thread is True:
             self.worker_task.emit({'fcn': self.save_project,
-                                   'params': [filename, quit]})
+                                   'params': [filename, quit_action]})
         else:
-            self.save_project(filename, quit)
+            self.save_project(filename, quit_action)
 
         # self.save_project(filename)
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("project", filename)
         self.file_saved.emit("project", filename)
+
         if not make_copy:
             self.project_filename = filename
 
@@ -7079,7 +7400,9 @@ class App(QtCore.QObject):
         """
         Exports a Geometry Object to an SVG file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
         :param filename: Path to the SVG file to save to.
+        :param scale_factor: factor by which to change/scale the thickness of the features
         :return:
         """
         self.report_usage("export_svg()")
@@ -7141,9 +7464,12 @@ class App(QtCore.QObject):
         """
         Exports a Geometry Object to an SVG file in negative.
 
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
+        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
         :param filename: Path to the SVG file to save to.
-        :param: use_thread: If True use threads
-        :type: Bool
+        :param boundary: thickness of a black border to surround all the features
+        :param scale_factor: factor by which to change/scale the thickness of the features
+        :param use_thread: if to be run in a separate thread; boolean
         :return:
         """
         self.report_usage("export_negative()")
@@ -7265,11 +7591,13 @@ class App(QtCore.QObject):
 
     def export_svg_black(self, obj_name, box_name, filename, scale_factor=0.00, use_thread=True):
         """
-        Exports a Geometry Object to an SVG file in negative.
+        Exports a Geometry Object to an SVG file in positive black.
 
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
+        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
         :param filename: Path to the SVG file to save to.
-        :param: use_thread: If True use threads
-        :type: Bool
+        :param scale_factor: factor by which to change/scale the thickness of the features
+        :param use_thread: if to be run in a separate thread; boolean
         :return:
         """
         self.report_usage("export_svg_black()")
@@ -7386,9 +7714,11 @@ class App(QtCore.QObject):
 
     def save_source_file(self, obj_name, filename, use_thread=True):
         """
-        Exports a Gerber Object to an Gerber file.
+        Exports a FlatCAM Object to an Gerber/Excellon file.
 
+        :param obj_name: the name of the FlatCAM object for which to save it's embedded source file
         :param filename: Path to the Gerber file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("save source file()")
@@ -7422,7 +7752,9 @@ class App(QtCore.QObject):
         """
         Exports a Excellon Object to an Excellon file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as Excellon
         :param filename: Path to the Excellon file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("export_excellon()")
@@ -7448,7 +7780,8 @@ class App(QtCore.QObject):
         ewhole = self.defaults["excellon_exp_integer"]
         efract = self.defaults["excellon_exp_decimals"]
         ezeros = self.defaults["excellon_exp_zeros"]
-        eformat = self.defaults[ "excellon_exp_format"]
+        eformat = self.defaults["excellon_exp_format"]
+        slot_type = self.defaults["excellon_exp_slot_type"]
 
         fc_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
         if fc_units == 'MM':
@@ -7468,7 +7801,7 @@ class App(QtCore.QObject):
                 header += ';Created on : %s' % time_str + '\n'
 
                 if eformat == 'dec':
-                    has_slots, excellon_code = obj.export_excellon(ewhole, efract, factor=factor)
+                    has_slots, excellon_code = obj.export_excellon(ewhole, efract, factor=factor, slot_type=slot_type)
                     header += eunits + '\n'
 
                     for tool in obj.tools:
@@ -7483,7 +7816,8 @@ class App(QtCore.QObject):
                 else:
                     if ezeros == 'LZ':
                         has_slots, excellon_code = obj.export_excellon(ewhole, efract,
-                                                                       form='ndec', e_zeros='LZ', factor=factor)
+                                                                       form='ndec', e_zeros='LZ', factor=factor,
+                                                                       slot_type=slot_type)
                         header += '%s,%s\n' % (eunits, 'LZ')
                         header += format_exc
 
@@ -7498,7 +7832,8 @@ class App(QtCore.QObject):
                                                                               dec=4)
                     else:
                         has_slots, excellon_code = obj.export_excellon(ewhole, efract,
-                                                                       form='ndec', e_zeros='TZ', factor=factor)
+                                                                       form='ndec', e_zeros='TZ', factor=factor,
+                                                                       slot_type=slot_type)
                         header += '%s,%s\n' % (eunits, 'TZ')
                         header += format_exc
 
@@ -7555,7 +7890,9 @@ class App(QtCore.QObject):
         """
         Exports a Gerber Object to an Gerber file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as Gerber
         :param filename: Path to the Gerber file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("export_gerber()")
@@ -7678,7 +8015,9 @@ class App(QtCore.QObject):
         """
         Exports a Geometry Object to an DXF file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as DXF
         :param filename: Path to the DXF file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("export_dxf()")
@@ -7722,7 +8061,7 @@ class App(QtCore.QObject):
                 def job_thread_exc(app_obj):
                     ret = make_dxf()
                     if ret == 'fail':
-                        self.inform.emit(_('[[WARNING_NOTCL]] Could not export DXF file.'))
+                        app_obj.inform.emit(_('[[WARNING_NOTCL]] Could not export DXF file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
@@ -8108,6 +8447,8 @@ class App(QtCore.QObject):
         """
         App.log.debug("Opening project: " + filename)
 
+        self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
+
         # Open and parse an uncompressed Project file
         try:
             f = open(filename, 'r')
@@ -8128,8 +8469,9 @@ class App(QtCore.QObject):
                 with lzma.open(filename) as f:
                     file_content = f.read().decode('utf-8')
                     d = json.loads(file_content, object_hook=dict2obj)
-            except IOError:
-                App.log.error("Failed to open project file: %s" % filename)
+
+            except Exception as e:
+                App.log.error("Failed to open project file: %s with error: %s" % (filename, str(e)))
                 self.inform.emit(_("[ERROR_NOTCL] Failed to open project file: %s") % filename)
                 return
 
@@ -8146,20 +8488,26 @@ class App(QtCore.QObject):
         self.set_screen_units(self.options["units"])
 
         # Re create objects
-        App.log.debug("Re-creating objects...")
+        App.log.debug(" **************** Started PROEJCT loading... **************** ")
+
         for obj in d['objs']:
             def obj_init(obj_inst, app_inst):
                 obj_inst.from_dict(obj)
-            App.log.debug(obj['kind'] + ":  " + obj['options']['name'])
+            App.log.debug("Recreating from opened project an %s object: %s" %
+                          (obj['kind'].capitalize(), obj['options']['name']))
+
+            self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
+
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
-        self.plot_all()
+
+        # self.plot_all()
         self.inform.emit(_("[success] Project loaded from: %s") % filename)
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
         self.set_ui_title(name=self.project_filename)
 
-        App.log.debug("Project loaded")
+        App.log.debug(" **************** Finished PROJECT loading... **************** ")
 
     def propagate_defaults(self, silent=False):
         """
@@ -8594,22 +8942,27 @@ class App(QtCore.QObject):
             _('<b>Shortcut Key List</b>'))
         sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
-        # font = self.sel_title.font()
-        # font.setPointSize(12)
-        # self.sel_title.setFont(font)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("notebook_font_size"):
+            fsize = settings.value('notebook_font_size', type=int)
+        else:
+            fsize = 12
+
+        tsize = fsize + int(fsize / 2)
 
         selected_text = _('''
-<p><span style="font-size:14px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
+<p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
 
-<p><span style="font-size:10px"><strong>Details</strong>:<br />
+<p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
 The normal flow when working in FlatCAM is the following:</span></p>
 
 <ol>
-	<li><span style="font-size:10px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;s, toolbars, key shortcuts or even dragging and dropping the files on the GUI.<br />
+	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;s, toolbars, key shortcuts or even dragging and dropping the files on the GUI.<br />
 	<br />
 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
 	&nbsp;</li>
-	<li><span style="font-size:10px">Once an object is available in the Project Tab, by selecting it and then focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
+	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it and then focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
 	<br />
 	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong> is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate it even if it was out of focus.<br />
 	<br />
@@ -8618,43 +8971,14 @@ The normal flow when working in FlatCAM is the following:</span></p>
 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object </strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object </strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in <strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
 </ol>
 
-<p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: <strng>F3</strong>.</span></p>
+<p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: <strng>F3</strong>.</span></p>
 
-        ''')
+        '''.format(fsize=fsize, tsize=tsize))
 
         sel_title.setText(selected_text)
         sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
         self.ui.selected_scroll_area.setWidget(sel_title)
-
-#         tool_title = QtWidgets.QTextEdit(
-#             '<b>Shortcut Key List</b>')
-#         tool_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-#         tool_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
-#         # font = self.sel_title.font()
-#         # font.setPointSize(12)
-#         # self.sel_title.setFont(font)
-#
-#         tool_text = '''
-# <p><span style="font-size:14px"><strong>Tool Tab - Choose an Item in Tools Menu</strong></span></p>
-#
-# <p><span style="font-size:10px"><strong>Details</strong>:<br />
-# Some of the functionality of FlatCAM have been implemented as tools (a sort of plugins). </span></p>
-#
-# <p><span style="font-size:10px">Most of the tools are accessible through&nbsp;the Tools menu or by using the associated shortcut keys.<br />
-# Each such a tool, if it needs an object to be used as a source it will provide the way to select this object(s) through a series of comboboxes. The result of using a tool is either a Geometry, an information that can be used in the app or it can be a file that can be saved.</span></p>
-#
-# <ol>
-# </ol>
-#
-# <p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: &#39;`&#39; (key left to 1).</span></p>
-#
-#                 '''
-#
-#         tool_title.setText(tool_text)
-#         tool_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-#
-#         self.ui.tool_scroll_area.setWidget(tool_title)
 
     def setup_obj_classes(self):
         """
@@ -8733,6 +9057,35 @@ The normal flow when working in FlatCAM is the following:</span></p>
             _("info")
         )
 
+    def on_plotcanvas_setup(self, container=None):
+        """
+        This is doing the setup for the plot area (VisPy canvas)
+
+        :param container: widget where to install the canvas
+        :return: None
+        """
+        if container:
+            plot_container = container
+        else:
+            plot_container = self.ui.right_layout
+
+        self.plotcanvas = PlotCanvas(plot_container, self)
+
+        # So it can receive key presses
+        self.plotcanvas.native.setFocus()
+
+        self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
+        self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
+        self.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release_over_plot)
+        self.plotcanvas.vis_connect('mouse_double_click', self.on_double_click_over_plot)
+
+        # Keys over plot enabled
+        self.plotcanvas.vis_connect('key_press', self.ui.keyPressEvent)
+
+        self.app_cursor = self.plotcanvas.new_cursor()
+        self.app_cursor.enabled = False
+        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+
     def on_zoom_fit(self, event):
         """
         Callback for zoom-out request. This can be either from the corresponding
@@ -8744,6 +9097,12 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
 
         self.plotcanvas.fit_view()
+
+    def on_zoom_in(self):
+        self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))
+
+    def on_zoom_out(self):
+        self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
 
     def disable_all_plots(self):
         self.report_usage("disable_all_plots()")
@@ -8783,11 +9142,11 @@ The normal flow when working in FlatCAM is the following:</span></p>
         :param objects: list of Objects to be enabled
         :return:
         """
-
         log.debug("Enabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
-            obj.options['plot'] = True
+            if obj.options['plot'] is False:
+                obj.options['plot'] = True
         self.plots_updated.emit()
 
     def disable_plots(self, objects):
@@ -8801,20 +9160,11 @@ The normal flow when working in FlatCAM is the following:</span></p>
         if not self.collection.get_selected():
             return
 
-        # if at least one object is visible then do the disable
-        exit_flag = True
-        for obj in objects:
-            if obj.options['plot'] is True:
-                exit_flag = False
-                break
-
-        if exit_flag:
-            return
-
         log.debug("Disabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
-            obj.options['plot'] = False
+            if obj.options['plot'] is True:
+                obj.options['plot'] = False
         self.plots_updated.emit()
 
     def toggle_plots(self, objects):
@@ -8855,12 +9205,13 @@ The normal flow when working in FlatCAM is the following:</span></p>
         for obj in objects:
             obj.on_generatecnc_button_click()
 
-    def save_project(self, filename, quit=False):
+    def save_project(self, filename, quit_action=False):
         """
         Saves the current project to the specified file.
 
         :param filename: Name of the file in which to save.
         :type filename: str
+        :param quit_action: if the project saving will be followed by an app quit; boolean
         :return: None
         """
         self.log.debug("save_project()")
@@ -8922,28 +9273,37 @@ The normal flow when working in FlatCAM is the following:</span></p>
                 else:
                     self.inform.emit(_("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it.") % filename)
 
+                settings = QSettings("Open Source", "FlatCAM")
+                lock_state = self.ui.lock_action.isChecked()
+                settings.setValue('toolbar_lock', lock_state)
+
+                # This will write the setting to the platform specific storage.
+                del settings
+
             # if quit:
                 # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
                 # t.start()
-            self.start_delayed_quit(delay=500, filename=filename, quit=quit)
+            self.start_delayed_quit(delay=500, filename=filename, should_quit=quit_action)
 
-    def start_delayed_quit(self, delay, filename, quit=None):
+    def start_delayed_quit(self, delay, filename, should_quit=None):
         """
 
         :param delay:       period of checking if project file size is more than zero; in seconds
         :param filename:    the name of the project file to be checked periodically for size more than zero
+        :param should_quit: if the task finished will be followed by an app quit; boolean
         :return:
         """
-        to_quit = quit
+        to_quit = should_quit
         self.save_timer = QtCore.QTimer()
         self.save_timer.setInterval(delay)
-        self.save_timer.timeout.connect(lambda : self.check_project_file_size(filename=filename, quit=to_quit))
+        self.save_timer.timeout.connect(lambda: self.check_project_file_size(filename=filename, should_quit=to_quit))
         self.save_timer.start()
 
-    def check_project_file_size(self, filename, quit=None):
+    def check_project_file_size(self, filename, should_quit=None):
         """
 
         :param filename: the name of the project file to be checked periodically for size more than zero
+        :param should_quit: will quit the app if True; boolean
         :return:
         """
 
@@ -8951,9 +9311,9 @@ The normal flow when working in FlatCAM is the following:</span></p>
             if os.stat(filename).st_size > 0:
                 self.save_in_progress = False
                 self.save_timer.stop()
-                if quit:
+                if should_quit:
                     self.app_quit.emit()
-        except Exception:
+        except Exception as e:
             traceback.print_exc()
 
     def on_options_app2project(self):

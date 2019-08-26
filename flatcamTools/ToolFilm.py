@@ -53,7 +53,7 @@ class Film(FlatCAMTool):
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
         self.tf_type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.tf_type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
+        self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.tf_type_obj_combo_label.setToolTip(
             _("Specify the type of object for which to create the film.\n"
               "The object can be of type: Gerber or Geometry.\n"
@@ -68,7 +68,7 @@ class Film(FlatCAMTool):
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_object_combo.setCurrentIndex(1)
 
-        self.tf_object_label = QtWidgets.QLabel(_("Film Object:"))
+        self.tf_object_label = QtWidgets.QLabel('%s:' % _("Film Object"))
         self.tf_object_label.setToolTip(
             _("Object for which to create the film.")
         )
@@ -101,7 +101,7 @@ class Film(FlatCAMTool):
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_box_combo.setCurrentIndex(1)
 
-        self.tf_box_combo_label = QtWidgets.QLabel(_("Box Object:"))
+        self.tf_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
         self.tf_box_combo_label.setToolTip(
             _("The actual object that is used a container for the\n "
               "selected object for which we create the film.\n"
@@ -127,7 +127,7 @@ class Film(FlatCAMTool):
         # Boundary for negative film generation
 
         self.boundary_entry = FCEntry()
-        self.boundary_label = QtWidgets.QLabel(_("Border:"))
+        self.boundary_label = QtWidgets.QLabel('%s:' % _("Border"))
         self.boundary_label.setToolTip(
             _("Specify a border around the object.\n"
               "Only for negative film.\n"
@@ -141,7 +141,7 @@ class Film(FlatCAMTool):
         tf_form_layout.addRow(self.boundary_label, self.boundary_entry)
 
         self.film_scale_entry = FCEntry()
-        self.film_scale_label = QtWidgets.QLabel(_("Scale Stroke:"))
+        self.film_scale_label = QtWidgets.QLabel('%s:' % _("Scale Stroke"))
         self.film_scale_label.setToolTip(
             _("Scale the line stroke thickness of each feature in the SVG file.\n"
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
@@ -190,7 +190,12 @@ class Film(FlatCAMTool):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:

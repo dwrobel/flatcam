@@ -23,6 +23,8 @@ if '_' not in builtins.__dict__:
 
 class ToolSub(FlatCAMTool):
 
+    job_finished = QtCore.pyqtSignal(bool)
+
     toolName = _("Substract Tool")
 
     def __init__(self, app):
@@ -52,7 +54,7 @@ class ToolSub(FlatCAMTool):
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        self.gerber_title = QtWidgets.QLabel(_("<b>Gerber Objects</b>"))
+        self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("Gerber Objects"))
         form_layout.addRow(self.gerber_title)
 
         # Target Gerber Object
@@ -61,7 +63,7 @@ class ToolSub(FlatCAMTool):
         self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.target_gerber_combo.setCurrentIndex(1)
 
-        self.target_gerber_label = QtWidgets.QLabel(_("Target:"))
+        self.target_gerber_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_gerber_label.setToolTip(
             _("Gerber object from which to substract\n"
               "the substractor Gerber object.")
@@ -75,7 +77,7 @@ class ToolSub(FlatCAMTool):
         self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.sub_gerber_combo.setCurrentIndex(1)
 
-        self.sub_gerber_label = QtWidgets.QLabel(_("Substractor:"))
+        self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Substractor"))
         self.sub_gerber_label.setToolTip(
             _("Gerber object that will be substracted\n"
               "from the target Gerber object.")
@@ -98,7 +100,7 @@ class ToolSub(FlatCAMTool):
         form_geo_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_geo_layout)
 
-        self.geo_title = QtWidgets.QLabel(_("<b>Geometry Objects</b>"))
+        self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("Geometry Objects"))
         form_geo_layout.addRow(self.geo_title)
 
         # Target Geometry Object
@@ -107,7 +109,7 @@ class ToolSub(FlatCAMTool):
         self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.target_geo_combo.setCurrentIndex(1)
 
-        self.target_geo_label = QtWidgets.QLabel(_("Target:"))
+        self.target_geo_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_geo_label.setToolTip(
             _("Geometry object from which to substract\n"
               "the substractor Geometry object.")
@@ -121,7 +123,7 @@ class ToolSub(FlatCAMTool):
         self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.sub_geo_combo.setCurrentIndex(1)
 
-        self.sub_geo_label = QtWidgets.QLabel(_("Substractor:"))
+        self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Substractor"))
         self.sub_geo_label.setToolTip(
             _("Geometry object that will be substracted\n"
               "from the target Geometry object.")
@@ -129,6 +131,10 @@ class ToolSub(FlatCAMTool):
         e_lab_1 = QtWidgets.QLabel('')
 
         form_geo_layout.addRow(self.sub_geo_label, self.sub_geo_combo)
+
+        self.close_paths_cb = FCCheckBox(_("Close paths"))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
+        self.tools_box.addWidget(self.close_paths_cb)
 
         self.intersect_geo_btn = FCButton(_('Substract Geometry'))
         self.intersect_geo_btn.setToolTip(
@@ -184,6 +190,7 @@ class ToolSub(FlatCAMTool):
         except (TypeError, AttributeError):
             pass
         self.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
+        self.job_finished.connect(self.on_job_finished)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+W', **kwargs)
@@ -198,7 +205,12 @@ class ToolSub(FlatCAMTool):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:
@@ -217,6 +229,7 @@ class ToolSub(FlatCAMTool):
 
     def set_tool_ui(self):
         self.tools_frame.show()
+        self.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
 
     def on_grb_intersection_click(self):
         # reset previous values
@@ -231,7 +244,7 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] No Target object loaded."))
             return
 
-        # Get source object.
+        # Get target object.
         try:
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except Exception as e:
@@ -244,7 +257,7 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] No Substractor object loaded."))
             return
 
-        # Get source object.
+        # Get substractor object.
         try:
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except Exception as e:
@@ -281,7 +294,7 @@ class ToolSub(FlatCAMTool):
         for apid in self.target_grb_obj.apertures:
             self.promises.append(apid)
 
-        # start the QTimer to check for promises with 1 second period check
+        # start the QTimer to check for promises with 0.5 second period check
         self.periodic_check(500, reset=True)
 
         for apid in self.target_grb_obj.apertures:
@@ -408,7 +421,10 @@ class ToolSub(FlatCAMTool):
             # cleanup
             self.new_apertures.clear()
             self.new_solid_geometry[:] = []
-            self.sub_union[:] = []
+            try:
+                self.sub_union[:] = []
+            except TypeError:
+                self.sub_union = []
 
     def on_geo_intersection_click(self):
         # reset previous values
@@ -424,7 +440,7 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] No Target object loaded."))
             return
 
-        # Get source object.
+        # Get target object.
         try:
             self.target_geo_obj = self.app.collection.get_by_name(self.target_geo_obj_name)
         except Exception as e:
@@ -437,7 +453,7 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] No Substractor object loaded."))
             return
 
-        # Get source object.
+        # Get substractor object.
         try:
             self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
         except Exception as e:
@@ -450,14 +466,14 @@ class ToolSub(FlatCAMTool):
             return
 
         # create the target_options obj
-        self.target_options = {}
-        for opt in self.target_geo_obj.options:
-            if opt != 'name':
-                self.target_options[opt] = deepcopy(self.target_geo_obj.options[opt])
+        # self.target_options = dict()
+        # for k, v in self.target_geo_obj.options.items():
+        #     if k != 'name':
+        #         self.target_options[k] = v
 
         # crate the new_tools dict structure
         for tool in self.target_geo_obj.tools:
-            self.new_tools[tool] = {}
+            self.new_tools[tool] = dict()
             for key in self.target_geo_obj.tools[tool]:
                 if key == 'solid_geometry':
                     self.new_tools[tool][key] = []
@@ -496,10 +512,53 @@ class ToolSub(FlatCAMTool):
             text = _("Parsing tool %s geometry ...") % str(tool)
 
         with self.app.proc_container.new(text):
-            new_geo = (cascaded_union(geo)).difference(self.sub_union)
-            if new_geo:
-                if not new_geo.is_empty:
-                    new_geometry.append(new_geo)
+            # resulting paths are closed resulting into Polygons
+            if self.close_paths_cb.isChecked():
+                new_geo = (cascaded_union(geo)).difference(self.sub_union)
+                if new_geo:
+                    if not new_geo.is_empty:
+                        new_geometry.append(new_geo)
+            # resulting paths are unclosed resulting in a multitude of rings
+            else:
+                try:
+                    for geo_elem in geo:
+                        if isinstance(geo_elem, Polygon):
+                            for ring in self.poly2rings(geo_elem):
+                                new_geo = ring.difference(self.sub_union)
+                                if new_geo and not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                        elif isinstance(geo_elem, MultiPolygon):
+                            for poly in geo_elem:
+                                for ring in self.poly2rings(poly):
+                                    new_geo = ring.difference(self.sub_union)
+                                    if new_geo and not new_geo.is_empty:
+                                        new_geometry.append(new_geo)
+                        elif isinstance(geo_elem, LineString):
+                            new_geo = geo_elem.difference(self.sub_union)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                        elif isinstance(geo_elem, MultiLineString):
+                            for line_elem in geo_elem:
+                                new_geo = line_elem.difference(self.sub_union)
+                                if new_geo and not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                except TypeError:
+                    if isinstance(geo, Polygon):
+                        for ring in self.poly2rings(geo):
+                            new_geo = ring.difference(self.sub_union)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                    elif isinstance(geo, LineString):
+                        new_geo = geo.difference(self.sub_union)
+                        if new_geo and not new_geo.is_empty:
+                            new_geometry.append(new_geo)
+                    elif isinstance(geo, MultiLineString):
+                        for line_elem in geo:
+                            new_geo = line_elem.difference(self.sub_union)
+                            if new_geo and not new_geo.is_empty:
+                                new_geometry.append(new_geo)
 
         if new_geometry:
             if tool == "single":
@@ -522,10 +581,14 @@ class ToolSub(FlatCAMTool):
         log.debug("Promise fulfilled: %s" % str(tool))
 
     def new_geo_object(self, outname):
+        geo_name = outname
         def obj_init(geo_obj, app_obj):
 
-            geo_obj.options = deepcopy(self.target_options)
-            geo_obj.options['name'] = outname
+            # geo_obj.options = self.target_options
+            # create the target_options obj
+            for k, v in self.target_geo_obj.options.items():
+                geo_obj.options[k] = v
+            geo_obj.options['name'] = geo_name
 
             if self.target_geo_obj.multigeo:
                 geo_obj.tools = deepcopy(self.new_tools)
@@ -540,6 +603,7 @@ class ToolSub(FlatCAMTool):
                         geo_obj.tools[tool]['solid_geometry'] = deepcopy(self.new_solid_geometry)
                 except Exception as e:
                     log.debug("ToolSub.new_geo_object() --> %s" % str(e))
+                geo_obj.multigeo = False
 
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.new_object('geometry', outname, obj_init, autoselected=False)
@@ -554,7 +618,7 @@ class ToolSub(FlatCAMTool):
             # cleanup
             self.new_tools.clear()
             self.new_solid_geometry[:] = []
-            self.sub_union[:] = []
+            self.sub_union = []
 
     def periodic_check(self, check_period, reset=False):
         """
@@ -592,26 +656,38 @@ class ToolSub(FlatCAMTool):
         try:
             if not self.promises:
                 self.check_thread.stop()
-                if self.sub_type == "gerber":
-                    outname = self.target_gerber_combo.currentText() + '_sub'
-
-                    # intersection jobs finished, start the creation of solid_geometry
-                    self.app.worker_task.emit({'fcn': self.new_gerber_object,
-                                               'params': [outname]})
-                else:
-                    outname = self.target_geo_combo.currentText() + '_sub'
-
-                    # intersection jobs finished, start the creation of solid_geometry
-                    self.app.worker_task.emit({'fcn': self.new_geo_object,
-                                               'params': [outname]})
+                self.job_finished.emit(True)
 
                 # reset the type of substraction for next time
                 self.sub_type = None
 
                 log.debug("ToolSub --> Periodic check finished.")
         except Exception as e:
+            self.job_finished.emit(False)
             log.debug("ToolSub().periodic_check_handler() --> %s" % str(e))
             traceback.print_exc()
+
+    def on_job_finished(self, succcess):
+        """
+
+        :param succcess: boolean, this parameter signal if all the apertures were processed
+        :return: None
+        """
+        if succcess is True:
+            if self.sub_type == "gerber":
+                outname = self.target_gerber_combo.currentText() + '_sub'
+
+                # intersection jobs finished, start the creation of solid_geometry
+                self.app.worker_task.emit({'fcn': self.new_gerber_object,
+                                           'params': [outname]})
+            else:
+                outname = self.target_geo_combo.currentText() + '_sub'
+
+                # intersection jobs finished, start the creation of solid_geometry
+                self.app.worker_task.emit({'fcn': self.new_geo_object,
+                                           'params': [outname]})
+        else:
+            self.app.inform.emit(_('[ERROR_NOTCL] Generating new object failed.'))
 
     def reset_fields(self):
         self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -620,4 +696,7 @@ class ToolSub(FlatCAMTool):
         self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
 
+    @staticmethod
+    def poly2rings(poly):
+        return [poly.exterior] + [interior for interior in poly.interiors]
 # end of file

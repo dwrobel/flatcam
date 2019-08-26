@@ -50,7 +50,7 @@ class ToolImage(FlatCAMTool):
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
         self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon("share/geometry16.png"))
 
-        self.tf_type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
+        self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.tf_type_obj_combo_label.setToolTip(
            _("Specify the type of object to create from the image.\n"
              "It can be of type: Gerber or Geometry.")
@@ -60,7 +60,7 @@ class ToolImage(FlatCAMTool):
 
         # DPI value of the imported image
         self.dpi_entry = IntEntry()
-        self.dpi_label = QtWidgets.QLabel(_("DPI value:"))
+        self.dpi_label = QtWidgets.QLabel('%s:' % _("DPI value"))
         self.dpi_label.setToolTip(
            _("Specify a DPI value for the image.")
         )
@@ -69,7 +69,7 @@ class ToolImage(FlatCAMTool):
         self.emty_lbl = QtWidgets.QLabel("")
         self.layout.addWidget(self.emty_lbl)
 
-        self.detail_label = QtWidgets.QLabel("<font size=4><b>%s:</b>" % _('Level of detail'))
+        self.detail_label = QtWidgets.QLabel("<font size=4><b>%s:</b></font>" % _('Level of detail'))
         self.layout.addWidget(self.detail_label)
 
         ti2_form_layout = QtWidgets.QFormLayout()
@@ -157,7 +157,12 @@ class ToolImage(FlatCAMTool):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:

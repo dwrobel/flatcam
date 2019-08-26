@@ -53,7 +53,7 @@ class Panelize(FlatCAMTool):
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be panelized\n"
               "It can be of type: Gerber, Excellon or Geometry.\n"
@@ -68,7 +68,7 @@ class Panelize(FlatCAMTool):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(1)
 
-        self.object_label = QtWidgets.QLabel(_("Object:"))
+        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
         self.object_label.setToolTip(
             _("Object to be panelized. This means that it will\n"
               "be duplicated in an array of rows and columns.")
@@ -83,7 +83,7 @@ class Panelize(FlatCAMTool):
         # Type of box Panel object
         self.reference_radio = RadioSet([{'label': _('Object'), 'value': 'object'},
                                          {'label': _('Bounding Box'), 'value': 'bbox'}])
-        self.box_label = QtWidgets.QLabel(_("<b>Penelization Reference:</b>"))
+        self.box_label = QtWidgets.QLabel("<b>%s:</b>" % _("Penelization Reference"))
         self.box_label.setToolTip(
             _("Choose the reference for panelization:\n"
               "- Object = the bounding box of a different object\n"
@@ -108,7 +108,7 @@ class Panelize(FlatCAMTool):
         self.type_box_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
         self.type_box_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
+        self.type_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Type"))
         self.type_box_combo_label.setToolTip(
             _("Specify the type of object to be used as an container for\n"
               "panelization. It can be: Gerber or Geometry type.\n"
@@ -123,7 +123,7 @@ class Panelize(FlatCAMTool):
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(1)
 
-        self.box_combo_label = QtWidgets.QLabel(_("Box Object:"))
+        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
         self.box_combo_label.setToolTip(
             _("The actual object that is used a container for the\n "
               "selected object that is to be panelized.")
@@ -131,7 +131,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.box_combo_label, self.box_combo)
         form_layout.addRow(QtWidgets.QLabel(""))
 
-        panel_data_label = QtWidgets.QLabel(_("<b>Panel Data:</b>"))
+        panel_data_label = QtWidgets.QLabel("<b>%s:</b>" % _("Panel Data"))
         panel_data_label.setToolTip(
             _("This informations will shape the resulting panel.\n"
               "The number of rows and columns will set how many\n"
@@ -144,7 +144,7 @@ class Panelize(FlatCAMTool):
 
         # Spacing Columns
         self.spacing_columns = FCEntry()
-        self.spacing_columns_label = QtWidgets.QLabel(_("Spacing cols:"))
+        self.spacing_columns_label = QtWidgets.QLabel('%s:' % _("Spacing cols"))
         self.spacing_columns_label.setToolTip(
             _("Spacing between columns of the desired panel.\n"
               "In current units.")
@@ -153,7 +153,7 @@ class Panelize(FlatCAMTool):
 
         # Spacing Rows
         self.spacing_rows = FCEntry()
-        self.spacing_rows_label = QtWidgets.QLabel(_("Spacing rows:"))
+        self.spacing_rows_label = QtWidgets.QLabel('%s:' % _("Spacing rows"))
         self.spacing_rows_label.setToolTip(
             _("Spacing between rows of the desired panel.\n"
               "In current units.")
@@ -162,7 +162,7 @@ class Panelize(FlatCAMTool):
 
         # Columns
         self.columns = FCEntry()
-        self.columns_label = QtWidgets.QLabel(_("Columns:"))
+        self.columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
             _("Number of columns of the desired panel")
         )
@@ -170,7 +170,7 @@ class Panelize(FlatCAMTool):
 
         # Rows
         self.rows = FCEntry()
-        self.rows_label = QtWidgets.QLabel(_("Rows:"))
+        self.rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
             _("Number of rows of the desired panel")
         )
@@ -180,7 +180,7 @@ class Panelize(FlatCAMTool):
         # Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
                                           {'label': _('Geo'), 'value': 'geometry'}])
-        self.panel_type_label = QtWidgets.QLabel(_("<b>Panel Type:</b>"))
+        self.panel_type_label = QtWidgets.QLabel("<b>%s:</b>" % _("Panel Type"))
         self.panel_type_label.setToolTip(
             _("Choose the type of object for the panel object:\n"
               "- Geometry\n"
@@ -190,7 +190,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.panel_type_radio)
 
         # Constrains
-        self.constrain_cb = FCCheckBox(_("Constrain panel within:"))
+        self.constrain_cb = FCCheckBox('%s:' % _("Constrain panel within"))
         self.constrain_cb.setToolTip(
             _("Area define by DX and DY within to constrain the panel.\n"
               "DX and DY values are in current units.\n"
@@ -201,7 +201,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.constrain_cb)
 
         self.x_width_entry = FCEntry()
-        self.x_width_lbl = QtWidgets.QLabel(_("Width (DX):"))
+        self.x_width_lbl = QtWidgets.QLabel('%s:' % _("Width (DX)"))
         self.x_width_lbl.setToolTip(
             _("The width (DX) within which the panel must fit.\n"
               "In current units.")
@@ -209,7 +209,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
         self.y_height_entry = FCEntry()
-        self.y_height_lbl = QtWidgets.QLabel(_("Height (DY):"))
+        self.y_height_lbl = QtWidgets.QLabel('%s:' % _("Height (DY)"))
         self.y_height_lbl.setToolTip(
             _("The height (DY)within which the panel must fit.\n"
               "In current units.")
@@ -259,7 +259,12 @@ class Panelize(FlatCAMTool):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:

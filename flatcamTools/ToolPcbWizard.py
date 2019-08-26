@@ -48,13 +48,13 @@ class PcbWizard(FlatCAMTool):
         self.layout.addWidget(title_label)
 
         self.layout.addWidget(QtWidgets.QLabel(""))
-        self.layout.addWidget(QtWidgets.QLabel(_("<b>Load files:</b>")))
+        self.layout.addWidget(QtWidgets.QLabel("<b>%s:</b>" % _("Load files")))
 
         # Form Layout
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 
-        self.excellon_label = QtWidgets.QLabel(_("Excellon file:"))
+        self.excellon_label = QtWidgets.QLabel('%s:' % _("Excellon file"))
         self.excellon_label.setToolTip(
            _("Load the Excellon file.\n"
              "Usually it has a .DRL extension")
@@ -62,7 +62,7 @@ class PcbWizard(FlatCAMTool):
         self.excellon_brn = FCButton(_("Open"))
         form_layout.addRow(self.excellon_label, self.excellon_brn)
 
-        self.inf_label = QtWidgets.QLabel(_("INF file:"))
+        self.inf_label = QtWidgets.QLabel('%s:' % _("INF file"))
         self.inf_label.setToolTip(
             _("Load the INF file.")
         )
@@ -84,7 +84,7 @@ class PcbWizard(FlatCAMTool):
         self.tools_table.setVisible(False)
 
         self.layout.addWidget(QtWidgets.QLabel(""))
-        self.layout.addWidget(QtWidgets.QLabel(_("<b>Excellon format:</b>")))
+        self.layout.addWidget(QtWidgets.QLabel("<b>%s:</b>" % _("Excellon format")))
         # Form Layout
         form_layout1 = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout1)
@@ -92,7 +92,7 @@ class PcbWizard(FlatCAMTool):
         # Integral part of the coordinates
         self.int_entry = FCSpinner()
         self.int_entry.set_range(1, 10)
-        self.int_label = QtWidgets.QLabel(_("Int. digits:"))
+        self.int_label = QtWidgets.QLabel('%s:' % _("Int. digits"))
         self.int_label.setToolTip(
            _("The number of digits for the integral part of the coordinates.")
         )
@@ -101,7 +101,7 @@ class PcbWizard(FlatCAMTool):
         # Fractional part of the coordinates
         self.frac_entry = FCSpinner()
         self.frac_entry.set_range(1, 10)
-        self.frac_label = QtWidgets.QLabel(_("Frac. digits:"))
+        self.frac_label = QtWidgets.QLabel('%s:' % _("Frac. digits"))
         self.frac_label.setToolTip(
             _("The number of digits for the fractional part of the coordinates.")
         )
@@ -111,7 +111,7 @@ class PcbWizard(FlatCAMTool):
         self.zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'LZ'},
                                      {'label': _('TZ'), 'value': 'TZ'},
                                      {'label': _('No Suppression'), 'value': 'D'}])
-        self.zeros_label = QtWidgets.QLabel(_("Zeros supp.:"))
+        self.zeros_label = QtWidgets.QLabel('%s:' % _("Zeros supp."))
         self.zeros_label.setToolTip(
             _("The type of zeros suppression used.\n"
               "Can be of type:\n"
@@ -179,7 +179,12 @@ class PcbWizard(FlatCAMTool):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:

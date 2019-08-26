@@ -44,7 +44,7 @@ class DblSidedTool(FlatCAMTool):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.gerber_object_combo.setCurrentIndex(1)
 
-        self.botlay_label = QtWidgets.QLabel(_("<b>GERBER:</b>"))
+        self.botlay_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.botlay_label.setToolTip(
             "Gerber  to be mirrored."
         )
@@ -68,7 +68,7 @@ class DblSidedTool(FlatCAMTool):
         self.exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
         self.exc_object_combo.setCurrentIndex(1)
 
-        self.excobj_label = QtWidgets.QLabel(_("<b>EXCELLON:</b>"))
+        self.excobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("EXCELLON"))
         self.excobj_label.setToolTip(
             _("Excellon Object to be mirrored.")
         )
@@ -92,7 +92,7 @@ class DblSidedTool(FlatCAMTool):
         self.geo_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.geo_object_combo.setCurrentIndex(1)
 
-        self.geoobj_label = QtWidgets.QLabel(_("<b>GEOMETRY</b>:"))
+        self.geoobj_label = QtWidgets.QLabel("<b>%s</b>:" % _("GEOMETRY"))
         self.geoobj_label.setToolTip(
             _("Geometry Obj to be mirrored.")
         )
@@ -149,7 +149,7 @@ class DblSidedTool(FlatCAMTool):
 
         # ## Point/Box
         self.point_box_container = QtWidgets.QVBoxLayout()
-        self.pb_label = QtWidgets.QLabel("<b>%s</b>" % _('Point/Box Reference:'))
+        self.pb_label = QtWidgets.QLabel("<b>%s:</b>" % _('Point/Box Reference'))
         self.pb_label.setToolTip(
             _("If 'Point' is selected above it store the coordinates (x, y) through which\n"
               "the mirroring axis passes.\n"
@@ -189,7 +189,7 @@ class DblSidedTool(FlatCAMTool):
         self.box_combo_type.hide()
 
         # ## Alignment holes
-        self.ah_label = QtWidgets.QLabel("<b>%s</b>" % _('Alignment Drill Coordinates:'))
+        self.ah_label = QtWidgets.QLabel("<b>%s:</b>" % _('Alignment Drill Coordinates'))
         self.ah_label.setToolTip(
            _("Alignment holes (x1, y1), (x2, y2), ... "
              "on one side of the mirror axis. For each set of (x, y) coordinates\n"
@@ -220,7 +220,7 @@ class DblSidedTool(FlatCAMTool):
         grid_lay3.addWidget(self.add_drill_point_button, 0, 1)
 
         # ## Drill diameter for alignment holes
-        self.dt_label = QtWidgets.QLabel("<b>%s</b>:" % _('Alignment Drill Diameter'))
+        self.dt_label = QtWidgets.QLabel("<b>%s:</b>" % _('Alignment Drill Diameter'))
         self.dt_label.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")
@@ -231,7 +231,7 @@ class DblSidedTool(FlatCAMTool):
         self.layout.addLayout(hlay)
 
         self.drill_dia = FCEntry()
-        self.dd_label = QtWidgets.QLabel(_("Drill diam.:"))
+        self.dd_label = QtWidgets.QLabel('%s:' % _("Drill dia"))
         self.dd_label.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")
@@ -288,7 +288,12 @@ class DblSidedTool(FlatCAMTool):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:

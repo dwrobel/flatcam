@@ -57,7 +57,7 @@ class TclCommandFollow(TclCommandSignaled):
 
         del args['name']
         try:
-            obj.follow(**args)
+            obj.follow_geo(**args)
         except Exception as e:
             return "Operation failed: %s" % str(e)
 

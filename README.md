@@ -9,6 +9,199 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.08.2019
+
+- initial add of a new Tcl Command named CopperClear
+- remade the NCC Tool in preparation for the newly added TclCommand CopperClear
+- finished adding the TclCommandCopperClear that can be called with alias: 'ncc'
+- added new capability in NCC Tool when the reference object is of Gerber type and fixed some newly introduced errors
+- fixed issue #298. The changes in postprocessors done in Preferences dis not update the object UI layout as it was supposed to. The selection of Marlin postproc. did not unhidden the Feedrate Rapids entry.
+- fixed minor issues
+- fixed Tcl Command AddPolygon, AddPolyline
+- fixed Tcl Command CncJob
+- fixed crash due of Properties Tool trying to have a convex hull area on FlatCAMCNCJob objects which is not possible due of their nature
+- modified Tcl Command SubtractRectangle
+- fixed and modernized the Tcl Command Scale to be able to scale on X axis or on Y axis or on both and having as scale reference either the (0, 0) point or the minimum point of the bounding box or the center of the bounding box.
+- fixed and modernized the Tcl Command Skew
+
+24.08.2019
+
+- modified CutOut Tool so now the manual gaps adding will continue until the user is clicking the RMB
+- added ability to turn on/off the grid snapping and to jump to a location while in CutOut Tool manual gap adding action
+- made PlotCanvas class inherit from VisPy Canvas instead of creating an instance of it (work of JP)
+- fixed selection by dragging a selection shape in Geometry Editor
+- modified the Paint Tool. Now the Single Polygon and Area/Reference Object painting works with multiple tools too. The tools have to be selected in the Tool Table.
+- remade the TclCommand Paint to work in the new configuration of the the app (the painting functions are now in their own tool, Paint Tool)
+- fixed a bug in the Properties Tool
+- added a new TcL Command named Nregions who generate non-copper regions
+- added a new TclCommand named Bbox who generate a bounding box.
+
+23.08.2019
+
+- in Tool Cutout for the manual gaps, right mouse button click will exit from the action of adding gaps
+- in Tool Cutout tool I've added the possibility to create a cutout without bridge gaps; added the 'None' option in the Gaps combobox
+- in NCC Tool added ability to add multiple zones to clear when Area option is checked and the modifier key is pressed (either CTRL or SHIFT as set in Preferences). Right click of the mouse is an additional way to finish the job.
+- fixed a bug in Excellon Editor that made that the selection of drills is always cumulative
+- in Paint Tool added ability to add multiple zones to paint when Area option is checked and the modifier key is pressed (either CTRL or SHIFT as set in Preferences). Right click of the mouse is an additional way to finish the job.
+- in Paint Tool and NCC Tool, for the Area option, now mouse panning is allowed while adding areas to process
+- for all the FlatCAM tools launched from toolbar the behavior is modified: first click it will launch the tool; second click: if the Tool tab has focus it will close the tool but if another tab is selected, the tool will have focus
+- modified the NCC Tool and Paint Tool to work multiple times after first launch
+- fixed the issue with GUI entries content being deselected on right click in the box in order to copy the value
+- some changes in GUI tooltips
+- modified the way key modifiers are detected in Gerber Editor Selection class and in Excellon Editor Selection class
+- updated the translations
+- fixed aperture move in Gerber Editor
+- fixed drills/slots move in Excellon Editor
+- RELEASE 8.96
+
+22.08.2019
+
+- added ability to turn ON/OFF the detachable capability of the tabs in Notebook through a context menu activated by right mouse button click on the Notebook header
+- added ability to turn ON/OFF the detachable capability of the tabs in Plot Tab Area through a context menu activated by right mouse button click on the Notebook header
+- added possibility to turn application portable from the Edit -> Preferences -> General -> App. Preferences -> Portable checkbox
+- moved the canvas setup into it's own function and called it in the init() function
+- fixed the Buffer Tool in Geometry Editor; made the Buffer entry field a QDoubleSpinner and set the lower limit to zero.
+- fixed Tool Cutout so when the target Gerber is a single Polygon then the created manual geometry will follow the shape if shape is freeform
+- fixed TclCommandFollow command; an older function name was used who yielded wrong results
+- in Tool Cutout for the manual gaps, now the moving geometry that cuts gaps will orient itself to fit the angle of the cutout geometry
+
+21.08.2019
+
+- added feature in Paint Tool allowing the painting to be done on Gerber objects
+- added feature in Paint Tool to set how (and if) the tools are sorted
+- added Edit -> Preferences GUI entries for the above just added features
+- added new entry in Properties Tool which is the calculated Convex Hull Area (should give a more precise area for the irregular shapes than the box area)
+- added some more strings in Properties Tool for the translation
+- in NCC Tool added area selection feature
+- fixed bug in Excellon parser for the Excellon files that do not put the type of zero suppression they use in the file (like DipTrace eCAD)
+- fixed some issues introduced in NCC Tool
+
+20.08.2019
+
+- added ability to do copper clearing through NCC Tool on Geometry objects
+- replaced the layout from Grid to Form for the Reference objects comboboxes in Paint Tool and in NCC Tool
+
+19.08.2019
+
+- updated the Edit -> Preferences to include also the Gerber Editor complete Preferences
+- started to update the app strings to make it easier for future translations
+- fixed the POT file and the German translation
+- some mods in the Tool Sub
+- fixed bug in Tool Sub that created issues when toggling visibility of the plots
+- fixed the Spanish, Brazilian Portuguese and Romanian translations
+
+18.08.2019
+
+- made the exported preferences formatted therefore more easily read
+- projects at startup don't work in another thread so there is no multithreading if I want to double click an project and to load it
+- added messages in the application window title which show the progress in loading a project (which is not thread-safe therefore keeping the app from fully initialize until finished)
+- in NCC Tool added a new parameter (radio button) that offer the choice on the order of the tools both in tools table and in execution of engraving; added as a parameter also in Edit -> Preferences -> Tools -> NCC Tool
+- added possibility to drag & drop FlatCAM config files (*.FlatConfig) into the canvas to be opened into the application
+- added GUI in Paint tool in beginning to add Paint by external reference object 
+- finished adding in Paint Tool the usage of an external object to set the extent of th area painted. For simple shapes (single Polygon) the shape can be anything, for the rest will be a convex hull of the reference object
+- modified NCC tool so for simple objects (single Polygon) the external object used as reference can have any shape, for the other types of objects the copper cleared area will be the convex hull of the reference object
+- modified the strings of the app wherever they contained the char seq <b> </b> so it is not included in the translated string
+- updated the translation files for the modified strings (and for the newly added strings)
+- added ability to lock toolbars within the context menu that is popped up on any toolbars right mouse click. The value is saved in QSettings and it is persistent between application startup's.
+
+17.08.2019
+
+- added estimated time of routing for the CNCJob and added travelled distance parameter for geometry, too
+- fixed error when creating CNCJob due of having the annotations disabled from preferences but the plot2() function from camlib.CNCJob class still performed operations who yielded TypeError exceptions
+- coded a more accurate way to estimate the job time in CNCJob, taking into consideration if there is a usage of multi depth which generate more passes
+- another fix (final one) for the Exception generated by the annotations set not to show in Preferences
+- updated translations and changed version
+- fixed installer issue for the x64 version due of the used CX_FREEZE python package which was in unofficial version (obviously not ready to be used)
+- fixed bug in Geometry Editor, in disconnect_canvas_event_handlers() where I left some part of code without adding a try - except block which was required
+- moved the initialization of the FlatCAM editors after a read of the default values. If I don't do this then only at the first start of the application the Editors are not functional as the Editor objects are most likely destroyed
+- fixed bug in FlatCAM editors that caused the shapes to be drawn without resolution when the app units where INCH
+- modified the transformation functions in all classes in camlib.py and FlatCAMObj.py to work with empty geometries
+- RELEASE 8.95
+
+17.08.2019
+
+- updated the translations for the new strings
+- RELEASE 8.94
+
+16.08.2019
+
+- working in Excellon Editor to Tool Resize to consider the slots, too
+- fixed a weird error that created a crash in the following scenario: create a new excellon, edit it, add some drills/slots, delete it without saving, create a new excellon, try to edit and a crash is issued due of a wrapped C++ error
+- fixed bug selection in Excellon editor that caused not to select the corresponding row (tool dia) in the tool table when a selection rectangle selected an even number of geometric elements
+- updated the default values to more convenient ones
+- remade the enable/disable plots functions to work only where it needs to (no sense in disabling a plot already disabled)
+- made sure that if multi depth is choosed when creating GCode then if the multidepth is more than the depth of cut only one cut is made (to the depth of cut)
+- each CNCJob object has now it's own text_collection for the annotations which allow for the individual enabling and disabling of the annotations
+- added new menu category in File -> Backup with two menu entries that duplicate the functions of the export/import preferences buttons from the bottom of the Preferences window
+- in Excellon Editor fixed the display of the number of slots in the Tool Table after the resize done with the Resize tool
+- in Excellon Editor -> Resize tool, made sure that when the slot is resized, it's length remain the same, because the tool should influence only the 'thickness' of the slot. Since I don't know anything but the geometry and tool diameters (old and new), this is only an approximation and computationally intensive
+- in Excellon Editor -> remade the Tool edit made by editing the diameter values in the Tools Table to work for slots too
+- In Excellon Editor -> fixed bug that caused incorrect display of the relative coordinates in the status bar
+
+15.08.2019
+
+- added Edit -> Preferences GUI and storage for the Excellon Editor Add Slots
+- added a confirmation message for objects delete and a setting to activate it in Edit -> Preferences -> Global
+- merged pull request from Mike Smith which fix an application crash when attempting to open a not-a-FlatCAM-project file as project
+- merged pull request from Mike Smith that add support for a new SVG element: <use>
+- stored inside FlatCAM app the VisPy data files and at the first start the application will try to copy those files to the APPDATA (roaming) folder in case of running under Windows OS
+- created a configuration file in the root/config/configuration.txt with a configuration line for portability. Set portable to True to run the app as portable
+- working on the Slots Array in Excellon Editor - building the GUI
+- added a failsafe path to the source folder from which to copy the VisPy data
+- fixed the GUI for Slot Arrays in Excellon Editor
+- finished the Slot Array tool in Excellon Editor
+- added the key shortcut handlers for Add Slot and Add Slot Array tools in Excellon Editor
+- started to work on the Resize tool for the case of Excellon slots in Excellon Editor
+- final fix for the VisPy data files; the defaults files are saved to the Config folder when the app is set to be portable
+- added the Slot Type parameter for exporting Excellon in Edit -> Preferences -> Excellon -> Export Excellon. Now the Excellon object can be exported also with drilled slot command G85
+- fixed bug in Excellon export when there are no zero suppression (coordinates with decimals)
+
+14.08.2019
+
+- fixed the loading of Excellon with slots and the saving of edited Excellon object in regard of slots, in Excellon Editor
+- fixed the Delete tool, Select tool in Excellon Editor to work for Slots too
+- changes in the way the edited Excellon with added slots is saved
+- added more icons and cursor in Excellon Editor for Slots related functions
+- in Excellon Editor fixed the selection issue which in a certain step created a failure in the Copy and Move tools.
+- in Excellon Editor fixed the selection with key modifier pressed
+- edited the mouse cursors and saved them without included thumbnail in a bid to remove some CRC warnings made by libpng
+
+13.08.2019
+
+- added new option in ToolSub: the ability to close (or not) the resulting paths when using tool on Geometry objects. Added also a new category in the Edit -> Preferences -> Tools, the Substractor Tool Options
+- some PEP8 changes in FlatCAMApp.py
+- added new settings in Edit -> Preferences -> General for Notebook Font size (set font size for the items in Project Tree and for text in Selected Tab) and for canvas Axis font size. The values are stored in QSettings.
+- updated translations
+- fixed a bug in FCDoubleSpinner GUI element
+- added a new parameter in NCC tool named offset. If the offset is used then the copper clearing will finish to a set distance of the copper features
+- fixed bugs in Geometry Editor
+- added protection's against the 'bowtie' geometries for Subtract Tool in Geometry Editor
+- added all the tools from Geometry Editor to the the contextual menu
+- fixed bug in Add Text Tool in Geometry Editor that gave error when clicking to place text without having text in the box
+- added all the tools from Gerber Editor to the the contextual menu
+- added the menu entry "Edit" in the Project contextual menu for Gerber objects
+- started to work in adding slots and slots array in Excellon Editor
+- in FCSlot finished the utility geometry and the GUI for it
+
+12.08.2019
+
+- done regression to solve the bug with multiple passes cutting from the copper features (I should remember not to make mods here)
+- if 'combine' is checked in Gerber isolation but there is only one pass, the resulting geometry will still be single geo
+- the 'passes' entry was changed to a IntSpinner so it will allow passes to be entered only in range (1, 999) - it will not allow entry of 0 which may create some issues
+- improved the FlatCAMGerber.isolate() function to work for geometry in the form of list and also in case that the elements of the list are LinearRings (like when doing the Exterior Isolation)
+- in NCC Tool made sure that at each run the old objects are deleted
+- fixed bug in camlib.Gerber.parse_lines() Gerber parser where for Allegro Gerber files the Gerber units were incorrectly detected
+- improved Mark Area Tool in Gerber Editor such that at each launch the previous markings are deleted
+
+11.08.2019
+
+- small changes regarding the Project Title
+- trying to fix reported bugs
+- made sure that the annotations are deleted when the object that contain them is deleted
+- fixed issue where the annotations for all the CNCJob objects are toggled together whenever the ones for an single object are toggled
+- optimizations in GeoEditor
+- updated translations
+
 10.08.2019
 
 - added new feature in NCC Tool: now another object can be used as reference for the area extent to be cleared of copper
