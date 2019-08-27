@@ -1164,7 +1164,6 @@ msgid "<b>Shortcut Key List</b>"
 msgstr "<b>Список комбинаций клавиш</b>"
 
 #: FlatCAMApp.py:8954
-#, python-brace-format
 msgid ""
 "\n"
 "<p><span style=\"font-size:{tsize}px\"><strong>Selected Tab - Choose an Item "
