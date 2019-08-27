@@ -29,6 +29,11 @@ import gc
 
 from xml.dom.minidom import parseString as parse_xml_string
 
+from multiprocessing.connection import Listener, Client
+from multiprocessing import Pool
+import socket
+from array import array
+
 # #######################################
 # #      Imports part of FlatCAM       ##
 # #######################################
@@ -51,7 +56,6 @@ from vispy.io import write_png
 
 from flatcamTools import *
 
-from multiprocessing import Pool
 import tclCommands
 
 import gettext
@@ -65,6 +69,40 @@ if '_' not in builtins.__dict__:
 # ########################################
 # #                App                 ###
 # ########################################
+
+
+class ArgsThread(QtCore.QThread):
+    open_signal = pyqtSignal(list)
+
+    if sys.platform == 'win32':
+        address = (r'\\.\pipe\NPtest', 'AF_PIPE')
+    else:
+        address = ('/tmp/testipc', 'AF_UNIX')
+
+    def my_loop(self, address):
+        try:
+            listener = Listener(*address)
+            while True:
+                conn = listener.accept()
+                self.serve(conn)
+        except socket.error as e:
+            conn = Client(*address)
+            conn.send(sys.argv)
+            conn.send('close')
+            # close the current instance only if there are args
+            if len(sys.argv) > 1:
+                sys.exit()
+
+    def serve(self, conn):
+        while True:
+            msg = conn.recv()
+            if msg == 'close':
+                break
+            self.open_signal.emit(msg)
+        conn.close()
+
+    def run(self):
+        self.my_loop(self.address)
 
 
 class App(QtCore.QObject):
@@ -199,6 +237,10 @@ class App(QtCore.QObject):
         App.log.info("FlatCAM Starting...")
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
+
+        self.new_launch = ArgsThread()
+        self.new_launch.start()
+        self.new_launch.open_signal[list].connect(self.on_startup_args)
 
         # #######################
         # # ## OS-specific ######
@@ -1747,7 +1789,7 @@ class App(QtCore.QObject):
             self.on_excellon_options_button)
 
         # when there are arguments at application startup this get launched
-        self.args_at_startup.connect(self.on_startup_args)
+        self.args_at_startup.connect(lambda: self.on_startup_args())
         self.log.debug("Finished connecting Signals.")
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
@@ -2198,7 +2240,6 @@ class App(QtCore.QObject):
         if App.args:
             self.args_at_startup.emit()
 
-
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
         """
@@ -2216,9 +2257,14 @@ class App(QtCore.QObject):
             from_new_path = os.path.dirname(os.path.realpath(__file__)) + '\\flatcamGUI\\VisPyData\\data'
             shutil.copytree(from_new_path, to_path)
 
-    def on_startup_args(self):
-        log.debug("Application was started with an argument. Processing ...")
-        for argument in App.args:
+    def on_startup_args(self, args=None):
+        if args:
+            args_to_process = args
+        else:
+            args_to_process = App.args
+            log.debug("Application was started with an argument. Processing ...")
+
+        for argument in args_to_process:
             if '.FlatPrj' in argument:
                 try:
                     project_name = str(argument)
