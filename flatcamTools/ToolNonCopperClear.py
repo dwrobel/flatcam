@@ -1504,6 +1504,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 milling_type = 'cl'
 
                 for tool_iso in isotooldia:
+                    new_geometry = []
+
                     if milling_type == 'cl':
                         isolated_geo = self.generate_envelope(tool_iso, 1)
                     else:
@@ -1512,12 +1514,52 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     if isolated_geo == 'fail':
                         app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))
                     else:
+                        try:
+                            for geo_elem in isolated_geo:
+                                if isinstance(geo_elem, Polygon):
+                                    for ring in self.poly2rings(geo_elem):
+                                        new_geo = ring.intersection(bounding_box)
+                                        if new_geo and not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                                elif isinstance(geo_elem, MultiPolygon):
+                                    for poly in geo_elem:
+                                        for ring in self.poly2rings(poly):
+                                            new_geo = ring.intersection(bounding_box)
+                                            if new_geo and not new_geo.is_empty:
+                                                new_geometry.append(new_geo)
+                                elif isinstance(geo_elem, LineString):
+                                    new_geo = geo_elem.intersection(bounding_box)
+                                    if new_geo:
+                                        if not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                                elif isinstance(geo_elem, MultiLineString):
+                                    for line_elem in geo_elem:
+                                        new_geo = line_elem.intersection(bounding_box)
+                                        if new_geo and not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                        except TypeError:
+                            if isinstance(isolated_geo, Polygon):
+                                for ring in self.poly2rings(isolated_geo):
+                                    new_geo = ring.intersection(bounding_box)
+                                    if new_geo:
+                                        if not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                            elif isinstance(isolated_geo, LineString):
+                                new_geo = isolated_geo.intersection(bounding_box)
+                                if new_geo and not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                            elif isinstance(isolated_geo, MultiLineString):
+                                for line_elem in isolated_geo:
+                                    new_geo = line_elem.intersection(bounding_box)
+                                    if new_geo and not new_geo.is_empty:
+                                        new_geometry.append(new_geo)
+
                         for k, v in tools_storage.items():
                             if float('%.4f' % v['tooldia']) == float('%.4f' % tool_iso):
                                 current_uid = int(k)
                                 # add the solid_geometry to the current too in self.paint_tools dictionary
                                 # and then reset the temporary list that stored that solid_geometry
-                                v['solid_geometry'] = deepcopy(isolated_geo)
+                                v['solid_geometry'] = deepcopy(new_geometry)
                                 v['data']['name'] = name
                                 break
                         geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
