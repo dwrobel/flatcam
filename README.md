@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed open handlers
 - fixed issue in NCC Tool where the tool table context menu could be installed multiple times
 - added new ability to create simple isolation's in the NCC Tool
+- fixed an issue when multi depth step is larger than the depth of cut
 
 27.08.2019
 

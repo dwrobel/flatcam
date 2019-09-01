@@ -5765,8 +5765,8 @@ class CNCjob(Geometry):
             return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
-        if self.z_cut < self.z_depthpercut:
-            self.z_depthpercut = self.z_cut
+        if abs(self.z_cut) < self.z_depthpercut:
+            self.z_depthpercut = abs(self.z_cut)
 
         if self.z_move is None:
             self.app.inform.emit(_("[ERROR_NOTCL] Travel Z parameter is None or zero."))
@@ -6072,6 +6072,10 @@ class CNCjob(Geometry):
             self.app.inform.emit(_("[WARNING] The Z Travel parameter is zero. "
                                    "This is dangerous, skipping %s file") % self.options['name'])
             return 'fail'
+
+        # made sure that depth_per_cut is no more then the z_cut
+        if abs(self.z_cut) < self.z_depthpercut:
+            self.z_depthpercut = abs(self.z_cut)
 
         # ## Index first and last points in paths
         # What points to index.
