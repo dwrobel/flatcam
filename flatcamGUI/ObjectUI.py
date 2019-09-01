@@ -912,7 +912,7 @@ class GeometryObjectUI(ObjectUI):
         self.geo_tools_table.horizontalHeaderItem(3).setToolTip(
             _(
                 "The (Operation) Type has only informative value. Usually the UI form values \n"
-                "are choosed based on the operation type and this will serve as a reminder.\n"
+                "are choose based on the operation type and this will serve as a reminder.\n"
                 "Can be 'Roughing', 'Finishing' or 'Isolation'.\n"
                 "For Roughing we may choose a lower Feedrate and multiDepth cut.\n"
                 "For Finishing we may choose a higher Feedrate, without multiDepth.\n"

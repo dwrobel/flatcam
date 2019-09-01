@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+1.09.2019
+
+- fixed open handlers
+- fixed issue in NCC Tool where the tool table context menu could be installed multiple times
+- added new ability to create simple isolation's in the NCC Tool
+
 27.08.2019
 
 - made FlatCAM so that whenever an associated file is double clicked, if there is an opened instance of FlatCAM, the file will be opened in the first instance without launching a new instance of FlatCAM. If FlatCAM is launched again it will spawn a new process (hopefully it will work when freezed).

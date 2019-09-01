@@ -6764,7 +6764,7 @@ class App(QtCore.QObject):
         self.report_usage("obj_move()")
         self.move_tool.run(toggle=False)
 
-    def on_fileopengerber(self, name=None):
+    def on_fileopengerber(self, checked=None, name=None):
         """
         File menu callback for opening a Gerber.
 
@@ -6802,10 +6802,9 @@ class App(QtCore.QObject):
         else:
             for filename in filenames:
                 if filename != '':
-                    self.worker_task.emit({'fcn': self.open_gerber,
-                                           'params': [filename]})
+                    self.worker_task.emit({'fcn': self.open_gerber, 'params': [filename]})
 
-    def on_fileopenexcellon(self, name=None):
+    def on_fileopenexcellon(self, checked=None, name=None):
         """
         File menu callback for opening an Excellon file.
 
@@ -6833,10 +6832,9 @@ class App(QtCore.QObject):
         else:
             for filename in filenames:
                 if filename != '':
-                    self.worker_task.emit({'fcn': self.open_excellon,
-                                           'params': [filename]})
+                    self.worker_task.emit({'fcn': self.open_excellon, 'params': [filename]})
 
-    def on_fileopengcode(self, name=None):
+    def on_fileopengcode(self, checked=None, name=None):
         """
         File menu call back for opening gcode.
 
@@ -6868,10 +6866,9 @@ class App(QtCore.QObject):
         else:
             for filename in filenames:
                 if filename != '':
-                    self.worker_task.emit({'fcn': self.open_gcode,
-                                           'params': [filename]})
+                    self.worker_task.emit({'fcn': self.open_gcode, 'params': [filename]})
 
-    def on_file_openproject(self):
+    def on_file_openproject(self, checked=None):
         """
         File menu callback for opening a project.
 
@@ -6901,7 +6898,7 @@ class App(QtCore.QObject):
             # thread safe. The new_project()
             self.open_project(filename)
 
-    def on_file_openconfig(self):
+    def on_file_openconfig(self, checked=None):
         """
         File menu callback for opening a config file.
 
