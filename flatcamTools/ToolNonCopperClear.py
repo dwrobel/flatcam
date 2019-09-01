@@ -1178,31 +1178,49 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 ncc_sel_obj = ncc_obj
             else:
                 ncc_sel_obj = sel_obj
+        except Exception as e:
+            log.debug("NonCopperClear.clear_copper() --> %s" % str(e))
+            return 'fail'
 
-            bounding_box = None
-            if ncc_select == 'itself':
-                geo_n = ncc_sel_obj.solid_geometry
+        bounding_box = None
+        if ncc_select == 'itself':
+            geo_n = ncc_sel_obj.solid_geometry
 
-                try:
-                    if isinstance(geo_n, MultiPolygon):
-                        env_obj = geo_n.convex_hull
-                    elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
-                            (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-                        env_obj = cascaded_union(geo_n)
-                    else:
-                        env_obj = cascaded_union(geo_n)
-                        env_obj = env_obj.convex_hull
+            try:
+                if isinstance(geo_n, MultiPolygon):
+                    env_obj = geo_n.convex_hull
+                elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
+                        (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
+                    env_obj = cascaded_union(geo_n)
+                else:
+                    env_obj = cascaded_union(geo_n)
+                    env_obj = env_obj.convex_hull
 
-                    bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
-                except Exception as e:
-                    log.debug("NonCopperClear.on_ncc() --> %s" % str(e))
-                    self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
-                    return
-            elif ncc_select == 'area':
-                geo_n = MultiPolygon(self.sel_rect)
+                bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
+            except Exception as e:
+                log.debug("NonCopperClear.clear_copper() 'itself'  --> %s" % str(e))
+                self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
+                return 'fail'
+        elif ncc_select == 'area':
+            geo_n = cascaded_union(self.sel_rect)
+            try:
+                __ = iter(geo_n)
+            except Exception as e:
+                log.debug("NonCopperClear.clear_copper() 'area' --> %s" % str(e))
+                geo_n = [geo_n]
+
+            geo_buff_list = []
+            for poly in geo_n:
+                geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
+
+            bounding_box = cascaded_union(geo_buff_list)
+        elif ncc_select == 'box':
+            geo_n = ncc_sel_obj.solid_geometry
+            if isinstance(ncc_sel_obj, FlatCAMGeometry):
                 try:
                     __ = iter(geo_n)
-                except TypeError:
+                except Exception as e:
+                    log.debug("NonCopperClear.clear_copper() 'box' --> %s" % str(e))
                     geo_n = [geo_n]
 
                 geo_buff_list = []
@@ -1210,29 +1228,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
                 bounding_box = cascaded_union(geo_buff_list)
-            elif ncc_select == 'box':
-                geo_n = ncc_sel_obj.solid_geometry
-                if isinstance(ncc_sel_obj, FlatCAMGeometry):
-                    try:
-                        __ = iter(geo_n)
-                    except TypeError:
-                        geo_n = [geo_n]
-
-                    geo_buff_list = []
-                    for poly in geo_n:
-                        geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
-
-                    bounding_box = cascaded_union(geo_buff_list)
-                elif isinstance(ncc_sel_obj, FlatCAMGerber):
-                    geo_n = cascaded_union(geo_n).convex_hull
-                    bounding_box = cascaded_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
-                    bounding_box = bounding_box.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
-                else:
-                    self.app.inform.emit(_("[ERROR_NOTCL] The reference object type is not supported."))
-                    return 'fail'
-        except Exception as e:
-            log.debug("NonCopperClear.clear_copper() --> %s" % str(e))
-            return 'fail'
+            elif isinstance(ncc_sel_obj, FlatCAMGerber):
+                geo_n = cascaded_union(geo_n).convex_hull
+                bounding_box = cascaded_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
+                bounding_box = bounding_box.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
+            else:
+                self.app.inform.emit(_("[ERROR_NOTCL] The reference object type is not supported."))
+                return 'fail'
 
         # ########################################################################################################
         # set the name for the future Geometry object
