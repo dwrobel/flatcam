@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - in NCC tool added possibility to choose between the type of tools to be used and when V-shape is used then the tool diameter is calculated from the desired depth of cut and from the V-tip parameters
 - small changes in NCC tool regarding the usage of the V-shape tool
 - fixed the isolation distance in NCC Tool for the tools with iso_op type
+- in NCC Tool now the Area adding is continuous until RMB is clicked (no key modifier is needed anymore)
 
 2.09.2019
 

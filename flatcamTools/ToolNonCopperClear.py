@@ -1147,7 +1147,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         if self.app.grid_status() == True:
                             self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
                     else:
-                        self.app.inform.emit(_("Zone added. Right click to finish."))
+                        self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
                         self.app.delete_selection_shape()
 
                         curr_pos = self.app.plotcanvas.translate_coords(event.pos)
@@ -1161,38 +1161,40 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         pt3 = (x1, y1)
                         pt4 = (x0, y1)
                         self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
+                        self.first_click = False
+                        return
 
-                        modifiers = QtWidgets.QApplication.keyboardModifiers()
-
-                        if modifiers == QtCore.Qt.ShiftModifier:
-                            mod_key = 'Shift'
-                        elif modifiers == QtCore.Qt.ControlModifier:
-                            mod_key = 'Control'
-                        else:
-                            mod_key = None
-
-                        if mod_key == self.app.defaults["global_mselect_key"]:
-                            self.first_click = False
-                            return
-
-                        self.sel_rect = cascaded_union(self.sel_rect)
-                        self.clear_copper(ncc_obj=self.ncc_obj,
-                                          sel_obj=self.bound_obj,
-                                          ncctooldia=ncc_dia_list,
-                                          isotooldia=iso_dia_list,
-                                          has_offset=has_offset,
-                                          outname=o_name,
-                                          overlap=overlap,
-                                          connect=connect,
-                                          contour=contour,
-                                          rest=rest)
-
-                        self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
-                        self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
-
-                        self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                        self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-                        self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                        # modifiers = QtWidgets.QApplication.keyboardModifiers()
+                        #
+                        # if modifiers == QtCore.Qt.ShiftModifier:
+                        #     mod_key = 'Shift'
+                        # elif modifiers == QtCore.Qt.ControlModifier:
+                        #     mod_key = 'Control'
+                        # else:
+                        #     mod_key = None
+                        #
+                        # if mod_key == self.app.defaults["global_mselect_key"]:
+                        #     self.first_click = False
+                        #     return
+                        #
+                        # self.sel_rect = cascaded_union(self.sel_rect)
+                        # self.clear_copper(ncc_obj=self.ncc_obj,
+                        #                   sel_obj=self.bound_obj,
+                        #                   ncctooldia=ncc_dia_list,
+                        #                   isotooldia=iso_dia_list,
+                        #                   has_offset=has_offset,
+                        #                   outname=o_name,
+                        #                   overlap=overlap,
+                        #                   connect=connect,
+                        #                   contour=contour,
+                        #                   rest=rest)
+                        #
+                        # self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
+                        # self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
+                        #
+                        # self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                        # self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                        # self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
                 elif event.button == 2 and self.first_click is False and self.mouse_is_dragging is False:
                     self.first_click = False
                     self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
