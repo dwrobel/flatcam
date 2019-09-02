@@ -3998,7 +3998,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         tooldia = float(self.ui.geo_tools_table.item(row, 1).text())
         new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
-        new_cutz = float('%.4f' % -new_cutz)
+        new_cutz = float('%.4f' % -new_cutz) # this value has to be negative
         self.ui.cutz_entry.set_value(new_cutz)
 
         # store the new CutZ value into storage (self.tools)

@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - in NCC tool there is now a depth of cut parameter named 'Cut Z' which will dictate how deep the tool will enter into the PCB material
 - in NCC tool added possibility to choose between the type of tools to be used and when V-shape is used then the tool diameter is calculated from the desired depth of cut and from the V-tip parameters
+- small changes in NCC tool regarding the usage of the V-shape tool
 
 2.09.2019
 

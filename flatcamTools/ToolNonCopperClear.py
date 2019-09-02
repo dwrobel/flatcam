@@ -548,8 +548,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "name": '_ncc',
             "plot": self.app.defaults["geometry_plot"],
             "cutz": float(self.cutz_entry.get_value()),
-            "vtipdia": 0.2,
-            "vtipangle": 30,
+            "vtipdia": float(self.tipdia_entry.get_value()),
+            "vtipangle": float(self.tipangle_entry.get_value()),
             "travelz": self.app.defaults["geometry_travelz"],
             "feedrate": self.app.defaults["geometry_feedrate"],
             "feedrate_z": self.app.defaults["geometry_feedrate_z"],
@@ -838,6 +838,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.ui_disconnect()
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
         if dia:
             tool_dia = dia
         else:
@@ -875,9 +877,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                                "use a number."))
                         return
-
+                # calculated tool diameter so the cut_z parameter is obeyed
                 tool_dia = tip_dia + 2 * cut_z * math.tan(math.radians(tip_angle))
-                tool_dia = float('%.4f' % tool_dia)
+
+                # update the default_data so it is used in the ncc_tools dict
+                self.default_data.update({
+                    "vtipdia": tip_dia,
+                    "vtipangle": (tip_angle * 2),
+                })
             else:
                 try:
                     tool_dia = float(self.addtool_entry.get_value())
@@ -894,6 +901,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.build_ui()
                 self.app.inform.emit(_("[WARNING_NOTCL] Please enter a tool diameter to add, in Float format."))
                 return
+
+        if self.units == 'MM':
+            tool_dia = float('%.2f' % tool_dia)
+        else:
+            tool_dia = float('%.4f' % tool_dia)
 
         if tool_dia == 0:
             self.app.inform.emit(_("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, "
