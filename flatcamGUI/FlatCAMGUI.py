@@ -3135,7 +3135,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     # ## Current application units in Upper Case
                     self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
                     tool_add_popup = FCInputDialog(title=_("New Tool ..."),
-                                                   text=_('Enter a Tool Diameter:'),
+                                                   text='%s:' % _('Enter a Tool Diameter'),
                                                    min=0.0000, max=99.9999, decimals=4)
                     tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
 
@@ -3539,31 +3539,31 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box = QtWidgets.QFormLayout()
 
         # Grid X Entry
-        self.gridx_label = QtWidgets.QLabel(_('Grid X value:'))
+        self.gridx_label = QtWidgets.QLabel('%s:' % _('Grid X value'))
         self.gridx_label.setToolTip(
            _("This is the Grid snap value on X axis.")
         )
         self.gridx_entry = FCEntry3()
 
         # Grid Y Entry
-        self.gridy_label = QtWidgets.QLabel(_('Grid Y value:'))
+        self.gridy_label = QtWidgets.QLabel('%s:' % _('Grid Y value'))
         self.gridy_label.setToolTip(
             _("This is the Grid snap value on Y axis.")
         )
         self.gridy_entry = FCEntry3()
 
         # Snap Max Entry
-        self.snap_max_label = QtWidgets.QLabel(_('Snap Max:'))
+        self.snap_max_label = QtWidgets.QLabel('%s:' % _('Snap Max'))
         self.snap_max_label.setToolTip(_("Max. magnet distance"))
         self.snap_max_dist_entry = FCEntry()
 
         # Workspace
-        self.workspace_lbl = QtWidgets.QLabel(_('Workspace:'))
+        self.workspace_lbl = QtWidgets.QLabel('%s:' % _('Workspace'))
         self.workspace_lbl.setToolTip(
            _("Draw a delimiting rectangle on canvas.\n"
              "The purpose is to illustrate the limits for our work.")
         )
-        self.workspace_type_lbl = QtWidgets.QLabel(_('Wk. format:'))
+        self.workspace_type_lbl = QtWidgets.QLabel('%s:' % _('Wk. format'))
         self.workspace_type_lbl.setToolTip(
            _("Select the type of rectangle to be used on canvas,\n"
              "as valid workspace.")
@@ -3578,7 +3578,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.wks = OptionalInputSection(self.workspace_cb, [self.workspace_type_lbl, self.wk_cb])
 
         # Plot Fill Color
-        self.pf_color_label = QtWidgets.QLabel(_('Plot Fill:'))
+        self.pf_color_label = QtWidgets.QLabel('%s:' % _('Plot Fill'))
         self.pf_color_label.setToolTip(
            _("Set the fill color for plotted objects.\n"
              "First 6 digits are the color and the last 2\n"
@@ -3594,7 +3594,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Plot Fill Transparency Level
-        self.pf_alpha_label = QtWidgets.QLabel(_('Alpha Level:'))
+        self.pf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha Level'))
         self.pf_alpha_label.setToolTip(
            _("Set the fill transparency for plotted objects.")
         )
@@ -3613,7 +3613,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_2.addWidget(self.pf_color_alpha_spinner)
 
         # Plot Line Color
-        self.pl_color_label = QtWidgets.QLabel(_('Plot Line:'))
+        self.pl_color_label = QtWidgets.QLabel('%s:' % _('Plot Line'))
         self.pl_color_label.setToolTip(
            _("Set the line color for plotted objects.")
         )
@@ -3627,7 +3627,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_3.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Plot Selection (left - right) Fill Color
-        self.sf_color_label = QtWidgets.QLabel(_('Sel. Fill:'))
+        self.sf_color_label = QtWidgets.QLabel('%s:' % _('Sel. Fill'))
         self.sf_color_label.setToolTip(
             _("Set the fill color for the selection box\n"
               "in case that the selection is done from left to right.\n"
@@ -3644,7 +3644,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_4.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Plot Selection (left - right) Fill Transparency Level
-        self.sf_alpha_label = QtWidgets.QLabel(_('Alpha Level:'))
+        self.sf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha Level'))
         self.sf_alpha_label.setToolTip(
             _("Set the fill transparency for the 'left to right' selection box.")
         )
@@ -3663,7 +3663,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_5.addWidget(self.sf_color_alpha_spinner)
 
         # Plot Selection (left - right) Line Color
-        self.sl_color_label = QtWidgets.QLabel(_('Sel. Line:'))
+        self.sl_color_label = QtWidgets.QLabel('%s:' % _('Sel. Line'))
         self.sl_color_label.setToolTip(
             _("Set the line color for the 'left to right' selection box.")
         )
@@ -3677,7 +3677,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_6.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Plot Selection (right - left) Fill Color
-        self.alt_sf_color_label = QtWidgets.QLabel(_('Sel2. Fill:'))
+        self.alt_sf_color_label = QtWidgets.QLabel('%s:' % _('Sel2. Fill'))
         self.alt_sf_color_label.setToolTip(
             _("Set the fill color for the selection box\n"
               "in case that the selection is done from right to left.\n"
@@ -3694,7 +3694,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_7.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Plot Selection (right - left) Fill Transparency Level
-        self.alt_sf_alpha_label = QtWidgets.QLabel(_('Alpha Level:'))
+        self.alt_sf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha Level'))
         self.alt_sf_alpha_label.setToolTip(
             _("Set the fill transparency for selection 'right to left' box.")
         )
@@ -3713,7 +3713,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_8.addWidget(self.alt_sf_color_alpha_spinner)
 
         # Plot Selection (right - left) Line Color
-        self.alt_sl_color_label = QtWidgets.QLabel(_('Sel2. Line:'))
+        self.alt_sl_color_label = QtWidgets.QLabel('%s:' % _('Sel2. Line'))
         self.alt_sl_color_label.setToolTip(
             _("Set the line color for the 'right to left' selection box.")
         )
@@ -3727,7 +3727,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_9.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Editor Draw Color
-        self.draw_color_label = QtWidgets.QLabel(_('Editor Draw:'))
+        self.draw_color_label = QtWidgets.QLabel('%s:' % _('Editor Draw'))
         self.alt_sf_color_label.setToolTip(
             _("Set the color for the shape.")
         )
@@ -3741,7 +3741,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_10.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Editor Draw Selection Color
-        self.sel_draw_color_label = QtWidgets.QLabel(_('Editor Draw Sel.:'))
+        self.sel_draw_color_label = QtWidgets.QLabel('%s:' % _('Editor Draw Sel.'))
         self.sel_draw_color_label.setToolTip(
             _("Set the color of the shape when selected.")
         )
@@ -3755,7 +3755,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Project Tab items color
-        self.proj_color_label = QtWidgets.QLabel(_('Project Items:'))
+        self.proj_color_label = QtWidgets.QLabel('%s:' % _('Project Items'))
         self.proj_color_label.setToolTip(
             _("Set the color of the items in Project Tab Tree.")
         )
@@ -3768,7 +3768,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_12.addWidget(self.proj_color_button)
         self.form_box_child_12.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        self.proj_color_dis_label = QtWidgets.QLabel(_('Proj. Dis. Items:'))
+        self.proj_color_dis_label = QtWidgets.QLabel('%s:' % _('Proj. Dis. Items'))
         self.proj_color_dis_label.setToolTip(
             _("Set the color of the items in Project Tab Tree,\n"
               "for the case when the items are disabled.")
@@ -3827,7 +3827,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box = QtWidgets.QFormLayout()
 
         # Layout selection
-        self.layout_label = QtWidgets.QLabel(_('Layout:'))
+        self.layout_label = QtWidgets.QLabel('%s:' % _('Layout'))
         self.layout_label.setToolTip(
             _("Select an layout for FlatCAM.\n"
               "It is applied immediately.")
@@ -3845,7 +3845,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             self.layout_combo.setCurrentIndex(idx)
 
         # Style selection
-        self.style_label = QtWidgets.QLabel(_('Style:'))
+        self.style_label = QtWidgets.QLabel('%s:' % _('Style'))
         self.style_label.setToolTip(
             _("Select an style for FlatCAM.\n"
               "It will be applied at the next app start.")
@@ -3858,7 +3858,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.style_combo.activated[str].connect(self.handle_style)
 
         # Enable High DPI Support
-        self.hdpi_label = QtWidgets.QLabel(_('HDPI Support:'))
+        self.hdpi_label = QtWidgets.QLabel('%s:' % _('HDPI Support'))
         self.hdpi_label.setToolTip(
             _("Enable High DPI support for FlatCAM.\n"
               "It will be applied at the next app start.")
@@ -3873,7 +3873,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.hdpi_cb.stateChanged.connect(self.handle_hdpi)
 
         # Clear Settings
-        self.clear_label = QtWidgets.QLabel(_('Clear GUI Settings:'))
+        self.clear_label = QtWidgets.QLabel('%s:' % _('Clear GUI Settings'))
         self.clear_label.setToolTip(
             _("Clear the GUI settings for FlatCAM,\n"
               "such as: layout, gui state, style, hdpi support etc.")
@@ -3882,7 +3882,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.clear_btn.clicked.connect(self.handle_clear)
 
         # Enable Hover box
-        self.hover_label = QtWidgets.QLabel(_('Hover Shape:'))
+        self.hover_label = QtWidgets.QLabel('%s:' % _('Hover Shape'))
         self.hover_label.setToolTip(
             _("Enable display of a hover shape for FlatCAM objects.\n"
               "It is displayed whenever the mouse cursor is hovering\n"
@@ -3891,7 +3891,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.hover_cb = FCCheckBox()
 
         # Enable Selection box
-        self.selection_label = QtWidgets.QLabel(_('Sel. Shape:'))
+        self.selection_label = QtWidgets.QLabel('%s:' % _('Sel. Shape'))
         self.selection_label.setToolTip(
             _("Enable the display of a selection shape for FlatCAM objects.\n"
               "It is displayed whenever the mouse selects an object\n"
@@ -3900,7 +3900,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         self.selection_cb = FCCheckBox()
 
-        self.notebook_font_size_label = QtWidgets.QLabel(_('NB Font Size:'))
+        self.notebook_font_size_label = QtWidgets.QLabel('%s:' % _('NB Font Size'))
         self.notebook_font_size_label.setToolTip(
             _("This sets the font size for the elements found in the Notebook.\n"
               "The notebook is the collapsible area in the left side of the GUI,\n"
@@ -3917,7 +3917,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.notebook_font_size_spinner.set_value(12)
 
-        self.axis_font_size_label = QtWidgets.QLabel(_('Axis Font Size:'))
+        self.axis_font_size_label = QtWidgets.QLabel('%s:' % _('Axis Font Size'))
         self.axis_font_size_label.setToolTip(
             _("This sets the font size for canvas axis.")
         )
@@ -4086,7 +4086,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                           {'label': _('RMB'), 'value': '2'}])
 
         # Multiple Selection Modifier Key
-        self.mselectlabel = QtWidgets.QLabel('<b>%s:</b>' % _('Multiple Sel:'))
+        self.mselectlabel = QtWidgets.QLabel('<b>%s:</b>' % _('Multiple Sel'))
         self.mselectlabel.setToolTip(_("Select the key used for multiple selection."))
         self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
                                        {'label': _('SHIFT'), 'value': 'Shift'}])
@@ -5088,7 +5088,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.toolchangez_entry = LengthEntry()
         grid2.addWidget(self.toolchangez_entry, 3, 1)
 
-        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate (Plunge):'))
+        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate (Plunge)'))
         frlabel.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
@@ -5128,7 +5128,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             _("Pause to allow the spindle to reach its\n"
               "speed before cutting.")
         )
-        dwelltime = QtWidgets.QLabel(_('Duration:'))
+        dwelltime = QtWidgets.QLabel('%s:' % _('Duration'))
         dwelltime.setToolTip(
             _("Number of time units for spindle to dwell.")
         )
@@ -5293,7 +5293,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         self.feedrate_probe_entry = FCEntry()
         grid1.addWidget(self.feedrate_probe_entry, 6, 1)
 
-        fplungelabel = QtWidgets.QLabel(_('Fast Plunge:'))
+        fplungelabel = QtWidgets.QLabel('%s:' % _('Fast Plunge'))
         fplungelabel.setToolTip(
             _("By checking this, the vertical move from\n"
               "Z_Toolchange to Z_move is done with G0,\n"
@@ -5529,7 +5529,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_array_linear_label, 3, 0, 1, 2)
 
         # Linear Drill Array direction
-        self.drill_axis_label = QtWidgets.QLabel(_('Linear Dir.:'))
+        self.drill_axis_label = QtWidgets.QLabel('%s:' % _('Linear Dir.'))
         self.drill_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -6851,7 +6851,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},
                                          {'label': 'Neg', 'value': 'neg'}])
-        ftypelbl = QtWidgets.QLabel(_('Film Type:'))
+        ftypelbl = QtWidgets.QLabel('%s:' % _('Film Type'))
         ftypelbl.setToolTip(
             _("Generate a Positive black film or a Negative film.\n"
               "Positive means that it will print the features\n"

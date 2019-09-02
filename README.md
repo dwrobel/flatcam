@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 2.09.2019
 
 - fixed issue in NCC Tool when using area option
+- added formatting for some strings in the app strings, making the future translations easier
 
 1.09.2019
 

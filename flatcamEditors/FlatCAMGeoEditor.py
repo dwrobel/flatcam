@@ -431,7 +431,7 @@ class PaintOptionsTool(FlatCAMTool):
         self.layout.addLayout(grid)
 
         # Tool dia
-        ptdlabel = QtWidgets.QLabel(_('Tool dia:'))
+        ptdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
         ptdlabel.setToolTip(
            _("Diameter of the tool to\n"
              "be used in the operation.")
@@ -442,7 +442,7 @@ class PaintOptionsTool(FlatCAMTool):
         grid.addWidget(self.painttooldia_entry, 0, 1)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel(_('Overlap Rate:'))
+        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
               "Example:\n"
@@ -460,7 +460,7 @@ class PaintOptionsTool(FlatCAMTool):
         grid.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
-        marginlabel = QtWidgets.QLabel(_('Margin:'))
+        marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
         marginlabel.setToolTip(
            _("Distance by which to avoid\n"
              "the edges of the polygon to\n"
@@ -471,7 +471,7 @@ class PaintOptionsTool(FlatCAMTool):
         grid.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel(_('Method:'))
+        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm to paint the polygon:<BR>"
               "<B>Standard</B>: Fixed step inwards.<BR>"
@@ -1477,7 +1477,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def on_rotate_key(self):
         val_box = FCInputDialog(title=_("Rotate ..."),
-                                text=_('Enter an Angle Value (degrees):'),
+                                text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_rotate']))
         val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
@@ -1498,7 +1498,7 @@ class TransformEditorTool(FlatCAMTool):
         units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
-                                text=(_('Enter a distance Value (%s):') % str(units)),
+                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
@@ -1517,7 +1517,7 @@ class TransformEditorTool(FlatCAMTool):
         units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
-                                text=(_('Enter a distance Value (%s):') % str(units)),
+                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
@@ -1534,7 +1534,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def on_skewx_key(self):
         val_box = FCInputDialog(title=_("Skew on X axis ..."),
-                                text=_('Enter an Angle Value (degrees):'),
+                                text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_skew_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
@@ -1551,7 +1551,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def on_skewy_key(self):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
-                                text=_('Enter an Angle Value (degrees):'),
+                                text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_skew_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))

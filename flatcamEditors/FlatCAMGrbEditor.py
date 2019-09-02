@@ -2448,7 +2448,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apdim_entry = EvalEntry2()
         grid1.addWidget(self.apdim_entry, 4, 1)
 
-        apadd_del_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Add/Delete Aperture:'))
+        apadd_del_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Add/Delete Aperture'))
         apadd_del_lbl.setToolTip(
             _("Add/Delete an aperture in the aperture table")
         )
@@ -2481,7 +2481,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.buffer_tool_frame.hide()
 
         # Title
-        buf_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Buffer Aperture:'))
+        buf_title_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Buffer Aperture'))
         buf_title_lbl.setToolTip(
             _("Buffer a aperture in the aperture list")
         )
@@ -5748,7 +5748,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def on_rotate_key(self):
         val_box = FCInputDialog(title=_("Rotate ..."),
-                                text=_('Enter an Angle Value (degrees):'),
+                                text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_rotate']))
         val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
@@ -5769,7 +5769,7 @@ class TransformEditorTool(FlatCAMTool):
         units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
-                                text=(_('Enter a distance Value (%s):') % str(units)),
+                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
@@ -5788,7 +5788,7 @@ class TransformEditorTool(FlatCAMTool):
         units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
-                                text=(_('Enter a distance Value (%s):') % str(units)),
+                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
@@ -5805,7 +5805,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def on_skewx_key(self):
         val_box = FCInputDialog(title=_("Skew on X axis ..."),
-                                text=_('Enter an Angle Value (degrees):'),
+                                text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_skew_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
@@ -5822,7 +5822,7 @@ class TransformEditorTool(FlatCAMTool):
 
     def on_skewy_key(self):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
-                                text=_('Enter an Angle Value (degrees):'),
+                                text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_skew_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))

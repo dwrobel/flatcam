@@ -1498,7 +1498,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         grid1 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid1)
 
-        addtool_entry_lbl = QtWidgets.QLabel(_('Tool Dia:'))
+        addtool_entry_lbl = QtWidgets.QLabel('%s:' % _('Tool Dia'))
         addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool")
         )
@@ -1551,7 +1551,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         grid3 = QtWidgets.QGridLayout()
         self.resize_box.addLayout(grid3)
 
-        res_entry_lbl = QtWidgets.QLabel(_('Resize Dia:'))
+        res_entry_lbl = QtWidgets.QLabel('%s:' % _('Resize Dia'))
         res_entry_lbl.setToolTip(
            _("Diameter to resize to.")
         )
@@ -1608,7 +1608,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_box.addLayout(self.array_form)
 
         # Set the number of drill holes in the drill array
-        self.drill_array_size_label = QtWidgets.QLabel(_('Nr of drills:'))
+        self.drill_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of drills'))
         self.drill_array_size_label.setToolTip(_("Specify how many drills to be in the array."))
         self.drill_array_size_label.setMinimumWidth(100)
 
@@ -1626,7 +1626,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_box.addLayout(self.linear_form)
 
         # Linear Drill Array direction
-        self.drill_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.drill_axis_label = QtWidgets.QLabel('%s:'% _('Direction'))
         self.drill_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -1641,7 +1641,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_form.addRow(self.drill_axis_label, self.drill_axis_radio)
 
         # Linear Drill Array pitch distance
-        self.drill_pitch_label = QtWidgets.QLabel(_('Pitch:'))
+        self.drill_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
         self.drill_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -1651,7 +1651,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_form.addRow(self.drill_pitch_label, self.drill_pitch_entry)
 
         # Linear Drill Array angle
-        self.linear_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.linear_angle_label.setToolTip(
            _("Angle at which the linear array is placed.\n"
              "The precision is of max 2 decimals.\n"
@@ -1673,7 +1673,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.circular_box.setContentsMargins(0, 0, 0, 0)
         self.array_circular_frame.setLayout(self.circular_box)
 
-        self.drill_direction_label = QtWidgets.QLabel(_('Direction:'))
+        self.drill_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.drill_direction_label.setToolTip(_("Direction for circular array."
                                                 "Can be CW = clockwise or CCW = counter clockwise."))
         self.drill_direction_label.setMinimumWidth(100)
@@ -1685,7 +1685,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                                                {'label': _('CCW'), 'value': 'CCW'}])
         self.circular_form.addRow(self.drill_direction_label, self.drill_direction_radio)
 
-        self.drill_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.drill_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.drill_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
         self.drill_angle_label.setMinimumWidth(100)
 
@@ -1727,7 +1727,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_box.addLayout(self.slot_form)
 
         # Slot length
-        self.slot_length_label = QtWidgets.QLabel(_('Length:'))
+        self.slot_length_label = QtWidgets.QLabel('%s:' % _('Length'))
         self.slot_length_label.setToolTip(
             _("Length = The length of the slot.")
         )
@@ -1737,7 +1737,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_form.addRow(self.slot_length_label, self.slot_length_entry)
 
         # Slot direction
-        self.slot_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.slot_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.slot_axis_label.setToolTip(
             _("Direction on which the slot is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -1752,7 +1752,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_form.addRow(self.slot_axis_label, self.slot_axis_radio)
 
         # Slot custom angle
-        self.slot_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.slot_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.slot_angle_label.setToolTip(
            _("Angle at which the slot is placed.\n"
              "The precision is of max 2 decimals.\n"
@@ -1810,7 +1810,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_box.addLayout(self.slot_array_form)
 
         # Set the number of slot holes in the slot array
-        self.slot_array_size_label = QtWidgets.QLabel(_('Nr of slots:'))
+        self.slot_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of slots'))
         self.slot_array_size_label.setToolTip(_("Specify how many slots to be in the array."))
         self.slot_array_size_label.setMinimumWidth(100)
 
@@ -1828,7 +1828,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_linear_box.addLayout(self.slot_array_linear_form)
 
         # Linear Slot Array direction
-        self.slot_array_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.slot_array_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.slot_array_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -1843,7 +1843,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_linear_form.addRow(self.slot_array_axis_label, self.slot_array_axis_radio)
 
         # Linear Slot Array pitch distance
-        self.slot_array_pitch_label = QtWidgets.QLabel(_('Pitch:'))
+        self.slot_array_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
         self.slot_array_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -1853,7 +1853,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_linear_form.addRow(self.slot_array_pitch_label, self.slot_array_pitch_entry)
 
         # Linear Slot Array angle
-        self.slot_array_linear_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.slot_array_linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.slot_array_linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
@@ -1875,7 +1875,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_circular_box.setContentsMargins(0, 0, 0, 0)
         self.slot_array_circular_frame.setLayout(self.slot_array_circular_box)
 
-        self.slot_array_direction_label = QtWidgets.QLabel(_('Direction:'))
+        self.slot_array_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.slot_array_direction_label.setToolTip(_("Direction for circular array."
                                                      "Can be CW = clockwise or CCW = counter clockwise."))
         self.slot_array_direction_label.setMinimumWidth(100)
@@ -1887,7 +1887,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                                                     {'label': _('CCW'), 'value': 'CCW'}])
         self.slot_array_circular_form.addRow(self.slot_array_direction_label, self.slot_array_direction_radio)
 
-        self.slot_array_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.slot_array_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.slot_array_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
         self.slot_array_angle_label.setMinimumWidth(100)
 
