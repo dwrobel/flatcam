@@ -140,6 +140,23 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "If it's not successful then the non-copper clearing will fail, too.\n"
               "- Clear -> the regular non-copper clearing."))
 
+        # Milling Type Radio Button
+        self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.milling_type_label.setToolTip(
+            _("Milling type when the selected tool is of type: 'iso_op':\n"
+              "- climb / best for precision milling and to reduce tool usage\n"
+              "- conventional / useful when there is no backlash compensation")
+        )
+
+        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
+                                            {'label': _('Conv.'), 'value': 'cv'}])
+        self.milling_type_radio.setToolTip(
+            _("Milling type when the selected tool is of type: 'iso_op':\n"
+              "- climb / best for precision milling and to reduce tool usage\n"
+              "- conventional / useful when there is no backlash compensation")
+        )
+
+        # Tool order
         self.ncc_order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
         self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
@@ -159,8 +176,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                           "in reverse and disable this control."))
         form = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form)
+
         form.addRow(QtWidgets.QLabel(''), QtWidgets.QLabel(''))
+        form.addRow(self.milling_type_label, self.milling_type_radio)
         form.addRow(self.ncc_order_label, self.ncc_order_radio)
+
+        self.milling_type_label.hide()
+        self.milling_type_radio.hide()
 
         # ### Add a new Tool ####
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
@@ -397,6 +419,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # store here solid_geometry when there are tool with isolation job
         self.solid_geometry = []
 
+        self.tool_type_item_options = []
+
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
@@ -463,6 +487,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_contour_cb.set_value(self.app.defaults["tools_ncccontour"])
         self.ncc_rest_cb.set_value(self.app.defaults["tools_nccrest"])
         self.reference_radio.set_value(self.app.defaults["tools_nccref"])
+        self.milling_type_radio.set_value(self.app.defaults["tools_nccmilling_type"])
 
         # init the working variables
         self.default_data.clear()
@@ -524,7 +549,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     'offset_value': 0.0,
                     'type': 'Iso',
                     'tool_type': 'V',
-                    'operation': 'clear',
+                    'operation': 'clear_op',
                     'data': dict(self.default_data),
                     'solid_geometry': []
                 }
@@ -594,9 +619,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     tool_uid_item = QtWidgets.QTableWidgetItem(str(int(tooluid_key)))
 
                     operation_type = QtWidgets.QComboBox()
-                    operation_type.addItem('iso')
+                    operation_type.addItem('iso_op')
                     operation_type.setStyleSheet('background-color: rgb(255,255,255)')
-                    operation_type.addItem('clear')
+                    operation_type.addItem('clear_op')
                     operation_type.setStyleSheet('background-color: rgb(255,255,255)')
                     op_idx = operation_type.findText(tooluid_value['operation'])
                     operation_type.setCurrentIndex(op_idx)
@@ -642,12 +667,23 @@ class NonCopperClear(FlatCAMTool, Gerber):
     def ui_connect(self):
         self.tools_table.itemChanged.connect(self.on_tool_edit)
 
+        for row in range(self.tools_table.rowCount()):
+            for col in [2, 4]:
+                self.tools_table.cellWidget(row, col).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
+
     def ui_disconnect(self):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table.itemChanged.disconnect(self.on_tool_edit)
         except (TypeError, AttributeError):
             pass
+
+        for row in range(self.tools_table.rowCount()):
+            for col in [2, 4]:
+                try:
+                    self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
+                except (TypeError, AttributeError):
+                    pass
 
     def on_combo_box_type(self):
         obj_type = self.box_combo_type.currentIndex()
@@ -686,6 +722,40 @@ class NonCopperClear(FlatCAMTool, Gerber):
         else:
             self.ncc_order_label.setDisabled(False)
             self.ncc_order_radio.setDisabled(False)
+
+    def on_tooltable_cellwidget_change(self):
+        cw = self.sender()
+        cw_index = self.tools_table.indexAt(cw.pos())
+        cw_row = cw_index.row()
+        cw_col = cw_index.column()
+
+        current_uid = int(self.tools_table.item(cw_row, 3).text())
+
+        hide_iso_type = True
+        for row in range(self.tools_table.rowCount()):
+            if self.tools_table.cellWidget(row, 4).currentText() == 'iso_op':
+                hide_iso_type = False
+                break
+
+        if hide_iso_type is False:
+            self.milling_type_label.show()
+            self.milling_type_radio.show()
+        else:
+            self.milling_type_label.hide()
+            self.milling_type_radio.hide()
+
+        # if the sender is in the column with index 2 then we update the tool_type key
+        if cw_col == 2:
+            tt = cw.currentText()
+            if tt == 'V':
+                typ = 'Iso'
+            else:
+                typ = "Rough"
+
+            self.ncc_tools[current_uid].update({
+                'type': typ,
+                'tool_type': tt,
+            })
 
     def on_tool_add(self, dia=None, muted=None):
 
@@ -748,7 +818,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     'offset_value': 0.0,
                     'type': 'Iso',
                     'tool_type': 'V',
-                    'operation': 'clear',
+                    'operation': 'clear_op',
                     'data': dict(self.default_data),
                     'solid_geometry': []
                 }
@@ -759,6 +829,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
     def on_tool_edit(self):
         self.ui_disconnect()
 
+        old_tool_dia = ''
         tool_dias = []
         for k, v in self.ncc_tools.items():
             for tool_v in v.keys():
@@ -901,7 +972,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                "use a number."))
                         continue
 
-                if self.tools_table.cellWidget(x.row(), 4).currentText() == 'iso':
+                if self.tools_table.cellWidget(x.row(), 4).currentText() == 'iso_op':
                     iso_dia_list.append(tooldia)
                 else:
                     ncc_dia_list.append(tooldia)
@@ -1167,7 +1238,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     sorted_tools = ncctooldia
         else:
             for row in range(self.tools_table.rowCount()):
-                if self.tools_table.cellWidget(row, 1).currentText() == 'clear':
+                if self.tools_table.cellWidget(row, 1).currentText() == 'clear_op':
                     sorted_tools.append(float(self.tools_table.item(row, 1).text()))
 
         # ##############################################################################################################
@@ -1287,7 +1358,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.solid_geometry = ncc_obj.solid_geometry
 
                 # if milling type is climb then the move is counter-clockwise around features
-                milling_type = 'cl'
+                milling_type = self.milling_type_radio.get_value()
 
                 for tool_iso in isotooldia:
                     new_geometry = []
@@ -1503,7 +1574,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.solid_geometry = ncc_obj.solid_geometry
 
                 # if milling type is climb then the move is counter-clockwise around features
-                milling_type = 'cl'
+                milling_type = self.milling_type_radio.get_value()
 
                 for tool_iso in isotooldia:
                     new_geometry = []

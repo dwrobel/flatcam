@@ -630,6 +630,7 @@ class App(QtCore.QObject):
             "tools_ncc_offset_choice": self.ui.tools_defaults_form.tools_ncc_group.ncc_choice_offset_cb,
             "tools_ncc_offset_value": self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
             "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.reference_radio,
+            "tools_nccmilling_type": self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
 
             # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
@@ -1012,6 +1013,7 @@ class App(QtCore.QObject):
             "tools_ncc_offset_choice": False,
             "tools_ncc_offset_value": 0.0000,
             "tools_nccref": 'itself',
+            "tools_nccmilling_type": 'cl',
 
             "tools_cutouttooldia": 0.0944882,
             "tools_cutoutkind": "single",

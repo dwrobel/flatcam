@@ -21,8 +21,9 @@ if '_' not in builtins.__dict__:
 
 
 class Properties(FlatCAMTool):
-
     toolName = _("Properties")
+
+    area_finished = pyqtSignal(float, object)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -63,6 +64,8 @@ class Properties(FlatCAMTool):
 
         self.vlay.addWidget(self.treeWidget)
         self.vlay.setStretch(0, 0)
+
+        self.area_finished.connect(self.show_area_chull)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolProperties()")
@@ -170,25 +173,38 @@ class Properties(FlatCAMTool):
             self.addChild(dims, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'in2')], True)
 
         if not isinstance(obj, FlatCAMCNCjob):
-            # calculate and add convex hull area
-            geo = obj.solid_geometry
-            if isinstance(geo, MultiPolygon):
-                env_obj = geo.convex_hull
-            elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
-                    (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
-                env_obj = cascaded_union(obj.solid_geometry)
-                env_obj = env_obj.convex_hull
-            else:
-                env_obj = cascaded_union(obj.solid_geometry)
-                env_obj = env_obj.convex_hull
 
-            area_chull = env_obj.area
-            if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
-                area_chull = area_chull / 100
-                self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'cm2')], True)
-            else:
-                area_chull = area_chull
-                self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'in2')], True)
+            def job_thread():
+                proc = self.app.proc_container.new(_("Calculating area ... Please wait."))
+
+                # calculate and add convex hull area
+                geo = obj.solid_geometry
+                if geo:
+                    if isinstance(geo, MultiPolygon):
+                        env_obj = geo.convex_hull
+                    elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
+                            (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
+                        env_obj = cascaded_union(obj.solid_geometry)
+                        env_obj = env_obj.convex_hull
+                    else:
+                        env_obj = cascaded_union(obj.solid_geometry)
+                        env_obj = env_obj.convex_hull
+
+                    area_chull = env_obj.area
+                else:
+                    try:
+                        area_chull = []
+                        for tool in obj.tools:
+                            area_el = cascaded_union(obj.tools[tool]['solid_geometry']).convex_hull
+                            area_chull.append(area_el.area)
+                        area_chull = max(area_chull)
+                    except Exception as e:
+                        area_chull = None
+                        log.debug("Properties.addItems() --> %s" % str(e))
+
+                self.area_finished.emit(area_chull, dims)
+
+            self.app.worker_task.emit({'fcn': job_thread, 'params': []})
 
         self.addChild(units,
                       ['FlatCAM units:',
@@ -294,4 +310,11 @@ class Properties(FlatCAMTool):
         if column1 is not None:
             item.setText(1, str(title[1]))
 
+    def show_area_chull(self, area, location):
+        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+            area_chull = area / 100
+            self.addChild(location, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'cm2')], True)
+        else:
+            area_chull = area
+            self.addChild(location, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'in2')], True)
 # end of file
