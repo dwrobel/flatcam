@@ -1492,9 +1492,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     new_geometry = []
 
                     if milling_type == 'cl':
-                        isolated_geo = self.generate_envelope(tool_iso, 1)
+                        isolated_geo = self.generate_envelope(tool_iso / 2, 1)
                     else:
-                        isolated_geo = self.generate_envelope(tool_iso, 0)
+                        isolated_geo = self.generate_envelope(tool_iso / 2, 0)
 
                     if isolated_geo == 'fail':
                         app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))

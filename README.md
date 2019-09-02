@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - in NCC tool there is now a depth of cut parameter named 'Cut Z' which will dictate how deep the tool will enter into the PCB material
 - in NCC tool added possibility to choose between the type of tools to be used and when V-shape is used then the tool diameter is calculated from the desired depth of cut and from the V-tip parameters
 - small changes in NCC tool regarding the usage of the V-shape tool
+- fixed the isolation distance in NCC Tool for the tools with iso_op type
 
 2.09.2019
 
@@ -22,7 +23,7 @@ CAD program, and create G-Code for Isolation routing.
 - made changes in the Excellon Tools Table to make it more clear that the tools are selected in the # column and not in the Plot column
 - in Excellon and Gerber Seleted tab made the Plot (mark) columns not selectable
 - some ToolTips were modified
-- in Properties Tool made threaded the calculation of convex_hull area and to work for multi-geo objects
+- in Properties Tool made threaded the calculation of convex_hull area and also made it to work for multi-geo objects
 - in NCC tool the type of tool that is used is transferred to the Geometry object
 - in NCC tool the type of isolation done with the tools selected as isolation tools can now be selected and it has also an Edit -> Preferences entry
 - in Properties Tool fixed the dimensions calculations (length, width, area) to work for multi-geo objects
