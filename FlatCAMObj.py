@@ -5687,6 +5687,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.app.inform.emit(_("[success] Machine Code file saved to: %s") % filename)
 
     def on_edit_code_click(self, *args):
+
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
         gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
@@ -5706,13 +5707,14 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.app.ui.code_editor.append(proc_line)
         except Exception as e:
             log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
-            self.app.inform.emit(_('[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s') % str(e))
+            self.app.inform.emit(_('[ERROR] FlatCAMCNNJob.on_edit_code_click() -->%s') % str(e))
             return
 
         self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
         self.app.handleTextChanged()
         self.app.ui.show()
+        self.app.inform.emit(_('[success] Loaded Machine Code into Code Editor ...'))
 
     def gcode_header(self):
         log.debug("FlatCAMCNCJob.gcode_header()")

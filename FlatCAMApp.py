@@ -631,6 +631,10 @@ class App(QtCore.QObject):
             "tools_ncc_offset_value": self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
             "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.reference_radio,
             "tools_nccmilling_type": self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
+            "tools_ncctool_type": self.ui.tools_defaults_form.tools_ncc_group.tool_type_radio,
+            "tools_ncccutz": self.ui.tools_defaults_form.tools_ncc_group.cutz_entry,
+            "tools_ncctipdia": self.ui.tools_defaults_form.tools_ncc_group.tipdia_entry,
+            "tools_ncctipangle": self.ui.tools_defaults_form.tools_ncc_group.tipangle_entry,
 
             # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
@@ -1014,6 +1018,10 @@ class App(QtCore.QObject):
             "tools_ncc_offset_value": 0.0000,
             "tools_nccref": 'itself',
             "tools_nccmilling_type": 'cl',
+            "tools_ncctool_type": 'V',
+            "tools_ncccutz": -0.001968504,
+            "tools_ncctipdia": 0.00393701,
+            "tools_ncctipangle": 30,
 
             "tools_cutouttooldia": 0.0944882,
             "tools_cutoutkind": "single",
@@ -4123,7 +4131,7 @@ class App(QtCore.QObject):
                       'cncjob_tooldia',
 
                       'tools_paintmargin', 'tools_painttooldia', 'tools_paintoverlap',
-                      "tools_ncctools", "tools_nccoverlap", "tools_nccmargin",
+                      "tools_ncctools", "tools_nccoverlap", "tools_nccmargin", "tools_ncccutz", "tools_ncctipdia"
                       "tools_2sided_drilldia", "tools_film_boundary",
                       "tools_cutouttooldia", 'tools_cutoutmargin', 'tools_cutoutgapsize',
                       "tools_panelize_constrainx", "tools_panelize_constrainy",
