@@ -738,7 +738,8 @@ class ExcellonObjectUI(ObjectUI):
 
         choose_tools_label = QtWidgets.QLabel(
             _("Select from the Tools Table above\n"
-              "the tools you want to include.")
+              "the hole dias that are to be drilled.\n"
+              "Use the # column to make the selection.")
         )
         self.tools_box.addWidget(choose_tools_label)
 
@@ -761,7 +762,7 @@ class ExcellonObjectUI(ObjectUI):
         self.excellon_gcode_type_radio.setVisible(False)
         gcode_type_label.hide()
 
-        self.generate_cnc_button = QtWidgets.QPushButton(_('Create GCode'))
+        self.generate_cnc_button = QtWidgets.QPushButton(_('Create Drills GCode'))
         self.generate_cnc_button.setToolTip(
             _("Generate the CNC Job.")
         )
@@ -776,7 +777,8 @@ class ExcellonObjectUI(ObjectUI):
 
         self.choose_tools_label2 = QtWidgets.QLabel(
             _("Select from the Tools Table above\n"
-              " the hole dias that are to be milled.")
+              "the hole dias that are to be milled.\n"
+              "Use the # column to make the selection.")
         )
         self.tools_box.addWidget(self.choose_tools_label2)
 
@@ -1113,7 +1115,7 @@ class GeometryObjectUI(ObjectUI):
 
         # Tool change:
 
-        self.toolchzlabel = QtWidgets.QLabel('%s:' %_("Tool change Z"))
+        self.toolchzlabel = QtWidgets.QLabel('%s:' % _("Tool change Z"))
         self.toolchzlabel.setToolTip(
             _(
                 "Z-axis position (height) for\n"
@@ -1352,8 +1354,7 @@ class CNCObjectUI(ObjectUI):
         self.annotation_label.setToolTip(
             _("This selects if to display text annotation on the plot.\n"
               "When checked it will display numbers in order for each end\n"
-              "of a travel line."
-            )
+              "of a travel line.")
         )
         self.annotation_cb = FCCheckBox()
 

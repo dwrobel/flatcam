@@ -655,6 +655,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.apertures_table.setItem(self.apertures_row, 3, ap_size_item)   # Aperture Dimensions
             self.ui.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)   # Aperture Dimensions
 
+            empty_plot_item = QtWidgets.QTableWidgetItem('')
+            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.apertures_table.setItem(self.apertures_row, 5, empty_plot_item)
             self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
 
             self.apertures_row += 1
@@ -1957,6 +1960,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.tools_table.setItem(self.tool_row, 2, drill_count)  # Number of drills per tool
             self.ui.tools_table.setItem(self.tool_row, 3, slot_count)  # Number of drills per tool
             self.ui.tools_table.setItem(self.tool_row, 4, tool_offset_item)  # Tool offset
+            empty_plot_item = QtWidgets.QTableWidgetItem('')
+            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.tools_table.setItem(self.tool_row, 5, empty_plot_item)
             self.ui.tools_table.setCellWidget(self.tool_row, 5, plot_item)
 
             self.tool_row += 1

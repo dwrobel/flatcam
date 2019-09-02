@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue in NCC Tool when using area option
 - added formatting for some strings in the app strings, making the future translations easier
 - made changes in the Excellon Tools Table to make it more clear that the tools are selected in the # column and not in the Plot column
+- in Excellon and Gerber Seleted tab made the Plot (mark) columns not selectable
+- some ToolTips were modified
 
 1.09.2019
 
