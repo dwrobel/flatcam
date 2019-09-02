@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-08-23 23:19+0300\n"
+"POT-Creation-Date: 2019-08-23 22:35+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -27,7 +27,7 @@ msgstr ""
 
 #: FlatCAMApp.py:1587
 msgid "Detachable Tabs"
-msgstr "Съемные вкладки"
+msgstr "Плавающие вкладки"
 
 #: FlatCAMApp.py:1977
 msgid ""
@@ -1163,8 +1163,7 @@ msgstr "Очистить список"
 msgid "<b>Shortcut Key List</b>"
 msgstr "<b>Список комбинаций клавиш</b>"
 
-#: FlatCAMApp.py:8946
-#, python-brace-format
+#: FlatCAMApp.py:8954
 msgid ""
 "\n"
 "<p><span style=\"font-size:{tsize}px\"><strong>Selected Tab - Choose an Item "
@@ -1952,7 +1951,7 @@ msgstr "[success] Готово. Массив отверстий добавлен
 
 #: flatcamEditors/FlatCAMExcEditor.py:358
 msgid "[WARNING_NOTCL] To add a slot first select a tool"
-msgstr "[WARNING_NOTCL] Чтобы добавить слот, сначала выберите инструмент"
+msgstr "[WARNING_NOTCL] Чтобы добавить паз, сначала выберите инструмент"
 
 #: flatcamEditors/FlatCAMExcEditor.py:415
 #: flatcamEditors/FlatCAMExcEditor.py:422
@@ -1970,7 +1969,7 @@ msgstr "[success] Готово. Добавление слота завершен
 #: flatcamEditors/FlatCAMExcEditor.py:547
 msgid "[WARNING_NOTCL] To add an Slot Array first select a tool in Tool Table"
 msgstr ""
-"[WARNING_NOTCL] Чтобы добавить массив слотов, сначала выберите инструмент в "
+"[WARNING_NOTCL] Чтобы добавить массив пазов сначала выберите инструмент в "
 "таблице инструментов"
 
 #: flatcamEditors/FlatCAMExcEditor.py:604
@@ -1984,11 +1983,11 @@ msgstr "[ERROR_NOTCL] Значение опечатано. Проверьте з
 
 #: flatcamEditors/FlatCAMExcEditor.py:807
 msgid "[WARNING_NOTCL] Too many Slots for the selected spacing angle."
-msgstr "[WARNING_NOTCL] Слишком много слотов для выбранного расстояния."
+msgstr "[WARNING_NOTCL] Слишком много пазов для выбранного расстояния."
 
 #: flatcamEditors/FlatCAMExcEditor.py:829
 msgid "[success] Done. Slot Array added."
-msgstr "[success] Готово. Слот Массив добавлен."
+msgstr "[success] Готово. Массив пазов добавлен."
 
 #: flatcamEditors/FlatCAMExcEditor.py:846
 msgid "Click on the Drill(s) to resize ..."
@@ -2008,7 +2007,7 @@ msgstr "[ERROR_NOTCL] Отмена."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1055
 msgid "[success] Done. Drill/Slot Resize completed."
-msgstr "[success] Готово. Сверло / Слот Изменение размера завершено."
+msgstr "[success] Готово. Изменение размера отверстия/паза завершено."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1057
 msgid "[WARNING_NOTCL] Cancelled. No drills/slots selected for resize ..."
@@ -2074,7 +2073,7 @@ msgstr "Диаметр нового инструмента"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1509
 msgid "Add Tool"
-msgstr "Доб. инструм."
+msgstr "Добавить инструмент"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1511
 msgid ""
@@ -2150,7 +2149,7 @@ msgstr "Круговой"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1609
 msgid "Nr of drills:"
-msgstr "Кол-во отверстий:"
+msgstr "Количество отверстий:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1610 flatcamGUI/FlatCAMGUI.py:5486
 msgid "Specify how many drills to be in the array."
@@ -2308,10 +2307,10 @@ msgid ""
 "- 'Y' - vertical axis or \n"
 "- 'Angle' - a custom angle for the slot inclination"
 msgstr ""
-"Направление, на которое ориентирован слот:\n"
+"Направление, на которое ориентирован паз:\n"
 "- 'X' - горизонтальная ось\n"
 "- 'Y' - вертикальная ось или\n"
-"- «Угол» - произвольный угол наклона прорези"
+"- «Угол» - произвольный угол наклона паза"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1755 flatcamGUI/FlatCAMGUI.py:5596
 msgid ""
@@ -2320,34 +2319,34 @@ msgid ""
 "Min value is: -359.99 degrees.\n"
 "Max value is:  360.00 degrees."
 msgstr ""
-"Угол, под которым расположен слот.\n"
+"Угол, под которым расположен паз.\n"
 "Точность составляет не более 2 десятичных знаков.\n"
 "Минимальное значение: -359,99 градусов.\n"
 "Максимальное значение: 360,00 градусов."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1788
 msgid "Slot Array Parameters"
-msgstr "Параметры массива слотов"
+msgstr "Параметры массива пазов"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1790
 msgid "Parameters for the array of slots (linear or circular array)"
-msgstr "Параметры для массива слотов (линейный или круговой массив)"
+msgstr "Параметры для массива пазов(линейный или круговой массив)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1799
 msgid ""
 "Select the type of slot array to create.\n"
 "It can be Linear X(Y) or Circular"
 msgstr ""
-"Выберите тип массива слотов для создания.\n"
+"Выберите тип массива пазов для создания.\n"
 "Это может быть линейный X (Y) или круговой"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1811
 msgid "Nr of slots:"
-msgstr "Количество слотов:"
+msgstr "Количество пазов:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1812 flatcamGUI/FlatCAMGUI.py:5620
 msgid "Specify how many slots to be in the array."
-msgstr "Укажите, сколько слотов должно быть в массиве."
+msgstr "Укажите, сколько пазов должно быть в массиве."
 
 #: flatcamEditors/FlatCAMExcEditor.py:2409
 msgid ""
@@ -2486,7 +2485,7 @@ msgstr "Инструменты"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:434
 msgid "Tool dia:"
-msgstr "Диам. инструм.:"
+msgstr "Диаметр инструмента:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:436 flatcamGUI/FlatCAMGUI.py:6686
 msgid ""
@@ -2503,7 +2502,6 @@ msgstr "Частота перекрытия:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:447 flatcamGUI/FlatCAMGUI.py:6717
 #: flatcamTools/ToolPaint.py:207
-#, python-format
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
@@ -2769,7 +2767,7 @@ msgstr "Наклон Y"
 #: flatcamEditors/FlatCAMGeoEditor.py:763
 #: flatcamEditors/FlatCAMGrbEditor.py:4922
 msgid "Factor X:"
-msgstr "Коэф. X:"
+msgstr "Коэффициент X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:765
 #: flatcamEditors/FlatCAMGrbEditor.py:4924
@@ -2797,7 +2795,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:780
 #: flatcamEditors/FlatCAMGrbEditor.py:4939
 msgid "Factor Y:"
-msgstr "Коэф Y:"
+msgstr "Коэффициент Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:782
 #: flatcamEditors/FlatCAMGrbEditor.py:4941
@@ -3745,7 +3743,7 @@ msgstr "Код для нового отверстия"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2410
 msgid "Aperture Size"
-msgstr "Размер диафрагмы:"
+msgstr "Размер отверстия:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2412
 msgid ""
@@ -3763,7 +3761,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2424
 msgid "Aperture Type"
-msgstr "Тип диафрагмы"
+msgstr "Тип отверстия"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2426
 msgid ""
@@ -3779,7 +3777,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2437
 msgid "Aperture Dim"
-msgstr "Разм. диафрагмы:"
+msgstr "Размер отверстия:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2439
 msgid ""
@@ -3845,7 +3843,7 @@ msgstr "Буфер"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2526
 msgid "Scale Aperture"
-msgstr "Масштаб. отверстий"
+msgstr "Масштабирование отверстий"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2528
 msgid "Scale a aperture in the aperture list"
@@ -3853,7 +3851,7 @@ msgstr "Масштабирование отверстия в списке отв
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2536 flatcamGUI/FlatCAMGUI.py:4729
 msgid "Scale factor"
-msgstr "Коэффициент масш."
+msgstr "Коэффициент масштабирования"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2538
 msgid ""
@@ -3897,7 +3895,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2597
 msgid "Go"
-msgstr "Выполнять"
+msgstr "Выполнить"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2616 flatcamGUI/FlatCAMGUI.py:728
 #: flatcamGUI/FlatCAMGUI.py:2050
@@ -3918,7 +3916,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2635 flatcamGUI/FlatCAMGUI.py:4628
 msgid "Nr of pads"
-msgstr "№ колодок"
+msgstr "Количество площадок"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2637 flatcamGUI/FlatCAMGUI.py:4630
 msgid "Specify how many pads to be in the array."
@@ -4234,7 +4232,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:204
 msgid "Backup"
-msgstr "дублировать"
+msgstr "Резервное копирование"
 
 #: flatcamGUI/FlatCAMGUI.py:208
 msgid "Import Preferences from file ..."
@@ -4575,11 +4573,11 @@ msgstr "Добавить сверло\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:469
 msgid "Add Slot Array\tQ"
-msgstr "Добавить массив слотов\tQ"
+msgstr "Добавить массив пазов\tQ"
 
 #: flatcamGUI/FlatCAMGUI.py:471
 msgid "Add Slot\tW"
-msgstr "Добавить слот\tW"
+msgstr "Добавить паз\tW"
 
 #: flatcamGUI/FlatCAMGUI.py:475
 msgid "Resize Drill(S)\tR"
@@ -4769,7 +4767,7 @@ msgstr "&Командная строка"
 
 #: flatcamGUI/FlatCAMGUI.py:658 flatcamGUI/FlatCAMGUI.py:1976
 msgid "2Sided Tool"
-msgstr "2-х стор. плата"
+msgstr "2-х сторонняя плата"
 
 #: flatcamGUI/FlatCAMGUI.py:659 flatcamGUI/FlatCAMGUI.py:1977
 msgid "&Cutout Tool"
@@ -4820,12 +4818,12 @@ msgstr "Добавить массив отверстий"
 #: flatcamGUI/FlatCAMGUI.py:679 flatcamGUI/FlatCAMGUI.py:1694
 #: flatcamGUI/FlatCAMGUI.py:2000
 msgid "Add Slot"
-msgstr "Добавить слот"
+msgstr "Добавить паз"
 
 #: flatcamGUI/FlatCAMGUI.py:681 flatcamGUI/FlatCAMGUI.py:1695
 #: flatcamGUI/FlatCAMGUI.py:2002
 msgid "Add Slot Array"
-msgstr "Добавить массив слотов"
+msgstr "Добавить массив пазов"
 
 #: flatcamGUI/FlatCAMGUI.py:682 flatcamGUI/FlatCAMGUI.py:1697
 #: flatcamGUI/FlatCAMGUI.py:1999
@@ -5001,11 +4999,11 @@ msgstr "Основные"
 
 #: flatcamGUI/FlatCAMGUI.py:881
 msgid "APP.  DEFAULTS"
-msgstr "СТАНД. НАСТРОЙКИ"
+msgstr "СТАНДАРТНЫЕ НАСТРОЙКИ"
 
 #: flatcamGUI/FlatCAMGUI.py:882
 msgid "PROJ. OPTIONS "
-msgstr "ПАРАМ. ПРОЕКТА "
+msgstr "ПАРАМЕТРЫ ПРОЕКТА "
 
 #: flatcamGUI/FlatCAMGUI.py:894 flatcamTools/ToolDblSided.py:47
 msgid "GERBER"
@@ -5025,7 +5023,7 @@ msgstr "CNC-JOB"
 
 #: flatcamGUI/FlatCAMGUI.py:933
 msgid "TOOLS"
-msgstr "ИНСТР-ТЫ"
+msgstr "ИНСТРУМЕНТЫ"
 
 #: flatcamGUI/FlatCAMGUI.py:950
 msgid "Import Preferences"
@@ -6165,7 +6163,7 @@ msgstr ""
 "                    <tr height=\"20\">\n"
 "                        <td height=\"20\" width=\"89\"><strong>Q</strong></"
 "td>\n"
-"                        <td width=\"194\">&nbsp;Добавить массив слотов</td>\n"
+"                        <td width=\"194\">&nbsp;Добавить массив пазов</td>\n"
 "                    </tr>\n"
 "                    <tr height=\"20\">\n"
 "                        <td height=\"20\"><strong>R</strong></td>\n"
@@ -6178,7 +6176,7 @@ msgstr ""
 "                    <tr height=\"20\">\n"
 "                        <td height=\"20\" width=\"89\"><strong>W</strong></"
 "td>\n"
-"                        <td width=\"194\">&nbsp;Добавить слот</td>\n"
+"                        <td width=\"194\">&nbsp;Добавить паз</td>\n"
 "                    </tr>\n"
 "                    <tr height=\"20\">\n"
 "                        <td height=\"20\">&nbsp;</td>\n"
@@ -6371,11 +6369,11 @@ msgstr "Круг"
 
 #: flatcamGUI/FlatCAMGUI.py:1649
 msgid "Polygon"
-msgstr "полигон"
+msgstr "Полигон"
 
 #: flatcamGUI/FlatCAMGUI.py:1650
 msgid "Arc"
-msgstr "дугу"
+msgstr "Дуга"
 
 #: flatcamGUI/FlatCAMGUI.py:1653
 msgid "Text"
@@ -6383,7 +6381,7 @@ msgstr "Tекст"
 
 #: flatcamGUI/FlatCAMGUI.py:1659
 msgid "Union"
-msgstr "Cоюз"
+msgstr "Объединение"
 
 #: flatcamGUI/FlatCAMGUI.py:1660
 msgid "Intersection"
@@ -6424,7 +6422,7 @@ msgstr "Добавить сверло"
 
 #: flatcamGUI/FlatCAMGUI.py:1727
 msgid "Print Preview"
-msgstr "Предпр. печати"
+msgstr "Предпросмотр печати"
 
 #: flatcamGUI/FlatCAMGUI.py:1728
 msgid "Print Code"
@@ -6646,7 +6644,7 @@ msgstr "Установите цвет линии для построенных �
 
 #: flatcamGUI/FlatCAMGUI.py:3597
 msgid "Sel. Fill:"
-msgstr "Выбор Заполнения:"
+msgstr "Заполнение выбранного:"
 
 #: flatcamGUI/FlatCAMGUI.py:3599
 msgid ""
@@ -6666,7 +6664,7 @@ msgstr "Установите прозрачность заливки для по
 
 #: flatcamGUI/FlatCAMGUI.py:3633
 msgid "Sel. Line:"
-msgstr "Строка Выбора:"
+msgstr "Выбранная строка:"
 
 #: flatcamGUI/FlatCAMGUI.py:3635
 msgid "Set the line color for the 'left to right' selection box."
@@ -6702,7 +6700,7 @@ msgstr "Установите цвет линии для поля выбора \"
 
 #: flatcamGUI/FlatCAMGUI.py:3697
 msgid "Editor Draw:"
-msgstr "Редактор Розыгрыша:"
+msgstr "Редактор Draw:"
 
 #: flatcamGUI/FlatCAMGUI.py:3699
 msgid "Set the color for the shape."
@@ -6749,7 +6747,7 @@ msgid ""
 "Select an layout for FlatCAM.\n"
 "It is applied immediately."
 msgstr ""
-"Выберите макет для FlatCAM кулачка.\n"
+"Выберите макет для FlatCAM.\n"
 "Применяется немедленно."
 
 #: flatcamGUI/FlatCAMGUI.py:3815
@@ -6794,7 +6792,7 @@ msgstr "Сбросить"
 
 #: flatcamGUI/FlatCAMGUI.py:3852
 msgid "Hover Shape:"
-msgstr "Форма Наведения:"
+msgstr "Форма наведения:"
 
 #: flatcamGUI/FlatCAMGUI.py:3854
 msgid ""
@@ -6808,7 +6806,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3861
 msgid "Sel. Shape:"
-msgstr "Сэл. Форма:"
+msgstr "Форма выделения:"
 
 #: flatcamGUI/FlatCAMGUI.py:3863
 msgid ""
@@ -6824,7 +6822,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3870
 msgid "NB Font Size:"
-msgstr "NB Размер шрифта:"
+msgstr "Размер шрифта боковой панели:"
 
 #: flatcamGUI/FlatCAMGUI.py:3872
 msgid ""
@@ -6905,11 +6903,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3984 flatcamGUI/FlatCAMGUI.py:4949
 msgid "Basic"
-msgstr "Баз."
+msgstr "Базовый"
 
 #: flatcamGUI/FlatCAMGUI.py:3985
 msgid "Advanced"
-msgstr "Расш."
+msgstr "Расширенный"
 
 #: flatcamGUI/FlatCAMGUI.py:3988
 msgid "Portable app"
@@ -6961,7 +6959,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4010
 msgid "Shell at StartUp"
-msgstr "Ком.строка при запуске"
+msgstr "Командная строка при запуске"
 
 #: flatcamGUI/FlatCAMGUI.py:4012 flatcamGUI/FlatCAMGUI.py:4017
 msgid ""
@@ -6997,7 +6995,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4048
 msgid "Pan Button"
-msgstr "Кнопка панарам"
+msgstr "Кнопка панарамирования"
 
 #: flatcamGUI/FlatCAMGUI.py:4049
 msgid ""
@@ -7006,16 +7004,16 @@ msgid ""
 "- RMB --> Right Mouse Button"
 msgstr ""
 "Выбор кнопки мыши для панорамирования:\n"
-"- MMB --> Средняя кнопка мыши\n"
-"- RMB --> Правая кнопка мыши"
+"- СКМ --> Средняя кнопка мыши\n"
+"- ПКМ --> Правая кнопка мыши"
 
 #: flatcamGUI/FlatCAMGUI.py:4052
 msgid "MMB"
-msgstr "MMB"
+msgstr "СКМ"
 
 #: flatcamGUI/FlatCAMGUI.py:4053
 msgid "RMB"
-msgstr "RMB"
+msgstr "ПКМ"
 
 #: flatcamGUI/FlatCAMGUI.py:4056
 msgid "Multiple Sel:"
@@ -7023,7 +7021,7 @@ msgstr "Мультивыбор"
 
 #: flatcamGUI/FlatCAMGUI.py:4057
 msgid "Select the key used for multiple selection."
-msgstr "Выберите ключ, используемый для множественного выбора."
+msgstr "Выберите клавишу, используемую для множественного выбора."
 
 #: flatcamGUI/FlatCAMGUI.py:4058
 msgid "CTRL"
@@ -7035,7 +7033,7 @@ msgstr "SHIFT"
 
 #: flatcamGUI/FlatCAMGUI.py:4062
 msgid "Project at StartUp"
-msgstr "Проект при запуске"
+msgstr "Боковая панель при запуске"
 
 #: flatcamGUI/FlatCAMGUI.py:4064 flatcamGUI/FlatCAMGUI.py:4069
 msgid ""
@@ -7048,7 +7046,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4074
 msgid "Project AutoHide"
-msgstr "Автоскр. проекта"
+msgstr "Автоскрытие боковой панели"
 
 #: flatcamGUI/FlatCAMGUI.py:4076 flatcamGUI/FlatCAMGUI.py:4082
 msgid ""
@@ -7063,7 +7061,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4088
 msgid "Enable ToolTips"
-msgstr "Вспл. подсказки"
+msgstr "Всплывающие подсказки"
 
 #: flatcamGUI/FlatCAMGUI.py:4090 flatcamGUI/FlatCAMGUI.py:4095
 msgid ""
@@ -7096,7 +7094,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4119
 msgid "Geo Tolerance"
-msgstr "Гео Толерантности"
+msgstr "Допуск геометрии"
 
 #: flatcamGUI/FlatCAMGUI.py:4121 flatcamGUI/FlatCAMGUI.py:4130
 msgid ""
@@ -7135,7 +7133,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4180
 msgid "Delete object confirmation"
-msgstr "Подтвердить удаление объекта"
+msgstr "Подтверждать удаление объекта"
 
 #: flatcamGUI/FlatCAMGUI.py:4182
 msgid ""
@@ -7195,7 +7193,7 @@ msgstr "Сплошной цвет полигонов."
 
 #: flatcamGUI/FlatCAMGUI.py:4247 flatcamGUI/ObjectUI.py:164
 msgid "M-Color"
-msgstr "Мн.цветн"
+msgstr "Разноцветные"
 
 #: flatcamGUI/FlatCAMGUI.py:4249 flatcamGUI/ObjectUI.py:166
 msgid "Draw polygons in different colors."
@@ -7205,7 +7203,7 @@ msgstr "Окрашивать полигоны  разными цветами."
 #: flatcamGUI/FlatCAMGUI.py:5707 flatcamGUI/ObjectUI.py:172
 #: flatcamGUI/ObjectUI.py:542
 msgid "Plot"
-msgstr "Вкл."
+msgstr "Отображать"
 
 #: flatcamGUI/FlatCAMGUI.py:4256 flatcamGUI/FlatCAMGUI.py:5709
 #: flatcamGUI/FlatCAMGUI.py:6095 flatcamGUI/ObjectUI.py:174
@@ -7249,7 +7247,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:6684 flatcamGUI/ObjectUI.py:259
 #: flatcamTools/ToolCutOut.py:92
 msgid "Tool dia"
-msgstr "Диам. инструм."
+msgstr "Диаметр инструмента"
 
 #: flatcamGUI/FlatCAMGUI.py:4294 flatcamGUI/FlatCAMGUI.py:5149
 #: flatcamGUI/ObjectUI.py:785
@@ -7273,7 +7271,6 @@ msgid "Pass overlap"
 msgstr "Перекрытие"
 
 #: flatcamGUI/FlatCAMGUI.py:4314 flatcamGUI/ObjectUI.py:285
-#, python-format
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
@@ -7310,7 +7307,7 @@ msgstr "Обычный"
 
 #: flatcamGUI/FlatCAMGUI.py:4334 flatcamGUI/ObjectUI.py:307
 msgid "Combine Passes"
-msgstr "Объед. проходы"
+msgstr "Объединять проходы"
 
 #: flatcamGUI/FlatCAMGUI.py:4336 flatcamGUI/ObjectUI.py:309
 msgid "Combine all passes into one object"
@@ -7337,7 +7334,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:4355 flatcamGUI/FlatCAMGUI.py:4380
 #: flatcamGUI/ObjectUI.py:428 flatcamGUI/ObjectUI.py:462
 msgid "Boundary Margin"
-msgstr "Отст. от дорож."
+msgstr "Отступ от дорожек"
 
 #: flatcamGUI/FlatCAMGUI.py:4357 flatcamGUI/ObjectUI.py:430
 msgid ""
@@ -7387,7 +7384,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4405
 msgid "Gerber Adv. Options"
-msgstr "Gerber дополн."
+msgstr "Gerber дополнительные"
 
 #: flatcamGUI/FlatCAMGUI.py:4408
 msgid "Advanced Param."
@@ -7487,7 +7484,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4534 flatcamGUI/FlatCAMGUI.py:5384
 msgid "Zeros"
-msgstr "нули"
+msgstr "Нули"
 
 #: flatcamGUI/FlatCAMGUI.py:4537 flatcamGUI/FlatCAMGUI.py:4547
 msgid ""
@@ -7581,23 +7578,21 @@ msgstr "Диаметры режущих инструментов, разделе
 
 #: flatcamGUI/FlatCAMGUI.py:4646
 #, python-format
-#| msgid "<b>Units:</b>"
 msgid "<b>%s:</b>"
 msgstr "<b>%s:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4650 flatcamGUI/FlatCAMGUI.py:5630
 msgid "Linear Dir."
-msgstr "Линейное нап."
+msgstr "Линейное направление"
 
 #: flatcamGUI/FlatCAMGUI.py:4686
-#| msgid "<b>Circular Slot Array:</b>"
 msgid "Circular Pad Array"
 msgstr "Круговая матрица"
 
 #: flatcamGUI/FlatCAMGUI.py:4690 flatcamGUI/FlatCAMGUI.py:5539
 #: flatcamGUI/FlatCAMGUI.py:5670
 msgid "Circular Dir."
-msgstr "Круговое нап."
+msgstr "Круговое направление"
 
 #: flatcamGUI/FlatCAMGUI.py:4692 flatcamGUI/FlatCAMGUI.py:5541
 #: flatcamGUI/FlatCAMGUI.py:5672
@@ -7611,7 +7606,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:4703 flatcamGUI/FlatCAMGUI.py:5552
 #: flatcamGUI/FlatCAMGUI.py:5683
 msgid "Circ. Angle"
-msgstr "Круг. угол"
+msgstr "Угол закругления"
 
 #: flatcamGUI/FlatCAMGUI.py:4718
 msgid "Distance at which to buffer the Gerber element."
@@ -7619,11 +7614,11 @@ msgstr "Расстояние, на котором буферизуется эл�
 
 #: flatcamGUI/FlatCAMGUI.py:4725
 msgid "Scale Tool"
-msgstr "Инструмент Масштаб"
+msgstr "Масштаб"
 
 #: flatcamGUI/FlatCAMGUI.py:4731
 msgid "Factor to scale the Gerber element."
-msgstr "Фактор для масштабирования элемента Gerber."
+msgstr "Коэффициент масштабирования для элемента Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:4738
 msgid "Mark Area Tool"
@@ -7915,7 +7910,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5069
 msgid "Spindle Speed"
-msgstr "Скорость вр. шпинделя"
+msgstr "Скорость вращения шпинделя"
 
 #: flatcamGUI/FlatCAMGUI.py:5071 flatcamGUI/ObjectUI.py:681
 msgid ""
@@ -7927,7 +7922,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5079 flatcamGUI/FlatCAMGUI.py:5870
 msgid "Spindle dir."
-msgstr "Напр. вращения"
+msgstr "Направление вращения"
 
 #: flatcamGUI/FlatCAMGUI.py:5081 flatcamGUI/FlatCAMGUI.py:5872
 msgid ""
@@ -8003,7 +7998,7 @@ msgstr "Создание объекта геометрии для фрезеро
 
 #: flatcamGUI/FlatCAMGUI.py:5147 flatcamGUI/ObjectUI.py:783
 msgid "Drill Tool dia"
-msgstr "Диам. сверла"
+msgstr "Диаметр сверла"
 
 #: flatcamGUI/FlatCAMGUI.py:5154 flatcamGUI/ObjectUI.py:799
 msgid "Slot Tool dia"
@@ -8023,7 +8018,7 @@ msgstr "Значения по умолчанию"
 
 #: flatcamGUI/FlatCAMGUI.py:5181
 msgid "Excellon Adv. Options"
-msgstr "Excellon дополн."
+msgstr "Excellon дополнительные"
 
 #: flatcamGUI/FlatCAMGUI.py:5187 flatcamGUI/FlatCAMGUI.py:5924
 msgid "Advanced Options"
@@ -8089,7 +8084,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5232 flatcamGUI/ObjectUI.py:663
 msgid "Feedrate Rapids"
-msgstr "Пороги Скорости Подачи"
+msgstr "Пороги скорости подачи"
 
 #: flatcamGUI/FlatCAMGUI.py:5234 flatcamGUI/ObjectUI.py:665
 msgid ""
@@ -8122,7 +8117,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5255 flatcamGUI/FlatCAMGUI.py:5997
 #: flatcamGUI/ObjectUI.py:727 flatcamGUI/ObjectUI.py:1257
 msgid "Feedrate Probe"
-msgstr "Датчик Скорости Подачи"
+msgstr "Датчик скорости подачи"
 
 #: flatcamGUI/FlatCAMGUI.py:5257 flatcamGUI/FlatCAMGUI.py:5999
 #: flatcamGUI/ObjectUI.py:729 flatcamGUI/ObjectUI.py:1259
@@ -8221,7 +8216,7 @@ msgstr "Десятичный"
 
 #: flatcamGUI/FlatCAMGUI.py:5371
 msgid "No-Decimal"
-msgstr "Не-десятичный"
+msgstr "Недесятичный"
 
 #: flatcamGUI/FlatCAMGUI.py:5397
 msgid ""
@@ -8239,7 +8234,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5407
 msgid "Slot type"
-msgstr "Тип слот"
+msgstr "Тип слота"
 
 #: flatcamGUI/FlatCAMGUI.py:5410 flatcamGUI/FlatCAMGUI.py:5420
 msgid ""
@@ -8249,11 +8244,11 @@ msgid ""
 "If DRILLED(G85) the slots will be exported\n"
 "using the Drilled slot command (G85)."
 msgstr ""
-"Это устанавливает, как будут экспортироваться слоты.\n"
+"Это устанавливает, как будут экспортироваться пазы.\n"
 "Если маршрутизируется, то слоты будут маршрутизироваться\n"
 "используя команды M15 / M16.\n"
-"Если пробурено (G85), слоты будут экспортированы\n"
-"используя команду Сверлил слот (G85)."
+"Если пробурено (G85), пазы будут экспортированы\n"
+"используя команду сверления пазов (G85)."
 
 #: flatcamGUI/FlatCAMGUI.py:5417
 msgid "Routed"
@@ -8283,23 +8278,22 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5472
 msgid "New Tool Dia"
-msgstr "Новый диам. инструм"
+msgstr "Новый диаметр инструмента"
 
 #: flatcamGUI/FlatCAMGUI.py:5484
 msgid "Nr of drills"
-msgstr "Кол-во упражнений"
+msgstr "Количество отверстий"
 
 #: flatcamGUI/FlatCAMGUI.py:5495
 msgid "Linear Drill Array"
-msgstr "Линейная дрель массив"
+msgstr "Линейный массив отверстий"
 
 #: flatcamGUI/FlatCAMGUI.py:5499
 msgid "Linear Dir.:"
-msgstr "Линейное нап."
+msgstr "Линейное направление:"
 
 #: flatcamGUI/FlatCAMGUI.py:5515 flatcamGUI/FlatCAMGUI.py:5935
 #, python-format
-#| msgid "%s"
 msgid "%s:"
 msgstr "%s:"
 
@@ -8317,15 +8311,15 @@ msgstr "Длина"
 
 #: flatcamGUI/FlatCAMGUI.py:5614
 msgid "Linear Slot Array"
-msgstr "Линейный массив слотов"
+msgstr "Линейный массив пазов"
 
 #: flatcamGUI/FlatCAMGUI.py:5618
 msgid "Nr of slots"
-msgstr "Количество слотов"
+msgstr "Количество пазов"
 
 #: flatcamGUI/FlatCAMGUI.py:5666
 msgid "Circular Slot Array"
-msgstr "Круговой массив слотов"
+msgstr "Круговой массив пазов"
 
 #: flatcamGUI/FlatCAMGUI.py:5700
 msgid "Geometry General"
@@ -8438,7 +8432,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5857 flatcamGUI/ObjectUI.py:679
 #: flatcamGUI/ObjectUI.py:1204
 msgid "Spindle speed"
-msgstr "Скорость вр. шпинделя"
+msgstr "Скорость вращения шпинделя"
 
 #: flatcamGUI/FlatCAMGUI.py:5860 flatcamGUI/ObjectUI.py:1207
 msgid ""
@@ -8464,7 +8458,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5919
 msgid "Geometry Adv. Options"
-msgstr "Geometry дополн."
+msgstr "Geometry дополнительные"
 
 #: flatcamGUI/FlatCAMGUI.py:5926
 msgid ""
@@ -8522,7 +8516,7 @@ msgstr "Быстрый подвод"
 
 #: flatcamGUI/FlatCAMGUI.py:6018
 msgid "Seg. X size"
-msgstr "Сегмент. Размер X"
+msgstr "Сегмент. размер X"
 
 #: flatcamGUI/FlatCAMGUI.py:6020
 msgid ""
@@ -8536,7 +8530,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6029
 msgid "Seg. Y size"
-msgstr "Сегмент. Размер М"
+msgstr "Сегмент. размер Y "
 
 #: flatcamGUI/FlatCAMGUI.py:6031
 msgid ""
@@ -8581,7 +8575,7 @@ msgstr "Рисовать объекты"
 
 #: flatcamGUI/FlatCAMGUI.py:6099
 msgid "Plot kind:"
-msgstr "Рисовать участка:"
+msgstr "Вид участка:"
 
 #: flatcamGUI/FlatCAMGUI.py:6101 flatcamGUI/ObjectUI.py:1336
 msgid ""
@@ -8648,7 +8642,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6185
 msgid "Coords dec."
-msgstr "Координаты дек."
+msgstr "Координаты дес."
 
 #: flatcamGUI/FlatCAMGUI.py:6187
 msgid ""
@@ -8656,7 +8650,7 @@ msgid ""
 "the X, Y, Z coordinates in CNC code (GCODE, etc.)"
 msgstr ""
 "Число десятичных знаков, которые будут использоваться для \n"
-"координаты X, Y, Z в коде CNC (код G, etc.)"
+"координаты X, Y, Z в коде CNC (GCODE, и т.д.)"
 
 #: flatcamGUI/FlatCAMGUI.py:6195
 msgid "Feedrate dec."
@@ -8668,7 +8662,7 @@ msgid ""
 "the Feedrate parameter in CNC code (GCODE, etc.)"
 msgstr ""
 "Число десятичных знаков, которые будут использоваться для \n"
-"параметр скорости подачи в коде КНК (коде г, ЕТК.)"
+"параметра скорости подачи в коде CNC (GCODE, и т.д.)"
 
 #: flatcamGUI/FlatCAMGUI.py:6212
 msgid "CNC Job Options"
@@ -8716,7 +8710,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6253
 msgid "CNC Job Adv. Options"
-msgstr "CNC Job дополн."
+msgstr "CNC Job дополнительные"
 
 #: flatcamGUI/FlatCAMGUI.py:6256 flatcamGUI/ObjectUI.py:1471
 msgid "Export CNC Code"
@@ -8834,7 +8828,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6356 flatcamGUI/FlatCAMGUI.py:7211
 msgid "Tools dia"
-msgstr "Диам. инстр."
+msgstr "Диаметр инструмента"
 
 #: flatcamGUI/FlatCAMGUI.py:6364 flatcamGUI/FlatCAMGUI.py:6694
 #: flatcamTools/ToolNonCopperClear.py:137 flatcamTools/ToolPaint.py:136
@@ -8873,7 +8867,7 @@ msgstr "Вперед"
 #: flatcamGUI/FlatCAMGUI.py:6374 flatcamGUI/FlatCAMGUI.py:6704
 #: flatcamTools/ToolNonCopperClear.py:147 flatcamTools/ToolPaint.py:146
 msgid "Reverse"
-msgstr "Задний ход"
+msgstr "Обратный ход"
 
 #: flatcamGUI/FlatCAMGUI.py:6384 flatcamGUI/FlatCAMGUI.py:6715
 #: flatcamTools/ToolPaint.py:205
@@ -8881,7 +8875,6 @@ msgid "Overlap Rate"
 msgstr "Частота перекрытия"
 
 #: flatcamGUI/FlatCAMGUI.py:6386 flatcamTools/ToolNonCopperClear.py:203
-#, python-format
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
@@ -8915,7 +8908,7 @@ msgstr "Отступ"
 
 #: flatcamGUI/FlatCAMGUI.py:6402 flatcamTools/ToolNonCopperClear.py:219
 msgid "Bounding box margin."
-msgstr "Ограничивающее поле Поля."
+msgstr "Граница рамки."
 
 #: flatcamGUI/FlatCAMGUI.py:6409 flatcamGUI/FlatCAMGUI.py:6743
 #: flatcamTools/ToolNonCopperClear.py:226 flatcamTools/ToolPaint.py:233
@@ -9146,7 +9139,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6624 flatcamTools/ToolDblSided.py:234
 msgid "Drill dia"
-msgstr "Диам. сверла."
+msgstr "Диаметр сверла"
 
 #: flatcamGUI/FlatCAMGUI.py:6626 flatcamTools/ToolDblSided.py:225
 #: flatcamTools/ToolDblSided.py:236
@@ -9444,7 +9437,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6984 flatcamTools/ToolCalculators.py:92
 msgid "Tip Diameter"
-msgstr "Диа. наклона"
+msgstr "Диаметр наконечника"
 
 #: flatcamGUI/FlatCAMGUI.py:6986 flatcamTools/ToolCalculators.py:97
 msgid ""
@@ -9456,14 +9449,14 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6994 flatcamTools/ToolCalculators.py:100
 msgid "Tip Angle"
-msgstr "Угол наклона"
+msgstr "Угол наконечника"
 
 #: flatcamGUI/FlatCAMGUI.py:6996
 msgid ""
 "This is the angle on the tip of the tool.\n"
 "It is specified by manufacturer."
 msgstr ""
-"Это угол на кончике инструмента.\n"
+"Это угол наконечника инструмента.\n"
 "Это указано производителем."
 
 #: flatcamGUI/FlatCAMGUI.py:7006
@@ -9495,7 +9488,7 @@ msgstr "Длина платы"
 
 #: flatcamGUI/FlatCAMGUI.py:7027 flatcamTools/ToolCalculators.py:162
 msgid "This is the board length. In centimeters."
-msgstr "Это длина доски. В сантиметрах."
+msgstr "Это длина платы. В сантиметрах."
 
 #: flatcamGUI/FlatCAMGUI.py:7033 flatcamTools/ToolCalculators.py:164
 msgid "Board Width"
@@ -9503,7 +9496,7 @@ msgstr "Ширина платы"
 
 #: flatcamGUI/FlatCAMGUI.py:7035 flatcamTools/ToolCalculators.py:168
 msgid "This is the board width.In centimeters."
-msgstr "Это совет директоров width.In сантиметры."
+msgstr "Это ширина платы. В сантиметрах."
 
 #: flatcamGUI/FlatCAMGUI.py:7040 flatcamTools/ToolCalculators.py:170
 msgid "Current Density"
@@ -9526,7 +9519,7 @@ msgid ""
 "How thick the copper growth is intended to be.\n"
 "In microns."
 msgstr ""
-"Насколько толстым должен быть медный рост.\n"
+"Насколько толстым должен быть медный слой.\n"
 "В микронах."
 
 #: flatcamGUI/FlatCAMGUI.py:7065
@@ -9543,7 +9536,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:7080
 msgid "Rotate Angle"
-msgstr "Угол Поворота"
+msgstr "Угол поворота"
 
 #: flatcamGUI/FlatCAMGUI.py:7092 flatcamTools/ToolTransform.py:107
 msgid "Skew_X angle"
@@ -9555,7 +9548,7 @@ msgstr "Угол наклона_Y"
 
 #: flatcamGUI/FlatCAMGUI.py:7112 flatcamTools/ToolTransform.py:164
 msgid "Scale_X factor"
-msgstr "Коэф. X"
+msgstr "Коэффициент X"
 
 #: flatcamGUI/FlatCAMGUI.py:7114 flatcamTools/ToolTransform.py:166
 msgid "Factor for scaling on X axis."
@@ -9563,7 +9556,7 @@ msgstr "Коэффициент масштабирования по оси X."
 
 #: flatcamGUI/FlatCAMGUI.py:7121 flatcamTools/ToolTransform.py:181
 msgid "Scale_Y factor"
-msgstr "Коэф Y"
+msgstr "Коэффициент Y"
 
 #: flatcamGUI/FlatCAMGUI.py:7123 flatcamTools/ToolTransform.py:183
 msgid "Factor for scaling on Y axis."
@@ -9664,7 +9657,7 @@ msgstr "Диаметры сопловых инструментов, раздел
 
 #: flatcamGUI/FlatCAMGUI.py:7220
 msgid "New Nozzle Dia"
-msgstr "Новый диам. сопла"
+msgstr "Новый диаметр сопла"
 
 #: flatcamGUI/FlatCAMGUI.py:7222 flatcamTools/ToolSolderPaste.py:103
 msgid "Diameter for the new Nozzle tool to add in the Tool Table"
@@ -9762,7 +9755,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:7315 flatcamTools/ToolSolderPaste.py:242
 msgid "Spindle Speed FWD"
-msgstr "Скорость прям. вр. шпинделя"
+msgstr "Скорость прямого вращения шпинделя"
 
 #: flatcamGUI/FlatCAMGUI.py:7317 flatcamTools/ToolSolderPaste.py:244
 msgid ""
@@ -9782,7 +9775,7 @@ msgstr "Пауза после выдачи паяльной пасты."
 
 #: flatcamGUI/FlatCAMGUI.py:7334 flatcamTools/ToolSolderPaste.py:259
 msgid "Spindle Speed REV"
-msgstr "Скорость обратн. вр. шпинделя"
+msgstr "Скорость обратного вращения шпинделя"
 
 #: flatcamGUI/FlatCAMGUI.py:7336 flatcamTools/ToolSolderPaste.py:261
 msgid ""
@@ -9844,7 +9837,7 @@ msgstr "Приложение запущено ..."
 
 #: flatcamGUI/FlatCAMGUI.py:7438
 msgid "Hello!"
-msgstr "Привет!"
+msgstr "Приветствую!"
 
 #: flatcamGUI/ObjectUI.py:33
 msgid "FlatCAM Object"
@@ -10029,7 +10022,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:382
 msgid "Clear N-copper"
-msgstr "Чистый N-медь"
+msgstr "Очистка меди"
 
 #: flatcamGUI/ObjectUI.py:392 flatcamTools/ToolNonCopperClear.py:360
 msgid ""
@@ -10397,7 +10390,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1046
 msgid "V-Tip Dia"
-msgstr "Диам. V-наконечника"
+msgstr "Диаметр V-наконечника"
 
 #: flatcamGUI/ObjectUI.py:1049
 msgid "The tip diameter for V-Shape Tool"
@@ -10455,7 +10448,7 @@ msgstr "Рисовать участка"
 
 #: flatcamGUI/ObjectUI.py:1367
 msgid "Travelled dist."
-msgstr "Расст. прохода"
+msgstr "Пройденное расстояние"
 
 #: flatcamGUI/ObjectUI.py:1369 flatcamGUI/ObjectUI.py:1374
 msgid ""
@@ -10479,7 +10472,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1421
 msgid "CNC Tools Table"
-msgstr "Стол с ЧПУ"
+msgstr "Таблица инструментов CNC"
 
 #: flatcamGUI/ObjectUI.py:1424
 msgid ""
@@ -10779,7 +10772,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:232
 msgid "Geo Obj"
-msgstr "Об. Geo"
+msgstr "Объект Geo"
 
 #: flatcamTools/ToolCutOut.py:234
 msgid "Geometry object used to create the manual cutout."
@@ -10816,7 +10809,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:276
 msgid "Generate Gap"
-msgstr "Созд. перемычку"
+msgstr "Создать перемычку"
 
 #: flatcamTools/ToolCutOut.py:278
 msgid ""
@@ -11126,7 +11119,7 @@ msgstr "Сбрасывает все поля."
 
 #: flatcamTools/ToolDblSided.py:306
 msgid "2-Sided Tool"
-msgstr "Инструмент 2-х сторонних плат"
+msgstr "2-х сторонняя плата"
 
 #: flatcamTools/ToolDblSided.py:331
 msgid ""
@@ -11474,7 +11467,7 @@ msgstr "Начальные"
 
 #: flatcamTools/ToolMeasurement.py:48 flatcamTools/ToolMeasurement.py:51
 msgid "Coords"
-msgstr "координаты"
+msgstr "Координаты"
 
 #: flatcamTools/ToolMeasurement.py:49 flatcamTools/ToolMeasurement.py:65
 msgid "This is measuring Start point coordinates."
@@ -11490,7 +11483,7 @@ msgstr "Это координаты точки остановки измерен
 
 #: flatcamTools/ToolMeasurement.py:54
 msgid "Dx"
-msgstr "Дист. по X"
+msgstr "Дистанция по X"
 
 #: flatcamTools/ToolMeasurement.py:55 flatcamTools/ToolMeasurement.py:73
 msgid "This is the distance measured over the X axis."
@@ -11498,7 +11491,7 @@ msgstr "Это расстояние, измеренное по оси X."
 
 #: flatcamTools/ToolMeasurement.py:57
 msgid "Dy"
-msgstr "Дист. по Y"
+msgstr "Дистанция по Y:"
 
 #: flatcamTools/ToolMeasurement.py:58 flatcamTools/ToolMeasurement.py:77
 msgid "This is the distance measured over the Y axis."
@@ -11691,7 +11684,7 @@ msgstr ""
 
 #: flatcamTools/ToolNonCopperClear.py:343 flatcamTools/ToolPaint.py:323
 msgid "Ref. Object"
-msgstr "Кон. объект"
+msgstr "Указатель объекта"
 
 #: flatcamTools/ToolNonCopperClear.py:345 flatcamTools/ToolPaint.py:325
 msgid "The FlatCAM object to be used as non copper clearing reference."
@@ -11944,7 +11937,7 @@ msgstr ""
 
 #: flatcamTools/ToolPaint.py:294
 msgid "Single Polygon"
-msgstr "Единственный Полигон"
+msgstr "Единичный полигон"
 
 #: flatcamTools/ToolPaint.py:296
 msgid "All Polygons"
@@ -12305,7 +12298,7 @@ msgstr "Нет подавления"
 
 #: flatcamTools/ToolPcbWizard.py:114
 msgid "Zeros supp."
-msgstr "Подд. нулей"
+msgstr "Поддержка нулей"
 
 #: flatcamTools/ToolPcbWizard.py:116
 msgid ""
@@ -12457,21 +12450,21 @@ msgstr "Выпуклая область корпуса"
 
 #: flatcamTools/ToolProperties.py:195
 msgid "Inch"
-msgstr "дюйм"
+msgstr "Дюйм"
 
 #: flatcamTools/ToolProperties.py:196
 msgid "Metric"
-msgstr "метрический"
+msgstr "Метрический"
 
 #: flatcamTools/ToolProperties.py:247 flatcamTools/ToolProperties.py:261
 #: flatcamTools/ToolProperties.py:264 flatcamTools/ToolProperties.py:267
 msgid "Present"
-msgstr "настоящее время"
+msgstr "Представление"
 
 #: flatcamTools/ToolProperties.py:247 flatcamTools/ToolProperties.py:261
 #: flatcamTools/ToolProperties.py:264 flatcamTools/ToolProperties.py:267
 msgid "None"
-msgstr "Никто"
+msgstr "Нет"
 
 #: flatcamTools/ToolShell.py:69
 msgid "...proccessing..."
@@ -12591,7 +12584,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:324
 msgid "Geo Result"
-msgstr "Результ. Geo"
+msgstr "Результирующая Geo"
 
 #: flatcamTools/ToolSolderPaste.py:326
 msgid ""
@@ -12625,7 +12618,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:357
 msgid "CNC Result"
-msgstr "Результ. CNC"
+msgstr "Результирующий CNC"
 
 #: flatcamTools/ToolSolderPaste.py:359
 msgid ""
@@ -13004,6 +12997,57 @@ msgstr ""
 #: flatcamTools/ToolTransform.py:872
 msgid "CNCJob objects can't be offseted."
 msgstr "Объекты CNCJob не могут быть смещены."
+
+#, fuzzy
+#~| msgid ""
+#~| "How much (fraction) of the tool width to overlap each tool pass.\n"
+#~| "Example:\n"
+#~| "A value here of 0.25 means 25% from the tool diameter found above.\n"
+#~| "\n"
+#~| "Adjust the value starting with lower values\n"
+#~| "and increasing it if areas that should be painted are still \n"
+#~| "not painted.\n"
+#~| "Lower values = faster processing, faster execution on PCB.\n"
+#~| "Higher values = slow processing and slow execution on CNC\n"
+#~| "due of too many paths."
+#~ msgid ""
+#~ "How much (fraction) of the tool width to overlap each tool pass.\n"
+#~ "Example:\n"
+#~ "A value here of 0.25 means 25\\% from the tool diameter found above.\n"
+#~ "\n"
+#~ "Adjust the value starting with lower values\n"
+#~ "and increasing it if areas that should be painted are still \n"
+#~ "not painted.\n"
+#~ "Lower values = faster processing, faster execution on PCB.\n"
+#~ "Higher values = slow processing and slow execution on CNC\n"
+#~ "due of too many paths."
+#~ msgstr ""
+#~ "Какая часть ширины инструмента будет перекрываться за каждый проход "
+#~ "инструмента.\n"
+#~ "Пример:\n"
+#~ "Здесь значение 0.25 означает 25% от диаметра инструмента, указанного "
+#~ "выше.\n"
+#~ "\n"
+#~ "Отрегулируйте значение, начиная с более низких значений\n"
+#~ "и увеличивая его, если области, которые должны быть нарисованы, все еще\n"
+#~ "не окрашены.\n"
+#~ "Более низкие значения = более быстрая обработка, более быстрое выполнение "
+#~ "на печатной плате.\n"
+#~ "Более высокие значения = медленная обработка и медленное выполнение на "
+#~ "ЧПУ\n"
+#~ "из-за большого количества путей."
+
+#~ msgid "z_cut = Z coord for Toolchange"
+#~ msgstr "z_cut = Z coord for Toolchange"
+
+#~ msgid "z_move = Z coord for Toolchange"
+#~ msgstr "z_move = Z coord for Toolchange"
+
+#~ msgid "%s/Project_%s"
+#~ msgstr "%s/Project_%s"
+
+#~ msgid "tool_tab"
+#~ msgstr "tool_tab"
 
 #~ msgid "<b>Apertures:</b>"
 #~ msgstr "<b>Отверстия:</b>"
@@ -13402,57 +13446,6 @@ msgstr "Объекты CNCJob не могут быть смещены."
 
 #~ msgid "Line"
 #~ msgstr "Линия"
-
-#, fuzzy
-#~| msgid ""
-#~| "How much (fraction) of the tool width to overlap each tool pass.\n"
-#~| "Example:\n"
-#~| "A value here of 0.25 means 25% from the tool diameter found above.\n"
-#~| "\n"
-#~| "Adjust the value starting with lower values\n"
-#~| "and increasing it if areas that should be painted are still \n"
-#~| "not painted.\n"
-#~| "Lower values = faster processing, faster execution on PCB.\n"
-#~| "Higher values = slow processing and slow execution on CNC\n"
-#~| "due of too many paths."
-#~ msgid ""
-#~ "How much (fraction) of the tool width to overlap each tool pass.\n"
-#~ "Example:\n"
-#~ "A value here of 0.25 means 25\\% from the tool diameter found above.\n"
-#~ "\n"
-#~ "Adjust the value starting with lower values\n"
-#~ "and increasing it if areas that should be painted are still \n"
-#~ "not painted.\n"
-#~ "Lower values = faster processing, faster execution on PCB.\n"
-#~ "Higher values = slow processing and slow execution on CNC\n"
-#~ "due of too many paths."
-#~ msgstr ""
-#~ "Какая часть ширины инструмента будет перекрываться за каждый проход "
-#~ "инструмента.\n"
-#~ "Пример:\n"
-#~ "Здесь значение 0.25 означает 25% от диаметра инструмента, указанного "
-#~ "выше.\n"
-#~ "\n"
-#~ "Отрегулируйте значение, начиная с более низких значений\n"
-#~ "и увеличивая его, если области, которые должны быть нарисованы, все еще\n"
-#~ "не окрашены.\n"
-#~ "Более низкие значения = более быстрая обработка, более быстрое выполнение "
-#~ "на печатной плате.\n"
-#~ "Более высокие значения = медленная обработка и медленное выполнение на "
-#~ "ЧПУ\n"
-#~ "из-за большого количества путей."
-
-#~ msgid "z_cut = Z coord for Toolchange"
-#~ msgstr "z_cut = Z coord for Toolchange"
-
-#~ msgid "z_move = Z coord for Toolchange"
-#~ msgstr "z_move = Z coord for Toolchange"
-
-#~ msgid "%s/Project_%s"
-#~ msgstr "%s/Project_%s"
-
-#~ msgid "tool_tab"
-#~ msgstr "tool_tab"
 
 #~ msgid "Tool dia:                   "
 #~ msgstr "Диам. инстр.:                   "

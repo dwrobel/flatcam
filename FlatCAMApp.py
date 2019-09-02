@@ -8951,7 +8951,7 @@ class App(QtCore.QObject):
 
         tsize = fsize + int(fsize / 2)
 
-        selected_text = _('''
+        selected_text = (_('''
 <p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
 
 <p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
@@ -8973,7 +8973,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
 <p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: <strng>F3</strong>.</span></p>
 
-        '''.format(fsize=fsize, tsize=tsize))
+        ''').format(fsize=fsize, tsize=tsize))
 
         sel_title.setText(selected_text)
         sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
