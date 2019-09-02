@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Properties Tool made threaded the calculation of convex_hull area and to work for multi-geo objects
 - in NCC tool the type of tool that is used is transferred to the Geometry object
 - in NCC tool the type of isolation done with the tools selected as isolation tools can now be selected and it has also an Edit -> Preferences entry
+- in Properties Tool fixed the dimensions calculations (length, width, area) to work for multi-geo objects
 
 1.09.2019
 
