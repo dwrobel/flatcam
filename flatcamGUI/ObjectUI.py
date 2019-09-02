@@ -558,7 +558,8 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_table.horizontalHeaderItem(0).setToolTip(
             _("This is the Tool Number.\n"
               "When ToolChange is checked, on toolchange event this value\n"
-              "will be showed as a T1, T2 ... Tn in the Machine Code."))
+              "will be showed as a T1, T2 ... Tn in the Machine Code.\n\n"
+              "Here the tools are selected for G-code generation."))
         self.tools_table.horizontalHeaderItem(1).setToolTip(
             _("Tool Diameter. It's value (in current FlatCAM units) \n"
               "is the cut width into the material."))
@@ -573,7 +574,8 @@ class ExcellonObjectUI(ObjectUI):
               "to create the desired exit hole diameter due of the tip shape.\n"
               "The value here can compensate the Cut Z parameter."))
         self.tools_table.horizontalHeaderItem(5).setToolTip(
-            _("Toggle display of the drills for the current tool."))
+            _("Toggle display of the drills for the current tool.\n"
+              "This does not select the tools for G-code generation."))
 
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)

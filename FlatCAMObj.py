@@ -1946,6 +1946,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 t_offset = self.app.defaults['excellon_offset']
 
             tool_offset_item = QtWidgets.QTableWidgetItem('%s' % str(t_offset))
+            tool_offset_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
@@ -1961,20 +1962,26 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.tool_row += 1
 
         # add a last row with the Total number of drills
-        empty = QtWidgets.QTableWidgetItem('')
-        empty.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         empty_1 = QtWidgets.QTableWidgetItem('')
         empty_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1_1 = QtWidgets.QTableWidgetItem('')
+        empty_1_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1_2 = QtWidgets.QTableWidgetItem('')
+        empty_1_2.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1_3 = QtWidgets.QTableWidgetItem('')
+        empty_1_3.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
         label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % self.tot_drill_cnt)
         label_tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
         tot_drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
-        self.ui.tools_table.setItem(self.tool_row, 0, empty)
+        self.ui.tools_table.setItem(self.tool_row, 0, empty_1)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
         self.ui.tools_table.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
-        self.ui.tools_table.setItem(self.tool_row, 3, empty_1)  # Total number of drills
+        self.ui.tools_table.setItem(self.tool_row, 3, empty_1_1)
+        self.ui.tools_table.setItem(self.tool_row, 4, empty_1_2)
+        self.ui.tools_table.setItem(self.tool_row, 5, empty_1_3)
 
         font = QtGui.QFont()
         font.setBold(True)
@@ -1989,8 +1996,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # add a last row with the Total number of slots
         empty_2 = QtWidgets.QTableWidgetItem('')
         empty_2.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-        empty_3 = QtWidgets.QTableWidgetItem('')
-        empty_3.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2_1 = QtWidgets.QTableWidgetItem('')
+        empty_2_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2_2 = QtWidgets.QTableWidgetItem('')
+        empty_2_2.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_2_3 = QtWidgets.QTableWidgetItem('')
+        empty_2_3.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
         label_tot_slot_count = QtWidgets.QTableWidgetItem(_('Total Slots'))
         tot_slot_count = QtWidgets.QTableWidgetItem('%d' % self.tot_slot_cnt)
@@ -1999,8 +2010,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.ui.tools_table.setItem(self.tool_row, 0, empty_2)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
-        self.ui.tools_table.setItem(self.tool_row, 2, empty_3)
+        self.ui.tools_table.setItem(self.tool_row, 2, empty_2_1)
         self.ui.tools_table.setItem(self.tool_row, 3, tot_slot_count)  # Total number of slots
+        self.ui.tools_table.setItem(self.tool_row, 4, empty_2_2)
+        self.ui.tools_table.setItem(self.tool_row, 5, empty_2_3)
 
         for kl in [1, 2, 3]:
             self.ui.tools_table.item(self.tool_row, kl).setFont(font)
