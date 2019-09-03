@@ -1601,6 +1601,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if type(empty) is Polygon:
                 empty = MultiPolygon([empty])
 
+            cp = None
             for tool in sorted_tools:
                 app_obj.inform.emit(_('[success] Non-Copper Clearing with ToolDia = %s started.') % str(tool))
                 cleared_geo[:] = []
@@ -1622,22 +1623,44 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if area.geoms:
                     if len(area.geoms) > 0:
                         for p in area.geoms:
-                            try:
-                                if ncc_method == 'standard':
-                                    cp = self.clear_polygon(p, tool, self.app.defaults["gerber_circle_steps"],
-                                                            overlap=overlap, contour=contour, connect=connect)
-                                elif ncc_method == 'seed':
-                                    cp = self.clear_polygon2(p, tool, self.app.defaults["gerber_circle_steps"],
-                                                             overlap=overlap, contour=contour, connect=connect)
-                                else:
-                                    cp = self.clear_polygon3(p, tool, self.app.defaults["gerber_circle_steps"],
-                                                             overlap=overlap, contour=contour, connect=connect)
-                                if cp:
-                                    cleared_geo += list(cp.get_objects())
-                            except Exception as e:
-                                log.warning("Polygon can not be cleared. %s" % str(e))
-                                app_obj.poly_not_cleared = True
-                                continue
+                            if p is not None:
+                                try:
+                                    if isinstance(p, Polygon):
+                                        if ncc_method == 'standard':
+                                            cp = self.clear_polygon(p, tool, self.app.defaults["gerber_circle_steps"],
+                                                                    overlap=overlap, contour=contour, connect=connect)
+                                        elif ncc_method == 'seed':
+                                            cp = self.clear_polygon2(p, tool, self.app.defaults["gerber_circle_steps"],
+                                                                     overlap=overlap, contour=contour, connect=connect)
+                                        else:
+                                            cp = self.clear_polygon3(p, tool, self.app.defaults["gerber_circle_steps"],
+                                                                     overlap=overlap, contour=contour, connect=connect)
+                                        if cp:
+                                            cleared_geo += list(cp.get_objects())
+                                    elif isinstance(p, MultiPolygon):
+                                        for pol in p:
+                                            if pol is not None:
+                                                if ncc_method == 'standard':
+                                                    cp = self.clear_polygon(pol, tool,
+                                                                            self.app.defaults["gerber_circle_steps"],
+                                                                            overlap=overlap, contour=contour,
+                                                                            connect=connect)
+                                                elif ncc_method == 'seed':
+                                                    cp = self.clear_polygon2(pol, tool,
+                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             overlap=overlap, contour=contour,
+                                                                             connect=connect)
+                                                else:
+                                                    cp = self.clear_polygon3(pol, tool,
+                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             overlap=overlap, contour=contour,
+                                                                             connect=connect)
+                                                if cp:
+                                                    cleared_geo += list(cp.get_objects())
+                                except Exception as e:
+                                    log.warning("Polygon can not be cleared. %s" % str(e))
+                                    app_obj.poly_not_cleared = True
+                                    continue
 
                         # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
@@ -1866,23 +1889,52 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if area.geoms:
                     if len(area.geoms) > 0:
                         for p in area.geoms:
-                            try:
-                                if ncc_method == 'standard':
-                                    cp = self.clear_polygon(p, tool_used, self.app.defaults["gerber_circle_steps"],
-                                                            overlap=overlap, contour=contour, connect=connect)
-                                elif ncc_method == 'seed':
-                                    cp = self.clear_polygon2(p, tool_used,
-                                                             self.app.defaults["gerber_circle_steps"],
-                                                             overlap=overlap, contour=contour, connect=connect)
-                                else:
-                                    cp = self.clear_polygon3(p, tool_used,
-                                                             self.app.defaults["gerber_circle_steps"],
-                                                             overlap=overlap, contour=contour, connect=connect)
-                                cleared_geo.append(list(cp.get_objects()))
-                            except:
-                                log.warning("Polygon can't be cleared.")
-                                # this polygon should be added to a list and then try clear it with a smaller tool
-                                rest_geo.append(p)
+                            if p is not None:
+                                if isinstance(p, Polygon):
+                                    try:
+                                        if ncc_method == 'standard':
+                                            cp = self.clear_polygon(p, tool_used,
+                                                                    self.app.defaults["gerber_circle_steps"],
+                                                                    overlap=overlap, contour=contour, connect=connect)
+                                        elif ncc_method == 'seed':
+                                            cp = self.clear_polygon2(p, tool_used,
+                                                                     self.app.defaults["gerber_circle_steps"],
+                                                                     overlap=overlap, contour=contour, connect=connect)
+                                        else:
+                                            cp = self.clear_polygon3(p, tool_used,
+                                                                     self.app.defaults["gerber_circle_steps"],
+                                                                     overlap=overlap, contour=contour, connect=connect)
+                                        cleared_geo.append(list(cp.get_objects()))
+                                    except Exception as e:
+                                        log.warning("Polygon can't be cleared. %s" % str(e))
+                                        # this polygon should be added to a list and then try clear it with
+                                        # a smaller tool
+                                        rest_geo.append(p)
+                            elif isinstance(p, MultiPolygon):
+                                for poly in p:
+                                    if poly is not None:
+                                        try:
+                                            if ncc_method == 'standard':
+                                                cp = self.clear_polygon(poly, tool_used,
+                                                                        self.app.defaults["gerber_circle_steps"],
+                                                                        overlap=overlap, contour=contour,
+                                                                        connect=connect)
+                                            elif ncc_method == 'seed':
+                                                cp = self.clear_polygon2(poly, tool_used,
+                                                                         self.app.defaults["gerber_circle_steps"],
+                                                                         overlap=overlap, contour=contour,
+                                                                         connect=connect)
+                                            else:
+                                                cp = self.clear_polygon3(poly, tool_used,
+                                                                         self.app.defaults["gerber_circle_steps"],
+                                                                         overlap=overlap, contour=contour,
+                                                                         connect=connect)
+                                            cleared_geo.append(list(cp.get_objects()))
+                                        except Exception as e:
+                                            log.warning("Polygon can't be cleared. %s" % str(e))
+                                            # this polygon should be added to a list and then try clear it with
+                                            # a smaller tool
+                                            rest_geo.append(poly)
 
                         # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:

@@ -1027,9 +1027,15 @@ class Geometry(object):
 
         # Add margin (contour) to storage
         if contour:
-            geoms.insert(margin_poly.exterior)
-            for ints in margin_poly.interiors:
-                geoms.insert(ints)
+            if isinstance(margin_poly, Polygon):
+                geoms.insert(margin_poly.exterior)
+                for ints in margin_poly.interiors:
+                    geoms.insert(ints)
+            elif isinstance(margin_poly, MultiPolygon):
+                for poly in margin_poly:
+                    geoms.insert(poly.exterior)
+                    for ints in poly.interiors:
+                        geoms.insert(ints)
 
         # Optimization: Reduce lifts
         if connect:

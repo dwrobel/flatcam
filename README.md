@@ -22,6 +22,8 @@ CAD program, and create G-Code for Isolation routing.
 - in Paint Tool and NCC Tool fixed the RMB click detection when Area selection is used
 - finished the work on file extensions registration with FlatCAM. If the file extensions are deleted in the Preferences -> File Associations then those extensions are unregistered with FlatCAM
 - fixed bug in NCC Tools and in SolderPaste Tool if in Edit -> Preferences only one tool is entered
+- fixed bug in camblib.clear_polygon3() which caused that some copper clearing / paintings were not complete (some polygons were not processed) when the Straight Lines method was used
+- some changes in NCC Tools regarding of the clearing itself
 
 2.09.2019
 
