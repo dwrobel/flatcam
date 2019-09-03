@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - small changes in NCC tool regarding the usage of the V-shape tool
 - fixed the isolation distance in NCC Tool for the tools with iso_op type
 - in NCC Tool now the Area adding is continuous until RMB is clicked (no key modifier is needed anymore)
+- fixed German language translation
 
 2.09.2019
 
