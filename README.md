@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed German language translation
 - in NCC Tool added a warning in case there are isolation tools and if those isolation's are interrupted by an area or a box
 - in Paint Tool made that the area selection is repeated until RMB click
+- in Paint Tool and NCC Tool fixed the RMB click detection when Area selection is used
 
 2.09.2019
 

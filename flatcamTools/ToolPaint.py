@@ -1060,14 +1060,18 @@ class ToolPaint(FlatCAMTool, Gerber):
                         # self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
                         # self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
                         # self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-                elif event.button == 2 and self.first_click is False and self.mouse_is_dragging is False:
+                elif event.button == 2 and self.mouse_is_dragging is False:
                     self.first_click = False
+
                     self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
                     self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
 
                     self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
                     self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
                     self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+                    if len(self.sel_rect) == 0:
+                        return
 
                     self.sel_rect = cascaded_union(self.sel_rect)
                     self.paint_poly_area(obj=self.paint_obj,
@@ -1083,12 +1087,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                 curr_pos = self.app.plotcanvas.translate_coords(event.pos)
                 self.app.app_cursor.enabled = False
 
-                if event.button == 2:
-                    if event.is_dragging is True:
-                        self.mouse_is_dragging = True
-                    else:
-                        self.mouse_is_dragging = False
+                # detect mouse dragging motion
+                if event.is_dragging is True:
+                    self.mouse_is_dragging = True
+                else:
+                    self.mouse_is_dragging = False
 
+                # update the cursor position
                 if self.app.grid_status() == True:
                     self.app.app_cursor.enabled = True
                     # Update cursor
@@ -1096,6 +1101,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
                                                  symbol='++', edge_color='black', size=20)
 
+                # draw the utility geometry
                 if self.first_click:
                     self.app.delete_selection_shape()
                     self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
