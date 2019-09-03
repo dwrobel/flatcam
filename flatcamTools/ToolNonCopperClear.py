@@ -140,6 +140,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "If it's not successful then the non-copper clearing will fail, too.\n"
               "- Clear -> the regular non-copper clearing."))
 
+        form = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form)
+
         # Milling Type Radio Button
         self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
         self.milling_type_label.setToolTip(
@@ -174,15 +177,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                           "'Reverse' --> menas that the tools will ordered from big to small\n\n"
                                           "WARNING: using rest machining will automatically set the order\n"
                                           "in reverse and disable this control."))
-        form = QtWidgets.QFormLayout()
-        self.tools_box.addLayout(form)
 
-        form.addRow(QtWidgets.QLabel(''), QtWidgets.QLabel(''))
         form.addRow(self.milling_type_label, self.milling_type_radio)
         form.addRow(self.ncc_order_label, self.ncc_order_radio)
+        form.addRow(QtWidgets.QLabel(''))
 
         self.milling_type_label.hide()
         self.milling_type_radio.hide()
+
+        # #############################################################
+        # ############### Tool selection ##############################
+        # #############################################################
+        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("Tool Selection"))
+        form.addRow(self.tool_sel_label)
 
         # Tool Type Radio Button
         self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
@@ -1195,7 +1202,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         # self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
                         # self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
                         # self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-                elif event.button == 2 and self.first_click is False and self.mouse_is_dragging is False:
+                elif event.button == 2 and self.first_click == False and self.mouse_is_dragging == False:
                     self.first_click = False
                     self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
                     self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
@@ -1454,6 +1461,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
+            # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
+            # will store the number of tools for which the isolation is broken
+            warning_flag = 0
+
             if order == 'fwd':
                 sorted_tools.sort(reverse=False)
             elif order == 'rev':
@@ -1540,6 +1551,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     new_geo = line_elem.intersection(bounding_box)
                                     if new_geo and not new_geo.is_empty:
                                         new_geometry.append(new_geo)
+
+                        # a MultiLineString geometry element will show that the isolation is broken for this tool
+                        for geo_e in new_geometry:
+                            if type(geo_e) == MultiLineString:
+                                warning_flag += 1
+                                break
 
                         for k, v in tools_storage.items():
                             if float('%.4f' % v['tooldia']) == float('%.4f' % tool_iso):
@@ -1668,8 +1685,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # Experimental...
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
-
-            self.app.inform.emit(_("[success] Non-Copper clear all done."))
+            if warning_flag == 0:
+                self.app.inform.emit(_("[success] Non-Copper clear all done."))
+            else:
+                self.app.inform.emit('%s: %s %s.' % (_("[WARNING] Non-Copper clear all done but the copper features "
+                                                       "isolation is broken for"), str(warning_flag),  _("tools")))
 
         # ###########################################################################################
         # Initializes the new geometry object for the case of the rest-machining ####################
@@ -1677,6 +1697,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         def gen_clear_area_rest(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+
+
+            # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
+            # will store the number of tools for which the isolation is broken
+            warning_flag = 0
 
             sorted_tools.sort(reverse=True)
 
@@ -1756,6 +1781,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     new_geo = line_elem.intersection(bounding_box)
                                     if new_geo and not new_geo.is_empty:
                                         new_geometry.append(new_geo)
+
+                        # a MultiLineString geometry element will show that the isolation is broken for this tool
+                        for geo_e in new_geometry:
+                            if type(geo_e) == MultiLineString:
+                                warning_flag += 1
+                                break
 
                         for k, v in tools_storage.items():
                             if float('%.4f' % v['tooldia']) == float('%.4f' % tool_iso):
@@ -1881,6 +1912,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # check to see if geo_obj.tools is empty
             # it will be updated only if there is a solid_geometry for tools
             if geo_obj.tools:
+                if warning_flag == 0:
+                    self.app.inform.emit(_("[success] Non-Copper Rest Machining clear all done."))
+                else:
+                    self.app.inform.emit(
+                        '%s: %s %s.' % (_("[WARNING] Non-Copper Rest Machining clear all done but the copper features "
+                                          "isolation is broken for"), str(warning_flag), _("tools")))
                 return
             else:
                 # I will use this variable for this purpose although it was meant for something else

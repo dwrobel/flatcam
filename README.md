@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the isolation distance in NCC Tool for the tools with iso_op type
 - in NCC Tool now the Area adding is continuous until RMB is clicked (no key modifier is needed anymore)
 - fixed German language translation
+- in NCC Tool added a warning in case there are isolation tools and if those isolation's are interrupted by an area or a box
+- in Paint Tool made that the area selection is repeated until RMB click
 
 2.09.2019
 
