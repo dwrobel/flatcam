@@ -20,13 +20,15 @@ CAD program, and create G-Code for Isolation routing.
 - in NCC Tool added a warning in case there are isolation tools and if those isolation's are interrupted by an area or a box
 - in Paint Tool made that the area selection is repeated until RMB click
 - in Paint Tool and NCC Tool fixed the RMB click detection when Area selection is used
+- finished the work on file extensions registration with FlatCAM. If the file extensions are deleted in the Preferences -> File Associations then those extensions are unregistered with FlatCAM
+- fixed bug in NCC Tools and in SolderPaste Tool if in Edit -> Preferences only one tool is entered
 
 2.09.2019
 
 - fixed issue in NCC Tool when using area option
 - added formatting for some strings in the app strings, making the future translations easier
 - made changes in the Excellon Tools Table to make it more clear that the tools are selected in the # column and not in the Plot column
-- in Excellon and Gerber Seleted tab made the Plot (mark) columns not selectable
+- in Excellon and Gerber Selected tab made the Plot (mark) columns not selectable
 - some ToolTips were modified
 - in Properties Tool made threaded the calculation of convex_hull area and also made it to work for multi-geo objects
 - in NCC tool the type of tool that is used is transferred to the Geometry object

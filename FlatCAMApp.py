@@ -71,40 +71,6 @@ if '_' not in builtins.__dict__:
 # ########################################
 
 
-class ArgsThread(QtCore.QThread):
-    open_signal = pyqtSignal(list)
-
-    if sys.platform == 'win32':
-        address = (r'\\.\pipe\NPtest', 'AF_PIPE')
-    else:
-        address = ('/tmp/testipc', 'AF_UNIX')
-
-    def my_loop(self, address):
-        try:
-            listener = Listener(*address)
-            while True:
-                conn = listener.accept()
-                self.serve(conn)
-        except socket.error as e:
-            conn = Client(*address)
-            conn.send(sys.argv)
-            conn.send('close')
-            # close the current instance only if there are args
-            if len(sys.argv) > 1:
-                sys.exit()
-
-    def serve(self, conn):
-        while True:
-            msg = conn.recv()
-            if msg == 'close':
-                break
-            self.open_signal.emit(msg)
-        conn.close()
-
-    def run(self):
-        self.my_loop(self.address)
-
-
 class App(QtCore.QObject):
     """
     The main application class. The constructor starts the GUI.
@@ -754,10 +720,11 @@ class App(QtCore.QObject):
         self.defaults.set_change_callback(self.on_defaults_dict_change)  # When the dictionary changes.
         self.defaults.update({
             # Global APP Preferences
+            "first_run": True,
+            "units": "IN",
             "global_serial": 0,
             "global_stats": {},
             "global_tabs_detachable": True,
-            "units": "IN",
             "global_app_level": 'b',
             "global_portable": False,
             "global_language": 'English',
@@ -1800,6 +1767,15 @@ class App(QtCore.QObject):
 
         # when there are arguments at application startup this get launched
         self.args_at_startup.connect(lambda: self.on_startup_args())
+
+        # connect the 'Apply' buttons from the Preferences/File Associations
+        self.ui.fa_defaults_form.fa_excellon_group.exc_list_btn.clicked.connect(
+            lambda: self.on_register_files(obj_type='excellon'))
+        self.ui.fa_defaults_form.fa_gcode_group.gco_list_btn.clicked.connect(
+            lambda: self.on_register_files(obj_type='gcode'))
+        self.ui.fa_defaults_form.fa_gerber_group.grb_list_btn.clicked.connect(
+            lambda: self.on_register_files(obj_type='gerber'))
+
         self.log.debug("Finished connecting Signals.")
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
@@ -2127,7 +2103,11 @@ class App(QtCore.QObject):
         # ################################################
         # ######### Variables for global usage ###########
         # ################################################
-        self.on_apply_associations()
+
+        # register files with FlatCAM; it works only for Windows for now
+        if sys.platform == 'win32' and self.defaults["first_run"] is True:
+            self.on_register_files()
+
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
         self.rel_point2 = (0, 0)
@@ -2244,6 +2224,9 @@ class App(QtCore.QObject):
         App.log.debug("END of constructor. Releasing control.")
 
         self.set_ui_title(name=_("New Project - Not saved"))
+
+        # after the first run, this object should be False
+        self.defaults["first_run"] = False
 
         # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
@@ -3896,7 +3879,9 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.show()
 
-    def on_apply_associations(self):
+    def on_register_files(self, obj_type=None):
+        log.debug("Manufacturing files extensions are registered with FlatCAM.")
+
         new_reg_path = 'Software\\Classes\\'
         # find if the current user is admin
         try:
@@ -3919,20 +3904,77 @@ class App(QtCore.QObject):
             except WindowsError:
                 return False
 
-        exc_list = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
-        for ext in exc_list:
-            new_k = new_reg_path + ext.replace(' ', '')
-            set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+        # delete key in registry
+        def delete_reg(root_path, reg_path, key_to_del):
+            key_to_del_path = reg_path + key_to_del
+            try:
+                winreg.DeleteKey(root_path, key_to_del_path)
+                return True
+            except WindowsError:
+                return False
 
-        gco_list = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
-        for ext in gco_list:
-            new_k = new_reg_path + ext.replace(' ', '')
-            set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+        if obj_type is None or obj_type == 'excellon':
+            exc_list = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
+            exc_list = [x for x in exc_list if x != '']
 
-        grb_list = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
-        for ext in grb_list:
-            new_k = new_reg_path + ext.replace(' ', '')
-            set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+            # register all keys in the Preferences window
+            for ext in exc_list:
+                new_k = new_reg_path + ext
+                set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+
+            # and unregister those that are no longer in the Preferences windows but are in the file
+            for ext in self.defaults["fa_excellon"].replace(' ', '').split(','):
+                if ext not in exc_list:
+                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del=ext)
+
+            # now write the updated extensions to the self.defaults
+            new_ext = ''
+            for ext in exc_list:
+                new_ext = new_ext + ext + ', '
+            self.defaults["fa_excellon"] = new_ext
+            self.inform.emit(_("[success] Selected Excellon file extensions registered with FlatCAM."))
+
+        if obj_type is None or obj_type == 'gcode':
+            gco_list = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
+            gco_list = [x for x in gco_list if x != '']
+
+            # register all keys in the Preferences window
+            for ext in gco_list:
+                new_k = new_reg_path + ext
+                set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+
+            # and unregister those that are no longer in the Preferences windows but are in the file
+            for ext in self.defaults["fa_gcode"].replace(' ', '').split(','):
+                if ext not in gco_list:
+                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del=ext)
+
+            # now write the updated extensions to the self.defaults
+            new_ext = ''
+            for ext in gco_list:
+                new_ext = new_ext + ext + ', '
+            self.defaults["fa_gcode"] = new_ext
+            self.inform.emit(_("[success] Selected GCode file extensions registered with FlatCAM."))
+
+        if obj_type is None or obj_type == 'gerber':
+            grb_list = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
+            grb_list = [x for x in grb_list if x != '']
+
+            # register all keys in the Preferences window
+            for ext in grb_list:
+                new_k = new_reg_path + ext
+                set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+
+            # and unregister those that are no longer in the Preferences windows but are in the file
+            for ext in self.defaults["fa_gerber"].replace(' ', '').split(','):
+                if ext not in grb_list:
+                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del=ext)
+
+            # now write the updated extensions to the self.defaults
+            new_ext = ''
+            for ext in grb_list:
+                new_ext = new_ext + ext + ', '
+            self.defaults["fa_gerber"] = new_ext
+            self.inform.emit(_("[success] Selected Gerber file extensions registered with FlatCAM."))
 
     def on_edit_join(self, name=None):
         """
@@ -9587,5 +9629,39 @@ The normal flow when working in FlatCAM is the following:</span></p>
                 oname = option[len(obj.kind) + 1:]
                 obj.options[oname] = self.defaults[option]
         obj.to_form()  # Update UI
+
+
+class ArgsThread(QtCore.QThread):
+    open_signal = pyqtSignal(list)
+
+    if sys.platform == 'win32':
+        address = (r'\\.\pipe\NPtest', 'AF_PIPE')
+    else:
+        address = ('/tmp/testipc', 'AF_UNIX')
+
+    def my_loop(self, address):
+        try:
+            listener = Listener(*address)
+            while True:
+                conn = listener.accept()
+                self.serve(conn)
+        except socket.error as e:
+            conn = Client(*address)
+            conn.send(sys.argv)
+            conn.send('close')
+            # close the current instance only if there are args
+            if len(sys.argv) > 1:
+                sys.exit()
+
+    def serve(self, conn):
+        while True:
+            msg = conn.recv()
+            if msg == 'close':
+                break
+            self.open_signal.emit(msg)
+        conn.close()
+
+    def run(self):
+        self.my_loop(self.address)
 
 # end of file
