@@ -3667,7 +3667,7 @@ class App(QtCore.QObject):
             response = msgbox.clickedButton()
 
             if response == bt_yes:
-                self.on_file_saveprojectas(thread=True, quit=True)
+                self.on_file_saveprojectas(use_thread=True, quit_action=True)
             elif response == bt_no:
                 self.quit_application()
             elif response == bt_cancel:
