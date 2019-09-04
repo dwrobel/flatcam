@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.09.2019
+
+- started to work on support for G91 in Gcode (relative coordinates)
+
 3.09.2019
 
 - in NCC tool there is now a depth of cut parameter named 'Cut Z' which will dictate how deep the tool will enter into the PCB material

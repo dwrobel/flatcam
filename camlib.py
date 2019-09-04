@@ -4054,12 +4054,9 @@ class Excellon(Geometry):
                                     else:
                                         diam = (self.toolless_diam + (int(current_tool) - 1) / 100) / 25.4
 
-                                spec = {
-                                    "C": diam,
-                                }
-                                spec['solid_geometry'] = []
+                                spec = {"C": diam, 'solid_geometry': []}
                                 self.tools[name] = spec
-                                log.debug("  Tool definition out of header: %s %s" % (name, spec))
+                                log.debug("Tool definition out of header: %s %s" % (name, spec))
 
                         continue
 
@@ -4070,7 +4067,7 @@ class Excellon(Geometry):
                         if match or match1:
                             name_tool += 1
                             current_tool = str(name_tool)
-                            log.debug(" Tool change for Allegro type of Excellon: %s" % current_tool)
+                            log.debug("Tool change for Allegro type of Excellon: %s" % current_tool)
                             continue
 
                     # ## Slots parsing for drilled slots (contain G85)
@@ -4394,15 +4391,7 @@ class Excellon(Geometry):
                     if match:
 
                         name = str(int(match.group(1)))
-                        spec = {
-                            "C": float(match.group(2)),
-                            # "F": float(match.group(3)),
-                            # "S": float(match.group(4)),
-                            # "B": float(match.group(5)),
-                            # "H": float(match.group(6)),
-                            # "Z": float(match.group(7))
-                        }
-                        spec['solid_geometry'] = []
+                        spec = {"C": float(match.group(2)), 'solid_geometry': []}
                         self.tools[name] = spec
                         log.debug("  Tool definition: %s %s" % (name, spec))
                         continue
@@ -4505,7 +4494,8 @@ class Excellon(Geometry):
         except Exception as e:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
             msg = _("[ERROR_NOTCL] An internal error has ocurred. See shell.\n")
-            msg += _('[ERROR] Excellon Parser error.\nParsing Failed. Line {l_nr}: {line}\n').format(l_nr=line_num, line=eline)
+            msg += _('[ERROR] Excellon Parser error.\nParsing Failed. Line {l_nr}: {line}\n').format(l_nr=line_num,
+                                                                                                     line=eline)
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
 
@@ -5050,6 +5040,7 @@ class CNCjob(Geometry):
 
         self.feedminutecode = "G94"
         self.absolutecode = "G90"
+        self.relativecode = "G91"
 
         self.gcode = ""
         self.gcode_parsed = None
@@ -5227,14 +5218,14 @@ class CNCjob(Geometry):
 
         if drillz > 0:
             self.app.inform.emit(_("[WARNING] The Cut Z parameter has positive value. "
-                                 "It is the depth value to drill into material.\n"
-                                 "The Cut Z parameter needs to have a negative value, assuming it is a typo "
-                                 "therefore the app will convert the value to negative. "
-                                 "Check the resulting CNC code (Gcode etc)."))
+                                   "It is the depth value to drill into material.\n"
+                                   "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                   "therefore the app will convert the value to negative. "
+                                   "Check the resulting CNC code (Gcode etc)."))
             self.z_cut = -drillz
         elif drillz == 0:
             self.app.inform.emit(_("[WARNING] The Cut Z parameter is zero. "
-                                 "There will be no cut, skipping %s file") % exobj.options['name'])
+                                   "There will be no cut, skipping %s file") % exobj.options['name'])
             return 'fail'
         else:
             self.z_cut = drillz
@@ -5248,7 +5239,7 @@ class CNCjob(Geometry):
                 self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
                 if len(self.xy_toolchange) < 2:
                     self.app.inform.emit(_("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
-                                         "in the format (x, y) \nbut now there is only one value, not two. "))
+                                           "in the format (x, y) \nbut now there is only one value, not two. "))
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
@@ -5371,8 +5362,10 @@ class CNCjob(Geometry):
                         self.postdata['toolC'] = exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
-                        ############################################## ##
-                        # Create the data.
+                        # ###############################################
+                        # ############ Create the data. #################
+                        # ###############################################
+
                         node_list = []
                         locations = create_data_array()
                         tsp_size = len(locations)
@@ -5421,7 +5414,7 @@ class CNCjob(Geometry):
                                 log.warning('No solution found.')
                         else:
                             log.warning('Specify an instance greater than 0.')
-                        ############################################## ##
+                        # ############################################# ##
 
                         # Only if tool has points.
                         if tool in points:
@@ -5485,7 +5478,7 @@ class CNCjob(Geometry):
                         self.postdata['toolC']=exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
-                        ############################################## ##
+                        # ############################################# ##
                         node_list = []
                         locations = create_data_array()
                         tsp_size = len(locations)
@@ -5527,7 +5520,7 @@ class CNCjob(Geometry):
                                 log.warning('No solution found.')
                         else:
                             log.warning('Specify an instance greater than 0.')
-                        ############################################## ##
+                        # ############################################# ##
 
                         # Only if tool has points.
                         if tool in points:
