@@ -5039,8 +5039,9 @@ class CNCjob(Geometry):
         self.unitcode = {"IN": "G20", "MM": "G21"}
 
         self.feedminutecode = "G94"
-        self.absolutecode = "G90"
-        self.relativecode = "G91"
+        # self.absolutecode = "G90"
+        # self.incrementalcode = "G91"
+        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
 
         self.gcode = ""
         self.gcode_parsed = None
@@ -5442,27 +5443,51 @@ class CNCjob(Geometry):
                                 z_offset = 0
                             self.z_cut += z_offset
 
-                            # Drillling!
-                            for k in node_list:
-                                locx = locations[k][0]
-                                locy = locations[k][1]
+                            self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+                            if self.coordinates_type == "G90":
+                                # Drillling! for Absolute coordinates type G90
+                                for k in node_list:
+                                    locx = locations[k][0]
+                                    locy = locations[k][1]
 
-                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
 
-                                if self.f_retract is False:
-                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                    measured_up_to_zero_distance += abs(self.z_cut)
-                                    measured_lift_distance += abs(self.z_move)
-                                else:
-                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                    if self.f_retract is False:
+                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                        measured_up_to_zero_distance += abs(self.z_cut)
+                                        measured_lift_distance += abs(self.z_move)
+                                    else:
+                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
 
-                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                                self.oldx = locx
-                                self.oldy = locy
+                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                    self.oldx = locx
+                                    self.oldy = locy
+                            else:
+                                # Drillling! for Incremental coordinates type G91
+                                for k in node_list:
+                                    locx = locations[k][0] - self.oldx
+                                    locy = locations[k][1] - self.oldy
+
+                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                    if self.f_retract is False:
+                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                        measured_up_to_zero_distance += abs(self.z_cut)
+                                        measured_lift_distance += abs(self.z_move)
+                                    else:
+                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                    self.oldx = locx
+                                    self.oldy = locy
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
@@ -5548,27 +5573,51 @@ class CNCjob(Geometry):
                                 z_offset = 0
                             self.z_cut += z_offset
 
-                            # Drillling!
-                            for k in node_list:
-                                locx = locations[k][0]
-                                locy = locations[k][1]
+                            self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+                            if self.coordinates_type == "G90":
+                                # Drillling! for Absolute coordinates type G90
+                                for k in node_list:
+                                    locx = locations[k][0]
+                                    locy = locations[k][1]
 
-                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
 
-                                if self.f_retract is False:
-                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                    measured_up_to_zero_distance += abs(self.z_cut)
-                                    measured_lift_distance += abs(self.z_move)
-                                else:
-                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                    if self.f_retract is False:
+                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                        measured_up_to_zero_distance += abs(self.z_cut)
+                                        measured_lift_distance += abs(self.z_move)
+                                    else:
+                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
 
-                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                                self.oldx = locx
-                                self.oldy = locy
+                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                    self.oldx = locx
+                                    self.oldy = locy
+                            else:
+                                # Drillling! for Incremental coordinates type G91
+                                for k in node_list:
+                                    locx = locations[k][0] - self.oldx
+                                    locy = locations[k][1] - self.oldy
+
+                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                    if self.f_retract is False:
+                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                        measured_up_to_zero_distance += abs(self.z_cut)
+                                        measured_lift_distance += abs(self.z_move)
+                                    else:
+                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                    self.oldx = locx
+                                    self.oldy = locy
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
@@ -5613,28 +5662,56 @@ class CNCjob(Geometry):
                             z_offset = 0
                         self.z_cut += z_offset
 
-                        # Drillling!
-                        altPoints = []
-                        for point in points[tool]:
-                            altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+                        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+                        if self.coordinates_type == "G90":
+                            # Drillling! for Absolute coordinates type G90
+                            altPoints = []
+                            for point in points[tool]:
+                                altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
 
-                        for point in self.optimized_travelling_salesman(altPoints):
-                            gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
-                            gcode += self.doformat(p.down_code, x=point[0], y=point[1])
+                            for point in self.optimized_travelling_salesman(altPoints):
+                                gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
+                                gcode += self.doformat(p.down_code, x=point[0], y=point[1])
 
-                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
 
-                            if self.f_retract is False:
-                                gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
-                                measured_up_to_zero_distance += abs(self.z_cut)
-                                measured_lift_distance += abs(self.z_move)
-                            else:
-                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                if self.f_retract is False:
+                                    gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
+                                    measured_up_to_zero_distance += abs(self.z_cut)
+                                    measured_lift_distance += abs(self.z_move)
+                                else:
+                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
 
-                            gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
-                            measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
-                            self.oldx = point[0]
-                            self.oldy = point[1]
+                                gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
+                                measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
+                                self.oldx = point[0]
+                                self.oldy = point[1]
+                        else:
+                            # Drillling! for Incremental coordinates type G91
+                            altPoints = []
+                            for point in points[tool]:
+                                altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
+
+                            for point in self.optimized_travelling_salesman(altPoints):
+                                point[0] = point[0] - self.oldx
+                                point[1] = point[1] - self.oldy
+
+                                gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
+                                gcode += self.doformat(p.down_code, x=point[0], y=point[1])
+
+                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                if self.f_retract is False:
+                                    gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
+                                    measured_up_to_zero_distance += abs(self.z_cut)
+                                    measured_lift_distance += abs(self.z_move)
+                                else:
+                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
+                                measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
+                                self.oldx = point[0]
+                                self.oldy = point[1]
                     else:
                         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                                   "The loaded Excellon file has no drills ...")
@@ -5864,7 +5941,7 @@ class CNCjob(Geometry):
                     # calculate the cut distance
                     total_cut = total_cut + geo.length
 
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
+                    self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance, old_point=current_pt)
 
                 # --------- Multi-pass ---------
                 else:
@@ -5879,7 +5956,7 @@ class CNCjob(Geometry):
                     total_cut += (geo.length * nr_cuts)
 
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
-                                                               postproc=p, current_point=current_pt)
+                                                               postproc=p, old_point=current_pt)
 
                 # calculate the total distance
                 total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
@@ -6157,7 +6234,7 @@ class CNCjob(Geometry):
                 if not multidepth:
                     # calculate the cut distance
                     total_cut += geo.length
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
+                    self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance, old_point=current_pt)
 
                 # --------- Multi-pass ---------
                 else:
@@ -6172,7 +6249,7 @@ class CNCjob(Geometry):
                     total_cut += (geo.length * nr_cuts)
 
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
-                                                               postproc=p, current_point=current_pt)
+                                                               postproc=p, old_point=current_pt)
 
                 # calculate the travel distance
                 total_travel += abs(distance(pt1=current_pt, pt2=pt))
@@ -6283,7 +6360,7 @@ class CNCjob(Geometry):
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
                     geo.coords = list(geo.coords)[::-1]
 
-                self.gcode += self.create_soldepaste_gcode(geo, p=p)
+                self.gcode += self.create_soldepaste_gcode(geo, p=p, old_point=current_pt)
                 current_pt = geo.coords[-1]
                 pt, geo = storage.nearest(current_pt)  # Next
 
@@ -6298,13 +6375,23 @@ class CNCjob(Geometry):
 
         return self.gcode
 
-    def create_soldepaste_gcode(self, geometry, p):
+    def create_soldepaste_gcode(self, geometry, p, old_point=(0, 0)):
         gcode = ''
         path = geometry.coords
 
+        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+        if self.coordinates_type == "G90":
+            # For Absolute coordinates type G90
+            first_x = path[0][0]
+            first_y = path[0][1]
+        else:
+            # For Incremental coordinates type G91
+            first_x = path[0][0] - old_point[0]
+            first_y = path[0][1] - old_point[1]
+
         if type(geometry) == LineString or type(geometry) == LinearRing:
             # Move fast to 1st point
-            gcode += self.doformat(p.rapid_code, x=path[0][0], y=path[0][1])  # Move to first point
+            gcode += self.doformat(p.rapid_code, x=first_x, y=first_y)  # Move to first point
 
             # Move down to cutting depth
             gcode += self.doformat(p.z_feedrate_code)
@@ -6316,8 +6403,20 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.feedrate_xy_code)
 
             # Cutting...
+            prev_x = first_x
+            prev_y = first_y
             for pt in path[1:]:
-                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])  # Linear motion to point
+                if self.coordinates_type == "G90":
+                    # For Absolute coordinates type G90
+                    next_x = pt[0]
+                    next_y = pt[1]
+                else:
+                    # For Incremental coordinates type G91
+                    next_x = pt[0] - prev_x
+                    next_y = pt[1] - prev_y
+                gcode += self.doformat(p.linear_code, x=next_x, y=next_y)  # Linear motion to point
+                prev_x = next_x
+                prev_y = next_y
 
             # Up to travelling height.
             gcode += self.doformat(p.spindle_off_code) # Stop dispensing
@@ -6328,7 +6427,7 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.lift_code)
         elif type(geometry) == Point:
-            gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])  # Move to first point
+            gcode += self.doformat(p.linear_code, x=first_x, y=first_y)  # Move to first point
 
             gcode += self.doformat(p.feedrate_z_dispense_code)
             gcode += self.doformat(p.down_z_start_code)
@@ -6345,18 +6444,18 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.lift_code)
         return gcode
 
-    def create_gcode_single_pass(self, geometry, extracut, tolerance):
+    def create_gcode_single_pass(self, geometry, extracut, tolerance, old_point=(0, 0)):
         # G-code. Note: self.linear2gcode() and self.point2gcode() will lower and raise the tool every time.
         gcode_single_pass = ''
 
         if type(geometry) == LineString or type(geometry) == LinearRing:
             if extracut is False:
-                gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance)
+                gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, old_point=old_point)
             else:
                 if geometry.is_ring:
-                    gcode_single_pass = self.linear2gcode_extra(geometry, tolerance=tolerance)
+                    gcode_single_pass = self.linear2gcode_extra(geometry, tolerance=tolerance, old_point=old_point)
                 else:
-                    gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance)
+                    gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, old_point=old_point)
         elif type(geometry) == Point:
             gcode_single_pass = self.point2gcode(geometry)
         else:
@@ -6365,7 +6464,7 @@ class CNCjob(Geometry):
 
         return gcode_single_pass
 
-    def create_gcode_multi_pass(self, geometry, extracut, tolerance, postproc, current_point):
+    def create_gcode_multi_pass(self, geometry, extracut, tolerance, postproc, old_point=(0, 0)):
 
         gcode_multi_pass = ''
 
@@ -6394,17 +6493,19 @@ class CNCjob(Geometry):
             # is inconsequential.
             if type(geometry) == LineString or type(geometry) == LinearRing:
                 if extracut is False:
-                    gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False)
+                    gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False,
+                                                          old_point=old_point)
                 else:
                     if geometry.is_ring:
                         gcode_multi_pass += self.linear2gcode_extra(geometry, tolerance=tolerance, z_cut=depth,
-                                                                    up=False)
+                                                                    up=False, old_point=old_point)
                     else:
-                        gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False)
+                        gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False,
+                                                              old_point=old_point)
 
             # Ignore multi-pass for points.
             elif type(geometry) == Point:
-                gcode_multi_pass += self.point2gcode(geometry)
+                gcode_multi_pass += self.point2gcode(geometry, old_point=old_point)
                 break  # Ignoring ...
             else:
                 log.warning("G-code generation not implemented for %s" % (str(type(geometry))))
@@ -6420,7 +6521,7 @@ class CNCjob(Geometry):
                 geometry.coords = list(geometry.coords)[::-1]
 
         # Lift the tool
-        gcode_multi_pass += self.doformat(postproc.lift_code, x=current_point[0], y=current_point[1])
+        gcode_multi_pass += self.doformat(postproc.lift_code, x=old_point[0], y=old_point[1])
         return gcode_multi_pass
 
     def codes_split(self, gline):
@@ -6692,43 +6793,134 @@ class CNCjob(Geometry):
         else:
             text = []
             pos = []
-            for geo in gcode_parsed:
-                if geo['kind'][0] == 'T':
-                    current_position = geo['geom'].coords[0]
-                    if current_position not in pos:
-                        pos.append(current_position)
-                        path_num += 1
-                        text.append(str(path_num))
-                    current_position = geo['geom'].coords[-1]
-                    if current_position not in pos:
-                        pos.append(current_position)
-                        path_num += 1
-                        text.append(str(path_num))
+            self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+            if self.coordinates_type == "G90":
+                # For Absolute coordinates type G90
+                for geo in gcode_parsed:
+                    if geo['kind'][0] == 'T':
+                        current_position = geo['geom'].coords[0]
+                        if current_position not in pos:
+                            pos.append(current_position)
+                            path_num += 1
+                            text.append(str(path_num))
 
-                # plot the geometry of Excellon objects
-                if self.origin_kind == 'excellon':
-                    try:
-                        poly = Polygon(geo['geom'])
-                    except ValueError:
-                        # if the geos are travel lines it will enter into Exception
+                        current_position = geo['geom'].coords[-1]
+                        if current_position not in pos:
+                            pos.append(current_position)
+                            path_num += 1
+                            text.append(str(path_num))
+
+                    # plot the geometry of Excellon objects
+                    if self.origin_kind == 'excellon':
+                        try:
+                            poly = Polygon(geo['geom'])
+                        except ValueError:
+                            # if the geos are travel lines it will enter into Exception
+                            poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                            poly = poly.simplify(tool_tolerance)
+                    else:
+                        # plot the geometry of any objects other than Excellon
                         poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
                         poly = poly.simplify(tool_tolerance)
-                else:
-                    # plot the geometry of any objects other than Excellon
-                    poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
-                    poly = poly.simplify(tool_tolerance)
 
-                if kind == 'all':
-                    obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
-                                  visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
-                elif kind == 'travel':
+                    if kind == 'all':
+                        obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
+                                      visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
+                    elif kind == 'travel':
+                        if geo['kind'][0] == 'T':
+                            obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
+                                          visible=visible, layer=2)
+                    elif kind == 'cut':
+                        if geo['kind'][0] == 'C':
+                            obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
+                                          visible=visible, layer=1)
+            else:
+                # For Incremental coordinates type G91
+                current_x = gcode_parsed[0]['geom'].coords[0][0]
+                current_y = gcode_parsed[0]['geom'].coords[0][1]
+                old_pos = (
+                    current_x,
+                    current_y
+                )
+
+                for geo in gcode_parsed:
+                    print(list(geo['geom'].coordsner))
                     if geo['kind'][0] == 'T':
-                        obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
-                                      visible=visible, layer=2)
-                elif kind == 'cut':
-                    if geo['kind'][0] == 'C':
-                        obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
-                                      visible=visible, layer=1)
+                        current_position = (
+                            geo['geom'].coords[0][0] + old_pos[0],
+                            geo['geom'].coords[0][1] + old_pos[1]
+                        )
+                        if current_position not in pos:
+                            pos.append(current_position)
+                            path_num += 1
+                            text.append(str(path_num))
+
+                        delta = (
+                            geo['geom'].coords[-1][0] - geo['geom'].coords[0][0],
+                            geo['geom'].coords[-1][1] - geo['geom'].coords[0][1]
+                        )
+                        current_position = (
+                            current_position[0] + geo['geom'].coords[-1][0],
+                            current_position[1] + geo['geom'].coords[-1][1]
+                        )
+                        if current_position not in pos:
+                            pos.append(current_position)
+                            path_num += 1
+                            text.append(str(path_num))
+
+                    # plot the geometry of Excellon objects
+                    if self.origin_kind == 'excellon':
+                        if isinstance(geo['geom'], Point):
+                            # if geo is Point
+                            current_position = (
+                                current_position[0] + geo['geom'].x,
+                                current_position[1] + geo['geom'].y
+                            )
+                            poly = Polygon(Point(current_position))
+                        elif isinstance(geo['geom'], LineString):
+                            # if the geos are travel lines (LineStrings)
+                            new_line_pts = []
+                            old_line_pos = deepcopy(current_position)
+                            for p in list(geo['geom'].coords):
+                                current_position = (
+                                    current_position[0] + p[0],
+                                    current_position[1] + p[1]
+                                )
+                                new_line_pts.append(current_position)
+                                old_line_pos = p
+                            new_line = LineString(new_line_pts)
+
+                            poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                            poly = poly.simplify(tool_tolerance)
+                    else:
+                        # plot the geometry of any objects other than Excellon
+                        new_line_pts = []
+                        old_line_pos = deepcopy(current_position)
+                        for p in list(geo['geom'].coords):
+                            current_position = (
+                                current_position[0] + p[0],
+                                current_position[1] + p[1]
+                            )
+                            new_line_pts.append(current_position)
+                            old_line_pos = p
+                        new_line = LineString(new_line_pts)
+
+                        poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                        poly = poly.simplify(tool_tolerance)
+
+                    old_pos = deepcopy(current_position)
+
+                    if kind == 'all':
+                        obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
+                                      visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
+                    elif kind == 'travel':
+                        if geo['kind'][0] == 'T':
+                            obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
+                                          visible=visible, layer=2)
+                    elif kind == 'cut':
+                        if geo['kind'][0] == 'C':
+                            obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
+                                          visible=visible, layer=1)
             try:
                 obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
@@ -6798,7 +6990,7 @@ class CNCjob(Geometry):
 
     def linear2gcode(self, linear, tolerance=0, down=True, up=True,
                      z_cut=None, z_move=None, zdownrate=None,
-                     feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False):
+                     feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
         Generates G-code to cut along the linear feature.
 
@@ -6845,30 +7037,51 @@ class CNCjob(Geometry):
 
         p = self.pp_geometry
 
+        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+        if self.coordinates_type == "G90":
+            # For Absolute coordinates type G90
+            first_x = path[0][0]
+            first_y = path[0][1]
+        else:
+            # For Incremental coordinates type G91
+            first_x = path[0][0] - old_point[0]
+            first_y = path[0][1] - old_point[1]
+
         # Move fast to 1st point
         if not cont:
-            gcode += self.doformat(p.rapid_code, x=path[0][0], y=path[0][1])  # Move to first point
+            gcode += self.doformat(p.rapid_code, x=first_x, y=first_y)  # Move to first point
 
         # Move down to cutting depth
         if down:
             # Different feedrate for vertical cut?
             gcode += self.doformat(p.z_feedrate_code)
             # gcode += self.doformat(p.feedrate_code)
-            gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut=z_cut)
+            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut=z_cut)
             gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
 
         # Cutting...
+        prev_x = first_x
+        prev_y = first_y
         for pt in path[1:]:
-            gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1], z=z_cut)  # Linear motion to point
-
+            if self.coordinates_type == "G90":
+                # For Absolute coordinates type G90
+                next_x = pt[0]
+                next_y = pt[1]
+            else:
+                # For Incremental coordinates type G91
+                next_x = pt[0] - prev_x
+                next_y = pt[1] - prev_y
+            gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z=z_cut)  # Linear motion to point
+            prev_x = pt[0]
+            prev_y = pt[1]
         # Up to travelling height.
         if up:
-            gcode += self.doformat(p.lift_code, x=pt[0], y=pt[1], z_move=z_move)  # Stop cutting
+            gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # Stop cutting
         return gcode
 
     def linear2gcode_extra(self, linear, tolerance=0, down=True, up=True,
                      z_cut=None, z_move=None, zdownrate=None,
-                     feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False):
+                     feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
         Generates G-code to cut along the linear feature.
 
@@ -6913,9 +7126,19 @@ class CNCjob(Geometry):
         path = list(target_linear.coords)
         p = self.pp_geometry
 
+        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+        if self.coordinates_type == "G90":
+            # For Absolute coordinates type G90
+            first_x = path[0][0]
+            first_y = path[0][1]
+        else:
+            # For Incremental coordinates type G91
+            first_x = path[0][0] - old_point[0]
+            first_y = path[0][1] - old_point[1]
+
         # Move fast to 1st point
         if not cont:
-            gcode += self.doformat(p.rapid_code, x=path[0][0], y=path[0][1])  # Move to first point
+            gcode += self.doformat(p.rapid_code, x=first_x, y=first_y)  # Move to first point
 
         # Move down to cutting depth
         if down:
@@ -6923,40 +7146,72 @@ class CNCjob(Geometry):
             if self.z_feedrate is not None:
                 gcode += self.doformat(p.z_feedrate_code)
                 # gcode += self.doformat(p.feedrate_code)
-                gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut=z_cut)
+                gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut=z_cut)
                 gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
             else:
-                gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut=z_cut)  # Start cutting
+                gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut=z_cut)  # Start cutting
 
         # Cutting...
+        prev_x = first_x
+        prev_y = first_y
         for pt in path[1:]:
-            gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1], z=z_cut)  # Linear motion to point
+            if self.coordinates_type == "G90":
+                # For Absolute coordinates type G90
+                next_x = pt[0]
+                next_y = pt[1]
+            else:
+                # For Incremental coordinates type G91
+                next_x = pt[0] - prev_x
+                next_y = pt[1] - prev_y
+            gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z=z_cut)  # Linear motion to point
+            prev_x = pt[0]
+            prev_y = pt[1]
 
         # this line is added to create an extra cut over the first point in patch
         # to make sure that we remove the copper leftovers
-        gcode += self.doformat(p.linear_code, x=path[1][0], y=path[1][1])    # Linear motion to the 1st point in the cut path
+        # Linear motion to the 1st point in the cut path
+        if self.coordinates_type == "G90":
+            # For Absolute coordinates type G90
+            last_x = path[1][0]
+            last_y = path[1][1]
+        else:
+            # For Incremental coordinates type G91
+            last_x = path[1][0] - first_x
+            last_y = path[1][1] - first_y
+        gcode += self.doformat(p.linear_code, x=last_x, y=last_y)
 
         # Up to travelling height.
         if up:
-            gcode += self.doformat(p.lift_code, x=path[1][0], y=path[1][1], z_move=z_move)  # Stop cutting
+            gcode += self.doformat(p.lift_code, x=last_x, y=last_y, z_move=z_move)  # Stop cutting
 
         return gcode
 
-    def point2gcode(self, point):
+    def point2gcode(self, point, old_point=(0, 0)):
         gcode = ""
 
         path = list(point.coords)
         p = self.pp_geometry
-        gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])  # Move to first point
+
+        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+        if self.coordinates_type == "G90":
+            # For Absolute coordinates type G90
+            first_x = path[0][0]
+            first_y = path[0][1]
+        else:
+            # For Incremental coordinates type G91
+            first_x = path[0][0] - old_point[0]
+            first_y = path[0][1] - old_point[1]
+
+        gcode += self.doformat(p.linear_code, x=first_x, y=first_y)  # Move to first point
 
         if self.z_feedrate is not None:
             gcode += self.doformat(p.z_feedrate_code)
-            gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut = self.z_cut)
+            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut = self.z_cut)
             gcode += self.doformat(p.feedrate_code)
         else:
-            gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut = self.z_cut)  # Start cutting
+            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut = self.z_cut)  # Start cutting
 
-        gcode += self.doformat(p.lift_code, x=path[0][0], y=path[0][1])  # Stop cutting
+        gcode += self.doformat(p.lift_code, x=first_x, y=first_y)  # Stop cutting
         return gcode
 
     def export_svg(self, scale_factor=0.00):

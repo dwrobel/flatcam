@@ -6119,8 +6119,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
-        grid0.setColumnStretch(1, 1)
-        grid0.setColumnStretch(2, 1)
+        # grid0.setColumnStretch(1, 1)
+        # grid0.setColumnStretch(2, 1)
 
         # Plot CB
         # self.plot_cb = QtWidgets.QCheckBox('Plot')
@@ -6129,7 +6129,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.plot_cb, 0, 0)
 
         # Plot Kind
-        self.cncplot_method_label = QtWidgets.QLabel('%s:' % _("Plot kind:"))
+        self.cncplot_method_label = QtWidgets.QLabel('%s:' % _("Plot kind"))
         self.cncplot_method_label.setToolTip(
             _("This selects the kind of geometries on the canvas to plot.\n"
               "Those can be either of type 'Travel' which means the moves\n"
@@ -6205,34 +6205,52 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.steps_per_circle_entry, 5, 1)
 
         # Tool dia for plot
-        tdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
+        tdlabel = QtWidgets.QLabel('%s:' % _('Travel dia'))
         tdlabel.setToolTip(
-            _("Diameter of the tool to be\n"
+            _("The width of the travel lines to be\n"
               "rendered in the plot.")
         )
-        grid0.addWidget(tdlabel, 6, 0)
         self.tooldia_entry = LengthEntry()
+        grid0.addWidget(tdlabel, 6, 0)
         grid0.addWidget(self.tooldia_entry, 6, 1)
 
+        # add a space
+        grid0.addWidget(QtWidgets.QLabel(''), 7, 0)
+
         # Number of decimals to use in GCODE coordinates
-        cdeclabel = QtWidgets.QLabel('%s:' % _('Coords dec.'))
+        cdeclabel = QtWidgets.QLabel('%s:' % _('Coordinates decimals'))
         cdeclabel.setToolTip(
             _("The number of decimals to be used for \n"
               "the X, Y, Z coordinates in CNC code (GCODE, etc.)")
         )
-        grid0.addWidget(cdeclabel, 7, 0)
         self.coords_dec_entry = IntEntry()
-        grid0.addWidget(self.coords_dec_entry, 7, 1)
+        grid0.addWidget(cdeclabel, 8, 0)
+        grid0.addWidget(self.coords_dec_entry, 8, 1)
 
         # Number of decimals to use in GCODE feedrate
-        frdeclabel = QtWidgets.QLabel('%s:' % _('Feedrate dec.'))
+        frdeclabel = QtWidgets.QLabel('%s:' % _('Feedrate decimals'))
         frdeclabel.setToolTip(
             _("The number of decimals to be used for \n"
               "the Feedrate parameter in CNC code (GCODE, etc.)")
         )
-        grid0.addWidget(frdeclabel, 8, 0)
         self.fr_dec_entry = IntEntry()
-        grid0.addWidget(self.fr_dec_entry, 8, 1)
+        grid0.addWidget(frdeclabel, 9, 0)
+        grid0.addWidget(self.fr_dec_entry, 9, 1)
+
+        # The type of coordinates used in the Gcode: Absolute or Incremental
+        coords_type_label = QtWidgets.QLabel('%s:' % _('Coordinates type'))
+        coords_type_label.setToolTip(
+            _("The type of coordinates to be used in Gcode.\n"
+              "Can be:\n"
+              "- Absolute G90 -> the reference is the origin x=0, y=0\n"
+              "- Incremental G91 -> the reference is the previous position")
+        )
+        self.coords_type_radio = RadioSet([
+            {"label": _("Absolute G90"), "value": "G90"},
+            {"label": _("Incremental G91"), "value": "G91"}
+        ], orientation='vertical', stretch=False)
+        grid0.addWidget(coords_type_label, 10, 0)
+        grid0.addWidget(self.coords_type_radio, 10, 1)
 
         self.layout.addStretch()
 

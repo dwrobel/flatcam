@@ -572,6 +572,7 @@ class App(QtCore.QObject):
             "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry,
 
             "cncjob_tooldia": self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
+            "cncjob_coords_type": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_type_radio,
             "cncjob_coords_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
             "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
             "cncjob_steps_per_circle": self.ui.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
@@ -961,6 +962,7 @@ class App(QtCore.QObject):
             "cncjob_annotation_fontsize": 9,
             "cncjob_annotation_fontcolor": '#990000',
             "cncjob_tooldia": 0.0393701,
+            "cncjob_coords_type": "G90",
             "cncjob_coords_decimals": 4,
             "cncjob_fr_decimals": 2,
             "cncjob_steps_per_circle": 128,

@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 4.09.2019
 
 - started to work on support for G91 in Gcode (relative coordinates)
+- added support for G91 coordinates
+- working in plotting the CNCjob generated with G91 coordinates
 
 3.09.2019
 
