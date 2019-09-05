@@ -1630,8 +1630,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 if area.geoms:
                     if len(area.geoms) > 0:
+                        # pol_nr = 0
                         for p in area.geoms:
                             if p is not None:
+                                # pol_nr += 1
+                                # log.debug("Polygons cleared: %d" % pol_nr)
                                 try:
                                     if isinstance(p, Polygon):
                                         if ncc_method == 'standard':

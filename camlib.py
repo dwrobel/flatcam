@@ -907,6 +907,7 @@ class Geometry(object):
         # Index first and last points in paths
         def get_pts(o):
             return [o.coords[0], o.coords[-1]]
+
         geoms = FlatCAMRTreeStorage()
         geoms.get_points = get_pts
 
