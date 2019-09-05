@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.09.2019
+
+- fixed issue with loading files at start-up
+- fixed issue with generating bounding box geometry for CNCJob objects
+- added some more infobar messages and log.debug
+- increased the priority for the worker tasks
+
 4.09.2019
 
 - started to work on support for G91 in Gcode (relative coordinates)

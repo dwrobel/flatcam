@@ -1324,6 +1324,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ####### Read the parameters #########################################
         # #####################################################################
 
+        log.debug("Copper clearing started. Reading parameters.")
         ncc_method = method if method else self.ncc_method_radio.get_value()
 
         if margin is not None:
@@ -1387,6 +1388,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ##############################################################################################################
         # Prepare non-copper polygons. Create the bounding box area from which the copper features will be subtracted ##
         # ##############################################################################################################
+        log.debug("Copper clearing. Preparing non-copper polygons.")
         try:
             if sel_obj is None or sel_obj == 'itself':
                 ncc_sel_obj = ncc_obj
@@ -1450,6 +1452,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit(_("[ERROR_NOTCL] The reference object type is not supported."))
                 return 'fail'
 
+        log.debug("Copper clearing. Finished non-copper polygons.")
         # ########################################################################################################
         # set the name for the future Geometry object
         # I do it here because it is also stored inside the gen_clear_area() and gen_clear_area_rest() methods
@@ -1466,6 +1469,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         def gen_clear_area(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+
+            log.debug("Copper clearing. Normal copper clearing task started.")
 
             # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
             # will store the number of tools for which the isolation is broken
@@ -1496,6 +1501,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # ###################################################################################################
             # Calculate the empty area by subtracting the solid_geometry from the object bounding box geometry ##
             # ###################################################################################################
+            log.debug("Copper clearing. Calculate 'empty' area.")
             if isinstance(ncc_obj, FlatCAMGerber) and not isotooldia:
                 sol_geo = ncc_obj.solid_geometry
                 if has_offset is True:
@@ -1601,8 +1607,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if type(empty) is Polygon:
                 empty = MultiPolygon([empty])
 
+            log.debug("Copper clearing. Finished calculation of 'empty' area.")
             cp = None
             for tool in sorted_tools:
+                log.debug("Starting geometry processing for tool: %s" % str(tool))
                 app_obj.inform.emit(_('[success] Non-Copper Clearing with ToolDia = %s started.') % str(tool))
                 cleared_geo[:] = []
 
@@ -1730,7 +1738,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
-
+            log.debug("Copper clearing. Rest machining copper clearing task started.")
             # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
             # will store the number of tools for which the isolation is broken
             warning_flag = 0
@@ -1748,7 +1756,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
             app_obj.poly_not_cleared = True
-
+            log.debug("Copper clearing. Calculate 'empty' area.")
             # ###################################################################################################
             # Calculate the empty area by subtracting the solid_geometry from the object bounding box geometry ##
             # ###################################################################################################
@@ -1858,9 +1866,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 empty = MultiPolygon([empty])
 
             area = empty.buffer(0)
+
+            log.debug("Copper clearing. Finished calculation of 'empty' area.")
             # Generate area for each tool
             while sorted_tools:
                 tool = sorted_tools.pop(0)
+                log.debug("Starting geometry processing for tool: %s" % str(tool))
+
                 app_obj.inform.emit(_('[success] Non-Copper Rest Clearing with ToolDia = %s started.') % str(tool))
 
                 tool_used = tool - 1e-12

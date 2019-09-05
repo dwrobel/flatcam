@@ -5966,7 +5966,7 @@ class CNCjob(Geometry):
         except StopIteration:  # Nothing found in storage.
             pass
 
-        log.debug("Finishing G-Code... %s paths traced." % path_count)
+        log.debug("Finished G-Code... %s paths traced." % path_count)
 
         # add move to end position
         total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
@@ -5977,7 +5977,7 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.spindle_stop_code)
         self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
         self.gcode += self.doformat(p.end_code, x=0, y=0)
-
+        self.app.inform.emit(_("Finished G-Code generation... %s paths traced.") % str(path_count))
         return self.gcode
 
     def generate_from_geometry_2(self, geometry, append=True,
@@ -6270,6 +6270,7 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.spindle_stop_code)
         self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
         self.gcode += self.doformat(p.end_code, x=0, y=0)
+        self.app.inform.emit(_("Finished G-Code generation... %s paths traced.") % str(path_count))
 
         return self.gcode
 
@@ -6844,7 +6845,6 @@ class CNCjob(Geometry):
                 )
 
                 for geo in gcode_parsed:
-                    print(list(geo['geom'].coordsner))
                     if geo['kind'][0] == 'T':
                         current_position = (
                             geo['geom'].coords[0][0] + old_pos[0],

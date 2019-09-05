@@ -4788,7 +4788,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
 
                 # TODO this serve for bounding box creation only; should be optimized
-                dia_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
+                # commented this; there is no need for the actual GCode geometry - the original one will serve as well
+                # for bounding box values
+                # geo_for_bound_values = cascaded_union([
+                #     geo['geom'] for geo in dia_cnc_dict['gcode_parsed'] if geo['geom'].is_valid is True
+                # ])
+                try:
+                    dia_cnc_dict['solid_geometry'] = cascaded_union(tool_solid_geometry)
+                    self.app.inform.emit(_("[success] Finished G-Code processing..."))
+                except Exception as e:
+                    self.app.inform.emit(_("[ERROR] G-Code processing failed with error: %s") % str(e))
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
@@ -4953,6 +4962,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # source of gcode
             job_obj.toolchange_xy_type = "geometry"
             job_obj.gcode_parse()
+            self.app.inform.emit(_("[success] Finished G-Code processing..."))
 
             app_obj.progress.emit(80)
 

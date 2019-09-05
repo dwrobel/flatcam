@@ -190,7 +190,7 @@ class App(QtCore.QObject):
     thread_exception = QtCore.pyqtSignal(object)
 
     # used to signal that there are arguments for the app
-    args_at_startup = QtCore.pyqtSignal()
+    args_at_startup = QtCore.pyqtSignal(list)
 
     def __init__(self, user_defaults=True, post_gui=None):
         """
@@ -204,10 +204,6 @@ class App(QtCore.QObject):
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
 
-        self.new_launch = ArgsThread()
-        self.new_launch.start()
-        self.new_launch.open_signal[list].connect(self.on_startup_args)
-
         # #######################
         # # ## OS-specific ######
         # #######################
@@ -216,6 +212,14 @@ class App(QtCore.QObject):
 
         # Folder for user settings.
         if sys.platform == 'win32':
+
+            # #########################################################################
+            # Setup the listening thread for another instance launching with args #####
+            # #########################################################################
+            self.new_launch = ArgsThread()
+            self.new_launch.start(priority=QtCore.QThread.IdlePriority)
+            self.new_launch.open_signal[list].connect(self.on_startup_args)
+
             from win32com.shell import shell, shellcon
             if platform.architecture()[0] == '32bit':
                 App.log.debug("Win32!")
@@ -1768,7 +1772,7 @@ class App(QtCore.QObject):
             self.on_excellon_options_button)
 
         # when there are arguments at application startup this get launched
-        self.args_at_startup.connect(lambda: self.on_startup_args())
+        self.args_at_startup[list].connect(lambda: self.on_startup_args())
 
         # connect the 'Apply' buttons from the Preferences/File Associations
         self.ui.fa_defaults_form.fa_excellon_group.exc_list_btn.clicked.connect(
@@ -2233,7 +2237,7 @@ class App(QtCore.QObject):
         # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
         if App.args:
-            self.args_at_startup.emit()
+            self.args_at_startup.emit(App.args)
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -2257,7 +2261,8 @@ class App(QtCore.QObject):
             args_to_process = args
         else:
             args_to_process = App.args
-            log.debug("Application was started with an argument. Processing ...")
+
+        log.debug("Application was started with arguments: %s. Processing ..." % str(args_to_process))
 
         for argument in args_to_process:
             if '.FlatPrj' in argument:
@@ -2305,12 +2310,13 @@ class App(QtCore.QObject):
 
             else:
                 exc_list = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
+                proc_arg = argument.lower()
                 for ext in exc_list:
                     proc_ext = ext.replace(' ', '')
-                    if proc_ext.lower() in argument.lower():
+                    if proc_ext.lower() in proc_arg and proc_ext != '':
                         file_name = str(argument)
                         if file_name == "":
-                            self.inform.emit(_("Open Script file failed."))
+                            self.inform.emit(_("Open Excellon file failed."))
                         else:
                             self.on_fileopenexcellon(name=file_name)
                             return
@@ -2318,10 +2324,10 @@ class App(QtCore.QObject):
                 gco_list = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
                 for ext in gco_list:
                     proc_ext = ext.replace(' ', '')
-                    if proc_ext.lower() in argument.lower():
+                    if proc_ext.lower() in proc_arg and proc_ext != '':
                         file_name = str(argument)
                         if file_name == "":
-                            self.inform.emit(_("Open Script file failed."))
+                            self.inform.emit(_("Open GCode file failed."))
                         else:
                             self.on_fileopengcode(name=file_name)
                             return
@@ -2329,10 +2335,10 @@ class App(QtCore.QObject):
                 grb_list = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
                 for ext in grb_list:
                     proc_ext = ext.replace(' ', '')
-                    if proc_ext.lower() in argument.lower():
+                    if proc_ext.lower() in proc_arg and proc_ext != '':
                         file_name = str(argument)
                         if file_name == "":
-                            self.inform.emit(_("Open Script file failed."))
+                            self.inform.emit(_("Open Gerber file failed."))
                         else:
                             self.on_fileopengerber(name=file_name)
                             return
