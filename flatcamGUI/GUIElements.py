@@ -1743,7 +1743,7 @@ class _BrowserTextEdit(QTextEdit):
 
     def clear(self):
         QTextEdit.clear(self)
-        text = "FlatCAM %s (c)2014-2019 Juan Pablo Caram (Type help to get started)\n\n" % self.version
+        text = "FlatCAM %s - Type help to get started\n\n" % self.version
         text = html.escape(text)
         text = text.replace('\n', '<br/>')
         self.moveCursor(QTextCursor.End)

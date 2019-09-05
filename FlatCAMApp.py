@@ -216,9 +216,15 @@ class App(QtCore.QObject):
             # #########################################################################
             # Setup the listening thread for another instance launching with args #####
             # #########################################################################
+
+            # make sure the thread is stored by using a self. otherwise it's garbage collected
+            self.th = QtCore.QThread()
+            self.th.start(priority=QtCore.QThread.LowestPriority)
+
             self.new_launch = ArgsThread()
-            self.new_launch.start(priority=QtCore.QThread.IdlePriority)
             self.new_launch.open_signal[list].connect(self.on_startup_args)
+            self.new_launch.moveToThread(self.th)
+            self.new_launch.start.emit()
 
             from win32com.shell import shell, shellcon
             if platform.architecture()[0] == '32bit':
@@ -2029,8 +2035,8 @@ class App(QtCore.QObject):
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
-        self.shell.append_output("FlatCAM %s (c)2014-2019 Juan Pablo Caram " % self.version)
-        self.shell.append_output(_("(Type help to get started)\n\n"))
+        self.shell.append_output("FlatCAM %s - " % self.version)
+        self.shell.append_output(_("Type help to get started\n\n"))
 
         self.init_tcl()
 
@@ -9639,13 +9645,18 @@ The normal flow when working in FlatCAM is the following:</span></p>
         obj.to_form()  # Update UI
 
 
-class ArgsThread(QtCore.QThread):
+class ArgsThread(QtCore.QObject):
     open_signal = pyqtSignal(list)
+    start = pyqtSignal()
 
     if sys.platform == 'win32':
         address = (r'\\.\pipe\NPtest', 'AF_PIPE')
     else:
         address = ('/tmp/testipc', 'AF_UNIX')
+
+    def __init__(self):
+        super(ArgsThread, self).__init__()
+        self.start.connect(self.run)
 
     def my_loop(self, address):
         try:
@@ -9669,6 +9680,9 @@ class ArgsThread(QtCore.QThread):
             self.open_signal.emit(msg)
         conn.close()
 
+    # the decorator is a must; without it this technique will not work unless the start signal is connected
+    # in the main thread (where this class is instantiated) after the instance is moved o the new thread
+    @pyqtSlot()
     def run(self):
         self.my_loop(self.address)
 

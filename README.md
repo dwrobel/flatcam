@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.09.2019
+
+- remade visibility threaded
+- reimplemented the thread listening for new FlatCAM process starting with args so it is no longer subclassed but using the moveToThread function
+
 5.09.2019
 
 - fixed issue with loading files at start-up
