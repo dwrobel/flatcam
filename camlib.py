@@ -5813,8 +5813,9 @@ class CNCjob(Geometry):
             else:
                 self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
                 if len(self.xy_toolchange) < 2:
-                    self.app.inform.emit(_("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
-                                         "in the format (x, y) \nbut now there is only one value, not two. "))
+                    self.app.inform.emit('[ERROR]  %s' % _("The Toolchange X,Y field in Edit -> Preferences has to be "
+                                                           "in the format (x, y) \n"
+                                                           "but now there is only one value, not two."))
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_multitool_geometry() --> %s" % str(e))
@@ -5871,6 +5872,8 @@ class CNCjob(Geometry):
 
         # Store the geometry
         log.debug("Indexing geometry before generating G-Code...")
+        self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
+
         for shape in flat_geometry:
             if shape is not None:  # TODO: This shouldn't have happened.
                 storage.insert(shape)
@@ -5919,6 +5922,7 @@ class CNCjob(Geometry):
 
         # ## Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
+        self.app.inform.emit(_("Starting G-Code..."))
         path_count = 0
         current_pt = (0, 0)
 
