@@ -5276,6 +5276,7 @@ class CNCjob(Geometry):
             tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
             log.debug("Tools selected and sorted are: %s" % str(tools))
 
+        self.app.inform.emit(_("Creating a list of points to drill..."))
         # Points (Group by tool)
         points = {}
         for drill in exobj.drills:
@@ -5353,6 +5354,7 @@ class CNCjob(Geometry):
         measured_up_to_zero_distance = 0.0
         measured_lift_distance = 0.0
 
+        self.app.inform.emit(_("Starting G-Code..."))
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
             if excellon_optimization_type == 'M':
@@ -5467,27 +5469,8 @@ class CNCjob(Geometry):
                                     self.oldx = locx
                                     self.oldy = locy
                             else:
-                                # Drillling! for Incremental coordinates type G91
-                                for k in node_list:
-                                    locx = locations[k][0] - self.oldx
-                                    locy = locations[k][1] - self.oldy
-
-                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
-
-                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                    if self.f_retract is False:
-                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                        measured_up_to_zero_distance += abs(self.z_cut)
-                                        measured_lift_distance += abs(self.z_move)
-                                    else:
-                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                                    self.oldx = locx
-                                    self.oldy = locy
+                                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                                return 'fail'
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
@@ -5597,27 +5580,8 @@ class CNCjob(Geometry):
                                     self.oldx = locx
                                     self.oldy = locy
                             else:
-                                # Drillling! for Incremental coordinates type G91
-                                for k in node_list:
-                                    locx = locations[k][0] - self.oldx
-                                    locy = locations[k][1] - self.oldy
-
-                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
-
-                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                    if self.f_retract is False:
-                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                        measured_up_to_zero_distance += abs(self.z_cut)
-                                        measured_lift_distance += abs(self.z_move)
-                                    else:
-                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                                    self.oldx = locx
-                                    self.oldy = locy
+                                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                                return 'fail'
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
@@ -5687,31 +5651,8 @@ class CNCjob(Geometry):
                                 self.oldx = point[0]
                                 self.oldy = point[1]
                         else:
-                            # Drillling! for Incremental coordinates type G91
-                            altPoints = []
-                            for point in points[tool]:
-                                altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
-
-                            for point in self.optimized_travelling_salesman(altPoints):
-                                point[0] = point[0] - self.oldx
-                                point[1] = point[1] - self.oldy
-
-                                gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
-                                gcode += self.doformat(p.down_code, x=point[0], y=point[1])
-
-                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                if self.f_retract is False:
-                                    gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
-                                    measured_up_to_zero_distance += abs(self.z_cut)
-                                    measured_lift_distance += abs(self.z_move)
-                                else:
-                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
-
-                                gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
-                                measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
-                                self.oldx = point[0]
-                                self.oldy = point[1]
+                            self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                            return 'fail'
                     else:
                         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                                   "The loaded Excellon file has no drills ...")
@@ -5737,6 +5678,7 @@ class CNCjob(Geometry):
         self.routing_time += lift_time + traveled_time
 
         self.gcode = gcode
+        self.app.inform.emit(_("Finished G-Code generation..."))
         return 'OK'
 
     def generate_from_multitool_geometry(self, geometry, append=True,
@@ -5923,6 +5865,7 @@ class CNCjob(Geometry):
         # ## Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
         self.app.inform.emit(_("Starting G-Code..."))
+
         path_count = 0
         current_pt = (0, 0)
 
@@ -6168,6 +6111,8 @@ class CNCjob(Geometry):
 
         # Store the geometry
         log.debug("Indexing geometry before generating G-Code...")
+        self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
+
         for shape in flat_geometry:
             if shape is not None:  # TODO: This shouldn't have happened.
                 storage.insert(shape)
@@ -6219,6 +6164,8 @@ class CNCjob(Geometry):
 
         # Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
+        self.app.inform.emit(_("Starting G-Code..."))
+
         path_count = 0
         current_pt = (0, 0)
         pt, geo = storage.nearest(current_pt)
@@ -6841,32 +6788,16 @@ class CNCjob(Geometry):
                                           visible=visible, layer=1)
             else:
                 # For Incremental coordinates type G91
-                current_x = gcode_parsed[0]['geom'].coords[0][0]
-                current_y = gcode_parsed[0]['geom'].coords[0][1]
-                old_pos = (
-                    current_x,
-                    current_y
-                )
-
+                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
                 for geo in gcode_parsed:
                     if geo['kind'][0] == 'T':
-                        current_position = (
-                            geo['geom'].coords[0][0] + old_pos[0],
-                            geo['geom'].coords[0][1] + old_pos[1]
-                        )
+                        current_position = geo['geom'].coords[0]
                         if current_position not in pos:
                             pos.append(current_position)
                             path_num += 1
                             text.append(str(path_num))
 
-                        delta = (
-                            geo['geom'].coords[-1][0] - geo['geom'].coords[0][0],
-                            geo['geom'].coords[-1][1] - geo['geom'].coords[0][1]
-                        )
-                        current_position = (
-                            current_position[0] + geo['geom'].coords[-1][0],
-                            current_position[1] + geo['geom'].coords[-1][1]
-                        )
+                        current_position = geo['geom'].coords[-1]
                         if current_position not in pos:
                             pos.append(current_position)
                             path_num += 1
@@ -6874,45 +6805,16 @@ class CNCjob(Geometry):
 
                     # plot the geometry of Excellon objects
                     if self.origin_kind == 'excellon':
-                        if isinstance(geo['geom'], Point):
-                            # if geo is Point
-                            current_position = (
-                                current_position[0] + geo['geom'].x,
-                                current_position[1] + geo['geom'].y
-                            )
-                            poly = Polygon(Point(current_position))
-                        elif isinstance(geo['geom'], LineString):
-                            # if the geos are travel lines (LineStrings)
-                            new_line_pts = []
-                            old_line_pos = deepcopy(current_position)
-                            for p in list(geo['geom'].coords):
-                                current_position = (
-                                    current_position[0] + p[0],
-                                    current_position[1] + p[1]
-                                )
-                                new_line_pts.append(current_position)
-                                old_line_pos = p
-                            new_line = LineString(new_line_pts)
-
-                            poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                        try:
+                            poly = Polygon(geo['geom'])
+                        except ValueError:
+                            # if the geos are travel lines it will enter into Exception
+                            poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
                             poly = poly.simplify(tool_tolerance)
                     else:
                         # plot the geometry of any objects other than Excellon
-                        new_line_pts = []
-                        old_line_pos = deepcopy(current_position)
-                        for p in list(geo['geom'].coords):
-                            current_position = (
-                                current_position[0] + p[0],
-                                current_position[1] + p[1]
-                            )
-                            new_line_pts.append(current_position)
-                            old_line_pos = p
-                        new_line = LineString(new_line_pts)
-
-                        poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                        poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
                         poly = poly.simplify(tool_tolerance)
-
-                    old_pos = deepcopy(current_position)
 
                     if kind == 'all':
                         obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
@@ -6925,6 +6827,90 @@ class CNCjob(Geometry):
                         if geo['kind'][0] == 'C':
                             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                                           visible=visible, layer=1)
+                # current_x = gcode_parsed[0]['geom'].coords[0][0]
+                # current_y = gcode_parsed[0]['geom'].coords[0][1]
+                # old_pos = (
+                #     current_x,
+                #     current_y
+                # )
+                #
+                # for geo in gcode_parsed:
+                #     if geo['kind'][0] == 'T':
+                #         current_position = (
+                #             geo['geom'].coords[0][0] + old_pos[0],
+                #             geo['geom'].coords[0][1] + old_pos[1]
+                #         )
+                #         if current_position not in pos:
+                #             pos.append(current_position)
+                #             path_num += 1
+                #             text.append(str(path_num))
+                #
+                #         delta = (
+                #             geo['geom'].coords[-1][0] - geo['geom'].coords[0][0],
+                #             geo['geom'].coords[-1][1] - geo['geom'].coords[0][1]
+                #         )
+                #         current_position = (
+                #             current_position[0] + geo['geom'].coords[-1][0],
+                #             current_position[1] + geo['geom'].coords[-1][1]
+                #         )
+                #         if current_position not in pos:
+                #             pos.append(current_position)
+                #             path_num += 1
+                #             text.append(str(path_num))
+                #
+                #     # plot the geometry of Excellon objects
+                #     if self.origin_kind == 'excellon':
+                #         if isinstance(geo['geom'], Point):
+                #             # if geo is Point
+                #             current_position = (
+                #                 current_position[0] + geo['geom'].x,
+                #                 current_position[1] + geo['geom'].y
+                #             )
+                #             poly = Polygon(Point(current_position))
+                #         elif isinstance(geo['geom'], LineString):
+                #             # if the geos are travel lines (LineStrings)
+                #             new_line_pts = []
+                #             old_line_pos = deepcopy(current_position)
+                #             for p in list(geo['geom'].coords):
+                #                 current_position = (
+                #                     current_position[0] + p[0],
+                #                     current_position[1] + p[1]
+                #                 )
+                #                 new_line_pts.append(current_position)
+                #                 old_line_pos = p
+                #             new_line = LineString(new_line_pts)
+                #
+                #             poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                #             poly = poly.simplify(tool_tolerance)
+                #     else:
+                #         # plot the geometry of any objects other than Excellon
+                #         new_line_pts = []
+                #         old_line_pos = deepcopy(current_position)
+                #         for p in list(geo['geom'].coords):
+                #             current_position = (
+                #                 current_position[0] + p[0],
+                #                 current_position[1] + p[1]
+                #             )
+                #             new_line_pts.append(current_position)
+                #             old_line_pos = p
+                #         new_line = LineString(new_line_pts)
+                #
+                #         poly = new_line.buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                #         poly = poly.simplify(tool_tolerance)
+                #
+                #     old_pos = deepcopy(current_position)
+                #
+                #     if kind == 'all':
+                #         obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
+                #                       visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
+                #     elif kind == 'travel':
+                #         if geo['kind'][0] == 'T':
+                #             obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
+                #                           visible=visible, layer=2)
+                #     elif kind == 'cut':
+                #         if geo['kind'][0] == 'C':
+                #             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
+                #                           visible=visible, layer=1)
             try:
                 obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
@@ -7073,11 +7059,16 @@ class CNCjob(Geometry):
                 next_y = pt[1]
             else:
                 # For Incremental coordinates type G91
-                next_x = pt[0] - prev_x
-                next_y = pt[1] - prev_y
+                # next_x = pt[0] - prev_x
+                # next_y = pt[1] - prev_y
+                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                next_x = pt[0]
+                next_y = pt[1]
+
             gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z=z_cut)  # Linear motion to point
             prev_x = pt[0]
             prev_y = pt[1]
+
         # Up to travelling height.
         if up:
             gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # Stop cutting
@@ -7165,8 +7156,13 @@ class CNCjob(Geometry):
                 next_y = pt[1]
             else:
                 # For Incremental coordinates type G91
-                next_x = pt[0] - prev_x
-                next_y = pt[1] - prev_y
+                # For Incremental coordinates type G91
+                # next_x = pt[0] - prev_x
+                # next_y = pt[1] - prev_y
+                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                next_x = pt[0]
+                next_y = pt[1]
+
             gcode += self.doformat(p.linear_code, x=next_x, y=next_y, z=z_cut)  # Linear motion to point
             prev_x = pt[0]
             prev_y = pt[1]
@@ -7203,8 +7199,11 @@ class CNCjob(Geometry):
             first_y = path[0][1]
         else:
             # For Incremental coordinates type G91
-            first_x = path[0][0] - old_point[0]
-            first_y = path[0][1] - old_point[1]
+            # first_x = path[0][0] - old_point[0]
+            # first_y = path[0][1] - old_point[1]
+            self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+            first_x = path[0][0]
+            first_y = path[0][1]
 
         gcode += self.doformat(p.linear_code, x=first_x, y=first_y)  # Move to first point
 

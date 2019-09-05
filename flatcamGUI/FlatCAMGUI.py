@@ -6252,6 +6252,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(coords_type_label, 10, 0)
         grid0.addWidget(self.coords_type_radio, 10, 1)
 
+        # hidden for the time being, until implemented
+        coords_type_label.hide()
+        self.coords_type_radio.hide()
+        
         self.layout.addStretch()
 
 
