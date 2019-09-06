@@ -1324,6 +1324,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ####### Read the parameters #########################################
         # #####################################################################
 
+        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
+
         log.debug("Copper clearing started. Reading parameters.")
         ncc_method = method if method else self.ncc_method_radio.get_value()
 
@@ -1611,7 +1613,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
             cp = None
             for tool in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
-                app_obj.inform.emit(_('[success] Non-Copper Clearing with ToolDia = %s started.') % str(tool))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s: %d%%' % (_('Non-Copper Clearing with tool diameter = '),
+                                                    str(tool),
+                                                    units.lower(),
+                                                    _('started. Progress'),
+                                                    0)
+                )
                 cleared_geo[:] = []
 
                 # Get remaining tools offset
@@ -1628,13 +1636,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if type(area) is Polygon:
                     area = MultiPolygon([area])
 
+                # variables to display the percentage of work done
+                step = int(len(area.geoms) / 100)
+                disp_number = 0
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(len(area.geoms)))
+                log.warning("Step: %d" % step)
+
                 if area.geoms:
                     if len(area.geoms) > 0:
-                        # pol_nr = 0
+                        pol_nr = 0
                         for p in area.geoms:
                             if p is not None:
-                                # pol_nr += 1
-                                # log.debug("Polygons cleared: %d" % pol_nr)
                                 try:
                                     if isinstance(p, Polygon):
                                         if ncc_method == 'standard':
@@ -1673,7 +1686,22 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     app_obj.poly_not_cleared = True
                                     continue
 
-                        # check if there is a geometry at all in the cleared geometry
+                                pol_nr += 1
+                                disp_number = int(pol_nr / step)
+                                # log.debug("Polygons cleared: %d" % pol_nr)
+
+                                if disp_number > old_disp_number and disp_number <= 100:
+                                    app_obj.inform.emit(
+                                        '[success] %s %s%s %s: %d%%' % (_('Non-Copper Clearing with tool diameter = '),
+                                                                      str(tool),
+                                                                      units.lower(),
+                                                                      _('started. Progress'),
+                                                                      disp_number)
+                                    )
+                                    old_disp_number = disp_number
+                                    # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
+
+                            # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
                             # Overall cleared area
                             cleared = empty.buffer(-offset * (1 + overlap)).buffer(-tool / 1.999999).buffer(
@@ -1871,12 +1899,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
             area = empty.buffer(0)
 
             log.debug("Copper clearing. Finished calculation of 'empty' area.")
+
             # Generate area for each tool
             while sorted_tools:
                 tool = sorted_tools.pop(0)
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
 
-                app_obj.inform.emit(_('[success] Non-Copper Rest Clearing with ToolDia = %s started.') % str(tool))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s: %d%%' % (_('Non-Copper Rest Clearing with tool diameter = '),
+                                                    str(tool),
+                                                    units.lower(),
+                                                    _('started. Progress'),
+                                                    0)
+                )
 
                 tool_used = tool - 1e-12
                 cleared_geo[:] = []
@@ -1901,8 +1936,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 area = MultiPolygon(deepcopy(allparts))
                 allparts[:] = []
 
+                # variables to display the percentage of work done
+                step = int(len(area.geoms) / 100)
+                disp_number = 0
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(len(area.geoms)))
+                log.warning("Step: %d" % step)
+
                 if area.geoms:
                     if len(area.geoms) > 0:
+                        pol_nr = 0
                         for p in area.geoms:
                             if p is not None:
                                 if isinstance(p, Polygon):
@@ -1925,31 +1968,46 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         # this polygon should be added to a list and then try clear it with
                                         # a smaller tool
                                         rest_geo.append(p)
-                            elif isinstance(p, MultiPolygon):
-                                for poly in p:
-                                    if poly is not None:
-                                        try:
-                                            if ncc_method == 'standard':
-                                                cp = self.clear_polygon(poly, tool_used,
-                                                                        self.app.defaults["gerber_circle_steps"],
-                                                                        overlap=overlap, contour=contour,
-                                                                        connect=connect)
-                                            elif ncc_method == 'seed':
-                                                cp = self.clear_polygon2(poly, tool_used,
-                                                                         self.app.defaults["gerber_circle_steps"],
-                                                                         overlap=overlap, contour=contour,
-                                                                         connect=connect)
-                                            else:
-                                                cp = self.clear_polygon3(poly, tool_used,
-                                                                         self.app.defaults["gerber_circle_steps"],
-                                                                         overlap=overlap, contour=contour,
-                                                                         connect=connect)
-                                            cleared_geo.append(list(cp.get_objects()))
-                                        except Exception as e:
-                                            log.warning("Polygon can't be cleared. %s" % str(e))
-                                            # this polygon should be added to a list and then try clear it with
-                                            # a smaller tool
-                                            rest_geo.append(poly)
+                                elif isinstance(p, MultiPolygon):
+                                    for poly in p:
+                                        if poly is not None:
+                                            try:
+                                                if ncc_method == 'standard':
+                                                    cp = self.clear_polygon(poly, tool_used,
+                                                                            self.app.defaults["gerber_circle_steps"],
+                                                                            overlap=overlap, contour=contour,
+                                                                            connect=connect)
+                                                elif ncc_method == 'seed':
+                                                    cp = self.clear_polygon2(poly, tool_used,
+                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             overlap=overlap, contour=contour,
+                                                                             connect=connect)
+                                                else:
+                                                    cp = self.clear_polygon3(poly, tool_used,
+                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             overlap=overlap, contour=contour,
+                                                                             connect=connect)
+                                                cleared_geo.append(list(cp.get_objects()))
+                                            except Exception as e:
+                                                log.warning("Polygon can't be cleared. %s" % str(e))
+                                                # this polygon should be added to a list and then try clear it with
+                                                # a smaller tool
+                                                rest_geo.append(poly)
+
+                                pol_nr += 1
+                                disp_number = int(pol_nr / step)
+                                # log.debug("Polygons cleared: %d" % pol_nr)
+
+                                if disp_number > old_disp_number and disp_number <= 100:
+                                    app_obj.inform.emit(
+                                        '[success] %s %s%s %s: %d%%' % (_('Non-Copper Clearing with tool diameter = '),
+                                                                        str(tool),
+                                                                        units.lower(),
+                                                                        _('started. Progress'),
+                                                                        disp_number)
+                                    )
+                                    old_disp_number = disp_number
+                                    # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                         # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
