@@ -5480,12 +5480,13 @@ class CNCjob(Geometry):
                                     loc_nr += 1
                                     disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
 
-                                    if disp_number > old_disp_number and disp_number <= 100:
+                                    if old_disp_number < disp_number <= 100:
                                         self.app.inform.emit(
-                                            '%s: %s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
-                                                                  str(current_tooldia),
-                                                                  _("Progress"),
-                                                                  disp_number)
+                                            '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
+                                                                    str(current_tooldia),
+                                                                    str(self.units),
+                                                                    _("Progress"),
+                                                                    disp_number)
                                         )
                                         old_disp_number = disp_number
 
@@ -5611,12 +5612,13 @@ class CNCjob(Geometry):
                                     loc_nr += 1
                                     disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
 
-                                    if disp_number > old_disp_number and disp_number <= 100:
+                                    if old_disp_number < disp_number <= 100:
                                         self.app.inform.emit(
-                                            '%s: %s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
-                                                                  str(current_tooldia),
-                                                                  _("Progress"),
-                                                                  disp_number)
+                                            '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
+                                                                    str(current_tooldia),
+                                                                    str(self.units),
+                                                                    _("Progress"),
+                                                                    disp_number)
                                         )
                                         old_disp_number = disp_number
 
@@ -5703,12 +5705,13 @@ class CNCjob(Geometry):
                                 loc_nr += 1
                                 disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
 
-                                if disp_number > old_disp_number and disp_number <= 100:
+                                if old_disp_number < disp_number <= 100:
                                     self.app.inform.emit(
-                                        '%s: %s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
-                                                              str(current_tooldia),
-                                                              _("Progress"),
-                                                              disp_number)
+                                        '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
+                                                                str(current_tooldia),
+                                                                str(self.units),
+                                                                _("Progress"),
+                                                                disp_number)
                                     )
                                     old_disp_number = disp_number
                         else:
@@ -5930,6 +5933,17 @@ class CNCjob(Geometry):
         path_count = 0
         current_pt = (0, 0)
 
+        # variables to display the percentage of work done
+        geo_len = len(flat_geometry)
+        disp_number = 0
+        old_disp_number = 0
+        log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
+
+        if self.units == 'MM':
+            current_tooldia = float('%.2f' % float(self.tooldia))
+        else:
+            current_tooldia = float('%.4f' % float(self.tooldia))
+
         pt, geo = storage.nearest(current_pt)
 
         try:
@@ -5971,6 +5985,17 @@ class CNCjob(Geometry):
                 current_pt = geo.coords[-1]
 
                 pt, geo = storage.nearest(current_pt) # Next
+
+                disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
+                if old_disp_number < disp_number <= 100:
+                    self.app.inform.emit(
+                        '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
+                                                str(current_tooldia),
+                                                str(self.units),
+                                                _("Progress"),
+                                                disp_number)
+                    )
+                    old_disp_number = disp_number
         except StopIteration:  # Nothing found in storage.
             pass
 
@@ -6227,6 +6252,17 @@ class CNCjob(Geometry):
         log.debug("Starting G-Code...")
         self.app.inform.emit(_("Starting G-Code..."))
 
+        # variables to display the percentage of work done
+        geo_len = len(flat_geometry)
+        disp_number = 0
+        old_disp_number = 0
+        log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
+
+        if self.units == 'MM':
+            current_tooldia = float('%.2f' % float(self.tooldia))
+        else:
+            current_tooldia = float('%.4f' % float(self.tooldia))
+
         path_count = 0
         current_pt = (0, 0)
         pt, geo = storage.nearest(current_pt)
@@ -6268,6 +6304,17 @@ class CNCjob(Geometry):
                 current_pt = geo.coords[-1]
 
                 pt, geo = storage.nearest(current_pt) # Next
+
+                disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
+                if old_disp_number < disp_number <= 100:
+                    self.app.inform.emit(
+                        '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
+                                                str(current_tooldia),
+                                                str(self.units),
+                                                _("Progress"),
+                                                disp_number)
+                    )
+                    old_disp_number = disp_number
         except StopIteration:  # Nothing found in storage.
             pass
 

@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - added percentage display for work done in Paint Tool
 - some fixes and prepared the activity monitor area to receive updated texts
 - added progress display in status bar for generating CNCJob from Excellon objects
+- added progress display in status bar for generating CNCJob from Geometry objects
 
 5.09.2019
 

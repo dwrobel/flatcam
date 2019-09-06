@@ -4529,6 +4529,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 })
 
                 spindledir = self.app.defaults['geometry_spindledir']
+                tool_solid_geometry = self.solid_geometry
 
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
                 job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
@@ -4570,10 +4571,19 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # object is the source of gcode
                 job_obj.toolchange_xy_type = "geometry"
 
+                self.app.inform.emit('[success] %s' % _("G-Code parsing in progress..."))
                 dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
+                self.app.inform.emit('[success] %s' % _("G-Code parsing finished..."))
 
                 # TODO this serve for bounding box creation only; should be optimized
-                dia_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
+                # commented this; there is no need for the actual GCode geometry - the original one will serve as well
+                # for bounding box values
+                # dia_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
+                try:
+                    dia_cnc_dict['solid_geometry'] = tool_solid_geometry
+                    self.app.inform.emit('[success] %s' % _("Finished G-Code processing..."))
+                except Exception as e:
+                    self.app.inform.emit('[ERROR] %s' % _("G-Code processing failed with error: %s") % str(e))
 
                 app_obj.progress.emit(80)
 
