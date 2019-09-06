@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-09-06 21:00+0300\n"
+"POT-Creation-Date: 2019-09-06 22:24+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1641,16 +1641,12 @@ msgstr ""
 msgid "Starting G-Code"
 msgstr ""
 
-#: camlib.py:5485 camlib.py:5617 camlib.py:5710 camlib.py:5992 camlib.py:6311
+#: camlib.py:5442 camlib.py:5574 camlib.py:5665 camlib.py:5948 camlib.py:6267
 msgid "Starting G-Code for tool with diameter"
 msgstr ""
 
-#: camlib.py:5488 camlib.py:5620 camlib.py:5713 camlib.py:5995 camlib.py:6314
-msgid "Progress"
-msgstr ""
-
-#: camlib.py:5494 camlib.py:5626 camlib.py:5718 camlib.py:6899 camlib.py:7172
-#: camlib.py:7270 camlib.py:7312
+#: camlib.py:5494 camlib.py:5626 camlib.py:5718 camlib.py:6909 camlib.py:7182
+#: camlib.py:7280 camlib.py:7322
 msgid "[ERROR_NOTCL] G91 coordinates not implemented ..."
 msgstr ""
 
@@ -1740,6 +1736,11 @@ msgstr ""
 
 #: camlib.py:6358
 msgid "[ERROR_NOTCL] There is no tool data in the SolderPaste geometry."
+msgstr ""
+
+#: camlib.py:6440
+#, python-format
+msgid "Finished SolderPste G-Code generation... %s paths traced."
 msgstr ""
 
 #: flatcamEditors/FlatCAMExcEditor.py:45 flatcamEditors/FlatCAMExcEditor.py:69
@@ -8922,11 +8923,11 @@ msgstr ""
 #: flatcamTools/ToolNonCopperClear.py:901
 #: flatcamTools/ToolNonCopperClear.py:980
 #: flatcamTools/ToolNonCopperClear.py:1062
-#: flatcamTools/ToolNonCopperClear.py:1339
-#: flatcamTools/ToolNonCopperClear.py:1365 flatcamTools/ToolPaint.py:695
-#: flatcamTools/ToolPaint.py:770 flatcamTools/ToolPaint.py:914
-#: flatcamTools/ToolPaint.py:968 flatcamTools/ToolPaint.py:1200
-#: flatcamTools/ToolPaint.py:1445 flatcamTools/ToolPaint.py:1859
+#: flatcamTools/ToolNonCopperClear.py:1341
+#: flatcamTools/ToolNonCopperClear.py:1367 flatcamTools/ToolPaint.py:695
+#: flatcamTools/ToolPaint.py:770 flatcamTools/ToolPaint.py:919
+#: flatcamTools/ToolPaint.py:973 flatcamTools/ToolPaint.py:1205
+#: flatcamTools/ToolPaint.py:1451 flatcamTools/ToolPaint.py:1862
 #: flatcamTools/ToolPanelize.py:397 flatcamTools/ToolPanelize.py:409
 #: flatcamTools/ToolPanelize.py:422 flatcamTools/ToolPanelize.py:435
 #: flatcamTools/ToolPanelize.py:447 flatcamTools/ToolPanelize.py:458
@@ -9088,7 +9089,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:371 flatcamTools/ToolCutOut.py:571
 #: flatcamTools/ToolNonCopperClear.py:1124
-#: flatcamTools/ToolNonCopperClear.py:1265 flatcamTools/ToolPaint.py:1141
+#: flatcamTools/ToolNonCopperClear.py:1265 flatcamTools/ToolPaint.py:1146
 #: flatcamTools/ToolPanelize.py:359 flatcamTools/ToolPanelize.py:376
 #: flatcamTools/ToolSub.py:254 flatcamTools/ToolSub.py:269
 #: flatcamTools/ToolSub.py:456 flatcamTools/ToolSub.py:471
@@ -9848,7 +9849,7 @@ msgstr ""
 msgid "Overlap value must be between 0 (inclusive) and 1 (exclusive), "
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1083 flatcamTools/ToolPaint.py:937
+#: flatcamTools/ToolNonCopperClear.py:1083 flatcamTools/ToolPaint.py:942
 #, python-format
 msgid "Could not retrieve object: %s"
 msgstr ""
@@ -9857,7 +9858,7 @@ msgstr ""
 msgid "Wrong Tool Dia value format entered, use a number."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1112 flatcamTools/ToolPaint.py:973
+#: flatcamTools/ToolNonCopperClear.py:1112 flatcamTools/ToolPaint.py:978
 msgid "No selected tools in Tool Table."
 msgstr ""
 
@@ -9865,11 +9866,11 @@ msgstr ""
 msgid "Click the start point of the area."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1148 flatcamTools/ToolPaint.py:1029
+#: flatcamTools/ToolNonCopperClear.py:1148 flatcamTools/ToolPaint.py:1034
 msgid "Click the end point of the paint area."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1154 flatcamTools/ToolPaint.py:1035
+#: flatcamTools/ToolNonCopperClear.py:1154 flatcamTools/ToolPaint.py:1040
 msgid "Zone added. Click to start adding next zone or right click to finish."
 msgstr ""
 
@@ -9877,69 +9878,81 @@ msgstr ""
 msgid "Non-Copper clearing ..."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1415 flatcamTools/ToolPaint.py:2276
+#: flatcamTools/ToolNonCopperClear.py:1327
+msgid "NCC Tool started. Reading parameters."
+msgstr ""
+
+#: flatcamTools/ToolNonCopperClear.py:1391
+msgid "NCC Tool. Preparing non-copper polygons."
+msgstr ""
+
+#: flatcamTools/ToolNonCopperClear.py:1419 flatcamTools/ToolPaint.py:2269
 msgid "No object available."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1449
+#: flatcamTools/ToolNonCopperClear.py:1455
 msgid "The reference object type is not supported."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1505
-#: flatcamTools/ToolNonCopperClear.py:1795
-#: flatcamTools/ToolNonCopperClear.py:1875
-msgid "Buffering ..."
+#: flatcamTools/ToolNonCopperClear.py:1477
+msgid ""
+"NCC Tool. Finished non-copper polygons. Normal copper clearing task started."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1507
-#: flatcamTools/ToolNonCopperClear.py:1587
-#: flatcamTools/ToolNonCopperClear.py:1594
-#: flatcamTools/ToolNonCopperClear.py:1797
-#: flatcamTools/ToolNonCopperClear.py:1877
-#: flatcamTools/ToolNonCopperClear.py:1884
-msgid "Buffering finished ..."
+#: flatcamTools/ToolNonCopperClear.py:1509
+msgid "NCC Tool. Calculate 'empty' area."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1525
-#: flatcamTools/ToolNonCopperClear.py:1815
+#: flatcamTools/ToolNonCopperClear.py:1515
+#: flatcamTools/ToolNonCopperClear.py:1597
+#: flatcamTools/ToolNonCopperClear.py:1606
+#: flatcamTools/ToolNonCopperClear.py:1813
+#: flatcamTools/ToolNonCopperClear.py:1896
+#: flatcamTools/ToolNonCopperClear.py:1906
+msgid "Buffering"
+msgstr ""
+
+#: flatcamTools/ToolNonCopperClear.py:1518
+#: flatcamTools/ToolNonCopperClear.py:1600
+#: flatcamTools/ToolNonCopperClear.py:1609
+#: flatcamTools/ToolNonCopperClear.py:1816
+#: flatcamTools/ToolNonCopperClear.py:1899
+#: flatcamTools/ToolNonCopperClear.py:1909
+msgid "Buffering finished"
+msgstr ""
+
+#: flatcamTools/ToolNonCopperClear.py:1536
+#: flatcamTools/ToolNonCopperClear.py:1835
 msgid "Isolation geometry could not be generated."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1585
-#: flatcamTools/ToolNonCopperClear.py:1592
-#: flatcamTools/ToolNonCopperClear.py:1882
-msgid "[WARNING_NOTCL] Buffering ..."
-msgstr ""
-
-#: flatcamTools/ToolNonCopperClear.py:1597
-#: flatcamTools/ToolNonCopperClear.py:1887
+#: flatcamTools/ToolNonCopperClear.py:1613
+#: flatcamTools/ToolNonCopperClear.py:1914
 msgid "The selected object is not suitable for copper clearing."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1602
-#: flatcamTools/ToolNonCopperClear.py:1892
+#: flatcamTools/ToolNonCopperClear.py:1618
+#: flatcamTools/ToolNonCopperClear.py:1919
 msgid "Could not get the extent of the area to be non copper cleared."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1613
-#: flatcamTools/ToolNonCopperClear.py:1690
-#: flatcamTools/ToolNonCopperClear.py:2001
-msgid "Non-Copper Clearing with tool diameter = "
+#: flatcamTools/ToolNonCopperClear.py:1625
+msgid "NCC Tool. Finished calculation of 'empty' area."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1616
-#: flatcamTools/ToolNonCopperClear.py:1693
-#: flatcamTools/ToolNonCopperClear.py:1911
-#: flatcamTools/ToolNonCopperClear.py:2004 flatcamTools/ToolPaint.py:1553
-#: flatcamTools/ToolPaint.py:1624 flatcamTools/ToolPaint.py:1753
-#: flatcamTools/ToolPaint.py:1965 flatcamTools/ToolPaint.py:2035
-#: flatcamTools/ToolPaint.py:2115 flatcamTools/ToolPaint.py:2170
-msgid "started. Progress"
+#: flatcamTools/ToolNonCopperClear.py:1631
+#: flatcamTools/ToolNonCopperClear.py:1936
+msgid "NCC Tool clearing with tool diameter = "
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1746 flatcamTools/ToolPaint.py:1364
-#: flatcamTools/ToolPaint.py:1663 flatcamTools/ToolPaint.py:1786
-#: flatcamTools/ToolPaint.py:2074 flatcamTools/ToolPaint.py:2203
+#: flatcamTools/ToolNonCopperClear.py:1634
+#: flatcamTools/ToolNonCopperClear.py:1939
+msgid "started."
+msgstr ""
+
+#: flatcamTools/ToolNonCopperClear.py:1759 flatcamTools/ToolPaint.py:1370
+#: flatcamTools/ToolPaint.py:1664 flatcamTools/ToolPaint.py:1789
+#: flatcamTools/ToolPaint.py:2072 flatcamTools/ToolPaint.py:2196
 msgid ""
 "There is no Painting Geometry in the file.\n"
 "Usually it means that the tool diameter is too big for the painted "
@@ -9947,32 +9960,27 @@ msgid ""
 "Change the painting parameters and try again."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1756
-msgid "Non-Copper clear all done."
+#: flatcamTools/ToolNonCopperClear.py:1769
+msgid "NCC Tool clear all done."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1758
-msgid ""
-"Non-Copper clear all done but the copper features isolation is broken for"
+#: flatcamTools/ToolNonCopperClear.py:1771
+msgid "NCC Tool clear all done but the copper features isolation is broken for"
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1761
-#: flatcamTools/ToolNonCopperClear.py:2055
+#: flatcamTools/ToolNonCopperClear.py:1774
+#: flatcamTools/ToolNonCopperClear.py:2077
 msgid "tools"
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:1908
-msgid "Non-Copper Rest Clearing with tool diameter = "
+#: flatcamTools/ToolNonCopperClear.py:2073
+msgid "NCC Tool Rest Machining clear all done."
 msgstr ""
 
-#: flatcamTools/ToolNonCopperClear.py:2051
-msgid "Non-Copper Rest Machining clear all done."
-msgstr ""
-
-#: flatcamTools/ToolNonCopperClear.py:2054
+#: flatcamTools/ToolNonCopperClear.py:2076
 msgid ""
-"Non-Copper Rest Machining clear all done but the copper features isolation "
-"is broken for"
+"NCC Tool Rest Machining clear all done but the copper features isolation is "
+"broken for"
 msgstr ""
 
 #: flatcamTools/ToolPDF.py:38
@@ -10103,85 +10111,108 @@ msgid ""
 "specified by another object."
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:919
+#: flatcamTools/ToolPaint.py:909
+msgid "Paint Tool. Reading parameters."
+msgstr ""
+
+#: flatcamTools/ToolPaint.py:924
 msgid "Overlap value must be between 0 (inclusive) and 1 (exclusive)"
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:923 flatcamTools/ToolPaint.py:986
+#: flatcamTools/ToolPaint.py:928 flatcamTools/ToolPaint.py:991
 msgid "Click inside the desired polygon."
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:943 flatcamTools/ToolPanelize.py:366
+#: flatcamTools/ToolPaint.py:948 flatcamTools/ToolPanelize.py:366
 #: tclCommands/TclCommandBbox.py:66 tclCommands/TclCommandNregions.py:65
 msgid "Object not found"
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:951
+#: flatcamTools/ToolPaint.py:956
 msgid "Can't do Paint on MultiGeo geometries"
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:995 flatcamTools/ToolPaint.py:1448
-#: flatcamTools/ToolPaint.py:1862
+#: flatcamTools/ToolPaint.py:1000 flatcamTools/ToolPaint.py:1214
 msgid "Painting polygon..."
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1017
+#: flatcamTools/ToolPaint.py:1022
 msgid "Click the start point of the paint area."
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1206
+#: flatcamTools/ToolPaint.py:1211
 msgid "[WARNING] No polygon found."
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1209
-msgid "Painting polygon."
+#: flatcamTools/ToolPaint.py:1215
+#, python-format
+msgid "Paint Tool. Painting polygon at location: %s"
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1283
+#: flatcamTools/ToolPaint.py:1289
 msgid "Geometry could not be painted completely"
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1326
+#: flatcamTools/ToolPaint.py:1332
 msgid ""
 "Could not do Paint. Try a different combination of parameters. Or a "
 "different strategy of paint"
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1369
+#: flatcamTools/ToolPaint.py:1375
 msgid "Paint Single Done."
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1391
+#: flatcamTools/ToolPaint.py:1397
 msgid "PaintTool.paint_poly()"
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1398 flatcamTools/ToolPaint.py:1811
-#: flatcamTools/ToolPaint.py:2228
+#: flatcamTools/ToolPaint.py:1404 flatcamTools/ToolPaint.py:1814
+#: flatcamTools/ToolPaint.py:2221
 msgid "Polygon Paint started ..."
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1550 flatcamTools/ToolPaint.py:1621
-#: flatcamTools/ToolPaint.py:1750 flatcamTools/ToolPaint.py:1962
-#: flatcamTools/ToolPaint.py:2032 flatcamTools/ToolPaint.py:2112
-#: flatcamTools/ToolPaint.py:2167
+#: flatcamTools/ToolPaint.py:1454 flatcamTools/ToolPaint.py:1865
+msgid "Painting polygons..."
+msgstr ""
+
+#: flatcamTools/ToolPaint.py:1530
+msgid "Paint Tool. Normal painting all task started."
+msgstr ""
+
+#: flatcamTools/ToolPaint.py:1557 flatcamTools/ToolPaint.py:1703
+#: flatcamTools/ToolPaint.py:1966 flatcamTools/ToolPaint.py:2111
 msgid "Painting with tool diameter = "
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1610 flatcamTools/ToolPaint.py:1739
+#: flatcamTools/ToolPaint.py:1560 flatcamTools/ToolPaint.py:1706
+#: flatcamTools/ToolPaint.py:1969 flatcamTools/ToolPaint.py:2114
+msgid "started"
+msgstr ""
+
+#: flatcamTools/ToolPaint.py:1617 flatcamTools/ToolPaint.py:1748
 msgid ""
 "Could not do Paint All. Try a different combination of parameters. Or a "
 "different Method of paint"
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1672
+#: flatcamTools/ToolPaint.py:1673
 msgid "[success] Paint All Done."
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:1795 flatcamTools/ToolPaint.py:2212
+#: flatcamTools/ToolPaint.py:1681
+msgid "Paint Tool. Rest machining painting all task started."
+msgstr ""
+
+#: flatcamTools/ToolPaint.py:1798 flatcamTools/ToolPaint.py:2205
 msgid "Paint All with Rest-Machining done."
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:2022 flatcamTools/ToolPaint.py:2157
+#: flatcamTools/ToolPaint.py:1928
+msgid "Paint Tool. Normal painting area task started."
+msgstr ""
+
+#: flatcamTools/ToolPaint.py:2026 flatcamTools/ToolPaint.py:2156
 #, python-format
 msgid ""
 "Could not do Paint All. Try a different combination of parameters. Or a "
@@ -10189,8 +10220,12 @@ msgid ""
 "%s"
 msgstr ""
 
-#: flatcamTools/ToolPaint.py:2083
+#: flatcamTools/ToolPaint.py:2081
 msgid "[success] Paint Area Done."
+msgstr ""
+
+#: flatcamTools/ToolPaint.py:2089
+msgid "Paint Tool. Rest machining painting area task started."
 msgstr ""
 
 #: flatcamTools/ToolPanelize.py:25

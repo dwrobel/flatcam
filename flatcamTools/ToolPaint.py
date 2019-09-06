@@ -903,6 +903,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app.report_usage(_("on_paint_button_click"))
         # self.app.call_source = 'paint'
 
+        # #####################################################
+        # ######### Reading Parameters ########################
+        # #####################################################
+        self.app.inform.emit(_("Paint Tool. Reading parameters."))
+
         try:
             overlap = float(self.paintoverlap_entry.get_value())
         except ValueError:
@@ -1206,7 +1211,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.inform.emit(_('[WARNING] No polygon found.'))
             return
 
-        proc = self.app.proc_container.new(_("Painting polygon."))
+        proc = self.app.proc_container.new(_("Painting polygon..."))
+        self.app.inform.emit(_("Paint Tool. Painting polygon at location: %s") % str(inside_pt))
 
         name = outname if outname is not None else self.obj_name + "_paint"
 
@@ -1445,7 +1451,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                          _("Wrong value format entered, use a number."))
                     return
 
-        proc = self.app.proc_container.new(_("Painting polygon..."))
+        proc = self.app.proc_container.new(_("Painting polygons..."))
         name = outname if outname is not None else self.obj_name + "_paint"
 
         over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"])
@@ -1521,6 +1527,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             log.debug("Paint Tool. Normal painting all task started.")
+            app_obj.inform.emit(_("Paint Tool. Normal painting all task started."))
 
             tool_dia = None
             if order == 'fwd':
@@ -1547,12 +1554,12 @@ class ToolPaint(FlatCAMTool, Gerber):
             for tool_dia in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
                 app_obj.inform.emit(
-                    '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
-                                                    str(tool_dia),
-                                                    self.units.lower(),
-                                                    _('started. Progress'),
-                                                    0)
+                    '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
+                                              str(tool_dia),
+                                              self.units.lower(),
+                                              _('started'))
                 )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
@@ -1617,13 +1624,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     # log.debug("Polygons cleared: %d" % pol_nr)
 
                     if old_disp_number < disp_number <= 100:
-                        app_obj.inform.emit(
-                            '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
-                                                            str(tool_dia),
-                                                            self.units.lower(),
-                                                            _('started. Progress'),
-                                                            disp_number)
-                        )
+                        app_obj.proc_container.update_view_text(' %d%%' % disp_number)
                         old_disp_number = disp_number
                         # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
@@ -1677,6 +1678,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             log.debug("Paint Tool. Rest machining painting all task started.")
+            app_obj.inform.emit(_("Paint Tool. Rest machining painting all task started."))
 
             tool_dia = None
             sorted_tools.sort(reverse=True)
@@ -1697,6 +1699,13 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             for tool_dia in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
+                                              str(tool_dia),
+                                              self.units.lower(),
+                                              _('started'))
+                )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
 
                 painted_area = recurse(obj.solid_geometry)
                 # variables to display the percentage of work done
@@ -1746,13 +1755,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     # log.debug("Polygons cleared: %d" % pol_nr)
 
                     if old_disp_number < disp_number <= 100:
-                        app_obj.inform.emit(
-                            '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
-                                                            str(tool_dia),
-                                                            self.units.lower(),
-                                                            _('started. Progress'),
-                                                            disp_number)
-                        )
+                        app_obj.proc_container.update_view_text(' %d%%' % disp_number)
                         old_disp_number = disp_number
                         # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
@@ -1859,7 +1862,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                          _("Wrong value format entered, use a number."))
                     return
 
-        proc = self.app.proc_container.new(_("Painting polygon..."))
+        proc = self.app.proc_container.new(_("Painting polygons..."))
         name = outname if outname is not None else self.obj_name + "_paint"
 
         over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"])
@@ -1922,6 +1925,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             log.debug("Paint Tool. Normal painting area task started.")
+            app_obj.inform.emit(_("Paint Tool. Normal painting area task started."))
 
             tool_dia = None
             if order == 'fwd':
@@ -1959,12 +1963,12 @@ class ToolPaint(FlatCAMTool, Gerber):
             for tool_dia in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
                 app_obj.inform.emit(
-                    '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
-                                                    str(tool_dia),
-                                                    self.units.lower(),
-                                                    _('started. Progress'),
-                                                    0)
+                    '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
+                                              str(tool_dia),
+                                              self.units.lower(),
+                                              _('started'))
                 )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
@@ -2027,14 +2031,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                     disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
                     # log.debug("Polygons cleared: %d" % pol_nr)
 
-                    if disp_number > old_disp_number and disp_number <= 100:
-                        app_obj.inform.emit(
-                            '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
-                                                            str(tool_dia),
-                                                            self.units.lower(),
-                                                            _('started. Progress'),
-                                                            disp_number)
-                        )
+                    if old_disp_number < disp_number <= 100:
+                        app_obj.proc_container.update_view_text(' %d%%' % disp_number)
                         old_disp_number = disp_number
                         # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
@@ -2088,6 +2086,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             log.debug("Paint Tool. Rest machining painting area task started.")
+            app_obj.inform.emit(_("Paint Tool. Rest machining painting area task started."))
 
             tool_dia = None
             sorted_tools.sort(reverse=True)
@@ -2109,12 +2108,12 @@ class ToolPaint(FlatCAMTool, Gerber):
             for tool_dia in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
                 app_obj.inform.emit(
-                    '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
-                                                    str(tool_dia),
-                                                    self.units.lower(),
-                                                    _('started. Progress'),
-                                                    0)
+                    '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
+                                              str(tool_dia),
+                                              self.units.lower(),
+                                              _('started'))
                 )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
 
                 painted_area = recurse(obj.solid_geometry)
                 # variables to display the percentage of work done
@@ -2162,14 +2161,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                     disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
                     # log.debug("Polygons cleared: %d" % pol_nr)
 
-                    if disp_number > old_disp_number and disp_number <= 100:
-                        app_obj.inform.emit(
-                            '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
-                                                            str(tool_dia),
-                                                            self.units.lower(),
-                                                            _('started. Progress'),
-                                                            disp_number)
-                        )
+                    if old_disp_number < disp_number <= 100:
+                        app_obj.proc_container.update_view_text(' %d%%' % disp_number)
                         old_disp_number = disp_number
                         # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 

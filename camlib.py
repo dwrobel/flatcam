@@ -5438,6 +5438,12 @@ class CNCjob(Geometry):
                             else:
                                 current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
+                            self.app.inform.emit(
+                                '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                               str(current_tooldia),
+                                               str(self.units))
+                            )
+
                             # TODO apply offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
                             try:
@@ -5481,13 +5487,7 @@ class CNCjob(Geometry):
                                     disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
 
                                     if old_disp_number < disp_number <= 100:
-                                        self.app.inform.emit(
-                                            '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
-                                                                    str(current_tooldia),
-                                                                    str(self.units),
-                                                                    _("Progress"),
-                                                                    disp_number)
-                                        )
+                                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                         old_disp_number = disp_number
 
                             else:
@@ -5570,6 +5570,12 @@ class CNCjob(Geometry):
                             else:
                                 current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
+                            self.app.inform.emit(
+                                '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                               str(current_tooldia),
+                                               str(self.units))
+                            )
+
                             # TODO apply offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
                             try:
@@ -5613,13 +5619,7 @@ class CNCjob(Geometry):
                                     disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
 
                                     if old_disp_number < disp_number <= 100:
-                                        self.app.inform.emit(
-                                            '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
-                                                                    str(current_tooldia),
-                                                                    str(self.units),
-                                                                    _("Progress"),
-                                                                    disp_number)
-                                        )
+                                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                         old_disp_number = disp_number
 
                             else:
@@ -5660,6 +5660,12 @@ class CNCjob(Geometry):
                             current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
                         else:
                             current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
+
+                        self.app.inform.emit(
+                            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                           str(current_tooldia),
+                                           str(self.units))
+                        )
 
                         # TODO apply offset only when using the GUI, for TclCommand this will create an error
                         # because the values for Z offset are created in build_ui()
@@ -5706,13 +5712,7 @@ class CNCjob(Geometry):
                                 disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
 
                                 if old_disp_number < disp_number <= 100:
-                                    self.app.inform.emit(
-                                        '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
-                                                                str(current_tooldia),
-                                                                str(self.units),
-                                                                _("Progress"),
-                                                                disp_number)
-                                    )
+                                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                     old_disp_number = disp_number
                         else:
                             self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
@@ -5944,6 +5944,12 @@ class CNCjob(Geometry):
         else:
             current_tooldia = float('%.4f' % float(self.tooldia))
 
+        self.app.inform.emit(
+            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                           str(current_tooldia),
+                           str(self.units))
+        )
+
         pt, geo = storage.nearest(current_pt)
 
         try:
@@ -5988,13 +5994,7 @@ class CNCjob(Geometry):
 
                 disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
                 if old_disp_number < disp_number <= 100:
-                    self.app.inform.emit(
-                        '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
-                                                str(current_tooldia),
-                                                str(self.units),
-                                                _("Progress"),
-                                                disp_number)
-                    )
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     old_disp_number = disp_number
         except StopIteration:  # Nothing found in storage.
             pass
@@ -6263,6 +6263,12 @@ class CNCjob(Geometry):
         else:
             current_tooldia = float('%.4f' % float(self.tooldia))
 
+        self.app.inform.emit(
+            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                           str(current_tooldia),
+                           str(self.units))
+        )
+
         path_count = 0
         current_pt = (0, 0)
         pt, geo = storage.nearest(current_pt)
@@ -6307,13 +6313,7 @@ class CNCjob(Geometry):
 
                 disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
                 if old_disp_number < disp_number <= 100:
-                    self.app.inform.emit(
-                        '%s: %s%s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
-                                                str(current_tooldia),
-                                                str(self.units),
-                                                _("Progress"),
-                                                disp_number)
-                    )
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     old_disp_number = disp_number
         except StopIteration:  # Nothing found in storage.
             pass
@@ -6406,6 +6406,11 @@ class CNCjob(Geometry):
         path_count = 0
         current_pt = (0, 0)
 
+        # variables to display the percentage of work done
+        geo_len = len(flat_geometry)
+        disp_number = 0
+        old_disp_number = 0
+
         pt, geo = storage.nearest(current_pt)
 
         try:
@@ -6424,10 +6429,15 @@ class CNCjob(Geometry):
                 current_pt = geo.coords[-1]
                 pt, geo = storage.nearest(current_pt)  # Next
 
+                disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
+                if old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                    old_disp_number = disp_number
         except StopIteration:  # Nothing found in storage.
             pass
 
         log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
+        self.app.inform.emit(_("Finished SolderPste G-Code generation... %s paths traced.") % str(path_count))
 
         # Finish
         self.gcode += self.doformat(p.lift_code)

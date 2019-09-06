@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - added progress display in status bar for generating CNCJob from Excellon objects
 - added progress display in status bar for generating CNCJob from Geometry objects
 - modified all the FlatCAM tools strings to the new format in which the status is no longer included in the translated strings to make it easier for the future translations
+- more customization for the progress display in case of NCC Tool, Paint Tool and for the Gcode generation
 - updated POT file with the new strings
 
 5.09.2019
