@@ -5092,6 +5092,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             ))
             return
 
+        self.geo_len = 0
+        self.old_disp_number = 0
+        self.el_count = 0
+
         def translate_recursion(geom):
             if type(geom) is list:
                 geoms = list()
@@ -5100,14 +5104,30 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 return geoms
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.translate(geom, xoff=dx, yoff=dy)
                 except AttributeError:
                     return geom
 
         if self.multigeo is True:
             for tool in self.tools:
+                # variables to display the percentage of work done
+                self.geo_len = len(self.tools[tool]['solid_geometry'])
+                self.old_disp_number = 0
+                self.el_count = 0
+
                 self.tools[tool]['solid_geometry'] = translate_recursion(self.tools[tool]['solid_geometry'])
         else:
+            # variables to display the percentage of work done
+            self.geo_len = len(self.solid_geometry)
+            self.old_disp_number = 0
+            self.el_count = 0
+
             self.solid_geometry = translate_recursion(self.solid_geometry)
         self.app.inform.emit(_("[success] Geometry Offset done."))
 

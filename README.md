@@ -21,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified all the FlatCAM tools strings to the new format in which the status is no longer included in the translated strings to make it easier for the future translations
 - more customization for the progress display in case of NCC Tool, Paint Tool and for the Gcode generation
 - updated POT file with the new strings
+- made the objects offset (therefore the Move Tool) show progress display
 
 5.09.2019
 

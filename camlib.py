@@ -112,6 +112,11 @@ class Geometry(object):
 
         self.geo_steps_per_circle = geo_steps_per_circle
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        self.old_disp_number = 0
+        self.el_count = 0
+
         # if geo_steps_per_circle is None:
         #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
         # self.geo_steps_per_circle = geo_steps_per_circle
@@ -3464,6 +3469,11 @@ class Gerber (Geometry):
                                  "Probable you entered only one value in the Offset field."))
             return
 
+        # variables to display the percentage of work done
+        self.geo_len = len(self.solid_geometry)
+        self.old_disp_number = 0
+        self.el_count = 0
+
         def offset_geom(obj):
             if type(obj) is list:
                 new_obj = []
@@ -3472,6 +3482,12 @@ class Gerber (Geometry):
                 return new_obj
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.translate(obj, xoff=dx, yoff=dy)
                 except AttributeError:
                     return obj
@@ -4780,9 +4796,20 @@ class Excellon(Geometry):
                 except AttributeError:
                     return obj
 
+        # variables to display the percentage of work done
+        self.geo_len = len(self.drills)
+        self.old_disp_number = 0
+        self.el_count = 0
+
         # Drills
         for drill in self.drills:
             drill['point'] = affinity.translate(drill['point'], xoff=dx, yoff=dy)
+
+            self.el_count += 1
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            if self.old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                self.old_disp_number = disp_number
 
         # offset solid_geometry
         for tool in self.tools:
@@ -7658,23 +7685,50 @@ class CNCjob(Geometry):
         if self.multitool is False:
             # offset Gcode
             self.gcode = offset_g(self.gcode)
+
+            # variables to display the percentage of work done
+            self.geo_len = len(self.gcode_parsed)
+            self.old_disp_number = 0
+            self.el_count = 0
+
             # offset geometry
             for g in self.gcode_parsed:
                 try:
                     g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
                 except AttributeError:
                     return g['geom']
+
+                self.el_count += 1
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                if self.old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                    self.old_disp_number = disp_number
+
             self.create_geometry()
         else:
             for k, v in self.cnc_tools.items():
                 # offset Gcode
                 v['gcode'] = offset_g(v['gcode'])
+
+                # variables to display the percentage of work done
+                self.geo_len = len(v['gcode_parsed'])
+                self.old_disp_number = 0
+                self.el_count = 0
+
                 # offset gcode_parsed
                 for g in v['gcode_parsed']:
                     try:
                         g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
                     except AttributeError:
                         return g['geom']
+
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
+                # for the bounding box
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
 
     def mirror(self, axis, point):
