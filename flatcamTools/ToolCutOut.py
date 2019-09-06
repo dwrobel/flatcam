@@ -368,11 +368,12 @@ class CutOut(FlatCAMTool):
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_freeform_cutout() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] There is no object selected for Cutout.\nSelect one and try again."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("There is no object selected for Cutout.\nSelect one and try again."))
             return
 
         try:
@@ -382,12 +383,13 @@ class CutOut(FlatCAMTool):
             try:
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
                 return
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[WARNING_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
@@ -402,8 +404,8 @@ class CutOut(FlatCAMTool):
             try:
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Margin value is missing or wrong format. Add it and retry."))
                 return
 
         try:
@@ -413,26 +415,27 @@ class CutOut(FlatCAMTool):
             try:
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Gap size value is missing or wrong format. Add it and retry."))
                 return
 
         try:
             gaps = self.gaps.get_value()
         except TypeError:
-            self.app.inform.emit(_("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Number of gaps value is missing. Add it and retry."))
             return
 
         if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: "
-                                   "'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                    "Fill in a correct value and retry. "))
             return
 
         if cutout_obj.multigeo is True:
-            self.app.inform.emit(_("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
-                                   "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
-                                   "and after that perform Cutout."))
+            self.app.inform.emit('[ERROR] %s' % _("Cutout operation cannot be done on a multi-geo Geometry.\n"
+                                                  "Optionally, this Multi-geo Geometry can be converted to "
+                                                  "Single-geo Geometry,\n"
+                                                  "and after that perform Cutout."))
             return
 
         convex_box = self.convex_box.get_value()
@@ -548,7 +551,7 @@ class CutOut(FlatCAMTool):
         self.app.new_object('geometry', outname, geo_init)
 
         cutout_obj.plot()
-        self.app.inform.emit(_("[success] Any form CutOut operation finished."))
+        self.app.inform.emit('[success] %s' % _("Any form CutOut operation finished."))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
         self.app.should_we_save = True
 
@@ -565,11 +568,11 @@ class CutOut(FlatCAMTool):
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_rectangular_cutout() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Object not found: %s") % cutout_obj)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found: %s"), cutout_obj))
 
         try:
             dia = float(self.dia.get_value())
@@ -578,12 +581,13 @@ class CutOut(FlatCAMTool):
             try:
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
                 return
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
@@ -598,8 +602,8 @@ class CutOut(FlatCAMTool):
             try:
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Margin value is missing or wrong format. Add it and retry."))
                 return
 
         try:
@@ -609,26 +613,28 @@ class CutOut(FlatCAMTool):
             try:
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Gap size value is missing or wrong format. Add it and retry."))
                 return
 
         try:
             gaps = self.gaps.get_value()
         except TypeError:
-            self.app.inform.emit(_("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Number of gaps value is missing. Add it and retry."))
             return
 
         if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: "
-                                   "'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                   "Fill in a correct value and retry. "))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Gaps value can be only one of: "
+                                                          "'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+                                                          "Fill in a correct value and retry. "))
             return
 
         if cutout_obj.multigeo is True:
-            self.app.inform.emit(_("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
-                                   "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
-                                   "and after that perform Cutout."))
+            self.app.inform.emit('[ERROR] %s' % _("Cutout operation cannot be done on a multi-geo Geometry.\n"
+                                                  "Optionally, this Multi-geo Geometry can be converted to "
+                                                  "Single-geo Geometry,\n"
+                                                  "and after that perform Cutout."))
             return
 
         # Get min and max data for each object as we just cut rectangles across X or Y
@@ -729,7 +735,8 @@ class CutOut(FlatCAMTool):
         self.app.new_object('geometry', outname, geo_init)
 
         # cutout_obj.plot()
-        self.app.inform.emit(_("[success] Any form CutOut operation finished."))
+        self.app.inform.emit('[success] %s' %
+                             _("Any form CutOut operation finished."))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
         self.app.should_we_save = True
 
@@ -744,12 +751,13 @@ class CutOut(FlatCAMTool):
             try:
                 self.cutting_dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                     "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
                 return
 
         if 0 in {self.cutting_dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
@@ -759,8 +767,8 @@ class CutOut(FlatCAMTool):
             try:
                 self.cutting_gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
-                                     "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Gap size value is missing or wrong format. Add it and retry."))
                 return
 
         name = self.man_object_combo.currentText()
@@ -769,7 +777,7 @@ class CutOut(FlatCAMTool):
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Geometry object: %s") % name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Geometry object"), name))
             return "Could not retrieve object: %s" % name
 
         self.app.plotcanvas.vis_disconnect('key_press', self.app.ui.keyPressEvent)
@@ -788,12 +796,12 @@ class CutOut(FlatCAMTool):
             self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Geometry object: %s") % name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Geometry object"), name))
             return "Could not retrieve object: %s" % name
 
         if self.man_cutout_obj is None:
-            self.app.inform.emit(
-                _("[ERROR_NOTCL] Geometry object for manual cutout not found: %s") % self.man_cutout_obj)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Geometry object for manual cutout not found"), self.man_cutout_obj))
             return
 
         # use the snapped position as reference
@@ -803,7 +811,7 @@ class CutOut(FlatCAMTool):
         self.man_cutout_obj.subtract_polygon(cut_poly)
 
         self.man_cutout_obj.plot()
-        self.app.inform.emit(_("[success] Added manual Bridge Gap."))
+        self.app.inform.emit('[success] %s' % _("Added manual Bridge Gap."))
 
         self.app.should_we_save = True
 
@@ -815,16 +823,18 @@ class CutOut(FlatCAMTool):
             cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_geo() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Gerber object: %s") % name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Gerber object"), name))
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] There is no Gerber object selected for Cutout.\n"
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("There is no Gerber object selected for Cutout.\n"
                                    "Select one and try again."))
             return
 
         if not isinstance(cutout_obj, FlatCAMGerber):
-            self.app.inform.emit(_("[ERROR_NOTCL] The selected object has to be of Gerber type.\n"
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("The selected object has to be of Gerber type.\n"
                                    "Select a Gerber file and try again."))
             return
 
@@ -835,12 +845,13 @@ class CutOut(FlatCAMTool):
             try:
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
                 return
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
@@ -855,8 +866,8 @@ class CutOut(FlatCAMTool):
             try:
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Margin value is missing or wrong format. Add it and retry."))
                 return
 
         convex_box = self.convex_box.get_value()
@@ -877,7 +888,8 @@ class CutOut(FlatCAMTool):
                     geo = box(x0, y0, x1, y1)
                     geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
                 else:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Geometry not supported for cutout: %s") % type(geo_union))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_("Geometry not supported for cutout"), type(geo_union)))
                     return 'fail'
             else:
                 geo = geo_union

@@ -227,13 +227,15 @@ class Film(FlatCAMTool):
         try:
             name = self.tf_object_combo.currentText()
         except Exception as e:
-            self.app.inform.emit(_("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Film and retry."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("No FlatCAM object selected. Load an object for Film and retry."))
             return
 
         try:
             boxname = self.tf_box_combo.currentText()
         except Exception as e:
-            self.app.inform.emit(_("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Box and retry."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("No FlatCAM object selected. Load an object for Box and retry."))
             return
 
         try:
@@ -243,15 +245,13 @@ class Film(FlatCAMTool):
             try:
                 border = float(self.boundary_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                     "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                 return
 
         try:
             scale_stroke_width = int(self.film_scale_entry.get_value())
         except ValueError:
-            self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                 "use a number."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
             return
 
         if border is None:
@@ -271,7 +271,7 @@ class Film(FlatCAMTool):
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit(_("[WARNING_NOTCL] Export SVG positive cancelled."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export SVG positive cancelled."))
                 return
             else:
                 self.app.export_svg_black(name, boxname, filename, scale_factor=scale_stroke_width)
@@ -287,7 +287,7 @@ class Film(FlatCAMTool):
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit(_("[WARNING_NOTCL] Export SVG negative cancelled."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export SVG negative cancelled."))
                 return
             else:
                 self.app.export_svg_negative(name, boxname, filename, border, scale_factor=scale_stroke_width)

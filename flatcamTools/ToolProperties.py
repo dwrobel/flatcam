@@ -108,14 +108,16 @@ class Properties(FlatCAMTool):
     def properties(self):
         obj_list = self.app.collection.get_selected()
         if not obj_list:
-            self.app.inform.emit(_("[ERROR_NOTCL] Properties Tool was not displayed. No object selected."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Properties Tool was not displayed. No object selected."))
             self.app.ui.notebook.setTabText(2, _("Tools"))
             self.properties_frame.hide()
             self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             return
         for obj in obj_list:
             self.addItems(obj)
-            self.app.inform.emit(_("[success] Object Properties are displayed."))
+            self.app.inform.emit('[success] %s' %
+                                 _("Object Properties are displayed."))
         self.app.ui.notebook.setTabText(2, _("Properties Tool"))
 
     def addItems(self, obj):

@@ -241,7 +241,8 @@ class ToolSub(FlatCAMTool):
 
         self.target_grb_obj_name = self.target_gerber_combo.currentText()
         if self.target_grb_obj_name == '':
-            self.app.inform.emit(_("[ERROR_NOTCL] No Target object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("No Target object loaded."))
             return
 
         # Get target object.
@@ -249,12 +250,14 @@ class ToolSub(FlatCAMTool):
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
         self.sub_grb_obj_name = self.sub_gerber_combo.currentText()
         if self.sub_grb_obj_name == '':
-            self.app.inform.emit(_("[ERROR_NOTCL] No Substractor object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("No Substractor object loaded."))
             return
 
         # Get substractor object.
@@ -262,7 +265,8 @@ class ToolSub(FlatCAMTool):
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.sub_grb_obj_name
 
         # crate the new_apertures dict structure
@@ -412,11 +416,13 @@ class ToolSub(FlatCAMTool):
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.new_object('gerber', outname, obj_init, autoselected=False)
             if ret == 'fail':
-                self.app.inform.emit(_('[ERROR_NOTCL] Generating new object failed.'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _('Generating new object failed.'))
                 return
 
             # GUI feedback
-            self.app.inform.emit(_("[success] Created: %s") % outname)
+            self.app.inform.emit('[success] %s: %s' %
+                                 (_("Created"), outname))
 
             # cleanup
             self.new_apertures.clear()
@@ -437,7 +443,8 @@ class ToolSub(FlatCAMTool):
 
         self.target_geo_obj_name = self.target_geo_combo.currentText()
         if self.target_geo_obj_name == '':
-            self.app.inform.emit(_("[ERROR_NOTCL] No Target object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("No Target object loaded."))
             return
 
         # Get target object.
@@ -445,12 +452,14 @@ class ToolSub(FlatCAMTool):
             self.target_geo_obj = self.app.collection.get_by_name(self.target_geo_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_geo_intersection_click() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.target_geo_obj_name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Could not retrieve object"), self.target_geo_obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
         self.sub_geo_obj_name = self.sub_geo_combo.currentText()
         if self.sub_geo_obj_name == '':
-            self.app.inform.emit(_("[ERROR_NOTCL] No Substractor object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("No Substractor object loaded."))
             return
 
         # Get substractor object.
@@ -458,11 +467,13 @@ class ToolSub(FlatCAMTool):
             self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_geo_intersection_click() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.sub_geo_obj_name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Could not retrieve object"), self.sub_geo_obj_name))
             return "Could not retrieve object: %s" % self.sub_geo_obj_name
 
         if self.sub_geo_obj.multigeo:
-            self.app.inform.emit(_("[ERROR_NOTCL] Currently, the Substractor geometry cannot be of type Multigeo."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Currently, the Substractor geometry cannot be of type Multigeo."))
             return
 
         # create the target_options obj
@@ -608,12 +619,14 @@ class ToolSub(FlatCAMTool):
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.new_object('geometry', outname, obj_init, autoselected=False)
             if ret == 'fail':
-                self.app.inform.emit(_('[ERROR_NOTCL] Generating new object failed.'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _('Generating new object failed.'))
                 return
             # Register recent file
             self.app.file_opened.emit('geometry', outname)
             # GUI feedback
-            self.app.inform.emit(_("[success] Created: %s") % outname)
+            self.app.inform.emit('[success] %s: %s' %
+                                 (_("Created"), outname))
 
             # cleanup
             self.new_tools.clear()
@@ -687,7 +700,8 @@ class ToolSub(FlatCAMTool):
                 self.app.worker_task.emit({'fcn': self.new_geo_object,
                                            'params': [outname]})
         else:
-            self.app.inform.emit(_('[ERROR_NOTCL] Generating new object failed.'))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _('Generating new object failed.'))
 
     def reset_fields(self):
         self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

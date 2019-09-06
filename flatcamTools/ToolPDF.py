@@ -156,7 +156,7 @@ class ToolPDF(FlatCAMTool):
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open PDF"), filter=_filter_)
 
         if len(filenames) == 0:
-            self.app.inform.emit(_("[WARNING_NOTCL] Open PDF cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s.' % _("Open PDF cancelled"))
         else:
             # start the parsing timer with a period of 1 second
             self.periodic_check(1000)
@@ -241,8 +241,7 @@ class ToolPDF(FlatCAMTool):
                 name_tool += 1
 
                 # create tools dictionary
-                spec = {"C": dia}
-                spec['solid_geometry'] = []
+                spec = {"C": dia, 'solid_geometry': []}
                 exc_obj.tools[str(name_tool)] = spec
 
                 # create drill list of dictionaries
@@ -259,19 +258,22 @@ class ToolPDF(FlatCAMTool):
             for tool in exc_obj.tools:
                 if exc_obj.tools[tool]['solid_geometry']:
                     return
-            app_obj.inform.emit(_("[ERROR_NOTCL] No geometry found in file: %s") % outname)
+            app_obj.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                (_("No geometry found in file"), outname))
             return "fail"
 
         with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % int(layer_nr)):
 
             ret_val = self.app.new_object("excellon", outname, obj_init, autoselected=False)
             if ret_val == 'fail':
-                self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _('Open PDF file failed.'))
                 return
             # Register recent file
             self.app.file_opened.emit("excellon", filename)
             # GUI feedback
-            self.app.inform.emit(_("[success] Rendered: %s") % outname)
+            self.app.inform.emit('[success] %s: %s' %
+                                 (_("Rendered"),  outname))
 
     def layer_rendering_as_gerber(self, filename, ap_dict, layer_nr):
         outname = filename.split('/')[-1].split('\\')[-1] + "_%s" % str(layer_nr)
@@ -339,12 +341,13 @@ class ToolPDF(FlatCAMTool):
 
             ret = self.app.new_object('gerber', outname, obj_init, autoselected=False)
             if ret == 'fail':
-                self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _('Open PDF file failed.'))
                 return
             # Register recent file
             self.app.file_opened.emit('gerber', filename)
             # GUI feedback
-            self.app.inform.emit(_("[success] Rendered: %s") % outname)
+            self.app.inform.emit('[success] %s: %s' % (_("Rendered"), outname))
 
     def periodic_check(self, check_period):
         """

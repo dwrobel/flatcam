@@ -362,7 +362,8 @@ class PcbWizard(FlatCAMTool):
                 self.frac_entry.set_value(self.fractional)
 
         if not self.tools_from_inf:
-            self.app.inform.emit(_("[ERROR] The INF file does not contain the tool table.\n"
+            self.app.inform.emit('[ERROR] %s' %
+                                 _("The INF file does not contain the tool table.\n"
                                    "Try to open the Excellon file from File -> Open -> Excellon\n"
                                    "and edit the drill diameters manually."))
             return "fail"
@@ -382,11 +383,13 @@ class PcbWizard(FlatCAMTool):
         if signal == 'inf':
             self.inf_loaded = True
             self.tools_table.setVisible(True)
-            self.app.inform.emit(_("[success] PcbWizard .INF file loaded."))
+            self.app.inform.emit('[success] %s' %
+                                 _("PcbWizard .INF file loaded."))
         elif signal == 'excellon':
             self.excellon_loaded = True
             self.outname = os.path.split(str(filename))[1]
-            self.app.inform.emit(_("[success] Main PcbWizard Excellon file loaded."))
+            self.app.inform.emit('[success] %s' %
+                                 _("Main PcbWizard Excellon file loaded."))
 
         if self.excellon_loaded and self.inf_loaded:
             self.update_params()
@@ -420,16 +423,18 @@ class PcbWizard(FlatCAMTool):
                 ret = excellon_obj.parse_file(file_obj=excellon_fileobj)
                 if ret == "fail":
                     app_obj.log.debug("Excellon parsing failed.")
-                    app_obj.inform.emit(_("[ERROR_NOTCL] This is not Excellon file."))
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("This is not Excellon file."))
                     return "fail"
             except IOError:
-                app_obj.inform.emit(_("[ERROR_NOTCL] Cannot parse file: %s") % self.outname)
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (
+                        _("Cannot parse file"), self.outname))
                 app_obj.log.debug("Could not import Excellon object.")
                 app_obj.progress.emit(0)
                 return "fail"
             except Exception as e:
                 app_obj.log.debug("PcbWizard.on_import_excellon().obj_init() %s" % str(e))
-                msg = _("[ERROR_NOTCL] An internal error has occurred. See shell.\n")
+                msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
                 msg += app_obj.traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return "fail"
@@ -442,7 +447,8 @@ class PcbWizard(FlatCAMTool):
             for tool in excellon_obj.tools:
                 if excellon_obj.tools[tool]['solid_geometry']:
                     return
-            app_obj.inform.emit(_("[ERROR_NOTCL] No geometry found in file: %s") % name)
+            app_obj.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                (_("No geometry found in file"), name))
             return "fail"
 
         if excellon_fileobj is not None and excellon_fileobj != '':
@@ -454,16 +460,19 @@ class PcbWizard(FlatCAMTool):
 
                     ret_val = self.app.new_object("excellon", name, obj_init, autoselected=False)
                     if ret_val == 'fail':
-                        self.app.inform.emit(_('[ERROR_NOTCL] Import Excellon file failed.'))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _('Import Excellon file failed.'))
                         return
 
                         # Register recent file
                     self.app.file_opened.emit("excellon", name)
 
                     # GUI feedback
-                    self.app.inform.emit(_("[success] Imported: %s") % name)
+                    self.app.inform.emit('[success] %s: %s' %
+                                         (_("Imported"), name))
                     self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             else:
-                self.app.inform.emit(_('[WARNING_NOTCL] Excellon merging is in progress. Please wait...'))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _('Excellon merging is in progress. Please wait...'))
         else:
-            self.app.inform.emit(_('[ERROR_NOTCL] The imported Excellon file is None.'))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _('The imported Excellon file is None.'))

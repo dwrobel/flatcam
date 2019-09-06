@@ -859,8 +859,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     try:
                         tip_dia = float(self.tipdia_entry.get_value().replace(',', '.'))
                     except ValueError:
-                        self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                               "use a number."))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, "
+                                                                    "use a number."))
                         return
 
                 try:
@@ -870,8 +870,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     try:
                         tip_angle = float(self.tipangle_entry.get_value().replace(',', '.')) / 2
                     except ValueError:
-                        self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                               "use a number."))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                         return
 
                 try:
@@ -881,8 +880,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     try:
                         cut_z = float(self.cutz_entry.get_value().replace(',', '.'))
                     except ValueError:
-                        self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                               "use a number."))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                         return
                 # calculated tool diameter so the cut_z parameter is obeyed
                 tool_dia = tip_dia + 2 * cut_z * math.tan(math.radians(tip_angle))
@@ -900,13 +898,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     try:
                         tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                     except ValueError:
-                        self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                               "use a number."))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                         return
 
             if tool_dia is None:
                 self.build_ui()
-                self.app.inform.emit(_("[WARNING_NOTCL] Please enter a tool diameter to add, in Float format."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter to add, in Float format."))
                 return
 
         if self.units == 'MM':
@@ -915,8 +912,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             tool_dia = float('%.4f' % tool_dia)
 
         if tool_dia == 0:
-            self.app.inform.emit(_("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, "
-                                   "in Float format."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
+                                                          "in Float format."))
             return
 
         # construct a list of all 'tooluid' in the self.tools
@@ -940,12 +937,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         if float('%.4f' % tool_dia) in tool_dias:
             if muted is None:
-                self.app.inform.emit(_("[WARNING_NOTCL] Adding tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
             if muted is None:
-                self.app.inform.emit(_("[success] New tool added to Tool Table."))
+                self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
             self.ncc_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.4f' % tool_dia),
@@ -980,7 +977,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 try:
                     new_tool_dia = float(self.tools_table.item(row, 1).text().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
+                    self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, "
                                          "use a number."))
                     return
 
@@ -989,7 +986,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # identify the tool that was edited and get it's tooluid
             if new_tool_dia not in tool_dias:
                 self.ncc_tools[tooluid]['tooldia'] = new_tool_dia
-                self.app.inform.emit(_("[success] Tool from Tool Table was edited."))
+                self.app.inform.emit('[success] %s' % _("Tool from Tool Table was edited."))
                 self.build_ui()
                 return
             else:
@@ -1000,8 +997,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         break
                 restore_dia_item = self.tools_table.item(row, 1)
                 restore_dia_item.setText(str(old_tool_dia))
-                self.app.inform.emit(_("[WARNING_NOTCL] Edit cancelled. "
-                                       "New diameter value is already in the Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Edit cancelled. "
+                                                              "New diameter value is already in the Tool Table."))
         self.build_ui()
 
     def on_tool_delete(self, rows_to_delete=None, all=None):
@@ -1040,12 +1037,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     self.ncc_tools.pop(t, None)
 
         except AttributeError:
-            self.app.inform.emit(_("[WARNING_NOTCL] Delete failed. Select a tool to delete."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a tool to delete."))
             return
         except Exception as e:
             log.debug(str(e))
 
-        self.app.inform.emit(_("[success] Tool(s) deleted from Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
         self.build_ui()
 
     def on_ncc_click(self):
@@ -1062,13 +1059,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
             try:
                 overlap = float(self.ncc_overlap_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                       "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, "
+                                                             "use a number."))
                 return
 
         if overlap >= 1 or overlap < 0:
-            self.app.inform.emit(_("[ERROR_NOTCL] Overlap value must be between "
-                                   "0 (inclusive) and 1 (exclusive), "))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Overlap value must be between "
+                                                        "0 (inclusive) and 1 (exclusive), "))
             return
 
         connect = self.ncc_connect_cb.get_value()
@@ -1083,11 +1080,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         try:
             self.ncc_obj = self.app.collection.get_by_name(self.obj_name)
         except Exception as e:
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not retrieve object: %s") % self.obj_name)
             return "Could not retrieve object: %s" % self.obj_name
 
         if self.ncc_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Object not found: %s") % self.ncc_obj)
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Object not found: %s") % self.ncc_obj)
             return
 
         # use the selected tools in the tool table; get diameters for non-copper clear
@@ -1103,8 +1100,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     try:
                         tooldia = float(self.tools_table.item(x.row(), 1).text().replace(',', '.'))
                     except ValueError:
-                        self.app.inform.emit(_("[ERROR_NOTCL] Wrong Tool Dia value format entered, "
-                                               "use a number."))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong Tool Dia value format entered, "
+                                                                    "use a number."))
                         continue
 
                 if self.tools_table.cellWidget(x.row(), 4).currentText() == 'iso_op':
@@ -1112,7 +1109,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 else:
                     ncc_dia_list.append(tooldia)
         else:
-            self.app.inform.emit(_("[ERROR_NOTCL] No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
             return
 
         o_name = '%s_ncc' % self.obj_name
@@ -1124,7 +1121,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             try:
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
             except Exception as e:
-                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
                 return "Could not retrieve object: %s" % self.obj_name
 
             self.clear_copper(ncc_obj=self.ncc_obj,
@@ -1137,7 +1134,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                               contour=contour,
                               rest=rest)
         elif select_method == 'area':
-            self.app.inform.emit(_("[WARNING_NOTCL] Click the start point of the area."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
             # use the first tool in the tool table; get the diameter
             # tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
@@ -1148,7 +1145,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if event.button == 1:
                     if self.first_click is False:
                         self.first_click = True
-                        self.app.inform.emit(_("[WARNING_NOTCL] Click the end point of the paint area."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the paint area."))
 
                         self.cursor_pos = self.app.plotcanvas.translate_coords(event.pos)
                         if self.app.grid_status() == True:
@@ -1265,7 +1262,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             try:
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
             except Exception as e:
-                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.bound_obj_name)
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.bound_obj_name))
                 return "Could not retrieve object: %s. Error: %s" % (self.bound_obj_name, str(e))
 
             self.clear_copper(ncc_obj=self.ncc_obj,
@@ -1339,8 +1336,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 try:
                     ncc_margin = float(self.ncc_margin_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
 
         if select_method is not None:
@@ -1366,8 +1362,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 try:
                     ncc_offset = float(self.ncc_offset_spinner.get_value())
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                     return
 
         # ######################################################################################################
@@ -1417,7 +1412,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             except Exception as e:
                 log.debug("NonCopperClear.clear_copper() 'itself'  --> %s" % str(e))
-                self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                 return 'fail'
         elif ncc_select == 'area':
             geo_n = cascaded_union(self.sel_rect)
@@ -1451,7 +1446,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 bounding_box = cascaded_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
                 bounding_box = bounding_box.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             else:
-                self.app.inform.emit(_("[ERROR_NOTCL] The reference object type is not supported."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
                 return 'fail'
 
         log.debug("Copper clearing. Finished non-copper polygons.")
@@ -1507,9 +1502,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if isinstance(ncc_obj, FlatCAMGerber) and not isotooldia:
                 sol_geo = ncc_obj.solid_geometry
                 if has_offset is True:
-                    app_obj.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
+                    app_obj.inform.emit('[WARNING_NOTCL] %s' % _("Buffering ..."))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit(_("[success] Buffering finished ..."))
+                    app_obj.inform.emit('[success] %s' % _("Buffering finished ..."))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
             elif isinstance(ncc_obj, FlatCAMGerber) and isotooldia:
                 isolated_geo = []
@@ -1527,7 +1522,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         isolated_geo = self.generate_envelope(tool_iso / 2, 0)
 
                     if isolated_geo == 'fail':
-                        app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                     else:
                         try:
                             for geo_elem in isolated_geo:
@@ -1589,21 +1584,22 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if has_offset is True:
                     app_obj.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit(_("[success] Buffering finished ..."))
+                    app_obj.inform.emit('[success] %s' % _("Buffering finished ..."))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
             elif isinstance(ncc_obj, FlatCAMGeometry):
                 sol_geo = cascaded_union(ncc_obj.solid_geometry)
                 if has_offset is True:
                     app_obj.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit(_("[success] Buffering finished ..."))
+                    app_obj.inform.emit('[success] %' % _("Buffering finished ..."))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
             else:
-                app_obj.inform.emit(_('[ERROR_NOTCL] The selected object is not suitable for copper clearing.'))
+                app_obj.inform.emit('[ERROR_NOTCL] %' % _('The selected object is not suitable for copper clearing.'))
                 return
 
             if empty.is_empty:
-                app_obj.inform.emit(_("[ERROR_NOTCL] Could not get the extent of the area to be non copper cleared."))
+                app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                    _("Could not get the extent of the area to be non copper cleared."))
                 return 'fail'
 
             if type(empty) is Polygon:
@@ -1747,19 +1743,22 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                app_obj.inform.emit(_("[ERROR] There is no Painting Geometry in the file.\n"
-                                      "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                      "Change the painting parameters and try again."))
+                app_obj.inform.emit('[ERROR] %s' % _("There is no Painting Geometry in the file.\n"
+                                                     "Usually it means that the tool diameter is too big "
+                                                     "for the painted geometry.\n"
+                                                     "Change the painting parameters and try again."))
                 return
 
             # Experimental...
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
             if warning_flag == 0:
-                self.app.inform.emit(_("[success] Non-Copper clear all done."))
+                self.app.inform.emit('[success] %s' % _("Non-Copper clear all done."))
             else:
-                self.app.inform.emit('%s: %s %s.' % (_("[WARNING] Non-Copper clear all done but the copper features "
-                                                       "isolation is broken for"), str(warning_flag),  _("tools")))
+                self.app.inform.emit('[WARNING] %s: %s %s.' % (_("Non-Copper clear all done but the copper features "
+                                                                 "isolation is broken for"),
+                                                               str(warning_flag),
+                                                               _("tools")))
 
         # ###########################################################################################
         # Initializes the new geometry object for the case of the rest-machining ####################
@@ -1793,9 +1792,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if isinstance(ncc_obj, FlatCAMGerber) and not isotooldia:
                 sol_geo = ncc_obj.solid_geometry
                 if has_offset is True:
-                    app_obj.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
+                    app_obj.inform.emit('[WARNING_NOTCL] %s' % _("Buffering ..."))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit(_("[success] Buffering finished ..."))
+                    app_obj.inform.emit('[success] %s' % _("Buffering finished ..."))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
             elif isinstance(ncc_obj, FlatCAMGerber) and isotooldia:
                 isolated_geo = []
@@ -1813,7 +1812,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         isolated_geo = self.generate_envelope(tool_iso, 0)
 
                     if isolated_geo == 'fail':
-                        app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                     else:
                         try:
                             for geo_elem in isolated_geo:
@@ -1873,23 +1872,24 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 sol_geo = cascaded_union(isolated_geo)
                 if has_offset is True:
-                    app_obj.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
+                    app_obj.inform.emit('[WARNING_NOTCL] %s' % _("Buffering ..."))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit(_("[success] Buffering finished ..."))
+                    app_obj.inform.emit('[success] %s' % _("Buffering finished ..."))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
             elif isinstance(ncc_obj, FlatCAMGeometry):
                 sol_geo = cascaded_union(ncc_obj.solid_geometry)
                 if has_offset is True:
                     app_obj.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit(_("[success] Buffering finished ..."))
+                    app_obj.inform.emit('[success] %s' % _("Buffering finished ..."))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
             else:
-                app_obj.inform.emit(_('[ERROR_NOTCL] The selected object is not suitable for copper clearing.'))
+                app_obj.inform.emit('[ERROR_NOTCL] %s' % _('The selected object is not suitable for copper clearing.'))
                 return
 
             if empty.is_empty:
-                app_obj.inform.emit(_("[ERROR_NOTCL] Could not get the extent of the area to be non copper cleared."))
+                app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                    _("Could not get the extent of the area to be non copper cleared."))
                 return 'fail'
 
             if type(empty) is Polygon:
@@ -2048,11 +2048,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # it will be updated only if there is a solid_geometry for tools
             if geo_obj.tools:
                 if warning_flag == 0:
-                    self.app.inform.emit(_("[success] Non-Copper Rest Machining clear all done."))
+                    self.app.inform.emit('[success] %s' % _("Non-Copper Rest Machining clear all done."))
                 else:
                     self.app.inform.emit(
-                        '%s: %s %s.' % (_("[WARNING] Non-Copper Rest Machining clear all done but the copper features "
-                                          "isolation is broken for"), str(warning_flag), _("tools")))
+                        '[WARNING] %s: %s %s.' % (_("Non-Copper Rest Machining clear all done but the copper features "
+                                                    "isolation is broken for"), str(warning_flag), _("tools")))
                 return
             else:
                 # I will use this variable for this purpose although it was meant for something else
