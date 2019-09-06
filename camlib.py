@@ -5355,7 +5355,7 @@ class CNCjob(Geometry):
         measured_up_to_zero_distance = 0.0
         measured_lift_distance = 0.0
 
-        self.app.inform.emit(_("Starting G-Code..."))
+        self.app.inform.emit('%s...' % _("Starting G-Code"))
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
             if excellon_optimization_type == 'M':
@@ -5449,6 +5449,13 @@ class CNCjob(Geometry):
                             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
                             if self.coordinates_type == "G90":
                                 # Drillling! for Absolute coordinates type G90
+                                # variables to display the percentage of work done
+                                geo_len = len(node_list)
+                                disp_number = 0
+                                old_disp_number = 0
+                                log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+
+                                loc_nr = 0
                                 for k in node_list:
                                     locx = locations[k][0]
                                     locy = locations[k][1]
@@ -5469,6 +5476,19 @@ class CNCjob(Geometry):
                                     measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                     self.oldx = locx
                                     self.oldy = locy
+
+                                    loc_nr += 1
+                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
+
+                                    if disp_number > old_disp_number and disp_number <= 100:
+                                        self.app.inform.emit(
+                                            '%s: %s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
+                                                                  str(current_tooldia),
+                                                                  _("Progress"),
+                                                                  disp_number)
+                                        )
+                                        old_disp_number = disp_number
+
                             else:
                                 self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
                                 return 'fail'
@@ -5560,6 +5580,13 @@ class CNCjob(Geometry):
                             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
                             if self.coordinates_type == "G90":
                                 # Drillling! for Absolute coordinates type G90
+                                # variables to display the percentage of work done
+                                geo_len = len(node_list)
+                                disp_number = 0
+                                old_disp_number = 0
+                                log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+
+                                loc_nr = 0
                                 for k in node_list:
                                     locx = locations[k][0]
                                     locy = locations[k][1]
@@ -5580,6 +5607,19 @@ class CNCjob(Geometry):
                                     measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                     self.oldx = locx
                                     self.oldy = locy
+
+                                    loc_nr += 1
+                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
+
+                                    if disp_number > old_disp_number and disp_number <= 100:
+                                        self.app.inform.emit(
+                                            '%s: %s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
+                                                                  str(current_tooldia),
+                                                                  _("Progress"),
+                                                                  disp_number)
+                                        )
+                                        old_disp_number = disp_number
+
                             else:
                                 self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
                                 return 'fail'
@@ -5634,7 +5674,15 @@ class CNCjob(Geometry):
                             for point in points[tool]:
                                 altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
 
-                            for point in self.optimized_travelling_salesman(altPoints):
+                            node_list = self.optimized_travelling_salesman(altPoints)
+                            # variables to display the percentage of work done
+                            geo_len = len(node_list)
+                            disp_number = 0
+                            old_disp_number = 0
+                            log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+
+                            loc_nr = 0
+                            for point in node_list:
                                 gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
                                 gcode += self.doformat(p.down_code, x=point[0], y=point[1])
 
@@ -5651,6 +5699,18 @@ class CNCjob(Geometry):
                                 measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
                                 self.oldx = point[0]
                                 self.oldy = point[1]
+
+                                loc_nr += 1
+                                disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
+
+                                if disp_number > old_disp_number and disp_number <= 100:
+                                    self.app.inform.emit(
+                                        '%s: %s. %s: %d%%' % (_("Starting G-Code for tool with diameter"),
+                                                              str(current_tooldia),
+                                                              _("Progress"),
+                                                              disp_number)
+                                    )
+                                    old_disp_number = disp_number
                         else:
                             self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
                             return 'fail'
