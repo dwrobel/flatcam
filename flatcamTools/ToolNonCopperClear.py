@@ -1637,11 +1637,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     area = MultiPolygon([area])
 
                 # variables to display the percentage of work done
-                step = int(len(area.geoms) / 100)
+                geo_len = len(area.geoms)
                 disp_number = 0
                 old_disp_number = 0
-                log.warning("Total number of polygons to be cleared. %s" % str(len(area.geoms)))
-                log.warning("Step: %d" % step)
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
                 if area.geoms:
                     if len(area.geoms) > 0:
@@ -1687,10 +1686,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     continue
 
                                 pol_nr += 1
-                                disp_number = int(pol_nr / step)
+                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
                                 # log.debug("Polygons cleared: %d" % pol_nr)
 
-                                if disp_number > old_disp_number and disp_number <= 100:
+                                if old_disp_number < disp_number <= 100:
                                     app_obj.inform.emit(
                                         '[success] %s %s%s %s: %d%%' % (_('Non-Copper Clearing with tool diameter = '),
                                                                       str(tool),
@@ -1937,11 +1936,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 allparts[:] = []
 
                 # variables to display the percentage of work done
-                step = int(len(area.geoms) / 100)
+                geo_len = len(area.geoms)
                 disp_number = 0
                 old_disp_number = 0
-                log.warning("Total number of polygons to be cleared. %s" % str(len(area.geoms)))
-                log.warning("Step: %d" % step)
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
                 if area.geoms:
                     if len(area.geoms) > 0:
@@ -1995,7 +1993,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                 rest_geo.append(poly)
 
                                 pol_nr += 1
-                                disp_number = int(pol_nr / step)
+                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
                                 # log.debug("Polygons cleared: %d" % pol_nr)
 
                                 if disp_number > old_disp_number and disp_number <= 100:

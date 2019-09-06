@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - remade visibility threaded
 - reimplemented the thread listening for new FlatCAM process starting with args so it is no longer subclassed but using the moveToThread function
 - added percentage display for work done in NCC Tool
+- added percentage display for work done in Paint Tool
+- some fixes and prepared the activity monitor area to receive updated texts
 
 5.09.2019
 

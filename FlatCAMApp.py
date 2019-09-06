@@ -3459,14 +3459,14 @@ class App(QtCore.QObject):
 
         # here it is done the object plotting
         def worker_task(t_obj):
-            with self.proc_container.new("Plotting"):
-                if isinstance(t_obj, FlatCAMCNCjob):
-                    t_obj.plot(kind=self.defaults["cncjob_plot_kind"])
-                else:
-                    t_obj.plot()
-                t1 = time.time()  # DEBUG
-                self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
-                self.object_plotted.emit(t_obj)
+            # with self.proc_container.new(_("Plotting")):
+            if isinstance(t_obj, FlatCAMCNCjob):
+                t_obj.plot(kind=self.defaults["cncjob_plot_kind"])
+            else:
+                t_obj.plot()
+            t1 = time.time()  # DEBUG
+            self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
+            self.object_plotted.emit(t_obj)
 
         # Send to worker
         # self.worker.add_task(worker_task, [self])

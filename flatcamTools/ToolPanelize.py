@@ -620,6 +620,9 @@ class Panelize(FlatCAMTool):
 
                     app_obj.log.debug("Found %s geometries. Creating a panel geometry cascaded union ..." %
                                       len(obj_fin.solid_geometry))
+                    self.app.inform.emit(_("Found %s geometries. Creating a final panel geometry ...") %
+                                         len(obj_fin.solid_geometry))
+
                     obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
                     app_obj.log.debug("Finished creating a cascaded union for the panel.")
 
@@ -639,7 +642,7 @@ class Panelize(FlatCAMTool):
                                    "Final panel has {col} columns and {row} rows").format(
                 col=columns, row=rows))
 
-        proc = self.app.proc_container.new(_("Generating panel ... Please wait."))
+        proc = self.app.proc_container.new(_("Generating panel ..."))
 
         def job_thread(app_obj):
             try:

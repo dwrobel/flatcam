@@ -348,16 +348,16 @@ class FlatCAMObj(QtCore.QObject):
         log.debug("FlatCAMObj.visible()")
 
         def worker_task(app_obj):
-            app_obj.shapes.visible = value
+            self.shapes.visible = value
 
             # Not all object types has annotations
             try:
-                app_obj.annotation.visible = value
+                self.annotation.visible = value
             except Exception as e:
                 pass
 
         if threaded is False:
-            worker_task(app_obj=self)
+            worker_task(app_obj=self.app)
         else:
             self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
@@ -1179,39 +1179,40 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             color[3] = 1
             return color
 
-        try:
-            if self.options["solid"]:
-                for g in geometry:
-                    if type(g) == Polygon or type(g) == LineString:
-                        self.add_shape(shape=g, color=color,
-                                       face_color=random_color() if self.options['multicolored']
-                                       else face_color, visible=self.options['plot'])
-                    elif type(g) == Point:
-                        pass
-                    else:
-                        try:
-                            for el in g:
-                                self.add_shape(shape=el, color=color,
-                                               face_color=random_color() if self.options['multicolored']
-                                               else face_color, visible=self.options['plot'])
-                        except TypeError:
+        with self.app.proc_container.new(_("Plotting")):
+            try:
+                if self.options["solid"]:
+                    for g in geometry:
+                        if type(g) == Polygon or type(g) == LineString:
                             self.add_shape(shape=g, color=color,
                                            face_color=random_color() if self.options['multicolored']
                                            else face_color, visible=self.options['plot'])
-            else:
-                for g in geometry:
-                    if type(g) == Polygon or type(g) == LineString:
-                        self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
-                                       visible=self.options['plot'])
-                    elif type(g) == Point:
-                        pass
-                    else:
-                        for el in g:
-                            self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
+                        elif type(g) == Point:
+                            pass
+                        else:
+                            try:
+                                for el in g:
+                                    self.add_shape(shape=el, color=color,
+                                                   face_color=random_color() if self.options['multicolored']
+                                                   else face_color, visible=self.options['plot'])
+                            except TypeError:
+                                self.add_shape(shape=g, color=color,
+                                               face_color=random_color() if self.options['multicolored']
+                                               else face_color, visible=self.options['plot'])
+                else:
+                    for g in geometry:
+                        if type(g) == Polygon or type(g) == LineString:
+                            self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
                                            visible=self.options['plot'])
-            self.shapes.redraw()
-        except (ObjectDeleted, AttributeError):
-            self.shapes.clear(update=True)
+                        elif type(g) == Point:
+                            pass
+                        else:
+                            for el in g:
+                                self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
+                                               visible=self.options['plot'])
+                self.shapes.redraw()
+            except (ObjectDeleted, AttributeError):
+                self.shapes.clear(update=True)
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
     def plot_aperture(self, **kwargs):
@@ -2928,28 +2929,29 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # except (ObjectDeleted, AttributeError, KeyError):
         #     self.shapes.clear(update=True)
 
-        # this stays for compatibility reasons, in case we try to open old projects
-        try:
-            __ = iter(self.solid_geometry)
-        except TypeError:
-            self.solid_geometry = [self.solid_geometry]
+        with self.app.proc_container.new(_("Plotting")):
+            # this stays for compatibility reasons, in case we try to open old projects
+            try:
+                __ = iter(self.solid_geometry)
+            except TypeError:
+                self.solid_geometry = [self.solid_geometry]
 
-        try:
-            # Plot Excellon (All polygons?)
-            if self.options["solid"]:
-                for geo in self.solid_geometry:
-                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
-                                   visible=self.options['plot'],
-                                   layer=2)
-            else:
-                for geo in self.solid_geometry:
-                    self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
-                    for ints in geo.interiors:
-                        self.add_shape(shape=ints, color='orange', visible=self.options['plot'])
+            try:
+                # Plot Excellon (All polygons?)
+                if self.options["solid"]:
+                    for geo in self.solid_geometry:
+                        self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
+                                       visible=self.options['plot'],
+                                       layer=2)
+                else:
+                    for geo in self.solid_geometry:
+                        self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
+                        for ints in geo.interiors:
+                            self.add_shape(shape=ints, color='orange', visible=self.options['plot'])
 
-            self.shapes.redraw()
-        except (ObjectDeleted, AttributeError):
-            self.shapes.clear(update=True)
+                self.shapes.redraw()
+            except (ObjectDeleted, AttributeError):
+                self.shapes.clear(update=True)
 
 
 class FlatCAMGeometry(FlatCAMObj, Geometry):
@@ -6039,32 +6041,33 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         if not FlatCAMObj.plot(self):
             return
 
-        visible = visible if visible else self.options['plot']
+        with self.app.proc_container.new(_("Plotting")):
+            visible = visible if visible else self.options['plot']
 
-        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.text_col.enabled = True
-        else:
-            self.text_col.enabled = False
-        self.annotation.redraw()
-
-        try:
-            if self.multitool is False:  # single tool usage
-                try:
-                    dia_plot = float(self.options["tooldia"])
-                except ValueError:
-                    # we may have a tuple with only one element and a comma
-                    dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
-                self.plot2(dia_plot, obj=self, visible=visible, kind=kind)
+            if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+                self.text_col.enabled = True
             else:
-                # multiple tools usage
-                for tooluid_key in self.cnc_tools:
-                    tooldia = float('%.4f' % float(self.cnc_tools[tooluid_key]['tooldia']))
-                    gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
-                    self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
-            self.shapes.redraw()
-        except (ObjectDeleted, AttributeError):
-            self.shapes.clear(update=True)
-            self.annotation.clear(update=True)
+                self.text_col.enabled = False
+            self.annotation.redraw()
+
+            try:
+                if self.multitool is False:  # single tool usage
+                    try:
+                        dia_plot = float(self.options["tooldia"])
+                    except ValueError:
+                        # we may have a tuple with only one element and a comma
+                        dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
+                    self.plot2(dia_plot, obj=self, visible=visible, kind=kind)
+                else:
+                    # multiple tools usage
+                    for tooluid_key in self.cnc_tools:
+                        tooldia = float('%.4f' % float(self.cnc_tools[tooluid_key]['tooldia']))
+                        gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
+                        self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                self.shapes.redraw()
+            except (ObjectDeleted, AttributeError):
+                self.shapes.clear(update=True)
+                self.annotation.clear(update=True)
 
     def on_annotation_change(self):
         if self.ui.annotation_cb.get_value():

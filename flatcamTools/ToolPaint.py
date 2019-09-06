@@ -1497,6 +1497,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             # assert isinstance(geo_obj, FlatCAMGeometry), \
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
+            log.debug("Paint Tool. Normal painting all task started.")
+
             tool_dia = None
             if order == 'fwd':
                 sorted_tools.sort(reverse=False)
@@ -1520,6 +1522,14 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             geo_obj.solid_geometry = []
             for tool_dia in sorted_tools:
+                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
+                                                    str(tool_dia),
+                                                    self.units.lower(),
+                                                    _('started. Progress'),
+                                                    0)
+                )
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
@@ -1527,7 +1537,15 @@ class ToolPaint(FlatCAMTool, Gerber):
                         current_uid = int(k)
                         break
 
-                for geo in recurse(obj.solid_geometry):
+                painted_area = recurse(obj.solid_geometry)
+                # variables to display the percentage of work done
+                geo_len = len(painted_area)
+                disp_number = 0
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                pol_nr = 0
+                for geo in painted_area:
                     try:
                         # Polygons are the only really paintable geometries, lines in theory have no area to be painted
                         if not isinstance(geo, Polygon):
@@ -1569,6 +1587,21 @@ class ToolPaint(FlatCAMTool, Gerber):
                             _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
                               "Or a different Method of paint\n%s") % str(e))
                         return
+
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    # log.debug("Polygons cleared: %d" % pol_nr)
+
+                    if old_disp_number < disp_number <= 100:
+                        app_obj.inform.emit(
+                            '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
+                                                            str(tool_dia),
+                                                            self.units.lower(),
+                                                            _('started. Progress'),
+                                                            disp_number)
+                        )
+                        old_disp_number = disp_number
+                        # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                 # add the solid_geometry to the current too in self.paint_tools (tools_storage)
                 # dictionary and then reset the temporary list that stored that solid_geometry
@@ -1618,6 +1651,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
+            log.debug("Paint Tool. Rest machining painting all task started.")
+
             tool_dia = None
             sorted_tools.sort(reverse=True)
 
@@ -1636,7 +1671,17 @@ class ToolPaint(FlatCAMTool, Gerber):
                 return
 
             for tool_dia in sorted_tools:
-                for geo in recurse(obj.solid_geometry):
+                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+
+                painted_area = recurse(obj.solid_geometry)
+                # variables to display the percentage of work done
+                geo_len = int(len(painted_area) / 100)
+                disp_number = 0
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                pol_nr = 0
+                for geo in painted_area:
                     try:
                         geo = Polygon(geo) if not isinstance(geo, Polygon) else geo
                         poly_buf = geo.buffer(-paint_margin)
@@ -1669,6 +1714,21 @@ class ToolPaint(FlatCAMTool, Gerber):
                             _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
                               "Or a different Method of paint\n%s") % str(e))
                         return
+
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    # log.debug("Polygons cleared: %d" % pol_nr)
+
+                    if old_disp_number < disp_number <= 100:
+                        app_obj.inform.emit(
+                            '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
+                                                            str(tool_dia),
+                                                            self.units.lower(),
+                                                            _('started. Progress'),
+                                                            disp_number)
+                        )
+                        old_disp_number = disp_number
+                        # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
@@ -1833,6 +1893,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         def gen_paintarea(geo_obj, app_obj):
             # assert isinstance(geo_obj, FlatCAMGeometry), \
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+
+            log.debug("Paint Tool. Normal painting area task started.")
+
             tool_dia = None
             if order == 'fwd':
                 sorted_tools.sort(reverse=False)
@@ -1867,6 +1930,14 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             geo_obj.solid_geometry = []
             for tool_dia in sorted_tools:
+                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
+                                                    str(tool_dia),
+                                                    self.units.lower(),
+                                                    _('started. Progress'),
+                                                    0)
+                )
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
@@ -1874,7 +1945,15 @@ class ToolPaint(FlatCAMTool, Gerber):
                         current_uid = int(k)
                         break
 
-                for geo in recurse(geo_to_paint):
+                painted_area = recurse(geo_to_paint)
+                # variables to display the percentage of work done
+                geo_len = len(painted_area)
+                disp_number = 0
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                pol_nr = 0
+                for geo in painted_area:
                     try:
                         # Polygons are the only really paintable geometries, lines in theory have no area to be painted
                         if not isinstance(geo, Polygon):
@@ -1916,6 +1995,21 @@ class ToolPaint(FlatCAMTool, Gerber):
                             _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
                               "Or a different Method of paint\n%s") % str(e))
                         return
+
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    # log.debug("Polygons cleared: %d" % pol_nr)
+
+                    if disp_number > old_disp_number and disp_number <= 100:
+                        app_obj.inform.emit(
+                            '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
+                                                            str(tool_dia),
+                                                            self.units.lower(),
+                                                            _('started. Progress'),
+                                                            disp_number)
+                        )
+                        old_disp_number = disp_number
+                        # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                 # add the solid_geometry to the current too in self.paint_tools (tools_storage)
                 # dictionary and then reset the temporary list that stored that solid_geometry
@@ -1965,6 +2059,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
+            log.debug("Paint Tool. Rest machining painting area task started.")
+
             tool_dia = None
             sorted_tools.sort(reverse=True)
 
@@ -1983,7 +2079,24 @@ class ToolPaint(FlatCAMTool, Gerber):
                 return
 
             for tool_dia in sorted_tools:
-                for geo in recurse(obj.solid_geometry):
+                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
+                                                    str(tool_dia),
+                                                    self.units.lower(),
+                                                    _('started. Progress'),
+                                                    0)
+                )
+
+                painted_area = recurse(obj.solid_geometry)
+                # variables to display the percentage of work done
+                geo_len = len(painted_area)
+                disp_number = 0
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                pol_nr = 0
+                for geo in painted_area:
                     try:
                         geo = Polygon(geo) if not isinstance(geo, Polygon) else geo
                         poly_buf = geo.buffer(-paint_margin)
@@ -2016,6 +2129,21 @@ class ToolPaint(FlatCAMTool, Gerber):
                             _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
                               "Or a different Method of paint\n%s") % str(e))
                         return
+
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    # log.debug("Polygons cleared: %d" % pol_nr)
+
+                    if disp_number > old_disp_number and disp_number <= 100:
+                        app_obj.inform.emit(
+                            '[success] %s %s%s %s: %d%%' % (_('Painting with tool diameter = '),
+                                                            str(tool_dia),
+                                                            self.units.lower(),
+                                                            _('started. Progress'),
+                                                            disp_number)
+                        )
+                        old_disp_number = disp_number
+                        # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
