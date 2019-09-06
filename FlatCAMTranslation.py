@@ -174,7 +174,7 @@ def restart_program(app):
         response = msgbox.clickedButton()
 
         if response == bt_yes:
-            app.on_file_saveprojectas(thread=True, quit=True)
+            app.on_file_saveprojectas(use_thread=True, quit_action=True)
 
     app.save_defaults()
     python = sys.executable
