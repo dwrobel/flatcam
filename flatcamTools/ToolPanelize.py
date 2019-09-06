@@ -647,7 +647,7 @@ class Panelize(FlatCAMTool):
                                    "Final panel has {col} columns and {row} rows").format(
                 text='[WARNING] ', col=columns, row=rows))
 
-        proc = self.app.proc_container.new(_("Generating panel ..."))
+        proc = self.app.proc_container.new(_("Generating panel..."))
 
         def job_thread(app_obj):
             try:
