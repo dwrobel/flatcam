@@ -184,7 +184,7 @@ class ToolMove(FlatCAMTool):
     def replot(self, obj_list):
 
         def worker_task():
-            with self.app.proc_container.new(_("Plotting...")):
+            with self.app.proc_container.new('%s...' % _("Plotting")):
                 for sel_obj in obj_list:
                     sel_obj.plot()
 

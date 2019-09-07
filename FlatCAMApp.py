@@ -105,7 +105,7 @@ class App(QtCore.QObject):
     # Version and VERSION DATE ###########
     # ####################################
     version = 8.97
-    version_date = "2019/09/07"
+    version_date = "2019/09/09"
     beta = True
 
     # current date now
@@ -5463,7 +5463,7 @@ class App(QtCore.QObject):
         def origin_replot():
 
             def worker_task():
-                with self.proc_container.new(_("Plotting...")):
+                with self.proc_container.new('%s...' % _("Plotting")):
                     for obj in self.collection.get_list():
                         obj.plot()
                     self.plotcanvas.fit_view()
@@ -6335,7 +6335,7 @@ class App(QtCore.QObject):
 
         self.ui.popMenu.mouse_is_panning = False
 
-        if origin_click != True:
+        if not origin_click:
             # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
             if event.button == 2 and event.is_dragging == 1:
                 self.ui.popMenu.mouse_is_panning = True
@@ -6450,20 +6450,23 @@ class App(QtCore.QObject):
                         self.selection_area_handler(self.pos, pos, self.selection_type)
                         self.selection_type = None
                     else:
-                        modifiers = QtWidgets.QApplication.keyboardModifiers()
+                        key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
-                        # If the CTRL key is pressed when the LMB is clicked then if the object is selected it will
-                        # deselect, and if it's not selected then it will be selected
-                        if modifiers == QtCore.Qt.ControlModifier:
+                        if key_modifier == QtCore.Qt.ShiftModifier:
+                            mod_key = 'Shift'
+                        elif key_modifier == QtCore.Qt.ControlModifier:
+                            mod_key = 'Control'
+                        else:
+                            mod_key = None
+
+                        if mod_key == self.defaults["global_mselect_key"]:
+                            # If the CTRL key is pressed when the LMB is clicked then if the object is selected it will
+                            # deselect, and if it's not selected then it will be selected
                             # If there is no active command (self.command_active is None) then we check if we clicked
                             # on a object by checking the bounding limits against mouse click position
                             if self.command_active is None:
                                 self.select_objects(key='CTRL')
                                 self.delete_hover_shape()
-                        elif modifiers == QtCore.Qt.ShiftModifier:
-                            # if SHIFT was pressed and LMB is clicked then we have a coordinates copy to clipboard
-                            # therefore things should stay as they are
-                            pass
                         else:
                             # If there is no active command (self.command_active is None) then we check if we clicked
                             # on a object by checking the bounding limits against mouse click position
@@ -6559,17 +6562,21 @@ class App(QtCore.QObject):
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
-                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                color='green', name=str(curr_sel_obj.options['name'])))
+                            self.inform.emit(
+                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                    color='green', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'excellon':
-                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                color='brown', name=str(curr_sel_obj.options['name'])))
+                            self.inform.emit(
+                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                    color='brown', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'cncjob':
-                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                color='blue', name=str(curr_sel_obj.options['name'])))
+                            self.inform.emit(
+                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                    color='blue', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'geometry':
-                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                color='red', name=str(curr_sel_obj.options['name'])))
+                            self.inform.emit(
+                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                    color='red', name=str(curr_sel_obj.options['name'])))
 
                     elif self.collection.get_active().options['name'] not in objects_under_the_click_list:
                         self.collection.set_all_inactive()
@@ -6583,17 +6590,21 @@ class App(QtCore.QObject):
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
-                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                color='green', name=str(curr_sel_obj.options['name'])))
+                            self.inform.emit(
+                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                    color='green', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'excellon':
-                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                color='brown', name=str(curr_sel_obj.options['name'])))
+                            self.inform.emit(
+                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                    color='brown', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'cncjob':
-                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                color='blue', name=str(curr_sel_obj.options['name'])))
+                            self.inform.emit(
+                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                    color='blue', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'geometry':
-                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                color='red', name=str(curr_sel_obj.options['name'])))
+                            self.inform.emit(
+                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                    color='red', name=str(curr_sel_obj.options['name'])))
 
                     else:
                         self.collection.set_all_inactive()

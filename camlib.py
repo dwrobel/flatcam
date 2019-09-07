@@ -550,6 +550,10 @@ class Geometry(object):
         # the previously commented block is replaced with this block - regression - to solve the bug with multiple
         # isolation passes cutting from the copper features
 
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise FlatCAMApp.GracefulException
+
         geo_iso = []
         if offset == 0:
             if follow:
@@ -2194,6 +2198,9 @@ class Gerber (Geometry):
         :return: Identifier of the aperture.
         :rtype: str
         """
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise FlatCAMApp.GracefulException
 
         # Found some Gerber with a leading zero in the aperture id and the
         # referenced it without the zero, so this is a hack to handle that.
@@ -2363,6 +2370,10 @@ class Gerber (Geometry):
         gline = ""
         try:
             for gline in glines:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
                 line_num += 1
                 self.source_file += gline + '\n'
 
@@ -4106,6 +4117,10 @@ class Excellon(Geometry):
         eline = ""
         try:
             for eline in elines:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
                 line_num += 1
                 # log.debug("%3d %s" % (line_num, str(eline)))
 
@@ -5571,6 +5586,10 @@ class CNCjob(Geometry):
         # Points (Group by tool)
         points = {}
         for drill in exobj.drills:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             if drill['tool'] in tools:
                 try:
                     points[drill['tool']].append(drill['point'])
@@ -5656,6 +5675,10 @@ class CNCjob(Geometry):
                         self.postdata['toolC'] = exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise FlatCAMApp.GracefulException
+
                         # ###############################################
                         # ############ Create the data. #################
                         # ###############################################
@@ -5702,6 +5725,10 @@ class CNCjob(Geometry):
                                 start_node = node
 
                                 while not routing.IsEnd(node):
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
+
                                     node_list.append(node)
                                     node = assignment.Value(routing.NextVar(node))
                             else:
@@ -5712,6 +5739,10 @@ class CNCjob(Geometry):
 
                         # Only if tool has points.
                         if tool in points:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise FlatCAMApp.GracefulException
+
                             # Tool change sequence (optional)
                             if toolchange:
                                 gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
@@ -5753,6 +5784,10 @@ class CNCjob(Geometry):
 
                                 loc_nr = 0
                                 for k in node_list:
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
+
                                     locx = locations[k][0]
                                     locy = locations[k][1]
 
@@ -5794,6 +5829,10 @@ class CNCjob(Geometry):
                 log.debug("Using OR-Tools Basic drill path optimization.")
                 if exobj.drills:
                     for tool in tools:
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise FlatCAMApp.GracefulException
+
                         self.tool=tool
                         self.postdata['toolC']=exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
@@ -5844,6 +5883,10 @@ class CNCjob(Geometry):
 
                         # Only if tool has points.
                         if tool in points:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise FlatCAMApp.GracefulException
+
                             # Tool change sequence (optional)
                             if toolchange:
                                 gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
@@ -5885,6 +5928,10 @@ class CNCjob(Geometry):
 
                                 loc_nr = 0
                                 for k in node_list:
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
+
                                     locx = locations[k][0]
                                     locy = locations[k][1]
 
@@ -5928,6 +5975,10 @@ class CNCjob(Geometry):
         else:
             log.debug("Using Travelling Salesman drill path optimization.")
             for tool in tools:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
                 if exobj.drills:
                     self.tool = tool
                     self.postdata['toolC'] = exobj.tools[tool]["C"]
@@ -5935,6 +5986,10 @@ class CNCjob(Geometry):
 
                     # Only if tool has points.
                     if tool in points:
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise FlatCAMApp.GracefulException
+
                         # Tool change sequence (optional)
                         if toolchange:
                             gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
@@ -5981,6 +6036,10 @@ class CNCjob(Geometry):
 
                             loc_nr = 0
                             for point in node_list:
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise FlatCAMApp.GracefulException
+
                                 gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
                                 gcode += self.doformat(p.down_code, x=point[0], y=point[1])
 
@@ -6171,6 +6230,10 @@ class CNCjob(Geometry):
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
         for shape in flat_geometry:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             if shape is not None:  # TODO: This shouldn't have happened.
                 storage.insert(shape)
 
@@ -6244,6 +6307,10 @@ class CNCjob(Geometry):
 
         try:
             while True:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
                 path_count += 1
 
                 # Remove before modifying, otherwise deletion will fail.
@@ -6490,6 +6557,10 @@ class CNCjob(Geometry):
         self.app.inform.emit(_("Indexing geometry before generating G-Code..."))
 
         for shape in flat_geometry:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             if shape is not None:  # TODO: This shouldn't have happened.
                 storage.insert(shape)
 
@@ -6564,6 +6635,10 @@ class CNCjob(Geometry):
         pt, geo = storage.nearest(current_pt)
         try:
             while True:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
                 path_count += 1
 
                 # Remove before modifying, otherwise deletion will fail.
@@ -6705,6 +6780,10 @@ class CNCjob(Geometry):
 
         try:
             while True:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
                 path_count += 1
 
                 # Remove before modifying, otherwise deletion will fail.
@@ -7461,6 +7540,10 @@ class CNCjob(Geometry):
         prev_x = first_x
         prev_y = first_y
         for pt in path[1:]:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
                 next_x = pt[0]
@@ -7558,6 +7641,10 @@ class CNCjob(Geometry):
         prev_x = first_x
         prev_y = first_y
         for pt in path[1:]:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
                 next_x = pt[0]
@@ -7596,6 +7683,10 @@ class CNCjob(Geometry):
 
     def point2gcode(self, point, old_point=(0, 0)):
         gcode = ""
+
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise FlatCAMApp.GracefulException
 
         path = list(point.coords)
         p = self.pp_geometry
@@ -7651,6 +7742,10 @@ class CNCjob(Geometry):
         cuts = []
         travels = []
         for g in self.gcode_parsed:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             if g['kind'][0] == 'C': cuts.append(g)
             if g['kind'][0] == 'T': travels.append(g)
 
@@ -7660,6 +7755,11 @@ class CNCjob(Geometry):
         # Convert the cuts and travels into single geometry objects we can render as svg xml
         if travels:
             travelsgeom = cascaded_union([geo['geom'] for geo in travels])
+
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise FlatCAMApp.GracefulException
+
         if cuts:
             cutsgeom = cascaded_union([geo['geom'] for geo in cuts])
 

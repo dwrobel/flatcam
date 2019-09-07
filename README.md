@@ -20,6 +20,8 @@ CAD program, and create G-Code for Isolation routing.
 - made threaded the Offset and Scale operations found in the Selected tab of the object
 - corrected some issues and made Move Tool to show correctly when it is plotting and when it is offsetting the objects position
 - made Set Origin feature, threaded
+- updated German language translation files
+- separated the Plotting thread from the transformations threads
 
 6.09.2019
 

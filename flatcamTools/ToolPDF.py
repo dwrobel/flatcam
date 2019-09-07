@@ -183,12 +183,20 @@ class ToolPDF(FlatCAMTool):
             # 1 inch = 72 points => 1 point = 1 / 72 = 0.01388888888 inch
             self.point_to_unit_factor = 1 / 72
 
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise FlatCAMApp.GracefulException
+
         with self.app.proc_container.new(_("Parsing PDF file ...")):
             with open(filename, "rb") as f:
                 pdf = f.read()
 
             stream_nr = 0
             for s in re.findall(self.stream_re, pdf):
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
                 stream_nr += 1
                 log.debug(" PDF STREAM: %d\n" % stream_nr)
                 s = s.strip(b'\r\n')
@@ -389,10 +397,18 @@ class ToolPDF(FlatCAMTool):
                 if self.pdf_parsed:
                     obj_to_delete = []
                     for object_name in self.pdf_parsed:
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise FlatCAMApp.GracefulException
+
                         filename = deepcopy(self.pdf_parsed[object_name]['filename'])
                         pdf_content = deepcopy(self.pdf_parsed[object_name]['pdf'])
                         obj_to_delete.append(object_name)
                         for k in pdf_content:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise FlatCAMApp.GracefulException
+
                             ap_dict = pdf_content[k]
                             if ap_dict:
                                 layer_nr = k
@@ -470,6 +486,10 @@ class ToolPDF(FlatCAMTool):
         lines = pdf_content.splitlines()
 
         for pline in lines:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             line_nr += 1
             log.debug("line %d: %s" % (line_nr, pline))
 
@@ -1327,6 +1347,10 @@ class ToolPDF(FlatCAMTool):
         for x in empty_layers:
             if x in object_dict:
                 object_dict.pop(x)
+
+        if self.app.abort_flag:
+            # graceful abort requested by the user
+            raise FlatCAMApp.GracefulException
 
         return object_dict
 

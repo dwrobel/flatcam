@@ -217,7 +217,7 @@ class FlatCAMObj(QtCore.QObject):
             with self.app.proc_container.new(_("Offsetting...")):
                 self.offset(vector_val)
             self.app.proc_container.update_view_text('')
-            with self.app.proc_container.new(_("Plotting...")):
+            with self.app.proc_container.new('%s...' % _("Plotting")):
                 self.plot()
             self.app.object_changed.emit(self)
 
@@ -232,7 +232,7 @@ class FlatCAMObj(QtCore.QObject):
             with self.app.proc_container.new(_("Scaling...")):
                 self.scale(factor)
             self.app.proc_container.update_view_text('')
-            with self.app.proc_container.new(_("Plotting...")):
+            with self.app.proc_container.new('%s...' % _("Plotting")):
                 self.plot()
             self.app.object_changed.emit(self)
 
@@ -248,7 +248,7 @@ class FlatCAMObj(QtCore.QObject):
             with self.app.proc_container.new(_("Skewing...")):
                 self.skew(x_angle, y_angle)
             self.app.proc_container.update_view_text('')
-            with self.app.proc_container.new(_("Plotting...")):
+            with self.app.proc_container.new('%s...' % _("Plotting")):
                 self.plot()
             self.app.object_changed.emit(self)
 
