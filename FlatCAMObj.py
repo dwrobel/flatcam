@@ -212,26 +212,47 @@ class FlatCAMObj(QtCore.QObject):
 
         self.read_form()
         vector_val = self.ui.offsetvector_entry.get_value()
-        self.offset(vector_val)
-        self.plot()
-        self.app.object_changed.emit(self)
+
+        def worker_task():
+            with self.app.proc_container.new(_("Offsetting...")):
+                self.offset(vector_val)
+            self.app.proc_container.update_view_text('')
+            with self.app.proc_container.new(_("Plotting...")):
+                self.plot()
+            self.app.object_changed.emit(self)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_scale_button_click(self):
         self.app.report_usage("obj_on_scale_button")
         self.read_form()
         factor = self.ui.scale_entry.get_value()
-        self.scale(factor)
-        self.plot()
-        self.app.object_changed.emit(self)
+
+        def worker_task():
+            with self.app.proc_container.new(_("Scaling...")):
+                self.scale(factor)
+            self.app.proc_container.update_view_text('')
+            with self.app.proc_container.new(_("Plotting...")):
+                self.plot()
+            self.app.object_changed.emit(self)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_skew_button_click(self):
         self.app.report_usage("obj_on_skew_button")
         self.read_form()
         x_angle = self.ui.xangle_entry.get_value()
         y_angle = self.ui.yangle_entry.get_value()
-        self.skew(x_angle, y_angle)
-        self.plot()
-        self.app.object_changed.emit(self)
+
+        def worker_task():
+            with self.app.proc_container.new(_("Skewing...")):
+                self.skew(x_angle, y_angle)
+            self.app.proc_container.update_view_text('')
+            with self.app.proc_container.new(_("Plotting...")):
+                self.plot()
+            self.app.object_changed.emit(self)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def to_form(self):
         """
@@ -5123,6 +5144,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         #                                          origin=(px, py))
         # self.app.inform.emit("[success] Geometry Scale done.")
 
+        self.geo_len = 0
+        self.old_disp_number = 0
+        self.el_count = 0
+
         def scale_recursion(geom):
             if type(geom) is list:
                 geoms = list()
@@ -5131,15 +5156,41 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 return geoms
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
                 except AttributeError:
                     return geom
 
         if self.multigeo is True:
             for tool in self.tools:
+                # variables to display the percentage of work done
+                self.geo_len = 0
+                try:
+                    for g in self.tools[tool]['solid_geometry']:
+                        self.geo_len += 1
+                except TypeError:
+                    self.geo_len = 1
+                self.old_disp_number = 0
+                self.el_count = 0
+
                 self.tools[tool]['solid_geometry'] = scale_recursion(self.tools[tool]['solid_geometry'])
         else:
             try:
+                # variables to display the percentage of work done
+                self.geo_len = 0
+                try:
+                    for g in self.solid_geometry:
+                        self.geo_len += 1
+                except TypeError:
+                    self.geo_len = 1
+                self.old_disp_number = 0
+                self.el_count = 0
+
                 self.solid_geometry = scale_recursion(self.solid_geometry)
             except AttributeError:
                 self.solid_geometry = []
@@ -5193,14 +5244,24 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if self.multigeo is True:
             for tool in self.tools:
                 # variables to display the percentage of work done
-                self.geo_len = len(self.tools[tool]['solid_geometry'])
+                self.geo_len = 0
+                try:
+                    for g in self.tools[tool]['solid_geometry']:
+                        self.geo_len += 1
+                except TypeError:
+                    self.geo_len = 1
                 self.old_disp_number = 0
                 self.el_count = 0
 
                 self.tools[tool]['solid_geometry'] = translate_recursion(self.tools[tool]['solid_geometry'])
         else:
             # variables to display the percentage of work done
-            self.geo_len = len(self.solid_geometry)
+            self.geo_len = 0
+            try:
+                for g in self.solid_geometry:
+                    self.geo_len += 1
+            except TypeError:
+                self.geo_len = 1
             self.old_disp_number = 0
             self.el_count = 0
 

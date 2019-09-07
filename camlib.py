@@ -1413,6 +1413,12 @@ class Geometry(object):
                 return new_obj
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.scale(obj, xscale, yscale, origin=(px, py))
                 except AttributeError:
                     return obj
@@ -1420,8 +1426,28 @@ class Geometry(object):
         try:
             if self.multigeo is True:
                 for tool in self.tools:
+                    # variables to display the percentage of work done
+                    self.geo_len = 0
+                    try:
+                        for g in self.tools[tool]['solid_geometry']:
+                            self.geo_len += 1
+                    except TypeError:
+                        self.geo_len = 1
+                    self.old_disp_number = 0
+                    self.el_count = 0
+
                     self.tools[tool]['solid_geometry'] = mirror_geom(self.tools[tool]['solid_geometry'])
             else:
+                # variables to display the percentage of work done
+                self.geo_len = 0
+                try:
+                    for g in self.solid_geometry:
+                        self.geo_len += 1
+                except TypeError:
+                    self.geo_len = 1
+                self.old_disp_number = 0
+                self.el_count = 0
+
                 self.solid_geometry = mirror_geom(self.solid_geometry)
             self.app.inform.emit(_('[success] Object was mirrored ...'))
         except AttributeError:
@@ -1455,6 +1481,12 @@ class Geometry(object):
                 return new_obj
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.rotate(obj, angle, origin=(px, py))
                 except AttributeError:
                     return obj
@@ -1462,8 +1494,28 @@ class Geometry(object):
         try:
             if self.multigeo is True:
                 for tool in self.tools:
+                    # variables to display the percentage of work done
+                    self.geo_len = 0
+                    try:
+                        for g in self.tools[tool]['solid_geometry']:
+                            self.geo_len += 1
+                    except TypeError:
+                        self.geo_len = 1
+                    self.old_disp_number = 0
+                    self.el_count = 0
+
                     self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'])
             else:
+                # variables to display the percentage of work done
+                self.geo_len = 0
+                try:
+                    for g in self.solid_geometry:
+                        self.geo_len += 1
+                except TypeError:
+                    self.geo_len = 1
+                self.old_disp_number = 0
+                self.el_count = 0
+
                 self.solid_geometry = rotate_geom(self.solid_geometry)
             self.app.inform.emit(_('[success] Object was rotated ...'))
         except AttributeError:
@@ -1496,6 +1548,12 @@ class Geometry(object):
                 return new_obj
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
                 except AttributeError:
                     return obj
@@ -1503,8 +1561,28 @@ class Geometry(object):
         try:
             if self.multigeo is True:
                 for tool in self.tools:
+                    # variables to display the percentage of work done
+                    self.geo_len = 0
+                    try:
+                        for g in self.tools[tool]['solid_geometry']:
+                            self.geo_len += 1
+                    except TypeError:
+                        self.geo_len = 1
+                    self.old_disp_number = 0
+                    self.el_count = 0
+
                     self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
             else:
+                # variables to display the percentage of work done
+                self.geo_len = 0
+                try:
+                    for g in self.solid_geometry:
+                        self.geo_len += 1
+                except TypeError:
+                    self.geo_len = 1
+                self.old_disp_number = 0
+                self.el_count = 0
+
                 self.solid_geometry = skew_geom(self.solid_geometry)
             self.app.inform.emit(_('[success] Object was skewed ...'))
         except AttributeError:
@@ -3409,6 +3487,17 @@ class Gerber (Geometry):
         else:
             px, py = point
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.solid_geometry:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+
+        self.old_disp_number = 0
+        self.el_count = 0
+
         def scale_geom(obj):
             if type(obj) is list:
                 new_obj = []
@@ -3417,6 +3506,12 @@ class Gerber (Geometry):
                 return new_obj
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
                 except AttributeError:
                     return obj
@@ -3479,7 +3574,13 @@ class Gerber (Geometry):
             return
 
         # variables to display the percentage of work done
-        self.geo_len = len(self.solid_geometry)
+        self.geo_len = 0
+        try:
+            for g in self.solid_geometry:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+
         self.old_disp_number = 0
         self.el_count = 0
 
@@ -3549,6 +3650,17 @@ class Gerber (Geometry):
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.solid_geometry:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+
+        self.old_disp_number = 0
+        self.el_count = 0
+
         def mirror_geom(obj):
             if type(obj) is list:
                 new_obj = []
@@ -3557,6 +3669,12 @@ class Gerber (Geometry):
                 return new_obj
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.scale(obj, xscale, yscale, origin=(px, py))
                 except AttributeError:
                     return obj
@@ -3599,6 +3717,17 @@ class Gerber (Geometry):
 
         px, py = point
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.solid_geometry:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+
+        self.old_disp_number = 0
+        self.el_count = 0
+
         def skew_geom(obj):
             if type(obj) is list:
                 new_obj = []
@@ -3607,6 +3736,12 @@ class Gerber (Geometry):
                 return new_obj
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
                 except AttributeError:
                     return obj
@@ -3642,6 +3777,17 @@ class Gerber (Geometry):
 
         px, py = point
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.solid_geometry:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+
+        self.old_disp_number = 0
+        self.el_count = 0
+
         def rotate_geom(obj):
             if type(obj) is list:
                 new_obj = []
@@ -3650,6 +3796,12 @@ class Gerber (Geometry):
                 return new_obj
             else:
                 try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                     return affinity.rotate(obj, angle, origin=(px, py))
                 except AttributeError:
                     return obj
@@ -4766,9 +4918,25 @@ class Excellon(Geometry):
                 except AttributeError:
                     return obj
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.drills:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+        self.old_disp_number = 0
+        self.el_count = 0
+
         # Drills
         for drill in self.drills:
             drill['point'] = affinity.scale(drill['point'], xfactor, yfactor, origin=(px, py))
+
+            self.el_count += 1
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            if self.old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                self.old_disp_number = disp_number
 
         # scale solid_geometry
         for tool in self.tools:
@@ -4806,7 +4974,12 @@ class Excellon(Geometry):
                     return obj
 
         # variables to display the percentage of work done
-        self.geo_len = len(self.drills)
+        self.geo_len = 0
+        try:
+            for g in self.drills:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
         self.old_disp_number = 0
         self.el_count = 0
 
@@ -4859,9 +5032,26 @@ class Excellon(Geometry):
                     return obj
 
         # Modify data
+
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.drills:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+        self.old_disp_number = 0
+        self.el_count = 0
+
         # Drills
         for drill in self.drills:
             drill['point'] = affinity.scale(drill['point'], xscale, yscale, origin=(px, py))
+
+            self.el_count += 1
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            if self.old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                self.old_disp_number = disp_number
 
         # mirror solid_geometry
         for tool in self.tools:
@@ -4910,6 +5100,16 @@ class Excellon(Geometry):
                 except AttributeError:
                     return obj
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.drills:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+        self.old_disp_number = 0
+        self.el_count = 0
+
         if point is None:
             px, py = 0, 0
 
@@ -4917,6 +5117,13 @@ class Excellon(Geometry):
             for drill in self.drills:
                 drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
                                                origin=(px, py))
+
+                self.el_count += 1
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                if self.old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                    self.old_disp_number = disp_number
+
             # skew solid_geometry
             for tool in self.tools:
                 self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
@@ -4931,6 +5138,12 @@ class Excellon(Geometry):
             for drill in self.drills:
                 drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
                                                origin=(px, py))
+
+                self.el_count += 1
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                if self.old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                    self.old_disp_number = disp_number
 
             # skew solid_geometry
             for tool in self.tools:
@@ -4970,6 +5183,16 @@ class Excellon(Geometry):
                     except AttributeError:
                         return obj
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.drills:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+        self.old_disp_number = 0
+        self.el_count = 0
+
         if point is None:
             # Drills
             for drill in self.drills:
@@ -4978,6 +5201,12 @@ class Excellon(Geometry):
             # rotate solid_geometry
             for tool in self.tools:
                 self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'], origin='center')
+
+                self.el_count += 1
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                if self.old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                    self.old_disp_number = disp_number
 
             # Slots
             for slot in self.slots:
@@ -4988,6 +5217,12 @@ class Excellon(Geometry):
             # Drills
             for drill in self.drills:
                 drill['point'] = affinity.rotate(drill['point'], angle, origin=(px, py))
+
+                self.el_count += 1
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                if self.old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                    self.old_disp_number = disp_number
 
             # rotate solid_geometry
             for tool in self.tools:
@@ -7621,23 +7856,59 @@ class CNCjob(Geometry):
         if self.multitool is False:
             # offset Gcode
             self.gcode = scale_g(self.gcode)
-            # offset geometry
+
+            # variables to display the percentage of work done
+            self.geo_len = 0
+            try:
+                for g in self.gcode_parsed:
+                    self.geo_len += 1
+            except TypeError:
+                self.geo_len = 1
+            self.old_disp_number = 0
+            self.el_count = 0
+
+            # scale geometry
             for g in self.gcode_parsed:
                 try:
                     g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
                 except AttributeError:
                     return g['geom']
+
+                self.el_count += 1
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                if self.old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                    self.old_disp_number = disp_number
+
             self.create_geometry()
         else:
             for k, v in self.cnc_tools.items():
                 # scale Gcode
                 v['gcode'] = scale_g(v['gcode'])
+
+                # variables to display the percentage of work done
+                self.geo_len = 0
+                try:
+                    for g in v['gcode_parsed']:
+                        self.geo_len += 1
+                except TypeError:
+                    self.geo_len = 1
+                self.old_disp_number = 0
+                self.el_count = 0
+
                 # scale gcode_parsed
                 for g in v['gcode_parsed']:
                     try:
                         g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
                     except AttributeError:
                         return g['geom']
+
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
         self.create_geometry()
 
@@ -7696,7 +7967,12 @@ class CNCjob(Geometry):
             self.gcode = offset_g(self.gcode)
 
             # variables to display the percentage of work done
-            self.geo_len = len(self.gcode_parsed)
+            self.geo_len = 0
+            try:
+                for g in self.gcode_parsed:
+                    self.geo_len += 1
+            except TypeError:
+                self.geo_len = 1
             self.old_disp_number = 0
             self.el_count = 0
 
@@ -7720,7 +7996,12 @@ class CNCjob(Geometry):
                 v['gcode'] = offset_g(v['gcode'])
 
                 # variables to display the percentage of work done
-                self.geo_len = len(v['gcode_parsed'])
+                self.geo_len = 0
+                try:
+                    for g in v['gcode_parsed']:
+                        self.geo_len += 1
+                except TypeError:
+                    self.geo_len = 1
                 self.old_disp_number = 0
                 self.el_count = 0
 
@@ -7752,11 +8033,28 @@ class CNCjob(Geometry):
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.gcode_parsed:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+        self.old_disp_number = 0
+        self.el_count = 0
+
         for g in self.gcode_parsed:
             try:
                 g['geom'] = affinity.scale(g['geom'], xscale, yscale, origin=(px, py))
             except AttributeError:
                 return g['geom']
+
+            self.el_count += 1
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            if self.old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                self.old_disp_number = disp_number
+
         self.create_geometry()
 
     def skew(self, angle_x, angle_y, point):
@@ -7778,11 +8076,28 @@ class CNCjob(Geometry):
 
         px, py = point
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.gcode_parsed:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+        self.old_disp_number = 0
+        self.el_count = 0
+
         for g in self.gcode_parsed:
             try:
                 g['geom'] = affinity.skew(g['geom'], angle_x, angle_y, origin=(px, py))
             except AttributeError:
                 return g['geom']
+
+            self.el_count += 1
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            if self.old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                self.old_disp_number = disp_number
+
         self.create_geometry()
 
     def rotate(self, angle, point):
@@ -7796,11 +8111,28 @@ class CNCjob(Geometry):
 
         px, py = point
 
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.gcode_parsed:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+        self.old_disp_number = 0
+        self.el_count = 0
+
         for g in self.gcode_parsed:
             try:
                 g['geom'] = affinity.rotate(g['geom'], angle, origin=(px, py))
             except AttributeError:
                 return g['geom']
+
+            self.el_count += 1
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            if self.old_disp_number < disp_number <= 100:
+                self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                self.old_disp_number = disp_number
+
         self.create_geometry()
 
 

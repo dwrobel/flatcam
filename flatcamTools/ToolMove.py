@@ -155,7 +155,7 @@ class ToolMove(FlatCAMTool):
                                     # self.app.collection.set_active(sel_obj.options['name'])
                         except Exception as e:
                             proc.done()
-                            self.app.inform.emit('[ERROR_NOTCL] %s --> %s' % (_('ToolMove.on_left_click('), str(e)))
+                            self.app.inform.emit('[ERROR_NOTCL] %s --> %s' % (_('ToolMove.on_left_click()'), str(e)))
                             return "fail"
                         proc.done()
                         # delete the selection bounding box

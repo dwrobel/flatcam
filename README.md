@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - remade the handlers for the Enable/Disable Project Tree context menu so they are threaded and activity is shown in the lower right corner of the main window
 - added to GUI new options for the Gerber object related to area subtraction
 - added new feature in the Gerber object isolation allowing for the isolation to avoid an area defined by another object (Gerber or Geometry)
+- all transformation functions show now the progress (rotate, mirror, scale, offset, skew)
+- made threaded the Offset and Scale operations found in the Selected tab of the object
 
 6.09.2019
 
