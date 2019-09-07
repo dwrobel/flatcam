@@ -192,6 +192,10 @@ class App(QtCore.QObject):
     # used to signal that there are arguments for the app
     args_at_startup = QtCore.pyqtSignal(list)
 
+    # a reusable signal to replot a list of objects
+    # should be disconnected after use so it can be reused
+    replot_signal = pyqtSignal(list)
+
     def __init__(self, user_defaults=True, post_gui=None):
         """
         Starts the application.
@@ -5456,8 +5460,58 @@ class App(QtCore.QObject):
         # and ask him to click on the desired position
         self.report_usage("on_set_origin()")
 
+        def origin_replot():
+
+            def worker_task():
+                with self.proc_container.new(_("Plotting...")):
+                    for obj in self.collection.get_list():
+                        obj.plot()
+                    self.plotcanvas.fit_view()
+
+            self.worker_task.emit({'fcn': worker_task, 'params': []})
+
+        def on_set_zero_click(event):
+            # this function will be available only for mouse left click
+
+            pos_canvas = self.plotcanvas.translate_coords(event.pos)
+            if event.button == 1:
+                if self.grid_status() == True:
+                    pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                else:
+                    pos = pos_canvas
+
+                x = 0 - pos[0]
+                y = 0 - pos[1]
+
+                def worker_task():
+                    with self.proc_container.new(_("Setting Origin...")):
+                        for obj in self.collection.get_list():
+                            obj.offset((x, y))
+                            self.object_changed.emit(obj)
+
+                            # Update the object bounding box options
+                            a, b, c, d = obj.bounds()
+                            obj.options['xmin'] = a
+                            obj.options['ymin'] = b
+                            obj.options['xmax'] = c
+                            obj.options['ymax'] = d
+                        self.inform.emit(_('[success] Origin set ...'))
+                        self.replot_signal.emit([])
+
+                self.worker_task.emit({'fcn': worker_task, 'params': []})
+
+                self.plotcanvas.vis_disconnect('mouse_press', on_set_zero_click)
+                self.should_we_save = True
+
         self.inform.emit(_('Click to set the origin ...'))
-        self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
+        self.plotcanvas.vis_connect('mouse_press', on_set_zero_click)
+
+        # first disconnect it as it may have been used by something else
+        try:
+            self.replot_signal.disconnect()
+        except TypeError:
+            pass
+        self.replot_signal[list].connect(origin_replot)
 
     def on_jump_to(self, custom_location=None, fit_center=True):
         """
@@ -5722,34 +5776,6 @@ class App(QtCore.QObject):
             self.inform.emit('[WARNING_NOTCL] %s' %
                              _("The current task was gracefully closed on user request..."))
             self.abort_flag = False
-
-    def on_set_zero_click(self, event):
-        # this function will be available only for mouse left click
-        pos = []
-        pos_canvas = self.plotcanvas.translate_coords(event.pos)
-        if event.button == 1:
-            if self.grid_status() == True:
-                pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-            else:
-                pos = pos_canvas
-
-            x = 0 - pos[0]
-            y = 0 - pos[1]
-            for obj in self.collection.get_list():
-                obj.offset((x, y))
-                self.object_changed.emit(obj)
-                obj.plot()
-                # Update the object bounding box options
-                a, b, c, d = obj.bounds()
-                obj.options['xmin'] = a
-                obj.options['ymin'] = b
-                obj.options['xmax'] = c
-                obj.options['ymax'] = d
-            # self.plot_all(zoom=False)
-            self.inform.emit(_('[success] Origin set ...'))
-            self.plotcanvas.fit_view()
-            self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
-            self.should_we_save = True
 
     def on_selectall(self):
         self.report_usage("on_selectall()")

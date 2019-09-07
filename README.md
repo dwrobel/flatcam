@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - all transformation functions show now the progress (rotate, mirror, scale, offset, skew)
 - made threaded the Offset and Scale operations found in the Selected tab of the object
 - corrected some issues and made Move Tool to show correctly when it is moving and when it is offsetting the objects position
+- made Set Origin feature, threaded
 
 6.09.2019
 
