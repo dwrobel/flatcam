@@ -1816,6 +1816,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.activity_view = FlatCAMActivityView()
         self.infobar.addWidget(self.activity_view)
 
+        # ###########################################################################
+        # ####### Set the APP ICON and the WINDOW TITLE and GEOMETRY ################
+        # ###########################################################################
+
         self.app_icon = QtGui.QIcon()
         self.app_icon.addFile('share/flatcam_icon16.png', QtCore.QSize(16, 16))
         self.app_icon.addFile('share/flatcam_icon24.png', QtCore.QSize(24, 24))
@@ -1950,6 +1954,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
 
     def eventFilter(self, obj, event):
+        # filter the ToolTips display based on a Preferences setting
         if self.general_defaults_form.general_app_group.toggle_tooltips_cb.get_value() is False:
             if event.type() == QtCore.QEvent.ToolTip:
                 return True
