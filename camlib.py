@@ -797,8 +797,8 @@ class Geometry(object):
             boundary = self.solid_geometry.envelope
         return boundary.difference(self.solid_geometry)
         
-    @staticmethod
-    def clear_polygon(polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True):
+
+    def clear_polygon(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -852,6 +852,9 @@ class Geometry(object):
                 geoms.insert(i)
 
         while True:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
 
             # Can only result in a Polygon or MultiPolygon
             current = current.buffer(-tooldia * (1 - overlap), int(int(steps_per_circle) / 4))
@@ -880,8 +883,7 @@ class Geometry(object):
 
         return geoms
 
-    @staticmethod
-    def clear_polygon2(polygon_to_clear, tooldia, steps_per_circle, seedpoint=None, overlap=0.15,
+    def clear_polygon2(self, polygon_to_clear, tooldia, steps_per_circle, seedpoint=None, overlap=0.15,
                        connect=True, contour=True):
         """
         Creates geometry inside a polygon for a tool to cover
@@ -928,7 +930,11 @@ class Geometry(object):
 
         # Grow from seed until outside the box. The polygons will
         # never have an interior, so take the exterior LinearRing.
-        while 1:
+        while True:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             path = Point(seedpoint).buffer(radius, int(steps_per_circle / 4)).exterior
             path = path.intersection(path_margin)
 
@@ -971,8 +977,7 @@ class Geometry(object):
 
         return geoms
 
-    @staticmethod
-    def clear_polygon3(polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True):
+    def clear_polygon3(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -1007,6 +1012,10 @@ class Geometry(object):
         # First line
         y = top - tooldia / 1.99999999
         while y > bot + tooldia / 1.999999999:
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             line = LineString([(left, y), (right, y)])
             lines.append(line)
             y -= tooldia * (1 - overlap)

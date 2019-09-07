@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.09.2019
+
+- added a method to gracefully exit from threaded tasks and implemented it for the NCC Tool and for the Paint Tool
+- modified the on_about() function to reflect the reality in 2019 - FlatCAM it is an Open Source contributed software
+
 6.09.2019
 
 - remade visibility threaded

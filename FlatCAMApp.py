@@ -105,7 +105,7 @@ class App(QtCore.QObject):
     # Version and VERSION DATE ###########
     # ####################################
     version = 8.97
-    version_date = "2019/08/31"
+    version_date = "2019/09/07"
     beta = True
 
     # current date now
@@ -1788,6 +1788,9 @@ class App(QtCore.QObject):
         self.ui.fa_defaults_form.fa_gerber_group.grb_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='gerber'))
 
+        # connect the abort_all_tasks related slots to the related signals
+        self.proc_container.idle_flag.connect(self.app_is_idle)
+
         self.log.debug("Finished connecting Signals.")
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
@@ -2036,7 +2039,7 @@ class App(QtCore.QObject):
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
         self.shell.append_output("FlatCAM %s - " % self.version)
-        self.shell.append_output(_("Type help to get started\n\n"))
+        self.shell.append_output(_("Open Source Software - Type help to get started\n\n"))
 
         self.init_tcl()
 
@@ -2192,6 +2195,9 @@ class App(QtCore.QObject):
         # VisPy visuals
         self.isHovering = False
         self.notHovering = True
+
+        # when True, the app has to return from any thread
+        self.abort_flag = False
 
         # #########################################################
         # ### Save defaults to factory_defaults.FlatConfig file ###
@@ -3544,9 +3550,12 @@ class App(QtCore.QObject):
                         "2D Computer-Aided Printed Circuit Board<BR>"
                         "Manufacturing.<BR>"
                         "<BR>"
-                        "(c) 2014-2019 <B>Juan Pablo Caram</B><BR>"
+                        "<B> License: </B><BR>"
+                        "Licensed under MIT license (c)2014 - 2019"
                         "<BR>"
-                        "<B> Main Contributors:</B><BR>"
+                        "<BR>"
+                        "<B> Programmers:</B><BR>"
+                        "<B> Juan Pablo Caram </B><BR>"
                         "Denis Hayrullin<BR>"
                         "Kamil Sopko<BR>"
                         "Marius Stanciu<BR>"
@@ -5692,6 +5701,17 @@ class App(QtCore.QObject):
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
+
+    def abort_all_tasks(self):
+        if self.abort_flag is False:
+            self.inform.emit(_("Aborting. The current task will be gracefully closed as soon as possible..."))
+            self.abort_flag = True
+
+    def app_is_idle(self):
+        if self.abort_flag:
+            self.inform.emit('[WARNING_NOTCL] %s' %
+                             _("The current task was gracefully closed on user request..."))
+            self.abort_flag = False
 
     def on_set_zero_click(self, event):
         # this function will be available only for mouse left click
@@ -9685,5 +9705,14 @@ class ArgsThread(QtCore.QObject):
     @pyqtSlot()
     def run(self):
         self.my_loop(self.address)
+
+
+class GracefulException(Exception):
+    # Graceful Exception raised when the user is requesting to cancel the current threaded task
+    def __init__(self):
+        super().__init__()
+
+    def __str__(self):
+        return ('\n\n%s' % _("The user requested a graceful exit of the current task."))
 
 # end of file

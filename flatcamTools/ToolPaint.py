@@ -1254,32 +1254,38 @@ class ToolPaint(FlatCAMTool, Gerber):
                 pass
 
             def paint_p(polyg, tooldia):
-                if paint_method == "seed":
-                    # Type(cp) == FlatCAMRTreeStorage | None
-                    cpoly = self.clear_polygon2(polyg,
-                                                tooldia=tooldia,
-                                                steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                overlap=over,
-                                                contour=cont,
-                                                connect=conn)
+                cpoly = None
+                try:
+                    if paint_method == "seed":
+                        # Type(cp) == FlatCAMRTreeStorage | None
+                        cpoly = self.clear_polygon2(polyg,
+                                                    tooldia=tooldia,
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn)
 
-                elif paint_method == "lines":
-                    # Type(cp) == FlatCAMRTreeStorage | None
-                    cpoly = self.clear_polygon3(polyg,
-                                                tooldia=tooldia,
-                                                steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                overlap=over,
-                                                contour=cont,
-                                                connect=conn)
+                    elif paint_method == "lines":
+                        # Type(cp) == FlatCAMRTreeStorage | None
+                        cpoly = self.clear_polygon3(polyg,
+                                                    tooldia=tooldia,
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn)
 
-                else:
-                    # Type(cp) == FlatCAMRTreeStorage | None
-                    cpoly = self.clear_polygon(polyg,
-                                               tooldia=tooldia,
-                                               steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                               overlap=over,
-                                               contour=cont,
-                                               connect=conn)
+                    else:
+                        # Type(cp) == FlatCAMRTreeStorage | None
+                        cpoly = self.clear_polygon(polyg,
+                                                   tooldia=tooldia,
+                                                   steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                   overlap=over,
+                                                   contour=cont,
+                                                   connect=conn)
+                except FlatCAMApp.GracefulException:
+                    return "fail"
+                except Exception as e:
+                    log.debug("ToolPaint.paint_poly().gen_paintarea().paint_p() --> %s" % str(e))
 
                 if cpoly is not None:
                     geo_obj.solid_geometry += list(cpoly.get_objects())
@@ -1326,13 +1332,15 @@ class ToolPaint(FlatCAMTool, Gerber):
                                 total_geometry += list(x.get_objects())
                         else:
                             total_geometry = list(cp.get_objects())
+                except FlatCAMApp.GracefulException:
+                    return "fail"
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
                     self.app.inform.emit('[ERROR] %s\n%s' %
                                          (_("Could not do Paint. Try a different combination of parameters. "
                                             "Or a different strategy of paint"),
                                           str(e)))
-                    return
+                    return "fail"
 
                 # add the solid_geometry to the current too in self.paint_tools (tools_storage)
                 # dictionary and then reset the temporary list that stored that solid_geometry
@@ -1391,6 +1399,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         def job_thread(app_obj):
             try:
                 app_obj.new_object("geometry", name, gen_paintarea)
+            except FlatCAMApp.GracefulException:
+                proc.done()
+                return
             except Exception as e:
                 proc.done()
                 self.app.inform.emit('[ERROR_NOTCL] %s --> %s' %
@@ -1498,6 +1509,9 @@ class ToolPaint(FlatCAMTool, Gerber):
             :param geometry: Shapely type or list or list of list of such.
             :param reset: Clears the contents of self.flat_geometry.
             """
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
 
             if geometry is None:
                 return
@@ -1611,13 +1625,15 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                         if cp is not None:
                             total_geometry += list(cp.get_objects())
+                    except FlatCAMApp.GracefulException:
+                        return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit('[ERROR] %s\n%s' %
                                              (_("Could not do Paint All. Try a different combination of parameters. "
                                                 "Or a different Method of paint"),
                                               str(e)))
-                        return
+                        return "fail"
 
                     pol_nr += 1
                     disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
@@ -1741,14 +1757,15 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                         if cp is not None:
                             cleared_geo += list(cp.get_objects())
-
+                    except FlatCAMApp.GracefulException:
+                        return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit('[ERROR] %s\n%s' %
                                              (_("Could not do Paint All. Try a different combination of parameters. "
                                                 "Or a different Method of paint"),
                                               str(e)))
-                        return
+                        return "fail"
 
                     pol_nr += 1
                     disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
@@ -1803,6 +1820,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                     app_obj.new_object("geometry", name, gen_paintarea_rest_machining)
                 else:
                     app_obj.new_object("geometry", name, gen_paintarea)
+            except FlatCAMApp.GracefulException:
+                proc.done()
+                return
             except Exception as e:
                 proc.done()
                 traceback.print_stack()
@@ -1896,6 +1916,9 @@ class ToolPaint(FlatCAMTool, Gerber):
             :param geometry: Shapely type or list or list of list of such.
             :param reset: Clears the contents of self.flat_geometry.
             """
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
 
             if geometry is None:
                 return
@@ -1991,6 +2014,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             continue
                         poly_buf = geo.buffer(-paint_margin)
 
+                        cp = None
                         if paint_method == "seed":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf,
@@ -2020,6 +2044,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                         if cp is not None:
                             total_geometry += list(cp.get_objects())
+                    except FlatCAMApp.GracefulException:
+                        return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit('[ERROR] %s' %
@@ -2149,7 +2175,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                         if cp is not None:
                             cleared_geo += list(cp.get_objects())
-
+                    except FlatCAMApp.GracefulException:
+                        return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit('[ERROR] %s' %
@@ -2210,6 +2237,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                     app_obj.new_object("geometry", name, gen_paintarea_rest_machining)
                 else:
                     app_obj.new_object("geometry", name, gen_paintarea)
+            except FlatCAMApp.GracefulException:
+                proc.done()
+                return
             except Exception as e:
                 proc.done()
                 traceback.print_stack()

@@ -1253,7 +1253,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <tr height="20">
                         <td height="20"><strong>ALT+F10</strong></td>
                         <td>&nbsp;Toggle Full Screen</td>
+                    </tr>                 
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
                     </tr>
+                    <tr height="20">
+                        <td height="20"><strong>CTRL+ALT+X</strong></td>
+                        <td>&nbsp;Abort current task (gracefully)</td>
+                    </tr>                    
                     <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
@@ -2163,7 +2171,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             key = event.key
 
         if self.app.call_source == 'app':
-            if modifiers == QtCore.Qt.ControlModifier:
+            if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
+                if key == QtCore.Qt.Key_X:
+                    self.app.abort_all_tasks()
+                    return
+
+            elif modifiers == QtCore.Qt.ControlModifier:
                 if key == QtCore.Qt.Key_A:
                     self.app.on_selectall()
 

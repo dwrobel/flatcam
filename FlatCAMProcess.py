@@ -128,6 +128,8 @@ class FCProcessContainer(object):
 
 class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
     something_changed = QtCore.pyqtSignal()
+    # this will signal that the application is IDLE
+    idle_flag = QtCore.pyqtSignal()
 
     def __init__(self, view):
         assert isinstance(view, FlatCAMActivityView), \
@@ -161,6 +163,7 @@ class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
     def update_view(self):
         if len(self.procs) == 0:
             self.view.set_idle()
+            self.idle_flag.emit()
             self.new_text = ''
 
         elif len(self.procs) == 1:

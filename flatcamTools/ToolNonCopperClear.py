@@ -1429,6 +1429,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             geo_buff_list = []
             for poly in geo_n:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
                 geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
             bounding_box = cascaded_union(geo_buff_list)
@@ -1444,6 +1447,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 geo_buff_list = []
                 for poly in geo_n:
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise FlatCAMApp.GracefulException
                     geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
                 bounding_box = cascaded_union(geo_buff_list)
@@ -1537,6 +1543,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     else:
                         try:
                             for geo_elem in isolated_geo:
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise FlatCAMApp.GracefulException
+
                                 if isinstance(geo_elem, Polygon):
                                     for ring in self.poly2rings(geo_elem):
                                         new_geo = ring.intersection(bounding_box)
@@ -1627,6 +1637,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
             cp = None
             for tool in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
                 app_obj.inform.emit(
                     '[success] %s %s%s %s' % (_('NCC Tool clearing with tool diameter = '),
                                               str(tool),
@@ -1661,6 +1675,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     if len(area.geoms) > 0:
                         pol_nr = 0
                         for p in area.geoms:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise FlatCAMApp.GracefulException
                             if p is not None:
                                 try:
                                     if isinstance(p, Polygon):
@@ -1836,6 +1853,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     else:
                         try:
                             for geo_elem in isolated_geo:
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise FlatCAMApp.GracefulException
+
                                 if isinstance(geo_elem, Polygon):
                                     for ring in self.poly2rings(geo_elem):
                                         new_geo = ring.intersection(bounding_box)
@@ -1858,21 +1879,24 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
                         except TypeError:
-                            if isinstance(isolated_geo, Polygon):
-                                for ring in self.poly2rings(isolated_geo):
-                                    new_geo = ring.intersection(bounding_box)
-                                    if new_geo:
-                                        if not new_geo.is_empty:
-                                            new_geometry.append(new_geo)
-                            elif isinstance(isolated_geo, LineString):
-                                new_geo = isolated_geo.intersection(bounding_box)
-                                if new_geo and not new_geo.is_empty:
-                                    new_geometry.append(new_geo)
-                            elif isinstance(isolated_geo, MultiLineString):
-                                for line_elem in isolated_geo:
-                                    new_geo = line_elem.intersection(bounding_box)
+                            try:
+                                if isinstance(isolated_geo, Polygon):
+                                    for ring in self.poly2rings(isolated_geo):
+                                        new_geo = ring.intersection(bounding_box)
+                                        if new_geo:
+                                            if not new_geo.is_empty:
+                                                new_geometry.append(new_geo)
+                                elif isinstance(isolated_geo, LineString):
+                                    new_geo = isolated_geo.intersection(bounding_box)
                                     if new_geo and not new_geo.is_empty:
                                         new_geometry.append(new_geo)
+                                elif isinstance(isolated_geo, MultiLineString):
+                                    for line_elem in isolated_geo:
+                                        new_geo = line_elem.intersection(bounding_box)
+                                        if new_geo and not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                            except Exception as e:
+                                pass
 
                         # a MultiLineString geometry element will show that the isolation is broken for this tool
                         for geo_e in new_geometry:
@@ -1919,6 +1943,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     _("Could not get the extent of the area to be non copper cleared."))
                 return 'fail'
 
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
             if type(empty) is Polygon:
                 empty = MultiPolygon([empty])
 
@@ -1929,6 +1957,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             # Generate area for each tool
             while sorted_tools:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
                 tool = sorted_tools.pop(0)
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
 
@@ -1945,6 +1977,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 # Area to clear
                 for poly in cleared_by_last_tool:
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise FlatCAMApp.GracefulException
                     try:
                         area = area.difference(poly)
                     except Exception as e:
@@ -1973,6 +2008,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     if len(area.geoms) > 0:
                         pol_nr = 0
                         for p in area.geoms:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise FlatCAMApp.GracefulException
+
                             if p is not None:
                                 if isinstance(p, Polygon):
                                     try:
@@ -2029,6 +2068,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     old_disp_number = disp_number
                                     # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise FlatCAMApp.GracefulException
+
                         # check if there is a geometry at all in the cleared geometry
                         if cleared_geo:
                             # Overall cleared area
@@ -2039,10 +2082,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                             # here we store the poly's already processed in the original geometry by the current tool
                             # into cleared_by_last_tool list
-                            # this will be sustracted from the original geometry_to_be_cleared and make data for
+                            # this will be sutracted from the original geometry_to_be_cleared and make data for
                             # the next tool
                             buffer_value = tool_used / 2
                             for p in cleared_area:
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise FlatCAMApp.GracefulException
+
                                 poly = p.buffer(buffer_value)
                                 cleared_by_last_tool.append(poly)
 
@@ -2091,6 +2138,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.new_object("geometry", name, gen_clear_area_rest)
                 else:
                     app_obj.new_object("geometry", name, gen_clear_area)
+            except FlatCAMApp.GracefulException:
+                proc.done()
+                return
             except Exception as e:
                 proc.done()
                 traceback.print_stack()
