@@ -24,6 +24,7 @@ if '_' not in builtins.__dict__:
 class ToolMove(FlatCAMTool):
 
     toolName = _("Move")
+    replot_signal = pyqtSignal(list)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -44,6 +45,8 @@ class ToolMove(FlatCAMTool):
 
         # VisPy visuals
         self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+
+        self.replot_signal[list].connect(self.replot)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='M', **kwargs)
@@ -125,21 +128,20 @@ class ToolMove(FlatCAMTool):
                     dx = pos[0] - self.point1[0]
                     dy = pos[1] - self.point1[1]
 
-                    proc = self.app.proc_container.new(_("Moving ..."))
+                    obj_list = self.app.collection.get_selected()
 
                     def job_move(app_obj):
-                        obj_list = self.app.collection.get_selected()
+                        with self.app.proc_container.new(_("Moving...")) as proc:
+                            try:
+                                if not obj_list:
+                                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object(s) selected."))
+                                    return "fail"
 
-                        try:
-                            if not obj_list:
-                                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object(s) selected."))
-                                return "fail"
-                            else:
                                 for sel_obj in obj_list:
 
                                     # offset solid_geometry
                                     sel_obj.offset((dx, dy))
-                                    sel_obj.plot()
+                                    # sel_obj.plot()
 
                                     try:
                                         sel_obj.replotApertures.emit()
@@ -152,18 +154,19 @@ class ToolMove(FlatCAMTool):
                                     sel_obj.options['ymin'] = b
                                     sel_obj.options['xmax'] = c
                                     sel_obj.options['ymax'] = d
-                                    # self.app.collection.set_active(sel_obj.options['name'])
-                        except Exception as e:
-                            proc.done()
-                            self.app.inform.emit('[ERROR_NOTCL] %s --> %s' % (_('ToolMove.on_left_click()'), str(e)))
-                            return "fail"
+
+                                # time to plot the moved objects
+                                self.replot_signal.emit(obj_list)
+                            except Exception as e:
+                                proc.done()
+                                self.app.inform.emit('[ERROR_NOTCL] %s --> %s' % (_('ToolMove.on_left_click()'), str(e)))
+                                return "fail"
+
                         proc.done()
                         # delete the selection bounding box
                         self.delete_shape()
-                        self.app.inform.emit('[success] %s %s' % (str(sel_obj.kind).capitalize(),
-                                                                  _('object was moved ...')
-                                                                  )
-                                             )
+                        self.app.inform.emit('[success] %s %s' %
+                                             (str(sel_obj.kind).capitalize(), 'object was moved ...'))
 
                     self.app.worker_task.emit({'fcn': job_move, 'params': [self]})
 
@@ -177,6 +180,15 @@ class ToolMove(FlatCAMTool):
                     return
 
             self.clicked_move = 1
+
+    def replot(self, obj_list):
+
+        def worker_task():
+            with self.app.proc_container.new(_("Plotting...")):
+                for sel_obj in obj_list:
+                    sel_obj.plot()
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_move(self, event):
         pos_canvas = self.app.plotcanvas.translate_coords(event.pos)

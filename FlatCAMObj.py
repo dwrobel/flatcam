@@ -1398,6 +1398,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             cw_row = cw_index.row()
         except AttributeError:
             cw_row = 0
+        except TypeError:
+            return
 
         self.marked_rows[:] = []
 
@@ -5195,9 +5197,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             except AttributeError:
                 self.solid_geometry = []
                 return
-        self.app.inform.emit(_(
-            "[success] Geometry Scale done."
-        ))
+
+        self.app.proc_container.new_text = ''
+        self.app.inform.emit('[success] %s' % _("Geometry Scale done."))
 
     def offset(self, vect):
         """
@@ -5266,7 +5268,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.el_count = 0
 
             self.solid_geometry = translate_recursion(self.solid_geometry)
-        self.app.inform.emit(_("[success] Geometry Offset done."))
+
+        self.app.proc_container.new_text = ''
+        self.app.inform.emit('[success] %s' % _("Geometry Offset done."))
 
     def convert_units(self, units):
         log.debug("FlatCAMObj.FlatCAMGeometry.convert_units()")

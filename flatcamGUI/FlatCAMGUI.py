@@ -7655,8 +7655,9 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.movie.stop()
         self.text.setText(_("Idle."))
 
-    def set_busy(self, msg):
-        self.movie.start()
+    def set_busy(self, msg, no_movie=None):
+        if no_movie is not True:
+            self.movie.start()
         self.text.setText(msg)
 
 

@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - added new feature in the Gerber object isolation allowing for the isolation to avoid an area defined by another object (Gerber or Geometry)
 - all transformation functions show now the progress (rotate, mirror, scale, offset, skew)
 - made threaded the Offset and Scale operations found in the Selected tab of the object
+- corrected some issues and made Move Tool to show correctly when it is moving and when it is offsetting the objects position
 
 6.09.2019
 

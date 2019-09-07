@@ -1453,6 +1453,8 @@ class Geometry(object):
         except AttributeError:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed to mirror. No object selected"))
 
+        self.app.proc_container.new_text = ''
+
     def rotate(self, angle, point):
         """
         Rotate an object by an angle (in degrees) around the provided coordinates.
@@ -1521,6 +1523,8 @@ class Geometry(object):
         except AttributeError:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed to rotate. No object selected"))
 
+        self.app.proc_container.new_text = ''
+
     def skew(self, angle_x, angle_y, point):
         """
         Shear/Skew the geometries of an object by angles along x and y dimensions.
@@ -1587,6 +1591,8 @@ class Geometry(object):
             self.app.inform.emit(_('[success] Object was skewed ...'))
         except AttributeError:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed to skew. No object selected"))
+
+        self.app.proc_container.new_text = ''
 
         # if type(self.solid_geometry) == list:
         #     self.solid_geometry = [affinity.skew(g, angle_x, angle_y, origin=(px, py))
@@ -3469,7 +3475,8 @@ class Gerber (Geometry):
         try:
             xfactor = float(xfactor)
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL] Scale factor has to be a number: integer or float."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Scale factor has to be a number: integer or float."))
             return
 
         if yfactor is None:
@@ -3478,7 +3485,8 @@ class Gerber (Geometry):
             try:
                 yfactor = float(yfactor)
             except:
-                self.app.inform.emit(_("[ERROR_NOTCL] Scale factor has to be a number: integer or float."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Scale factor has to be a number: integer or float."))
                 return
 
         if point is None:
@@ -3535,7 +3543,8 @@ class Gerber (Geometry):
             log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit(_("[success] Gerber Scale done."))
+        self.app.inform.emit('[success] %s' % _("Gerber Scale done."))
+        self.app.proc_container.new_text = ''
 
         # ## solid_geometry ???
         #  It's a cascaded union of objects.
@@ -3569,8 +3578,9 @@ class Gerber (Geometry):
         try:
             dx, dy = vect
         except TypeError:
-            self.app.inform.emit(_("[ERROR_NOTCL] An (x,y) pair of values are needed. "
-                                 "Probable you entered only one value in the Offset field."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("An (x,y) pair of values are needed. "
+                                   "Probable you entered only one value in the Offset field."))
             return
 
         # variables to display the percentage of work done
@@ -3622,7 +3632,8 @@ class Gerber (Geometry):
             log.debug('camlib.Gerber.offset() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit(_("[success] Gerber Offset done."))
+        self.app.inform.emit('[success] %s' % _("Gerber Offset done."))
+        self.app.proc_container.new_text = ''
 
     def mirror(self, axis, point):
         """
@@ -3697,7 +3708,8 @@ class Gerber (Geometry):
             log.debug('camlib.Gerber.mirror() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit(_("[success] Gerber Mirror done."))
+        self.app.inform.emit('[success] %s' % _("Gerber Mirror done."))
+        self.app.proc_container.new_text = ''
 
     def skew(self, angle_x, angle_y, point):
         """
@@ -3764,7 +3776,8 @@ class Gerber (Geometry):
             log.debug('camlib.Gerber.skew() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit(_("[success] Gerber Skew done."))
+        self.app.inform.emit('[success] %s' % _("Gerber Skew done."))
+        self.app.proc_container.new_text = ''
 
     def rotate(self, angle, point):
         """
@@ -3823,7 +3836,8 @@ class Gerber (Geometry):
         except Exception as e:
             log.debug('camlib.Gerber.rotate() Exception --> %s' % str(e))
             return 'fail'
-        self.app.inform.emit(_("[success] Gerber Rotate done."))
+        self.app.inform.emit('[success] %s' % _("Gerber Rotate done."))
+        self.app.proc_container.new_text = ''
 
 
 class Excellon(Geometry):
@@ -4948,6 +4962,7 @@ class Excellon(Geometry):
             slot['start'] = affinity.scale(slot['start'], xfactor, yfactor, origin=(px, py))
 
         self.create_geometry()
+        self.app.proc_container.new_text = ''
 
     def offset(self, vect):
         """
@@ -5004,6 +5019,7 @@ class Excellon(Geometry):
 
         # Recreate geometry
         self.create_geometry()
+        self.app.proc_container.new_text = ''
 
     def mirror(self, axis, point):
         """
@@ -5064,6 +5080,7 @@ class Excellon(Geometry):
 
         # Recreate geometry
         self.create_geometry()
+        self.app.proc_container.new_text = ''
 
     def skew(self, angle_x=None, angle_y=None, point=None):
         """
@@ -5155,6 +5172,7 @@ class Excellon(Geometry):
                 slot['start'] = affinity.skew(slot['start'], angle_x, angle_y, origin=(px, py))
 
         self.create_geometry()
+        self.app.proc_container.new_text = ''
 
     def rotate(self, angle, point=None):
         """
@@ -5234,6 +5252,7 @@ class Excellon(Geometry):
                 slot['start'] = affinity.rotate(slot['start'], angle, origin=(px, py))
 
         self.create_geometry()
+        self.app.proc_container.new_text = ''
 
 
 class AttrDict(dict):
@@ -7911,6 +7930,7 @@ class CNCjob(Geometry):
 
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
         self.create_geometry()
+        self.app.proc_container.new_text = ''
 
     def offset(self, vect):
         """
@@ -8021,6 +8041,8 @@ class CNCjob(Geometry):
                 # for the bounding box
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
 
+        self.app.proc_container.new_text = ''
+
     def mirror(self, axis, point):
         """
         Mirror the geometrys of an object by an given axis around the coordinates of the 'point'
@@ -8056,6 +8078,7 @@ class CNCjob(Geometry):
                 self.old_disp_number = disp_number
 
         self.create_geometry()
+        self.app.proc_container.new_text = ''
 
     def skew(self, angle_x, angle_y, point):
         """
@@ -8099,6 +8122,7 @@ class CNCjob(Geometry):
                 self.old_disp_number = disp_number
 
         self.create_geometry()
+        self.app.proc_container.new_text = ''
 
     def rotate(self, angle, point):
         """
@@ -8134,6 +8158,7 @@ class CNCjob(Geometry):
                 self.old_disp_number = disp_number
 
         self.create_geometry()
+        self.app.proc_container.new_text = ''
 
 
 def get_bounds(geometry_list):

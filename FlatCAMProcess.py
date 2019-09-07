@@ -162,9 +162,9 @@ class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
 
     def update_view(self):
         if len(self.procs) == 0:
+            self.new_text = ''
             self.view.set_idle()
             self.idle_flag.emit()
-            self.new_text = ''
 
         elif len(self.procs) == 1:
             self.view.set_busy(self.text_to_display_in_activity + self.new_text)
@@ -175,4 +175,4 @@ class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
         # this has to be called after the method 'new' inherited by this class is called with a string text as param
         self.new_text = new_text
         if len(self.procs) == 1:
-            self.view.set_busy(self.text_to_display_in_activity + self.new_text)
+            self.view.set_busy(self.text_to_display_in_activity + self.new_text, no_movie=True)
