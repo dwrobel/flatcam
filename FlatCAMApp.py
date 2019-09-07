@@ -3465,14 +3465,14 @@ class App(QtCore.QObject):
 
         # here it is done the object plotting
         def worker_task(t_obj):
-            # with self.proc_container.new(_("Plotting")):
-            if isinstance(t_obj, FlatCAMCNCjob):
-                t_obj.plot(kind=self.defaults["cncjob_plot_kind"])
-            else:
-                t_obj.plot()
-            t1 = time.time()  # DEBUG
-            self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
-            self.object_plotted.emit(t_obj)
+            with self.proc_container.new(_("Plotting")):
+                if isinstance(t_obj, FlatCAMCNCjob):
+                    t_obj.plot(kind=self.defaults["cncjob_plot_kind"])
+                else:
+                    t_obj.plot()
+                t1 = time.time()  # DEBUG
+                self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
+                self.object_plotted.emit(t_obj)
 
         # Send to worker
         # self.worker.add_task(worker_task, [self])
@@ -9379,11 +9379,26 @@ The normal flow when working in FlatCAM is the following:</span></p>
         :return:
         """
         log.debug("Enabling plots ...")
-        self.inform.emit(_("Working ..."))
+        # self.inform.emit(_("Working ..."))
+
         for obj in objects:
             if obj.options['plot'] is False:
+                obj.options.set_change_callback(lambda x: None)
                 obj.options['plot'] = True
-        self.plots_updated.emit()
+                obj.options.set_change_callback(obj.on_options_change)
+
+        def worker_task(objects):
+            with self.proc_container.new(_("Enabling plots ...")):
+                for obj in objects:
+                    # obj.options['plot'] = True
+                    if isinstance(obj, FlatCAMCNCjob):
+                        obj.plot(visible=True, kind=self.defaults["cncjob_plot_kind"])
+                    else:
+                        obj.plot(visible=True)
+
+        self.worker_task.emit({'fcn': worker_task, 'params': [objects]})
+
+        # self.plots_updated.emit()
 
     def disable_plots(self, objects):
         """
@@ -9397,11 +9412,25 @@ The normal flow when working in FlatCAM is the following:</span></p>
             return
 
         log.debug("Disabling plots ...")
-        self.inform.emit(_("Working ..."))
+        # self.inform.emit(_("Working ..."))
+
         for obj in objects:
             if obj.options['plot'] is True:
+                obj.options.set_change_callback(lambda x: None)
                 obj.options['plot'] = False
-        self.plots_updated.emit()
+                obj.options.set_change_callback(obj.on_options_change)
+
+        # self.plots_updated.emit()
+        def worker_task(objects):
+            with self.proc_container.new(_("Disabling plots ...")):
+                for obj in objects:
+                    # obj.options['plot'] = True
+                    if isinstance(obj, FlatCAMCNCjob):
+                        obj.plot(visible=False, kind=self.defaults["cncjob_plot_kind"])
+                    else:
+                        obj.plot(visible=False)
+
+        self.worker_task.emit({'fcn': worker_task, 'params': [objects]})
 
     def toggle_plots(self, objects):
         """
