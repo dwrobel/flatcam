@@ -1090,9 +1090,9 @@ class App(QtCore.QObject):
         if user_defaults:
             self.load_defaults(filename='current_defaults')
 
-        # ###########################
-        # #### APPLY APP LANGUAGE ###
-        # ###########################
+        # #############################################################
+        # ############## APPLY APP LANGUAGE ###########################
+        # #############################################################
 
         ret_val = fcTranslate.apply_language('strings')
 
@@ -1104,9 +1104,9 @@ class App(QtCore.QObject):
             self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
             log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
-        # ##################################
-        # ### CREATE UNIQUE SERIAL NUMBER ##
-        # ##################################
+        # ##############################################################
+        # ################# CREATE UNIQUE SERIAL NUMBER ################
+        # ##############################################################
 
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
@@ -1495,20 +1495,27 @@ class App(QtCore.QObject):
         # ############### Signal handling ################
         # ################################################
 
-        # ### Custom signals  ###
+        # ############# Custom signals  ##################
+
+        # signal for displaying messages in status bar
         self.inform.connect(self.info)
+        # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application)
         self.message.connect(self.message_dialog)
         self.progress.connect(self.set_progress_bar)
+
+        # signals that are emitted when object state changes
         self.object_created.connect(self.on_object_created)
         self.object_changed.connect(self.on_object_changed)
         self.object_plotted.connect(self.on_object_plotted)
         self.plots_updated.connect(self.on_plots_updated)
+
+        # signals emitted when file state change
         self.file_opened.connect(self.register_recent)
         self.file_opened.connect(lambda kind, filename: self.register_folder(filename))
         self.file_saved.connect(lambda kind, filename: self.register_save_folder(filename))
 
-        # ### Standard signals
+        # ############# Standard signals ###################
         # ### Menu
         self.ui.menufilenewproject.triggered.connect(self.on_file_new_click)
         self.ui.menufilenewgeo.triggered.connect(self.new_geometry_object)
@@ -1675,9 +1682,9 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
-        # ##############################
-        # ### GUI PREFERENCES SIGNALS ##
-        # ##############################
+        # ###############################################################
+        # ################### GUI COLORS SIGNALS ########################
+        # ###############################################################
 
         # Setting plot colors signals
         self.ui.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(
@@ -1739,11 +1746,13 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.clicked.connect(
             self.on_proj_color_dis_button)
 
+        # ########## workspace setting signals ###########
         self.ui.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
         self.ui.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
 
+        # ########## CNC Job related signals #############
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.tc_variable_combo.currentIndexChanged[str].connect(
             self.on_cnc_custom_parameters)
         self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.editingFinished.connect(
@@ -1751,7 +1760,7 @@ class App(QtCore.QObject):
         self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.clicked.connect(
             self.on_annotation_fontcolor_button)
 
-        # Modify G-CODE Plot Area TAB
+        # ########## Modify G-CODE Plot Area TAB ###########
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
         self.ui.buttonOpen.clicked.connect(self.handleOpen)
         self.ui.buttonSave.clicked.connect(self.handleSaveGCode)
@@ -1760,7 +1769,7 @@ class App(QtCore.QObject):
         self.ui.buttonFind.clicked.connect(self.handleFindGCode)
         self.ui.buttonReplace.clicked.connect(self.handleReplaceGCode)
 
-        # portability changed
+        # portability changed signal
         self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
 
         # Object list
@@ -1791,7 +1800,14 @@ class App(QtCore.QObject):
         # connect the abort_all_tasks related slots to the related signals
         self.proc_container.idle_flag.connect(self.app_is_idle)
 
+        # #####################################################################################
+        # ########### FINISHED CONNECTING SIGNALS #############################################
+        # #####################################################################################
         self.log.debug("Finished connecting Signals.")
+
+        # #####################################################################################
+        # ########################## Other setups #############################################
+        # #####################################################################################
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
         self.tool_tab_locked = False
@@ -1802,18 +1818,14 @@ class App(QtCore.QObject):
         else:
             self.ui.splitter.setSizes([0, 1])
 
-        # ###########################################
-        # ################# Other setups ############
-        # ###########################################
-
         # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
         self.setup_obj_classes()
         self.setup_recent_items()
         self.setup_component_editor()
 
-        # ###########################################
-        # #######Auto-complete KEYWORDS #############
-        # ###########################################
+        # #####################################################################################
+        # ######################### Auto-complete KEYWORDS ####################################
+        # #####################################################################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'aligndrillgrid', 'bbox', 'bounding_box', 'clear', 'cncjob', 'cutout',
                                   'delete', 'drillcncjob', 'export_gcode', 'export_svg', 'ext', 'exteriors', 'follow',
@@ -2028,9 +2040,9 @@ class App(QtCore.QObject):
 
         self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
 
-        # ###########################################
-        # ########### Shell SETUP ###################
-        # ###########################################
+        # ####################################################################################
+        # ####################### Shell SETUP ################################################
+        # ####################################################################################
 
         self.shell = FCShell(self, version=self.version)
         self.shell._edit.set_model_data(self.myKeywords)
@@ -2058,9 +2070,9 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.hide()
 
-        # ###########################################
-        # ######### Tools and Plugins ###############
-        # ###########################################
+        # ##################################################################################
+        # ###################### Tools and Plugins #########################################
+        # ##################################################################################
 
         self.dblsidedtool = None
         self.measurement_tool = None
@@ -2086,9 +2098,9 @@ class App(QtCore.QObject):
         # self.f_parse = ParseFont(self)
         # self.parse_system_fonts()
 
-        # ###############################################
-        # ######## START-UP ARGUMENTS ###################
-        # ###############################################
+        # #####################################################################################
+        # ########################## START-UP ARGUMENTS #######################################
+        # #####################################################################################
 
         # test if the program was started with a script as parameter
         if self.cmd_line_shellfile:
@@ -2100,9 +2112,9 @@ class App(QtCore.QObject):
                 print("ERROR: ", ext)
                 sys.exit(2)
 
-        # ###############################################
-        # ############# Check for updates ###############
-        # ###############################################
+        # #####################################################################################
+        # ######################## Check for updates ##########################################
+        # #####################################################################################
 
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
@@ -2115,9 +2127,9 @@ class App(QtCore.QObject):
                                    'params': []})
             self.thr2.start(QtCore.QThread.LowPriority)
 
-        # ################################################
-        # ######### Variables for global usage ###########
-        # ################################################
+        # #####################################################################################
+        # ###################### Variables for global usage ###################################
+        # #####################################################################################
 
         # register files with FlatCAM; it works only for Windows for now
         if sys.platform == 'win32' and self.defaults["first_run"] is True:
@@ -2199,10 +2211,10 @@ class App(QtCore.QObject):
         # when True, the app has to return from any thread
         self.abort_flag = False
 
-        # #########################################################
-        # ### Save defaults to factory_defaults.FlatConfig file ###
-        # ### It's done only once after install ###################
-        # #########################################################
+        # ###############################################################################
+        # ############# Save defaults to factory_defaults.FlatConfig file ###############
+        # ############# It's done only once after install                 ###############
+        # ###############################################################################
         factory_file = open(self.data_path + '/factory_defaults.FlatConfig')
         fac_def_from_file = factory_file.read()
         factory_defaults = json.loads(fac_def_from_file)
@@ -2223,9 +2235,9 @@ class App(QtCore.QObject):
         filename_factory = self.data_path + '/factory_defaults.FlatConfig'
         os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
 
-        ####################################################
-        # ### ADDING FlatCAM EDITORS section ###############
-        ####################################################
+        # ###############################################################################
+        # ################# ADDING FlatCAM EDITORS section ##############################
+        # ###############################################################################
 
         # watch out for the position of the editors instantiation ... if it is done before a save of the default values
         # at the first launch of the App , the editors will not be functional.
@@ -2234,17 +2246,15 @@ class App(QtCore.QObject):
         self.grb_editor = FlatCAMGrbEditor(self)
         self.log.debug("Finished adding FlatCAM Editor's.")
 
-        # Post-GUI initialization: Experimental attempt
-        # to perform unit tests on the GUI.
-        # if post_gui is not None:
-        #     post_gui(self)
-
-        App.log.debug("END of constructor. Releasing control.")
-
         self.set_ui_title(name=_("New Project - Not saved"))
 
         # after the first run, this object should be False
         self.defaults["first_run"] = False
+
+        # ###############################################################################
+        # ####################### Finished the CONSTRUCTOR ##############################
+        # ###############################################################################
+        App.log.debug("END of constructor. Releasing control.")
 
         # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces

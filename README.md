@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - added a method to gracefully exit from threaded tasks and implemented it for the NCC Tool and for the Paint Tool
 - modified the on_about() function to reflect the reality in 2019 - FlatCAM it is an Open Source contributed software
 - remade the handlers for the Enable/Disable Project Tree context menu so they are threaded and activity is shown in the lower right corner of the main window
+- added to GUI new options for the Gerber object related to area subtraction
+- added new feature in the Gerber object isolation allowing for the isolation to avoid an area defined by another object (Gerber or Geometry)
 
 6.09.2019
 

@@ -339,6 +339,10 @@ class FlatCAMObj(QtCore.QObject):
             key = self.mark_shapes[apid].add(tolerance=self.drawing_tolerance, **kwargs)
         return key
 
+    @staticmethod
+    def poly2rings(poly):
+        return [poly.exterior] + [interior for interior in poly.interiors]
+
     @property
     def visible(self):
         return self.shapes.visible
@@ -551,6 +555,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
         self.ui.follow_cb.stateChanged.connect(self.on_follow_cb_click)
 
+        # set the model for the Area Exception comboboxes
+        self.ui.obj_combo.setModel(self.app.collection)
+        self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ui.obj_combo.setCurrentIndex(1)
+        self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
@@ -563,12 +572,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.generate_ext_iso_button.hide()
             self.ui.generate_int_iso_button.hide()
             self.ui.follow_cb.hide()
-            self.ui.padding_area_label.show()
+            self.ui.except_cb.setChecked(False)
+            self.ui.except_cb.hide()
         else:
             self.ui.level.setText(_(
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
-            self.ui.padding_area_label.hide()
 
         # add the shapes storage for marking apertures
         for ap_code in self.apertures:
@@ -578,6 +587,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.on_aperture_table_visibility_change()
 
         self.build_ui()
+
+    def on_type_obj_index_changed(self, index):
+        obj_type = self.ui.type_obj_combo.currentIndex()
+        self.ui.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.ui.obj_combo.setCurrentIndex(0)
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)
@@ -881,23 +895,22 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             if invert:
                 try:
-                    try:
-                        pl = []
-                        for p in geom:
-                            if p is not None:
-                                if isinstance(p, Polygon):
-                                    pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
-                                elif isinstance(p, LinearRing):
-                                    pl.append(Polygon(p.coords[::-1]))
-                        geom = MultiPolygon(pl)
-                    except TypeError:
-                        if isinstance(geom, Polygon) and geom is not None:
-                            geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-                        elif isinstance(geom, LinearRing) and geom is not None:
-                            geom = Polygon(geom.coords[::-1])
-                        else:
-                            log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
-                                      type(geom))
+                    pl = []
+                    for p in geom:
+                        if p is not None:
+                            if isinstance(p, Polygon):
+                                pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                            elif isinstance(p, LinearRing):
+                                pl.append(Polygon(p.coords[::-1]))
+                    geom = MultiPolygon(pl)
+                except TypeError:
+                    if isinstance(geom, Polygon) and geom is not None:
+                        geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                    elif isinstance(geom, LinearRing) and geom is not None:
+                        geom = Polygon(geom.coords[::-1])
+                    else:
+                        log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
+                                  type(geom))
                 except Exception as e:
                     log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
                     return 'fail'
@@ -923,6 +936,54 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         # if float(self.options["isotooldia"]) < 0:
         #     self.options["isotooldia"] = -self.options["isotooldia"]
+
+        def area_subtraction(geo):
+            new_geometry = []
+
+            name = self.ui.obj_combo.currentText()
+            subtractor_obj = self.app.collection.get_by_name(name)
+            sub_union = cascaded_union(subtractor_obj.solid_geometry)
+
+            try:
+                for geo_elem in geo:
+                    if isinstance(geo_elem, Polygon):
+                        for ring in self.poly2rings(geo_elem):
+                            new_geo = ring.difference(sub_union)
+                            if new_geo and not new_geo.is_empty:
+                                new_geometry.append(new_geo)
+                    elif isinstance(geo_elem, MultiPolygon):
+                        for poly in geo_elem:
+                            for ring in self.poly2rings(poly):
+                                new_geo = ring.difference(sub_union)
+                                if new_geo and not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                    elif isinstance(geo_elem, LineString):
+                        new_geo = geo_elem.difference(sub_union)
+                        if new_geo:
+                            if not new_geo.is_empty:
+                                new_geometry.append(new_geo)
+                    elif isinstance(geo_elem, MultiLineString):
+                        for line_elem in geo_elem:
+                            new_geo = line_elem.difference(sub_union)
+                            if new_geo and not new_geo.is_empty:
+                                new_geometry.append(new_geo)
+            except TypeError:
+                if isinstance(geo, Polygon):
+                    for ring in self.poly2rings(geo):
+                        new_geo = ring.difference(sub_union)
+                        if new_geo:
+                            if not new_geo.is_empty:
+                                new_geometry.append(new_geo)
+                elif isinstance(geo, LineString):
+                    new_geo = geo.difference(sub_union)
+                    if new_geo and not new_geo.is_empty:
+                        new_geometry.append(new_geo)
+                elif isinstance(geo, MultiLineString):
+                    for line_elem in geo:
+                        new_geo = line_elem.difference(sub_union)
+                        if new_geo and not new_geo.is_empty:
+                            new_geometry.append(new_geo)
+            return new_geometry
 
         if combine:
             if self.iso_type == 0:
@@ -1001,21 +1062,24 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 for g in geo_obj.solid_geometry:
                     if g:
-                        app_obj.inform.emit(_(
-                            "[success] Isolation geometry created: %s"
-                        ) % geo_obj.options["name"])
                         break
                     else:
                         empty_cnt += 1
 
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
-
-                # even if combine is checked, one pass is still singlegeo
-                if passes > 1:
-                    geo_obj.multigeo = True
                 else:
-                    geo_obj.multigeo = False
+                    app_obj.inform.emit('[success] %s" %s' %
+                                        (_("Isolation geometry created"), geo_obj.options["name"]))
+
+                # even if combine is checked, one pass is still single-geo
+                geo_obj.multigeo = True if passes > 1 else False
+
+                # ############################################################
+                # ########## AREA SUBTRACTION ################################
+                # ############################################################
+                if self.ui.except_cb.get_value():
+                    geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init)
@@ -1065,15 +1129,22 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                     for g in geo_obj.solid_geometry:
                         if g:
-                            app_obj.inform.emit(_(
-                                "[success] Isolation geometry created: %s"
-                            ) % geo_obj.options["name"])
                             break
                         else:
                             empty_cnt += 1
+
                     if empty_cnt == len(geo_obj.solid_geometry):
                         raise ValidationError("Empty Geometry", None)
+                    else:
+                        app_obj.inform.emit('[success] %s: %s' %
+                                            (_("Isolation geometry created"), geo_obj.options["name"]))
                     geo_obj.multigeo = False
+
+                    # ############################################################
+                    # ########## AREA SUBTRACTION ################################
+                    # ############################################################
+                    if self.ui.except_cb.get_value():
+                        geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
                 # TODO: Do something if this is None. Offer changing name?
                 self.app.new_object("geometry", iso_name, iso_init)

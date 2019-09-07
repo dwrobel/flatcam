@@ -254,8 +254,13 @@ class GerberObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.isolation_routing_label)
 
+        # ###########################################
+        # ########## NEW GRID #######################
+        # ###########################################
+
         grid1 = QtWidgets.QGridLayout()
         self.custom_box.addLayout(grid1)
+
         tdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
         tdlabel.setToolTip(
             _("Diameter of the cutting tool.\n"
@@ -265,9 +270,9 @@ class GerberObjectUI(ObjectUI):
               "this parameter.")
         )
         tdlabel.setMinimumWidth(90)
-        grid1.addWidget(tdlabel, 0, 0)
         self.iso_tool_dia_entry = LengthEntry()
-        grid1.addWidget(self.iso_tool_dia_entry, 0, 1)
+        grid1.addWidget(tdlabel, 0, 0)
+        grid1.addWidget(self.iso_tool_dia_entry, 0, 1, 1, 2)
 
         passlabel = QtWidgets.QLabel('%s:' % _('# Passes'))
         passlabel.setToolTip(
@@ -275,10 +280,10 @@ class GerberObjectUI(ObjectUI):
               "number (integer) of tool widths.")
         )
         passlabel.setMinimumWidth(90)
-        grid1.addWidget(passlabel, 1, 0)
         self.iso_width_entry = FCSpinner()
         self.iso_width_entry.setRange(1, 999)
-        grid1.addWidget(self.iso_width_entry, 1, 1)
+        grid1.addWidget(passlabel, 1, 0)
+        grid1.addWidget(self.iso_width_entry, 1, 1, 1, 2)
 
         overlabel = QtWidgets.QLabel('%s:' % _('Pass overlap'))
         overlabel.setToolTip(
@@ -287,9 +292,9 @@ class GerberObjectUI(ObjectUI):
               "A value here of 0.25 means an overlap of 25% from the tool diameter found above.")
         )
         overlabel.setMinimumWidth(90)
-        grid1.addWidget(overlabel, 2, 0)
         self.iso_overlap_entry = FloatEntry()
-        grid1.addWidget(self.iso_overlap_entry, 2, 1)
+        grid1.addWidget(overlabel, 2, 0)
+        grid1.addWidget(self.iso_overlap_entry, 2, 1, 1, 2)
 
         # Milling Type Radio Button
         self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
@@ -298,27 +303,69 @@ class GerberObjectUI(ObjectUI):
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
-        grid1.addWidget(self.milling_type_label, 3, 0)
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                             {'label': _('Conv.'), 'value': 'cv'}])
-        grid1.addWidget(self.milling_type_radio, 3, 1)
+        grid1.addWidget(self.milling_type_label, 3, 0)
+        grid1.addWidget(self.milling_type_radio, 3, 1, 1, 2)
 
         # combine all passes CB
         self.combine_passes_cb = FCCheckBox(label=_('Combine Passes'))
         self.combine_passes_cb.setToolTip(
             _("Combine all passes into one object")
         )
-        grid1.addWidget(self.combine_passes_cb, 4, 0)
 
         # generate follow
         self.follow_cb = FCCheckBox(label=_('"Follow"'))
-        self.follow_cb.setToolTip(
-           _("Generate a 'Follow' geometry.\n"
-             "This means that it will cut through\n"
-             "the middle of the trace.")
+        self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
+                                    "This means that it will cut through\n"
+                                    "the middle of the trace."))
 
-        )
+        # avoid an area from isolation
+        self.except_cb = FCCheckBox(label=_('Except'))
+        self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
+                                    "by checking this, the area of the object bellow\n"
+                                    "will be subtracted from the isolation geometry."))
+
+        grid1.addWidget(self.combine_passes_cb, 4, 0)
         grid1.addWidget(self.follow_cb, 4, 1)
+        grid1.addWidget(self.except_cb, 4, 2)
+
+        # ## Form Layout
+        form_layout = QtWidgets.QFormLayout()
+        grid1.addLayout(form_layout, 5, 0, 1, 3)
+
+        # ################################################
+        # ##### Type of object to be excepted ############
+        # ################################################
+        self.type_obj_combo = QtWidgets.QComboBox()
+        self.type_obj_combo.addItem("Gerber")
+        self.type_obj_combo.addItem("Excellon")
+        self.type_obj_combo.addItem("Geometry")
+
+        # we get rid of item1 ("Excellon") as it is not suitable
+        self.type_obj_combo.view().setRowHidden(1, True)
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
+        self.type_obj_combo_label.setToolTip(
+            _("Specify the type of object to be excepted from isolation.\n"
+              "It can be of type: Gerber or Geometry.\n"
+              "What is selected here will dictate the kind\n"
+              "of objects that will populate the 'Object' combobox.")
+        )
+        # self.type_obj_combo_label.setMinimumWidth(60)
+        form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
+
+        # ################################################
+        # ##### The object to be excepted ################
+        # ################################################
+        self.obj_combo = QtWidgets.QComboBox()
+
+        self.obj_label = QtWidgets.QLabel('%s:' % _("Object"))
+        self.obj_label.setToolTip(_("Object whose area will be removed from isolation geometry."))
+
+        form_layout.addRow(self.obj_label, self.obj_combo)
 
         self.gen_iso_label = QtWidgets.QLabel("<b>%s:</b>" % _("Generate Isolation Geometry"))
         self.gen_iso_label.setToolTip(
@@ -332,14 +379,7 @@ class GerberObjectUI(ObjectUI):
               "inside the actual Gerber feature, use a negative tool\n"
               "diameter above.")
         )
-        self.custom_box.addWidget(self.gen_iso_label)
-
-        hlay_1 = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(hlay_1)
-
-        self.padding_area_label = QtWidgets.QLabel('')
-        self.padding_area_label.setMinimumWidth(90)
-        hlay_1.addWidget(self.padding_area_label)
+        grid1.addWidget(self.gen_iso_label, 6, 0, 1, 3)
 
         self.generate_iso_button = QtWidgets.QPushButton(_('FULL Geo'))
         self.generate_iso_button.setToolTip(
@@ -347,10 +387,10 @@ class GerberObjectUI(ObjectUI):
               "for isolation routing. It contains both\n"
               "the interiors and exteriors geometry.")
         )
-        self.generate_iso_button.setMinimumWidth(90)
-        hlay_1.addWidget(self.generate_iso_button, alignment=Qt.AlignLeft)
+        grid1.addWidget(self.generate_iso_button, 7, 0)
 
-        # hlay_1.addStretch()
+        hlay_1 = QtWidgets.QHBoxLayout()
+        grid1.addLayout(hlay_1, 7, 1, 1, 2)
 
         self.generate_ext_iso_button = QtWidgets.QPushButton(_('Ext Geo'))
         self.generate_ext_iso_button.setToolTip(
@@ -370,13 +410,27 @@ class GerberObjectUI(ObjectUI):
         # self.generate_ext_iso_button.setMinimumWidth(90)
         hlay_1.addWidget(self.generate_int_iso_button)
 
+        self.ohis_iso = OptionalHideInputSection(
+            self.except_cb,
+            [self.type_obj_combo, self.type_obj_combo_label, self.obj_combo, self.obj_label],
+            logic=True
+        )
         # when the follow checkbox is checked then the exteriors and interiors isolation generation buttons
         # are disabled as is doesn't make sense to have them enabled due of the nature of "follow"
         self.ois_iso = OptionalInputSection(self.follow_cb,
                                             [self.generate_int_iso_button, self.generate_ext_iso_button], logic=False)
 
+        grid1.addWidget(QtWidgets.QLabel(''), 8, 0)
+
+        # ###########################################
+        # ########## NEW GRID #######################
+        # ###########################################
+
         grid2 = QtWidgets.QGridLayout()
         self.custom_box.addLayout(grid2)
+
+        self.tool_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("TOOLS"))
+        grid2.addWidget(self.tool_lbl, 0, 0, 1, 2)
 
         # ## Clear non-copper regions
         self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Clear N-copper"))
@@ -385,14 +439,14 @@ class GerberObjectUI(ObjectUI):
               "toolpaths to cut all non-copper regions.")
         )
         self.clearcopper_label.setMinimumWidth(90)
-        grid2.addWidget(self.clearcopper_label, 0, 0)
 
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
         self.generate_ncc_button.setToolTip(
             _("Create the Geometry Object\n"
               "for non-copper routing.")
         )
-        grid2.addWidget(self.generate_ncc_button, 0, 1)
+        grid2.addWidget(self.clearcopper_label, 1, 0)
+        grid2.addWidget(self.generate_ncc_button, 1, 1)
 
         # ## Board cutout
         self.board_cutout_label = QtWidgets.QLabel("<b>%s:</b>" % _("Board cutout"))
@@ -401,14 +455,14 @@ class GerberObjectUI(ObjectUI):
               "the PCB and separate it from\n"
               "the original board.")
         )
-        grid2.addWidget(self.board_cutout_label, 1, 0)
 
         self.generate_cutout_button = QtWidgets.QPushButton(_('Cutout Tool'))
         self.generate_cutout_button.setToolTip(
             _("Generate the geometry for\n"
               "the board cutout.")
         )
-        grid2.addWidget(self.generate_cutout_button, 1, 1)
+        grid2.addWidget(self.board_cutout_label, 2, 0)
+        grid2.addWidget(self.generate_cutout_button, 2, 1)
 
         # ## Non-copper regions
         self.noncopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Non-copper regions"))
@@ -419,10 +473,8 @@ class GerberObjectUI(ObjectUI):
               "object. Can be used to remove all\n"
               "copper from a specified region.")
         )
-        self.custom_box.addWidget(self.noncopper_label)
 
-        grid4 = QtWidgets.QGridLayout()
-        self.custom_box.addLayout(grid4)
+        grid2.addWidget(self.noncopper_label, 3, 0, 1, 2)
 
         # Margin
         bmlabel = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
@@ -433,9 +485,9 @@ class GerberObjectUI(ObjectUI):
               "distance.")
         )
         bmlabel.setMinimumWidth(90)
-        grid4.addWidget(bmlabel, 0, 0)
         self.noncopper_margin_entry = LengthEntry()
-        grid4.addWidget(self.noncopper_margin_entry, 0, 1)
+        grid2.addWidget(bmlabel, 4, 0)
+        grid2.addWidget(self.noncopper_margin_entry, 4, 1)
 
         # Rounded corners
         self.noncopper_rounded_cb = FCCheckBox(label=_("Rounded Geo"))
@@ -443,10 +495,10 @@ class GerberObjectUI(ObjectUI):
             _("Resulting geometry will have rounded corners.")
         )
         self.noncopper_rounded_cb.setMinimumWidth(90)
-        grid4.addWidget(self.noncopper_rounded_cb, 1, 0)
 
         self.generate_noncopper_button = QtWidgets.QPushButton(_('Generate Geo'))
-        grid4.addWidget(self.generate_noncopper_button, 1, 1)
+        grid2.addWidget(self.noncopper_rounded_cb, 5, 0)
+        grid2.addWidget(self.generate_noncopper_button, 5, 1)
 
         # ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel('<b>%s:</b>' % _('Bounding Box'))
@@ -454,10 +506,8 @@ class GerberObjectUI(ObjectUI):
             _("Create a geometry surrounding the Gerber object.\n"
               "Square shape.")
         )
-        self.custom_box.addWidget(self.boundingbox_label)
 
-        grid5 = QtWidgets.QGridLayout()
-        self.custom_box.addLayout(grid5)
+        grid2.addWidget(self.boundingbox_label, 6, 0, 1, 2)
 
         bbmargin = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
         bbmargin.setToolTip(
@@ -465,9 +515,9 @@ class GerberObjectUI(ObjectUI):
               "to the nearest polygon.")
         )
         bbmargin.setMinimumWidth(90)
-        grid5.addWidget(bbmargin, 0, 0)
         self.bbmargin_entry = LengthEntry()
-        grid5.addWidget(self.bbmargin_entry, 0, 1)
+        grid2.addWidget(bbmargin, 7, 0)
+        grid2.addWidget(self.bbmargin_entry, 7, 1)
 
         self.bbrounded_cb = FCCheckBox(label=_("Rounded Geo"))
         self.bbrounded_cb.setToolTip(
@@ -477,13 +527,13 @@ class GerberObjectUI(ObjectUI):
               "the margin.")
         )
         self.bbrounded_cb.setMinimumWidth(90)
-        grid5.addWidget(self.bbrounded_cb, 1, 0)
 
         self.generate_bb_button = QtWidgets.QPushButton(_('Generate Geo'))
         self.generate_bb_button.setToolTip(
             _("Generate the Geometry object.")
         )
-        grid5.addWidget(self.generate_bb_button, 1, 1)
+        grid2.addWidget(self.bbrounded_cb, 8, 0)
+        grid2.addWidget(self.generate_bb_button, 8, 1)
 
 
 class ExcellonObjectUI(ObjectUI):

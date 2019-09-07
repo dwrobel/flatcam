@@ -1524,6 +1524,45 @@ class OptionalInputSection:
                     widget.setEnabled(True)
 
 
+class OptionalHideInputSection:
+
+    def __init__(self, cb, optinputs, logic=True):
+        """
+        Associates the a checkbox with a set of inputs.
+
+        :param cb: Checkbox that enables the optional inputs.
+        :param optinputs: List of widgets that are optional.
+        :param logic: When True the logic is normal, when False the logic is in reverse
+        It means that for logic=True, when the checkbox is checked the widgets are Enabled, and
+        for logic=False, when the checkbox is checked the widgets are Disabled
+        :return:
+        """
+        assert isinstance(cb, FCCheckBox), \
+            "Expected an FCCheckBox, got %s" % type(cb)
+
+        self.cb = cb
+        self.optinputs = optinputs
+        self.logic = logic
+
+        self.on_cb_change()
+        self.cb.stateChanged.connect(self.on_cb_change)
+
+    def on_cb_change(self):
+
+        if self.cb.checkState():
+            for widget in self.optinputs:
+                if self.logic is True:
+                    widget.show()
+                else:
+                    widget.hide()
+        else:
+            for widget in self.optinputs:
+                if self.logic is True:
+                    widget.hide()
+                else:
+                    widget.show()
+
+
 class FCTable(QtWidgets.QTableWidget):
     def __init__(self, parent=None):
         super(FCTable, self).__init__(parent)
