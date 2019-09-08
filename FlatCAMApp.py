@@ -423,6 +423,7 @@ class App(QtCore.QObject):
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
             "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
             "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
+            "gerber_buffering": self.ui.gerber_defaults_form.gerber_gen_group.buffering_radio,
 
             # Gerber Options
             "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
@@ -824,19 +825,20 @@ class App(QtCore.QObject):
             "gerber_plot": True,
             "gerber_solid": True,
             "gerber_multicolored": False,
+            "gerber_circle_steps": 128,
+            "gerber_use_buffer_for_union": True,
+            "gerber_buffering": "full",
+
+            # Gerber Options
             "gerber_isotooldia": 0.00787402,
             "gerber_isopasses": 1,
             "gerber_isooverlap": 0.00393701,
-
-            # Gerber Options
-            "gerber_combine_passes": False,
             "gerber_milling_type": "cl",
+            "gerber_combine_passes": False,
             "gerber_noncoppermargin": 0.00393701,
             "gerber_noncopperrounded": False,
             "gerber_bboxmargin": 0.00393701,
             "gerber_bboxrounded": False,
-            "gerber_circle_steps": 128,
-            "gerber_use_buffer_for_union": True,
 
             # Gerber Advanced Options
             "gerber_aperture_display": False,
@@ -3724,6 +3726,17 @@ class App(QtCore.QObject):
                 # Icon and title
                 self.setWindowIcon(parent.app_icon)
                 self.setWindowTitle("FlatCAM")
+                # self.setStyleSheet("background-image: url(share/flatcam_icon256.png); background-attachment: fixed")
+                # self.setStyleSheet(
+                #     "border-image: url(share/flatcam_icon256.png) 0 0 0 0 stretch stretch; "
+                #     "background-attachment: fixed"
+                # )
+
+                # bgimage = QtGui.QImage('share/flatcam_icon256.png')
+                # s_bgimage = bgimage.scaled(QtCore.QSize(self.frameGeometry().width(), self.frameGeometry().height()))
+                # palette = QtGui.QPalette()
+                # palette.setBrush(10, QtGui.QBrush(bgimage))  # 10 = Windowrole
+                # self.setPalette(palette)
 
                 layout1 = QtWidgets.QVBoxLayout()
                 self.setLayout(layout1)

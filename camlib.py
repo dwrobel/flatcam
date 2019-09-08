@@ -2368,6 +2368,8 @@ class Gerber (Geometry):
         # ### Parsing starts here ## ##
         line_num = 0
         gline = ""
+
+        self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Parsing"), len(glines), _("lines")))
         try:
             for gline in glines:
                 if self.app.abort_flag:
@@ -3277,18 +3279,21 @@ class Gerber (Geometry):
             self.follow_geometry = follow_buffer
 
             # this treats the case when we are storing geometry as solids
-            log.warning("Joining %d polygons." % len(poly_buffer))
 
             if len(poly_buffer) == 0:
                 log.error("Object is not Gerber file or empty. Aborting Object creation.")
                 return 'fail'
 
+            log.warning("Joining %d polygons." % len(poly_buffer))
+            self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Joining"), len(poly_buffer), _("polygons")))
+
             if self.use_buffer_for_union:
                 log.debug("Union by buffer...")
 
                 new_poly = MultiPolygon(poly_buffer)
-                new_poly = new_poly.buffer(0.00000001)
-                new_poly = new_poly.buffer(-0.00000001)
+                if self.app.defaults["gerber_buffering"] == 'full':
+                    new_poly = new_poly.buffer(0.00000001)
+                    new_poly = new_poly.buffer(-0.00000001)
                 log.warning("Union(buffer) done.")
             else:
                 log.debug("Union by union()...")
@@ -3299,15 +3304,15 @@ class Gerber (Geometry):
                 self.solid_geometry = self.solid_geometry.union(new_poly)
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
-
         except Exception as err:
             ex_type, ex, tb = sys.exc_info()
             traceback.print_tb(tb)
             # print traceback.format_exc()
 
             log.error("Gerber PARSING FAILED. Line %d: %s" % (line_num, gline))
-            loc = 'Gerber Line #%d Gerber Line Content: %s\n' % (line_num, gline) + repr(err)
-            self.app.inform.emit(_("[ERROR]Gerber Parser ERROR.\n%s:") % loc)
+
+            loc = '%s #%d %s: %s\n' % (_("Gerber Line"), line_num, _("Gerber Line Content"), gline) + repr(err)
+            self.app.inform.emit('[ERROR] %s\n%s:' % (_("Gerber Parser ERROR"), loc))
 
     @staticmethod
     def create_flash_geometry(location, aperture, steps_per_circle=None):

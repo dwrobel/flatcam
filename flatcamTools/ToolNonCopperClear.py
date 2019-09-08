@@ -1515,7 +1515,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.app.inform.emit(_("NCC Tool. Calculate 'empty' area."))
 
             if isinstance(ncc_obj, FlatCAMGerber) and not isotooldia:
-                sol_geo = ncc_obj.solid_geometry
+                # unfortunately for this function to work time efficient,
+                # if the Gerber was loaded without buffering then it require the buffering now.
+                if self.app.defaults['gerber_buffering'] == 'no':
+                    sol_geo = ncc_obj.solid_geometry.buffer(0)
+                else:
+                    sol_geo = ncc_obj.solid_geometry
+
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' %
                                         _("Buffering"))
@@ -1523,9 +1529,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.inform.emit('[success] %s ...' %
                                         _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
             elif isinstance(ncc_obj, FlatCAMGerber) and isotooldia:
                 isolated_geo = []
-                self.solid_geometry = ncc_obj.solid_geometry
+
+                # unfortunately for this function to work time efficient,
+                # if the Gerber was loaded without buffering then it require the buffering now.
+                if self.app.defaults['gerber_buffering'] == 'no':
+                    self.solid_geometry = ncc_obj.solid_geometry.buffer(0)
+                else:
+                    self.solid_geometry = ncc_obj.solid_geometry
 
                 # if milling type is climb then the move is counter-clockwise around features
                 milling_type = self.milling_type_radio.get_value()
@@ -1609,6 +1623,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.inform.emit('[success] %s ...' %
                                         _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
+
             elif isinstance(ncc_obj, FlatCAMGeometry):
                 sol_geo = cascaded_union(ncc_obj.solid_geometry)
                 if has_offset is True:
@@ -1618,6 +1635,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.inform.emit('[success] %s ...' %
                                         _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
+
             else:
                 app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                     _('The selected object is not suitable for copper clearing.'))
@@ -1832,6 +1852,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.inform.emit('[success] %s ...' %
                                         _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
 
             elif isinstance(ncc_obj, FlatCAMGerber) and isotooldia:
                 isolated_geo = []
@@ -1922,6 +1944,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.inform.emit('[success] %s ...' %
                                         _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
 
             elif isinstance(ncc_obj, FlatCAMGeometry):
                 sol_geo = cascaded_union(ncc_obj.solid_geometry)
@@ -1932,7 +1956,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.inform.emit('[success] %s ...' %
                                         _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
-
+                if empty == 'fail':
+                    return 'fail'
             else:
                 app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                     _('The selected object is not suitable for copper clearing.'))
@@ -2509,16 +2534,43 @@ class NonCopperClear(FlatCAMTool, Gerber):
     #     # Background
     #     self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
-    @staticmethod
-    def get_ncc_empty_area(target, boundary=None):
+    def get_ncc_empty_area(self, target, boundary=None):
         """
         Returns the complement of target geometry within
         the given boundary polygon. If not specified, it defaults to
         the rectangular bounding box of target geometry.
         """
+        geo_len = len(target)
+        pol_nr = 0
+        old_disp_number = 0
+
         if boundary is None:
             boundary = target.envelope
-        return boundary.difference(target)
+        else:
+            boundary = boundary
+        try:
+            ret_val = boundary.difference(target)
+        except Exception as e:
+            try:
+                for el in target:
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise FlatCAMApp.GracefulException
+                    boundary = boundary.difference(el)
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+
+                    if disp_number > old_disp_number and disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        old_disp_number = disp_number
+                return boundary
+            except Exception as e:
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Try to use the Buffering Type = Full in Preferences -> Gerber General. "
+                                       "Reload the Gerber file after this change."))
+                return 'fail'
+
+        return ret_val
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

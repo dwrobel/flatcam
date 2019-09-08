@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.09.2019
+
+- changed the triangulation type in VisPyVisuals for ShapeCollectionVisual class
+- added a setting in Preferences -> Gerber -> Gerber General named Buffering. If set to 'no' the Gerber objects load a lot more faster (perhaps 10 times faster than when set to 'full') but the visual look is not so great as all the aperture polygons can be seen
+
 8.09.2019
 
 - added some documentation strings for methods in FlatCAMApp.App class

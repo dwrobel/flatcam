@@ -4314,9 +4314,22 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
             _("The number of circle steps for Gerber \n"
               "circular aperture linear approximation.")
         )
-        grid0.addWidget(self.circle_steps_label, 1, 0)
         self.circle_steps_entry = IntEntry()
+        grid0.addWidget(self.circle_steps_label, 1, 0)
         grid0.addWidget(self.circle_steps_entry, 1, 1)
+
+        # Milling Type
+        buffering_label = QtWidgets.QLabel('%s:' % _('Buffering'))
+        buffering_label.setToolTip(
+            _("Buffering type:\n"
+              "- None --> best performance, fast file loading but no so good display\n"
+              "- Full --> slow file loading but good visuals. This is the default.\n"
+              "<<WARNING>>: Don't change this unless you know what you are doing !!!")
+        )
+        self.buffering_radio = RadioSet([{'label': _('None'), 'value': 'no'},
+                                          {'label': _('Full'), 'value': 'full'}])
+        grid0.addWidget(buffering_label, 2, 0)
+        grid0.addWidget(self.buffering_radio, 2, 1)
 
         self.layout.addStretch()
 
@@ -4370,6 +4383,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.iso_overlap_entry = FloatEntry()
         grid0.addWidget(self.iso_overlap_entry, 2, 1)
 
+        # Milling Type
         milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
         milling_type_label.setToolTip(
             _("Milling type:\n"
