@@ -3527,6 +3527,7 @@ class App(QtCore.QObject):
 
         # Move the object to the main thread and let the app know that it is available.
         obj.moveToThread(self.main_thread)
+
         self.object_created.emit(obj, obj_plot, obj_autoselected)
 
         return obj
@@ -3580,7 +3581,6 @@ class App(QtCore.QObject):
 
         self.new_object('gerber', 'new_grb', initialize, plot=False)
 
-    @pyqtSlot()
     def on_object_created(self, obj, plot, autoselect):
         """
         Event callback for object creation.
@@ -3643,7 +3643,6 @@ class App(QtCore.QObject):
         if plot is True:
             self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
 
-    @pyqtSlot()
     def on_object_changed(self, obj):
         """
         Called whenever the geometry of the object was changed in some way.
@@ -3665,7 +3664,6 @@ class App(QtCore.QObject):
         self.delete_selection_shape()
         self.should_we_save = True
 
-    @pyqtSlot()
     def on_object_plotted(self, obj):
         """
         Callback called whenever the plotted object needs to be fit into the viewport (canvas)
@@ -3782,7 +3780,6 @@ class App(QtCore.QObject):
 
         AboutDialog(self.ui).exec_()
 
-    @pyqtSlot()
     def on_file_savedefaults(self):
         """
         Callback for menu item File->Save Defaults. Saves application default options
@@ -3960,7 +3957,6 @@ class App(QtCore.QObject):
         if silent is False:
             self.inform.emit(_("Factory defaults saved."))
 
-    @pyqtSlot()
     def final_save(self):
         """
         Callback for doing a preferences save to file whenever the application is about to quit.
@@ -4022,7 +4018,6 @@ class App(QtCore.QObject):
         log.debug("App.final_save() --> App UI state saved.")
         QtWidgets.qApp.quit()
 
-    @pyqtSlot()
     def on_portable_checked(self, state):
         """
         Callback called when the checkbox in Preferences GUI is checked.
@@ -4115,7 +4110,6 @@ class App(QtCore.QObject):
         with open(config_file, 'w') as f:
             f.writelines(data)
 
-    @pyqtSlot()
     def on_toggle_shell(self):
         """
         Toggle shell: if is visible close it, if it is closed then open it
@@ -4128,7 +4122,6 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.show()
 
-    @pyqtSlot()
     def on_register_files(self, obj_type=None):
         """
         Called whenever there is a need to register file extensions with FlatCAM.
@@ -4235,7 +4228,6 @@ class App(QtCore.QObject):
             self.defaults["fa_gerber"] = new_ext
             self.inform.emit(_("[success] Selected Gerber file extensions registered with FlatCAM."))
 
-    @pyqtSlot()
     def on_edit_join(self, name=None):
         """
         Callback for Edit->Join. Joins the selected geometry objects into
@@ -4285,7 +4277,6 @@ class App(QtCore.QObject):
 
         self.should_we_save = True
 
-    @pyqtSlot()
     def on_edit_join_exc(self):
         """
         Callback for Edit->Join Excellon. Joins the selected Excellon objects into
@@ -4308,7 +4299,6 @@ class App(QtCore.QObject):
         self.new_object("excellon", 'Combo_Excellon', initialize)
         self.should_we_save = True
 
-    @pyqtSlot()
     def on_edit_join_grb(self):
         """
         Callback for Edit->Join Gerber. Joins the selected Gerber objects into
@@ -4331,7 +4321,6 @@ class App(QtCore.QObject):
         self.new_object("gerber", 'Combo_Gerber', initialize)
         self.should_we_save = True
 
-    @pyqtSlot()
     def on_convert_singlegeo_to_multigeo(self):
         """
         Called for converting a Geometry object from single-geo to multi-geo.
@@ -4366,7 +4355,6 @@ class App(QtCore.QObject):
 
         self.inform.emit(_("[success] A Geometry object was converted to MultiGeo type."))
 
-    @pyqtSlot()
     def on_convert_multigeo_to_singlegeo(self):
         """
         Called for converting a Geometry object from multi-geo to single-geo.
@@ -4402,7 +4390,6 @@ class App(QtCore.QObject):
 
         self.inform.emit(_("[success] A Geometry object was converted to SingleGeo type."))
 
-    @pyqtSlot()
     def on_options_dict_change(self, field):
         """
         Called whenever a key changed in the self.options dictionary. This dict was used to store the preferences of the

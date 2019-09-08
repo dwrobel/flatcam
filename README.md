@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 8.09.2019
 
 - added some documentation strings for methods in FlatCAMApp.App class
+- removed some @pyqtSlot() decorators as they interfere with the current way the program works
 
 7.09.2019
 
