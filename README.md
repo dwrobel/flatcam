@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.09.2019
+
+- added some documentation strings for methods in FlatCAMApp.App class
+
 7.09.2019
 
 - added a method to gracefully exit from threaded tasks and implemented it for the NCC Tool and for the Paint Tool

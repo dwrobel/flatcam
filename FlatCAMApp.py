@@ -101,9 +101,9 @@ class App(QtCore.QObject):
     handler.setFormatter(formatter)
     log.addHandler(handler)
 
-    # ####################################
-    # Version and VERSION DATE ###########
-    # ####################################
+    # ##########################################################################
+    # ################## Version and VERSION DATE ##############################
+    # ##########################################################################
     version = 8.97
     version_date = "2019/09/09"
     beta = True
@@ -130,9 +130,9 @@ class App(QtCore.QObject):
     # flag is True if saving action has been triggered
     save_in_progress = False
 
-    # #################
-    # #    Signals   ##
-    # #################
+    # ###########################################################################
+    # #############################    Signals   ################################
+    # ###########################################################################
 
     # Inform the user
     # Handled by:
@@ -208,10 +208,9 @@ class App(QtCore.QObject):
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
 
-        # #######################
-        # # ## OS-specific ######
-        # #######################
-
+        # ############################################################################
+        # # ################# OS-specific ############################################
+        # ############################################################################
         portable = False
 
         # Folder for user settings.
@@ -236,6 +235,9 @@ class App(QtCore.QObject):
             else:
                 App.log.debug("Win64!")
 
+            # #########################################################################
+            # ####### CONFIG FILE WITH PARAMETERS REGARDING PORTABILITY ###############
+            # #########################################################################
             config_file = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config\\configuration.txt'
             try:
                 with open(config_file, 'r') as f:
@@ -263,9 +265,9 @@ class App(QtCore.QObject):
             self.data_path = os.path.expanduser('~') + '/.FlatCAM'
             self.os = 'unix'
 
-        # ############################ ##
-        # # ## Setup folders and files # ##
-        # ############################ ##
+        # ##########################################################################
+        # ################## Setup folders and files ###############################
+        # ##########################################################################
 
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
@@ -320,6 +322,7 @@ class App(QtCore.QObject):
         # GUI icons will fail as their path is relative.
         # This will fail under cx_freeze ...
         self.app_home = os.path.dirname(os.path.realpath(__file__))
+
         App.log.debug("Application path is " + self.app_home)
         App.log.debug("Started in " + os.getcwd())
 
@@ -329,15 +332,14 @@ class App(QtCore.QObject):
 
         os.chdir(self.app_home)
 
-        # Create multiprocessing pool
+        # #############################################################################
+        # ##################### CREATE MULTIPROCESSING POOL ###########################
+        # #############################################################################
         self.pool = Pool()
 
-        # variable to store mouse coordinates
-        self.mouse = [0, 0]
-
-        # ###################
-        # # Initialize GUI ##
-        # ###################
+        # #############################################################################
+        # ##################### Initialize GUI ########################################
+        # #############################################################################
 
         # FlatCAM colors used in plotting
         self.FC_light_green = '#BBF268BF'
@@ -351,9 +353,9 @@ class App(QtCore.QObject):
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
 
-        # #############
-        # ### Data ####
-        # #############
+        # #############################################################################
+        # ############################## Data #########################################
+        # #############################################################################
         self.recent = []
         self.recent_projects = []
 
@@ -1087,9 +1089,9 @@ class App(QtCore.QObject):
                          ".bot, .smt, .smb, .sst, .ssb, .spt, .spb, .pho, .gdo, .art, .gbd",
         })
 
-        # ##############################
-        # ## Load defaults from file ###
-        # ##############################
+        # ############################################################
+        # ############### Load defaults from file ####################
+        # ############################################################
 
         if user_defaults:
             self.load_defaults(filename='current_defaults')
@@ -2147,6 +2149,9 @@ class App(QtCore.QObject):
         self.pos = (0, 0)
         self.pos_jump = (0, 0)
 
+        # variable to store mouse coordinates
+        self.mouse = [0, 0]
+
         # decide if we have a double click or single click
         self.doubleclick = False
 
@@ -2226,9 +2231,11 @@ class App(QtCore.QObject):
         # if the file contain an empty dictionary then save the factory defaults into the file
         if not factory_defaults:
             self.save_factory_defaults(silent=False)
+
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
             initial_lay = 'compact'
             self.on_layout(lay=initial_lay)
+
             # Set the combobox in Preferences to the current layout
             idx = self.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(initial_lay)
             self.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
@@ -2238,6 +2245,9 @@ class App(QtCore.QObject):
         # and then make the  factory_defaults.FlatConfig file read_only os it can't be modified after creation.
         filename_factory = self.data_path + '/factory_defaults.FlatConfig'
         os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
+
+        # after the first run, this object should be False
+        self.defaults["first_run"] = False
 
         # ###############################################################################
         # ################# ADDING FlatCAM EDITORS section ##############################
@@ -2251,9 +2261,6 @@ class App(QtCore.QObject):
         self.log.debug("Finished adding FlatCAM Editor's.")
 
         self.set_ui_title(name=_("New Project - Not saved"))
-
-        # after the first run, this object should be False
-        self.defaults["first_run"] = False
 
         # ###############################################################################
         # ####################### Finished the CONSTRUCTOR ##############################
@@ -2270,6 +2277,7 @@ class App(QtCore.QObject):
         """
         From here:
         https://stackoverflow.com/questions/12683834/how-to-copy-directory-recursively-in-python-and-overwrite-all
+
         :param from_path: source path
         :param to_path: destination path
         :return: None
@@ -2283,6 +2291,12 @@ class App(QtCore.QObject):
             shutil.copytree(from_new_path, to_path)
 
     def on_startup_args(self, args=None):
+        """
+        This will process any arguments provided to the application at startup. Like trying to launch a file or project.
+
+        :param args: a list containing the application args at startup
+        :return: None
+        """
         if args:
             args_to_process = args
         else:
@@ -2370,6 +2384,12 @@ class App(QtCore.QObject):
                             return
 
     def set_ui_title(self, name):
+        """
+        Sets the title of the main window.
+
+        :param name: String that store the project path and project name
+        :return: None
+        """
         self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %
                                (self.version,
                                 ('BETA' if self.beta else ''),
@@ -2378,6 +2398,11 @@ class App(QtCore.QObject):
                                )
 
     def defaults_read_form(self):
+        """
+        Will read all the values in the Preferences GUI and update the defaults dictionary.
+
+        :return: None
+        """
         for option in self.defaults_form_fields:
             try:
                 self.defaults[option] = self.defaults_form_fields[option].get_value()
@@ -2385,6 +2410,14 @@ class App(QtCore.QObject):
                 log.debug("App.defaults_read_form() --> %s" % str(e))
 
     def defaults_write_form(self, factor=None, fl_units=None):
+        """
+        Will set the values for all the GUI elements in Preferences GUI based on the values found in the
+        self.defaults dictionary.
+
+        :param factor: will apply a factor to the values that written in the GUI elements
+        :param fl_units: current measuring units in FlatCAM: Metric or Inch
+        :return: None
+        """
         for option in self.defaults:
             self.defaults_write_form_field(option, factor=factor, units=fl_units)
             # try:
@@ -2395,6 +2428,14 @@ class App(QtCore.QObject):
             #     pass
 
     def defaults_write_form_field(self, field, factor=None, units=None):
+        """
+        Basically it is the worker in the self.defaults_write_form()
+
+        :param field: the GUI element in Preferences GUI to be updated
+        :param factor: factor to be applied to the field parameter
+        :param units: current FLatCAM measuring units
+        :return: None, it updates GUI elements
+        """
         try:
             if factor is None:
                 if units is None:
@@ -2418,6 +2459,11 @@ class App(QtCore.QObject):
             log.debug(field)
 
     def clear_pool(self):
+        """
+        Clear the multiprocessing pool and calls garbage collector.
+
+        :return: None
+        """
         self.pool.close()
 
         self.pool = Pool()
@@ -2425,8 +2471,14 @@ class App(QtCore.QObject):
 
         gc.collect()
 
-    # the order that the tools are installed is important as they can depend on each other install position
     def install_tools(self):
+        """
+        This installs the FlatCAM tools (plugin-like) which reside in their own classes.
+        Instantiation of the Tools classes.
+        The order that the tools are installed is important as they can depend on each other install position.
+
+        :return: None
+        """
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
@@ -2483,11 +2535,25 @@ class App(QtCore.QObject):
         self.log.debug("Tools are installed.")
 
     def remove_tools(self):
+        """
+        Will remove all the actions in the Tool menu.
+        :return: None
+        """
         for act in self.ui.menutool.actions():
             self.ui.menutool.removeAction(act)
 
     def init_tools(self):
+        """
+        Initialize the Tool tab in the notebook side of the central widget.
+        Remove the actions in the Tools menu.
+        Instantiate again the FlatCAM tools (plugins).
+        All this is required when changing the layout: standard, compact etc.
+
+        :return: None
+        """
+
         log.debug("init_tools()")
+
         # delete the data currently in the Tools Tab and the Tab itself
         widget = QtWidgets.QTabWidget.widget(self.ui.notebook, 2)
         if widget is not None:
@@ -2505,9 +2571,11 @@ class App(QtCore.QObject):
         # reinstall all the Tools as some may have been removed when the data was removed from the Tools Tab
         # first remove all of them
         self.remove_tools()
-        # second re add the TCL Shell action to the Tools menu and reconnect it to ist slot function
+
+        # re-add the TCL Shell action to the Tools menu and reconnect it to ist slot function
         self.ui.menutoolshell = self.ui.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line\tS')
         self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
+
         # third install all of them
         self.install_tools()
         self.log.debug("Tools are initialized.")
@@ -2517,6 +2585,13 @@ class App(QtCore.QObject):
     #                            'params': []})
 
     def connect_toolbar_signals(self):
+        """
+        Reconnect the signals to the actions in the toolbar.
+        This has to be done each time after the FlatCAM tools are removed/installed.
+
+        :return: None
+        """
+
         # Toolbar
         # self.ui.file_new_btn.triggered.connect(self.on_file_new)
         self.ui.file_open_btn.triggered.connect(self.on_file_openproject)
@@ -2554,7 +2629,7 @@ class App(QtCore.QObject):
 
     def object2editor(self):
         """
-        Send the current Geometry or Excellon object (if any) into the editor.
+        Send the current Geometry or Excellon object (if any) into the it's editor.
 
         :return: None
         """
@@ -2639,7 +2714,7 @@ class App(QtCore.QObject):
 
     def editor2object(self, cleanup=None):
         """
-        Transfers the Geometry or Excellon from the editor to the current object.
+        Transfers the Geometry or Excellon from it's editor to the current object.
 
         :return: None
         """
@@ -2756,9 +2831,17 @@ class App(QtCore.QObject):
             self.ui.project_frame.setDisabled(False)
 
     def get_last_folder(self):
+        """
+        Get the folder path from where the last file was opened.
+        :return: String, last opened folder path
+        """
         return self.defaults["global_last_folder"]
 
     def get_last_save_folder(self):
+        """
+        Get the folder path from where the last file was saved.
+        :return: String, last saved folder path
+        """
         loc = self.defaults["global_last_save_folder"]
         if loc is None:
             loc = self.defaults["global_last_folder"]
@@ -2781,6 +2864,10 @@ class App(QtCore.QObject):
             self.defaults['global_stats'][resource] = 1
 
     def init_tcl(self):
+        """
+        Initialize the TCL Shell. A dock widget that holds the GUI interface to the FlatCAM command line.
+        :return: None
+        """
         if hasattr(self, 'tcl'):
             # self.tcl = None
             # TODO  we need  to clean  non default variables and procedures here
@@ -2795,7 +2882,7 @@ class App(QtCore.QObject):
     # TODO: This shouldn't be here.
     class TclErrorException(Exception):
         """
-        this exception is defined here, to be able catch it if we ssuccessfully handle all errors from shell command
+        this exception is defined here, to be able catch it if we successfully handle all errors from shell command
         """
         pass
 
@@ -2888,7 +2975,7 @@ class App(QtCore.QObject):
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
         Also handles execution in separated threads
 
-        :param text:
+        :param text: FlatCAM TclCommand with parameters
         :return: output if there was any
         """
 
@@ -3015,6 +3102,12 @@ class App(QtCore.QObject):
                 self.shell_message(msg)
 
     def restore_toolbar_view(self):
+        """
+        Some toolbars may be hidden by user and here we restore the state of the toolbars visibility that
+        was saved in the defaults dictionary.
+
+        :return: None
+        """
         tb = self.defaults["global_toolbar_view"]
         if tb & 1:
             self.ui.toolbarfile.setVisible(True)
@@ -3140,6 +3233,11 @@ class App(QtCore.QObject):
             self.inform.emit(_("[success] Imported Defaults from %s") % filename)
 
     def on_export_preferences(self):
+        """
+        Save the defaults dictionary to a file.
+
+        :return: None
+        """
         self.report_usage("on_export_preferences")
         App.log.debug("on_export_preferences()")
 
@@ -3211,6 +3309,11 @@ class App(QtCore.QObject):
         self.inform.emit("[success] Exported Defaults to %s" % filename)
 
     def on_preferences_open_folder(self):
+        """
+        Will open an Explorer window set to the folder path where the FlatCAM preferences files are usually saved.
+
+        :return: None
+        """
         self.report_usage("on_preferences_open_folder()")
 
         if sys.platform == 'win32':
@@ -3222,6 +3325,18 @@ class App(QtCore.QObject):
         self.inform.emit("[success] FlatCAM Preferences Folder opened.")
 
     def save_geometry(self, x, y, width, height, notebook_width):
+        """
+        Will save the application geometry and positions in the defaults discitionary to be restored at the next
+        launch of the application.
+
+        :param x: X position of the main window
+        :param y: Y position of the main window
+        :param width: width of the main window
+        :param height: height of the main window
+        :param notebook_width: the notebook width is adjustable so it get saved here, too.
+
+        :return: None
+        """
         self.defaults["global_def_win_x"] = x
         self.defaults["global_def_win_y"] = y
         self.defaults["global_def_win_w"] = width
@@ -3230,6 +3345,14 @@ class App(QtCore.QObject):
         self.save_defaults()
 
     def message_dialog(self, title, message, kind="info"):
+        """
+        Builds and show a custom QMessageBox to be used in FlatCAM.
+
+        :param title: title of the QMessageBox
+        :param message: message to be displayed
+        :param kind: type of QMessageBox; will display a specific icon.
+        :return:
+        """
         icon = {"info": QtWidgets.QMessageBox.Information,
                 "warning": QtWidgets.QMessageBox.Warning,
                 "error": QtWidgets.QMessageBox.Critical}[str(kind)]
@@ -3238,7 +3361,14 @@ class App(QtCore.QObject):
         dlg.exec_()
 
     def register_recent(self, kind, filename):
+        """
+        Will register the files opened into record dictionaries. The FlatCAM projects has it's own
+        dictionary.
 
+        :param kind: type of file that was opened
+        :param filename: the path and file name for the file that was opened
+        :return:
+        """
         self.log.debug("register_recent()")
         self.log.debug("   %s" % kind)
         self.log.debug("   %s" % filename)
@@ -3248,6 +3378,7 @@ class App(QtCore.QObject):
             return
         if record in self.recent_projects:
             return
+
         if record['kind'] == 'project':
             self.recent_projects.insert(0, record)
         else:
@@ -3401,11 +3532,21 @@ class App(QtCore.QObject):
         return obj
 
     def new_excellon_object(self):
+        """
+        Creates a new, blank Excellon object.
+
+        :return: None
+        """
         self.report_usage("new_excellon_object()")
 
         self.new_object('excellon', 'new_exc', lambda x, y: None, plot=False)
 
     def new_geometry_object(self):
+        """
+        Creates a new, blank and single-tool Geometry object.
+
+        :return: None
+        """
         self.report_usage("new_geometry_object()")
 
         def initialize(obj, self):
@@ -3414,6 +3555,11 @@ class App(QtCore.QObject):
         self.new_object('geometry', 'new_geo', initialize, plot=False)
 
     def new_gerber_object(self):
+        """
+        Creates a new, blank Gerber object.
+
+        :return: None
+        """
         self.report_usage("new_gerber_object()")
 
         def initialize(grb_obj, self):
@@ -3434,11 +3580,15 @@ class App(QtCore.QObject):
 
         self.new_object('gerber', 'new_grb', initialize, plot=False)
 
+    @pyqtSlot()
     def on_object_created(self, obj, plot, autoselect):
         """
         Event callback for object creation.
+        It will add the new object to the collection. After that it will plot the object in a threaded way
 
         :param obj: The newly created FlatCAM object.
+        :param plot: if the newly create object t obe plotted
+        :param autoselect: if the newly created object to be autoselected after creation
         :return: None
         """
         t0 = time.time()  # DEBUG
@@ -3493,8 +3643,17 @@ class App(QtCore.QObject):
         if plot is True:
             self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
 
+    @pyqtSlot()
     def on_object_changed(self, obj):
-        # update the bounding box data from obj.options
+        """
+        Called whenever the geometry of the object was changed in some way.
+        This require the update of it's bounding values so it can be the selected on canvas.
+        Update the bounding box data from obj.options
+
+        :param obj: the object that was changed
+        :return: None
+        """
+
         xmin, ymin, xmax, ymax = obj.bounds()
         obj.options['xmin'] = xmin
         obj.options['ymin'] = ymin
@@ -3506,18 +3665,40 @@ class App(QtCore.QObject):
         self.delete_selection_shape()
         self.should_we_save = True
 
+    @pyqtSlot()
     def on_object_plotted(self, obj):
+        """
+        Callback called whenever the plotted object needs to be fit into the viewport (canvas)
+
+        :param obj: object to be fit into view
+        :return: None
+        """
         self.on_zoom_fit(None)
 
     def options_read_form(self):
+        """
+        Same as it's equivalent from the defaults.
+        self.options use to store the preferences per project. No longer used.
+        :return: None
+        """
         for option in self.options_form_fields:
             self.options[option] = self.options_form_fields[option].get_value()
 
     def options_write_form(self):
+        """
+        Same as it's equivalent from the defaults.
+        self.options use to store the preferences per project. No longer used.
+        :return: None
+        """
         for option in self.options:
             self.options_write_form_field(option)
 
     def options_write_form_field(self, field):
+        """
+        Same as it's equivalent from the defaults.
+        self.options use to store the preferences per project. No longer used.
+        :return: None
+        """
         try:
             self.options_form_fields[field].set_value(self.options[field])
         except KeyError:
@@ -3528,7 +3709,7 @@ class App(QtCore.QObject):
 
     def on_about(self):
         """
-        Displays the "about" dialog.
+        Displays the "about" dialog found in the Menu --> Help.
 
         :return: None
         """
@@ -3601,6 +3782,7 @@ class App(QtCore.QObject):
 
         AboutDialog(self.ui).exec_()
 
+    @pyqtSlot()
     def on_file_savedefaults(self):
         """
         Callback for menu item File->Save Defaults. Saves application default options
@@ -3641,8 +3823,13 @@ class App(QtCore.QObject):
     def save_defaults(self, silent=False, data_path=None):
         """
         Saves application default options
-        ``self.defaults`` to current_defaults.FlatConfig.
+        ``self.defaults`` to current_defaults.FlatConfig file.
+        Save the toolbars visibility status to the preferences file (current_defaults.FlatConfig) to be
+        used at the next launch of the application.
 
+        :param silent: whether to display a message in status bar or not; boolean
+        :param data_path: the path where to save the preferences file (current_defaults.FlatConfig)
+        When the application is portable it should be a mobile location.
         :return: None
         """
         self.report_usage("save_defaults")
@@ -3721,12 +3908,15 @@ class App(QtCore.QObject):
 
     def save_factory_defaults(self, silent=False, data_path=None):
         """
-                Saves application factory default options
-                ``self.defaults`` to factory_defaults.FlatConfig.
-                It's a one time job done just after the first install.
+        Saves application factory default options
+        ``self.defaults`` to factory_defaults.FlatConfig.
+        It's a one time job done just after the first install.
 
-                :return: None
-                """
+        :param silent: whether to display a message in status bar or not; boolean
+        :param data_path: the path where to save the default preferences file (factory_defaults.FlatConfig)
+        When the application is portable it should be a mobile location.
+        :return: None
+        """
         self.report_usage("save_factory_defaults")
 
         if data_path is None:
@@ -3770,8 +3960,14 @@ class App(QtCore.QObject):
         if silent is False:
             self.inform.emit(_("Factory defaults saved."))
 
+    @pyqtSlot()
     def final_save(self):
+        """
+        Callback for doing a preferences save to file whenever the application is about to quit.
+        If the project has changes, it will ask the user to save the project.
 
+        :return: None
+        """
         if self.save_in_progress:
             self.inform.emit(_("[WARNING_NOTCL] Application is saving the project. Please wait ..."))
             return
@@ -3801,6 +3997,11 @@ class App(QtCore.QObject):
             self.quit_application()
 
     def quit_application(self):
+        """
+        Called (as a pyslot or not) when the application is quit.
+
+        :return: None
+        """
         self.save_defaults()
         log.debug("App.final_save() --> App Defaults saved.")
 
@@ -3821,7 +4022,17 @@ class App(QtCore.QObject):
         log.debug("App.final_save() --> App UI state saved.")
         QtWidgets.qApp.quit()
 
+    @pyqtSlot()
     def on_portable_checked(self, state):
+        """
+        Callback called when the checkbox in Preferences GUI is checked.
+        It will set the application as portable by creating the preferences and recent files in the
+        'config' folder found in the FlatCAM installation folder.
+
+        :param state: boolean, the state of the checkbox when clicked/checked
+        :return:
+        """
+
         line_no = 0
         data = None
 
@@ -3904,9 +4115,10 @@ class App(QtCore.QObject):
         with open(config_file, 'w') as f:
             f.writelines(data)
 
+    @pyqtSlot()
     def on_toggle_shell(self):
         """
-        toggle shell if is  visible close it if  closed open it
+        Toggle shell: if is visible close it, if it is closed then open it
         :return:
         """
         self.report_usage("on_toggle_shell()")
@@ -3916,7 +4128,17 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.show()
 
+    @pyqtSlot()
     def on_register_files(self, obj_type=None):
+        """
+        Called whenever there is a need to register file extensions with FlatCAM.
+        Works only in Windows and should be called only when FlatCAM is run in Windows.
+
+        :param obj_type: the type of object to be register for.
+        Can be: 'gerber', 'excellon' or 'gcode'. 'geometry' is not used for the moment.
+
+        :return: None
+        """
         log.debug("Manufacturing files extensions are registered with FlatCAM.")
 
         new_reg_path = 'Software\\Classes\\'
@@ -4013,6 +4235,7 @@ class App(QtCore.QObject):
             self.defaults["fa_gerber"] = new_ext
             self.inform.emit(_("[success] Selected Gerber file extensions registered with FlatCAM."))
 
+    @pyqtSlot()
     def on_edit_join(self, name=None):
         """
         Callback for Edit->Join. Joins the selected geometry objects into
@@ -4062,10 +4285,11 @@ class App(QtCore.QObject):
 
         self.should_we_save = True
 
+    @pyqtSlot()
     def on_edit_join_exc(self):
         """
-        Callback for Edit->Join Excellon. Joins the selected excellon objects into
-        a new one.
+        Callback for Edit->Join Excellon. Joins the selected Excellon objects into
+        a new Excellon.
 
         :return: None
         """
@@ -4084,13 +4308,14 @@ class App(QtCore.QObject):
         self.new_object("excellon", 'Combo_Excellon', initialize)
         self.should_we_save = True
 
+    @pyqtSlot()
     def on_edit_join_grb(self):
         """
-                Callback for Edit->Join Gerber. Joins the selected Gerber objects into
-                a new one.
+        Callback for Edit->Join Gerber. Joins the selected Gerber objects into
+        a new Gerber object.
 
-                :return: None
-                """
+        :return: None
+        """
         self.report_usage("on_edit_join_grb()")
 
         objs = self.collection.get_selected()
@@ -4106,7 +4331,17 @@ class App(QtCore.QObject):
         self.new_object("gerber", 'Combo_Gerber', initialize)
         self.should_we_save = True
 
+    @pyqtSlot()
     def on_convert_singlegeo_to_multigeo(self):
+        """
+        Called for converting a Geometry object from single-geo to multi-geo.
+        Single-geo Geometry objects store their geometry data into self.solid_geometry.
+        Multi-geo Geometry objects store their geometry data into the self.tools dictionary, each key (a tool actually)
+        having as a value another dictionary. This value dictionary has one of it's keys 'solid_geometry' which holds
+        the solid-geometry of that tool.
+
+        :return: None
+        """
         self.report_usage("on_convert_singlegeo_to_multigeo()")
 
         obj = self.collection.get_active()
@@ -4131,7 +4366,17 @@ class App(QtCore.QObject):
 
         self.inform.emit(_("[success] A Geometry object was converted to MultiGeo type."))
 
+    @pyqtSlot()
     def on_convert_multigeo_to_singlegeo(self):
+        """
+        Called for converting a Geometry object from multi-geo to single-geo.
+        Single-geo Geometry objects store their geometry data into self.solid_geometry.
+        Multi-geo Geometry objects store their geometry data into the self.tools dictionary, each key (a tool actually)
+        having as a value another dictionary. This value dictionary has one of it's keys 'solid_geometry' which holds
+        the solid-geometry of that tool.
+
+        :return: None
+        """
         self.report_usage("on_convert_multigeo_to_singlegeo()")
 
         obj = self.collection.get_active()
@@ -4157,25 +4402,46 @@ class App(QtCore.QObject):
 
         self.inform.emit(_("[success] A Geometry object was converted to SingleGeo type."))
 
+    @pyqtSlot()
     def on_options_dict_change(self, field):
+        """
+        Called whenever a key changed in the self.options dictionary. This dict was used to store the preferences of the
+        current project. This feature is no longer used.
+
+        :param field:
+        :return:
+        """
         self.options_write_form_field(field)
 
         if field == "units":
             self.set_screen_units(self.options['units'])
 
     def on_defaults_dict_change(self, field):
+        """
+        Called whenever a key changed in the self.defaults dictionary. It will set the required GUI element in the
+        Edit -> Preferences tab window.
+
+        :param field: the key of the self.defaults dictionary that was changed.
+        :return: None
+        """
         self.defaults_write_form_field(field)
 
         if field == "units":
             self.set_screen_units(self.defaults['units'])
 
     def set_screen_units(self, units):
+        """
+        Set the FlatCAM units on the status bar.
+
+        :param units: the new measuring units to be displayed in FlatCAM's status bar.
+        :return: None
+        """
         self.ui.units_label.setText("[" + units.lower() + "]")
 
     def on_toggle_units(self, no_pref=False):
         """
-        Callback for the Units radio-button change in the Options tab.
-        Changes the application's default units or the current project's units.
+        Callback for the Units radio-button change in the Preferences tab.
+        Changes the application's default units adn for the project too.
         If changing the project's units, the change propagates to all of
         the objects in the project.
 
