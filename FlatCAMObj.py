@@ -51,6 +51,9 @@ class FlatCAMObj(QtCore.QObject):
     # The app should set this value.
     app = None
 
+    # signal to plot a single object
+    plot_single_object = pyqtSignal()
+
     def __init__(self, name):
         """
         Constructor.
@@ -95,6 +98,8 @@ class FlatCAMObj(QtCore.QObject):
 
         # self.units = 'IN'
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        self.plot_single_object.connect(self.single_object_plot)
 
         # assert isinstance(self.ui, ObjectUI)
         # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
@@ -325,6 +330,14 @@ class FlatCAMObj(QtCore.QObject):
 
         self.clear()
         return True
+
+    def single_object_plot(self):
+        def plot_task():
+            with self.app.proc_container.new('%s...' % _("Plotting")):
+                self.plot()
+            self.app.object_changed.emit(self)
+
+        self.app.worker_task.emit({'fcn': plot_task, 'params': []})
 
     def serialize(self):
         """
@@ -600,6 +613,16 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
 
+        if self.app.defaults["gerber_buffering"] == 'no':
+            self.ui.create_buffer_button.show()
+            try:
+                self.ui.create_buffer_button.clicked.disconnect(self.on_generate_buffer)
+            except TypeError:
+                pass
+            self.ui.create_buffer_button.clicked.connect(self.on_generate_buffer)
+        else:
+            self.ui.create_buffer_button.hide()
+
         # add the shapes storage for marking apertures
         for ap_code in self.apertures:
             self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
@@ -774,6 +797,21 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.mark_all_cb.clicked.disconnect(self.on_mark_all_click)
         except (TypeError, AttributeError):
             pass
+
+    def on_generate_buffer(self):
+        self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Buffering solid geometry"))
+
+        def buffer_task():
+            with self.app.proc_container.new('%s...' % _("Buffering")):
+                if isinstance(self.solid_geometry, list):
+                    self.solid_geometry = MultiPolygon(self.solid_geometry)
+
+                self.solid_geometry = self.solid_geometry.buffer(0.0000001)
+                self.solid_geometry = self.solid_geometry.buffer(-0.0000001)
+                self.app.inform.emit('[success] %s.' % _("Done"))
+                self.plot_single_object.emit()
+
+        self.app.worker_task.emit({'fcn': buffer_task, 'params': []})
 
     def on_generatenoncopper_button_click(self, *args):
         self.app.report_usage("gerber_on_generatenoncopper_button")

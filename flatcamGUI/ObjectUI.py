@@ -381,16 +381,25 @@ class GerberObjectUI(ObjectUI):
         )
         grid1.addWidget(self.gen_iso_label, 6, 0, 1, 3)
 
+        self.create_buffer_button = QtWidgets.QPushButton(_('Buffer Solid Geometry'))
+        self.create_buffer_button.setToolTip(
+            _("This button is shown only when the Gerber file\n"
+              "is loaded without buffering.\n"
+              "Clicking this will create the buffered geometry\n"
+              "required for isolation.")
+        )
+        grid1.addWidget(self.create_buffer_button, 7, 0, 1, 3)
+
         self.generate_iso_button = QtWidgets.QPushButton(_('FULL Geo'))
         self.generate_iso_button.setToolTip(
             _("Create the Geometry Object\n"
               "for isolation routing. It contains both\n"
               "the interiors and exteriors geometry.")
         )
-        grid1.addWidget(self.generate_iso_button, 7, 0)
+        grid1.addWidget(self.generate_iso_button, 8, 0)
 
         hlay_1 = QtWidgets.QHBoxLayout()
-        grid1.addLayout(hlay_1, 7, 1, 1, 2)
+        grid1.addLayout(hlay_1, 8, 1, 1, 2)
 
         self.generate_ext_iso_button = QtWidgets.QPushButton(_('Ext Geo'))
         self.generate_ext_iso_button.setToolTip(
@@ -420,7 +429,7 @@ class GerberObjectUI(ObjectUI):
         self.ois_iso = OptionalInputSection(self.follow_cb,
                                             [self.generate_int_iso_button, self.generate_ext_iso_button], logic=False)
 
-        grid1.addWidget(QtWidgets.QLabel(''), 8, 0)
+        grid1.addWidget(QtWidgets.QLabel(''), 9, 0)
 
         # ###########################################
         # ########## NEW GRID #######################
