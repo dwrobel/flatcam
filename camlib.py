@@ -211,7 +211,8 @@ class Geometry(object):
         if isinstance(self.solid_geometry, list):
             return len(self.solid_geometry) == 0
 
-        self.app.inform.emit(_("[ERROR_NOTCL] self.solid_geometry is neither BaseGeometry or list."))
+        self.app.inform.emit('[ERROR_NOTCL] %s' %
+                             _("self.solid_geometry is neither BaseGeometry or list."))
         return
 
     def subtract_polygon(self, points):
@@ -1517,9 +1518,11 @@ class Geometry(object):
                 self.el_count = 0
 
                 self.solid_geometry = mirror_geom(self.solid_geometry)
-            self.app.inform.emit(_('[success] Object was mirrored ...'))
+            self.app.inform.emit('[success] %s...' %
+                                 _('Object was mirrored'))
         except AttributeError:
-            self.app.inform.emit(_("[ERROR_NOTCL] Failed to mirror. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Failed to mirror. No object selected"))
 
         self.app.proc_container.new_text = ''
 
@@ -1587,9 +1590,11 @@ class Geometry(object):
                 self.el_count = 0
 
                 self.solid_geometry = rotate_geom(self.solid_geometry)
-            self.app.inform.emit(_('[success] Object was rotated ...'))
+            self.app.inform.emit('[success] %s...' %
+                                 _('Object was rotated'))
         except AttributeError:
-            self.app.inform.emit(_("[ERROR_NOTCL] Failed to rotate. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Failed to rotate. No object selected"))
 
         self.app.proc_container.new_text = ''
 
@@ -1656,9 +1661,11 @@ class Geometry(object):
                 self.el_count = 0
 
                 self.solid_geometry = skew_geom(self.solid_geometry)
-            self.app.inform.emit(_('[success] Object was skewed ...'))
+            self.app.inform.emit('[success] %s...' %
+                                 _('Object was skewed'))
         except AttributeError:
-            self.app.inform.emit(_("[ERROR_NOTCL] Failed to skew. No object selected"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Failed to skew. No object selected"))
 
         self.app.proc_container.new_text = ''
 
@@ -2931,8 +2938,10 @@ class Gerber (Geometry):
                                     self.apertures['0']['geometry'] = []
                                 last_path_aperture = '0'
                         else:
-                            self.app.inform.emit(_("[WARNING] Coordinates missing, line ignored: %s") % str(gline))
-                            self.app.inform.emit(_("[WARNING_NOTCL] GERBER file might be CORRUPT. Check the file !!!"))
+                            self.app.inform.emit('[WARNING] %s: %s' %
+                                                 (_("Coordinates missing, line ignored"), str(gline)))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                 _("GERBER file might be CORRUPT. Check the file !!!"))
 
                     elif current_operation_code == 2:
                         if len(path) > 1:
@@ -2981,9 +2990,10 @@ class Gerber (Geometry):
                                     geo_s = Polygon(path)
                                 except ValueError:
                                     log.warning("Problem %s %s" % (gline, line_num))
-                                    self.app.inform.emit(_("[ERROR] Region does not have enough points. "
-                                                           "File will be processed but there are parser errors. "
-                                                           "Line number: %s") % str(line_num))
+                                    self.app.inform.emit('[ERROR] %s: %s' %
+                                                         (_("Region does not have enough points. "
+                                                            "File will be processed but there are parser errors. "
+                                                            "Line number"), str(line_num)))
                             else:
                                 if last_path_aperture is None:
                                     log.warning("No aperture defined for curent path. (%d)" % line_num)
@@ -3016,8 +3026,10 @@ class Gerber (Geometry):
                         if linear_x is not None and linear_y is not None:
                             path = [[linear_x, linear_y]]  # Start new path
                         else:
-                            self.app.inform.emit(_("[WARNING] Coordinates missing, line ignored: %s") % str(gline))
-                            self.app.inform.emit(_("[WARNING_NOTCL] GERBER file might be CORRUPT. Check the file !!!"))
+                            self.app.inform.emit('[WARNING] %s: %s' %
+                                                 (_("Coordinates missing, line ignored"), str(gline)))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                 _("GERBER file might be CORRUPT. Check the file !!!"))
 
                     # Flash
                     # Not allowed in region mode.
@@ -3376,7 +3388,8 @@ class Gerber (Geometry):
             log.error("Gerber PARSING FAILED. Line %d: %s" % (line_num, gline))
 
             loc = '%s #%d %s: %s\n' % (_("Gerber Line"), line_num, _("Gerber Line Content"), gline) + repr(err)
-            self.app.inform.emit('[ERROR] %s\n%s:' % (_("Gerber Parser ERROR"), loc))
+            self.app.inform.emit('[ERROR] %s\n%s:' %
+                                 (_("Gerber Parser ERROR"), loc))
 
     @staticmethod
     def create_flash_geometry(location, aperture, steps_per_circle=None):
@@ -3623,7 +3636,8 @@ class Gerber (Geometry):
             log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' % _("Gerber Scale done."))
+        self.app.inform.emit('[success] %s' %
+                             _("Gerber Scale done."))
         self.app.proc_container.new_text = ''
 
         # ## solid_geometry ???
@@ -3712,7 +3726,8 @@ class Gerber (Geometry):
             log.debug('camlib.Gerber.offset() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' % _("Gerber Offset done."))
+        self.app.inform.emit('[success] %s' %
+                             _("Gerber Offset done."))
         self.app.proc_container.new_text = ''
 
     def mirror(self, axis, point):
@@ -3788,7 +3803,8 @@ class Gerber (Geometry):
             log.debug('camlib.Gerber.mirror() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' % _("Gerber Mirror done."))
+        self.app.inform.emit('[success] %s' %
+                             _("Gerber Mirror done."))
         self.app.proc_container.new_text = ''
 
     def skew(self, angle_x, angle_y, point):
@@ -3856,7 +3872,8 @@ class Gerber (Geometry):
             log.debug('camlib.Gerber.skew() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' % _("Gerber Skew done."))
+        self.app.inform.emit('[success] %s' %
+                             _("Gerber Skew done."))
         self.app.proc_container.new_text = ''
 
     def rotate(self, angle, point):
@@ -3916,7 +3933,8 @@ class Gerber (Geometry):
         except Exception as e:
             log.debug('camlib.Gerber.rotate() Exception --> %s' % str(e))
             return 'fail'
-        self.app.inform.emit('[success] %s' % _("Gerber Rotate done."))
+        self.app.inform.emit('[success] %s' %
+                             _("Gerber Rotate done."))
         self.app.proc_container.new_text = ''
 
 
@@ -4202,7 +4220,8 @@ class Excellon(Geometry):
                 # and we need to exit from here
                 if self.detect_gcode_re.search(eline):
                     log.warning("This is GCODE mark: %s" % eline)
-                    self.app.inform.emit(_('[ERROR_NOTCL] This is GCODE mark: %s') % eline)
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_('This is GCODE mark'), eline))
                     return
 
                 # Header Begin (M48) #
@@ -4317,13 +4336,18 @@ class Excellon(Geometry):
                                     # the bellow construction is so each tool will have a slightly different diameter
                                     # starting with a default value, to allow Excellon editing after that
                                     self.diameterless = True
-                                    self.app.inform.emit(_("[WARNING] No tool diameter info's. See shell.\n"
-                                                           "A tool change event: T%s was found but the Excellon file "
-                                                           "have no informations regarding the tool "
-                                                           "diameters therefore the application will try to load it by "
-                                                           "using some 'fake' diameters.\nThe user needs to edit the "
-                                                           "resulting Excellon object and change the diameters to "
-                                                           "reflect the real diameters.") % current_tool)
+                                    self.app.inform.emit('[WARNING] %s%s %s' %
+                                                         (_("No tool diameter info's. See shell.\n"
+                                                            "A tool change event: T"),
+                                                          str(current_tool),
+                                                          _("was found but the Excellon file "
+                                                            "have no informations regarding the tool "
+                                                            "diameters therefore the application will try to load it "
+                                                            "by using some 'fake' diameters.\n"
+                                                            "The user needs to edit the resulting Excellon object and "
+                                                            "change the diameters to reflect the real diameters.")
+                                                          )
+                                                         )
 
                                     if self.excellon_units == 'MM':
                                         diam = self.toolless_diam + (int(current_tool) - 1) / 100
@@ -4769,9 +4793,12 @@ class Excellon(Geometry):
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
         except Exception as e:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
-            msg = _("[ERROR_NOTCL] An internal error has ocurred. See shell.\n")
-            msg += _('[ERROR] Excellon Parser error.\nParsing Failed. Line {l_nr}: {line}\n').format(l_nr=line_num,
-                                                                                                     line=eline)
+            msg = '[ERROR_NOTCL] %s' % \
+                  _("An internal error has ocurred. See shell.\n")
+            msg += _('{e_code} Excellon Parser error.\nParsing Failed. Line {l_nr}: {line}\n').format(
+                e_code='[ERROR]',
+                l_nr=line_num,
+                line=eline)
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
 
@@ -4850,7 +4877,8 @@ class Excellon(Geometry):
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
                 if drill['tool'] is '':
-                    self.app.inform.emit(_("[WARNING] Excellon.create_geometry() -> a drill location was skipped "
+                    self.app.inform.emit('[WARNING] %s' %
+                                         _("Excellon.create_geometry() -> a drill location was skipped "
                                            "due of not having a tool associated.\n"
                                            "Check the resulting GCode."))
                     log.debug("Excellon.create_geometry() -> a drill location was skipped "
@@ -5523,7 +5551,8 @@ class CNCjob(Geometry):
                 try:
                     value = getattr(self, command)
                 except AttributeError:
-                    self.app.inform.emit(_("[ERROR] There is no such parameter: %s") % str(match))
+                    self.app.inform.emit('[ERROR] %s: %s' %
+                                         (_("There is no such parameter"), str(match)))
                     log.debug("CNCJob.parse_custom_toolchange_code() --> AttributeError ")
                     return 'fail'
                 text = text.replace(match, str(value))
@@ -5593,15 +5622,17 @@ class CNCjob(Geometry):
         self.exc_tools = deepcopy(exobj.tools)
 
         if drillz > 0:
-            self.app.inform.emit(_("[WARNING] The Cut Z parameter has positive value. "
+            self.app.inform.emit('[WARNING] %s' %
+                                 _("The Cut Z parameter has positive value. "
                                    "It is the depth value to drill into material.\n"
                                    "The Cut Z parameter needs to have a negative value, assuming it is a typo "
                                    "therefore the app will convert the value to negative. "
                                    "Check the resulting CNC code (Gcode etc)."))
             self.z_cut = -drillz
         elif drillz == 0:
-            self.app.inform.emit(_("[WARNING] The Cut Z parameter is zero. "
-                                   "There will be no cut, skipping %s file") % exobj.options['name'])
+            self.app.inform.emit('[WARNING] %s: %s' %
+                                 (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                  exobj.options['name']))
             return 'fail'
         else:
             self.z_cut = drillz
@@ -5614,7 +5645,8 @@ class CNCjob(Geometry):
             else:
                 self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
                 if len(self.xy_toolchange) < 2:
-                    self.app.inform.emit(_("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
+                    self.app.inform.emit('[ERROR]%s' %
+                                         _("The Toolchange X,Y field in Edit -> Preferences has to be "
                                            "in the format (x, y) \nbut now there is only one value, not two. "))
                     return 'fail'
         except Exception as e:
@@ -5733,7 +5765,8 @@ class CNCjob(Geometry):
         measured_up_to_zero_distance = 0.0
         measured_lift_distance = 0.0
 
-        self.app.inform.emit('%s...' % _("Starting G-Code"))
+        self.app.inform.emit('%s...' %
+                             _("Starting G-Code"))
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
             if excellon_optimization_type == 'M':
@@ -5885,12 +5918,14 @@ class CNCjob(Geometry):
                                         old_disp_number = disp_number
 
                             else:
-                                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                                self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                                     _('G91 coordinates not implemented'))
                                 return 'fail'
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
-                    self.app.inform.emit(_('[ERROR_NOTCL] The loaded Excellon file has no drills ...'))
+                    self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                         _('The loaded Excellon file has no drills'))
                     return 'fail'
 
                 log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
@@ -6029,17 +6064,20 @@ class CNCjob(Geometry):
                                         old_disp_number = disp_number
 
                             else:
-                                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                                self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                                     _('G91 coordinates not implemented'))
                                 return 'fail'
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
-                    self.app.inform.emit(_('[ERROR_NOTCL] The loaded Excellon file has no drills ...'))
+                    self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                         _('The loaded Excellon file has no drills'))
                     return 'fail'
 
                 log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
             else:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong optimization type selected."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong optimization type selected."))
                 return 'fail'
         else:
             log.debug("Using Travelling Salesman drill path optimization.")
@@ -6133,12 +6171,14 @@ class CNCjob(Geometry):
                                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                     old_disp_number = disp_number
                         else:
-                            self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                            self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                                 _('G91 coordinates not implemented'))
                             return 'fail'
                     else:
                         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                                   "The loaded Excellon file has no drills ...")
-                        self.app.inform.emit(_('[ERROR_NOTCL] The loaded Excellon file has no drills ...'))
+                        self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                             _('The loaded Excellon file has no drills'))
                         return 'fail'
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
 
@@ -6249,20 +6289,23 @@ class CNCjob(Geometry):
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad combinations of "
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
                                  "other parameters."))
             return 'fail'
 
         if self.z_cut > 0:
-            self.app.inform.emit(_("[WARNING] The Cut Z parameter has positive value. "
+            self.app.inform.emit('[WARNING] %s' %
+                                 _("The Cut Z parameter has positive value. "
                                  "It is the depth value to cut into material.\n"
                                  "The Cut Z parameter needs to have a negative value, assuming it is a typo "
                                  "therefore the app will convert the value to negative."
                                  "Check the resulting CNC code (Gcode etc)."))
             self.z_cut = -self.z_cut
         elif self.z_cut == 0:
-            self.app.inform.emit(_("[WARNING] The Cut Z parameter is zero. "
-                                 "There will be no cut, skipping %s file") % self.options['name'])
+            self.app.inform.emit('[WARNING] %s: %s' %
+                                 (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                  self.options['name']))
             return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
@@ -6270,19 +6313,22 @@ class CNCjob(Geometry):
             self.z_depthpercut = abs(self.z_cut)
 
         if self.z_move is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Travel Z parameter is None or zero."))
+            self.app.inform.emit('[ERROR_NOTCL] %S' %
+                                 _("Travel Z parameter is None or zero."))
             return 'fail'
 
         if self.z_move < 0:
-            self.app.inform.emit(_("[WARNING] The Travel Z parameter has negative value. "
+            self.app.inform.emit('[WARNING] %s' %
+                                 _("The Travel Z parameter has negative value. "
                                  "It is the height value to travel between cuts.\n"
                                  "The Z Travel parameter needs to have a positive value, assuming it is a typo "
                                  "therefore the app will convert the value to positive."
                                  "Check the resulting CNC code (Gcode etc)."))
             self.z_move = -self.z_move
         elif self.z_move == 0:
-            self.app.inform.emit(_("[WARNING] The Z Travel parameter is zero. "
-                                 "This is dangerous, skipping %s file") % self.options['name'])
+            self.app.inform.emit('[WARNING] %s: %s' %
+                                 (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
+                                  self.options['name']))
             return 'fail'
 
         # ## Index first and last points in paths
@@ -6436,7 +6482,12 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.spindle_stop_code)
         self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
         self.gcode += self.doformat(p.end_code, x=0, y=0)
-        self.app.inform.emit(_("Finished G-Code generation... %s paths traced.") % str(path_count))
+        self.app.inform.emit('%s... %s %s.' %
+                             (_("Finished G-Code generation"),
+                              str(path_count),
+                              _("paths traced")
+                              )
+                             )
         return self.gcode
 
     def generate_from_geometry_2(self, geometry, append=True,
@@ -6468,13 +6519,15 @@ class CNCjob(Geometry):
         """
 
         if not isinstance(geometry, Geometry):
-            self.app.inform.emit(_("[ERROR]Expected a Geometry, got %s") % type(geometry))
+            self.app.inform.emit('[ERROR] %s: %s' %
+                                 (_("Expected a Geometry, got"), type(geometry)))
             return 'fail'
         log.debug("Generate_from_geometry_2()")
 
         # if solid_geometry is empty raise an exception
         if not geometry.solid_geometry:
-            self.app.inform.emit(_("[ERROR_NOTCL] Trying to generate a CNC Job "
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Trying to generate a CNC Job "
                                  "from a Geometry object without solid_geometry."))
 
         temp_solid_geometry = []
@@ -6513,7 +6566,8 @@ class CNCjob(Geometry):
                 # if the offset is less than half of the total length or less than half of the total width of the
                 # solid geometry it's obvious we can't do the offset
                 if -offset > ((c - a) / 2) or -offset > ((d - b) / 2):
-                    self.app.inform.emit(_("[ERROR_NOTCL] The Tool Offset value is too negative to use "
+                    self.app.inform.emit(_('[ERROR_NOTCL] %s' %
+                                           "The Tool Offset value is too negative to use "
                                            "for the current_geometry.\n"
                                            "Raise the value (in module) and try again."))
                     return 'fail'
@@ -6565,7 +6619,8 @@ class CNCjob(Geometry):
             else:
                 self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
                 if len(self.xy_toolchange) < 2:
-                    self.app.inform.emit(_("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
+                    self.app.inform.emit('[ERROR] %s' %
+                                         _("The Toolchange X,Y field in Edit -> Preferences has to be "
                                            "in the format (x, y) \nbut now there is only one value, not two. "))
                     return 'fail'
         except Exception as e:
@@ -6576,36 +6631,42 @@ class CNCjob(Geometry):
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad combinations of "
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
                                    "other parameters."))
             return 'fail'
 
         if self.z_cut > 0:
-            self.app.inform.emit(_("[WARNING] The Cut Z parameter has positive value. "
+            self.app.inform.emit('[WARNING] %s' %
+                                 _("The Cut Z parameter has positive value. "
                                    "It is the depth value to cut into material.\n"
                                    "The Cut Z parameter needs to have a negative value, assuming it is a typo "
                                    "therefore the app will convert the value to negative."
                                    "Check the resulting CNC code (Gcode etc)."))
             self.z_cut = -self.z_cut
         elif self.z_cut == 0:
-            self.app.inform.emit(_("[WARNING] The Cut Z parameter is zero. "
-                                   "There will be no cut, skipping %s file") % geometry.options['name'])
+            self.app.inform.emit('[WARNING] %s: %s' %
+                                 (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                  geometry.options['name']))
             return 'fail'
 
         if self.z_move is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Travel Z parameter is None or zero."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Travel Z parameter is None or zero."))
             return 'fail'
 
         if self.z_move < 0:
-            self.app.inform.emit(_("[WARNING] The Travel Z parameter has negative value. "
+            self.app.inform.emit('[WARNING] %s' %
+                                 _("The Travel Z parameter has negative value. "
                                    "It is the height value to travel between cuts.\n"
                                    "The Z Travel parameter needs to have a positive value, assuming it is a typo "
                                    "therefore the app will convert the value to positive."
                                    "Check the resulting CNC code (Gcode etc)."))
             self.z_move = -self.z_move
         elif self.z_move == 0:
-            self.app.inform.emit(_("[WARNING] The Z Travel parameter is zero. "
-                                   "This is dangerous, skipping %s file") % self.options['name'])
+            self.app.inform.emit('[WARNING] %s: %s' %
+                                 (_("The Z Travel parameter is zero. "
+                                   "This is dangerous, skipping file"), self.options['name']))
             return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
@@ -6763,7 +6824,12 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.spindle_stop_code)
         self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
         self.gcode += self.doformat(p.end_code, x=0, y=0)
-        self.app.inform.emit(_("Finished G-Code generation... %s paths traced.") % str(path_count))
+        self.app.inform.emit('%s... %s %s' %
+                             (_("Finished G-Code generation"),
+                              str(path_count),
+                             _(" paths traced.")
+                              )
+                             )
 
         return self.gcode
 
@@ -6789,7 +6855,8 @@ class CNCjob(Geometry):
 
         if not kwargs:
             log.debug("camlib.generate_from_solderpaste_geo() --> No tool in the solderpaste geometry.")
-            self.app.inform.emit(_("[ERROR_NOTCL] There is no tool data in the SolderPaste geometry."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("There is no tool data in the SolderPaste geometry."))
 
 
         # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
@@ -6875,7 +6942,13 @@ class CNCjob(Geometry):
             pass
 
         log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
-        self.app.inform.emit(_("Finished SolderPste G-Code generation... %s paths traced.") % str(path_count))
+        self.app.inform.emit('%s... %s %s' %
+                             (_("Finished SolderPste G-Code generation"),
+                              str(path_count),
+                              _("paths traced.")
+                              )
+                             )
+
 
         # Finish
         self.gcode += self.doformat(p.lift_code)
@@ -7344,7 +7417,8 @@ class CNCjob(Geometry):
                                           visible=visible, layer=1)
             else:
                 # For Incremental coordinates type G91
-                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _('G91 coordinates not implemented ...'))
                 for geo in gcode_parsed:
                     if geo['kind'][0] == 'T':
                         current_position = geo['geom'].coords[0]
@@ -7621,7 +7695,8 @@ class CNCjob(Geometry):
                 # For Incremental coordinates type G91
                 # next_x = pt[0] - prev_x
                 # next_y = pt[1] - prev_y
-                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _('G91 coordinates not implemented ...'))
                 next_x = pt[0]
                 next_y = pt[1]
 
@@ -7723,7 +7798,8 @@ class CNCjob(Geometry):
                 # For Incremental coordinates type G91
                 # next_x = pt[0] - prev_x
                 # next_y = pt[1] - prev_y
-                self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _('G91 coordinates not implemented ...'))
                 next_x = pt[0]
                 next_y = pt[1]
 
@@ -7769,7 +7845,8 @@ class CNCjob(Geometry):
             # For Incremental coordinates type G91
             # first_x = path[0][0] - old_point[0]
             # first_y = path[0][1] - old_point[1]
-            self.app.inform.emit(_('[ERROR_NOTCL] G91 coordinates not implemented ...'))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _('G91 coordinates not implemented ...'))
             first_x = path[0][0]
             first_y = path[0][1]
 
