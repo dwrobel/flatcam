@@ -6663,6 +6663,17 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(reference_label, 15, 0)
         grid0.addWidget(self.reference_radio, 15, 1)
 
+        # ## Plotting type
+        self.ncc_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
+                                            {"label": _("progressive"), "value": "progressive"}])
+        plotting_label = QtWidgets.QLabel('%s:' % _("NCC Plotting"))
+        plotting_label.setToolTip(
+            _("- 'Normal' -  normal plotting, done at the end of the NCC job\n"
+              "- 'Progressive' - after each shape is generated it will be plotted.")
+        )
+        grid0.addWidget(plotting_label, 16, 0)
+        grid0.addWidget(self.ncc_plotting_radio, 16, 1)
+
         self.layout.addStretch()
 
 
@@ -6949,14 +6960,25 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "- 'Reference Object' -  will do non copper clearing within the area\n"
               "specified by another object.")
         )
-        grid0.addWidget(selectlabel, 7, 0)
         self.selectmethod_combo = RadioSet([
             {"label": _("Single"), "value": "single"},
             {"label": _("Area"), "value": "area"},
             {"label": _("All"), "value": "all"},
             {"label": _("Ref."), "value": "ref"}
         ])
+        grid0.addWidget(selectlabel, 7, 0)
         grid0.addWidget(self.selectmethod_combo, 7, 1)
+
+        # ## Plotting type
+        self.paint_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
+                                              {"label": _("progressive"), "value": "progressive"}])
+        plotting_label = QtWidgets.QLabel('%s:' % _("Paint Plotting"))
+        plotting_label.setToolTip(
+            _("- 'Normal' -  normal plotting, done at the end of the Paint job\n"
+              "- 'Progressive' - after each shape is generated it will be plotted.")
+        )
+        grid0.addWidget(plotting_label, 8, 0)
+        grid0.addWidget(self.paint_plotting_radio, 8, 1)
 
         self.layout.addStretch()
 

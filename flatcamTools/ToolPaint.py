@@ -518,6 +518,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintcontour_cb.set_value(self.default_data["paintcontour"])
         self.paintoverlap_entry.set_value(self.default_data["paintoverlap"])
 
+        # make the default object type, "Geometry"
+        self.type_obj_combo.setCurrentIndex(2)
         # updated units
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
@@ -1204,6 +1206,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.app.inform.emit('[ERROR_NOTCL] %s' %
                                          _("Wrong value format entered, use a number."))
                     return
+        # determine if to use the progressive plotting
+        if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            prog_plot = True
 
         # No polygon?
         if poly is None:
@@ -1263,7 +1268,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over,
                                                     contour=cont,
-                                                    connect=conn)
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
                     elif paint_method == "lines":
                         # Type(cp) == FlatCAMRTreeStorage | None
@@ -1272,7 +1278,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over,
                                                     contour=cont,
-                                                    connect=conn)
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
                     else:
                         # Type(cp) == FlatCAMRTreeStorage | None
@@ -1281,7 +1288,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                    overlap=over,
                                                    contour=cont,
-                                                   connect=conn)
+                                                   connect=conn,
+                                                    prog_plot=prog_plot)
                 except FlatCAMApp.GracefulException:
                     return "fail"
                 except Exception as e:
@@ -1348,6 +1356,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 tools_storage[current_uid]['data']['name'] = name
                 total_geometry[:] = []
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
             keys_to_delete = []
@@ -1461,6 +1473,10 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.app.inform.emit('[ERROR_NOTCL] %s' %
                                          _("Wrong value format entered, use a number."))
                     return
+
+        # determine if to use the progressive plotting
+        if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            prog_plot = True
 
         proc = self.app.proc_container.new(_("Painting polygons..."))
         name = outname if outname is not None else self.obj_name + "_paint"
@@ -1603,7 +1619,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over,
                                                      contour=cont,
-                                                     connect=conn)
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                         elif paint_method == "lines":
                             # Type(cp) == FlatCAMRTreeStorage | None
@@ -1612,7 +1629,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over,
                                                      contour=cont,
-                                                     connect=conn)
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                         else:
                             # Type(cp) == FlatCAMRTreeStorage | None
@@ -1621,7 +1639,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over,
                                                     contour=cont,
-                                                    connect=conn)
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
                         if cp is not None:
                             total_geometry += list(cp.get_objects())
@@ -1650,6 +1669,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 tools_storage[current_uid]['data']['name'] = name
                 total_geometry[:] = []
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
             keys_to_delete = []
@@ -1741,19 +1764,22 @@ class ToolPaint(FlatCAMTool, Gerber):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf, tooldia=tool_dia,
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                    overlap=over, contour=cont, connect=conn)
+                                                    overlap=over, contour=cont, connect=conn,
+                                                    prog_plot=prog_plot)
 
                         elif paint_method == "seed":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over, contour=cont, connect=conn)
+                                                     overlap=over, contour=cont, connect=conn,
+                                                     prog_plot=prog_plot)
 
                         elif paint_method == "lines":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon3(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over, contour=cont, connect=conn)
+                                                     overlap=over, contour=cont, connect=conn,
+                                                     prog_plot=prog_plot)
 
                         if cp is not None:
                             cleared_geo += list(cp.get_objects())
@@ -1795,6 +1821,10 @@ class ToolPaint(FlatCAMTool, Gerber):
             geo_obj.multitool = True
             geo_obj.tools.clear()
             geo_obj.tools = dict(tools_storage)
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
             has_solid_geo = 0
@@ -1882,6 +1912,10 @@ class ToolPaint(FlatCAMTool, Gerber):
                                          _("Wrong value format entered, use a number."))
                     return
 
+        # determine if to use the progressive plotting
+        if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            prog_plot = True
+
         proc = self.app.proc_container.new(_("Painting polygons..."))
         name = outname if outname is not None else self.obj_name + "_paint"
 
@@ -1960,14 +1994,20 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             # this is were heavy lifting is done and creating the geometry to be painted
             geo_to_paint = []
-            if not isinstance(obj.solid_geometry, list):
-                target_geo = [obj.solid_geometry]
-            else:
-                target_geo = obj.solid_geometry
+            target_geo = obj.solid_geometry
 
-            for poly in target_geo:
-                new_pol = poly.intersection(sel_obj)
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                target_geo = MultiPolygon(target_geo).buffer(0)
+
+            try:
+                for poly in target_geo:
+                    new_pol = poly.intersection(sel_obj)
+                    geo_to_paint.append(new_pol)
+            except TypeError:
+                new_pol = target_geo.intersection(sel_obj)
                 geo_to_paint.append(new_pol)
+
+            painted_area = recurse(geo_to_paint)
 
             try:
                 a, b, c, d = self.paint_bounds(geo_to_paint)
@@ -1999,7 +2039,6 @@ class ToolPaint(FlatCAMTool, Gerber):
                         current_uid = int(k)
                         break
 
-                painted_area = recurse(geo_to_paint)
                 # variables to display the percentage of work done
                 geo_len = len(painted_area)
                 disp_number = 0
@@ -2022,7 +2061,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over,
                                                      contour=cont,
-                                                     connect=conn)
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                         elif paint_method == "lines":
                             # Type(cp) == FlatCAMRTreeStorage | None
@@ -2031,7 +2071,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over,
                                                      contour=cont,
-                                                     connect=conn)
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                         else:
                             # Type(cp) == FlatCAMRTreeStorage | None
@@ -2040,7 +2081,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over,
                                                     contour=cont,
-                                                    connect=conn)
+                                                    connect=conn,
+                                                     prog_plot=prog_plot)
 
                         if cp is not None:
                             total_geometry += list(cp.get_objects())
@@ -2068,6 +2110,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 tools_storage[current_uid]['data']['name'] = name
                 total_geometry[:] = []
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
             keys_to_delete = []
@@ -2121,6 +2167,23 @@ class ToolPaint(FlatCAMTool, Gerber):
             current_uid = int(1)
             geo_obj.solid_geometry = []
 
+            # this is were heavy lifting is done and creating the geometry to be painted
+            geo_to_paint = []
+            target_geo = obj.solid_geometry
+
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                target_geo = MultiPolygon(target_geo).buffer(0)
+
+            try:
+                for poly in target_geo:
+                    new_pol = poly.intersection(sel_obj)
+                    geo_to_paint.append(new_pol)
+            except TypeError:
+                new_pol = target_geo.intersection(sel_obj)
+                geo_to_paint.append(new_pol)
+
+            painted_area = recurse(geo_to_paint)
+
             try:
                 a, b, c, d = obj.bounds()
                 geo_obj.options['xmin'] = a
@@ -2141,7 +2204,6 @@ class ToolPaint(FlatCAMTool, Gerber):
                 )
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
 
-                painted_area = recurse(obj.solid_geometry)
                 # variables to display the percentage of work done
                 geo_len = len(painted_area)
                 disp_number = 0
@@ -2159,19 +2221,22 @@ class ToolPaint(FlatCAMTool, Gerber):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf, tooldia=tool_dia,
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                    overlap=over, contour=cont, connect=conn)
+                                                    overlap=over, contour=cont, connect=conn,
+                                                    prog_plot=prog_plot)
 
                         elif paint_method == "seed":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over, contour=cont, connect=conn)
+                                                     overlap=over, contour=cont, connect=conn,
+                                                     prog_plot=prog_plot)
 
                         elif paint_method == "lines":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon3(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over, contour=cont, connect=conn)
+                                                     overlap=over, contour=cont, connect=conn,
+                                                     prog_plot=prog_plot)
 
                         if cp is not None:
                             cleared_geo += list(cp.get_objects())
@@ -2212,6 +2277,10 @@ class ToolPaint(FlatCAMTool, Gerber):
             geo_obj.multitool = True
             geo_obj.tools.clear()
             geo_obj.tools = dict(self.paint_tools)
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
             has_solid_geo = 0

@@ -117,9 +117,21 @@ class Geometry(object):
         self.old_disp_number = 0
         self.el_count = 0
 
+        self.temp_shapes = self.app.plotcanvas.new_shape_group()
+
         # if geo_steps_per_circle is None:
         #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
         # self.geo_steps_per_circle = geo_steps_per_circle
+
+    def plot_temp_shapes(self, element, color='red'):
+
+        try:
+            for sub_el in element:
+                self.plot_temp_shapes(sub_el)
+        except TypeError:  # Element is not iterable...
+            # self.add_shape(shape=element, color=color, visible=visible, layer=0)
+            self.temp_shapes.add(tolerance=float(self.app.defaults["global_tolerance"]),
+                                 shape=element, color=color, visible=True, layer=0)
 
     def make_index(self):
         self.flatten()
@@ -802,7 +814,8 @@ class Geometry(object):
         return boundary.difference(self.solid_geometry)
         
 
-    def clear_polygon(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True):
+    def clear_polygon(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
+                      prog_plot=False):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -818,6 +831,7 @@ class Geometry(object):
                         minimize tool lifts.
         :param contour: Paint around the edges. Inconsequential in
                         this painting method.
+        :param prog_plot: boolean; if Ture use the progressive plotting
         :return:
         """
 
@@ -870,15 +884,24 @@ class Geometry(object):
                         geoms.insert(p.exterior)
                         for i in p.interiors:
                             geoms.insert(i)
+                            if prog_plot:
+                                self.plot_temp_shapes(p)
 
                 # Not a Multipolygon. Must be a Polygon
                 except TypeError:
                     geoms.insert(current.exterior)
+                    if prog_plot:
+                        self.plot_temp_shapes(current.exterior)
                     for i in current.interiors:
                         geoms.insert(i)
+                        if prog_plot:
+                            self.plot_temp_shapes(i)
             else:
                 log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
                 break
+
+        if prog_plot:
+            self.temp_shapes.redraw()
 
         # Optimization: Reduce lifts
         if connect:
@@ -888,7 +911,7 @@ class Geometry(object):
         return geoms
 
     def clear_polygon2(self, polygon_to_clear, tooldia, steps_per_circle, seedpoint=None, overlap=0.15,
-                       connect=True, contour=True):
+                       connect=True, contour=True, prog_plot=False):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -907,6 +930,7 @@ class Geometry(object):
         :param contour: Cut countour inside the polygon.
         :return: List of toolpaths covering polygon.
         :rtype: FlatCAMRTreeStorage | None
+        :param prog_plot: boolean; if True use the progressive plotting
         """
 
         # log.debug("camlib.clear_polygon2()")
@@ -952,8 +976,15 @@ class Geometry(object):
                 try:
                     for p in path:
                         geoms.insert(p)
+                        if prog_plot:
+                            self.plot_temp_shapes(p)
                 except TypeError:
                     geoms.insert(path)
+                    if prog_plot:
+                        self.plot_temp_shapes(path)
+
+                if prog_plot:
+                    self.temp_shapes.redraw()
 
             radius += tooldia * (1 - overlap)
 
@@ -969,6 +1000,11 @@ class Geometry(object):
             # geoms += outer_edges + inner_edges
             for g in outer_edges + inner_edges:
                 geoms.insert(g)
+                if prog_plot:
+                    self.plot_temp_shapes(g)
+
+        if prog_plot:
+            self.temp_shapes.redraw()
 
         # Optimization connect touching paths
         # log.debug("Connecting paths...")
@@ -981,7 +1017,8 @@ class Geometry(object):
 
         return geoms
 
-    def clear_polygon3(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True):
+    def clear_polygon3(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
+                       prog_plot=False):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -995,6 +1032,7 @@ class Geometry(object):
         :param overlap: Tool path overlap percentage.
         :param connect: Connect lines to avoid tool lifts.
         :param contour: Paint around the edges.
+        :param prog_plot: boolean; if to use the progressive plotting
         :return:
         """
 
@@ -1008,10 +1046,12 @@ class Geometry(object):
         geoms = FlatCAMRTreeStorage()
         geoms.get_points = get_pts
 
-        lines = []
+        lines_trimmed = []
 
         # Bounding box
         left, bot, right, top = polygon.bounds
+
+        margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
 
         # First line
         y = top - tooldia / 1.99999999
@@ -1021,20 +1061,33 @@ class Geometry(object):
                 raise FlatCAMApp.GracefulException
 
             line = LineString([(left, y), (right, y)])
-            lines.append(line)
+            line = line.intersection(margin_poly)
+            lines_trimmed.append(line)
             y -= tooldia * (1 - overlap)
+            if prog_plot:
+                self.plot_temp_shapes(line)
+                self.temp_shapes.redraw()
 
         # Last line
         y = bot + tooldia / 2
         line = LineString([(left, y), (right, y)])
-        lines.append(line)
+        line = line.intersection(margin_poly)
+        for ll in line:
+            lines_trimmed.append(ll)
+            if prog_plot:
+                self.plot_temp_shapes(line)
 
         # Combine
-        linesgeo = unary_union(lines)
+        # linesgeo = unary_union(lines)
 
         # Trim to the polygon
-        margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
-        lines_trimmed = linesgeo.intersection(margin_poly)
+        # margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
+        # lines_trimmed = linesgeo.intersection(margin_poly)
+
+        if prog_plot:
+            self.temp_shapes.redraw()
+
+        lines_trimmed = unary_union(lines_trimmed)
 
         # Add lines to storage
         try:
@@ -1048,13 +1101,24 @@ class Geometry(object):
         if contour:
             if isinstance(margin_poly, Polygon):
                 geoms.insert(margin_poly.exterior)
+                if prog_plot:
+                    self.plot_temp_shapes(margin_poly.exterior)
                 for ints in margin_poly.interiors:
                     geoms.insert(ints)
+                    if prog_plot:
+                        self.plot_temp_shapes(ints)
             elif isinstance(margin_poly, MultiPolygon):
                 for poly in margin_poly:
                     geoms.insert(poly.exterior)
+                    if prog_plot:
+                        self.plot_temp_shapes(poly.exterior)
                     for ints in poly.interiors:
                         geoms.insert(ints)
+                        if prog_plot:
+                            self.plot_temp_shapes(ints)
+
+        if prog_plot:
+            self.temp_shapes.redraw()
 
         # Optimization: Reduce lifts
         if connect:

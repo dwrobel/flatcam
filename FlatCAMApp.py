@@ -614,6 +614,7 @@ class App(QtCore.QObject):
             "tools_ncc_offset_choice": self.ui.tools_defaults_form.tools_ncc_group.ncc_choice_offset_cb,
             "tools_ncc_offset_value": self.ui.tools_defaults_form.tools_ncc_group.ncc_offset_spinner,
             "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.reference_radio,
+            "tools_ncc_plotting": self.ui.tools_defaults_form.tools_ncc_group.ncc_plotting_radio,
             "tools_nccmilling_type": self.ui.tools_defaults_form.tools_ncc_group.milling_type_radio,
             "tools_ncctool_type": self.ui.tools_defaults_form.tools_ncc_group.tool_type_radio,
             "tools_ncccutz": self.ui.tools_defaults_form.tools_ncc_group.cutz_entry,
@@ -637,6 +638,7 @@ class App(QtCore.QObject):
             "tools_selectmethod": self.ui.tools_defaults_form.tools_paint_group.selectmethod_combo,
             "tools_pathconnect": self.ui.tools_defaults_form.tools_paint_group.pathconnect_cb,
             "tools_paintcontour": self.ui.tools_defaults_form.tools_paint_group.contour_cb,
+            "tools_paint_plotting": self.ui.tools_defaults_form.tools_paint_group.paint_plotting_radio,
 
             # 2-sided Tool
             "tools_2sided_mirror_axis": self.ui.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
@@ -1004,6 +1006,7 @@ class App(QtCore.QObject):
             "tools_ncc_offset_choice": False,
             "tools_ncc_offset_value": 0.0000,
             "tools_nccref": 'itself',
+            "tools_ncc_plotting": 'normal',
             "tools_nccmilling_type": 'cl',
             "tools_ncctool_type": 'V',
             "tools_ncccutz": -0.001968504,
@@ -1025,6 +1028,7 @@ class App(QtCore.QObject):
             "tools_selectmethod": "single",
             "tools_pathconnect": True,
             "tools_paintcontour": True,
+            "tools_paint_plotting": 'normal',
 
             "tools_2sided_mirror_axis": "X",
             "tools_2sided_axis_loc": "point",
@@ -5733,44 +5737,12 @@ class App(QtCore.QObject):
                     for obj in self.collection.get_list():
                         obj.plot()
                     self.plotcanvas.fit_view()
+                self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
 
             self.worker_task.emit({'fcn': worker_task, 'params': []})
 
-        def on_set_zero_click(event):
-            # this function will be available only for mouse left click
-
-            pos_canvas = self.plotcanvas.translate_coords(event.pos)
-            if event.button == 1:
-                if self.grid_status() == True:
-                    pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                else:
-                    pos = pos_canvas
-
-                x = 0 - pos[0]
-                y = 0 - pos[1]
-
-                def worker_task():
-                    with self.proc_container.new(_("Setting Origin...")):
-                        for obj in self.collection.get_list():
-                            obj.offset((x, y))
-                            self.object_changed.emit(obj)
-
-                            # Update the object bounding box options
-                            a, b, c, d = obj.bounds()
-                            obj.options['xmin'] = a
-                            obj.options['ymin'] = b
-                            obj.options['xmax'] = c
-                            obj.options['ymax'] = d
-                        self.inform.emit(_('[success] Origin set ...'))
-                        self.replot_signal.emit([])
-
-                self.worker_task.emit({'fcn': worker_task, 'params': []})
-
-                self.plotcanvas.vis_disconnect('mouse_press', on_set_zero_click)
-                self.should_we_save = True
-
         self.inform.emit(_('Click to set the origin ...'))
-        self.plotcanvas.vis_connect('mouse_press', on_set_zero_click)
+        self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
 
         # first disconnect it as it may have been used by something else
         try:
@@ -5778,6 +5750,37 @@ class App(QtCore.QObject):
         except TypeError:
             pass
         self.replot_signal[list].connect(origin_replot)
+
+    def on_set_zero_click(self, event):
+        # this function will be available only for mouse left click
+
+        pos_canvas = self.plotcanvas.translate_coords(event.pos)
+        if event.button == 1:
+            if self.grid_status() == True:
+                pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+            else:
+                pos = pos_canvas
+
+            x = 0 - pos[0]
+            y = 0 - pos[1]
+
+            def worker_task():
+                with self.proc_container.new(_("Setting Origin...")):
+                    for obj in self.collection.get_list():
+                        obj.offset((x, y))
+                        self.object_changed.emit(obj)
+
+                        # Update the object bounding box options
+                        a, b, c, d = obj.bounds()
+                        obj.options['xmin'] = a
+                        obj.options['ymin'] = b
+                        obj.options['xmax'] = c
+                        obj.options['ymax'] = d
+                    self.inform.emit(_('[success] Origin set ...'))
+                    self.replot_signal.emit([])
+
+            self.worker_task.emit({'fcn': worker_task, 'params': []})
+            self.should_we_save = True
 
     def on_jump_to(self, custom_location=None, fit_center=True):
         """

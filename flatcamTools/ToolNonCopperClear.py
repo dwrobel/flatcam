@@ -1351,6 +1351,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         contour = contour if contour else self.app.defaults["tools_ncccontour"]
         order = order if order else self.ncc_order_radio.get_value()
 
+        # determine if to use the progressive plotting
+        if self.app.defaults["tools_ncc_plotting"] == 'progressive':
+            prog_plot = True
+
         if tools_storage is not None:
             tools_storage = tools_storage
         else:
@@ -1703,13 +1707,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     if isinstance(p, Polygon):
                                         if ncc_method == 'standard':
                                             cp = self.clear_polygon(p, tool, self.app.defaults["gerber_circle_steps"],
-                                                                    overlap=overlap, contour=contour, connect=connect)
+                                                                    overlap=overlap, contour=contour, connect=connect,
+                                                                    prog_plot=prog_plot)
                                         elif ncc_method == 'seed':
                                             cp = self.clear_polygon2(p, tool, self.app.defaults["gerber_circle_steps"],
-                                                                     overlap=overlap, contour=contour, connect=connect)
+                                                                     overlap=overlap, contour=contour, connect=connect,
+                                                                     prog_plot=prog_plot)
                                         else:
                                             cp = self.clear_polygon3(p, tool, self.app.defaults["gerber_circle_steps"],
-                                                                     overlap=overlap, contour=contour, connect=connect)
+                                                                     overlap=overlap, contour=contour, connect=connect,
+                                                                     prog_plot=prog_plot)
                                         if cp:
                                             cleared_geo += list(cp.get_objects())
                                     elif isinstance(p, MultiPolygon):
@@ -1719,17 +1726,20 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                     cp = self.clear_polygon(pol, tool,
                                                                             self.app.defaults["gerber_circle_steps"],
                                                                             overlap=overlap, contour=contour,
-                                                                            connect=connect)
+                                                                            connect=connect,
+                                                                            prog_plot=prog_plot)
                                                 elif ncc_method == 'seed':
                                                     cp = self.clear_polygon2(pol, tool,
                                                                              self.app.defaults["gerber_circle_steps"],
                                                                              overlap=overlap, contour=contour,
-                                                                             connect=connect)
+                                                                             connect=connect,
+                                                                             prog_plot=prog_plot)
                                                 else:
                                                     cp = self.clear_polygon3(pol, tool,
                                                                              self.app.defaults["gerber_circle_steps"],
                                                                              overlap=overlap, contour=contour,
-                                                                             connect=connect)
+                                                                             connect=connect,
+                                                                             prog_plot=prog_plot)
                                                 if cp:
                                                     cleared_geo += list(cp.get_objects())
                                 except Exception as e:
@@ -1769,6 +1779,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
                         else:
                             log.debug("There are no geometries in the cleared polygon.")
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_ncc_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
             keys_to_delete = []
@@ -2043,15 +2057,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         if ncc_method == 'standard':
                                             cp = self.clear_polygon(p, tool_used,
                                                                     self.app.defaults["gerber_circle_steps"],
-                                                                    overlap=overlap, contour=contour, connect=connect)
+                                                                    overlap=overlap, contour=contour, connect=connect,
+                                                                    prog_plot=prog_plot)
                                         elif ncc_method == 'seed':
                                             cp = self.clear_polygon2(p, tool_used,
                                                                      self.app.defaults["gerber_circle_steps"],
-                                                                     overlap=overlap, contour=contour, connect=connect)
+                                                                     overlap=overlap, contour=contour, connect=connect,
+                                                                     prog_plot=prog_plot)
                                         else:
                                             cp = self.clear_polygon3(p, tool_used,
                                                                      self.app.defaults["gerber_circle_steps"],
-                                                                     overlap=overlap, contour=contour, connect=connect)
+                                                                     overlap=overlap, contour=contour, connect=connect,
+                                                                     prog_plot=prog_plot)
                                         cleared_geo.append(list(cp.get_objects()))
                                     except Exception as e:
                                         log.warning("Polygon can't be cleared. %s" % str(e))
@@ -2066,17 +2083,20 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                     cp = self.clear_polygon(poly, tool_used,
                                                                             self.app.defaults["gerber_circle_steps"],
                                                                             overlap=overlap, contour=contour,
-                                                                            connect=connect)
+                                                                            connect=connect,
+                                                                            prog_plot=prog_plot)
                                                 elif ncc_method == 'seed':
                                                     cp = self.clear_polygon2(poly, tool_used,
                                                                              self.app.defaults["gerber_circle_steps"],
                                                                              overlap=overlap, contour=contour,
-                                                                             connect=connect)
+                                                                             connect=connect,
+                                                                             prog_plot=prog_plot)
                                                 else:
                                                     cp = self.clear_polygon3(poly, tool_used,
                                                                              self.app.defaults["gerber_circle_steps"],
                                                                              overlap=overlap, contour=contour,
-                                                                             connect=connect)
+                                                                             connect=connect,
+                                                                             prog_plot=prog_plot)
                                                 cleared_geo.append(list(cp.get_objects()))
                                             except Exception as e:
                                                 log.warning("Polygon can't be cleared. %s" % str(e))
@@ -2137,6 +2157,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             geo_obj.multigeo = True
             geo_obj.options["cnctooldia"] = str(tool)
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_ncc_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # check to see if geo_obj.tools is empty
             # it will be updated only if there is a solid_geometry for tools

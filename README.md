@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - changed the triangulation type in VisPyVisuals for ShapeCollectionVisual class
 - added a setting in Preferences -> Gerber -> Gerber General named Buffering. If set to 'no' the Gerber objects load a lot more faster (perhaps 10 times faster than when set to 'full') but the visual look is not so great as all the aperture polygons can be seen
+- added for NCC Tool and Paint Tool a setting in the Preferences -> Tools --> (NCC Tool/ Paint Tool) that can set a progressive plotting (plot shapes as they are processed)
 
 8.09.2019
 
