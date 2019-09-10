@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - added progress for the generation of Isolation geometry
 - added progress and possibility of graceful exit in Panel Tool
 - added graceful exit possibility when creating Isolation
+- chagend the workers thread priority back to Normal
 
 9.09.2019
 
