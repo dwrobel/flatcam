@@ -5240,7 +5240,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -5315,7 +5315,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number

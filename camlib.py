@@ -1500,7 +1500,7 @@ class Geometry(object):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -1572,7 +1572,7 @@ class Geometry(object):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -1643,7 +1643,7 @@ class Geometry(object):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -3871,7 +3871,7 @@ class Gerber (Geometry):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -3933,7 +3933,7 @@ class Gerber (Geometry):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -5085,7 +5085,7 @@ class Excellon(Geometry):
             drill['point'] = affinity.scale(drill['point'], xfactor, yfactor, origin=(px, py))
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -5141,7 +5141,7 @@ class Excellon(Geometry):
             drill['point'] = affinity.translate(drill['point'], xoff=dx, yoff=dy)
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -5202,7 +5202,7 @@ class Excellon(Geometry):
             drill['point'] = affinity.scale(drill['point'], xscale, yscale, origin=(px, py))
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -5274,7 +5274,7 @@ class Excellon(Geometry):
                                                origin=(px, py))
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -5295,7 +5295,7 @@ class Excellon(Geometry):
                                                origin=(px, py))
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -5359,7 +5359,7 @@ class Excellon(Geometry):
                 self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'], origin='center')
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -5375,7 +5375,7 @@ class Excellon(Geometry):
                 drill['point'] = affinity.rotate(drill['point'], angle, origin=(px, py))
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -5937,7 +5937,7 @@ class CNCjob(Geometry):
                                     self.oldy = locy
 
                                     loc_nr += 1
-                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
+                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
 
                                     if old_disp_number < disp_number <= 100:
                                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
@@ -6083,7 +6083,7 @@ class CNCjob(Geometry):
                                     self.oldy = locy
 
                                     loc_nr += 1
-                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
+                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
 
                                     if old_disp_number < disp_number <= 100:
                                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
@@ -6191,7 +6191,7 @@ class CNCjob(Geometry):
                                 self.oldy = point[1]
 
                                 loc_nr += 1
-                                disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
+                                disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
 
                                 if old_disp_number < disp_number <= 100:
                                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
@@ -6490,7 +6490,7 @@ class CNCjob(Geometry):
 
                 pt, geo = storage.nearest(current_pt) # Next
 
-                disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
+                disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     old_disp_number = disp_number
@@ -6832,7 +6832,7 @@ class CNCjob(Geometry):
 
                 pt, geo = storage.nearest(current_pt) # Next
 
-                disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
+                disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     old_disp_number = disp_number
@@ -6960,7 +6960,7 @@ class CNCjob(Geometry):
                 current_pt = geo.coords[-1]
                 pt, geo = storage.nearest(current_pt)  # Next
 
-                disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
+                disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     old_disp_number = disp_number
@@ -8166,7 +8166,7 @@ class CNCjob(Geometry):
                     return g['geom']
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -8195,7 +8195,7 @@ class CNCjob(Geometry):
                         return g['geom']
 
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -8276,7 +8276,7 @@ class CNCjob(Geometry):
                     return g['geom']
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -8305,7 +8305,7 @@ class CNCjob(Geometry):
                         return g['geom']
 
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -8344,7 +8344,7 @@ class CNCjob(Geometry):
                 return g['geom']
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -8388,7 +8388,7 @@ class CNCjob(Geometry):
                 return g['geom']
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -8424,7 +8424,7 @@ class CNCjob(Geometry):
                 return g['geom']
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
