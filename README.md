@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a small typo in TclCommandCopperCLear
 - made changing the Plot kind in CNCJob selected tab, threaded
 - fixed an object used before declaring it in NCC Tool - Area option
+- added progress for the generation of Isolation geometry
 
 9.09.2019
 

@@ -523,7 +523,7 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, iso_type=2, corner=None, follow=None):
+    def isolation_geometry(self, offset, iso_type=2, corner=None, follow=None, passes=0):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -533,35 +533,10 @@ class Geometry(object):
         :param iso_type: type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
         :param corner: type of corner for the isolation: 0 = round; 1 = square; 2= beveled (line that connects the ends)
         :param follow: whether the geometry to be isolated is a follow_geometry
+        :param passes: current pass out of possible multiple passes for which the isolation is done
         :return: The buffered geometry.
         :rtype: Shapely.MultiPolygon or Shapely.Polygon
         """
-
-        # geo_iso = []
-        # In case that the offset value is zero we don't use the buffer as the resulting geometry is actually the
-        # original solid_geometry
-        # if offset == 0:
-        #     geo_iso = self.solid_geometry
-        # else:
-        #     flattened_geo = self.flatten_list(self.solid_geometry)
-        #     try:
-        #         for mp_geo in flattened_geo:
-        #             geo_iso.append(mp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-        #     except TypeError:
-        #         geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-        # return geo_iso
-
-        # commented this because of the bug with multiple passes cutting out of the copper
-        # geo_iso = []
-        # flattened_geo = self.flatten_list(self.solid_geometry)
-        # try:
-        #     for mp_geo in flattened_geo:
-        #         geo_iso.append(mp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-        # except TypeError:
-        #     geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-
-        # the previously commented block is replaced with this block - regression - to solve the bug with multiple
-        # isolation passes cutting from the copper features
 
         if self.app.abort_flag:
             # graceful abort requested by the user
@@ -584,11 +559,47 @@ class Geometry(object):
 
                 # Remember: do not make a buffer for each element in the solid_geometry because it will cut into
                 # other copper features
-                if corner is None:
-                    geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
-                else:
-                    geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                                              join_style=corner)
+                # if corner is None:
+                #     geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                # else:
+                #     geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                #                               join_style=corner)
+
+                # variables to display the percentage of work done
+                geo_len = 0
+                try:
+                    for pol in self.solid_geometry:
+                        geo_len += 1
+                except TypeError:
+                    geo_len = 1
+                disp_number = 0
+                old_disp_number = 0
+                pol_nr = 0
+                # yet, it can be done by issuing an unary_union in the end, thus getting rid of the overlapping geo
+                try:
+                    for pol in self.solid_geometry:
+                        if corner is None:
+                            geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+                        else:
+                            geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)),
+                                           join_style=corner)
+                        pol_nr += 1
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+
+                        if disp_number > old_disp_number and disp_number <= 100:
+                            self.app.proc_container.update_view_text(' %s %d: %d%%' %
+                                                                     (_("Pass"), int(passes + 1), int(disp_number)))
+                            old_disp_number = disp_number
+                except TypeError:
+                    # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
+                    # MultiPolygon (not an iterable)
+                    if corner is None:
+                        geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+                    else:
+                        geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)),
+                                       join_style=corner)
+                self.app.proc_container.update_view_text(' %s' % _("Buffering"))
+                geo_iso = unary_union(geo_iso)
 
         # end of replaced block
         if follow:
@@ -596,8 +607,10 @@ class Geometry(object):
         elif iso_type == 2:
             return geo_iso
         elif iso_type == 0:
+            self.app.proc_container.update_view_text(' %s' % _("Get Exteriors"))
             return self.get_exteriors(geo_iso)
         elif iso_type == 1:
+            self.app.proc_container.update_view_text(' %s' % _("Get Interiors"))
             return self.get_interiors(geo_iso)
         else:
             log.debug("Geometry.isolation_geometry() --> Type of isolation not supported")

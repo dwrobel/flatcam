@@ -952,7 +952,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         base_name = self.options["name"] + "_iso"
         base_name = outname or base_name
 
-        def generate_envelope(offset, invert, envelope_iso_type=2, follow=None):
+        def generate_envelope(offset, invert, envelope_iso_type=2, follow=None, passes=0):
             # isolation_geometry produces an envelope that is going on the left of the geometry
             # (the copper features). To leave the least amount of burrs on the features
             # the tool needs to travel on the right side of the features (this is called conventional milling)
@@ -960,7 +960,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # the other passes overlap preceding ones and cut the left over copper. It is better for them
             # to cut on the right side of the left over copper i.e on the left side of the features.
             try:
-                geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow)
+                geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow, passes=passes)
             except Exception as e:
                 log.debug('FlatCAMGerber.isolate().generate_envelope() --> %s' % str(e))
                 return 'fail'
@@ -1076,9 +1076,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geom = generate_envelope (offset, i == 0)
-                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type, follow=follow)
+                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type, follow=follow,
+                                                 passes=i)
                     else:
-                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow)
+                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow,
+                                                 passes=i)
                     if geom == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                             _("Isolation geometry could not be generated."))
@@ -1152,6 +1154,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 # ########## AREA SUBTRACTION ################################
                 # ############################################################
                 if self.ui.except_cb.get_value():
+                    self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
                     geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
             # TODO: Do something if this is None. Offer changing name?
@@ -1183,9 +1186,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geo_obj.solid_geometry = generate_envelope(offset, i == 0)
-                        geom = generate_envelope(offset, 1, envelope_iso_type=self.iso_type, follow=follow)
+                        geom = generate_envelope(offset, 1, envelope_iso_type=self.iso_type, follow=follow,
+                                                 passes=i)
                     else:
-                        geom = generate_envelope(offset, 0, envelope_iso_type=self.iso_type, follow=follow)
+                        geom = generate_envelope(offset, 0, envelope_iso_type=self.iso_type, follow=follow,
+                                                 passes=i)
                     if geom == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                             _("Isolation geometry could not be generated."))
@@ -1218,6 +1223,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # ########## AREA SUBTRACTION ################################
                     # ############################################################
                     if self.ui.except_cb.get_value():
+                        self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
                         geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
                 # TODO: Do something if this is None. Offer changing name?
