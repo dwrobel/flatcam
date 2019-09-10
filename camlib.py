@@ -578,6 +578,9 @@ class Geometry(object):
                 # yet, it can be done by issuing an unary_union in the end, thus getting rid of the overlapping geo
                 try:
                     for pol in self.solid_geometry:
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise FlatCAMApp.GracefulException
                         if corner is None:
                             geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
                         else:
@@ -601,6 +604,7 @@ class Geometry(object):
                 self.app.proc_container.update_view_text(' %s' % _("Buffering"))
                 geo_iso = unary_union(geo_iso)
 
+        self.app.proc_container.update_view_text('')
         # end of replaced block
         if follow:
             return geo_iso

@@ -506,11 +506,24 @@ class Panelize(FlatCAMTool):
                             except KeyError:
                                 log.warning("Failed to copy option. %s" % str(option))
 
+                    geo_len_drills = len(panel_obj.drills) if panel_obj.drills else 0
+                    geo_len_slots = len(panel_obj.slots) if panel_obj.slots else 0
+
+                    element = 0
                     for row in range(rows):
                         currentx = 0.0
                         for col in range(columns):
+                            element += 1
+                            disp_number = 0
+                            old_disp_number = 0
+
                             if panel_obj.drills:
+                                drill_nr = 0
                                 for tool_dict in panel_obj.drills:
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
+
                                     point_offseted = affinity.translate(tool_dict['point'], currentx, currenty)
                                     obj_fin.drills.append(
                                         {
@@ -518,8 +531,24 @@ class Panelize(FlatCAMTool):
                                             "tool": tool_dict['tool']
                                         }
                                     )
+
+                                    drill_nr += 1
+                                    disp_number = int(np.interp(drill_nr, [0, geo_len_drills], [0, 100]))
+
+                                    if disp_number > old_disp_number and disp_number <= 100:
+                                        self.app.proc_container.update_view_text(' %s: %d D:%d%%' %
+                                                                                 (_("Copy"),
+                                                                                  int(element),
+                                                                                  disp_number))
+                                        old_disp_number = disp_number
+
                             if panel_obj.slots:
+                                slot_nr = 0
                                 for tool_dict in panel_obj.slots:
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
+
                                     start_offseted = affinity.translate(tool_dict['start'], currentx, currenty)
                                     stop_offseted = affinity.translate(tool_dict['stop'], currentx, currenty)
                                     obj_fin.slots.append(
@@ -529,12 +558,24 @@ class Panelize(FlatCAMTool):
                                             "tool": tool_dict['tool']
                                         }
                                     )
+
+                                    slot_nr += 1
+                                    disp_number = int(np.interp(slot_nr, [0, geo_len_slots], [0, 100]))
+
+                                    if disp_number > old_disp_number and disp_number <= 100:
+                                        self.app.proc_container.update_view_text(' %s: %d S:%d%%' %
+                                                                                 (_("Copy"),
+                                                                                  int(element),
+                                                                                  disp_number))
+                                        old_disp_number = disp_number
+
                             currentx += lenghtx
                         currenty += lenghty
 
                     obj_fin.create_geometry()
                     obj_fin.zeros = panel_obj.zeros
                     obj_fin.units = panel_obj.units
+                    self.app.proc_container.update_view_text('')
 
                 def job_init_geometry(obj_fin, app_obj):
                     currentx = 0.0
@@ -555,46 +596,153 @@ class Panelize(FlatCAMTool):
 
                     obj_fin.solid_geometry = []
 
+                    # create the initial structure on which to create the panel
                     if isinstance(panel_obj, FlatCAMGeometry):
                         obj_fin.multigeo = panel_obj.multigeo
                         obj_fin.tools = deepcopy(panel_obj.tools)
                         if panel_obj.multigeo is True:
                             for tool in panel_obj.tools:
                                 obj_fin.tools[tool]['solid_geometry'][:] = []
-
-                    if isinstance(panel_obj, FlatCAMGerber):
+                    elif isinstance(panel_obj, FlatCAMGerber):
                         obj_fin.apertures = deepcopy(panel_obj.apertures)
                         for ap in obj_fin.apertures:
                             obj_fin.apertures[ap]['geometry'] = list()
 
+                    # find the number of polygons in the source solid_geometry
+                    geo_len = 0
+                    if isinstance(panel_obj, FlatCAMGeometry):
+                        if panel_obj.multigeo is True:
+                            for tool in panel_obj.tools:
+                                try:
+                                    for pol in panel_obj.tools[tool]['solid_geometry']:
+                                        geo_len += 1
+                                except TypeError:
+                                    geo_len = 1
+                        else:
+                            try:
+                                for pol in panel_obj.solid_geometry:
+                                    geo_len += 1
+                            except TypeError:
+                                geo_len = 1
+                    elif isinstance(panel_obj, FlatCAMGerber):
+                        for ap in panel_obj.apertures:
+                            for elem in panel_obj.apertures[ap]['geometry']:
+                                geo_len += 1
+
                     self.app.progress.emit(0)
+                    element = 0
                     for row in range(rows):
                         currentx = 0.0
 
                         for col in range(columns):
+                            element += 1
+                            disp_number = 0
+                            old_disp_number = 0
+
                             if isinstance(panel_obj, FlatCAMGeometry):
                                 if panel_obj.multigeo is True:
                                     for tool in panel_obj.tools:
-                                        geo = translate_recursion(panel_obj.tools[tool]['solid_geometry'])
-                                        if isinstance(geo, list):
-                                            obj_fin.tools[tool]['solid_geometry'] += geo
-                                        else:
-                                            obj_fin.tools[tool]['solid_geometry'].append(geo)
+                                        if self.app.abort_flag:
+                                            # graceful abort requested by the user
+                                            raise FlatCAMApp.GracefulException
+
+                                        # geo = translate_recursion(panel_obj.tools[tool]['solid_geometry'])
+                                        # if isinstance(geo, list):
+                                        #     obj_fin.tools[tool]['solid_geometry'] += geo
+                                        # else:
+                                        #     obj_fin.tools[tool]['solid_geometry'].append(geo)
+
+                                        # calculate the number of polygons
+                                        geo_len = len(panel_obj.tools[tool]['solid_geometry'])
+                                        pol_nr = 0
+                                        for geo_el in panel_obj.tools[tool]['solid_geometry']:
+                                            trans_geo = translate_recursion(geo_el)
+                                            obj_fin.tools[tool]['solid_geometry'].append(trans_geo)
+
+                                            pol_nr += 1
+                                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+
+                                            if disp_number > old_disp_number and disp_number <= 100:
+                                                self.app.proc_container.update_view_text(' %s: %d %d%%' %
+                                                                                         (_("Copy"),
+                                                                                          int(element),
+                                                                                          disp_number))
+                                                old_disp_number = disp_number
                                 else:
-                                    geo = translate_recursion(panel_obj.solid_geometry)
-                                    if isinstance(geo, list):
-                                        obj_fin.solid_geometry += geo
-                                    else:
-                                        obj_fin.solid_geometry.append(geo)
+                                    # geo = translate_recursion(panel_obj.solid_geometry)
+                                    # if isinstance(geo, list):
+                                    #     obj_fin.solid_geometry += geo
+                                    # else:
+                                    #     obj_fin.solid_geometry.append(geo)
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
+
+                                    try:
+                                        # calculate the number of polygons
+                                        geo_len = len(panel_obj.solid_geometry)
+                                    except TypeError:
+                                        geo_len = 1
+                                    pol_nr = 0
+                                    try:
+                                        for geo_el in panel_obj.solid_geometry:
+                                            if self.app.abort_flag:
+                                                # graceful abort requested by the user
+                                                raise FlatCAMApp.GracefulException
+
+                                            trans_geo = translate_recursion(geo_el)
+                                            obj_fin.solid_geometry.append(trans_geo)
+
+                                            pol_nr += 1
+                                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+
+                                            if disp_number > old_disp_number and disp_number <= 100:
+                                                self.app.proc_container.update_view_text(' %s: %d %d%%' %
+                                                                                         (_("Copy"),
+                                                                                          int(element),
+                                                                                          disp_number))
+                                                old_disp_number = disp_number
+                                    except TypeError:
+                                        trans_geo = translate_recursion(panel_obj.solid_geometry)
+                                        obj_fin.solid_geometry.append(trans_geo)
                             else:
-                                geo = translate_recursion(panel_obj.solid_geometry)
-                                if isinstance(geo, list):
-                                    obj_fin.solid_geometry += geo
-                                else:
-                                    obj_fin.solid_geometry.append(geo)
+                                # geo = translate_recursion(panel_obj.solid_geometry)
+                                # if isinstance(geo, list):
+                                #     obj_fin.solid_geometry += geo
+                                # else:
+                                #     obj_fin.solid_geometry.append(geo)
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise FlatCAMApp.GracefulException
+
+                                try:
+                                    for geo_el in panel_obj.solid_geometry:
+                                        if self.app.abort_flag:
+                                            # graceful abort requested by the user
+                                            raise FlatCAMApp.GracefulException
+
+                                        trans_geo = translate_recursion(geo_el)
+                                        obj_fin.solid_geometry.append(trans_geo)
+                                except TypeError:
+                                    trans_geo = translate_recursion(panel_obj.solid_geometry)
+                                    obj_fin.solid_geometry.append(trans_geo)
 
                                 for apid in panel_obj.apertures:
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
+
+                                    try:
+                                        # calculate the number of polygons
+                                        geo_len = len(panel_obj.apertures[apid]['geometry'])
+                                    except TypeError:
+                                        geo_len = 1
+                                    pol_nr = 0
                                     for el in panel_obj.apertures[apid]['geometry']:
+                                        if self.app.abort_flag:
+                                            # graceful abort requested by the user
+                                            raise FlatCAMApp.GracefulException
+
                                         new_el = dict()
                                         if 'solid' in el:
                                             geo_aper = translate_recursion(el['solid'])
@@ -610,14 +758,25 @@ class Panelize(FlatCAMTool):
 
                                         obj_fin.apertures[apid]['geometry'].append(deepcopy(new_el))
 
+                                        pol_nr += 1
+                                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+
+                                        if disp_number > old_disp_number and disp_number <= 100:
+                                            self.app.proc_container.update_view_text(' %s: %d %d%%' %
+                                                                                     (_("Copy"),
+                                                                                      int(element),
+                                                                                      disp_number))
+                                            old_disp_number = disp_number
+
                             currentx += lenghtx
                         currenty += lenghty
 
-                    app_obj.log.debug("Found %s geometries. Creating a panel geometry cascaded union ..." %
-                                      len(obj_fin.solid_geometry))
+                    # app_obj.log.debug("Found %s geometries. Creating a panel geometry cascaded union ..." %
+                    #                   len(obj_fin.solid_geometry))
 
                     # obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
-                    app_obj.log.debug("Finished creating a cascaded union for the panel.")
+                    # app_obj.log.debug("Finished creating a cascaded union for the panel.")
+                    self.app.proc_container.update_view_text('')
 
                 if isinstance(panel_obj, FlatCAMExcellon):
                     self.app.progress.emit(50)
@@ -635,7 +794,7 @@ class Panelize(FlatCAMTool):
                                    "Final panel has {col} columns and {row} rows").format(
                 text='[WARNING] ', col=columns, row=rows))
 
-        proc = self.app.proc_container.new(_("Generating panel..."))
+        proc = self.app.proc_container.new(_("Working..."))
 
         def job_thread(app_obj):
             try:

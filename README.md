@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - made changing the Plot kind in CNCJob selected tab, threaded
 - fixed an object used before declaring it in NCC Tool - Area option
 - added progress for the generation of Isolation geometry
+- added progress and possibility of graceful exit in Panel Tool
+- added graceful exit possibility when creating Isolation
 
 9.09.2019
 
