@@ -10,6 +10,13 @@ from flatcamGUI.FlatCAMGUI import FlatCAMActivityView
 from PyQt5 import QtCore
 import weakref
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 # import logging
 
@@ -121,6 +128,8 @@ class FCProcessContainer(object):
 
 class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
     something_changed = QtCore.pyqtSignal()
+    # this will signal that the application is IDLE
+    idle_flag = QtCore.pyqtSignal()
 
     def __init__(self, view):
         assert isinstance(view, FlatCAMActivityView), \
@@ -130,6 +139,9 @@ class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
         QtCore.QObject.__init__(self)
 
         self.view = view
+
+        self.text_to_display_in_activity = ''
+        self.new_text = ' '
 
         self.something_changed.connect(self.update_view)
 
@@ -143,14 +155,24 @@ class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
         # self.app.log.debug("FCVisibleProcessContainer.on_change()")
         super(FCVisibleProcessContainer, self).on_change(proc)
 
+        # whenever there is a change update the message on activity
+        self.text_to_display_in_activity = self.procs[0]().status_msg()
+
         self.something_changed.emit()
 
     def update_view(self):
         if len(self.procs) == 0:
+            self.new_text = ''
             self.view.set_idle()
+            self.idle_flag.emit()
 
         elif len(self.procs) == 1:
-            self.view.set_busy(self.procs[0]().status_msg())
-
+            self.view.set_busy(self.text_to_display_in_activity + self.new_text)
         else:
-            self.view.set_busy("%d processes running." % len(self.procs))
+            self.view.set_busy("%d %s" % (len(self.procs), _("processes running.")))
+
+    def update_view_text(self, new_text):
+        # this has to be called after the method 'new' inherited by this class is called with a string text as param
+        self.new_text = new_text
+        if len(self.procs) == 1:
+            self.view.set_busy(self.text_to_display_in_activity + self.new_text, no_movie=True)

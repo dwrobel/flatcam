@@ -4,8 +4,9 @@ import os
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, Qt
 from FlatCAMApp import App
-from multiprocessing import freeze_support
 from flatcamGUI import VisPyPatches
+
+from multiprocessing import freeze_support
 
 if sys.platform == "win32":
     # cx_freeze 'module win32' workaround
@@ -58,5 +59,4 @@ if __name__ == '__main__':
         app.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
     fc = App()
-
     sys.exit(app.exec_())

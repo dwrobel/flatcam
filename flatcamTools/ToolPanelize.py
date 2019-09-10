@@ -355,13 +355,15 @@ class Panelize(FlatCAMTool):
             obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("Panelize.on_panelize() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
         panel_obj = obj
 
         if panel_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Object not found: %s") % panel_obj)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Object not found"), panel_obj))
             return "Object not found: %s" % panel_obj
 
         boxname = self.box_combo.currentText()
@@ -370,11 +372,13 @@ class Panelize(FlatCAMTool):
             box = self.app.collection.get_by_name(boxname)
         except Exception as e:
             log.debug("Panelize.on_panelize() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % boxname)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Could not retrieve object"), boxname))
             return "Could not retrieve object: %s" % boxname
 
         if box is None:
-            self.app.inform.emit(_("[WARNING_NOTCL]No object Box. Using instead %s") % panel_obj)
+            self.app.inform.emit('[WARNING_NOTCL]%s: %s' %
+                                 (_("No object Box. Using instead"), panel_obj))
             self.reference_radio.set_value('bbox')
 
         if self.reference_radio.get_value() == 'bbox':
@@ -389,8 +393,8 @@ class Panelize(FlatCAMTool):
             try:
                 spacing_columns = float(self.spacing_columns.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                     "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
         spacing_columns = spacing_columns if spacing_columns is not None else 0
 
@@ -401,8 +405,8 @@ class Panelize(FlatCAMTool):
             try:
                 spacing_rows = float(self.spacing_rows.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                     "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
         spacing_rows = spacing_rows if spacing_rows is not None else 0
 
@@ -414,8 +418,8 @@ class Panelize(FlatCAMTool):
                 rows = float(self.rows.get_value().replace(',', '.'))
                 rows = int(rows)
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                     "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
         rows = rows if rows is not None else 1
 
@@ -427,8 +431,8 @@ class Panelize(FlatCAMTool):
                 columns = float(self.columns.get_value().replace(',', '.'))
                 columns = int(columns)
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                     "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
         columns = columns if columns is not None else 1
 
@@ -439,8 +443,8 @@ class Panelize(FlatCAMTool):
             try:
                 constrain_dx = float(self.x_width_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                     "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
 
         try:
@@ -450,14 +454,15 @@ class Panelize(FlatCAMTool):
             try:
                 constrain_dy = float(self.y_height_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                     "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
 
         panel_type = str(self.panel_type_radio.get_value())
 
         if 0 in {columns, rows}:
-            self.app.inform.emit(_("[ERROR_NOTCL] Columns or Rows are zero value. Change them to a positive integer."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Columns or Rows are zero value. Change them to a positive integer."))
             return "Columns or Rows are zero value. Change them to a positive integer."
 
         xmin, ymin, xmax, ymax = box.bounds()
@@ -560,12 +565,7 @@ class Panelize(FlatCAMTool):
                     if isinstance(panel_obj, FlatCAMGerber):
                         obj_fin.apertures = deepcopy(panel_obj.apertures)
                         for ap in obj_fin.apertures:
-                            if 'solid_geometry' in obj_fin.apertures[ap]:
-                                obj_fin.apertures[ap]['solid_geometry'] = []
-                            if 'clear_geometry' in obj_fin.apertures[ap]:
-                                obj_fin.apertures[ap]['clear_geometry'] = []
-                            if 'follow_geometry' in obj_fin.apertures[ap]:
-                                obj_fin.apertures[ap]['follow_geometry'] = []
+                            obj_fin.apertures[ap]['geometry'] = list()
 
                     self.app.progress.emit(0)
                     for row in range(rows):
@@ -594,33 +594,29 @@ class Panelize(FlatCAMTool):
                                     obj_fin.solid_geometry.append(geo)
 
                                 for apid in panel_obj.apertures:
-                                    if 'solid_geometry' in panel_obj.apertures[apid]:
-                                        geo_aper = translate_recursion(panel_obj.apertures[apid]['solid_geometry'])
-                                        if isinstance(geo_aper, list):
-                                            obj_fin.apertures[apid]['solid_geometry'] += geo_aper
-                                        else:
-                                            obj_fin.apertures[apid]['solid_geometry'].append(geo_aper)
+                                    for el in panel_obj.apertures[apid]['geometry']:
+                                        new_el = dict()
+                                        if 'solid' in el:
+                                            geo_aper = translate_recursion(el['solid'])
+                                            new_el['solid'] = deepcopy(geo_aper)
 
-                                    if 'clear_geometry' in panel_obj.apertures[apid]:
-                                        geo_aper = translate_recursion(panel_obj.apertures[apid]['clear_geometry'])
-                                        if isinstance(geo_aper, list):
-                                            obj_fin.apertures[apid]['clear_geometry'] += geo_aper
-                                        else:
-                                            obj_fin.apertures[apid]['clear_geometry'].append(geo_aper)
+                                        if 'clear' in el:
+                                            geo_aper = translate_recursion(el['clear'])
+                                            new_el['clear'] = deepcopy(geo_aper)
 
-                                    if 'follow_geometry' in panel_obj.apertures[apid]:
-                                        geo_aper = translate_recursion(panel_obj.apertures[apid]['follow_geometry'])
-                                        if isinstance(geo_aper, list):
-                                            obj_fin.apertures[apid]['follow_geometry'] += geo_aper
-                                        else:
-                                            obj_fin.apertures[apid]['follow_geometry'].append(geo_aper)
+                                        if 'follow' in el:
+                                            geo_aper = translate_recursion(el['follow'])
+                                            new_el['follow'] = deepcopy(geo_aper)
+
+                                        obj_fin.apertures[apid]['geometry'].append(deepcopy(new_el))
 
                             currentx += lenghtx
                         currenty += lenghty
 
                     app_obj.log.debug("Found %s geometries. Creating a panel geometry cascaded union ..." %
                                       len(obj_fin.solid_geometry))
-                    obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
+
+                    # obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
                     app_obj.log.debug("Finished creating a cascaded union for the panel.")
 
                 if isinstance(panel_obj, FlatCAMExcellon):
@@ -632,19 +628,19 @@ class Panelize(FlatCAMTool):
                                         plot=True, autoselected=True)
 
         if self.constrain_flag is False:
-            self.app.inform.emit(_("[success] Panel done..."))
+            self.app.inform.emit('[success] %s' % _("Panel done..."))
         else:
             self.constrain_flag = False
-            self.app.inform.emit(_("[WARNING] Too big for the constrain area. "
+            self.app.inform.emit(_("{text} Too big for the constrain area. "
                                    "Final panel has {col} columns and {row} rows").format(
-                col=columns, row=rows))
+                text='[WARNING] ', col=columns, row=rows))
 
-        proc = self.app.proc_container.new(_("Generating panel ... Please wait."))
+        proc = self.app.proc_container.new(_("Generating panel..."))
 
         def job_thread(app_obj):
             try:
                 panelize_2()
-                self.app.inform.emit(_("[success] Panel created successfully."))
+                self.app.inform.emit('[success] %s' % _("Panel created successfully."))
             except Exception as ee:
                 proc.done()
                 log.debug(str(ee))

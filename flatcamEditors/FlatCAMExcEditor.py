@@ -50,7 +50,8 @@ class FCDrillAdd(FCShapeTool):
             item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
             self.draw_app.tools_table_exc.setCurrentItem(item)
         except KeyError:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add a drill first select a tool"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("To add a drill first select a tool"))
             self.draw_app.select_tool("drill_select")
             return
 
@@ -112,7 +113,8 @@ class FCDrillAdd(FCShapeTool):
         self.geometry = DrawToolShape(self.util_shape(self.points))
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Drill added."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Drill added."))
 
 
 class FCDrillArray(FCShapeTool):
@@ -154,7 +156,8 @@ class FCDrillArray(FCShapeTool):
             item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
             self.draw_app.tools_table_exc.setCurrentItem(item)
         except KeyError:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add an Drill Array first select a tool in Tool Table"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("To add an Drill Array first select a tool in Tool Table"))
             return
 
         try:
@@ -208,11 +211,12 @@ class FCDrillArray(FCShapeTool):
                 self.drill_linear_angle = float(self.draw_app.linear_angle_spinner.get_value())
                 self.drill_angle = float(self.draw_app.drill_angle_entry.get_value())
             except TypeError:
-                self.draw_app.app.inform.emit(
-                    _("[ERROR_NOTCL] The value is not Float. Check for comma instead of dot separator."))
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                              _("The value is not Float. Check for comma instead of dot separator."))
                 return
         except Exception as e:
-            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] The value is mistyped. Check the value. %s") % str(e))
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s. %s' %
+                                          (_("The value is mistyped. Check the value"), str(e)))
             return
 
         if self.drill_array == 'Linear':
@@ -310,7 +314,8 @@ class FCDrillArray(FCShapeTool):
                 self.geometry.append(DrawToolShape(geo))
         else:
             if (self.drill_angle * self.drill_array_size) > 360:
-                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Too many drills for the selected spacing angle."))
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                              _("Too many drills for the selected spacing angle."))
                 return
 
             radius = distance(self.destination, self.origin)
@@ -327,7 +332,8 @@ class FCDrillArray(FCShapeTool):
                 geo = self.util_shape((x, y))
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Drill Array added."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Drill Array added."))
         self.draw_app.in_action = False
         self.draw_app.array_frame.hide()
         return
@@ -355,7 +361,8 @@ class FCSlot(FCShapeTool):
             item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
             self.draw_app.tools_table_exc.setCurrentItem(item)
         except KeyError:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add a slot first select a tool"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("To add a slot first select a tool"))
             self.draw_app.select_tool("drill_select")
             return
 
@@ -412,15 +419,15 @@ class FCSlot(FCShapeTool):
                 slot_length = float(self.draw_app.slot_length_entry.get_value().replace(',', '.'))
                 self.draw_app.slot_length_entry.set_value(slot_length)
             except ValueError:
-                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Value is missing or wrong format. "
-                                                "Add it and retry."))
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                              _("Value is missing or wrong format. Add it and retry."))
                 return
 
         try:
             slot_angle = float(self.draw_app.slot_angle_spinner.get_value())
         except ValueError:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Value is missing or wrong format. "
-                                            "Add it and retry."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("Value is missing or wrong format. Add it and retry."))
             return
 
         if self.draw_app.slot_axis_radio.get_value() == 'X':
@@ -518,7 +525,8 @@ class FCSlot(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Adding Slot completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Adding Slot completed."))
         self.draw_app.slot_frame.hide()
 
 
@@ -544,7 +552,8 @@ class FCSlotArray(FCShapeTool):
             item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
             self.draw_app.tools_table_exc.setCurrentItem(item)
         except KeyError:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add an Slot Array first select a tool in Tool Table"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("To add an Slot Array first select a tool in Tool Table"))
             return
 
 
@@ -622,11 +631,12 @@ class FCSlotArray(FCShapeTool):
                 self.slot_linear_angle = float(self.draw_app.slot_array_linear_angle_spinner.get_value())
                 self.slot_angle = float(self.draw_app.slot_array_angle_entry.get_value())
             except TypeError:
-                self.draw_app.app.inform.emit(
-                    _("[ERROR_NOTCL] The value is not Float. Check for comma instead of dot separator."))
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                              _("The value is not Float. Check for comma instead of dot separator."))
                 return
         except Exception as e:
-            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] The value is mistyped. Check the value."))
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("The value is mistyped. Check the value."))
             return
 
         if self.slot_array == 'Linear':
@@ -687,15 +697,15 @@ class FCSlotArray(FCShapeTool):
                 slot_length = float(self.draw_app.slot_length_entry.get_value().replace(',', '.'))
                 self.draw_app.slot_length_entry.set_value(slot_length)
             except ValueError:
-                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Value is missing or wrong format. "
-                                                "Add it and retry."))
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                              _("Value is missing or wrong format. Add it and retry."))
                 return
 
         try:
             slot_angle = float(self.draw_app.slot_angle_spinner.get_value())
         except ValueError:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Value is missing or wrong format. "
-                                            "Add it and retry."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("Value is missing or wrong format. Add it and retry."))
             return
 
         if self.draw_app.slot_axis_radio.get_value() == 'X':
@@ -804,7 +814,8 @@ class FCSlotArray(FCShapeTool):
                 self.geometry.append(DrawToolShape(geo))
         else:
             if (self.slot_angle * self.slot_array_size) > 360:
-                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Too many Slots for the selected spacing angle."))
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                              _("Too many Slots for the selected spacing angle."))
                 return
 
             radius = distance(self.destination, self.origin)
@@ -826,7 +837,8 @@ class FCSlotArray(FCShapeTool):
 
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Slot Array added."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Slot Array added."))
         self.draw_app.in_action = False
         self.draw_app.slot_frame.hide()
         self.draw_app.slot_array_frame.hide()
@@ -872,9 +884,8 @@ class FCDrillResize(FCShapeTool):
         try:
             new_dia = self.draw_app.resdrill_entry.get_value()
         except:
-            self.draw_app.app.inform.emit(
-                _("[ERROR_NOTCL] Resize drill(s) failed. Please enter a diameter for resize.")
-            )
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("Resize drill(s) failed. Please enter a diameter for resize."))
             return
 
         if new_dia not in self.draw_app.olddia_newdia:
@@ -963,7 +974,8 @@ class FCDrillResize(FCShapeTool):
                             self.geometry.append(DrawToolShape(new_poly))
                         else:
                             # unexpected geometry so we cancel
-                            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Cancelled."))
+                            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                                          _("Cancelled."))
                             return
 
                         # remove the geometry with the old size
@@ -1032,7 +1044,8 @@ class FCDrillResize(FCShapeTool):
                     except KeyError:
                         # if the exception happen here then we are not dealing with slots neither
                         # therefore something else is not OK so we return
-                        self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Cancelled."))
+                        self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                                      _("Cancelled."))
                         return
 
             # this simple hack is used so we can delete form self.draw_app.selected but
@@ -1052,9 +1065,11 @@ class FCDrillResize(FCShapeTool):
             # we reactivate the signals after the after the tool editing
             self.draw_app.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
 
-            self.draw_app.app.inform.emit(_("[success] Done. Drill/Slot Resize completed."))
+            self.draw_app.app.inform.emit('[success] Done. %s' %
+                                          _("Drill/Slot Resize completed."))
         else:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Cancelled. No drills/slots selected for resize ..."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("Cancelled. No drills/slots selected for resize ..."))
 
         # init this set() for another use perhaps
         self.selected_dia_set = set()
@@ -1137,7 +1152,8 @@ class FCDrillMove(FCShapeTool):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit(_("[success] Done. Drill(s) Move completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Drill(s) Move completed."))
 
     def selection_bbox(self):
         geo_list = []
@@ -1234,7 +1250,8 @@ class FCDrillCopy(FCDrillMove):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit(_("[success] Done. Drill(s) copied."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Drill(s) copied."))
 
 
 class FCDrillSelect(DrawTool):
@@ -1498,7 +1515,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         grid1 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid1)
 
-        addtool_entry_lbl = QtWidgets.QLabel(_('Tool Dia:'))
+        addtool_entry_lbl = QtWidgets.QLabel('%s:' % _('Tool Dia'))
         addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool")
         )
@@ -1551,7 +1568,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         grid3 = QtWidgets.QGridLayout()
         self.resize_box.addLayout(grid3)
 
-        res_entry_lbl = QtWidgets.QLabel(_('Resize Dia:'))
+        res_entry_lbl = QtWidgets.QLabel('%s:' % _('Resize Dia'))
         res_entry_lbl.setToolTip(
            _("Diameter to resize to.")
         )
@@ -1608,7 +1625,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_box.addLayout(self.array_form)
 
         # Set the number of drill holes in the drill array
-        self.drill_array_size_label = QtWidgets.QLabel(_('Nr of drills:'))
+        self.drill_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of drills'))
         self.drill_array_size_label.setToolTip(_("Specify how many drills to be in the array."))
         self.drill_array_size_label.setMinimumWidth(100)
 
@@ -1626,7 +1643,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_box.addLayout(self.linear_form)
 
         # Linear Drill Array direction
-        self.drill_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.drill_axis_label = QtWidgets.QLabel('%s:'% _('Direction'))
         self.drill_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -1641,7 +1658,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_form.addRow(self.drill_axis_label, self.drill_axis_radio)
 
         # Linear Drill Array pitch distance
-        self.drill_pitch_label = QtWidgets.QLabel(_('Pitch:'))
+        self.drill_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
         self.drill_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -1651,7 +1668,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_form.addRow(self.drill_pitch_label, self.drill_pitch_entry)
 
         # Linear Drill Array angle
-        self.linear_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.linear_angle_label.setToolTip(
            _("Angle at which the linear array is placed.\n"
              "The precision is of max 2 decimals.\n"
@@ -1673,7 +1690,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.circular_box.setContentsMargins(0, 0, 0, 0)
         self.array_circular_frame.setLayout(self.circular_box)
 
-        self.drill_direction_label = QtWidgets.QLabel(_('Direction:'))
+        self.drill_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.drill_direction_label.setToolTip(_("Direction for circular array."
                                                 "Can be CW = clockwise or CCW = counter clockwise."))
         self.drill_direction_label.setMinimumWidth(100)
@@ -1685,7 +1702,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                                                {'label': _('CCW'), 'value': 'CCW'}])
         self.circular_form.addRow(self.drill_direction_label, self.drill_direction_radio)
 
-        self.drill_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.drill_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.drill_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
         self.drill_angle_label.setMinimumWidth(100)
 
@@ -1727,7 +1744,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_box.addLayout(self.slot_form)
 
         # Slot length
-        self.slot_length_label = QtWidgets.QLabel(_('Length:'))
+        self.slot_length_label = QtWidgets.QLabel('%s:' % _('Length'))
         self.slot_length_label.setToolTip(
             _("Length = The length of the slot.")
         )
@@ -1737,7 +1754,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_form.addRow(self.slot_length_label, self.slot_length_entry)
 
         # Slot direction
-        self.slot_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.slot_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.slot_axis_label.setToolTip(
             _("Direction on which the slot is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -1752,7 +1769,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_form.addRow(self.slot_axis_label, self.slot_axis_radio)
 
         # Slot custom angle
-        self.slot_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.slot_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.slot_angle_label.setToolTip(
            _("Angle at which the slot is placed.\n"
              "The precision is of max 2 decimals.\n"
@@ -1810,7 +1827,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_box.addLayout(self.slot_array_form)
 
         # Set the number of slot holes in the slot array
-        self.slot_array_size_label = QtWidgets.QLabel(_('Nr of slots:'))
+        self.slot_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of slots'))
         self.slot_array_size_label.setToolTip(_("Specify how many slots to be in the array."))
         self.slot_array_size_label.setMinimumWidth(100)
 
@@ -1828,7 +1845,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_linear_box.addLayout(self.slot_array_linear_form)
 
         # Linear Slot Array direction
-        self.slot_array_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.slot_array_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.slot_array_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -1843,7 +1860,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_linear_form.addRow(self.slot_array_axis_label, self.slot_array_axis_radio)
 
         # Linear Slot Array pitch distance
-        self.slot_array_pitch_label = QtWidgets.QLabel(_('Pitch:'))
+        self.slot_array_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
         self.slot_array_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -1853,7 +1870,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_linear_form.addRow(self.slot_array_pitch_label, self.slot_array_pitch_entry)
 
         # Linear Slot Array angle
-        self.slot_array_linear_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.slot_array_linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.slot_array_linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
@@ -1875,7 +1892,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_circular_box.setContentsMargins(0, 0, 0, 0)
         self.slot_array_circular_frame.setLayout(self.slot_array_circular_box)
 
-        self.slot_array_direction_label = QtWidgets.QLabel(_('Direction:'))
+        self.slot_array_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.slot_array_direction_label.setToolTip(_("Direction for circular array."
                                                      "Can be CW = clockwise or CCW = counter clockwise."))
         self.slot_array_direction_label.setMinimumWidth(100)
@@ -1887,7 +1904,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                                                     {'label': _('CCW'), 'value': 'CCW'}])
         self.slot_array_circular_form.addRow(self.slot_array_direction_label, self.slot_array_direction_radio)
 
-        self.slot_array_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.slot_array_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.slot_array_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
         self.slot_array_angle_label.setMinimumWidth(100)
 
@@ -2395,9 +2412,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                 try:
                     tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                         "use a number.")
-                                         )
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         if tool_dia not in self.olddia_newdia:
@@ -2408,17 +2424,17 @@ class FlatCAMExcEditor(QtCore.QObject):
             # each time a tool diameter is edited or added
             self.olddia_newdia[tool_dia] = tool_dia
         else:
-            self.app.inform.emit(_("[WARNING_NOTCL] Tool already in the original or actual tool list.\n"
-                                 "Save and reedit Excellon if you need to add this tool. ")
-                                 )
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Tool already in the original or actual tool list.\n"
+                                 "Save and reedit Excellon if you need to add this tool. "))
             return
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
         self.tool2tooldia[len(self.olddia_newdia)] = tool_dia
 
-        self.app.inform.emit(_("[success] Added new tool with dia: {dia} {units}").format(dia=str(tool_dia),
-                                                                                          units=str(self.units)))
+        self.app.inform.emit('[success] %s: %s %s' %
+                             (_("Added new tool with dia"), str(tool_dia), str(self.units)))
 
         self.build_ui()
 
@@ -2449,7 +2465,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                 else:
                     deleted_tool_dia_list.append(float('%.4f' % dia))
         except Exception as e:
-            self.app.inform.emit(_("[WARNING_NOTCL] Select a tool in Tool Table"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Select a tool in Tool Table"))
             return
 
         for deleted_tool_dia in deleted_tool_dia_list:
@@ -2481,9 +2498,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             self.olddia_newdia.pop(deleted_tool_dia, None)
 
-            self.app.inform.emit(_("[success] Deleted tool with dia: {del_dia} {units}").format(
-                del_dia=str(deleted_tool_dia),
-                units=str(self.units)))
+            self.app.inform.emit('[success] %s: %s %s' %
+                                 (_("Deleted tool with diameter"), str(deleted_tool_dia), str(self.units)))
 
         self.replot()
         # self.app.inform.emit("Could not delete selected tool")
@@ -2632,7 +2648,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
         self.tools_table_exc.cellPressed.connect(self.on_row_selected)
 
-        self.app.inform.emit(_("[success] Done. Tool edit completed."))
+        self.app.inform.emit('[success] %s' %
+                             _("Done. Tool edit completed."))
 
         # self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
 
@@ -3166,11 +3183,12 @@ class FlatCAMExcEditor(QtCore.QObject):
             try:
                 excellon_obj.create_geometry()
             except KeyError:
-                self.app.inform.emit(
-                   _("[ERROR_NOTCL] There are no Tools definitions in the file. Aborting Excellon creation.")
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("There are no Tools definitions in the file. Aborting Excellon creation.")
                 )
             except:
-                msg = _("[ERROR] An internal error has ocurred. See shell.\n")
+                msg = '[ERROR] %s' % \
+                      _("An internal error has ocurred. See Shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 raise
@@ -3185,7 +3203,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.app.progress.emit(100)
                 return
 
-            self.app.inform.emit(_("[success] Excellon editing finished."))
+            self.app.inform.emit('[success] %s' %
+                                 _("Excellon editing finished."))
             # self.progress.emit(100)
 
     def on_tool_select(self, tool):
@@ -3202,7 +3221,8 @@ class FlatCAMExcEditor(QtCore.QObject):
             # self.draw_app.select_tool('drill_select')
             self.complete = True
             current_tool = 'drill_select'
-            self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. There is no Tool/Drill selected"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Cancelled. There is no Tool/Drill selected"))
 
         # This is to make the group behave as radio group
         if current_tool in self.tools_exc:
@@ -3421,14 +3441,16 @@ class FlatCAMExcEditor(QtCore.QObject):
                         self.active_tool.complete = True
                         self.in_action = False
                         self.delete_utility_geometry()
-                        self.app.inform.emit(_("[success] Done."))
+                        self.app.inform.emit('[success] %s' %
+                                             _("Done."))
                         self.select_tool('drill_select')
                     else:
                         if isinstance(self.active_tool, FCDrillAdd):
                             self.active_tool.complete = True
                             self.in_action = False
                             self.delete_utility_geometry()
-                            self.app.inform.emit(_("[success] Done."))
+                            self.app.inform.emit('[success] %s' %
+                                                 _("Done."))
                             self.select_tool('drill_select')
 
                         self.app.cursor = QtGui.QCursor()
@@ -3784,7 +3806,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.selected = []
         self.build_ui()
-        self.app.inform.emit(_("[success] Done. Drill(s) deleted."))
+        self.app.inform.emit('[success] %s' %
+                             _("Done. Drill(s) deleted."))
 
     def delete_shape(self, del_shape):
         self.is_modified = True

@@ -9,6 +9,112 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.09.2019
+
+- changed the triangulation type in VisPyVisuals for ShapeCollectionVisual class
+- added a setting in Preferences -> Gerber -> Gerber General named Buffering. If set to 'no' the Gerber objects load a lot more faster (perhaps 10 times faster than when set to 'full') but the visual look is not so great as all the aperture polygons can be seen
+- added for NCC Tool and Paint Tool a setting in the Preferences -> Tools --> (NCC Tool/ Paint Tool) that can set a progressive plotting (plot shapes as they are processed)
+- some fixes in Paint Tool when done over the Gerber objects in case that the progressive plotting is selected
+- some fixes in Gerber isolation in case that the progressive plotting is selected; added a 'Buffer solid geometry' button shown only when progressive plotting for Gerber object is selected. It will buffer the entire geometry of the object and plot it, in a threaded way.
+- modified FlatCAMObj.py file to the new string format that will allow easier translations
+- modified camlib.py, FlatCAMAPp.py and ObjectCollection.py files to the new string format that will allow easier translations
+- updated the POT file and the German language
+- fixed issue when loading unbuffered a Gerber file that has negative regions
+- fixed Panelize Tool to save the aperture geometries into the panel apertures. Also made the tool faster by removing the buffering at the end of the job
+- modified FlatCAMEditor's files to the new string format that will allow easier translations
+- updated POT file and the Romanian translation
+
+8.09.2019
+
+- added some documentation strings for methods in FlatCAMApp.App class
+- removed some @pyqtSlot() decorators as they interfere with the current way the program works
+
+7.09.2019
+
+- added a method to gracefully exit from threaded tasks and implemented it for the NCC Tool and for the Paint Tool
+- modified the on_about() function to reflect the reality in 2019 - FlatCAM it is an Open Source contributed software
+- remade the handlers for the Enable/Disable Project Tree context menu so they are threaded and activity is shown in the lower right corner of the main window
+- added to GUI new options for the Gerber object related to area subtraction
+- added new feature in the Gerber object isolation allowing for the isolation to avoid an area defined by another object (Gerber or Geometry)
+- all transformation functions show now the progress (rotate, mirror, scale, offset, skew)
+- made threaded the Offset and Scale operations found in the Selected tab of the object
+- corrected some issues and made Move Tool to show correctly when it is plotting and when it is offsetting the objects position
+- made Set Origin feature, threaded
+- updated German language translation files
+- separated the Plotting thread from the transformations threads
+
+6.09.2019
+
+- remade visibility threaded
+- reimplemented the thread listening for new FlatCAM process starting with args so it is no longer subclassed but using the moveToThread function
+- added percentage display for work done in NCC Tool
+- added percentage display for work done in Paint Tool
+- some fixes and prepared the activity monitor area to receive updated texts
+- added progress display in status bar for generating CNCJob from Excellon objects
+- added progress display in status bar for generating CNCJob from Geometry objects
+- modified all the FlatCAM tools strings to the new format in which the status is no longer included in the translated strings to make it easier for the future translations
+- more customization for the progress display in case of NCC Tool, Paint Tool and for the Gcode generation
+- updated POT file with the new strings
+- made the objects offset (therefore the Move Tool) show progress display
+
+5.09.2019
+
+- fixed issue with loading files at start-up
+- fixed issue with generating bounding box geometry for CNCJob objects
+- added some more infobar messages and log.debug
+- increased the priority for the worker tasks
+- hidden the configuration for G91 coordinates due of deciding to leave this development for another time; it require too much refactoring
+- added some messages for the G-code generation so the user know in which stage the process is
+
+4.09.2019
+
+- started to work on support for G91 in Gcode (relative coordinates)
+- added support for G91 coordinates
+- working in plotting the CNCjob generated with G91 coordinates
+
+3.09.2019
+
+- in NCC tool there is now a depth of cut parameter named 'Cut Z' which will dictate how deep the tool will enter into the PCB material
+- in NCC tool added possibility to choose between the type of tools to be used and when V-shape is used then the tool diameter is calculated from the desired depth of cut and from the V-tip parameters
+- small changes in NCC tool regarding the usage of the V-shape tool
+- fixed the isolation distance in NCC Tool for the tools with iso_op type
+- in NCC Tool now the Area adding is continuous until RMB is clicked (no key modifier is needed anymore)
+- fixed German language translation
+- in NCC Tool added a warning in case there are isolation tools and if those isolation's are interrupted by an area or a box
+- in Paint Tool made that the area selection is repeated until RMB click
+- in Paint Tool and NCC Tool fixed the RMB click detection when Area selection is used
+- finished the work on file extensions registration with FlatCAM. If the file extensions are deleted in the Preferences -> File Associations then those extensions are unregistered with FlatCAM
+- fixed bug in NCC Tools and in SolderPaste Tool if in Edit -> Preferences only one tool is entered
+- fixed bug in camblib.clear_polygon3() which caused that some copper clearing / paintings were not complete (some polygons were not processed) when the Straight Lines method was used
+- some changes in NCC Tools regarding of the clearing itself
+
+2.09.2019
+
+- fixed issue in NCC Tool when using area option
+- added formatting for some strings in the app strings, making the future translations easier
+- made changes in the Excellon Tools Table to make it more clear that the tools are selected in the # column and not in the Plot column
+- in Excellon and Gerber Selected tab made the Plot (mark) columns not selectable
+- some ToolTips were modified
+- in Properties Tool made threaded the calculation of convex_hull area and also made it to work for multi-geo objects
+- in NCC tool the type of tool that is used is transferred to the Geometry object
+- in NCC tool the type of isolation done with the tools selected as isolation tools can now be selected and it has also an Edit -> Preferences entry
+- in Properties Tool fixed the dimensions calculations (length, width, area) to work for multi-geo objects
+
+1.09.2019
+
+- fixed open handlers
+- fixed issue in NCC Tool where the tool table context menu could be installed multiple times
+- added new ability to create simple isolation's in the NCC Tool
+- fixed an issue when multi depth step is larger than the depth of cut
+
+27.08.2019
+
+- made FlatCAM so that whenever an associated file is double clicked, if there is an opened instance of FlatCAM, the file will be opened in the first instance without launching a new instance of FlatCAM. If FlatCAM is launched again it will spawn a new process (hopefully it will work when freezed).
+
+26.08.2019
+
+- added support for file associations with FlatCAM, for Windows
+
 25.08.2019
 
 - initial add of a new Tcl Command named CopperClear

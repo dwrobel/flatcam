@@ -21,8 +21,9 @@ if '_' not in builtins.__dict__:
 
 
 class Properties(FlatCAMTool):
-
     toolName = _("Properties")
+
+    calculations_finished = pyqtSignal(float, float, float, float, object)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -63,6 +64,8 @@ class Properties(FlatCAMTool):
 
         self.vlay.addWidget(self.treeWidget)
         self.vlay.setStretch(0, 0)
+
+        self.calculations_finished.connect(self.show_area_chull)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolProperties()")
@@ -105,14 +108,16 @@ class Properties(FlatCAMTool):
     def properties(self):
         obj_list = self.app.collection.get_selected()
         if not obj_list:
-            self.app.inform.emit(_("[ERROR_NOTCL] Properties Tool was not displayed. No object selected."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Properties Tool was not displayed. No object selected."))
             self.app.ui.notebook.setTabText(2, _("Tools"))
             self.properties_frame.hide()
             self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             return
         for obj in obj_list:
             self.addItems(obj)
-            self.app.inform.emit(_("[success] Object Properties are displayed."))
+            self.app.inform.emit('[success] %s' %
+                                 _("Object Properties are displayed."))
         self.app.ui.notebook.setTabText(2, _("Properties Tool"))
 
     def addItems(self, obj):
@@ -146,49 +151,94 @@ class Properties(FlatCAMTool):
 
         self.addChild(obj_name, [obj.options['name']])
 
-        # calculate physical dimensions
-        try:
-            xmin, ymin, xmax, ymax = obj.bounds()
-        except Exception as e:
-            log.debug("PropertiesTool.addItems() --> %s" % str(e))
-            return
+        def job_thread(obj):
+            proc = self.app.proc_container.new(_("Calculating dimensions ... Please wait."))
 
-        length = abs(xmax - xmin)
-        width = abs(ymax - ymin)
+            length = 0.0
+            width = 0.0
+            area = 0.0
 
-        self.addChild(dims, ['%s:' % _('Length'), '%.4f %s' % (
-            length, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
-        self.addChild(dims, ['%s:' % _('Width'), '%.4f %s' % (
-            width, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
-
-        # calculate and add box area
-        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
-            area = (length * width) / 100
-            self.addChild(dims, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'cm2')], True)
-        else:
-            area = length * width
-            self.addChild(dims, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'in2')], True)
-
-        if not isinstance(obj, FlatCAMCNCjob):
-            # calculate and add convex hull area
             geo = obj.solid_geometry
-            if isinstance(geo, MultiPolygon):
-                env_obj = geo.convex_hull
-            elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
-                    (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
-                env_obj = cascaded_union(obj.solid_geometry)
-                env_obj = env_obj.convex_hull
-            else:
-                env_obj = cascaded_union(obj.solid_geometry)
-                env_obj = env_obj.convex_hull
+            if geo:
+                # calculate physical dimensions
+                try:
+                    xmin, ymin, xmax, ymax = obj.bounds()
 
-            area_chull = env_obj.area
+                    length = abs(xmax - xmin)
+                    width = abs(ymax - ymin)
+                except Exception as e:
+                    log.debug("PropertiesTool.addItems() --> %s" % str(e))
+
+                # calculate box area
+                if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+                    area = (length * width) / 100
+                else:
+                    area = length * width
+            else:
+                xmin = []
+                ymin = []
+                xmax = []
+                ymax = []
+
+                for tool in obj.tools:
+                    try:
+                        x0, y0, x1, y1 = cascaded_union(obj.tools[tool]['solid_geometry']).bounds
+                        xmin.append(x0)
+                        ymin.append(y0)
+                        xmax.append(x1)
+                        ymax.append(y1)
+                    except Exception as ee:
+                        log.debug("PropertiesTool.addItems() --> %s" % str(ee))
+
+                try:
+                    xmin = min(xmin)
+                    ymin = min(ymin)
+                    xmax = max(xmax)
+                    ymax = max(ymax)
+
+                    length = abs(xmax - xmin)
+                    width = abs(ymax - ymin)
+
+                    # calculate box area
+                    if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+                        area = (length * width) / 100
+                    else:
+                        area = length * width
+                except Exception as e:
+                    log.debug("Properties.addItems() --> %s" % str(e))
+
+            area_chull = 0.0
+            if not isinstance(obj, FlatCAMCNCjob):
+                # calculate and add convex hull area
+                if geo:
+                    if isinstance(geo, MultiPolygon):
+                        env_obj = geo.convex_hull
+                    elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
+                            (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
+                        env_obj = cascaded_union(obj.solid_geometry)
+                        env_obj = env_obj.convex_hull
+                    else:
+                        env_obj = cascaded_union(obj.solid_geometry)
+                        env_obj = env_obj.convex_hull
+
+                    area_chull = env_obj.area
+                else:
+                    try:
+                        area_chull = []
+                        for tool in obj.tools:
+                            area_el = cascaded_union(obj.tools[tool]['solid_geometry']).convex_hull
+                            area_chull.append(area_el.area)
+                        area_chull = max(area_chull)
+                    except Exception as e:
+                        area_chull = None
+                        log.debug("Properties.addItems() --> %s" % str(e))
+
             if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
                 area_chull = area_chull / 100
-                self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'cm2')], True)
-            else:
-                area_chull = area_chull
-                self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'in2')], True)
+
+            self.calculations_finished.emit(area, length, width, area_chull, dims)
+
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [obj]})
 
         self.addChild(units,
                       ['FlatCAM units:',
@@ -293,5 +343,22 @@ class Properties(FlatCAMTool):
         item.setText(0, str(title[0]))
         if column1 is not None:
             item.setText(1, str(title[1]))
+
+    def show_area_chull(self, area, length, width, chull_area, location):
+
+        # add dimensions
+        self.addChild(location, ['%s:' % _('Length'), '%.4f %s' % (
+            length, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
+        self.addChild(location, ['%s:' % _('Width'), '%.4f %s' % (
+            width, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
+
+        # add box area
+        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+            self.addChild(location, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'cm2')], True)
+            self.addChild(location, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (chull_area, 'cm2')], True)
+
+        else:
+            self.addChild(location, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'in2')], True)
+            self.addChild(location, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (chull_area, 'in2')], True)
 
 # end of file

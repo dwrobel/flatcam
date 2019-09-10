@@ -470,8 +470,8 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.rotate_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Rotate, "
-                                       "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
                                    'params': [value]})
@@ -504,8 +504,8 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.skewx_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew X, "
-                                       "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
 
         # self.on_skew("X", value)
@@ -522,8 +522,8 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.skewy_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew Y, "
-                                       "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
 
         # self.on_skew("Y", value)
@@ -540,8 +540,8 @@ class ToolTransform(FlatCAMTool):
             try:
                 xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale X, "
-                                       "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -574,8 +574,8 @@ class ToolTransform(FlatCAMTool):
             try:
                 yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale Y, "
-                                       "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -603,8 +603,8 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.offx_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset X, "
-                                       "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
 
         # self.on_offset("X", value)
@@ -621,8 +621,8 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.offy_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset Y, "
-                                       "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
 
         # self.on_offset("Y", value)
@@ -639,7 +639,8 @@ class ToolTransform(FlatCAMTool):
         ymaxlist = []
 
         if not obj_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to rotate!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No object selected. Please Select an object to rotate!"))
             return
         else:
             with self.app.proc_container.new(_("Appying Rotate")):
@@ -675,11 +676,12 @@ class ToolTransform(FlatCAMTool):
                         # add information to the object that it was changed and how much
                         sel_obj.options['rotate'] = num
                         sel_obj.plot()
-                    self.app.inform.emit(_('[success] Rotate done ...'))
+                    self.app.inform.emit('[success] %s...' % _('Rotate done'))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, rotation movement was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
+                                         (_("Due of"), str(e), _("action was not executed.")))
                     return
 
     def on_flip(self, axis):
@@ -690,7 +692,8 @@ class ToolTransform(FlatCAMTool):
         ymaxlist = []
 
         if not obj_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to flip!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s!' %
+                                 _("No object selected. Please Select an object to flip"))
             return
         else:
             with self.app.proc_container.new(_("Applying Flip")):
@@ -735,7 +738,8 @@ class ToolTransform(FlatCAMTool):
                                     sel_obj.options['mirror_y'] = not sel_obj.options['mirror_y']
                                 else:
                                     sel_obj.options['mirror_y'] = True
-                                self.app.inform.emit(_('[success] Flip on the Y axis done ...'))
+                                self.app.inform.emit('[success] %s...' %
+                                                     _('Flip on the Y axis done'))
                             elif axis is 'Y':
                                 sel_obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
@@ -744,13 +748,15 @@ class ToolTransform(FlatCAMTool):
                                     sel_obj.options['mirror_x'] = not sel_obj.options['mirror_x']
                                 else:
                                     sel_obj.options['mirror_x'] = True
-                                self.app.inform.emit(_('[success] Flip on the X axis done ...'))
+                                self.app.inform.emit('[success] %s...' %
+                                                     _('Flip on the X axis done'))
                             self.app.object_changed.emit(sel_obj)
                         sel_obj.plot()
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Flip action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
+                                         (_("Due of"), str(e), _("action was not executed.")))
                     return
 
     def on_skew(self, axis, num):
@@ -759,7 +765,8 @@ class ToolTransform(FlatCAMTool):
         yminlist = []
 
         if not obj_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to shear/skew!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No object selected. Please Select an object to shear/skew!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Skew")):
@@ -797,7 +804,8 @@ class ToolTransform(FlatCAMTool):
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Skew action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
+                                         (_("Due of"), str(e), _("action was not executed.")))
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -808,7 +816,8 @@ class ToolTransform(FlatCAMTool):
         ymaxlist = []
 
         if not obj_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to scale!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No object selected. Please Select an object to scale!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Scale")):
@@ -850,17 +859,20 @@ class ToolTransform(FlatCAMTool):
                             self.app.object_changed.emit(sel_obj)
                         sel_obj.plot()
 
-                    self.app.inform.emit(_('[success] Scale on the %s axis done ...') % str(axis))
+                    self.app.inform.emit('[success] %s %s %s...' %
+                                         (_('Scale on the'), str(axis), _('axis done')))
                     self.app.progress.emit(100)
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Scale action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
+                                         (_("Due of"), str(e), _("action was not executed.")))
                     return
 
     def on_offset(self, axis, num):
         obj_list = self.app.collection.get_selected()
 
         if not obj_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to offset!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No object selected. Please Select an object to offset!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Offset")):
@@ -869,7 +881,7 @@ class ToolTransform(FlatCAMTool):
 
                     for sel_obj in obj_list:
                         if isinstance(sel_obj, FlatCAMCNCjob):
-                            self.app.inform.emit(_("CNCJob objects can't be offseted."))
+                            self.app.inform.emit(_("CNCJob objects can't be offset."))
                         else:
                             if axis is 'X':
                                 sel_obj.offset((num, 0))
@@ -882,11 +894,13 @@ class ToolTransform(FlatCAMTool):
                             self.app.object_changed.emit(sel_obj)
                         sel_obj.plot()
 
-                    self.app.inform.emit(_('[success] Offset on the %s axis done ...') % str(axis))
+                    self.app.inform.emit('[success] %s %s %s...' %
+                                         (_('Offset on the'), str(axis), _('axis done')))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Offset action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
+                                         (_("Due of"), str(e),  _("action was not executed.")))
                     return
 
 # end of file

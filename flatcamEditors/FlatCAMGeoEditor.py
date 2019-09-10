@@ -137,8 +137,8 @@ class BufferSelectionTool(FlatCAMTool):
                 buffer_distance = float(self.buffer_distance_entry.get_value().replace(',', '.'))
                 self.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
@@ -154,8 +154,8 @@ class BufferSelectionTool(FlatCAMTool):
                 buffer_distance = float(self.buffer_distance_entry.get_value().replace(',', '.'))
                 self.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
@@ -171,8 +171,8 @@ class BufferSelectionTool(FlatCAMTool):
                 buffer_distance = float(self.buffer_distance_entry.get_value().replace(',', '.'))
                 self.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
@@ -431,7 +431,7 @@ class PaintOptionsTool(FlatCAMTool):
         self.layout.addLayout(grid)
 
         # Tool dia
-        ptdlabel = QtWidgets.QLabel(_('Tool dia:'))
+        ptdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
         ptdlabel.setToolTip(
            _("Diameter of the tool to\n"
              "be used in the operation.")
@@ -442,7 +442,7 @@ class PaintOptionsTool(FlatCAMTool):
         grid.addWidget(self.painttooldia_entry, 0, 1)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel(_('Overlap Rate:'))
+        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
               "Example:\n"
@@ -460,7 +460,7 @@ class PaintOptionsTool(FlatCAMTool):
         grid.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
-        marginlabel = QtWidgets.QLabel(_('Margin:'))
+        marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
         marginlabel.setToolTip(
            _("Distance by which to avoid\n"
              "the edges of the polygon to\n"
@@ -471,7 +471,7 @@ class PaintOptionsTool(FlatCAMTool):
         grid.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel(_('Method:'))
+        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm to paint the polygon:<BR>"
               "<B>Standard</B>: Fixed step inwards.<BR>"
@@ -562,7 +562,8 @@ class PaintOptionsTool(FlatCAMTool):
 
     def on_paint(self):
         if not self.fcdraw.selected:
-            self.app.inform.emit(_("[WARNING_NOTCL] Paint cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Paint cancelled. No shape selected."))
             return
 
         try:
@@ -573,8 +574,8 @@ class PaintOptionsTool(FlatCAMTool):
                 tooldia = float(self.painttooldia_entry.get_value().replace(',', '.'))
                 self.painttooldia_entry.set_value(tooldia)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
                 return
         try:
             overlap = float(self.paintoverlap_entry.get_value())
@@ -584,8 +585,8 @@ class PaintOptionsTool(FlatCAMTool):
                 overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
                 self.paintoverlap_entry.set_value(overlap)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Overlap value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Overlap value is missing or wrong format. Add it and retry."))
                 return
 
         try:
@@ -596,8 +597,8 @@ class PaintOptionsTool(FlatCAMTool):
                 margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
                 self.paintmargin_entry.set_value(margin)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Margin distance value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Margin distance value is missing or wrong format. Add it and retry."))
                 return
         method = self.paintmethod_combo.get_value()
         contour = self.paintcontour_cb.get_value()
@@ -1053,7 +1054,8 @@ class TransformEditorTool(FlatCAMTool):
 
     def template(self):
         if not self.fcdraw.selected:
-            self.app.inform.emit(_("[WARNING_NOTCL] Transformation cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Transformation cancelled. No shape selected."))
             return
 
 
@@ -1074,8 +1076,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.rotate_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Rotate, "
-                                         "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
                                        'params': [value]})
@@ -1111,8 +1113,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.skewx_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew X, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # self.on_skew("X", value)
@@ -1132,8 +1134,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.skewy_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew Y, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # self.on_skew("Y", value)
@@ -1153,8 +1155,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale X, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -1190,8 +1192,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale Y, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -1222,8 +1224,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.offx_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset X, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # self.on_offset("X", value)
@@ -1243,8 +1245,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.offy_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset Y, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # self.on_offset("Y", value)
@@ -1261,7 +1263,8 @@ class TransformEditorTool(FlatCAMTool):
         ymaxlist = []
 
         if not shape_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to rotate!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to rotate!"))
             return
         else:
             with self.app.proc_container.new(_("Appying Rotate")):
@@ -1292,12 +1295,14 @@ class TransformEditorTool(FlatCAMTool):
 
                     # self.draw_app.transform_complete.emit()
 
-                    self.app.inform.emit(_("[success] Done. Rotate completed."))
+                    self.app.inform.emit('[success] %s' %
+                                         _("Done. Rotate completed."))
 
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, rotation movement was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_("Rotation action was not executed"),str(e)))
                     return
 
     def on_flip(self, axis):
@@ -1308,7 +1313,8 @@ class TransformEditorTool(FlatCAMTool):
         ymaxlist = []
 
         if not shape_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to flip!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to flip!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Flip")):
@@ -1341,10 +1347,12 @@ class TransformEditorTool(FlatCAMTool):
                     for sha in shape_list:
                         if axis is 'X':
                             sha.mirror('X', (px, py))
-                            self.app.inform.emit(_('[success] Flip on the Y axis done ...'))
+                            self.app.inform.emit('[success] %s...' %
+                                                 _('Flip on the Y axis done'))
                         elif axis is 'Y':
                             sha.mirror('Y', (px, py))
-                            self.app.inform.emit(_('[success] Flip on the X axis done ...'))
+                            self.app.inform.emit('[success] %s' %
+                                                 _('Flip on the X axis done'))
                         self.draw_app.replot()
 
                     #     self.draw_app.add_shape(DrawToolShape(sha.geo))
@@ -1354,7 +1362,8 @@ class TransformEditorTool(FlatCAMTool):
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Flip action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_("Flip action was not executed"), str(e)))
                     return
 
     def on_skew(self, axis, num):
@@ -1363,7 +1372,8 @@ class TransformEditorTool(FlatCAMTool):
         yminlist = []
 
         if not shape_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to shear/skew!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to shear/skew!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Skew")):
@@ -1390,12 +1400,17 @@ class TransformEditorTool(FlatCAMTool):
                     #     self.draw_app.add_shape(DrawToolShape(sha.geo))
                     #
                     # self.draw_app.transform_complete.emit()
-
-                    self.app.inform.emit(_('[success] Skew on the %s axis done ...') % str(axis))
+                    if axis == 'X':
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Skew on the X axis done'))
+                    else:
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Skew on the Y axis done'))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Skew action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_("Skew action was not executed"), str(e)))
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -1406,7 +1421,8 @@ class TransformEditorTool(FlatCAMTool):
         ymaxlist = []
 
         if not shape_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to scale!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to scale!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Scale")):
@@ -1442,10 +1458,16 @@ class TransformEditorTool(FlatCAMTool):
                     #
                     # self.draw_app.transform_complete.emit()
 
-                    self.app.inform.emit(_('[success] Scale on the %s axis done ...') % str(axis))
+                    if str(axis) == 'X':
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Scale on the X axis done'))
+                    else:
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Scale on the Y axis done'))
                     self.app.progress.emit(100)
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Scale action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_("Scale action was not executed"), str(e)))
                     return
 
     def on_offset(self, axis, num):
@@ -1454,7 +1476,8 @@ class TransformEditorTool(FlatCAMTool):
         yminlist = []
 
         if not shape_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to offset!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to offset!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Offset")):
@@ -1468,16 +1491,22 @@ class TransformEditorTool(FlatCAMTool):
                             sha.offset((0, num))
                         self.draw_app.replot()
 
-                    self.app.inform.emit(_('[success] Offset on the %s axis done ...') % str(axis))
+                    if axis == 'X':
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Offset on the X axis done'))
+                    else:
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Offset on the Y axis done'))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Offset action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_("Offset action was not executed"), str(e)))
                     return
 
     def on_rotate_key(self):
         val_box = FCInputDialog(title=_("Rotate ..."),
-                                text=_('Enter an Angle Value (degrees):'),
+                                text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_rotate']))
         val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
@@ -1485,20 +1514,18 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_rotate(val=val)
-            self.app.inform.emit(
-                _("[success] Geometry shape rotate done...")
-                )
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape rotate done"))
             return
         else:
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] Geometry shape rotate cancelled...")
-                )
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Geometry shape rotate cancelled"))
 
     def on_offx_key(self):
         units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
-                                text=(_('Enter a distance Value (%s):') % str(units)),
+                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
@@ -1506,18 +1533,18 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit(
-                _("[success] Geometry shape offset on X axis done..."))
+            self.app.inform.emit('[success] %s' %
+                                 _("Geometry shape offset on X axis done"))
             return
         else:
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] Geometry shape offset X cancelled..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Geometry shape offset X cancelled"))
 
     def on_offy_key(self):
         units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
-                                text=(_('Enter a distance Value (%s):') % str(units)),
+                                text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
@@ -1525,16 +1552,16 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit(
-                _("[success] Geometry shape offset on Y axis done..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape offset on Y axis done"))
             return
         else:
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] Geometry shape offset Y cancelled..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape offset on Y axis canceled"))
 
     def on_skewx_key(self):
         val_box = FCInputDialog(title=_("Skew on X axis ..."),
-                                text=_('Enter an Angle Value (degrees):'),
+                                text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_skew_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
@@ -1542,16 +1569,16 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val)
-            self.app.inform.emit(
-                _("[success] Geometry shape skew on X axis done..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape skew on X axis done"))
             return
         else:
-            self.app.inform.emit(
-               _("[WARNING_NOTCL] Geometry shape skew X cancelled..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape skew on X axis canceled"))
 
     def on_skewy_key(self):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
-                                text=_('Enter an Angle Value (degrees):'),
+                                text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=4,
                                 init_val=float(self.app.defaults['tools_transform_skew_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))
@@ -1559,12 +1586,12 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val)
-            self.app.inform.emit(
-               _("[success] Geometry shape skew on Y axis done..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape skew on Y axis done"))
             return
         else:
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] Geometry shape skew Y cancelled..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape skew on Y axis canceled"))
 
 
 class DrawToolShape(object):
@@ -1964,7 +1991,8 @@ class FCCircle(FCShapeTool):
         radius = distance(p1, p2)
         self.geometry = DrawToolShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Adding Circle completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Adding Circle completed."))
 
 
 class FCArc(FCShapeTool):
@@ -2178,7 +2206,8 @@ class FCArc(FCShapeTool):
             self.geometry = DrawToolShape(LineString(arc(center, radius, startangle, stopangle,
                                                          self.direction, self.steps_per_circ)))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Arc completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Arc completed."))
 
 
 class FCRectangle(FCShapeTool):
@@ -2231,7 +2260,8 @@ class FCRectangle(FCShapeTool):
         # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
         self.geometry = DrawToolShape(Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Rectangle completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Rectangle completed."))
 
 
 class FCPolygon(FCShapeTool):
@@ -2285,7 +2315,8 @@ class FCPolygon(FCShapeTool):
         self.geometry = DrawToolShape(Polygon(self.points))
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Polygon completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Polygon completed."))
 
     def on_key(self, key):
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
@@ -2440,7 +2471,8 @@ class FCMove(FCShapeTool):
         self.selection_shape = self.selection_bbox()
 
         if len(self.draw_app.get_selected()) == 0:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] MOVE: No shape selected. Select a shape to move ..."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                          _("MOVE: No shape selected. Select a shape to move"))
         else:
             self.draw_app.app.inform.emit(_(" MOVE: Click on reference point ..."))
 
@@ -2479,7 +2511,8 @@ class FCMove(FCShapeTool):
             # Delete old
             self.draw_app.delete_selected()
             self.complete = True
-            self.draw_app.app.inform.emit(_("[success] Done. Geometry(s) Move completed."))
+            self.draw_app.app.inform.emit('[success] %s' %
+                                          _("Done. Geometry(s) Move completed."))
 
     def selection_bbox(self):
         geo_list = []
@@ -2599,7 +2632,8 @@ class FCCopy(FCMove):
         self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
                          for geom in self.draw_app.get_selected()]
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Geometry(s) Copy completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Geometry(s) Copy completed."))
 
 
 class FCText(FCShapeTool):
@@ -2635,20 +2669,23 @@ class FCText(FCShapeTool):
                 self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
             except Exception as e:
                 log.debug("Font geometry is empty or incorrect: %s" % str(e))
-                self.draw_app.app.inform.emit(_("[ERROR]Font not supported. Only Regular, Bold, Italic and BoldItalic are "
-                                              "supported. Error: %s") % str(e))
+                self.draw_app.app.inform.emit('[ERROR] %s: %s' %
+                                              (_("Font not supported. Only Regular, Bold, Italic and BoldItalic are "
+                                              "supported. Error"), str(e)))
                 self.text_gui.text_path = []
                 self.text_gui.hide_tool()
                 self.draw_app.select_tool('select')
                 return
         else:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] No text to add."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("No text to add."))
             return
 
         self.text_gui.text_path = []
         self.text_gui.hide_tool()
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Adding Text completed."))
+        self.draw_app.app.inform.emit('[success]%s' %
+                                      _(" Done. Adding Text completed."))
 
     def utility_geometry(self, data=None):
         """
@@ -2687,7 +2724,8 @@ class FCBuffer(FCShapeTool):
 
     def on_buffer(self):
         if not self.draw_app.selected:
-            self.app.inform.emit(_("[WARNING_NOTCL] Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Buffer cancelled. No shape selected."))
             return
 
         try:
@@ -2698,8 +2736,8 @@ class FCBuffer(FCShapeTool):
                 buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
                 self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                     "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
@@ -2711,11 +2749,13 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit(_("[success] Done. Buffer Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Buffer Tool completed."))
 
     def on_buffer_int(self):
         if not self.draw_app.selected:
-            self.app.inform.emit(_("[WARNING_NOTCL] Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Buffer cancelled. No shape selected."))
             return
 
         try:
@@ -2726,8 +2766,8 @@ class FCBuffer(FCShapeTool):
                 buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
                 self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                     "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
@@ -2739,11 +2779,13 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit(_("[success] Done. Buffer Int Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Buffer Int Tool completed."))
 
     def on_buffer_ext(self):
         if not self.draw_app.selected:
-            self.app.inform.emit(_("[WARNING_NOTCL] Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Buffer cancelled. No shape selected."))
             return
 
         try:
@@ -2754,8 +2796,8 @@ class FCBuffer(FCShapeTool):
                 buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
                 self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                     "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
@@ -2767,7 +2809,8 @@ class FCBuffer(FCShapeTool):
         self.disactivate()
         if ret_val == 'fail':
             return
-        self.draw_app.app.inform.emit(_("[success] Done. Buffer Ext Tool completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Buffer Ext Tool completed."))
 
     def activate(self):
         self.buff_tool.buffer_button.clicked.disconnect()
@@ -2862,7 +2905,8 @@ class FCEraser(FCShapeTool):
 
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
-        self.draw_app.app.inform.emit(_("[success] Done. Eraser tool action completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Eraser tool action completed."))
 
     def utility_geometry(self, data=None):
         """
@@ -3497,8 +3541,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if multigeo_tool:
             self.multigeo_tool = multigeo_tool
             geo_to_edit = fcgeometry.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'])
-            self.app.inform.emit(_("[WARNING_NOTCL] Editing MultiGeo Geometry, tool: {tool} with diameter: {dia}").
-                                 format(tool=self.multigeo_tool, dia=fcgeometry.tools[self.multigeo_tool]['tooldia']))
+            self.app.inform.emit('[WARNING_NOTCL] %s: %s %s: %s' %
+                                 (_("Editing MultiGeo Geometry, tool"),
+                                 str(self.multigeo_tool),
+                                 _("with diameter"),
+                                 str(fcgeometry.tools[self.multigeo_tool]['tooldia'])
+                                 )
+                                 )
         else:
             geo_to_edit = fcgeometry.flatten()
 
@@ -3738,7 +3787,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             self.active_tool.complete = True
                             self.in_action = False
                             self.delete_utility_geometry()
-                            self.app.inform.emit(_("[success] Done."))
+                            self.app.inform.emit('[success] %s' %
+                                                 _("Done."))
                             self.select_tool('select')
                         else:
                             self.app.cursor = QtGui.QCursor()
@@ -3752,7 +3802,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             self.active_tool.make()
                             if self.active_tool.complete:
                                 self.on_shape_complete()
-                                self.app.inform.emit(_("[success] Done."))
+                                self.app.inform.emit('[success] %s' %
+                                                     _("Done."))
                                 self.select_tool(self.active_tool.name)
         except Exception as e:
             log.warning("Error: %s" % str(e))
@@ -3869,7 +3920,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
     def on_copy_click(self):
         if not self.selected:
-            self.app.inform.emit(_("[WARNING_NOTCL] Copy cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Copy cancelled. No shape selected."))
             return
 
         self.app.ui.geo_copy_btn.setChecked(True)
@@ -4119,8 +4171,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             results = geo_shapes[0].geo
         except Exception as e:
             log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] A selection of at least 2 geo items is required to do Intersection."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("A selection of at least 2 geo items is required to do Intersection."))
             self.select_tool('select')
             return
 
@@ -4154,8 +4206,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             intersector = geo_shapes[0].geo
         except Exception as e:
             log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] A selection of at least 2 geo items is required to do Intersection."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("A selection of at least 2 geo items is required to do Intersection."))
             self.select_tool('select')
             return
 
@@ -4240,9 +4292,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
 
         if buf_distance < 0:
-            self.app.inform.emit(
-               _("[ERROR_NOTCL] Negative buffer value is not accepted. "
-                 "Use Buffer interior to generate an 'inside' shape"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Negative buffer value is not accepted. Use Buffer interior to generate an "
+                                   "'inside' shape"))
 
             # deselect everything
             self.selected = []
@@ -4250,11 +4302,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return 'fail'
 
         if len(selected) == 0:
-            self.app.inform.emit(_("[WARNING_NOTCL] Nothing selected for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Nothing selected for buffering."))
             return 'fail'
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit(_("[WARNING_NOTCL] Invalid distance for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Invalid distance for buffering."))
 
             # deselect everything
             self.selected = []
@@ -4277,7 +4331,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 )
 
         if not results:
-            self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4287,14 +4342,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(sha))
 
         self.replot()
-        self.app.inform.emit(_("[success] Full buffer geometry created."))
+        self.app.inform.emit('[success] %s' %
+                             _("Full buffer geometry created."))
 
     def buffer_int(self, buf_distance, join_style):
         selected = self.get_selected()
 
         if buf_distance < 0:
-            self.app.inform.emit(
-                _("[ERROR_NOTCL] Negative buffer value is not accepted.")
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Negative buffer value is not accepted.")
             )
             # deselect everything
             self.selected = []
@@ -4302,11 +4358,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return 'fail'
 
         if len(selected) == 0:
-            self.app.inform.emit(_("[WARNING_NOTCL] Nothing selected for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Nothing selected for buffering."))
             return 'fail'
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit(_("[WARNING_NOTCL] Invalid distance for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Invalid distance for buffering."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4325,7 +4383,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 )
 
         if not results:
-            self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a smaller buffer value."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Failed, the result is empty. Choose a smaller buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4335,25 +4394,29 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(sha))
 
         self.replot()
-        self.app.inform.emit(_("[success] Interior buffer geometry created."))
+        self.app.inform.emit('[success] %s' %
+                             _("Interior buffer geometry created."))
 
     def buffer_ext(self, buf_distance, join_style):
         selected = self.get_selected()
 
         if buf_distance < 0:
-            self.app.inform.emit(_("[ERROR_NOTCL] Negative buffer value is not accepted. "
-                                   "Use Buffer interior to generate an 'inside' shape"))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Negative buffer value is not accepted. Use Buffer interior to generate an "
+                                   "'inside' shape"))
             # deselect everything
             self.selected = []
             self.replot()
             return
 
         if len(selected) == 0:
-            self.app.inform.emit(_("[WARNING_NOTCL] Nothing selected for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Nothing selected for buffering."))
             return
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit(_("[WARNING_NOTCL] Invalid distance for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Invalid distance for buffering."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4372,7 +4435,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 )
 
         if not results:
-            self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4382,7 +4446,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(sha))
 
         self.replot()
-        self.app.inform.emit(_("[success] Exterior buffer geometry created."))
+        self.app.inform.emit('[success] %s' %
+                             _("Exterior buffer geometry created."))
 
     # def paint(self, tooldia, overlap, margin, method):
     #     selected = self.get_selected()
@@ -4446,19 +4511,21 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
 
         if len(selected) == 0:
-            self.app.inform.emit(_("[WARNING_NOTCL] Nothing selected for painting."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Nothing selected for painting."))
             return
 
         for param in [tooldia, overlap, margin]:
             if not isinstance(param, float):
                 param_name = [k for k, v in locals().items() if v is param][0]
-                self.app.inform.emit(_("[WARNING] Invalid value for {}").format(param))
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("Invalid value for"), str(param)))
 
         results = []
 
         if overlap >= 1:
-            self.app.inform.emit(
-                _("[ERROR_NOTCL] Could not do Paint. Overlap value has to be less than 1.00 (100%)."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Could not do Paint. Overlap value has to be less than 1.00 (100%%)."))
             return
 
         def recurse(geometry, reset=True):
@@ -4516,8 +4583,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                         local_results += list(cp.get_objects())
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
-                    self.app.inform.emit(
-                        _("[ERROR] Could not do Paint. Try a different combination of parameters. "
+                    self.app.inform.emit('[ERROR] %s' %
+                                         _("Could not do Paint. Try a different combination of parameters. "
                           "Or a different method of Paint\n%s") % str(e))
                     return
 

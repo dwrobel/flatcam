@@ -34,7 +34,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         """
 
         super(PlotCanvas, self).__init__()
-        VisPyCanvas.__init__(self)
+        # VisPyCanvas.__init__(self)
 
         # VisPyCanvas does not allow new attributes. Override.
         self.unfreeze()

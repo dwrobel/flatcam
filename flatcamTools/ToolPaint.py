@@ -350,6 +350,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.obj_name = ""
         self.paint_obj = None
+        self.bound_obj_name = ""
+        self.bound_obj = None
 
         self.units = ''
         self.paint_tools = {}
@@ -518,6 +520,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintcontour_cb.set_value(self.default_data["paintcontour"])
         self.paintoverlap_entry.set_value(self.default_data["paintoverlap"])
 
+        # make the default object type, "Geometry"
+        self.type_obj_combo.setCurrentIndex(2)
         # updated units
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
@@ -678,8 +682,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         try:
             self.tools_table.itemChanged.disconnect()
-        except Exception as e:
-            log.debug("ToolPaint.on_tool_add() --> %s" % str(e))
+        except TypeError:
+            pass
 
         if dia:
             tool_dia = dia
@@ -691,13 +695,14 @@ class ToolPaint(FlatCAMTool, Gerber):
                 try:
                     tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
             if tool_dia is None:
                 self.build_ui()
-                self.app.inform.emit(_("[WARNING_NOTCL] Please enter a tool diameter to add, in Float format."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter to add, in Float format."))
                 return
 
         # construct a list of all 'tooluid' in the self.tools
@@ -721,12 +726,14 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         if float('%.4f' % tool_dia) in tool_dias:
             if muted is None:
-                self.app.inform.emit(_("[WARNING_NOTCL] Adding tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Adding tool cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
             if muted is None:
-                self.app.inform.emit(_("[success] New tool added to Tool Table."))
+                self.app.inform.emit('[success] %s' %
+                                     _("New tool added to Tool Table."))
             self.paint_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.4f' % tool_dia),
@@ -746,8 +753,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         try:
             self.tools_table.itemChanged.disconnect()
-        except Exception as e:
-            log.debug("ToolPaint.on_tool_edit() --> %s" % str(e))
+        except TypeError:
+            pass
 
         tool_dias = []
         for k, v in self.paint_tools.items():
@@ -763,15 +770,16 @@ class ToolPaint(FlatCAMTool, Gerber):
                 try:
                     new_tool_dia = float(self.tools_table.item(row, 1).text().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                         "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
             tooluid = int(self.tools_table.item(row, 3).text())
 
             # identify the tool that was edited and get it's tooluid
             if new_tool_dia not in tool_dias:
                 self.paint_tools[tooluid]['tooldia'] = new_tool_dia
-                self.app.inform.emit(_("[success] Tool from Tool Table was edited."))
+                self.app.inform.emit('[success] %s' %
+                                     _("Tool from Tool Table was edited."))
                 self.build_ui()
                 return
             else:
@@ -782,8 +790,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                         break
                 restore_dia_item = self.tools_table.item(row, 1)
                 restore_dia_item.setText(str(old_tool_dia))
-                self.app.inform.emit(_("[WARNING_NOTCL] Edit cancelled. "
-                                       "New diameter value is already in the Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Edit cancelled. New diameter value is already in the Tool Table."))
         self.build_ui()
 
     # def on_tool_copy(self, all=None):
@@ -844,8 +852,7 @@ class ToolPaint(FlatCAMTool, Gerber):
     def on_tool_delete(self, rows_to_delete=None, all=None):
         try:
             self.tools_table.itemChanged.disconnect()
-        except Exception as e:
-            log.debug("ToolPaint.on_tool_delete() --> %s" % str(e))
+        except TypeError:
             pass
 
         deleted_tools_list = []
@@ -881,12 +888,14 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.paint_tools.pop(t, None)
 
         except AttributeError:
-            self.app.inform.emit(_("[WARNING_NOTCL] Delete failed. Select a tool to delete."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Delete failed. Select a tool to delete."))
             return
         except Exception as e:
             log.debug(str(e))
 
-        self.app.inform.emit(_("[success] Tool(s) deleted from Tool Table."))
+        self.app.inform.emit('[success] %s' %
+                             _("Tool(s) deleted from Tool Table."))
         self.build_ui()
 
     def on_paint_button_click(self):
@@ -897,6 +906,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app.report_usage(_("on_paint_button_click"))
         # self.app.call_source = 'paint'
 
+        # #####################################################
+        # ######### Reading Parameters ########################
+        # #####################################################
+        self.app.inform.emit(_("Paint Tool. Reading parameters."))
+
         try:
             overlap = float(self.paintoverlap_entry.get_value())
         except ValueError:
@@ -904,16 +918,17 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                       "use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Wrong value format entered, use a number."))
                 return
 
         if overlap >= 1 or overlap < 0:
-            self.app.inform.emit(_("[ERROR_NOTCL] Overlap value must be between "
-                                   "0 (inclusive) and 1 (exclusive), "))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Overlap value must be between 0 (inclusive) and 1 (exclusive)"))
             return
 
-        self.app.inform.emit(_("[WARNING_NOTCL] Click inside the desired polygon."))
+        self.app.inform.emit('[WARNING_NOTCL] %s' %
+                             _("Click inside the desired polygon."))
 
         connect = self.pathconnect_cb.get_value()
         contour = self.paintcontour_cb.get_value()
@@ -926,17 +941,22 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.paint_obj = self.app.collection.get_by_name(str(self.obj_name))
         except Exception as e:
             log.debug("ToolPaint.on_paint_button_click() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Could not retrieve object: %s"),
+                                  self.obj_name))
             return
 
         if self.paint_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Object not found: %s") % self.paint_obj)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                 (_("Object not found"),
+                                  self.paint_obj))
             return
 
         # test if the Geometry Object is multigeo and return Fail if True because
         # for now Paint don't work on MultiGeo
         if self.paint_obj.multigeo is True:
-            self.app.inform.emit(_("[ERROR_NOTCL] Can't do Paint on MultiGeo geometries ..."))
+            self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                 _("Can't do Paint on MultiGeo geometries"))
             return 'Fail'
 
         o_name = '%s_multitool_paint' % self.obj_name
@@ -952,12 +972,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                     try:
                         tooldia = float(self.tools_table.item(x.row(), 1).text().replace(',', '.'))
                     except ValueError:
-                        self.app.inform.emit(_("[ERROR_NOTCL] Wrong Tool Dia value format entered, "
-                                               "use a number."))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                             _("Wrong value format entered, use a number."))
                         continue
                 tooldia_list.append(tooldia)
         else:
-            self.app.inform.emit(_("[ERROR_NOTCL] No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("No selected tools in Tool Table."))
             return
 
         if select_method == "all":
@@ -969,7 +990,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                 contour=contour)
 
         elif select_method == "single":
-            self.app.inform.emit(_("[WARNING_NOTCL] Click inside the desired polygon."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Click inside the desired polygon."))
 
             # use the first tool in the tool table; get the diameter
             # tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
@@ -999,7 +1021,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.plotcanvas.vis_connect('mouse_press', doit)
 
         elif select_method == "area":
-            self.app.inform.emit(_("[WARNING_NOTCL] Click the start point of the paint area."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Click the start point of the paint area."))
 
             # use the first tool in the tool table; get the diameter
             # tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
@@ -1010,13 +1033,14 @@ class ToolPaint(FlatCAMTool, Gerber):
                 if event.button == 1:
                     if not self.first_click:
                         self.first_click = True
-                        self.app.inform.emit(_("[WARNING_NOTCL] Click the end point of the paint area."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                             _("Click the end point of the paint area."))
 
                         self.cursor_pos = self.app.plotcanvas.translate_coords(event.pos)
                         if self.app.grid_status() == True:
                             self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
                     else:
-                        self.app.inform.emit(_("Zone added. Right click to finish."))
+                        self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
                         self.app.delete_selection_shape()
 
                         curr_pos = self.app.plotcanvas.translate_coords(event.pos)
@@ -1030,43 +1054,48 @@ class ToolPaint(FlatCAMTool, Gerber):
                         pt3 = (x1, y1)
                         pt4 = (x0, y1)
                         self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
-
-                        modifiers = QtWidgets.QApplication.keyboardModifiers()
-
-                        if modifiers == QtCore.Qt.ShiftModifier:
-                            mod_key = 'Shift'
-                        elif modifiers == QtCore.Qt.ControlModifier:
-                            mod_key = 'Control'
-                        else:
-                            mod_key = None
-
-                        if mod_key == self.app.defaults["global_mselect_key"]:
-                            self.first_click = False
-                            return
-
-                        self.sel_rect = cascaded_union(self.sel_rect)
-                        self.paint_poly_area(obj=self.paint_obj,
-                                             tooldia=tooldia_list,
-                                             sel_obj= self.sel_rect,
-                                             outname=o_name,
-                                             overlap=overlap,
-                                             connect=connect,
-                                             contour=contour)
-
-                        self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
-                        self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
-
-                        self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                        self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-                        self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-                elif event.button == 2 and self.first_click is False and self.mouse_is_dragging is False:
+                        self.first_click = False
+                        return
+                        # modifiers = QtWidgets.QApplication.keyboardModifiers()
+                        #
+                        # if modifiers == QtCore.Qt.ShiftModifier:
+                        #     mod_key = 'Shift'
+                        # elif modifiers == QtCore.Qt.ControlModifier:
+                        #     mod_key = 'Control'
+                        # else:
+                        #     mod_key = None
+                        #
+                        # if mod_key == self.app.defaults["global_mselect_key"]:
+                        #     self.first_click = False
+                        #     return
+                        #
+                        # self.sel_rect = cascaded_union(self.sel_rect)
+                        # self.paint_poly_area(obj=self.paint_obj,
+                        #                      tooldia=tooldia_list,
+                        #                      sel_obj= self.sel_rect,
+                        #                      outname=o_name,
+                        #                      overlap=overlap,
+                        #                      connect=connect,
+                        #                      contour=contour)
+                        #
+                        # self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
+                        # self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
+                        #
+                        # self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                        # self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                        # self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                elif event.button == 2 and self.mouse_is_dragging is False:
                     self.first_click = False
+
                     self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
                     self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
 
                     self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
                     self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
                     self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+                    if len(self.sel_rect) == 0:
+                        return
 
                     self.sel_rect = cascaded_union(self.sel_rect)
                     self.paint_poly_area(obj=self.paint_obj,
@@ -1082,12 +1111,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                 curr_pos = self.app.plotcanvas.translate_coords(event.pos)
                 self.app.app_cursor.enabled = False
 
-                if event.button == 2:
-                    if event.is_dragging is True:
-                        self.mouse_is_dragging = True
-                    else:
-                        self.mouse_is_dragging = False
+                # detect mouse dragging motion
+                if event.is_dragging is True:
+                    self.mouse_is_dragging = True
+                else:
+                    self.mouse_is_dragging = False
 
+                # update the cursor position
                 if self.app.grid_status() == True:
                     self.app.app_cursor.enabled = True
                     # Update cursor
@@ -1095,6 +1125,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
                                                  symbol='++', edge_color='black', size=20)
 
+                # draw the utility geometry
                 if self.first_click:
                     self.app.delete_selection_shape()
                     self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
@@ -1114,7 +1145,9 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
             except Exception as e:
-                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                     (_("Could not retrieve object"),
+                                      self.obj_name))
                 return "Could not retrieve object: %s" % self.obj_name
 
             self.paint_poly_ref(obj=self.paint_obj,
@@ -1158,6 +1191,23 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # Which polygon.
         # poly = find_polygon(self.solid_geometry, inside_pt)
+        if isinstance(obj, FlatCAMGerber):
+            if self.app.defaults["gerber_buffering"] == 'no':
+                self.app.inform.emit('%s %s' %
+                                     (_("Paint Tool. Normal painting polygon task started."),
+                                      _("Buffering geometry...")))
+            else:
+                self.app.inform.emit(_("Paint Tool. Normal painting polygon task started."))
+        else:
+            self.app.inform.emit(_("Paint Tool. Normal painting polygon task started."))
+
+        if isinstance(obj, FlatCAMGerber):
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                if isinstance(obj.solid_geometry, list):
+                    obj.solid_geometry = MultiPolygon(obj.solid_geometry).buffer(0)
+                else:
+                    obj.solid_geometry = obj.solid_geometry.buffer(0)
+
         poly = self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)
         paint_method = method if method is None else self.paintmethod_combo.get_value()
 
@@ -1171,9 +1221,14 @@ class ToolPaint(FlatCAMTool, Gerber):
                 try:
                     paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                         "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
+        # determine if to use the progressive plotting
+        if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            prog_plot = True
+        else:
+            prog_plot = False
 
         # No polygon?
         if poly is None:
@@ -1181,7 +1236,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.inform.emit(_('[WARNING] No polygon found.'))
             return
 
-        proc = self.app.proc_container.new(_("Painting polygon."))
+        proc = self.app.proc_container.new(_("Painting polygon..."))
+        self.app.inform.emit(_("Paint Tool. Painting polygon at location: %s") % str(inside_pt))
 
         name = outname if outname is not None else self.obj_name + "_paint"
 
@@ -1222,39 +1278,49 @@ class ToolPaint(FlatCAMTool, Gerber):
             else:
                 pass
 
-            def paint_p(polyg, tooldia):
-                if paint_method == "seed":
-                    # Type(cp) == FlatCAMRTreeStorage | None
-                    cpoly = self.clear_polygon2(polyg,
-                                                tooldia=tooldia,
-                                                steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                overlap=over,
-                                                contour=cont,
-                                                connect=conn)
+            def paint_p(polyg, tooldiameter):
+                cpoly = None
+                try:
+                    if paint_method == "seed":
+                        # Type(cp) == FlatCAMRTreeStorage | None
+                        cpoly = self.clear_polygon2(polyg,
+                                                    tooldia=tooldiameter,
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
-                elif paint_method == "lines":
-                    # Type(cp) == FlatCAMRTreeStorage | None
-                    cpoly = self.clear_polygon3(polyg,
-                                                tooldia=tooldia,
-                                                steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                overlap=over,
-                                                contour=cont,
-                                                connect=conn)
+                    elif paint_method == "lines":
+                        # Type(cp) == FlatCAMRTreeStorage | None
+                        cpoly = self.clear_polygon3(polyg,
+                                                    tooldia=tooldiameter,
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
-                else:
-                    # Type(cp) == FlatCAMRTreeStorage | None
-                    cpoly = self.clear_polygon(polyg,
-                                               tooldia=tooldia,
-                                               steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                               overlap=over,
-                                               contour=cont,
-                                               connect=conn)
+                    else:
+                        # Type(cp) == FlatCAMRTreeStorage | None
+                        cpoly = self.clear_polygon(polyg,
+                                                   tooldia=tooldiameter,
+                                                   steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                   overlap=over,
+                                                   contour=cont,
+                                                   connect=conn,
+                                                   prog_plot=prog_plot)
+                except FlatCAMApp.GracefulException:
+                    return "fail"
+                except Exception as e:
+                    log.debug("ToolPaint.paint_poly().gen_paintarea().paint_p() --> %s" % str(e))
 
                 if cpoly is not None:
                     geo_obj.solid_geometry += list(cpoly.get_objects())
                     return cpoly
                 else:
-                    self.app.inform.emit(_('[ERROR_NOTCL] Geometry could not be painted completely'))
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _('Geometry could not be painted completely'))
                     return None
 
             try:
@@ -1294,12 +1360,17 @@ class ToolPaint(FlatCAMTool, Gerber):
                                 total_geometry += list(x.get_objects())
                         else:
                             total_geometry = list(cp.get_objects())
+                except FlatCAMApp.GracefulException:
+                    return "fail"
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
-                    self.app.inform.emit(
-                        _("[ERROR] Could not do Paint. Try a different combination of parameters. "
-                          "Or a different strategy of paint\n%s") % str(e))
-                    return
+                    app_obj.inform.emit('[ERROR] %s\n%s' %
+                                        (_("Could not do Paint. Try a different combination of parameters. "
+                                           "Or a different strategy of paint"),
+                                         str(e)
+                                         )
+                                        )
+                    return "fail"
 
                 # add the solid_geometry to the current too in self.paint_tools (tools_storage)
                 # dictionary and then reset the temporary list that stored that solid_geometry
@@ -1307,6 +1378,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 tools_storage[current_uid]['data']['name'] = name
                 total_geometry[:] = []
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
             keys_to_delete = []
@@ -1333,12 +1408,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                self.app.inform.emit(_("[ERROR] There is no Painting Geometry in the file.\n"
+                self.app.inform.emit('[ERROR] %s' %
+                                     _("There is no Painting Geometry in the file.\n"
                                        "Usually it means that the tool diameter is too big for the painted geometry.\n"
                                        "Change the painting parameters and try again."))
                 return
 
-            self.app.inform.emit(_("[success] Paint Single Done."))
+            self.app.inform.emit('[success] %s' % _("Paint Single Done."))
 
             # Experimental...
             # print("Indexing...", end=' ')
@@ -1357,9 +1433,14 @@ class ToolPaint(FlatCAMTool, Gerber):
         def job_thread(app_obj):
             try:
                 app_obj.new_object("geometry", name, gen_paintarea)
+            except FlatCAMApp.GracefulException:
+                proc.done()
+                return
             except Exception as e:
                 proc.done()
-                self.app.inform.emit(_('[ERROR_NOTCL] PaintTool.paint_poly() --> %s') % str(e))
+                self.app.inform.emit('[ERROR_NOTCL] %s --> %s' %
+                                     (_('PaintTool.paint_poly()'),
+                                      str(e)))
                 return
             proc.done()
             # focus on Selected Tab
@@ -1411,11 +1492,17 @@ class ToolPaint(FlatCAMTool, Gerber):
                 try:
                     paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                         "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
-        proc = self.app.proc_container.new(_("Painting polygon..."))
+        # determine if to use the progressive plotting
+        if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            prog_plot = True
+        else:
+            prog_plot = False
+
+        proc = self.app.proc_container.new(_("Painting polygons..."))
         name = outname if outname is not None else self.obj_name + "_paint"
 
         over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"])
@@ -1462,6 +1549,9 @@ class ToolPaint(FlatCAMTool, Gerber):
             :param geometry: Shapely type or list or list of list of such.
             :param reset: Clears the contents of self.flat_geometry.
             """
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
 
             if geometry is None:
                 return
@@ -1490,6 +1580,17 @@ class ToolPaint(FlatCAMTool, Gerber):
             # assert isinstance(geo_obj, FlatCAMGeometry), \
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
+            log.debug("Paint Tool. Normal painting all task started.")
+            if isinstance(obj, FlatCAMGerber):
+                if app_obj.defaults["gerber_buffering"] == 'no':
+                    app_obj.inform.emit('%s %s' %
+                                        (_("Paint Tool. Normal painting all task started."),
+                                         _("Buffering geometry...")))
+                else:
+                    app_obj.inform.emit(_("Paint Tool. Normal painting all task started."))
+            else:
+                app_obj.inform.emit(_("Paint Tool. Normal painting all task started."))
+
             tool_dia = None
             if order == 'fwd':
                 sorted_tools.sort(reverse=False)
@@ -1497,6 +1598,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                 sorted_tools.sort(reverse=True)
             else:
                 pass
+
+            if isinstance(obj, FlatCAMGerber):
+                if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                    if isinstance(obj.solid_geometry, list):
+                        obj.solid_geometry = MultiPolygon(obj.solid_geometry).buffer(0)
+                    else:
+                        obj.solid_geometry = obj.solid_geometry.buffer(0)
 
             try:
                 a, b, c, d = obj.bounds()
@@ -1513,6 +1621,14 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             geo_obj.solid_geometry = []
             for tool_dia in sorted_tools:
+                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
+                                              str(tool_dia),
+                                              self.units.lower(),
+                                              _('started'))
+                )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
@@ -1520,7 +1636,15 @@ class ToolPaint(FlatCAMTool, Gerber):
                         current_uid = int(k)
                         break
 
-                for geo in recurse(obj.solid_geometry):
+                painted_area = recurse(obj.solid_geometry)
+                # variables to display the percentage of work done
+                geo_len = len(painted_area)
+
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                pol_nr = 0
+                for geo in painted_area:
                     try:
                         # Polygons are the only really paintable geometries, lines in theory have no area to be painted
                         if not isinstance(geo, Polygon):
@@ -1534,7 +1658,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over,
                                                      contour=cont,
-                                                     connect=conn)
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                         elif paint_method == "lines":
                             # Type(cp) == FlatCAMRTreeStorage | None
@@ -1543,7 +1668,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over,
                                                      contour=cont,
-                                                     connect=conn)
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                         else:
                             # Type(cp) == FlatCAMRTreeStorage | None
@@ -1552,16 +1678,29 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over,
                                                     contour=cont,
-                                                    connect=conn)
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
                         if cp is not None:
                             total_geometry += list(cp.get_objects())
+                    except FlatCAMApp.GracefulException:
+                        return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
-                        self.app.inform.emit(
-                            _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
-                              "Or a different Method of paint\n%s") % str(e))
-                        return
+                        self.app.inform.emit('[ERROR] %s\n%s' %
+                                             (_("Could not do Paint All. Try a different combination of parameters. "
+                                                "Or a different Method of paint"),
+                                              str(e)))
+                        return "fail"
+
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    # log.debug("Polygons cleared: %d" % pol_nr)
+
+                    if old_disp_number < disp_number <= 100:
+                        app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                        old_disp_number = disp_number
+                        # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                 # add the solid_geometry to the current too in self.paint_tools (tools_storage)
                 # dictionary and then reset the temporary list that stored that solid_geometry
@@ -1569,6 +1708,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 tools_storage[current_uid]['data']['name'] = name
                 total_geometry[:] = []
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
             keys_to_delete = []
@@ -1595,7 +1738,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                self.app.inform.emit(_("[ERROR] There is no Painting Geometry in the file.\n"
+                self.app.inform.emit('[ERROR] %s' %
+                                     _("There is no Painting Geometry in the file.\n"
                                        "Usually it means that the tool diameter is too big for the painted geometry.\n"
                                        "Change the painting parameters and try again."))
                 return
@@ -1611,12 +1755,30 @@ class ToolPaint(FlatCAMTool, Gerber):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
+            log.debug("Paint Tool. Rest machining painting all task started.")
+            if isinstance(obj, FlatCAMGerber):
+                if app_obj.defaults["gerber_buffering"] == 'no':
+                    app_obj.inform.emit('%s %s' %
+                                        (_("Paint Tool. Rest machining painting all task started."),
+                                         _("Buffering geometry...")))
+                else:
+                    app_obj.inform.emit(_("Paint Tool. Rest machining painting all task started."))
+            else:
+                app_obj.inform.emit(_("Paint Tool. Rest machining painting all task started."))
+
             tool_dia = None
             sorted_tools.sort(reverse=True)
 
             cleared_geo = []
             current_uid = int(1)
             geo_obj.solid_geometry = []
+
+            if isinstance(obj, FlatCAMGerber):
+                if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                    if isinstance(obj.solid_geometry, list):
+                        obj.solid_geometry = MultiPolygon(obj.solid_geometry).buffer(0)
+                    else:
+                        obj.solid_geometry = obj.solid_geometry.buffer(0)
 
             try:
                 a, b, c, d = obj.bounds()
@@ -1629,7 +1791,24 @@ class ToolPaint(FlatCAMTool, Gerber):
                 return
 
             for tool_dia in sorted_tools:
-                for geo in recurse(obj.solid_geometry):
+                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
+                                              str(tool_dia),
+                                              self.units.lower(),
+                                              _('started'))
+                )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
+
+                painted_area = recurse(obj.solid_geometry)
+                # variables to display the percentage of work done
+                geo_len = int(len(painted_area) / 100)
+
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                pol_nr = 0
+                for geo in painted_area:
                     try:
                         geo = Polygon(geo) if not isinstance(geo, Polygon) else geo
                         poly_buf = geo.buffer(-paint_margin)
@@ -1639,29 +1818,43 @@ class ToolPaint(FlatCAMTool, Gerber):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf, tooldia=tool_dia,
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                    overlap=over, contour=cont, connect=conn)
+                                                    overlap=over, contour=cont, connect=conn,
+                                                    prog_plot=prog_plot)
 
                         elif paint_method == "seed":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over, contour=cont, connect=conn)
+                                                     overlap=over, contour=cont, connect=conn,
+                                                     prog_plot=prog_plot)
 
                         elif paint_method == "lines":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon3(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over, contour=cont, connect=conn)
+                                                     overlap=over, contour=cont, connect=conn,
+                                                     prog_plot=prog_plot)
 
                         if cp is not None:
                             cleared_geo += list(cp.get_objects())
-
+                    except FlatCAMApp.GracefulException:
+                        return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
-                        self.app.inform.emit(
-                            _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
-                              "Or a different Method of paint\n%s") % str(e))
-                        return
+                        self.app.inform.emit('[ERROR] %s\n%s' %
+                                             (_("Could not do Paint All. Try a different combination of parameters. "
+                                                "Or a different Method of paint"),
+                                              str(e)))
+                        return "fail"
+
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    # log.debug("Polygons cleared: %d" % pol_nr)
+
+                    if old_disp_number < disp_number <= 100:
+                        app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                        old_disp_number = disp_number
+                        # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
@@ -1683,13 +1876,18 @@ class ToolPaint(FlatCAMTool, Gerber):
             geo_obj.tools.clear()
             geo_obj.tools = dict(tools_storage)
 
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
+
             # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
             has_solid_geo = 0
             for tooluid in geo_obj.tools:
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                self.app.inform.emit(_("[ERROR_NOTCL] There is no Painting Geometry in the file.\n"
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("There is no Painting Geometry in the file.\n"
                                        "Usually it means that the tool diameter is too big for the painted geometry.\n"
                                        "Change the painting parameters and try again."))
                 return
@@ -1698,7 +1896,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
 
-            self.app.inform.emit(_("[success] Paint All with Rest-Machining done."))
+            self.app.inform.emit('[success] %s' % _("Paint All with Rest-Machining done."))
 
         def job_thread(app_obj):
             try:
@@ -1706,6 +1904,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                     app_obj.new_object("geometry", name, gen_paintarea_rest_machining)
                 else:
                     app_obj.new_object("geometry", name, gen_paintarea)
+            except FlatCAMApp.GracefulException:
+                proc.done()
+                return
             except Exception as e:
                 proc.done()
                 traceback.print_stack()
@@ -1761,11 +1962,17 @@ class ToolPaint(FlatCAMTool, Gerber):
                 try:
                     paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                         "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
-        proc = self.app.proc_container.new(_("Painting polygon..."))
+        # determine if to use the progressive plotting
+        if self.app.defaults["tools_paint_plotting"] == 'progressive':
+            prog_plot = True
+        else:
+            prog_plot = False
+
+        proc = self.app.proc_container.new(_("Painting polygons..."))
         name = outname if outname is not None else self.obj_name + "_paint"
 
         over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"])
@@ -1799,6 +2006,9 @@ class ToolPaint(FlatCAMTool, Gerber):
             :param geometry: Shapely type or list or list of list of such.
             :param reset: Clears the contents of self.flat_geometry.
             """
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
 
             if geometry is None:
                 return
@@ -1826,6 +2036,18 @@ class ToolPaint(FlatCAMTool, Gerber):
         def gen_paintarea(geo_obj, app_obj):
             # assert isinstance(geo_obj, FlatCAMGeometry), \
             #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+
+            log.debug("Paint Tool. Normal painting area task started.")
+            if isinstance(obj, FlatCAMGerber):
+                if app_obj.defaults["gerber_buffering"] == 'no':
+                    app_obj.inform.emit('%s %s' %
+                                        (_("Paint Tool. Normal painting area task started."),
+                                         _("Buffering geometry...")))
+                else:
+                    app_obj.inform.emit(_("Paint Tool. Normal painting area task started."))
+            else:
+                app_obj.inform.emit(_("Paint Tool. Normal painting area task started."))
+
             tool_dia = None
             if order == 'fwd':
                 sorted_tools.sort(reverse=False)
@@ -1835,15 +2057,18 @@ class ToolPaint(FlatCAMTool, Gerber):
                 pass
 
             # this is were heavy lifting is done and creating the geometry to be painted
-            geo_to_paint = []
-            if not isinstance(obj.solid_geometry, list):
-                target_geo = [obj.solid_geometry]
-            else:
-                target_geo = obj.solid_geometry
+            target_geo = obj.solid_geometry
 
-            for poly in target_geo:
-                new_pol = poly.intersection(sel_obj)
-                geo_to_paint.append(new_pol)
+            if isinstance(obj, FlatCAMGerber):
+                if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                    if isinstance(target_geo, list):
+                        target_geo = MultiPolygon(target_geo).buffer(0)
+                    else:
+                        target_geo = target_geo.buffer(0)
+
+            geo_to_paint = target_geo.intersection(sel_obj)
+
+            painted_area = recurse(geo_to_paint)
 
             try:
                 a, b, c, d = self.paint_bounds(geo_to_paint)
@@ -1860,6 +2085,14 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             geo_obj.solid_geometry = []
             for tool_dia in sorted_tools:
+                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
+                                              str(tool_dia),
+                                              self.units.lower(),
+                                              _('started'))
+                )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
@@ -1867,7 +2100,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                         current_uid = int(k)
                         break
 
-                for geo in recurse(geo_to_paint):
+                # variables to display the percentage of work done
+                geo_len = len(painted_area)
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                pol_nr = 0
+                for geo in painted_area:
                     try:
                         # Polygons are the only really paintable geometries, lines in theory have no area to be painted
                         if not isinstance(geo, Polygon):
@@ -1881,7 +2120,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over,
                                                      contour=cont,
-                                                     connect=conn)
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                         elif paint_method == "lines":
                             # Type(cp) == FlatCAMRTreeStorage | None
@@ -1890,7 +2130,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over,
                                                      contour=cont,
-                                                     connect=conn)
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                         else:
                             # Type(cp) == FlatCAMRTreeStorage | None
@@ -1899,16 +2140,28 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over,
                                                     contour=cont,
-                                                    connect=conn)
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
                         if cp is not None:
                             total_geometry += list(cp.get_objects())
+                    except FlatCAMApp.GracefulException:
+                        return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
-                        self.app.inform.emit(
-                            _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
-                              "Or a different Method of paint\n%s") % str(e))
+                        self.app.inform.emit('[ERROR] %s' %
+                                             _("Could not do Paint All. Try a different combination of parameters. "
+                                               "Or a different Method of paint\n%s") % str(e))
                         return
+
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    # log.debug("Polygons cleared: %d" % pol_nr)
+
+                    if old_disp_number < disp_number <= 100:
+                        app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                        old_disp_number = disp_number
+                        # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                 # add the solid_geometry to the current too in self.paint_tools (tools_storage)
                 # dictionary and then reset the temporary list that stored that solid_geometry
@@ -1916,6 +2169,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 tools_storage[current_uid]['data']['name'] = name
                 total_geometry[:] = []
+
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
 
             # delete tools with empty geometry
             keys_to_delete = []
@@ -1942,7 +2199,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                self.app.inform.emit(_("[ERROR] There is no Painting Geometry in the file.\n"
+                self.app.inform.emit('[ERROR] %s' %
+                                     _("There is no Painting Geometry in the file.\n"
                                        "Usually it means that the tool diameter is too big for the painted geometry.\n"
                                        "Change the painting parameters and try again."))
                 return
@@ -1958,12 +2216,37 @@ class ToolPaint(FlatCAMTool, Gerber):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
+            log.debug("Paint Tool. Rest machining painting area task started.")
+            if isinstance(obj, FlatCAMGerber):
+                if app_obj.defaults["gerber_buffering"] == 'no':
+                    app_obj.inform.emit('%s %s' %
+                                        (_("Paint Tool. Rest machining painting area task started."),
+                                         _("Buffering geometry...")))
+                else:
+                    app_obj.inform.emit(_("Paint Tool. Rest machining painting area task started."))
+            else:
+                app_obj.inform.emit(_("Paint Tool. Rest machining painting area task started."))
+
             tool_dia = None
             sorted_tools.sort(reverse=True)
 
             cleared_geo = []
             current_uid = int(1)
             geo_obj.solid_geometry = []
+
+            # this is were heavy lifting is done and creating the geometry to be painted
+            target_geo = obj.solid_geometry
+
+            if isinstance(obj, FlatCAMGerber):
+                if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                    if isinstance(target_geo, list):
+                        target_geo = MultiPolygon(target_geo).buffer(0)
+                    else:
+                        target_geo = target_geo.buffer(0)
+
+            geo_to_paint = target_geo.intersection(sel_obj)
+
+            painted_area = recurse(geo_to_paint)
 
             try:
                 a, b, c, d = obj.bounds()
@@ -1976,7 +2259,22 @@ class ToolPaint(FlatCAMTool, Gerber):
                 return
 
             for tool_dia in sorted_tools:
-                for geo in recurse(obj.solid_geometry):
+                log.debug("Starting geometry processing for tool: %s" % str(tool_dia))
+                app_obj.inform.emit(
+                    '[success] %s %s%s %s' % (_('Painting with tool diameter = '),
+                                              str(tool_dia),
+                                              self.units.lower(),
+                                              _('started'))
+                )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
+
+                # variables to display the percentage of work done
+                geo_len = len(painted_area)
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                pol_nr = 0
+                for geo in painted_area:
                     try:
                         geo = Polygon(geo) if not isinstance(geo, Polygon) else geo
                         poly_buf = geo.buffer(-paint_margin)
@@ -1986,29 +2284,42 @@ class ToolPaint(FlatCAMTool, Gerber):
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf, tooldia=tool_dia,
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                    overlap=over, contour=cont, connect=conn)
+                                                    overlap=over, contour=cont, connect=conn,
+                                                    prog_plot=prog_plot)
 
                         elif paint_method == "seed":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over, contour=cont, connect=conn)
+                                                     overlap=over, contour=cont, connect=conn,
+                                                     prog_plot=prog_plot)
 
                         elif paint_method == "lines":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon3(poly_buf, tooldia=tool_dia,
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over, contour=cont, connect=conn)
+                                                     overlap=over, contour=cont, connect=conn,
+                                                     prog_plot=prog_plot)
 
                         if cp is not None:
                             cleared_geo += list(cp.get_objects())
-
+                    except FlatCAMApp.GracefulException:
+                        return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
-                        self.app.inform.emit(
-                            _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
-                              "Or a different Method of paint\n%s") % str(e))
+                        self.app.inform.emit('[ERROR] %s' %
+                                             _("Could not do Paint All. Try a different combination of parameters. "
+                                               "Or a different Method of paint\n%s") % str(e))
                         return
+
+                    pol_nr += 1
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    # log.debug("Polygons cleared: %d" % pol_nr)
+
+                    if old_disp_number < disp_number <= 100:
+                        app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                        old_disp_number = disp_number
+                        # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
@@ -2030,13 +2341,18 @@ class ToolPaint(FlatCAMTool, Gerber):
             geo_obj.tools.clear()
             geo_obj.tools = dict(self.paint_tools)
 
+            # clean the progressive plotted shapes if it was used
+            if self.app.defaults["tools_paint_plotting"] == 'progressive':
+                self.temp_shapes.clear(update=True)
+
             # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
             has_solid_geo = 0
             for tooluid in geo_obj.tools:
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                self.app.inform.emit(_("[ERROR_NOTCL] There is no Painting Geometry in the file.\n"
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("There is no Painting Geometry in the file.\n"
                                        "Usually it means that the tool diameter is too big for the painted geometry.\n"
                                        "Change the painting parameters and try again."))
                 return
@@ -2045,7 +2361,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
 
-            self.app.inform.emit(_("[success] Paint All with Rest-Machining done."))
+            self.app.inform.emit('[success] %s' % _("Paint All with Rest-Machining done."))
 
         def job_thread(app_obj):
             try:
@@ -2053,6 +2369,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                     app_obj.new_object("geometry", name, gen_paintarea_rest_machining)
                 else:
                     app_obj.new_object("geometry", name, gen_paintarea)
+            except FlatCAMApp.GracefulException:
+                proc.done()
+                return
             except Exception as e:
                 proc.done()
                 traceback.print_stack()
@@ -2109,7 +2428,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             sel_rect = env_obj.buffer(distance=0.0000001, join_style=base.JOIN_STYLE.mitre)
         except Exception as e:
             log.debug("ToolPaint.on_paint_button_click() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
             return
 
         self.paint_poly_area(obj=obj,

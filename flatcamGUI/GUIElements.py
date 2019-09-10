@@ -531,9 +531,13 @@ class FCTextArea(QtWidgets.QPlainTextEdit):
     def get_value(self):
         return str(self.toPlainText())
 
-    def sizeHint(self):
+    def sizeHint(self, custom_sizehint=None):
         default_hint_size = super(FCTextArea, self).sizeHint()
-        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+        if custom_sizehint is None:
+            return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+        else:
+            return QtCore.QSize(custom_sizehint, default_hint_size.height())
 
 
 class FCTextAreaRich(QtWidgets.QTextEdit):
@@ -1520,6 +1524,45 @@ class OptionalInputSection:
                     widget.setEnabled(True)
 
 
+class OptionalHideInputSection:
+
+    def __init__(self, cb, optinputs, logic=True):
+        """
+        Associates the a checkbox with a set of inputs.
+
+        :param cb: Checkbox that enables the optional inputs.
+        :param optinputs: List of widgets that are optional.
+        :param logic: When True the logic is normal, when False the logic is in reverse
+        It means that for logic=True, when the checkbox is checked the widgets are Enabled, and
+        for logic=False, when the checkbox is checked the widgets are Disabled
+        :return:
+        """
+        assert isinstance(cb, FCCheckBox), \
+            "Expected an FCCheckBox, got %s" % type(cb)
+
+        self.cb = cb
+        self.optinputs = optinputs
+        self.logic = logic
+
+        self.on_cb_change()
+        self.cb.stateChanged.connect(self.on_cb_change)
+
+    def on_cb_change(self):
+
+        if self.cb.checkState():
+            for widget in self.optinputs:
+                if self.logic is True:
+                    widget.show()
+                else:
+                    widget.hide()
+        else:
+            for widget in self.optinputs:
+                if self.logic is True:
+                    widget.hide()
+                else:
+                    widget.show()
+
+
 class FCTable(QtWidgets.QTableWidget):
     def __init__(self, parent=None):
         super(FCTable, self).__init__(parent)
@@ -1739,7 +1782,7 @@ class _BrowserTextEdit(QTextEdit):
 
     def clear(self):
         QTextEdit.clear(self)
-        text = "FlatCAM %s (c)2014-2019 Juan Pablo Caram (Type help to get started)\n\n" % self.version
+        text = "FlatCAM %s - Open Source Software - Type help to get started\n\n" % self.version
         text = html.escape(text)
         text = text.replace('\n', '<br/>')
         self.moveCursor(QTextCursor.End)
