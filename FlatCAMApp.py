@@ -7495,7 +7495,7 @@ class App(QtCore.QObject):
 
     def on_file_savegerber(self):
         """
-        Callback for menu item File->Export Gerber.
+        Callback for menu item in Project context menu.
 
         :return: None
         """
@@ -7504,7 +7504,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %S' %
+            self.inform.emit('[WARNING_NOTCL] %s' %
                              _("No object selected. Please select an Gerber object to export."))
             return
 
@@ -7539,7 +7539,7 @@ class App(QtCore.QObject):
 
     def on_file_saveexcellon(self):
         """
-        Callback for menu item File->Export Gerber.
+        Callback for menu item in project context menu.
 
         :return: None
         """
@@ -8671,14 +8671,14 @@ class App(QtCore.QObject):
 
             with self.proc_container.new(_("Exporting Gerber")) as proc:
 
-                def job_thread_exc(app_obj):
+                def job_thread_grb(app_obj):
                     ret = make_gerber()
                     if ret == 'fail':
                         self.inform.emit('[ERROR_NOTCL] %s' %
                                          _('Could not export Gerber file.'))
                         return
 
-                self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
+                self.worker_task.emit({'fcn': job_thread_grb, 'params': [self]})
         else:
             ret = make_gerber()
             if ret == 'fail':
@@ -8912,10 +8912,8 @@ class App(QtCore.QObject):
                 app_obj.progress.emit(0)
                 return "fail"
             except ParseError as err:
-                app_obj.inform.emit(_("{e_code} Failed to parse file: {name}. {error}").format(
-                    e_code=_("[ERROR_NOTCL]"),
-                    name=filename,
-                    error=str(err)))
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s. %s' %
+                                    (_("Failed to parse file"), filename, str(err)))
                 app_obj.progress.emit(0)
                 self.log.error(str(err))
                 return "fail"

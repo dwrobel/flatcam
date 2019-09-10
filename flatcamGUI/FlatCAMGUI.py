@@ -6665,7 +6665,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
 
         # ## Plotting type
         self.ncc_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
-                                            {"label": _("progressive"), "value": "progressive"}])
+                                            {"label": _("Progressive"), "value": "progressive"}])
         plotting_label = QtWidgets.QLabel('%s:' % _("NCC Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' -  normal plotting, done at the end of the NCC job\n"
@@ -6971,7 +6971,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
 
         # ## Plotting type
         self.paint_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
-                                              {"label": _("progressive"), "value": "progressive"}])
+                                              {"label": _("Progressive"), "value": "progressive"}])
         plotting_label = QtWidgets.QLabel('%s:' % _("Paint Plotting"))
         plotting_label.setToolTip(
             _("- 'Normal' -  normal plotting, done at the end of the Paint job\n"

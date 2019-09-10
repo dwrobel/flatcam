@@ -2564,7 +2564,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         the given boundary polygon. If not specified, it defaults to
         the rectangular bounding box of target geometry.
         """
-        geo_len = len(target)
+        if isinstance(target, Polygon):
+            geo_len = 1
+        else:
+            geo_len = len(target)
         pol_nr = 0
         old_disp_number = 0
 

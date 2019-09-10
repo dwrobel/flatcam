@@ -3376,8 +3376,17 @@ class Gerber (Geometry):
                 new_poly = cascaded_union(poly_buffer)
                 new_poly = new_poly.buffer(0, int(self.steps_per_circle / 4))
                 log.warning("Union done.")
+
             if current_polarity == 'D':
-                self.solid_geometry = self.solid_geometry.union(new_poly)
+                try:
+                    self.solid_geometry = self.solid_geometry.union(new_poly)
+                except Exception as e:
+                    # in case in the new_poly are some self intersections try to avoid making union with them
+                    for poly in new_poly:
+                        try:
+                            self.solid_geometry = self.solid_geometry.union(poly)
+                        except:
+                            pass
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
         except Exception as err:
@@ -6313,7 +6322,7 @@ class CNCjob(Geometry):
             self.z_depthpercut = abs(self.z_cut)
 
         if self.z_move is None:
-            self.app.inform.emit('[ERROR_NOTCL] %S' %
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Travel Z parameter is None or zero."))
             return 'fail'
 

@@ -23,6 +23,13 @@ import freetype as ft
 from fontTools import ttLib
 
 import logging
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 log = logging.getLogger('base2')
 
@@ -295,7 +302,7 @@ class ParseFont():
             elif font_type == 'regular':
                 path_filename = regular_dict[font_name]
         except Exception as e:
-            self.app.inform.emit("[ERROR_NOTCL] Font not supported, try another one.")
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Font not supported, try another one."))
             log.debug("[ERROR_NOTCL] Font Loading: %s" % str(e))
             return "flatcam font parse failed"
 

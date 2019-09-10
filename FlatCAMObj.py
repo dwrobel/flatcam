@@ -1503,6 +1503,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         :return: Gerber_code
         """
+        log.debug("FlatCAMGerber.export_gerber() --> Generating the Gerber code from the selected Gerber file")
 
         def tz_format(x, y, fac):
             x_c = x * fac
@@ -1650,6 +1651,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         for geo_elem in self.apertures[apid]['geometry']:
                             if 'follow' in geo_elem:
                                 geo = geo_elem['follow']
+                                print(geo)
                                 if not geo.is_empty:
                                     if isinstance(geo, Point):
                                         if g_zeros == 'T':

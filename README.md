@@ -19,6 +19,10 @@ CAD program, and create G-Code for Isolation routing.
 - modified FlatCAMObj.py file to the new string format that will allow easier translations
 - modified camlib.py, FlatCAMAPp.py and ObjectCollection.py files to the new string format that will allow easier translations
 - updated the POT file and the German language
+- fixed issue when loading unbuffered a Gerber file that has negative regions
+- fixed Panelize Tool to save the aperture geometries into the panel apertures. Also made the tool faster by removing the buffering at the end of the job
+- modified FlatCAMEditor's files to the new string format that will allow easier translations
+- updated POT file and the Romanian translation
 
 8.09.2019
 

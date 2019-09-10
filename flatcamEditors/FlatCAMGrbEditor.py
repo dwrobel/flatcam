@@ -204,14 +204,15 @@ class FCPad(FCShapeTool):
         try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         except KeyError:
-            self.draw_app.app.inform.emit(_(
-                "[WARNING_NOTCL] To add an Pad first select a aperture in Aperture Table"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("To add an Pad first select a aperture in Aperture Table"))
             self.draw_app.in_action = False
             self.complete = True
             return
 
         if self.radius == 0:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Aperture size is zero. It needs to be greater than zero."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("Aperture size is zero. It needs to be greater than zero."))
             self.dont_execute = True
             return
         else:
@@ -374,7 +375,8 @@ class FCPad(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Adding Pad completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Adding Pad completed."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -395,15 +397,16 @@ class FCPadArray(FCShapeTool):
         try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         except KeyError:
-            self.draw_app.app.inform.emit(_(
-                "[WARNING_NOTCL] To add an Pad Array first select a aperture in Aperture Table"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("To add an Pad Array first select a aperture in Aperture Table"))
             self.complete = True
             self.draw_app.in_action = False
             self.draw_app.array_frame.hide()
             return
 
         if self.radius == 0:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Aperture size is zero. It needs to be greater than zero."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("Aperture size is zero. It needs to be greater than zero."))
             self.dont_execute = True
             return
         else:
@@ -498,11 +501,12 @@ class FCPadArray(FCShapeTool):
                 self.pad_linear_angle = float(self.draw_app.linear_angle_spinner.get_value())
                 self.pad_angle = float(self.draw_app.pad_angle_entry.get_value())
             except TypeError:
-                self.draw_app.app.inform.emit(
-                    _("[ERROR_NOTCL] The value is not Float. Check for comma instead of dot separator."))
+                self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                              _("The value is not Float. Check for comma instead of dot separator."))
                 return
         except Exception as e:
-            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] The value is mistyped. Check the value."))
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("The value is mistyped. Check the value."))
             return
 
         if self.pad_array == 'Linear':
@@ -692,7 +696,8 @@ class FCPadArray(FCShapeTool):
                 self.geometry.append(DrawToolShape(geo))
         else:
             if (self.pad_angle * self.pad_array_size) > 360:
-                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Too many Pads for the selected spacing angle."))
+                self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                              _("Too many Pads for the selected spacing angle."))
                 return
 
             radius = distance(self.destination, self.origin)
@@ -714,7 +719,8 @@ class FCPadArray(FCShapeTool):
 
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Pad Array added."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Pad Array added."))
         self.draw_app.in_action = False
         self.draw_app.array_frame.hide()
         return
@@ -746,7 +752,8 @@ class FCPoligonize(FCShapeTool):
         if not self.draw_app.selected:
             self.draw_app.in_action = False
             self.complete = True
-            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Failed. Nothing selected."))
+            self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
+                                          _("Failed. Nothing selected."))
             self.draw_app.select_tool("select")
             return
 
@@ -761,8 +768,9 @@ class FCPoligonize(FCShapeTool):
         if len(apid_set) > 1:
             self.draw_app.in_action = False
             self.complete = True
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Failed. Poligonize works only on "
-                                            "geometries belonging to the same aperture."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
+                                          _("Failed. Poligonize works only on geometries belonging "
+                                            "to the same aperture."))
             self.draw_app.select_tool("select")
             return
 
@@ -814,7 +822,8 @@ class FCPoligonize(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Poligonize completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Poligonize completed."))
 
         # MS: always return to the Select Tool if modifier key is not pressed
         # else return to the current tool
@@ -1054,7 +1063,8 @@ class FCRegion(FCShapeTool):
             self.geometry = DrawToolShape(new_geo_el)
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1157,7 +1167,8 @@ class FCTrack(FCRegion):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1430,7 +1441,8 @@ class FCDisc(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1687,7 +1699,8 @@ class FCSemiDisc(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1835,7 +1848,8 @@ class FCApertureMove(FCShapeTool):
         self.selected_apertures = []
 
         if len(self.draw_app.get_selected()) == 0:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Nothing selected to move ..."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                          _("Nothing selected to move"))
             self.complete = True
             self.draw_app.select_tool("select")
             return
@@ -1958,7 +1972,8 @@ class FCApertureMove(FCShapeTool):
 
         self.draw_app.plot_all()
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit(_("[success] Done. Apertures Move completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Apertures Move completed."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2034,7 +2049,8 @@ class FCApertureCopy(FCApertureMove):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit(_("[success] Done. Apertures copied."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Apertures copied."))
 
 
 class FCEraser(FCShapeTool):
@@ -2141,7 +2157,8 @@ class FCEraser(FCShapeTool):
 
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
-        self.draw_app.app.inform.emit(_("[success] Done. Eraser tool action completed."))
+        self.draw_app.app.inform.emit('[success] %s' %
+                                      _("Done. Eraser tool action completed."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -3132,12 +3149,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 ap_id = str(self.apcode_entry.get_value())
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Aperture code value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Aperture code value is missing or wrong format. Add it and retry."))
                 return
             if ap_id == '':
-                self.app.inform.emit(_("[WARNING_NOTCL] Aperture code value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Aperture code value is missing or wrong format. Add it and retry."))
                 return
 
         if ap_id == '0':
@@ -3172,7 +3189,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     except Exception as e:
                         log.error("FlatCAMGrbEditor.on_aperture_add() --> the R or O aperture dims has to be in a "
                                   "tuple format (x,y)\nError: %s" % str(e))
-                        self.app.inform.emit(_("[WARNING_NOTCL] Aperture dimensions value is missing or wrong format. "
+                        self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                             _("Aperture dimensions value is missing or wrong format. "
                                                "Add it in format (width, height) and retry."))
                         return
                 else:
@@ -3184,8 +3202,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             size_val = float(self.apsize_entry.get_value().replace(',', '.'))
                             self.apsize_entry.set_value(size_val)
                         except ValueError:
-                            self.app.inform.emit(_("[WARNING_NOTCL] Aperture size value is missing or wrong format. "
-                                                   "Add it and retry."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                 _("Aperture size value is missing or wrong format. Add it and retry."))
                             return
                 self.storage_dict[ap_id]['size'] = size_val
 
@@ -3195,14 +3213,16 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 # values  each time a aperture code is edited or added
                 self.olddia_newdia[ap_id] = ap_id
             else:
-                self.app.inform.emit(_("[WARNING_NOTCL] Aperture already in the aperture table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Aperture already in the aperture table."))
                 return
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
         self.tool2tooldia[len(self.olddia_newdia)] = int(ap_id)
 
-        self.app.inform.emit(_("[success] Added new aperture with code: {apid}").format(apid=str(ap_id)))
+        self.app.inform.emit('[success] %s: %s' %
+                             (_("Added new aperture with code"), str(ap_id)))
 
         self.build_ui()
 
@@ -3230,13 +3250,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
             else:
                 # deleted_tool_dia = float(self.apertures_table.item(self.apertures_table.currentRow(), 1).text())
                 if len(self.apertures_table.selectionModel().selectedRows()) == 0:
-                    self.app.inform.emit(_("[WARNING_NOTCL] Select an aperture in Aperture Table"))
+                    self.app.inform.emit('[WARNING_NOTCL]%s' %
+                                         _(" Select an aperture in Aperture Table"))
                     return
                 for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
                     deleted_apcode_list.append(self.apertures_table.item(row, 1).text())
         except Exception as exc:
-            self.app.inform.emit(_("[WARNING_NOTCL] Select an aperture in Aperture Table --> %s" % str(exc)))
+            self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                 (_("Select an aperture in Aperture Table -->", str(exc))))
             return
 
         if deleted_apcode_list:
@@ -3259,8 +3281,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                     self.olddia_newdia.pop(deleted_aperture, None)
 
-                    self.app.inform.emit(_("[success] Deleted aperture with code: {del_dia}").format(
-                        del_dia=str(deleted_aperture)))
+                    self.app.inform.emit('[success] %s: %s' %
+                                         (_("Deleted aperture with code"), str(deleted_aperture)))
 
         self.plot_all()
         self.build_ui()
@@ -3910,11 +3932,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 grb_obj.create_geometry()
             except KeyError:
-                self.app.inform.emit(
-                   _("[ERROR_NOTCL] There are no Aperture definitions in the file. Aborting Gerber creation.")
-                )
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("There are no Aperture definitions in the file. Aborting Gerber creation."))
             except Exception as e:
-                msg = _("[ERROR] An internal error has occurred. See shell.\n")
+                msg = '[ERROR] %s' % \
+                      _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 raise
@@ -3927,7 +3949,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.app.progress.emit(100)
                 return
 
-            self.app.inform.emit(_("[success] Gerber editing finished."))
+            self.app.inform.emit('[success] %s' %
+                                 _("Done. Gerber editing finished."))
 
     def on_tool_select(self, tool):
         """
@@ -3943,7 +3966,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
-            self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. No aperture is selected"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Cancelled. No aperture is selected"))
 
         # This is to make the group behave as radio group
         if current_tool in self.tools_gerber:
@@ -4094,7 +4118,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.app.clipboard.setText(
                         self.app.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1])
                     )
-                    self.app.inform.emit(_("[success] Coordinates copied to clipboard."))
+                    self.app.inform.emit('[success] %s' %
+                                         _("Coordinates copied to clipboard."))
                     return
 
                 # Dispatch event to active_tool
@@ -4153,7 +4178,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             self.active_tool.complete = True
                             self.in_action = False
                             self.delete_utility_geometry()
-                            self.app.inform.emit(_("[success] Done."))
+                            self.app.inform.emit('[success] %s' %
+                                                 _("Done."))
                             self.select_tool('select')
                         else:
                             self.app.cursor = QtGui.QCursor()
@@ -4167,7 +4193,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             self.active_tool.make()
                             if self.active_tool.complete:
                                 self.on_grb_shape_complete()
-                                self.app.inform.emit(_("[success] Done."))
+                                self.app.inform.emit('[success] %s' %
+                                                     _("Done."))
 
                                 # MS: always return to the Select Tool if modifier key is not pressed
                                 # else return to the current tool but not for FCTrack
@@ -4474,7 +4501,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         temp_ref = [s for s in self.selected]
 
         if len(temp_ref) == 0:
-            self.app.inform.emit(_("[ERROR_NOTCL] Failed. No aperture geometry is selected."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Failed. No aperture geometry is selected."))
             return
 
         for shape_sel in temp_ref:
@@ -4482,7 +4510,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.selected = []
         self.build_ui()
-        self.app.inform.emit(_("[success] Done. Apertures geometry deleted."))
+        self.app.inform.emit('[success] %s' %
+                             _("Done. Apertures geometry deleted."))
 
     def delete_shape(self, geo_el):
         self.is_modified = True
@@ -4596,8 +4625,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 buff_value = float(self.buffer_distance_entry.get_value().replace(',', '.'))
                 self.buffer_distance_entry.set_value(buff_value)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                       "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Buffer distance value is missing or wrong format. Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
@@ -4624,9 +4653,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     return geom_el
 
         if not self.apertures_table.selectedItems():
-            self.app.inform.emit(_(
-                "[WARNING_NOTCL] No aperture to buffer. Select at least one aperture and try again."
-            ))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No aperture to buffer. Select at least one aperture and try again."))
             return
 
         for x in self.apertures_table.selectedItems():
@@ -4638,10 +4666,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.storage_dict[apid]['geometry'] = temp_storage
             except Exception as e:
                 log.debug("FlatCAMGrbEditor.buffer() --> %s\n%s" % str(e))
-                self.app.inform.emit(_("[ERROR_NOTCL] Failed.\n%s") % str(traceback.print_exc()))
+                self.app.inform.emit('[ERROR_NOTCL] %s\n%s' %
+                                     (_("Failed."), str(traceback.print_exc())))
                 return
         self.plot_all()
-        self.app.inform.emit(_("[success] Done. Buffer Tool completed."))
+        self.app.inform.emit('[success] %s' %
+                             _("Done. Buffer Tool completed."))
 
     def on_scale(self):
         scale_factor = 1.0
@@ -4655,8 +4685,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 scale_factor = float(self.scale_factor_entry.get_value().replace(',', '.'))
                 self.scale_factor_entry.set_value(scale_factor)
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Scale factor value is missing or wrong format. "
-                                     "Add it and retry."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Scale factor value is missing or wrong format. Add it and retry."))
                 return
 
         def scale_recursion(geom_el, selection):
@@ -4687,9 +4717,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     return geom_el
 
         if not self.apertures_table.selectedItems():
-            self.app.inform.emit(_(
-                "[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try again."
-            ))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No aperture to scale. Select at least one aperture and try again."))
             return
 
         for x in self.apertures_table.selectedItems():
@@ -4704,7 +4733,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 log.debug("FlatCAMGrbEditor.on_scale() --> %s" % str(e))
 
         self.plot_all()
-        self.app.inform.emit(_("[success] Done. Scale Tool completed."))
+        self.app.inform.emit('[success] %s' %
+                             _("Done. Scale Tool completed."))
 
     def on_markarea(self):
         # clear previous marking
@@ -4741,9 +4771,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.ma_annotation.set(text=text, pos=position, visible=True,
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color=self.app.defaults["global_sel_draw_color"])
-            self.app.inform.emit(_("[success] Polygon areas marked."))
+            self.app.inform.emit('[success] %s' %
+                                 _("Polygon areas marked."))
         else:
-            self.app.inform.emit(_("[WARNING_NOTCL] There are no polygons to mark area."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("There are no polygons to mark area."))
 
     def on_eraser(self):
         self.select_tool('eraser')
@@ -5226,7 +5258,8 @@ class TransformEditorTool(FlatCAMTool):
 
     def template(self):
         if not self.fcdraw.selected:
-            self.app.inform.emit(_("[WARNING_NOTCL] Transformation cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Transformation cancelled. No shape selected."))
             return
 
         self.draw_app.select_tool("select")
@@ -5246,8 +5279,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.rotate_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Rotate, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
                                    'params': [value]})
@@ -5289,8 +5322,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.skewx_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew X, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # self.on_skew("X", value)
@@ -5316,8 +5349,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.skewy_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew Y, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # self.on_skew("Y", value)
@@ -5343,8 +5376,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     x_value = float(self.scalex_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale X, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -5384,8 +5417,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     y_value = float(self.scaley_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale Y, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -5422,8 +5455,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.offx_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset X, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # self.on_offset("X", value)
@@ -5448,8 +5481,8 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.offy_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset Y, "
-                                           "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("Wrong value format entered, use a number."))
                     return
 
         # self.on_offset("Y", value)
@@ -5471,7 +5504,8 @@ class TransformEditorTool(FlatCAMTool):
         ymaxlist = []
 
         if not elem_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to rotate!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to rotate!"))
             return
 
         with self.app.proc_container.new(_("Appying Rotate")):
@@ -5507,10 +5541,12 @@ class TransformEditorTool(FlatCAMTool):
                         sel_el['clear'] = affinity.rotate(sel_el['clear'], angle=-num, origin=(px, py))
                 self.draw_app.plot_all()
 
-                self.app.inform.emit(_("[success] Done. Rotate completed."))
+                self.app.inform.emit('[success] %s' %
+                                     _("Done. Rotate completed."))
                 self.app.progress.emit(100)
             except Exception as e:
-                self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, rotation movement was not executed.") % str(e))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                     (_("Rotation action was not executed."), str(e)))
                 return
 
     def on_flip(self, axis):
@@ -5526,7 +5562,8 @@ class TransformEditorTool(FlatCAMTool):
         ymaxlist = []
 
         if not elem_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to flip!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to flip!"))
             return
 
         with self.app.proc_container.new(_("Applying Flip")):
@@ -5568,7 +5605,8 @@ class TransformEditorTool(FlatCAMTool):
                             sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=1, yfact=-1, origin=(px, py))
                         if 'clear' in sel_el:
                             sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=1, yfact=-1, origin=(px, py))
-                        self.app.inform.emit(_('[success] Flip on the Y axis done ...'))
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Flip on the Y axis done'))
                     elif axis is 'Y':
                         if 'solid' in sel_el:
                             sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=-1, yfact=1, origin=(px, py))
@@ -5576,12 +5614,14 @@ class TransformEditorTool(FlatCAMTool):
                             sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=-1, yfact=1, origin=(px, py))
                         if 'clear' in sel_el:
                             sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=-1, yfact=1, origin=(px, py))
-                        self.app.inform.emit(_('[success] Flip on the X axis done ...'))
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Flip on the X axis done'))
                 self.draw_app.plot_all()
                 self.app.progress.emit(100)
 
             except Exception as e:
-                self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Flip action was not executed.") % str(e))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                     (_("Flip action was not executed."), str(e)))
                 return
 
     def on_skew(self, axis, num):
@@ -5596,7 +5636,8 @@ class TransformEditorTool(FlatCAMTool):
         yminlist = []
 
         if not elem_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to shear/skew!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to shear/skew!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Skew")):
@@ -5634,11 +5675,17 @@ class TransformEditorTool(FlatCAMTool):
                                 sel_el['clear'] = affinity.skew(sel_el['clear'], 0, num, origin=(xminimal, yminimal))
                     self.draw_app.plot_all()
 
-                    self.app.inform.emit(_('[success] Skew on the %s axis done ...') % str(axis))
+                    if str(axis) == 'X':
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Skew on the X axis done'))
+                    else:
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Skew on the Y axis done'))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Skew action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_("Skew action was not executed."), str(e)))
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -5657,7 +5704,8 @@ class TransformEditorTool(FlatCAMTool):
         ymaxlist = []
 
         if not elem_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to scale!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to scale!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Scale")):
@@ -5698,10 +5746,16 @@ class TransformEditorTool(FlatCAMTool):
                             sel_el['clear'] = affinity.scale(sel_el['clear'], xfactor, yfactor, origin=(px, py))
                     self.draw_app.plot_all()
 
-                    self.app.inform.emit(_('[success] Scale on the %s axis done ...') % str(axis))
+                    if str(axis) == 'X':
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Scale on the X axis done'))
+                    else:
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Scale on the Y axis done'))
                     self.app.progress.emit(100)
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Scale action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_("Scale action was not executed."), str(e)))
                     return
 
     def on_offset(self, axis, num):
@@ -5714,7 +5768,8 @@ class TransformEditorTool(FlatCAMTool):
         elem_list = self.draw_app.selected
 
         if not elem_list:
-            self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to offset!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("No shape selected. Please Select a shape to offset!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Offset")):
@@ -5739,11 +5794,17 @@ class TransformEditorTool(FlatCAMTool):
                                 sel_el['clear'] = affinity.translate(sel_el['clear'], 0, num)
                         self.draw_app.plot_all()
 
-                    self.app.inform.emit(_('[success] Offset on the %s axis done ...') % str(axis))
+                    if str(axis) == 'X':
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Offset on the X axis done'))
+                    else:
+                        self.app.inform.emit('[success] %s...' %
+                                             _('Offset on the Y axis done'))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Offset action was not executed.") % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
+                                         (_("Offset action was not executed."), str(e)))
                     return
 
     def on_rotate_key(self):
@@ -5756,14 +5817,12 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_rotate(val=val)
-            self.app.inform.emit(
-                _("[success] Geometry shape rotate done...")
-            )
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape rotate done"))
             return
         else:
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] Geometry shape rotate cancelled...")
-            )
+            self.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                 _("Geometry shape rotate cancelled"))
 
     def on_offx_key(self):
         units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
@@ -5777,12 +5836,12 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit(
-                _("[success] Geometry shape offset on X axis done..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape offset on X axis done"))
             return
         else:
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] Geometry shape offset X cancelled..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                 _("Geometry shape offset X cancelled"))
 
     def on_offy_key(self):
         units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
@@ -5796,12 +5855,12 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit(
-                _("[success] Geometry shape offset on Y axis done..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape offset on Y axis done"))
             return
         else:
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] Geometry shape offset Y cancelled..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                 _("Geometry shape offset Y cancelled"))
 
     def on_skewx_key(self):
         val_box = FCInputDialog(title=_("Skew on X axis ..."),
@@ -5813,12 +5872,12 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val)
-            self.app.inform.emit(
-                _("[success] Geometry shape skew on X axis done..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape skew on X axis done"))
             return
         else:
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] Geometry shape skew X cancelled..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                 _("Geometry shape skew X cancelled"))
 
     def on_skewy_key(self):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
@@ -5830,12 +5889,12 @@ class TransformEditorTool(FlatCAMTool):
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val)
-            self.app.inform.emit(
-                _("[success] Geometry shape skew on Y axis done..."))
+            self.app.inform.emit('[success] %s...' %
+                                 _("Geometry shape skew on Y axis done"))
             return
         else:
-            self.app.inform.emit(
-                _("[WARNING_NOTCL] Geometry shape skew Y cancelled..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                 _("Geometry shape skew Y cancelled"))
 
 
 def get_shapely_list_bounds(geometry_list):

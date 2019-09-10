@@ -565,12 +565,7 @@ class Panelize(FlatCAMTool):
                     if isinstance(panel_obj, FlatCAMGerber):
                         obj_fin.apertures = deepcopy(panel_obj.apertures)
                         for ap in obj_fin.apertures:
-                            if 'solid_geometry' in obj_fin.apertures[ap]:
-                                obj_fin.apertures[ap]['solid_geometry'] = []
-                            if 'clear_geometry' in obj_fin.apertures[ap]:
-                                obj_fin.apertures[ap]['clear_geometry'] = []
-                            if 'follow_geometry' in obj_fin.apertures[ap]:
-                                obj_fin.apertures[ap]['follow_geometry'] = []
+                            obj_fin.apertures[ap]['geometry'] = list()
 
                     self.app.progress.emit(0)
                     for row in range(rows):
@@ -599,36 +594,29 @@ class Panelize(FlatCAMTool):
                                     obj_fin.solid_geometry.append(geo)
 
                                 for apid in panel_obj.apertures:
-                                    if 'solid_geometry' in panel_obj.apertures[apid]:
-                                        geo_aper = translate_recursion(panel_obj.apertures[apid]['solid_geometry'])
-                                        if isinstance(geo_aper, list):
-                                            obj_fin.apertures[apid]['solid_geometry'] += geo_aper
-                                        else:
-                                            obj_fin.apertures[apid]['solid_geometry'].append(geo_aper)
+                                    for el in panel_obj.apertures[apid]['geometry']:
+                                        new_el = dict()
+                                        if 'solid' in el:
+                                            geo_aper = translate_recursion(el['solid'])
+                                            new_el['solid'] = deepcopy(geo_aper)
 
-                                    if 'clear_geometry' in panel_obj.apertures[apid]:
-                                        geo_aper = translate_recursion(panel_obj.apertures[apid]['clear_geometry'])
-                                        if isinstance(geo_aper, list):
-                                            obj_fin.apertures[apid]['clear_geometry'] += geo_aper
-                                        else:
-                                            obj_fin.apertures[apid]['clear_geometry'].append(geo_aper)
+                                        if 'clear' in el:
+                                            geo_aper = translate_recursion(el['clear'])
+                                            new_el['clear'] = deepcopy(geo_aper)
 
-                                    if 'follow_geometry' in panel_obj.apertures[apid]:
-                                        geo_aper = translate_recursion(panel_obj.apertures[apid]['follow_geometry'])
-                                        if isinstance(geo_aper, list):
-                                            obj_fin.apertures[apid]['follow_geometry'] += geo_aper
-                                        else:
-                                            obj_fin.apertures[apid]['follow_geometry'].append(geo_aper)
+                                        if 'follow' in el:
+                                            geo_aper = translate_recursion(el['follow'])
+                                            new_el['follow'] = deepcopy(geo_aper)
+
+                                        obj_fin.apertures[apid]['geometry'].append(deepcopy(new_el))
 
                             currentx += lenghtx
                         currenty += lenghty
 
                     app_obj.log.debug("Found %s geometries. Creating a panel geometry cascaded union ..." %
                                       len(obj_fin.solid_geometry))
-                    self.app.inform.emit(_("Found %s geometries. Creating a final panel geometry ...") %
-                                         len(obj_fin.solid_geometry))
 
-                    obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
+                    # obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
                     app_obj.log.debug("Finished creating a cascaded union for the panel.")
 
                 if isinstance(panel_obj, FlatCAMExcellon):

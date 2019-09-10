@@ -350,6 +350,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.obj_name = ""
         self.paint_obj = None
+        self.bound_obj_name = ""
+        self.bound_obj = None
 
         self.units = ''
         self.paint_tools = {}
@@ -680,8 +682,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         try:
             self.tools_table.itemChanged.disconnect()
-        except Exception as e:
-            log.debug("ToolPaint.on_tool_add() --> %s" % str(e))
+        except TypeError:
+            pass
 
         if dia:
             tool_dia = dia
@@ -751,8 +753,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         try:
             self.tools_table.itemChanged.disconnect()
-        except Exception as e:
-            log.debug("ToolPaint.on_tool_edit() --> %s" % str(e))
+        except TypeError:
+            pass
 
         tool_dias = []
         for k, v in self.paint_tools.items():
@@ -850,8 +852,7 @@ class ToolPaint(FlatCAMTool, Gerber):
     def on_tool_delete(self, rows_to_delete=None, all=None):
         try:
             self.tools_table.itemChanged.disconnect()
-        except Exception as e:
-            log.debug("ToolPaint.on_tool_delete() --> %s" % str(e))
+        except TypeError:
             pass
 
         deleted_tools_list = []
@@ -1277,13 +1278,13 @@ class ToolPaint(FlatCAMTool, Gerber):
             else:
                 pass
 
-            def paint_p(polyg, tooldia):
+            def paint_p(polyg, tooldiameter):
                 cpoly = None
                 try:
                     if paint_method == "seed":
                         # Type(cp) == FlatCAMRTreeStorage | None
                         cpoly = self.clear_polygon2(polyg,
-                                                    tooldia=tooldia,
+                                                    tooldia=tooldiameter,
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over,
                                                     contour=cont,
@@ -1293,7 +1294,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     elif paint_method == "lines":
                         # Type(cp) == FlatCAMRTreeStorage | None
                         cpoly = self.clear_polygon3(polyg,
-                                                    tooldia=tooldia,
+                                                    tooldia=tooldiameter,
                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=over,
                                                     contour=cont,
@@ -1303,12 +1304,12 @@ class ToolPaint(FlatCAMTool, Gerber):
                     else:
                         # Type(cp) == FlatCAMRTreeStorage | None
                         cpoly = self.clear_polygon(polyg,
-                                                   tooldia=tooldia,
+                                                   tooldia=tooldiameter,
                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                    overlap=over,
                                                    contour=cont,
                                                    connect=conn,
-                                                    prog_plot=prog_plot)
+                                                   prog_plot=prog_plot)
                 except FlatCAMApp.GracefulException:
                     return "fail"
                 except Exception as e:
@@ -1318,8 +1319,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                     geo_obj.solid_geometry += list(cpoly.get_objects())
                     return cpoly
                 else:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Geometry could not be painted completely'))
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _('Geometry could not be painted completely'))
                     return None
 
             try:
@@ -1363,10 +1364,12 @@ class ToolPaint(FlatCAMTool, Gerber):
                     return "fail"
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
-                    self.app.inform.emit('[ERROR] %s\n%s' %
-                                         (_("Could not do Paint. Try a different combination of parameters. "
-                                            "Or a different strategy of paint"),
-                                          str(e)))
+                    app_obj.inform.emit('[ERROR] %s\n%s' %
+                                        (_("Could not do Paint. Try a different combination of parameters. "
+                                           "Or a different strategy of paint"),
+                                         str(e)
+                                         )
+                                        )
                     return "fail"
 
                 # add the solid_geometry to the current too in self.paint_tools (tools_storage)
@@ -1636,7 +1639,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 painted_area = recurse(obj.solid_geometry)
                 # variables to display the percentage of work done
                 geo_len = len(painted_area)
-                disp_number = 0
+
                 old_disp_number = 0
                 log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
@@ -1800,7 +1803,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 painted_area = recurse(obj.solid_geometry)
                 # variables to display the percentage of work done
                 geo_len = int(len(painted_area) / 100)
-                disp_number = 0
+
                 old_disp_number = 0
                 log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
@@ -2099,7 +2102,6 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # variables to display the percentage of work done
                 geo_len = len(painted_area)
-                disp_number = 0
                 old_disp_number = 0
                 log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
@@ -2111,7 +2113,6 @@ class ToolPaint(FlatCAMTool, Gerber):
                             continue
                         poly_buf = geo.buffer(-paint_margin)
 
-                        cp = None
                         if paint_method == "seed":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf,
@@ -2140,7 +2141,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     overlap=over,
                                                     contour=cont,
                                                     connect=conn,
-                                                     prog_plot=prog_plot)
+                                                    prog_plot=prog_plot)
 
                         if cp is not None:
                             total_geometry += list(cp.get_objects())
@@ -2269,7 +2270,6 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # variables to display the percentage of work done
                 geo_len = len(painted_area)
-                disp_number = 0
                 old_disp_number = 0
                 log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
