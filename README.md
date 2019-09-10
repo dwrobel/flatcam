@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 10.09.2019
 
 - made isolation threaded
+- fixed a small typo in TclCommandCopperCLear
 
 9.09.2019
 
