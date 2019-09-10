@@ -1354,6 +1354,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # determine if to use the progressive plotting
         if self.app.defaults["tools_ncc_plotting"] == 'progressive':
             prog_plot = True
+        else:
+            prog_plot = False
 
         if tools_storage is not None:
             tools_storage = tools_storage
