@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - made isolation threaded
 - fixed a small typo in TclCommandCopperCLear
+- made changing the Plot kind in CNCJob selected tab, threaded
 
 9.09.2019
 

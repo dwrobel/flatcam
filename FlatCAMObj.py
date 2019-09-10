@@ -5894,7 +5894,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
     def on_plot_kind_change(self):
         kind = self.ui.cncplot_method_combo.get_value()
-        self.plot(kind=kind)
+
+        def worker_task():
+            with self.app.proc_container.new(_("Plotting...")):
+                self.plot(kind=kind)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_exportgcode_button_click(self, *args):
         self.app.report_usage("cncjob_on_exportgcode_button")
