@@ -587,9 +587,9 @@ class Geometry(object):
                             geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)),
                                            join_style=corner)
                         pol_nr += 1
-                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                        if disp_number > old_disp_number and disp_number <= 100:
+                        if  old_disp_number < disp_number <= 100:
                             self.app.proc_container.update_view_text(' %s %d: %d%%' %
                                                                      (_("Pass"), int(passes + 1), int(disp_number)))
                             old_disp_number = disp_number

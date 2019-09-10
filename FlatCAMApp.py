@@ -9902,6 +9902,11 @@ The normal flow when working in FlatCAM is the following:</span></p>
                 obj.options['plot'] = False
                 obj.options.set_change_callback(obj.on_options_change)
 
+        try:
+            self.delete_selection_shape()
+        except Exception as e:
+            log.debug("App.disable_plots() --> %s" % str(e))
+
         # self.plots_updated.emit()
         def worker_task(objects):
             with self.proc_container.new(_("Disabling plots ...")):

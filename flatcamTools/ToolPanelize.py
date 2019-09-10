@@ -662,7 +662,7 @@ class Panelize(FlatCAMTool):
                                             pol_nr += 1
                                             disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                                            if disp_number > old_disp_number and disp_number <= 100:
+                                            if old_disp_number < disp_number <= 100:
                                                 self.app.proc_container.update_view_text(' %s: %d %d%%' %
                                                                                          (_("Copy"),
                                                                                           int(element),
@@ -696,7 +696,7 @@ class Panelize(FlatCAMTool):
                                             pol_nr += 1
                                             disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                                            if disp_number > old_disp_number and disp_number <= 100:
+                                            if old_disp_number < disp_number <= 100:
                                                 self.app.proc_container.update_view_text(' %s: %d %d%%' %
                                                                                          (_("Copy"),
                                                                                           int(element),
@@ -746,22 +746,22 @@ class Panelize(FlatCAMTool):
                                         new_el = dict()
                                         if 'solid' in el:
                                             geo_aper = translate_recursion(el['solid'])
-                                            new_el['solid'] = deepcopy(geo_aper)
+                                            new_el['solid'] = geo_aper
 
                                         if 'clear' in el:
                                             geo_aper = translate_recursion(el['clear'])
-                                            new_el['clear'] = deepcopy(geo_aper)
+                                            new_el['clear'] = geo_aper
 
                                         if 'follow' in el:
                                             geo_aper = translate_recursion(el['follow'])
-                                            new_el['follow'] = deepcopy(geo_aper)
+                                            new_el['follow'] = geo_aper
 
                                         obj_fin.apertures[apid]['geometry'].append(deepcopy(new_el))
 
                                         pol_nr += 1
                                         disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                                        if disp_number > old_disp_number and disp_number <= 100:
+                                        if old_disp_number < disp_number <= 100:
                                             self.app.proc_container.update_view_text(' %s: %d %d%%' %
                                                                                      (_("Copy"),
                                                                                       int(element),

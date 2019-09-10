@@ -1694,7 +1694,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         return "fail"
 
                     pol_nr += 1
-                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                     # log.debug("Polygons cleared: %d" % pol_nr)
 
                     if old_disp_number < disp_number <= 100:
@@ -1848,7 +1848,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         return "fail"
 
                     pol_nr += 1
-                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                     # log.debug("Polygons cleared: %d" % pol_nr)
 
                     if old_disp_number < disp_number <= 100:
@@ -2155,7 +2155,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         return
 
                     pol_nr += 1
-                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                     # log.debug("Polygons cleared: %d" % pol_nr)
 
                     if old_disp_number < disp_number <= 100:
@@ -2313,7 +2313,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         return
 
                     pol_nr += 1
-                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                     # log.debug("Polygons cleared: %d" % pol_nr)
 
                     if old_disp_number < disp_number <= 100:
