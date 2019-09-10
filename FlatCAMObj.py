@@ -846,40 +846,53 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.app.new_object("geometry", name, geo_init)
 
     def on_ext_iso_button_click(self, *args):
+        obj = self.app.collection.get_active()
 
-        if self.ui.follow_cb.get_value() is True:
-            obj = self.app.collection.get_active()
-            obj.follow_geo()
-            # in the end toggle the visibility of the origin object so we can see the generated Geometry
-            obj.ui.plot_cb.toggle()
-        else:
-            self.app.report_usage("gerber_on_iso_button")
-            self.read_form()
-            self.isolate(iso_type=0)
+        def worker_task(obj, app_obj):
+            with self.app.proc_container.new(_("Isolating...")):
+                if self.ui.follow_cb.get_value() is True:
+                    obj.follow_geo()
+                    # in the end toggle the visibility of the origin object so we can see the generated Geometry
+                    obj.ui.plot_cb.toggle()
+                else:
+                    app_obj.report_usage("gerber_on_iso_button")
+                    self.read_form()
+                    self.isolate(iso_type=0)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
 
     def on_int_iso_button_click(self, *args):
+        obj = self.app.collection.get_active()
 
-        if self.ui.follow_cb.get_value() is True:
-            obj = self.app.collection.get_active()
-            obj.follow_geo()
-            # in the end toggle the visibility of the origin object so we can see the generated Geometry
-            obj.ui.plot_cb.toggle()
-        else:
-            self.app.report_usage("gerber_on_iso_button")
-            self.read_form()
-            self.isolate(iso_type=1)
+        def worker_task(obj, app_obj):
+            with self.app.proc_container.new(_("Isolating...")):
+                if self.ui.follow_cb.get_value() is True:
+                    obj.follow_geo()
+                    # in the end toggle the visibility of the origin object so we can see the generated Geometry
+                    obj.ui.plot_cb.toggle()
+                else:
+                    app_obj.report_usage("gerber_on_iso_button")
+                    self.read_form()
+                    self.isolate(iso_type=1)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
 
     def on_iso_button_click(self, *args):
 
-        if self.ui.follow_cb.get_value() is True:
-            obj = self.app.collection.get_active()
-            obj.follow_geo()
-            # in the end toggle the visibility of the origin object so we can see the generated Geometry
-            obj.ui.plot_cb.toggle()
-        else:
-            self.app.report_usage("gerber_on_iso_button")
-            self.read_form()
-            self.isolate()
+        obj = self.app.collection.get_active()
+
+        def worker_task(obj, app_obj):
+            with self.app.proc_container.new(_("Isolating...")):
+                if self.ui.follow_cb.get_value() is True:
+                    obj.follow_geo()
+                    # in the end toggle the visibility of the origin object so we can see the generated Geometry
+                    obj.ui.plot_cb.toggle()
+                else:
+                    app_obj.report_usage("gerber_on_iso_button")
+                    self.read_form()
+                    self.isolate()
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
 
     def follow_geo(self, outname=None):
         """

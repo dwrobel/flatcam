@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.09.2019
+
+- made isolation threaded
+
 9.09.2019
 
 - changed the triangulation type in VisPyVisuals for ShapeCollectionVisual class
