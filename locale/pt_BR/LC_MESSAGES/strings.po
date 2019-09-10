@@ -27,7 +27,7 @@ msgstr ""
 
 #: FlatCAMApp.py:1587
 msgid "Detachable Tabs"
-msgstr "Tabulação destacáveis"
+msgstr "Abas destacáveis"
 
 #: FlatCAMApp.py:1977
 msgid ""
@@ -39,7 +39,7 @@ msgstr ""
 
 #: FlatCAMApp.py:2172 FlatCAMApp.py:6595
 msgid "New Project - Not saved"
-msgstr "Novo projeto - Não salvo"
+msgstr "Novo Projeto - Não salvo"
 
 #: FlatCAMApp.py:2205 ObjectCollection.py:80 flatcamTools/ToolImage.py:218
 #: flatcamTools/ToolPcbWizard.py:301 flatcamTools/ToolPcbWizard.py:324
@@ -68,7 +68,7 @@ msgid ""
 msgstr ""
 "[WARNING_NOTCL] A edição simultânea de ferramentas geometria em uma "
 "Geometria MultiGeo não é possível. \n"
-"Editar apenas uma geometria por vez."
+"Edite apenas uma geometria por vez."
 
 #: FlatCAMApp.py:2507
 msgid "[WARNING_NOTCL] Editor is activated ..."
@@ -118,11 +118,11 @@ msgstr "[selected] %s está atualizado, retornando ao App ..."
 
 #: FlatCAMApp.py:2948
 msgid "[ERROR] Could not load defaults file."
-msgstr "[ERROR] Não foi possível carregar o arquivo padrão."
+msgstr "[ERROR] Não foi possível carregar o arquivo com os padrões."
 
 #: FlatCAMApp.py:2960
 msgid "[ERROR] Failed to parse defaults file."
-msgstr "[ERROR] Falha ao analisar o arquivo de padrões."
+msgstr "[ERROR] Falha ao analisar o arquivo com os padrões."
 
 #: FlatCAMApp.py:2981 FlatCAMApp.py:2985
 msgid "Import FlatCAM Preferences"
@@ -134,11 +134,11 @@ msgstr "[WARNING_NOTCL] Importação de preferências do FlatCAM cancelada."
 
 #: FlatCAMApp.py:2999 FlatCAMApp.py:3058 FlatCAMApp.py:3530
 msgid "[ERROR_NOTCL] Could not load defaults file."
-msgstr "[ERROR_NOTCL] Não foi possível carregar o arquivo de padrões."
+msgstr "[ERROR_NOTCL] Não foi possível carregar o arquivo com os padrões."
 
 #: FlatCAMApp.py:3007 FlatCAMApp.py:3539
 msgid "[ERROR_NOTCL] Failed to parse defaults file."
-msgstr "[ERROR_NOTCL] Falha ao analisar o arquivo de padrões."
+msgstr "[ERROR_NOTCL] Falha ao analisar o arquivo com os padrões."
 
 #: FlatCAMApp.py:3011
 #, python-format
@@ -161,7 +161,7 @@ msgid ""
 "Most likely another app is holding the file open and not accessible."
 msgstr ""
 "[WARNING] Permissão negada, não é possível salvar.\n"
-"O mais provável é que outro aplicativo esteja mantendo o arquivo aberto e "
+"É provável que outro aplicativo esteja mantendo o arquivo aberto e "
 "não acessível."
 
 #: FlatCAMApp.py:3077 FlatCAMApp.py:3584
@@ -171,17 +171,17 @@ msgstr "[ERROR_NOTCL] Falha ao gravar os padrões no arquivo."
 #: FlatCAMApp.py:3137
 msgid "[ERROR_NOTCL] Failed to open recent files file for writing."
 msgstr ""
-"[ERROR_NOTCL] Falha ao abrir o arquivo com arquivos recentes para gravação."
+"[ERROR_NOTCL] Falha ao abrir o arquivo com lista de arquivos recentes para gravação."
 
 #: FlatCAMApp.py:3147
 msgid "[ERROR_NOTCL] Failed to open recent projects file for writing."
 msgstr ""
-"[ERROR_NOTCL] Falha ao abrir o arquivo com projetos recentes para gravação."
+"[ERROR_NOTCL] Falha ao abrir o arquivo com lista de projetos recentes para gravação."
 
 #: FlatCAMApp.py:3229 camlib.py:4501
 msgid "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
 msgstr ""
-"[ERROR_NOTCL] Ocorreu um erro interno. Veja shell (linha de comando). \n"
+"[ERROR_NOTCL] Ocorreu um erro interno. Veja shell (linha de comando).\n"
 
 #: FlatCAMApp.py:3230
 #, python-brace-format
@@ -279,11 +279,11 @@ msgid ""
 "be lost and the result may not be what was expected. \n"
 "Check the generated GCODE."
 msgstr ""
-"[ERROR] Falha ao unir. Os objetos Geometria são de tipos diferentes. \n"
+"[ERROR] Falha ao unir. Os objetos Geometria são de tipos diferentes.\n"
 "Pelo menos um é do tipo MultiGeo e o outro é do tipo SingleGeo. Uma "
-"possibilidade é converter de um para outro e tentar unir, \n"
+"possibilidade é converter de um para outro e tentar unir,\n"
 "mas no caso de converter de MultiGeo para SingleGeo, as informações podem "
-"ser perdidas e o resultado pode não ser o esperado. \n"
+"ser perdidas e o resultado pode não ser o esperado.\n"
 "Verifique o G-CODE gerado."
 
 #: FlatCAMApp.py:3849
@@ -320,7 +320,7 @@ msgstr "Alternar Unidades"
 
 #: FlatCAMApp.py:4172
 msgid "Change project units ..."
-msgstr "Alterar unidades de projeto ..."
+msgstr "Alterar unidades do projeto ..."
 
 #: FlatCAMApp.py:4173
 msgid ""
@@ -386,8 +386,8 @@ msgid ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
 msgstr ""
-"Adicionar Ferramenta funciona somente quando Avançado está marcado. \n"
-"Vá para Preferências -> Geral - Mostrar Opções Avançadas."
+"Adicionar Ferramenta funciona somente no modo Avançado.\n"
+"Vá em Preferências -> Geral - Mostrar Opções Avançadas."
 
 #: FlatCAMApp.py:5157
 msgid "Delete objects"
@@ -419,7 +419,7 @@ msgstr "Clique para definir a origem ..."
 
 #: FlatCAMApp.py:5237
 msgid "Jump to ..."
-msgstr "Pule para ..."
+msgstr "Pular para ..."
 
 #: FlatCAMApp.py:5238
 msgid "Enter the coordinates in format X,Y:"
@@ -611,7 +611,7 @@ msgstr "[WARNING_NOTCL] Nenhum objeto selecionado para copiar nome"
 
 #: FlatCAMApp.py:5999
 msgid "Name copied on clipboard ..."
-msgstr "Nome copiado na área de transferência ..."
+msgstr "Nome copiado para a área de transferência ..."
 
 #: FlatCAMApp.py:6041 flatcamEditors/FlatCAMGrbEditor.py:4094
 msgid "[success] Coordinates copied to clipboard."
@@ -752,7 +752,7 @@ msgstr ""
 msgid ""
 "[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files..."
 msgstr ""
-"[ERROR_NOTCL] Falha. Somente objetos Excellon podem ser salvos como arquivos "
+"[ERROR_NOTCL] Falhou. Somente objetos Excellon podem ser salvos como arquivos "
 "Excellon ..."
 
 #: FlatCAMApp.py:6919 FlatCAMApp.py:6923
@@ -839,7 +839,7 @@ msgid ""
 "[WARNING_NOTCL] There is no selected object for which to see it's source "
 "file code."
 msgstr ""
-"[WARNING_NOTCL] Não há nenhum objeto selecionado para ver o código fonte do "
+"[WARNING_NOTCL] Nenhum objeto selecionado para ver o código fonte do "
 "arquivo."
 
 #: FlatCAMApp.py:7181
@@ -1074,7 +1074,7 @@ msgstr "[ERROR_NOTCL] Nenhuma geometria encontrada no arquivo: %s"
 
 #: FlatCAMApp.py:8314
 msgid "Opening Excellon."
-msgstr "Abrindo o Excellon."
+msgstr "Abrindo Excellon."
 
 #: FlatCAMApp.py:8320
 msgid "[ERROR_NOTCL] Open Excellon file failed. Probable not an Excellon file."
@@ -1103,7 +1103,7 @@ msgid ""
 msgstr ""
 "[ERROR_NOTCL] Falha ao criar o objeto Trabalho CNC. Provavelmente não é um "
 "arquivo G-Code. \n"
-"A tentativa de criar um objeto FlatCAM Trabalho CNC do arquivo G-Code falhou "
+"A tentativa de criar um objeto de Trabalho CNC do arquivo G-Code falhou "
 "durante o processamento"
 
 #: FlatCAMApp.py:8421
@@ -1316,7 +1316,7 @@ msgstr "[success] Todos os gráficos habilitados."
 
 #: FlatCAMApp.py:9121
 msgid "[success] Selected plots enabled..."
-msgstr "[success] Gráficos selecionados habilitados ..."
+msgstr "[success] Gráficos selecionados habilitados..."
 
 #: FlatCAMApp.py:9129
 msgid "[success] Selected plots disabled..."
@@ -1353,7 +1353,7 @@ msgstr ""
 #, python-format
 msgid "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
 msgstr ""
-"[ERROR_NOTCL] Falha ao salvar o arquivo de projeto: %s . Tente salvá-lo "
+"[ERROR_NOTCL] Falha ao salvar o arquivo de projeto: %s. Tente salvá-lo "
 "novamente."
 
 #: FlatCAMObj.py:208
@@ -1427,7 +1427,7 @@ msgstr ""
 msgid ""
 "[ERROR_NOTCL] Milling tool for DRILLS is larger than hole size. Cancelled."
 msgstr ""
-"[ERROR_NOTCL] A ferramenta de fresagem para BROCAS é maior que o tamanho do "
+"[ERROR_NOTCL] A ferramenta BROCA é maior que o tamanho do "
 "furo. Cancelado."
 
 #: FlatCAMObj.py:2465 FlatCAMObj.py:2560 FlatCAMObj.py:2679
@@ -1454,7 +1454,7 @@ msgstr "Fenda_Nr"
 msgid ""
 "[ERROR_NOTCL] Milling tool for SLOTS is larger than hole size. Cancelled."
 msgstr ""
-"[ERROR_NOTCL] A ferramenta de fresagem para FENDAS é maior que o tamanho do "
+"[ERROR_NOTCL] A ferramenta fresa para FENDAS é maior que o tamanho do "
 "furo. Cancelado."
 
 #: FlatCAMObj.py:2720 FlatCAMObj.py:4379 FlatCAMObj.py:4585 FlatCAMObj.py:4891
@@ -1462,7 +1462,7 @@ msgid ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"z_pdepth\"] or self."
 "options[\"z_pdepth\"]"
 msgstr ""
-"[ERROR_NOTCL] Formato de valor incorreto para self.defaults[\"z_pdepth\"] ou "
+"[ERROR_NOTCL] Valor com formato incorreto para self.defaults[\"z_pdepth\"] ou "
 "self.options[\"z_pdepth\"]"
 
 #: FlatCAMObj.py:2730 FlatCAMObj.py:4389 FlatCAMObj.py:4595 FlatCAMObj.py:4901
@@ -1470,7 +1470,7 @@ msgid ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"feedrate_probe\"] or "
 "self.options[\"feedrate_probe\"]"
 msgstr ""
-"[ERROR_NOTCL] Formato de valor incorreto para self.defaults[\"feedrate_probe"
+"[ERROR_NOTCL] Valor com formato incorreto para self.defaults[\"feedrate_probe"
 "\"] ou self.options[\"feedrate_probe\"]"
 
 #: FlatCAMObj.py:2760 FlatCAMObj.py:4781 FlatCAMObj.py:4786 FlatCAMObj.py:4933
@@ -1515,8 +1515,7 @@ msgstr "[success] Ferramenta adicionada na Tabela de Ferramentas."
 #: FlatCAMObj.py:3684
 msgid "[WARNING_NOTCL] Default Tool added. Wrong value format entered."
 msgstr ""
-"[WARNING_NOTCL] Ferramenta padrão adicionada. Formato de valor incorreto "
-"inserido."
+"[WARNING_NOTCL] Ferramenta padrão adicionada. Valor inserico com formato incorreto."
 
 #: FlatCAMObj.py:3716 FlatCAMObj.py:3724
 msgid "[WARNING_NOTCL] Failed. Select a tool to copy."
@@ -1565,9 +1564,9 @@ msgid ""
 "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
 "Add a Tool Offset or change the Offset Type."
 msgstr ""
-"[WARNING] Tool Offset é selecionado na Tabela de Ferramentas, mas nenhum "
-"valor é fornecido. \n"
-"Adicione um Offset de Ferramenta ou altere o Tipo de Deslocamento."
+"[WARNING] Deslocamento de Ferramenta selecionado na Tabela de Ferramentas, mas nenhum "
+"valor foi fornecido. \n"
+"Adicione um Deslocamento de Ferramenta ou altere o Tipo de Deslocamento."
 
 #: FlatCAMObj.py:4605 flatcamTools/ToolSolderPaste.py:1117
 #: flatcamTools/ToolSolderPaste.py:1173
@@ -1588,7 +1587,7 @@ msgid ""
 "[ERROR_NOTCL] An (x,y) pair of values are needed. Probable you entered only "
 "one value in the Offset field."
 msgstr ""
-"[ERROR_NOTCL] Um par de valores (x,y) é necessário. Provavelmente você "
+"[ERROR_NOTCL] Um par (x,y) de valores é necessário. Provavelmente você "
 "digitou apenas um valor no campo Deslocamento."
 
 #: FlatCAMObj.py:5059
@@ -1631,13 +1630,13 @@ msgid ""
 "[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
 "empty."
 msgstr ""
-"[ERROR_NOTCL] Cancelado. O código personalizado do Toolchange está ativado, "
+"[ERROR_NOTCL] Cancelado. O código personalizado para Troca de Ferramentas está ativado, "
 "mas está vazio."
 
 #: FlatCAMObj.py:5870
 msgid "[success] Toolchange G-code was replaced by a custom code."
 msgstr ""
-"[success] O G-Code do Toolchange foi substituído por um código personalizado."
+"[success] O G-Code para Troca de Ferramentas foi substituído por um código personalizado."
 
 #: FlatCAMObj.py:5884 flatcamTools/ToolSolderPaste.py:1402
 msgid "[WARNING_NOTCL] No such file or directory"
@@ -1648,7 +1647,7 @@ msgid ""
 "[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
 "'toolchange_custom'"
 msgstr ""
-"[WARNING_NOTCL] O arquivo do postprocessor usado deve ter em seu nome: "
+"[WARNING_NOTCL] O arquivo de pós-processamento deve ter em seu nome: "
 "'toolchange_custom'"
 
 #: FlatCAMObj.py:5926
@@ -1676,7 +1675,7 @@ msgstr "Objeto renomeado de <b>{old}</b> para <b>{new}</b>"
 #: ObjectCollection.py:765
 #, python-format
 msgid "[ERROR] Cause of error: %s"
-msgstr "[ERROR] Causa do erro: %s"
+msgstr "[ERROR] Motivo do erro: %s"
 
 #: camlib.py:197
 msgid "[ERROR_NOTCL] self.solid_geometry is neither BaseGeometry or list."
@@ -1684,7 +1683,7 @@ msgstr "[ERROR_NOTCL] self.solid_geometry não é nem BaseGeometry nem lista."
 
 #: camlib.py:1405
 msgid "[success] Object was mirrored ..."
-msgstr "[success] Objeto foi espelhado ..."
+msgstr "[success] O Objeto foi espelhado ..."
 
 #: camlib.py:1407
 msgid "[ERROR_NOTCL] Failed to mirror. No object selected"
@@ -1700,7 +1699,7 @@ msgstr "[ERROR_NOTCL] Falha ao girar. Nenhum objeto selecionado"
 
 #: camlib.py:1488
 msgid "[success] Object was skewed ..."
-msgstr "[success] Objeto foi inclinado ..."
+msgstr "[success] O Objeto foi inclinado ..."
 
 #: camlib.py:1490
 msgid "[ERROR_NOTCL] Failed to skew. No object selected"
@@ -1724,7 +1723,7 @@ msgid ""
 "are parser errors. Line number: %s"
 msgstr ""
 "[ERROR] A região não possui pontos suficientes. O arquivo será processado, "
-"mas há erros de analisador. Número da linha: %s"
+"mas há erros na análise. Número da linha: %s"
 
 #: camlib.py:3194
 #, python-format
@@ -1786,8 +1785,8 @@ msgid ""
 "[ERROR] Excellon Parser error.\n"
 "Parsing Failed. Line {l_nr}: {line}\n"
 msgstr ""
-"[ERROR] Erro do Analisador Excellon. \n"
-"Análise falhou. Linha {l_nr}: {line} \n"
+"[ERROR] Erro do Analisador Excellon.\n"
+"Análise falhou. Linha {l_nr}: {line}\n"
 
 #: camlib.py:4581
 msgid ""
@@ -1796,7 +1795,7 @@ msgid ""
 "Check the resulting GCode."
 msgstr ""
 "[WARNING] Excellon.create_geometry () -> um furo foi ignorado por não ter "
-"uma ferramenta associada. \n"
+"uma ferramenta associada.\n"
 "Verifique o G-Code resultante."
 
 #: camlib.py:5153
@@ -1838,7 +1837,7 @@ msgid ""
 "[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad "
 "combinations of other parameters."
 msgstr ""
-"O parâmetro [ERROR_NOTCL] Cut_Z está vazio ou é zero. O mais provável é uma "
+"O parâmetro [ERROR_NOTCL] Profundidade de Corte está vazio ou é zero. Provavelmente é uma "
 "combinação ruim de outros parâmetros."
 
 #: camlib.py:5756 camlib.py:6046
@@ -1954,7 +1953,7 @@ msgid ""
 "[ERROR_NOTCL] The value is not Float. Check for comma instead of dot "
 "separator."
 msgstr ""
-"[ERROR_NOTCL] O valor não é flutuante. Verifique uma vírgula em vez do ponto "
+"[ERROR_NOTCL] O valor não é flutuante. Verifique se há uma vírgula em vez do ponto "
 "no separador decimal."
 
 #: flatcamEditors/FlatCAMExcEditor.py:215
@@ -1966,7 +1965,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMExcEditor.py:313
 msgid "[WARNING_NOTCL] Too many drills for the selected spacing angle."
 msgstr ""
-"[WARNING_NOTCL] Brocas demais para o ângulo de espaçamento selecionado."
+"[WARNING_NOTCL] Muitas brocas para o ângulo de espaçamento selecionado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:330
 msgid "[success] Done. Drill Array added."
@@ -1988,13 +1987,13 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMExcEditor.py:521
 msgid "[success] Done. Adding Slot completed."
-msgstr "[success] Feito. Adicionando Ranhura concluído."
+msgstr "[success] Feito. Ranhura adicionada."
 
 #: flatcamEditors/FlatCAMExcEditor.py:547
 msgid "[WARNING_NOTCL] To add an Slot Array first select a tool in Tool Table"
 msgstr ""
 "[WARNING_NOTCL] Para adicionar uma matriz de ranhuras, primeiro selecione "
-"uma ferramenta na Tabela de ferramentas"
+"uma ferramenta na Tabela de Ferramentas"
 
 #: flatcamEditors/FlatCAMExcEditor.py:604
 msgid "Click on the Slot Circular Array Start position"
@@ -2003,12 +2002,12 @@ msgstr "Clique na posição inicial da matriz circular da ranhura"
 #: flatcamEditors/FlatCAMExcEditor.py:629
 #: flatcamEditors/FlatCAMGrbEditor.py:505
 msgid "[ERROR_NOTCL] The value is mistyped. Check the value."
-msgstr "[ERROR_NOTCL] O valor é digitado incorretamente. Verifique o valor."
+msgstr "[ERROR_NOTCL] O valor digitado está incorreto. Verifique o valor."
 
 #: flatcamEditors/FlatCAMExcEditor.py:807
 msgid "[WARNING_NOTCL] Too many Slots for the selected spacing angle."
 msgstr ""
-"[WARNING_NOTCL] Ranhuras demais para o ângulo de espaçamento selecionado."
+"[WARNING_NOTCL] Muitas Ranhuras para o ângulo de espaçamento selecionado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:829
 msgid "[success] Done. Slot Array added."
@@ -2032,12 +2031,12 @@ msgstr "[ERROR_NOTCL] Cancelado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1055
 msgid "[success] Done. Drill/Slot Resize completed."
-msgstr "[success] Feito. Redimensionamento de perfurar / ranhura concluído."
+msgstr "[success] Feito. Redimensionamento de broca/ranhura concluído."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1057
 msgid "[WARNING_NOTCL] Cancelled. No drills/slots selected for resize ..."
 msgstr ""
-"[WARNING_NOTCL] Cancelado. Nenhum brocas / ranhuras selecionados para "
+"[WARNING_NOTCL] Cancelado. Nenhuma broca/ranhura selecionada para "
 "redimensionar ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1085
