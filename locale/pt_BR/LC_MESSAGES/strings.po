@@ -1,4 +1,4 @@
-msgid ""
+﻿msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-09-10 00:20+0300\n"
@@ -2452,7 +2452,7 @@ msgid ""
 "Save and reedit Excellon if you need to add this tool. "
 msgstr ""
 "Ferramenta já na lista de ferramentas original ou atual.\n"
-"Salve e reedite Excellon se precisar adicionar essa ferramenta.
+"Salve e reedite Excellon se precisar adicionar essa ferramenta."
 
 #: flatcamEditors/FlatCAMExcEditor.py:2437
 msgid "Added new tool with dia"
@@ -2600,7 +2600,7 @@ msgstr "Taxa de Sobreposição"
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
-"A value here of 0.25 means 25% from the tool diameter found above.\n"
+"A value here of 0.25 means 25%% from the tool diameter found above.\n"
 "\n"
 "Adjust the value starting with lower values\n"
 "and increasing it if areas that should be painted are still \n"
@@ -2612,7 +2612,7 @@ msgstr ""
 "Quanto da largura da ferramenta (fração) é sobreposto em cada passagem da "
 "ferramenta.\n"
 "Exemplo:\n"
-"Um valor de 0.25 significa uma sobreposição de 25% do diâmetro da "
+"Um valor de 0.25 significa uma sobreposição de 25%% do diâmetro da "
 "ferramenta.\n"
 "Ajuste o valor começando com valores menores, e aumente se alguma área que \n"
 "deveria ser pintada não foi pintada.\n"
@@ -3545,7 +3545,7 @@ msgstr "Valor inválido para"
 #, python-format
 msgid "Could not do Paint. Overlap value has to be less than 1.00 (100%%)."
 msgstr "Não foi possível fazer a Pintura. O valor de sobreposição deve "
-"ser menor do que 1.00 (100%)."
+"ser menor do que 1.00 (100%%)."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4587
 #, python-format
@@ -4754,302 +4754,304 @@ msgstr "Editor"
 
 #: flatcamGUI/FlatCAMGUI.py:639 flatcamGUI/FlatCAMGUI.py:1982
 msgid "Save Object and close the Editor"
-msgstr ""
+msgstr "Salvar objeto e fechar o editor"
 
 #: flatcamGUI/FlatCAMGUI.py:643 flatcamGUI/FlatCAMGUI.py:1986
 msgid "&Delete"
-msgstr ""
+msgstr "&Excluir"
 
 #: flatcamGUI/FlatCAMGUI.py:646 flatcamGUI/FlatCAMGUI.py:1989
 msgid "&Replot"
-msgstr ""
+msgstr "&Redesenhar"
 
 #: flatcamGUI/FlatCAMGUI.py:647 flatcamGUI/FlatCAMGUI.py:1990
 msgid "&Clear plot"
-msgstr ""
+msgstr "Limpar gráfi&co"
 
 #: flatcamGUI/FlatCAMGUI.py:648 flatcamGUI/FlatCAMGUI.py:1991
 msgid "Zoom In"
-msgstr ""
+msgstr "Zoom +"
 
 #: flatcamGUI/FlatCAMGUI.py:649 flatcamGUI/FlatCAMGUI.py:1992
 msgid "Zoom Out"
-msgstr ""
+msgstr "Zoom -"
 
 #: flatcamGUI/FlatCAMGUI.py:650 flatcamGUI/FlatCAMGUI.py:1657
 #: flatcamGUI/FlatCAMGUI.py:1993
 msgid "Zoom Fit"
-msgstr ""
+msgstr "Zoom Ajustado"
 
 #: flatcamGUI/FlatCAMGUI.py:655 flatcamGUI/FlatCAMGUI.py:1998
 msgid "&Command Line"
-msgstr ""
+msgstr "Linha de &Comando"
 
 #: flatcamGUI/FlatCAMGUI.py:658 flatcamGUI/FlatCAMGUI.py:2001
 msgid "2Sided Tool"
-msgstr ""
+msgstr "PCB de 2 Faces"
 
 #: flatcamGUI/FlatCAMGUI.py:659 flatcamGUI/FlatCAMGUI.py:2002
 msgid "&Cutout Tool"
-msgstr ""
+msgstr "Ferramenta de Re&corte"
 
 #: flatcamGUI/FlatCAMGUI.py:660 flatcamGUI/FlatCAMGUI.py:2003
 #: flatcamGUI/ObjectUI.py:452 flatcamTools/ToolNonCopperClear.py:531
 msgid "NCC Tool"
-msgstr ""
+msgstr "Ferramenta NCC"
 
 #: flatcamGUI/FlatCAMGUI.py:664 flatcamGUI/FlatCAMGUI.py:2007
 msgid "Panel Tool"
-msgstr ""
+msgstr "Ferramenta de Painel"
 
 #: flatcamGUI/FlatCAMGUI.py:665 flatcamGUI/FlatCAMGUI.py:2008
 #: flatcamTools/ToolFilm.py:209
 msgid "Film Tool"
-msgstr ""
+msgstr "Ferramenta de Filme"
 
 #: flatcamGUI/FlatCAMGUI.py:666 flatcamGUI/FlatCAMGUI.py:2010
 #: flatcamTools/ToolSolderPaste.py:455
 msgid "SolderPaste Tool"
-msgstr ""
+msgstr "Ferramenta Pasta de Solda"
 
 #: flatcamGUI/FlatCAMGUI.py:667 flatcamGUI/FlatCAMGUI.py:2011
 #: flatcamTools/ToolSub.py:28
 msgid "Substract Tool"
-msgstr ""
+msgstr "Ferramenta Subtrair"
 
 #: flatcamGUI/FlatCAMGUI.py:671 flatcamGUI/FlatCAMGUI.py:2016
 msgid "Calculators Tool"
-msgstr ""
+msgstr "Calculadoras"
 
 #: flatcamGUI/FlatCAMGUI.py:675 flatcamGUI/FlatCAMGUI.py:692
 #: flatcamGUI/FlatCAMGUI.py:726 flatcamGUI/FlatCAMGUI.py:2020
 #: flatcamGUI/FlatCAMGUI.py:2073
 msgid "Select"
-msgstr ""
+msgstr "Selecionar"
 
 #: flatcamGUI/FlatCAMGUI.py:676 flatcamGUI/FlatCAMGUI.py:2021
 msgid "Add Drill Hole"
-msgstr ""
+msgstr "Adicionar Furo"
 
 #: flatcamGUI/FlatCAMGUI.py:678 flatcamGUI/FlatCAMGUI.py:2023
 msgid "Add Drill Hole Array"
-msgstr ""
+msgstr "Adicionar Matriz do Furos"
 
 #: flatcamGUI/FlatCAMGUI.py:679 flatcamGUI/FlatCAMGUI.py:1712
 #: flatcamGUI/FlatCAMGUI.py:2025
 msgid "Add Slot"
-msgstr ""
+msgstr "Adicionar Ranhura"
 
 #: flatcamGUI/FlatCAMGUI.py:681 flatcamGUI/FlatCAMGUI.py:1713
 #: flatcamGUI/FlatCAMGUI.py:2027
 msgid "Add Slot Array"
-msgstr ""
+msgstr "Adicionar Matriz de Ranhuras"
 
 #: flatcamGUI/FlatCAMGUI.py:682 flatcamGUI/FlatCAMGUI.py:1715
 #: flatcamGUI/FlatCAMGUI.py:2024
 msgid "Resize Drill"
-msgstr ""
+msgstr "Redimensionar Broca"
 
 #: flatcamGUI/FlatCAMGUI.py:685 flatcamGUI/FlatCAMGUI.py:2030
 msgid "Copy Drill"
-msgstr ""
+msgstr "Copiar Broca"
 
 #: flatcamGUI/FlatCAMGUI.py:686 flatcamGUI/FlatCAMGUI.py:2032
 msgid "Delete Drill"
-msgstr ""
+msgstr "Excluir Broca"
 
 #: flatcamGUI/FlatCAMGUI.py:689 flatcamGUI/FlatCAMGUI.py:2035
 msgid "Move Drill"
-msgstr ""
+msgstr "Mover Broca"
 
 #: flatcamGUI/FlatCAMGUI.py:693 flatcamGUI/FlatCAMGUI.py:2039
 msgid "Add Circle"
-msgstr ""
+msgstr "Adicionar Círculo"
 
 #: flatcamGUI/FlatCAMGUI.py:694 flatcamGUI/FlatCAMGUI.py:2040
 msgid "Add Arc"
-msgstr ""
+msgstr "Adicionar Arco"
 
 #: flatcamGUI/FlatCAMGUI.py:696 flatcamGUI/FlatCAMGUI.py:2042
 msgid "Add Rectangle"
-msgstr ""
+msgstr "Adicionar Retângulo"
 
 #: flatcamGUI/FlatCAMGUI.py:699 flatcamGUI/FlatCAMGUI.py:2045
 msgid "Add Path"
-msgstr ""
+msgstr "Adicionar Caminho"
 
 #: flatcamGUI/FlatCAMGUI.py:700 flatcamGUI/FlatCAMGUI.py:2047
 msgid "Add Polygon"
-msgstr ""
+msgstr "Adicionar Polígono"
 
 #: flatcamGUI/FlatCAMGUI.py:702 flatcamGUI/FlatCAMGUI.py:2049
 msgid "Add Text"
-msgstr ""
+msgstr "Adicionar Texto"
 
 #: flatcamGUI/FlatCAMGUI.py:703 flatcamGUI/FlatCAMGUI.py:2050
 msgid "Add Buffer"
-msgstr ""
+msgstr "Adicionar Buffer"
 
 #: flatcamGUI/FlatCAMGUI.py:704 flatcamGUI/FlatCAMGUI.py:2051
 msgid "Paint Shape"
-msgstr ""
+msgstr "Pintar Forma"
 
 #: flatcamGUI/FlatCAMGUI.py:705 flatcamGUI/FlatCAMGUI.py:743
 #: flatcamGUI/FlatCAMGUI.py:1674 flatcamGUI/FlatCAMGUI.py:1702
 #: flatcamGUI/FlatCAMGUI.py:2052 flatcamGUI/FlatCAMGUI.py:2089
 msgid "Eraser"
-msgstr ""
+msgstr "Borracha"
 
 #: flatcamGUI/FlatCAMGUI.py:708 flatcamGUI/FlatCAMGUI.py:2055
 msgid "Polygon Union"
-msgstr ""
+msgstr "União de Polígonos"
 
 #: flatcamGUI/FlatCAMGUI.py:710 flatcamGUI/FlatCAMGUI.py:2057
 msgid "Polygon Intersection"
-msgstr ""
+msgstr "Interseção de Polígonos"
 
 #: flatcamGUI/FlatCAMGUI.py:712 flatcamGUI/FlatCAMGUI.py:2059
 msgid "Polygon Subtraction"
-msgstr ""
+msgstr "Subtração de Polígonos"
 
 #: flatcamGUI/FlatCAMGUI.py:715 flatcamGUI/FlatCAMGUI.py:2062
 msgid "Cut Path"
-msgstr ""
+msgstr "Caminho de Corte"
 
 #: flatcamGUI/FlatCAMGUI.py:716
 msgid "Copy Shape(s)"
-msgstr ""
+msgstr "Copiar Forma(s)"
 
 #: flatcamGUI/FlatCAMGUI.py:719
 msgid "Delete Shape '-'"
-msgstr ""
+msgstr "Excluir Forma '-'"
 
 #: flatcamGUI/FlatCAMGUI.py:721 flatcamGUI/FlatCAMGUI.py:750
 #: flatcamGUI/FlatCAMGUI.py:1681 flatcamGUI/FlatCAMGUI.py:1706
 #: flatcamGUI/FlatCAMGUI.py:2067 flatcamGUI/FlatCAMGUI.py:2096
 msgid "Transformations"
-msgstr ""
+msgstr "Transformações"
 
 #: flatcamGUI/FlatCAMGUI.py:723
 msgid "Move Objects "
-msgstr ""
+msgstr "Mover Objetos "
 
 #: flatcamGUI/FlatCAMGUI.py:727 flatcamGUI/FlatCAMGUI.py:2074
 msgid "Add Pad"
-msgstr ""
+msgstr "Adicionar Pad"
 
 #: flatcamGUI/FlatCAMGUI.py:729 flatcamGUI/FlatCAMGUI.py:2076
 msgid "Add Track"
-msgstr ""
+msgstr "Adicionar Trilha"
 
 #: flatcamGUI/FlatCAMGUI.py:730 flatcamGUI/FlatCAMGUI.py:2077
 msgid "Add Region"
-msgstr ""
+msgstr "Adicionar Região"
 
 #: flatcamGUI/FlatCAMGUI.py:732 flatcamGUI/FlatCAMGUI.py:1694
 #: flatcamGUI/FlatCAMGUI.py:2079
 msgid "Poligonize"
-msgstr ""
+msgstr "Poligonizar"
 
 #: flatcamGUI/FlatCAMGUI.py:734 flatcamGUI/FlatCAMGUI.py:1695
 #: flatcamGUI/FlatCAMGUI.py:2081
 msgid "SemiDisc"
-msgstr ""
+msgstr "SemiDisco"
 
 #: flatcamGUI/FlatCAMGUI.py:735 flatcamGUI/FlatCAMGUI.py:1696
 #: flatcamGUI/FlatCAMGUI.py:2082
 msgid "Disc"
-msgstr ""
+msgstr "Disco"
 
 #: flatcamGUI/FlatCAMGUI.py:741 flatcamGUI/FlatCAMGUI.py:1701
 #: flatcamGUI/FlatCAMGUI.py:2088
 msgid "Mark Area"
-msgstr ""
+msgstr "Marcar Área"
 
 #: flatcamGUI/FlatCAMGUI.py:752 flatcamGUI/FlatCAMGUI.py:1684
 #: flatcamGUI/FlatCAMGUI.py:1725 flatcamGUI/FlatCAMGUI.py:2098
 #: flatcamTools/ToolMove.py:26
 msgid "Move"
-msgstr ""
+msgstr "Mover"
 
 #: flatcamGUI/FlatCAMGUI.py:758 flatcamGUI/FlatCAMGUI.py:2104
 msgid "Snap to grid"
-msgstr ""
+msgstr "Encaixar na Grade"
 
 #: flatcamGUI/FlatCAMGUI.py:761 flatcamGUI/FlatCAMGUI.py:2107
 msgid "Grid X snapping distance"
-msgstr ""
+msgstr "Distância de encaixe Grade X"
 
 #: flatcamGUI/FlatCAMGUI.py:766 flatcamGUI/FlatCAMGUI.py:2112
 msgid "Grid Y snapping distance"
-msgstr ""
+msgstr "Distância de encaixe Grade Y"
 
 #: flatcamGUI/FlatCAMGUI.py:772 flatcamGUI/FlatCAMGUI.py:2118
 msgid ""
 "When active, value on Grid_X\n"
 "is copied to the Grid_Y value."
 msgstr ""
+"Quando ativo, o valor em Grid_X\n"
+"é copiado para o valor Grid_Y."
 
 #: flatcamGUI/FlatCAMGUI.py:778 flatcamGUI/FlatCAMGUI.py:2124
 msgid "Snap to corner"
-msgstr ""
+msgstr "Encaixar no canto"
 
 #: flatcamGUI/FlatCAMGUI.py:782 flatcamGUI/FlatCAMGUI.py:2128
 #: flatcamGUI/FlatCAMGUI.py:3575
 msgid "Max. magnet distance"
-msgstr ""
+msgstr "Distância magnética max."
 
 #: flatcamGUI/FlatCAMGUI.py:809 flatcamGUI/FlatCAMGUI.py:1651
 msgid "Project"
-msgstr ""
+msgstr "Projeto"
 
 #: flatcamGUI/FlatCAMGUI.py:819
 msgid "Selected"
-msgstr ""
+msgstr "Selecionado"
 
 #: flatcamGUI/FlatCAMGUI.py:838 flatcamGUI/FlatCAMGUI.py:846
 msgid "Plot Area"
-msgstr ""
+msgstr "Área de Gráfico"
 
 #: flatcamGUI/FlatCAMGUI.py:872
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #: flatcamGUI/FlatCAMGUI.py:881
 msgid "APP.  DEFAULTS"
-msgstr ""
+msgstr "PADRÕES APP."
 
 #: flatcamGUI/FlatCAMGUI.py:882
 msgid "PROJ. OPTIONS "
-msgstr ""
+msgstr "OPÇÕES PROJ."
 
 #: flatcamGUI/FlatCAMGUI.py:894 flatcamTools/ToolDblSided.py:47
 msgid "GERBER"
-msgstr ""
+msgstr "Gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:904 flatcamTools/ToolDblSided.py:71
 msgid "EXCELLON"
-msgstr ""
+msgstr "Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:914 flatcamTools/ToolDblSided.py:95
 msgid "GEOMETRY"
-msgstr ""
+msgstr "Geometria"
 
 #: flatcamGUI/FlatCAMGUI.py:924
 msgid "CNC-JOB"
-msgstr ""
+msgstr "Trabalho CNC"
 
 #: flatcamGUI/FlatCAMGUI.py:933 flatcamGUI/ObjectUI.py:441
 msgid "TOOLS"
-msgstr ""
+msgstr "Ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:943
 msgid "FILE ASSOCIATIONS"
-msgstr ""
+msgstr "Associação de Arquivos"
 
 #: flatcamGUI/FlatCAMGUI.py:960
 msgid "Import Preferences"
-msgstr ""
+msgstr "Importar Preferências"
 
 #: flatcamGUI/FlatCAMGUI.py:963
 msgid ""
@@ -5059,30 +5061,39 @@ msgid ""
 "FlatCAM automatically save a 'factory_defaults' file\n"
 "on the first start. Do not delete that file."
 msgstr ""
+"Importa um conjunto completo de configurações do FlatCAM de um arquivo\n"
+"previamente salvo no HDD.\n"
+"\n"
+"FlatCAM salva automaticamente o arquivo 'factory_defaults'\n"
+"na primeira inicialização. Não exclua esse arquivo."
 
 #: flatcamGUI/FlatCAMGUI.py:970
 msgid "Export Preferences"
-msgstr ""
+msgstr "Exportar Preferências"
 
 #: flatcamGUI/FlatCAMGUI.py:973
 msgid ""
 "Export a full set of FlatCAM settings in a file\n"
 "that is saved on HDD."
 msgstr ""
+"Exporta um conjunto completo de configurações do FlatCAM em um arquivo\n"
+"salvo no HDD."
 
 #: flatcamGUI/FlatCAMGUI.py:978
 msgid "Open Pref Folder"
-msgstr ""
+msgstr "Abrir a Pasta Pref"
 
 #: flatcamGUI/FlatCAMGUI.py:981
 msgid "Open the folder where FlatCAM save the preferences files."
-msgstr ""
+msgstr "Abre a pasta onde o FlatCAM salva os arquivos de preferências."
 
 #: flatcamGUI/FlatCAMGUI.py:992
 msgid ""
 "Save the current settings in the 'current_defaults' file\n"
 "which is the file storing the working default preferences."
 msgstr ""
+"Salva as configurações atuais no arquivo 'current_defaults'\n"
+"que armazena as preferências padrão de trabalho."
 
 #: flatcamGUI/FlatCAMGUI.py:1018
 msgid ""
@@ -5375,6 +5386,287 @@ msgid ""
 "    \n"
 "            "
 msgstr ""
+"<b>Lista de Atalhos Gerais</b><br>\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
+"\"width:283px\">\n"
+"                <tbody>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\" width=\"89\"><strong>F3</strong></"
+"td>\n"
+"                        <td width=\"194\"><span style=\"color:"
+"#006400\"><strong>&nbsp;MOSTRA LISTA DE ATALHOS</strong></span></td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>1</strong></td>\n"
+"                        <td>&nbsp;Vai para a Aba do Projeto</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>2</strong></td>\n"
+"                        <td>&nbsp;Vai para a Aba Selecionado</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>3</strong></td>\n"
+"                        <td>&nbsp;Vai para a Aba Ferramenta</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>B</strong></td>\n"
+"                        <td>&nbsp;Novo Gerber</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>E</strong></td>\n"
+"                        <td>&nbsp;Editar Objeto (se selecionado)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>G</strong></td>\n"
+"                        <td>&nbsp;Liga/Desliga a Grade</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>J</strong></td>\n"
+"                        <td>&nbsp;Vai para as Coordenadas</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>L</strong></td>\n"
+"                        <td>&nbsp;Novo Excellon</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>M</strong></td>\n"
+"                        <td>&nbsp;Move Objeto</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>N</strong></td>\n"
+"                        <td>&nbsp;Nova Geometria</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>O</strong></td>\n"
+"                        <td>&nbsp;Ajusta Origem</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Q</strong></td>\n"
+"                        <td>&nbsp;Altera Unidades</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>P</strong></td>\n"
+"                        <td>&nbsp;Abre Propriedades da Ferramenta</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>R</strong></td>\n"
+"                        <td>&nbsp;Gira 90 graus horários</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>S</strong></td>\n"
+"                        <td>&nbsp;Alterna Linha de Comando</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>T</strong></td>\n"
+"                        <td>&nbsp;Adiciona uma Ferramenta (quando na Aba "
+"Selecionado ou em Ferramentas NCC ou de Pintura)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>V</strong></td>\n"
+"                        <td>&nbsp;Zoom Ajustado</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>X</strong></td>\n"
+"                        <td>&nbsp;Espelha em X</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Y</strong></td>\n"
+"                        <td>&nbsp;Espelha em Y</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>&#39;-&#39;</strong></td>\n"
+"                        <td>&nbsp;Zoom -</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>&#39;=&#39;</strong></td>\n"
+"                        <td>&nbsp;Zoom +</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+A</strong></td>\n"
+"                        <td>&nbsp;Seleciona Todos</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+C</strong></td>\n"
+"                        <td>&nbsp;Copiar Objeto</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+E</strong></td>\n"
+"                        <td>&nbsp;Abrir Arquivo Excellon</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+G</strong></td>\n"
+"                        <td>&nbsp;Abrir Arquivo Gerber</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+N</strong></td>\n"
+"                        <td>&nbsp;Novo Projeto</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+M</strong></td>\n"
+"                        <td>&nbsp;Ferramenta de Medição</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+O</strong></td>\n"
+"                        <td>&nbsp;Abrir Projeto</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
+"                        <td>&nbsp;Salvar Projeto Como</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+F10</strong></td>\n"
+"                        <td>&nbsp;Alternar Área de Gráfico</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+C</strong></td>\n"
+"                        <td>&nbsp;Copiar Obj_Name</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+E</strong></td>\n"
+"                        <td>&nbsp;Alterna Editor de Código</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+G</strong></td>\n"
+"                        <td>&nbsp;Alterna o Eixo</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+P</strong></td>\n"
+"                        <td>&nbsp;Abre Janela de Preferências</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+R</strong></td>\n"
+"                        <td>&nbsp;Gira 90 graus antihorário</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+S</strong></td>\n"
+"                        <td>&nbsp;Executa um Script</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+W</strong></td>\n"
+"                        <td>&nbsp;Alterna o Local de Trabalho</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+X</strong></td>\n"
+"                        <td>&nbsp;Inclina no Eixo X</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+Y</strong></td>\n"
+"                        <td>&nbsp;Inclina no Eixo Y</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+C</strong></td>\n"
+"                        <td>&nbsp;Calculadoras</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+D</strong></td>\n"
+"                        <td>&nbsp;Ferramenta PCB 2-Faces</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+K</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Pasta de Solda</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+L</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Filme PCB</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+N</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Retirar Cobre (NCC)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+P</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Pintura de Área</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+Q</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Importar PDF</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+R</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Transformações</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+S</strong></td>\n"
+"                        <td>&nbsp;Ver Arquivo Fonte</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+U</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Recorte PCB</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+1</strong></td>\n"
+"                        <td>&nbsp;Habilita todos os Gráficos</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+2</strong></td>\n"
+"                        <td>&nbsp;Desabilita todos os Gráficos</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+3</strong></td>\n"
+"                        <td>&nbsp;Desabilita todos os Gráficos não "
+"selecionados</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+F10</strong></td>\n"
+"                        <td>&nbsp;Alterna Tela Cheia</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>F1</strong></td>\n"
+"                        <td>&nbsp;Abrir Manual Online</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>F4</strong></td>\n"
+"                        <td>&nbsp;Abrir Tutoriais Online</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Del</strong></td>\n"
+"                        <td>&nbsp;Excluir Objeto</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Del</strong></td>\n"
+"                        <td>&nbsp;Alternativo: Excluir Ferramenta</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>'`'</strong></td>\n"
+"                        <td>&nbsp;(Seta Esquerda e Tecla_1)Alterna Área "
+"Notebook (Lado Esquerdo)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SPACE</strong></td>\n"
+"                        <td>&nbsp;(Des)habilita Objeto Gráfico</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Escape</strong></td>\n"
+"                        <td>&nbsp;Deseleciona todos os objetos</td>\n"
+"                    </tr>\n"
+"                </tbody>\n"
+"            </table>\n"
+"    \n"
+"            "
 
 #: flatcamGUI/FlatCAMGUI.py:1311
 msgid ""
@@ -5713,178 +6005,524 @@ msgid ""
 "            </table>\n"
 "                    "
 msgstr ""
+"<b>Lista de Atalhos dos Editores</b><br>\n"
+"            <br>\n"
+"            <strong><span style=\"color:#0000ff\">EDITOR DE GEOMETRIA</"
+"span></strong><br>\n"
+"    \n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
+"\"width:283px\">\n"
+"                <tbody>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\" width=\"89\"><strong>A</strong></"
+"td>\n"
+"                        <td width=\"194\">&nbsp;Desenha um Arco</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>B</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Buffer</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>C</strong></td>\n"
+"                        <td>&nbsp;Copiar Objeto Geo</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>D</strong></td>\n"
+"                        <td>&nbsp;Em Adicionar Arco, alterna o sentido do "
+"ARCO: CW ou CCW</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>E</strong></td>\n"
+"                        <td>&nbsp;Ferramenta de Interseção de Polígonos</"
+"td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>I</strong></td>\n"
+"                        <td>&nbsp;Ferramenta de Pintura</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>J</strong></td>\n"
+"                        <td>&nbsp;Ir para a Localização (x, y)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>K</strong></td>\n"
+"                        <td>&nbsp;Alterna Encaixe no Canto</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>M</strong></td>\n"
+"                        <td>&nbsp;Mover Item Geo</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>M</strong></td>\n"
+"                        <td>&nbsp;Em Adicionar Arco, alterna entre os modos "
+"de ARCO</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>N</strong></td>\n"
+"                        <td>&nbsp;Desenha um Polígono</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>O</strong></td>\n"
+"                        <td>&nbsp;Desenha um Círculo</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>P</strong></td>\n"
+"                        <td>&nbsp;Desenha um Caminho</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>R</strong></td>\n"
+"                        <td>&nbsp;Desenha um Retângulo</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>S</strong></td>\n"
+"                        <td>&nbsp;Ferramenta de Subtração de Polígonos</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>T</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Adicionar Texto</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>U</strong></td>\n"
+"                        <td>&nbsp;Ferramenta União de Polígonos</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>X</strong></td>\n"
+"                        <td>&nbsp;Espelha a forma no eixo X</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Y</strong></td>\n"
+"                        <td>&nbsp;Espelha a forma no eixo Y</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+X</strong></td>\n"
+"                        <td>&nbsp;Inclina a forma no eixo X</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>SHIFT+Y</strong></td>\n"
+"                        <td>&nbsp;Inclina a forma no eixo Y</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+R</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Editor de Transformação</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+X</strong></td>\n"
+"                        <td>&nbsp;Desloca a forma no eixo X</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+Y</strong></td>\n"
+"                        <td>&nbsp;Desloca a forma no eixo Y</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+M</strong></td>\n"
+"                        <td>&nbsp;Ferramenta de Medição</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
+"                        <td>&nbsp;Salvar Objeto e Sair do Editor</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+X</strong></td>\n"
+"                        <td>&nbsp;Ferramenta de Corte de Polígono</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Space</strong></td>\n"
+"                        <td>&nbsp;Girar Geometria</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ENTER</strong></td>\n"
+"                        <td>&nbsp;Terminar o desenho para certas "
+"ferramentas</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ESC</strong></td>\n"
+"                        <td>&nbsp;Abortar e retornar à Seleção</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Del</strong></td>\n"
+"                        <td>&nbsp;Excluir Forma</td>\n"
+"                    </tr>\n"
+"                </tbody>\n"
+"            </table>\n"
+"            <br>\n"
+"            <br>\n"
+"            <strong><span style=\"color:#ff0000\">EDITOR EXCELLON</span></"
+"strong><br>\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
+"\"width:283px\">\n"
+"                <tbody>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\" width=\"89\"><strong>A</strong></"
+"td>\n"
+"                        <td width=\"194\">&nbsp;Adiciona Matriz de Brocas</"
+"td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>C</strong></td>\n"
+"                        <td>&nbsp;Copiar Broca(s)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>D</strong></td>\n"
+"                        <td>&nbsp;Adicionar Broca</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>J</strong></td>\n"
+"                        <td>&nbsp;Ir para Localização (x, y)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>M</strong></td>\n"
+"                        <td>&nbsp;Mover Broca(s)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\" width=\"89\"><strong>Q</strong></"
+"td>\n"
+"                        <td width=\"194\">&nbsp;Adicionar Matriz de "
+"Ranhuras</td>\n"
+"                    </tr>\n"
+"\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>R</strong></td>\n"
+"                        <td>&nbsp;Redimensionar Broca(s)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>T</strong></td>\n"
+"                        <td>&nbsp;Adicionar uma Nova Ferramenta</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\" width=\"89\"><strong>W</strong></"
+"td>\n"
+"                        <td width=\"194\">&nbsp;Adicionar Ranhura</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Del</strong></td>\n"
+"                        <td>&nbsp;Excluir Broca(s)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Del</strong></td>\n"
+"                        <td>&nbsp;Alternativo: Excluir Ferramenta(s)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ESC</strong></td>\n"
+"                        <td>&nbsp;Abortar e retornar para a Seleção</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
+"                        <td>&nbsp;Salvar Objeto e Sair do Editor</td>\n"
+"                    </tr>\n"
+"                </tbody>\n"
+"            </table>\n"
+"            <br>\n"
+"            <br>\n"
+"            <strong><span style=\"color:#00ff00\">EDITOR GERBER</span></"
+"strong><br>\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
+"\"width:283px\">\n"
+"                <tbody>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\" width=\"89\"><strong>A</strong></"
+"td>\n"
+"                        <td width=\"194\">&nbsp;Adicionar Matriz de Pads</"
+"td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>B</strong></td>\n"
+"                        <td>&nbsp;Buffer</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>C</strong></td>\n"
+"                        <td>&nbsp;Copiar</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>D</strong></td>\n"
+"                        <td>&nbsp;Adicionar Disco</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>E</strong></td>\n"
+"                        <td>&nbsp;Adicionar SemiDisco</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>J</strong></td>\n"
+"                        <td>&nbsp;Ir para a Localização (x, y)</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>M</strong></td>\n"
+"                        <td>&nbsp;Mover</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>N</strong></td>\n"
+"                        <td>&nbsp;Adicionar Região</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>P</strong></td>\n"
+"                        <td>&nbsp;Adicionar Pad</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>R</strong></td>\n"
+"                        <td>&nbsp;Nas Ferramentas Trilha & Região alternará "
+"em REVERSO entre os modos de curvatura</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>S</strong></td>\n"
+"                        <td>&nbsp;Escala</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>T</strong></td>\n"
+"                        <td>&nbsp;Adicionar Trilha</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>T</strong></td>\n"
+"                        <td>&nbsp;Nas Ferramentas Trilha & Região alternará "
+"entre os modos de curvatura</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Del</strong></td>\n"
+"                        <td>&nbsp;Excluir</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>Del</strong></td>\n"
+"                        <td>&nbsp;Alternativo: Excluir Aberturas</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ESC</strong></td>\n"
+"                        <td>&nbsp;Abortar e retornar para a Seleção</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+E</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Apagador</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
+"                        <td>&nbsp;Salvar Objeto e Sair do Editor</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\">&nbsp;</td>\n"
+"                        <td>&nbsp;</td>\n"
+"                    </tr>\n"
+"                     <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+A</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Marcar Área</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+N</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Poligonizar</td>\n"
+"                    </tr>\n"
+"                    <tr height=\"20\">\n"
+"                        <td height=\"20\"><strong>ALT+R</strong></td>\n"
+"                        <td>&nbsp;Ferramenta Transformação</td>\n"
+"                    </tr>\n"
+"                </tbody>\n"
+"            </table>\n"
+"                    "
 
 #: flatcamGUI/FlatCAMGUI.py:1642
 msgid "Toggle Visibility"
-msgstr ""
+msgstr "Alternar Visibilidade"
 
 #: flatcamGUI/FlatCAMGUI.py:1643
 msgid "Toggle Panel"
-msgstr ""
+msgstr "Alternar Painel"
 
 #: flatcamGUI/FlatCAMGUI.py:1646
 msgid "New"
-msgstr ""
+msgstr "Novo"
 
 #: flatcamGUI/FlatCAMGUI.py:1647
 msgid "Geometry"
-msgstr ""
+msgstr "Geometria"
 
 #: flatcamGUI/FlatCAMGUI.py:1649
 msgid "Excellon"
-msgstr ""
+msgstr "Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:1654
 msgid "Grids"
-msgstr ""
+msgstr "Grades"
 
 #: flatcamGUI/FlatCAMGUI.py:1656
 msgid "View"
-msgstr ""
+msgstr "Ver"
 
 #: flatcamGUI/FlatCAMGUI.py:1658
 msgid "Clear Plot"
-msgstr ""
+msgstr "Limpar Gráfico"
 
 #: flatcamGUI/FlatCAMGUI.py:1659
 msgid "Replot"
-msgstr ""
+msgstr "Redesenhar"
 
 #: flatcamGUI/FlatCAMGUI.py:1662
 msgid "Geo Editor"
-msgstr ""
+msgstr "Editor de Geometria"
 
 #: flatcamGUI/FlatCAMGUI.py:1663
 msgid "Path"
-msgstr ""
+msgstr "Caminho"
 
 #: flatcamGUI/FlatCAMGUI.py:1664
 msgid "Rectangle"
-msgstr ""
+msgstr "Retângulo"
 
 #: flatcamGUI/FlatCAMGUI.py:1666
 msgid "Circle"
-msgstr ""
+msgstr "Círculo"
 
 #: flatcamGUI/FlatCAMGUI.py:1667
 msgid "Polygon"
-msgstr ""
+msgstr "Polígono"
 
 #: flatcamGUI/FlatCAMGUI.py:1668
 msgid "Arc"
-msgstr ""
+msgstr "Arco"
 
 #: flatcamGUI/FlatCAMGUI.py:1671
 msgid "Text"
-msgstr ""
+msgstr "Texto"
 
 #: flatcamGUI/FlatCAMGUI.py:1677
 msgid "Union"
-msgstr ""
+msgstr "União"
 
 #: flatcamGUI/FlatCAMGUI.py:1678
 msgid "Intersection"
-msgstr ""
+msgstr "Interseção"
 
 #: flatcamGUI/FlatCAMGUI.py:1679
 msgid "Substraction"
-msgstr ""
+msgstr "Substração"
 
 #: flatcamGUI/FlatCAMGUI.py:1680 flatcamGUI/FlatCAMGUI.py:6175
 #: flatcamGUI/ObjectUI.py:1409
 msgid "Cut"
-msgstr ""
+msgstr "Cortar"
 
 #: flatcamGUI/FlatCAMGUI.py:1687
 msgid "Pad"
-msgstr ""
+msgstr "Pad"
 
 #: flatcamGUI/FlatCAMGUI.py:1688
 msgid "Pad Array"
-msgstr ""
+msgstr "Matriz de Pads"
 
 #: flatcamGUI/FlatCAMGUI.py:1691
 msgid "Track"
-msgstr ""
+msgstr "Trilha"
 
 #: flatcamGUI/FlatCAMGUI.py:1692
 msgid "Region"
-msgstr ""
+msgstr "Região"
 
 #: flatcamGUI/FlatCAMGUI.py:1708
 msgid "Exc Editor"
-msgstr ""
+msgstr "Editor Exc"
 
 #: flatcamGUI/FlatCAMGUI.py:1709
 msgid "Add Drill"
-msgstr ""
+msgstr "Adicionar Broca"
 
 #: flatcamGUI/FlatCAMGUI.py:1745
 msgid "Print Preview"
-msgstr ""
+msgstr "Visualizar Impressão"
 
 #: flatcamGUI/FlatCAMGUI.py:1746
 msgid "Print Code"
-msgstr ""
+msgstr "Imprimir Código"
 
 #: flatcamGUI/FlatCAMGUI.py:1747
 msgid "Find in Code"
-msgstr ""
+msgstr "Encontrar no Código"
 
 #: flatcamGUI/FlatCAMGUI.py:1752
 msgid "Replace With"
-msgstr ""
+msgstr "Substituir Por"
 
 #: flatcamGUI/FlatCAMGUI.py:1756 flatcamGUI/FlatCAMGUI.py:6173
 #: flatcamGUI/FlatCAMGUI.py:6966 flatcamGUI/ObjectUI.py:1407
 msgid "All"
-msgstr ""
+msgstr "Todos"
 
 #: flatcamGUI/FlatCAMGUI.py:1758
 msgid ""
 "When checked it will replace all instances in the 'Find' box\n"
 "with the text in the 'Replace' box.."
 msgstr ""
+"Quando marcado, todas as instâncias na caixa 'Localizar'\n"
+"serão substituídas pelo texto na caixa 'Substituir'."
 
 #: flatcamGUI/FlatCAMGUI.py:1761
 msgid "Open Code"
-msgstr ""
+msgstr "Abrir Código"
 
 #: flatcamGUI/FlatCAMGUI.py:1762
 msgid "Save Code"
-msgstr ""
+msgstr "Salvar Código"
 
 #: flatcamGUI/FlatCAMGUI.py:1797
 msgid ""
 "Relative neasurement.\n"
 "Reference is last click position"
 msgstr ""
+"Medição relativa.\n"
+"Em relação à posição do último clique"
 
 #: flatcamGUI/FlatCAMGUI.py:1803
 msgid ""
 "Absolute neasurement.\n"
 "Reference is (X=0, Y= 0) position"
 msgstr ""
+"Medição absoluta.\n"
+"Em relação à posição (X=0, Y=0)"
 
 #: flatcamGUI/FlatCAMGUI.py:1933
 msgid "Lock Toolbars"
-msgstr ""
+msgstr "Travar Barras de Ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:2038
 msgid "Select 'Esc'"
-msgstr ""
+msgstr "Selecionar 'Esc'"
 
 #: flatcamGUI/FlatCAMGUI.py:2063
 msgid "Copy Objects"
-msgstr ""
+msgstr "Copiar Objetos"
 
 #: flatcamGUI/FlatCAMGUI.py:2065
 msgid "Delete Shape"
-msgstr ""
+msgstr "Excluir Forma"
 
 #: flatcamGUI/FlatCAMGUI.py:2070
 msgid "Move Objects"
-msgstr ""
+msgstr "Mover Objetos"
 
 #: flatcamGUI/FlatCAMGUI.py:2506
 msgid ""
@@ -5893,119 +6531,133 @@ msgid ""
 "out of the first item. In the end press ~X~ key or\n"
 "the toolbar button."
 msgstr ""
+"Por favor, primeiro selecione um item de geometria a ser cortado\n"
+"e em seguida, selecione o item de geometria que será cortado\n"
+"fora do primeiro item. No final, pressione a tecla ~X~ ou\n"
+"o botão da barra de ferramentas."
 
 #: flatcamGUI/FlatCAMGUI.py:2513 flatcamGUI/FlatCAMGUI.py:2650
 #: flatcamGUI/FlatCAMGUI.py:2709 flatcamGUI/FlatCAMGUI.py:2729
 msgid "Warning"
-msgstr ""
+msgstr "Aviso"
 
 #: flatcamGUI/FlatCAMGUI.py:2560 flatcamGUI/FlatCAMGUI.py:2572
 msgid "[success] Done."
-msgstr ""
+msgstr "Feito."
 
 #: flatcamGUI/FlatCAMGUI.py:2580 flatcamGUI/FlatCAMGUI.py:2788
 #: flatcamGUI/FlatCAMGUI.py:2999
 msgid "[WARNING_NOTCL] Cancelled."
-msgstr ""
+msgstr "Cancelado."
 
 #: flatcamGUI/FlatCAMGUI.py:2645
 msgid ""
 "Please select geometry items \n"
 "on which to perform Intersection Tool."
 msgstr ""
+"Por favor, selecione itens de geometria\n"
+"para executar a ferramenta de interseção."
 
 #: flatcamGUI/FlatCAMGUI.py:2704
 msgid ""
 "Please select geometry items \n"
 "on which to perform Substraction Tool."
 msgstr ""
+"Por favor, selecione itens de geometria\n"
+"para executar a ferramenta de subtração."
 
 #: flatcamGUI/FlatCAMGUI.py:2724
 msgid ""
 "Please select geometry items \n"
 "on which to perform union."
 msgstr ""
+"Por favor, selecione itens de geometria\n"
+"para executar a ferramenta de união."
 
 #: flatcamGUI/FlatCAMGUI.py:2804 flatcamGUI/FlatCAMGUI.py:3016
 msgid "[WARNING_NOTCL] Cancelled. Nothing selected to delete."
-msgstr ""
+msgstr "Cancelado. Nada selecionado para excluir."
 
 #: flatcamGUI/FlatCAMGUI.py:2888 flatcamGUI/FlatCAMGUI.py:3083
 msgid "[WARNING_NOTCL] Cancelled. Nothing selected to copy."
-msgstr ""
+msgstr "Cancelado. Nada selecionado para copiar."
 
 #: flatcamGUI/FlatCAMGUI.py:2934 flatcamGUI/FlatCAMGUI.py:3129
 msgid "[WARNING_NOTCL] Cancelled. Nothing selected to move."
-msgstr ""
+msgstr "Cancelado. Nada selecionado para mover."
 
 #: flatcamGUI/FlatCAMGUI.py:3155
 msgid "New Tool ..."
-msgstr ""
+msgstr "Nova Ferramenta ..."
 
 #: flatcamGUI/FlatCAMGUI.py:3156
 msgid "Enter a Tool Diameter"
-msgstr ""
+msgstr "Digite um diâmetro de ferramenta"
 
 #: flatcamGUI/FlatCAMGUI.py:3164
 #, python-brace-format
 msgid "[success] Added new tool with dia: {dia} {units}"
-msgstr ""
+msgstr "Adicionada nova ferramenta com diâmetro: {dia} {units}"
 
 #: flatcamGUI/FlatCAMGUI.py:3211
 msgid "Measurement Tool exit..."
-msgstr ""
+msgstr "Saída da ferramenta de medição ..."
 
 #: flatcamGUI/FlatCAMGUI.py:3312
 msgid "[WARNING_NOTCL] Application is saving the project. Please wait ..."
-msgstr ""
+msgstr "O aplicativo está salvando o projeto. Por favor, espere..."
 
 #: flatcamGUI/FlatCAMGUI.py:3554
 msgid "GUI Preferences"
-msgstr ""
+msgstr "Preferências da GUI"
 
 #: flatcamGUI/FlatCAMGUI.py:3560
 msgid "Grid X value"
-msgstr ""
+msgstr "Valor da grade X"
 
 #: flatcamGUI/FlatCAMGUI.py:3562
 msgid "This is the Grid snap value on X axis."
-msgstr ""
+msgstr "Este é o valor do encaixe à grade no eixo X."
 
 #: flatcamGUI/FlatCAMGUI.py:3567
 msgid "Grid Y value"
-msgstr ""
+msgstr "Valor da grade Y"
 
 #: flatcamGUI/FlatCAMGUI.py:3569
 msgid "This is the Grid snap value on Y axis."
-msgstr ""
+msgstr "Este é o valor do encaixe à grade no eixo Y."
 
 #: flatcamGUI/FlatCAMGUI.py:3574
 msgid "Snap Max"
-msgstr ""
+msgstr "Encaixe Max"
 
 #: flatcamGUI/FlatCAMGUI.py:3579
 msgid "Workspace"
-msgstr ""
+msgstr "Área de trabalho"
 
 #: flatcamGUI/FlatCAMGUI.py:3581
 msgid ""
 "Draw a delimiting rectangle on canvas.\n"
 "The purpose is to illustrate the limits for our work."
 msgstr ""
+"Desenha um retângulo de delimitação na tela.\n"
+"O objetivo é ilustrar os limites do nosso trabalho."
 
 #: flatcamGUI/FlatCAMGUI.py:3584
 msgid "Wk. format"
-msgstr ""
+msgstr "Formato da AT"
 
 #: flatcamGUI/FlatCAMGUI.py:3586
 msgid ""
 "Select the type of rectangle to be used on canvas,\n"
 "as valid workspace."
 msgstr ""
+"Selecione o tipo de retângulo a ser usado na tela,\n"
+"como área de trabalho válida."
 
 #: flatcamGUI/FlatCAMGUI.py:3599
 msgid "Plot Fill"
-msgstr ""
+msgstr "Cor de Preenchimento"
 
 #: flatcamGUI/FlatCAMGUI.py:3601
 msgid ""
@@ -6013,27 +6665,30 @@ msgid ""
 "First 6 digits are the color and the last 2\n"
 "digits are for alpha (transparency) level."
 msgstr ""
+"Define a cor de preenchimento para os objetos plotados.\n"
+"Os primeiros 6 dígitos são a cor e os últimos 2\n"
+"dígitos são para o nível alfa (transparência)."
 
 #: flatcamGUI/FlatCAMGUI.py:3615 flatcamGUI/FlatCAMGUI.py:3665
 #: flatcamGUI/FlatCAMGUI.py:3715
 msgid "Alpha Level"
-msgstr ""
+msgstr "Nível Alfa"
 
 #: flatcamGUI/FlatCAMGUI.py:3617
 msgid "Set the fill transparency for plotted objects."
-msgstr ""
+msgstr "Define a transparência de preenchimento para objetos plotados."
 
 #: flatcamGUI/FlatCAMGUI.py:3634
 msgid "Plot Line"
-msgstr ""
+msgstr "Linha"
 
 #: flatcamGUI/FlatCAMGUI.py:3636
 msgid "Set the line color for plotted objects."
-msgstr ""
+msgstr "Define a cor da linha para objetos plotados."
 
 #: flatcamGUI/FlatCAMGUI.py:3648
 msgid "Sel. Fill"
-msgstr ""
+msgstr Preenchimento Sel.""
 
 #: flatcamGUI/FlatCAMGUI.py:3650
 msgid ""
@@ -6042,22 +6697,29 @@ msgid ""
 "First 6 digits are the color and the last 2\n"
 "digits are for alpha (transparency) level."
 msgstr ""
+"Define a cor de preenchimento para a caixa de seleção\n"
+"no caso de a seleção ser feita da esquerda para a direita.\n"
+"Os primeiros 6 dígitos são a cor e os últimos 2\n"
+"dígitos são para o nível alfa (transparência)."
 
 #: flatcamGUI/FlatCAMGUI.py:3667
 msgid "Set the fill transparency for the 'left to right' selection box."
 msgstr ""
+"Define a transparência de preenchimento para a caixa de seleção 'da "
+"esquerda para a direita'."
 
 #: flatcamGUI/FlatCAMGUI.py:3684
 msgid "Sel. Line"
-msgstr ""
+msgstr "Linha Sel."
 
 #: flatcamGUI/FlatCAMGUI.py:3686
 msgid "Set the line color for the 'left to right' selection box."
 msgstr ""
+"Define a cor da linha para a caixa de seleção 'da esquerda para a direita'."
 
 #: flatcamGUI/FlatCAMGUI.py:3698
 msgid "Sel2. Fill"
-msgstr ""
+msgstr "Preenchimento Sel2"
 
 #: flatcamGUI/FlatCAMGUI.py:3700
 msgid ""
@@ -6066,104 +6728,121 @@ msgid ""
 "First 6 digits are the color and the last 2\n"
 "digits are for alpha (transparency) level."
 msgstr ""
+"Define a cor de preenchimento para a caixa de seleção, caso a seleção seja "
+"feita da direita para a esquerda.\n"
+"Os primeiros 6 dígitos são a cor e os últimos 2\n"
+"dígitos são para o nível alfa (transparência)."
 
 #: flatcamGUI/FlatCAMGUI.py:3717
 msgid "Set the fill transparency for selection 'right to left' box."
 msgstr ""
+"Define a transparência de preenchimento para a seleção da caixa 'direita "
+"para a esquerda'."
 
 #: flatcamGUI/FlatCAMGUI.py:3734
 msgid "Sel2. Line"
-msgstr ""
+msgstr "Linha Sel2"
 
 #: flatcamGUI/FlatCAMGUI.py:3736
 msgid "Set the line color for the 'right to left' selection box."
 msgstr ""
+"Define a cor da linha para a caixa de seleção 'direita para a esquerda'."
 
 #: flatcamGUI/FlatCAMGUI.py:3748
 msgid "Editor Draw"
-msgstr ""
+msgstr "Editor de Desenho"
 
 #: flatcamGUI/FlatCAMGUI.py:3750
 msgid "Set the color for the shape."
-msgstr ""
+msgstr "Define a cor da forma."
 
 #: flatcamGUI/FlatCAMGUI.py:3762
 msgid "Editor Draw Sel."
-msgstr ""
+msgstr "Editor de Desenho Sel."
 
 #: flatcamGUI/FlatCAMGUI.py:3764
 msgid "Set the color of the shape when selected."
-msgstr ""
+msgstr "Define a cor da forma quando selecionada."
 
 #: flatcamGUI/FlatCAMGUI.py:3776
 msgid "Project Items"
-msgstr ""
+msgstr "Itens do Projeto"
 
 #: flatcamGUI/FlatCAMGUI.py:3778
 msgid "Set the color of the items in Project Tab Tree."
-msgstr ""
+msgstr "Define a cor dos itens na Árvore do Guia de Projeto."
 
 #: flatcamGUI/FlatCAMGUI.py:3789
 msgid "Proj. Dis. Items"
-msgstr ""
+msgstr "Itens Desabilitados"
 
 #: flatcamGUI/FlatCAMGUI.py:3791
 msgid ""
 "Set the color of the items in Project Tab Tree,\n"
 "for the case when the items are disabled."
 msgstr ""
+"Define a cor dos itens na Árvore da guia Projeto,\n"
+"para o caso em que os itens estão desativados."
 
 #: flatcamGUI/FlatCAMGUI.py:3842
 msgid "GUI Settings"
-msgstr ""
+msgstr "Configurações da GUI"
 
 #: flatcamGUI/FlatCAMGUI.py:3848
 msgid "Layout"
-msgstr ""
+msgstr "Layout"
 
 #: flatcamGUI/FlatCAMGUI.py:3850
 msgid ""
 "Select an layout for FlatCAM.\n"
 "It is applied immediately."
 msgstr ""
+"Selecione um layout para o FlatCAM.\n"
+"É aplicado imediatamente."
 
 #: flatcamGUI/FlatCAMGUI.py:3866
 msgid "Style"
-msgstr ""
+msgstr "Estilo"
 
 #: flatcamGUI/FlatCAMGUI.py:3868
 msgid ""
 "Select an style for FlatCAM.\n"
 "It will be applied at the next app start."
 msgstr ""
+"Selecione um estilo para FlatCAM.\n"
+"Ele será aplicado na próxima inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:3879
 msgid "HDPI Support"
-msgstr ""
+msgstr "Suporte HDPI"
 
 #: flatcamGUI/FlatCAMGUI.py:3881
 msgid ""
 "Enable High DPI support for FlatCAM.\n"
 "It will be applied at the next app start."
 msgstr ""
+"Ativa o suporte de alta DPI para FlatCAM.\n"
+"Ele será aplicado na próxima inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:3894 flatcamGUI/FlatCAMGUI.py:3994
 msgid "Clear GUI Settings"
-msgstr ""
+msgstr "Limpar Config. da GUI"
 
 #: flatcamGUI/FlatCAMGUI.py:3896
 msgid ""
 "Clear the GUI settings for FlatCAM,\n"
 "such as: layout, gui state, style, hdpi support etc."
 msgstr ""
+"Limpa as configurações da GUI para FlatCAM,\n"
+"como: layout, estado de gui, estilo, suporte a HDPI etc."
 
 #: flatcamGUI/FlatCAMGUI.py:3899
 msgid "Clear"
-msgstr ""
+msgstr "Limpar"
 
 #: flatcamGUI/FlatCAMGUI.py:3903
 msgid "Hover Shape"
-msgstr ""
+msgstr "Forma Flutuante"
 
 #: flatcamGUI/FlatCAMGUI.py:3905
 msgid ""
@@ -6171,10 +6850,13 @@ msgid ""
 "It is displayed whenever the mouse cursor is hovering\n"
 "over any kind of not-selected object."
 msgstr ""
+"Habilita a exibição de uma forma flutuante para objetos FlatCAM.\n"
+"É exibido sempre que o cursor do mouse estiver pairando\n"
+"sobre qualquer tipo de objeto não selecionado."
 
 #: flatcamGUI/FlatCAMGUI.py:3912
 msgid "Sel. Shape"
-msgstr ""
+msgstr "Sel. Forma"
 
 #: flatcamGUI/FlatCAMGUI.py:3914
 msgid ""
@@ -6183,10 +6865,14 @@ msgid ""
 "either by clicking or dragging mouse from left to right or\n"
 "right to left."
 msgstr ""
+"Ativa a exibição de seleção de forma para objetos FlatCAM.\n"
+"É exibido sempre que o mouse seleciona um objeto\n"
+"seja clicando ou arrastando o mouse da esquerda para a direita ou da direita "
+"para a esquerda."
 
 #: flatcamGUI/FlatCAMGUI.py:3921
 msgid "NB Font Size"
-msgstr ""
+msgstr "Tamanho da Fonte BN"
 
 #: flatcamGUI/FlatCAMGUI.py:3923
 msgid ""
@@ -6194,28 +6880,32 @@ msgid ""
 "The notebook is the collapsible area in the left side of the GUI,\n"
 "and include the Project, Selected and Tool tabs."
 msgstr ""
+"Isso define o tamanho da fonte para os elementos encontrados no bloco de "
+"notas.\n"
+"O bloco de notas é a área desmontável no lado esquerdo da GUI,\n"
+"e inclui as guias Projeto, Selecionado e Ferramenta."
 
 #: flatcamGUI/FlatCAMGUI.py:3938
 msgid "Axis Font Size"
-msgstr ""
+msgstr "Tamanho da fonte do eixo"
 
 #: flatcamGUI/FlatCAMGUI.py:3940
 msgid "This sets the font size for canvas axis."
-msgstr ""
+msgstr "Define o tamanho da fonte para o eixo da tela."
 
 #: flatcamGUI/FlatCAMGUI.py:3991
 msgid "Are you sure you want to delete the GUI Settings? \n"
-msgstr ""
+msgstr "Você tem certeza de que deseja excluir as configurações da GUI? \n"
 
 #: flatcamGUI/FlatCAMGUI.py:4015
 msgid "App Preferences"
-msgstr ""
+msgstr "Preferências do aplicativo"
 
 #: flatcamGUI/FlatCAMGUI.py:4021 flatcamGUI/FlatCAMGUI.py:4549
 #: flatcamGUI/FlatCAMGUI.py:5374 flatcamTools/ToolMeasurement.py:43
 #: flatcamTools/ToolPcbWizard.py:127 flatcamTools/ToolProperties.py:133
 msgid "Units"
-msgstr ""
+msgstr "Unidades"
 
 #: flatcamGUI/FlatCAMGUI.py:4022
 msgid ""
@@ -6223,20 +6913,23 @@ msgid ""
 "Whatever is selected here is set every time\n"
 "FLatCAM is started."
 msgstr ""
+"Unidade utilizada como padrão para os valores no FlatCAM.\n"
+"O que estiver selecionado aqui será considerado sempre que\n"
+"o FLatCAM for iniciado."
 
 #: flatcamGUI/FlatCAMGUI.py:4025
 msgid "IN"
-msgstr ""
+msgstr "in"
 
 #: flatcamGUI/FlatCAMGUI.py:4026 flatcamGUI/FlatCAMGUI.py:4555
 #: flatcamGUI/FlatCAMGUI.py:4987 flatcamGUI/FlatCAMGUI.py:5380
 #: flatcamTools/ToolCalculators.py:61 flatcamTools/ToolPcbWizard.py:126
 msgid "MM"
-msgstr ""
+msgstr "mm"
 
 #: flatcamGUI/FlatCAMGUI.py:4029
 msgid "APP. LEVEL"
-msgstr ""
+msgstr "Nível do Aplicativo"
 
 #: flatcamGUI/FlatCAMGUI.py:4030
 msgid ""
@@ -6247,18 +6940,24 @@ msgid ""
 "The choice here will influence the parameters in\n"
 "the Selected Tab for all kinds of FlatCAM objects."
 msgstr ""
+"Escolha o nível padrão de uso para FlatCAM.\n"
+"Nível BÁSICO -> funcionalidade reduzida, melhor para iniciantes.\n"
+"Nível AVANÇADO -> funcionalidade completa.\n"
+"\n"
+"A escolha influenciará os parâmetros na Aba\n"
+"Selecionado para todos os tipos de objetos FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:4035 flatcamGUI/FlatCAMGUI.py:5014
 msgid "Basic"
-msgstr ""
+msgstr "Básico"
 
 #: flatcamGUI/FlatCAMGUI.py:4036
 msgid "Advanced"
-msgstr ""
+msgstr "Avançado"
 
 #: flatcamGUI/FlatCAMGUI.py:4039
 msgid "Portable app"
-msgstr ""
+msgstr "Aplicativo portátil"
 
 #: flatcamGUI/FlatCAMGUI.py:4040
 msgid ""
@@ -6268,18 +6967,23 @@ msgid ""
 "which means that the preferences files will be saved\n"
 "in the application folder, in the lib\\config subfolder."
 msgstr ""
+"Escolha se o aplicativo deve ser executado como portátil.\n"
+"\n"
+"Se marcado, o aplicativo será executado como portátil,\n"
+"o que significa que os arquivos de preferências serão salvos\n"
+"na pasta do aplicativo, na subpasta lib\\config."
 
 #: flatcamGUI/FlatCAMGUI.py:4047
 msgid "Languages"
-msgstr ""
+msgstr "Idiomas"
 
 #: flatcamGUI/FlatCAMGUI.py:4048
 msgid "Set the language used throughout FlatCAM."
-msgstr ""
+msgstr "Defina o idioma usado no FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:4051
 msgid "Apply Language"
-msgstr ""
+msgstr "Aplicar o Idioma"
 
 #: flatcamGUI/FlatCAMGUI.py:4052
 msgid ""
@@ -6291,40 +6995,53 @@ msgid ""
 "security features. In this case the language will be\n"
 "applied at the next app start."
 msgstr ""
+"Define o idioma usado no FlatCAM.\n"
+"O aplicativo será reinicializado após o clique.\n"
+"Windows: se o FlatCAM estiver instalado no diretório\n"
+"Arquivos de Programas, é possível que o aplicativo não\n"
+"seja reiniciado depois que o botão for clicado devido\n"
+"aos recursos de segurança do Windows. Neste caso, o\n"
+"idioma será aplicado na próxima inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:4061
 msgid "Shell at StartUp"
-msgstr ""
+msgstr "Shell na Inicialização"
 
 #: flatcamGUI/FlatCAMGUI.py:4063 flatcamGUI/FlatCAMGUI.py:4068
 msgid ""
 "Check this box if you want the shell to\n"
 "start automatically at startup."
 msgstr ""
+"Marque esta caixa se você deseja que o shell (linha de comando)\n"
+"seja inicializado automaticamente na inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:4073
 msgid "Version Check"
-msgstr ""
+msgstr "Verificar Versão"
 
 #: flatcamGUI/FlatCAMGUI.py:4075 flatcamGUI/FlatCAMGUI.py:4080
 msgid ""
 "Check this box if you want to check\n"
 "for a new version automatically at startup."
 msgstr ""
+"Marque esta caixa se você quiser verificar\n"
+"por nova versão automaticamente na inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:4085
 msgid "Send Stats"
-msgstr ""
+msgstr "Enviar estatísticas"
 
 #: flatcamGUI/FlatCAMGUI.py:4087 flatcamGUI/FlatCAMGUI.py:4092
 msgid ""
 "Check this box if you agree to send anonymous\n"
 "stats automatically at startup, to help improve FlatCAM."
 msgstr ""
+"Marque esta caixa se você concorda em enviar dados anônimos\n"
+"automaticamente na inicialização, para ajudar a melhorar o FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:4099
 msgid "Pan Button"
-msgstr ""
+msgstr "Botão Pan"
 
 #: flatcamGUI/FlatCAMGUI.py:4100
 msgid ""
@@ -6332,44 +7049,49 @@ msgid ""
 "- MMB --> Middle Mouse Button\n"
 "- RMB --> Right Mouse Button"
 msgstr ""
+"Selecione o botão do mouse para usar o panning:\n"
+"- BM -> Botão do meio do mouse\n"
+"- BD -> botão direito do mouse"
 
 #: flatcamGUI/FlatCAMGUI.py:4103
 msgid "MMB"
-msgstr ""
+msgstr "BM"
 
 #: flatcamGUI/FlatCAMGUI.py:4104
 msgid "RMB"
-msgstr ""
+msgstr "BD"
 
 #: flatcamGUI/FlatCAMGUI.py:4107
 msgid "Multiple Sel"
-msgstr ""
+msgstr "Seleção Múltipla"
 
 #: flatcamGUI/FlatCAMGUI.py:4108
 msgid "Select the key used for multiple selection."
-msgstr ""
+msgstr "Selecione a tecla usada para seleção múltipla."
 
 #: flatcamGUI/FlatCAMGUI.py:4109
 msgid "CTRL"
-msgstr ""
+msgstr "CTRL"
 
 #: flatcamGUI/FlatCAMGUI.py:4110
 msgid "SHIFT"
-msgstr ""
+msgstr "SHIFT"
 
 #: flatcamGUI/FlatCAMGUI.py:4113
 msgid "Project at StartUp"
-msgstr ""
+msgstr "Projeto na Inicialização"
 
 #: flatcamGUI/FlatCAMGUI.py:4115 flatcamGUI/FlatCAMGUI.py:4120
 msgid ""
 "Check this box if you want the project/selected/tool tab area to\n"
 "to be shown automatically at startup."
 msgstr ""
+"Marque esta caixa se você quiser que a aba Projeto/Selecionado/Ferramenta\n"
+"seja apresentada automaticamente na inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:4125
 msgid "Project AutoHide"
-msgstr ""
+msgstr "Auto Ocultar"
 
 #: flatcamGUI/FlatCAMGUI.py:4127 flatcamGUI/FlatCAMGUI.py:4133
 msgid ""
@@ -6377,20 +7099,25 @@ msgid ""
 "hide automatically when there are no objects loaded and\n"
 "to show whenever a new object is created."
 msgstr ""
+"Marque esta caixa se você deseja que a aba Projeto/Selecionado/Ferramenta\n"
+"desapareça automaticamente quando não houver objetos carregados e\n"
+"apareça sempre que um novo objeto for criado."
 
 #: flatcamGUI/FlatCAMGUI.py:4139
 msgid "Enable ToolTips"
-msgstr ""
+msgstr "Habilitar Dicas"
 
 #: flatcamGUI/FlatCAMGUI.py:4141 flatcamGUI/FlatCAMGUI.py:4146
 msgid ""
 "Check this box if you want to have toolTips displayed\n"
 "when hovering with mouse over items throughout the App."
 msgstr ""
+"Marque esta caixa se quiser que as dicas de ferramentas sejam exibidas\n"
+"ao passar o mouse sobre os itens em todo o aplicativo."
 
 #: flatcamGUI/FlatCAMGUI.py:4149
 msgid "Workers number"
-msgstr ""
+msgstr "Número de trabalhadores"
 
 #: flatcamGUI/FlatCAMGUI.py:4151 flatcamGUI/FlatCAMGUI.py:4160
 msgid ""
@@ -6401,10 +7128,15 @@ msgid ""
 "Default value is 2.\n"
 "After change, it will be applied at next App start."
 msgstr ""
+"O número de Qthreads disponibilizados para o App.\n"
+"Um número maior pode executar os trabalhos mais rapidamente, mas\n"
+"dependendo da velocidade do computador, pode fazer com que o App\n"
+"não responda. Pode ter um valor entre 2 e 16. O valor padrão é 2.\n"
+"Após a mudança, ele será aplicado na próxima inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:4170
 msgid "Geo Tolerance"
-msgstr ""
+msgstr "Tolerância Geo"
 
 #: flatcamGUI/FlatCAMGUI.py:4172 flatcamGUI/FlatCAMGUI.py:4181
 msgid ""
@@ -6415,10 +7147,16 @@ msgid ""
 "performance. Higher value will provide more\n"
 "performance at the expense of level of detail."
 msgstr ""
+"Este valor pode contrariar o efeito do parâmetro Passos do Círculo.\n"
+"O valor padrão é 0.01.\n"
+"Um valor mais baixo aumentará os detalhes na imagem e no G-Code\n"
+"para os círculos, com um custo maior em desempenho.\n"
+"Um valor maior proporcionará mais desempenho à custa do nível\n"
+"de detalhes."
 
 #: flatcamGUI/FlatCAMGUI.py:4220
 msgid "\"Open\" behavior"
-msgstr ""
+msgstr "Comportamento \"Abrir\""
 
 #: flatcamGUI/FlatCAMGUI.py:4222
 msgid ""
@@ -6428,10 +7166,16 @@ msgid ""
 "When unchecked the path for opening files is the one used last: either the\n"
 "path for saving files or the path for opening files."
 msgstr ""
+"Quando marcado, o caminho do último arquivo salvo é usado ao salvar "
+"arquivos,\n"
+"e o caminho para o último arquivo aberto é usado ao abrir arquivos.\n"
+"\n"
+"Quando desmarcado, o caminho para abrir arquivos é aquele usado por último:\n"
+"o caminho para salvar arquivos ou o caminho para abrir arquivos."
 
 #: flatcamGUI/FlatCAMGUI.py:4231
 msgid "Delete object confirmation"
-msgstr ""
+msgstr "Confirmação excluir objeto"
 
 #: flatcamGUI/FlatCAMGUI.py:4233
 msgid ""
@@ -6439,20 +7183,25 @@ msgid ""
 "whenever the Delete object(s) event is triggered, either by\n"
 "menu shortcut or key shortcut."
 msgstr ""
+"Quando marcada, o aplicativo pedirá a confirmação do usuário\n"
+"sempre que o evento Excluir objeto(s) é acionado, seja por\n"
+"atalho de menu ou atalho de tecla."
 
 #: flatcamGUI/FlatCAMGUI.py:4240
 msgid "Save Compressed Project"
-msgstr ""
+msgstr "Salvar Projeto Compactado"
 
 #: flatcamGUI/FlatCAMGUI.py:4242
 msgid ""
 "Whether to save a compressed or uncompressed project.\n"
 "When checked it will save a compressed FlatCAM project."
 msgstr ""
+"Para salvar um projeto compactado ou descompactado.\n"
+"Quando marcado, o projeto FlatCAM será salvo compactado."
 
 #: flatcamGUI/FlatCAMGUI.py:4253
 msgid "Compression Level"
-msgstr ""
+msgstr "Nível de Compactação"
 
 #: flatcamGUI/FlatCAMGUI.py:4255
 msgid ""
@@ -6460,52 +7209,55 @@ msgid ""
 "a FlatCAM project. Higher value means better compression\n"
 "but require more RAM usage and more processing time."
 msgstr ""
+"O nível de compactação usado ao salvar o Projeto FlatCAM.\n"
+"Um valor maior significa melhor compactação, mas é necessário mais uso de "
+"RAM e mais tempo de processamento."
 
 #: flatcamGUI/FlatCAMGUI.py:4281
 msgid "Gerber General"
-msgstr ""
+msgstr "Gerber Geral"
 
 #: flatcamGUI/FlatCAMGUI.py:4284 flatcamGUI/FlatCAMGUI.py:4838
 #: flatcamGUI/FlatCAMGUI.py:5768 flatcamGUI/FlatCAMGUI.py:6149
 #: flatcamGUI/ObjectUI.py:150 flatcamGUI/ObjectUI.py:562
 #: flatcamGUI/ObjectUI.py:894 flatcamGUI/ObjectUI.py:1393
 msgid "Plot Options"
-msgstr ""
+msgstr "Opções de Gráfico"
 
 #: flatcamGUI/FlatCAMGUI.py:4291 flatcamGUI/FlatCAMGUI.py:4850
 #: flatcamGUI/ObjectUI.py:156 flatcamGUI/ObjectUI.py:563
 msgid "Solid"
-msgstr ""
+msgstr "Preenchido"
 
 #: flatcamGUI/FlatCAMGUI.py:4293 flatcamGUI/ObjectUI.py:158
 msgid "Solid color polygons."
-msgstr ""
+msgstr "Polígonos com cor sólida."
 
 #: flatcamGUI/FlatCAMGUI.py:4298 flatcamGUI/ObjectUI.py:164
 msgid "M-Color"
-msgstr ""
+msgstr "M-Cores"
 
 #: flatcamGUI/FlatCAMGUI.py:4300 flatcamGUI/ObjectUI.py:166
 msgid "Draw polygons in different colors."
-msgstr ""
+msgstr "Desenha polígonos em cores diferentes."
 
 #: flatcamGUI/FlatCAMGUI.py:4305 flatcamGUI/FlatCAMGUI.py:4844
 #: flatcamGUI/FlatCAMGUI.py:5772 flatcamGUI/ObjectUI.py:172
 #: flatcamGUI/ObjectUI.py:601
 msgid "Plot"
-msgstr ""
+msgstr Gráfico""
 
 #: flatcamGUI/FlatCAMGUI.py:4307 flatcamGUI/FlatCAMGUI.py:5774
 #: flatcamGUI/FlatCAMGUI.py:6160 flatcamGUI/ObjectUI.py:174
 #: flatcamGUI/ObjectUI.py:603 flatcamGUI/ObjectUI.py:940
 #: flatcamGUI/ObjectUI.py:1503
 msgid "Plot (show) this object."
-msgstr ""
+msgstr "Mostra o objeto no gráfico."
 
 #: flatcamGUI/FlatCAMGUI.py:4312 flatcamGUI/FlatCAMGUI.py:5782
 #: flatcamGUI/FlatCAMGUI.py:6230
 msgid "Circle Steps"
-msgstr ""
+msgstr "Passos do Círculo"
 
 #: flatcamGUI/FlatCAMGUI.py:4314
 msgid ""
@@ -6569,7 +7321,7 @@ msgstr ""
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
-"A value here of 0.25 means an overlap of 25% from the tool diameter found "
+"A value here of 0.25 means an overlap of 25%% from the tool diameter found "
 "above."
 msgstr ""
 
@@ -7935,7 +8687,7 @@ msgstr ""
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
-"A value here of 0.25 means 25% from the tool diameter found above.\n"
+"A value here of 0.25 means 25%% from the tool diameter found above.\n"
 "\n"
 "Adjust the value starting with lower values\n"
 "and increasing it if areas that should be cleared are still \n"
