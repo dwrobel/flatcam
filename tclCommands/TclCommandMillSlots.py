@@ -68,7 +68,7 @@ class TclCommandMillSlots(TclCommandSignaled):
 
         try:
             if 'milled_dias' in args and args['milled_dias'] != 'all':
-                diameters = [x.strip() for x in args['tools'].split(",")]
+                diameters = [x.strip() for x in args['milled_dias'].split(",")]
                 req_tools = []
                 for tool in obj.tools:
                     for req_dia in diameters:

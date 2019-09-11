@@ -1858,6 +1858,7 @@ class App(QtCore.QObject):
                                   'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
                                   'filename', 'follow', 'gaps', 'gapsize', 'grid', 'gridoffset', 'gridoffsetx',
                                   'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
+                                  'milled_dias',
                                   'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
                                   'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
                                   'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
