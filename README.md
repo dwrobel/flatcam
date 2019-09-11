@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - whenever a Gerber file is deleted, the mark_shapes objects are deleted also
 - made faster the Gerber parser for the case of having a not valid geometry when loading a Gerber file without buffering
 - updated code in self.on_view_source() to make it more responsive
+- fixed the TclCommand MillHoles
 
 10.09.2019
 

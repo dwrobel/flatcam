@@ -82,7 +82,7 @@ class TclCommandMillHoles(TclCommandSignaled):
             del args['name']
 
             # This runs in the background... Is blocking handled?
-            success, msg = obj.generate_milling(**args)
+            success, msg = obj.generate_milling_drills(**args)
 
         except Exception as e:
             self.raise_tcl_error("Operation failed: %s" % str(e))
