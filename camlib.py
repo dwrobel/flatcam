@@ -3395,6 +3395,7 @@ class Gerber (Geometry):
                 log.warning("Union done.")
 
             if current_polarity == 'D':
+                self.app.inform.emit('%s' % _("Gerber processing. Applying Gerber polarity."))
                 try:
                     self.solid_geometry = self.solid_geometry.union(new_poly)
                 except Exception as e:

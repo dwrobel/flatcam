@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.09.2019
+
+- added the Gerber code as source for the panelized object in Panelize Tool
+- whenever a Gerber file is deleted, the mark_shapes objects are deleted also
+
 10.09.2019
 
 - made isolation threaded

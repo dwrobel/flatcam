@@ -1519,7 +1519,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def export_gerber(self, whole, fract, g_zeros='L', factor=1):
         """
+        Creates a Gerber file content to be exported to a file.
 
+        :param whole: how many digits in the whole part of coordinates
+        :param fract: how many decimals in coordinates
+        :param g_zeros: type of the zero suppression used: LZ or TZ; string
+        :param factor: factor to be applied onto the Gerber coordinates
         :return: Gerber_code
         """
         log.debug("FlatCAMGerber.export_gerber() --> Generating the Gerber code from the selected Gerber file")
@@ -1670,7 +1675,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         for geo_elem in self.apertures[apid]['geometry']:
                             if 'follow' in geo_elem:
                                 geo = geo_elem['follow']
-                                print(geo)
                                 if not geo.is_empty:
                                     if isinstance(geo, Point):
                                         if g_zeros == 'T':

@@ -5734,7 +5734,8 @@ class App(QtCore.QObject):
                             for el in obj_active.mark_shapes:
                                 obj_active.mark_shapes[el].clear(update=True)
                                 obj_active.mark_shapes[el].enabled = False
-                                obj_active.mark_shapes[el] = None
+                                # obj_active.mark_shapes[el] = None
+                                del el
                         elif isinstance(obj_active, FlatCAMCNCjob):
                             try:
                                 obj_active.annotation.clear(update=True)
@@ -8557,12 +8558,14 @@ class App(QtCore.QObject):
                                  _('Could not export Excellon file.'))
                 return
 
-    def export_gerber(self, obj_name, filename, use_thread=True):
+    def export_gerber(self, obj_name, filename, local_use=None, use_thread=True):
         """
         Exports a Gerber Object to an Gerber file.
 
         :param obj_name: the name of the FlatCAM object to be saved as Gerber
         :param filename: Path to the Gerber file to save to.
+        :param local_use: if the Gerber code is to be saved to a file (None) or used within FlatCAM.
+        When not None, the value will be the actual Gerber object for which to create the Gerber code
         :param use_thread: if to be run in a separate thread
         :return:
         """
@@ -8573,11 +8576,14 @@ class App(QtCore.QObject):
 
         self.log.debug("export_gerber()")
 
-        try:
-            obj = self.collection.get_by_name(str(obj_name))
-        except:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % obj_name
+        if local_use is None:
+            try:
+                obj = self.collection.get_by_name(str(obj_name))
+            except:
+                # TODO: The return behavior has not been established... should raise exception?
+                return "Could not retrieve object: %s" % obj_name
+        else:
+            obj = local_use
 
         # updated units
         gunits = self.defaults["gerber_exp_units"]
@@ -8649,26 +8655,28 @@ class App(QtCore.QObject):
                 exported_gerber += gerber_code
                 exported_gerber += footer
 
-                try:
-                    with open(filename, 'w') as fp:
-                        fp.write(exported_gerber)
-                except PermissionError:
-                    self.inform.emit('[WARNING] %s' %
-                                     _("Permission denied, saving not possible.\n"
-                                       "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
+                if local_use is None:
+                    try:
+                        with open(filename, 'w') as fp:
+                            fp.write(exported_gerber)
+                    except PermissionError:
+                        self.inform.emit('[WARNING] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                        return 'fail'
 
-                if self.defaults["global_open_style"] is False:
-                    self.file_opened.emit("Gerber", filename)
-                self.file_saved.emit("Gerber", filename)
-                self.inform.emit('[success] %s: %s' %
-                                 (_("Gerber file exported to"), filename))
+                    if self.defaults["global_open_style"] is False:
+                        self.file_opened.emit("Gerber", filename)
+                    self.file_saved.emit("Gerber", filename)
+                    self.inform.emit('[success] %s: %s' %
+                                     (_("Gerber file exported to"), filename))
+                else:
+                    return exported_gerber
             except Exception as e:
                 log.debug("App.export_gerber.make_gerber() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
-
             with self.proc_container.new(_("Exporting Gerber")) as proc:
 
                 def job_thread_grb(app_obj):
@@ -8684,7 +8692,9 @@ class App(QtCore.QObject):
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _('Could not export Gerber file.'))
-                return
+                return 'fail'
+            if local_use is not None:
+                return ret
 
     def export_dxf(self, obj_name, filename, use_thread=True):
         """
