@@ -55,7 +55,7 @@ class TclCommandMillSlots(TclCommandSignaled):
         name = args['name']
 
         if 'outname' not in args:
-            args['outname'] = name + "_mill"
+            args['outname'] = name + "_mill_slots"
 
         try:
             obj = self.app.collection.get_by_name(str(name))

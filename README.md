@@ -17,7 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated code in self.on_view_source() to make it more responsive
 - fixed the TclCommand MillHoles
 - changed the name of TclCommand MillHoles to MillDrills and added a new TclCommand named MillSlots
-- modified the MillDrills and MillSlots TclCommands to accept as parameter a list of tool dimaeters to be milled instead of tool indexes
+- modified the MillDrills and MillSlots TclCommands to accept as parameter a list of tool diameters to be milled instead of tool indexes
 
 10.09.2019
 
