@@ -5880,24 +5880,24 @@ class App(QtCore.QObject):
         self.report_usage("on_copy_object()")
 
         def initialize(obj_init, app):
-            obj_init.solid_geometry = obj.solid_geometry
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             try:
-                obj_init.follow_geometry = obj.follow_geometry
+                obj_init.follow_geometry = deepcopy(obj.follow_geometry)
             except AttributeError:
                 pass
             try:
-                obj_init.apertures = obj.apertures
+                obj_init.apertures = deepcopy(obj.apertures)
             except AttributeError:
                 pass
 
             try:
                 if obj.tools:
-                    obj_init.tools = obj.tools
+                    obj_init.tools = deepcopy(obj.tools)
             except Exception as e:
                 log.debug("App.on_copy_object() --> %s" % str(e))
 
         def initialize_excellon(obj_init, app):
-            obj_init.tools = obj.tools
+            obj_init.tools = deepcopy(obj.tools)
 
             # drills are offset, so they need to be deep copied
             obj_init.drills = deepcopy(obj.drills)
@@ -5921,29 +5921,29 @@ class App(QtCore.QObject):
     def on_copy_object2(self, custom_name):
 
         def initialize_geometry(obj_init, app):
-            obj_init.solid_geometry = obj.solid_geometry
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             try:
-                obj_init.follow_geometry = obj.follow_geometry
+                obj_init.follow_geometry = deepcopy(obj.follow_geometry)
             except AttributeError:
                 pass
             try:
-                obj_init.apertures = obj.apertures
+                obj_init.apertures = deepcopy(obj.apertures)
             except AttributeError:
                 pass
 
             try:
                 if obj.tools:
-                    obj_init.tools = obj.tools
+                    obj_init.tools = deepcopy(obj.tools)
             except Exception as e:
                 log.debug("on_copy_object2() --> %s" % str(e))
 
         def initialize_gerber(obj_init, app):
-            obj_init.solid_geometry = obj.solid_geometry
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             obj_init.apertures = deepcopy(obj.apertures)
             obj_init.aperture_macros = deepcopy(obj.aperture_macros)
 
         def initialize_excellon(obj_init, app):
-            obj_init.tools = obj.tools
+            obj_init.tools = deepcopy(obj.tools)
             # drills are offset, so they need to be deep copied
             obj_init.drills = deepcopy(obj.drills)
             # slots are offset, so they need to be deep copied
