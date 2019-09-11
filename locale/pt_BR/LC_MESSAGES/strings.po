@@ -579,7 +579,7 @@ msgstr "Adicionar"
 #: flatcamTools/ToolNonCopperClear.py:249 flatcamTools/ToolPaint.py:188
 #: flatcamTools/ToolSolderPaste.py:121 flatcamTools/ToolSolderPaste.py:485
 msgid "Delete"
-msgstr ""
+msgstr "Excluir"
 
 #: FlatCAMApp.py:6518
 msgid "New Grid ..."
