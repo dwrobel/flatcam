@@ -3452,97 +3452,100 @@ msgstr "Clique para apagar ..."
 #: flatcamEditors/FlatCAMGeoEditor.py:2909
 #: flatcamEditors/FlatCAMGrbEditor.py:2161
 msgid "Done. Eraser tool action completed."
-msgstr "Borracha concluída."
+msgstr "Apagado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2952
 msgid "Create Paint geometry ..."
-msgstr ""
+msgstr "Criar geometria de pintura ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2966
 #: flatcamEditors/FlatCAMGrbEditor.py:2312
 msgid "Shape transformations ..."
-msgstr ""
+msgstr "Transformações de forma ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3545
 msgid "Editing MultiGeo Geometry, tool"
-msgstr ""
+msgstr "Editando Geometria MultiGeo, ferramenta"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3547
 msgid "with diameter"
-msgstr ""
+msgstr "com diâmetro"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3924
 msgid "Copy cancelled. No shape selected."
-msgstr ""
+msgstr "Cópia cancelada. Nenhuma forma selecionada."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:3931 flatcamGUI/FlatCAMGUI.py:2882
 #: flatcamGUI/FlatCAMGUI.py:2928 flatcamGUI/FlatCAMGUI.py:2946
 #: flatcamGUI/FlatCAMGUI.py:3077 flatcamGUI/FlatCAMGUI.py:3089
 #: flatcamGUI/FlatCAMGUI.py:3123 flatcamGUI/FlatCAMGUI.py:3180
 msgid "Click on target point."
-msgstr ""
+msgstr "Clique no ponto alvo."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4175
 #: flatcamEditors/FlatCAMGeoEditor.py:4210
 msgid "A selection of at least 2 geo items is required to do Intersection."
-msgstr ""
+msgstr "É necessária uma seleção de pelo menos 2 itens geométricos "
+"para fazer a interseção."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4296
 #: flatcamEditors/FlatCAMGeoEditor.py:4405
 msgid ""
 "Negative buffer value is not accepted. Use Buffer interior to generate an "
 "'inside' shape"
-msgstr ""
+msgstr "Valor de buffer negativo não é aceito. Use o Buffer interior "
+"para gerar uma forma 'interna'"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4306
 #: flatcamEditors/FlatCAMGeoEditor.py:4362
 #: flatcamEditors/FlatCAMGeoEditor.py:4414
 msgid "Nothing selected for buffering."
-msgstr ""
+msgstr "Nada selecionado para armazenamento em buffer."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4311
 #: flatcamEditors/FlatCAMGeoEditor.py:4367
 #: flatcamEditors/FlatCAMGeoEditor.py:4419
 msgid "Invalid distance for buffering."
-msgstr ""
+msgstr "Distância inválida para armazenamento em buffer."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4335
 #: flatcamEditors/FlatCAMGeoEditor.py:4439
 msgid "Failed, the result is empty. Choose a different buffer value."
-msgstr ""
+msgstr "Falhou, o resultado está vazio. Escolha um valor diferente para o buffer."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4346
 msgid "Full buffer geometry created."
-msgstr ""
+msgstr "Buffer de geometria completa criado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4353
 msgid "Negative buffer value is not accepted."
-msgstr ""
+msgstr "Valor de buffer negativo não é aceito."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4387
 msgid "Failed, the result is empty. Choose a smaller buffer value."
-msgstr ""
+msgstr "alhou, o resultado está vazio. Escolha um valor menor para o buffer."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4398
 msgid "Interior buffer geometry created."
-msgstr ""
+msgstr "Buffer de Geometria interna criado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4450
 msgid "Exterior buffer geometry created."
-msgstr ""
+msgstr "Buffer de Geometria externa criado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4515
 msgid "Nothing selected for painting."
-msgstr ""
+msgstr "Nada selecionado para pintura."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4522
 msgid "Invalid value for"
-msgstr ""
+msgstr "Valor inválido para"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4528
 #, python-format
 msgid "Could not do Paint. Overlap value has to be less than 1.00 (100%%)."
-msgstr ""
+msgstr "Não foi possível fazer a Pintura. O valor de sobreposição deve "
+"ser menor do que 1.00 (100%)."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4587
 #, python-format
@@ -3551,199 +3554,208 @@ msgid ""
 "different method of Paint\n"
 "%s"
 msgstr ""
+"Não foi possível pintar. Tente uma combinação diferente de "
+"parâmetros, ou um método diferente de Pintura\n"
+"%s"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4598
 msgid "[success] Paint done."
-msgstr ""
+msgstr "Pintura concluída."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:208
 msgid "To add an Pad first select a aperture in Aperture Table"
-msgstr ""
+msgstr "Para adicionar um Pad, primeiro selecione uma abertura na "
+"Tabela de Aberturas"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:215
 #: flatcamEditors/FlatCAMGrbEditor.py:409
 msgid "Aperture size is zero. It needs to be greater than zero."
-msgstr ""
+msgstr "O tamanho da abertura é zero. Precisa ser maior que zero."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:366
 #: flatcamEditors/FlatCAMGrbEditor.py:674
 msgid ""
 "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."
 msgstr ""
+"Tipo de abertura incompatível. Selecione uma abertura do tipo 'C', 'R' ou 'O'."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:379
 msgid "Done. Adding Pad completed."
-msgstr ""
+msgstr "Pad adicionado."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:401
 msgid "To add an Pad Array first select a aperture in Aperture Table"
-msgstr ""
+msgstr "Para adicionar uma Matriz de Pads, primeiro selecione uma "
+"abertura na Tabela de Aberturas"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:479
 msgid "Click on the Pad Circular Array Start position"
-msgstr ""
+msgstr "Clique na posição inicial da Matriz Circular de Pads"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:700
 msgid "Too many Pads for the selected spacing angle."
-msgstr ""
+msgstr "Muitos Pads para o ângulo de espaçamento selecionado."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:723
 msgid "Done. Pad Array added."
-msgstr ""
+msgstr "Matriz de pads adicionada."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:744
 msgid "Select shape(s) and then click ..."
-msgstr ""
+msgstr "Selecione a(s) forma(s) e então clique ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:756
 msgid "Failed. Nothing selected."
-msgstr ""
+msgstr "Falhou. Nada selecionado."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:772
 msgid ""
 "Failed. Poligonize works only on geometries belonging to the same aperture."
 msgstr ""
+"Falhou. Poligonize funciona apenas em geometrias pertencentes à mesma abertura."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:826
 msgid "Done. Poligonize completed."
-msgstr ""
+msgstr "Poligonizar concluído."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:879
 #: flatcamEditors/FlatCAMGrbEditor.py:1102
 #: flatcamEditors/FlatCAMGrbEditor.py:1126
 msgid "Corner Mode 1: 45 degrees ..."
-msgstr ""
+msgstr "Canto Modo 1: 45 graus ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:881
 msgid "Click on 1st point ..."
-msgstr ""
+msgstr "Clique no primeiro ponto ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:891
 #: flatcamEditors/FlatCAMGrbEditor.py:1202
 msgid "Click on next Point or click Right mouse button to complete ..."
 msgstr ""
+"Clique no próximo ponto ou clique com o botão direito do mouse para "
+"completar ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1090
 #: flatcamEditors/FlatCAMGrbEditor.py:1123
 msgid "Corner Mode 2: Reverse 45 degrees ..."
-msgstr ""
+msgstr "Canto Modo 2: 45 graus invertido ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1093
 #: flatcamEditors/FlatCAMGrbEditor.py:1120
 msgid "Corner Mode 3: 90 degrees ..."
-msgstr ""
+msgstr "Canto Modo 3: 90 graus ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1096
 #: flatcamEditors/FlatCAMGrbEditor.py:1117
 msgid "Corner Mode 4: Reverse 90 degrees ..."
-msgstr ""
+msgstr "Canto Modo 4: 90 graus invertido ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1099
 #: flatcamEditors/FlatCAMGrbEditor.py:1114
 msgid "Corner Mode 5: Free angle ..."
-msgstr ""
+msgstr "Canto Modo 5: Ângulo livre ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1153
 #: flatcamEditors/FlatCAMGrbEditor.py:1319
 #: flatcamEditors/FlatCAMGrbEditor.py:1358
 msgid "Track Mode 1: 45 degrees ..."
-msgstr ""
+msgstr "Trilha Modo 1: 45 graus ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1299
 #: flatcamEditors/FlatCAMGrbEditor.py:1353
 msgid "Track Mode 2: Reverse 45 degrees ..."
-msgstr ""
+msgstr "Trilha Modo 2: 45 graus invertido ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1304
 #: flatcamEditors/FlatCAMGrbEditor.py:1348
 msgid "Track Mode 3: 90 degrees ..."
-msgstr ""
+msgstr "Trilha Modo 3: 90 graus ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1309
 #: flatcamEditors/FlatCAMGrbEditor.py:1343
 msgid "Track Mode 4: Reverse 90 degrees ..."
-msgstr ""
+msgstr "Trilha Modo 4: 90 graus invertido ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1314
 #: flatcamEditors/FlatCAMGrbEditor.py:1338
 msgid "Track Mode 5: Free angle ..."
-msgstr ""
+msgstr "Trilha Modo 5: Ângulo livre ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1720
 msgid "Scale the selected Gerber apertures ..."
-msgstr ""
+msgstr "Redimensiona as aberturas de Gerber selecionadas ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1762
 msgid "Buffer the selected apertures ..."
-msgstr ""
+msgstr "Buffer das aberturas selecionadas ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1804
 msgid "Mark polygon areas in the edited Gerber ..."
-msgstr ""
+msgstr "Marca áreas de polígonos no Gerber editado..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1852
 msgid "Nothing selected to move"
-msgstr ""
+msgstr "Nada selecionado para mover"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1976
 msgid "Done. Apertures Move completed."
-msgstr ""
+msgstr "Aberturas movidas."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2053
 msgid "Done. Apertures copied."
-msgstr ""
+msgstr "Aberturas copiadas."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2354 flatcamGUI/FlatCAMGUI.py:1686
 #: flatcamGUI/FlatCAMGUI.py:4629
 msgid "Gerber Editor"
-msgstr ""
+msgstr "Editor Gerber"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2374 flatcamGUI/ObjectUI.py:192
 #: flatcamTools/ToolProperties.py:137
 msgid "Apertures"
-msgstr ""
+msgstr "Aberturas"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2376 flatcamGUI/ObjectUI.py:194
 msgid "Apertures Table for the Gerber Object."
-msgstr ""
+msgstr "Tabela de Aberturas para o Objeto Gerber."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2387
 #: flatcamEditors/FlatCAMGrbEditor.py:3819 flatcamGUI/ObjectUI.py:227
 msgid "Code"
-msgstr ""
+msgstr "Código"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2387
 #: flatcamEditors/FlatCAMGrbEditor.py:3819 flatcamGUI/ObjectUI.py:227
 #: flatcamGUI/ObjectUI.py:952 flatcamGUI/ObjectUI.py:1517
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2387
 #: flatcamEditors/FlatCAMGrbEditor.py:3819 flatcamGUI/ObjectUI.py:227
 msgid "Size"
-msgstr ""
+msgstr "Tamanho"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2387
 #: flatcamEditors/FlatCAMGrbEditor.py:3819 flatcamGUI/ObjectUI.py:227
 msgid "Dim"
-msgstr ""
+msgstr "Dim"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2391 flatcamGUI/ObjectUI.py:231
 msgid "Index"
-msgstr ""
+msgstr "Índice"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2393
 #: flatcamEditors/FlatCAMGrbEditor.py:2420 flatcamGUI/ObjectUI.py:233
 msgid "Aperture Code"
-msgstr ""
+msgstr "Código de Abertura"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2395 flatcamGUI/ObjectUI.py:235
 msgid "Type of aperture: circular, rectangle, macros etc"
-msgstr ""
+msgstr "Tipo de abertura: circular, retângulo, macros etc"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2397 flatcamGUI/ObjectUI.py:237
 msgid "Aperture Size:"
-msgstr ""
+msgstr "Tamanho da abertura:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2399 flatcamGUI/ObjectUI.py:239
 msgid ""
@@ -3751,14 +3763,17 @@ msgid ""
 " - (width, height) for R, O type.\n"
 " - (dia, nVertices) for P type"
 msgstr ""
+"Dimensões da abertura: \n"
+" - (largura, altura) para o tipo R, O. \n"
+" - (dia, nVertices) para o tipo P"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2422 flatcamGUI/FlatCAMGUI.py:4658
 msgid "Code for the new aperture"
-msgstr ""
+msgstr "Código para a nova abertura"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2430
 msgid "Aperture Size"
-msgstr ""
+msgstr "Tamanho da abertura"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2432
 msgid ""
@@ -3768,10 +3783,15 @@ msgid ""
 "calculated as:\n"
 "sqrt(width**2 + height**2)"
 msgstr ""
+"Tamanho para a nova abertura.\n"
+"Se o tipo de abertura for 'R' ou 'O' então\n"
+"este valor será automaticamente\n"
+"calculado como:\n"
+"sqrt(largura^2 + altura^2)"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2444
 msgid "Aperture Type"
-msgstr ""
+msgstr "Tipo de Abertura"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2446
 msgid ""
@@ -3780,10 +3800,14 @@ msgid ""
 "R = rectangular\n"
 "O = oblong"
 msgstr ""
+"Selecione o tipo da nova abertura. Pode ser:\n"
+"C = circular \n"
+"R = retangular \n"
+"O = oblongo"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2457
 msgid "Aperture Dim"
-msgstr ""
+msgstr "Dim Abertura"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2459
 msgid ""
@@ -3791,38 +3815,41 @@ msgid ""
 "Active only for rectangular apertures (type R).\n"
 "The format is (width, height)"
 msgstr ""
+"Dimensões da nova abertura.\n"
+"Ativa apenas para aberturas retangulares (tipo R).\n"
+"O formato é (largura, altura)"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2468
 msgid "Add/Delete Aperture"
-msgstr ""
+msgstr "Adicionar/Excluir Abertura:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2470
 msgid "Add/Delete an aperture in the aperture table"
-msgstr ""
+msgstr "Adicionar/Excluir uma abertura na tabela de aberturas"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2479
 msgid "Add a new aperture to the aperture list."
-msgstr ""
+msgstr "Adiciona uma nova abertura à lista de aberturas."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2484
 msgid "Delete a aperture in the aperture list"
-msgstr ""
+msgstr "Exclui uma abertura da lista de aberturas"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2501
 msgid "Buffer Aperture"
-msgstr ""
+msgstr "Buffer Abertura"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2503
 msgid "Buffer a aperture in the aperture list"
-msgstr ""
+msgstr "Buffer de uma abertura na lista de aberturas"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2513 flatcamGUI/FlatCAMGUI.py:4781
 msgid "Buffer distance"
-msgstr ""
+msgstr "Distância do buffer"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2514
 msgid "Buffer corner"
-msgstr ""
+msgstr "Canto do buffer"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2516
 msgid ""
@@ -3832,138 +3859,155 @@ msgid ""
 " - 'Beveled:' the corner is a line that directly connects the features "
 "meeting in the corner"
 msgstr ""
+"Existem 3 tipos de cantos:\n"
+" - 'Redondo': o canto é arredondado.\n"
+" - 'Quadrado:' o canto é em um ângulo agudo.\n"
+" - 'Chanfrado:' o canto é uma linha que conecta diretamente os recursos "
+"reunidos no canto"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2531 flatcamGUI/FlatCAMGUI.py:738
 #: flatcamGUI/FlatCAMGUI.py:1672 flatcamGUI/FlatCAMGUI.py:1699
 #: flatcamGUI/FlatCAMGUI.py:2085
 msgid "Buffer"
-msgstr ""
+msgstr "Buffer"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2546
 msgid "Scale Aperture"
-msgstr ""
+msgstr "Redim. Abertura"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2548
 msgid "Scale a aperture in the aperture list"
-msgstr ""
+msgstr "Redimensiona uma abertura na lista de aberturas"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2556 flatcamGUI/FlatCAMGUI.py:4794
 msgid "Scale factor"
-msgstr ""
+msgstr "Fator de Escala"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2558
 msgid ""
 "The factor by which to scale the selected aperture.\n"
 "Values can be between 0.0000 and 999.9999"
 msgstr ""
+"O fator para redimensionar a abertura selecionada. \n"
+"Os valores podem estar entre 0.0000 e 999.9999"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2584
 msgid "Mark polygon areas"
-msgstr ""
+msgstr "Marcar áreas de polígono"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2586
 msgid "Mark the polygon areas."
-msgstr ""
+msgstr "Marcar as áreas de polígonos."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2594
 msgid "Area UPPER threshold"
-msgstr ""
+msgstr "Limite de área SUPERIOR"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2596
 msgid ""
 "The threshold value, all areas less than this are marked.\n"
 "Can have a value between 0.0000 and 9999.9999"
 msgstr ""
+"Valor limite, todas as áreas menores que isso são marcadas.\n"
+"Pode ser um valor entre 0.0000 e 9999.9999"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2602
 msgid "Area LOWER threshold"
-msgstr ""
+msgstr "Limite de área INFERIOR"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2604
 msgid ""
 "The threshold value, all areas more than this are marked.\n"
 "Can have a value between 0.0000 and 9999.9999"
 msgstr ""
+"Valor limite, todas as áreas maiores que isso são marcadas.\n"
+"Pode ser um valor entre 0.0000 e 9999.9999"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2617
 msgid "Go"
-msgstr ""
+msgstr "Ir"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2636 flatcamGUI/FlatCAMGUI.py:728
 #: flatcamGUI/FlatCAMGUI.py:2075
 msgid "Add Pad Array"
-msgstr ""
+msgstr "Adicionar Matriz de Pads"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2638
 msgid "Add an array of pads (linear or circular array)"
-msgstr ""
+msgstr "Adicione uma matriz de pads (matriz linear ou circular)"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2644
 msgid ""
 "Select the type of pads array to create.\n"
 "It can be Linear X(Y) or Circular"
 msgstr ""
+"Selecione o tipo de matriz de pads para criar.\n"
+"Pode ser Linear X(Y) ou Circular"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2655 flatcamGUI/FlatCAMGUI.py:4693
 msgid "Nr of pads"
-msgstr ""
+msgstr "Nº de pads"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2657 flatcamGUI/FlatCAMGUI.py:4695
 msgid "Specify how many pads to be in the array."
-msgstr ""
+msgstr "Especifique quantos pads devem estar na matriz."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3153
 #: flatcamEditors/FlatCAMGrbEditor.py:3157
 msgid "Aperture code value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "O valor do código de abertura está ausente ou em formato "
+"incorreto. Altere e tente novamente."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3193
 msgid ""
 "Aperture dimensions value is missing or wrong format. Add it in format "
 "(width, height) and retry."
-msgstr ""
+msgstr "O valor das dimensões da abertura está ausente ou está no "
+"formato errado. Altere (largura, altura) e tente novamente."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3206
 msgid "Aperture size value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "O valor do tamanho da abertura está ausente ou está no "
+"formato errado. Altere e tente novamente."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3217
 msgid "Aperture already in the aperture table."
-msgstr ""
+msgstr "Abertura já na tabela de aberturas."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3225
 msgid "Added new aperture with code"
-msgstr ""
+msgstr "Adicionada nova abertura com código"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3254
 msgid " Select an aperture in Aperture Table"
-msgstr ""
+msgstr "Selecione uma abertura na Tabela de Aberturas"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3261
 msgid "Select an aperture in Aperture Table -->"
-msgstr ""
+msgstr "Selecione uma abertura na Tabela de Aberturas ->"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3285
 msgid "Deleted aperture with code"
-msgstr ""
+msgstr "Abertura excluída com código"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3748
 #, python-format
 msgid "Adding aperture: %s geo ..."
-msgstr ""
+msgstr "Adicionando abertura: %s geo ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3936
 msgid ""
 "There are no Aperture definitions in the file. Aborting Gerber creation."
-msgstr ""
+msgstr "Não há definições da Abertura no arquivo. Abortando a criação "
+"de Gerber."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3944
 msgid "Creating Gerber."
-msgstr ""
+msgstr "Criando Gerber."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3953
 msgid "Done. Gerber editing finished."
-msgstr ""
+msgstr "Edição de Gerber concluída."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3970
 msgid "Cancelled. No aperture is selected"
@@ -3971,156 +4015,159 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4505
 msgid "Failed. No aperture geometry is selected."
-msgstr ""
+msgstr "Cancelado. Nenhuma abertura selecionada"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4514
 msgid "Done. Apertures geometry deleted."
-msgstr ""
+msgstr "Abertura excluída."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4657
 msgid "No aperture to buffer. Select at least one aperture and try again."
-msgstr ""
+msgstr "Nenhuma abertura para buffer. Selecione pelo menos uma "
+"abertura e tente novamente."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4670
 msgid "Failed."
-msgstr ""
+msgstr "Falhou."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4689
 msgid "Scale factor value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "O valor do fator de escala está ausente ou está em formato "
+"incorreto. Altere e tente novamente."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4721
 msgid "No aperture to scale. Select at least one aperture and try again."
-msgstr ""
+msgstr "Nenhuma abertura para redimensionar. Selecione pelo menos uma "
+"abertura e tente novamente."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4737
 msgid "Done. Scale Tool completed."
-msgstr ""
+msgstr "Redimensionamento concluído."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4775
 msgid "Polygon areas marked."
-msgstr ""
+msgstr "Áreas de polígono marcadas."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4778
 msgid "There are no polygons to mark area."
-msgstr ""
+msgstr "Não há polígonos para marcar a área."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:5549
 msgid "Rotation action was not executed."
-msgstr ""
+msgstr "A rotação não foi executada."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:5688
 msgid "Skew action was not executed."
-msgstr ""
+msgstr "A inclinação não foi executada."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:5758
 msgid "Scale action was not executed."
-msgstr ""
+msgstr "O redimensionamento não foi executado."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:5807
 msgid "Offset action was not executed."
-msgstr ""
+msgstr "O deslocamento não foi executado."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:5863
 msgid "Geometry shape offset Y cancelled"
-msgstr ""
+msgstr "Deslocamento Y cancelado."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:5880
 msgid "Geometry shape skew X cancelled"
-msgstr ""
+msgstr "Inclinação X cancelada."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:5897
 msgid "Geometry shape skew Y cancelled"
-msgstr ""
+msgstr "Inclinação Y cancelada."
 
 #: flatcamGUI/FlatCAMGUI.py:52
 msgid "&File"
-msgstr ""
+msgstr "&Arquivo"
 
 #: flatcamGUI/FlatCAMGUI.py:57
 msgid "&New Project ...\tCTRL+N"
-msgstr ""
+msgstr "&Novo Projeto ...\tCTRL+N"
 
 #: flatcamGUI/FlatCAMGUI.py:59
 msgid "Will create a new, blank project"
-msgstr ""
+msgstr "Criará um novo projeto em branco"
 
 #: flatcamGUI/FlatCAMGUI.py:64
 msgid "&New"
-msgstr ""
+msgstr "&Novo"
 
 #: flatcamGUI/FlatCAMGUI.py:67
 msgid "Geometry\tN"
-msgstr ""
+msgstr "Geometria\tN"
 
 #: flatcamGUI/FlatCAMGUI.py:69
 msgid "Will create a new, empty Geometry Object."
-msgstr ""
+msgstr "Criará um novo Objeto Geometria vazio."
 
 #: flatcamGUI/FlatCAMGUI.py:71
 msgid "Gerber\tB"
-msgstr ""
+msgstr "Gerber\tB"
 
 #: flatcamGUI/FlatCAMGUI.py:73
 msgid "Will create a new, empty Gerber Object."
-msgstr ""
+msgstr "Criará um novo Objeto Gerber vazio."
 
 #: flatcamGUI/FlatCAMGUI.py:75
 msgid "Excellon\tL"
-msgstr ""
+msgstr "Excellon\tL"
 
 #: flatcamGUI/FlatCAMGUI.py:77
 msgid "Will create a new, empty Excellon Object."
-msgstr ""
+msgstr "Criará um novo Objeto Excellon vazio."
 
 #: flatcamGUI/FlatCAMGUI.py:80 flatcamTools/ToolPcbWizard.py:62
 #: flatcamTools/ToolPcbWizard.py:69
 msgid "Open"
-msgstr ""
+msgstr "Abrir"
 
 #: flatcamGUI/FlatCAMGUI.py:84
 msgid "Open &Project ..."
-msgstr ""
+msgstr "Abrir &Projeto ..."
 
 #: flatcamGUI/FlatCAMGUI.py:90
 msgid "Open &Gerber ...\tCTRL+G"
-msgstr ""
+msgstr "Abrir &Gerber ...\tCTRL+G"
 
 #: flatcamGUI/FlatCAMGUI.py:95
 msgid "Open &Excellon ...\tCTRL+E"
-msgstr ""
+msgstr "Abrir &Excellon ...\tCTRL+E"
 
 #: flatcamGUI/FlatCAMGUI.py:99
 msgid "Open G-&Code ..."
-msgstr ""
+msgstr "Abrir G-&Code ..."
 
 #: flatcamGUI/FlatCAMGUI.py:105
 msgid "Open Config ..."
-msgstr ""
+msgstr "Abrir Configuração ..."
 
 #: flatcamGUI/FlatCAMGUI.py:109
 msgid "Recent projects"
-msgstr ""
+msgstr "Projetos Recentes"
 
 #: flatcamGUI/FlatCAMGUI.py:110
 msgid "Recent files"
-msgstr ""
+msgstr "Arquivos Recentes"
 
 #: flatcamGUI/FlatCAMGUI.py:116
 msgid "Scripting"
-msgstr ""
+msgstr "Scripting"
 
 #: flatcamGUI/FlatCAMGUI.py:119
 msgid "New Script ..."
-msgstr ""
+msgstr "Novo Script ..."
 
 #: flatcamGUI/FlatCAMGUI.py:120
 msgid "Open Script ..."
-msgstr ""
+msgstr "Abrir Script ..."
 
 #: flatcamGUI/FlatCAMGUI.py:122
 msgid "Run Script ...\tSHIFT+S"
-msgstr ""
+msgstr "Executar Script ...\tSHIFT+S"
 
 #: flatcamGUI/FlatCAMGUI.py:124
 msgid ""
@@ -4128,42 +4175,45 @@ msgid ""
 "enabling the automation of certain\n"
 "functions of FlatCAM."
 msgstr ""
+"Executará o script TCL aberto,\n"
+"ativando a automação de certas\n"
+"funções do FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:137
 msgid "Import"
-msgstr ""
+msgstr "Importar"
 
 #: flatcamGUI/FlatCAMGUI.py:139
 msgid "&SVG as Geometry Object ..."
-msgstr ""
+msgstr "&SVG como Objeto de Geometria ..."
 
 #: flatcamGUI/FlatCAMGUI.py:142
 msgid "&SVG as Gerber Object ..."
-msgstr ""
+msgstr "&SVG como Objeto Gerber ..."
 
 #: flatcamGUI/FlatCAMGUI.py:147
 msgid "&DXF as Geometry Object ..."
-msgstr ""
+msgstr "&DXF como Objeto de Geometria ..."
 
 #: flatcamGUI/FlatCAMGUI.py:150
 msgid "&DXF as Gerber Object ..."
-msgstr ""
+msgstr "&DXF como Objeto Gerber ..."
 
 #: flatcamGUI/FlatCAMGUI.py:155
 msgid "Export"
-msgstr ""
+msgstr "Exportar"
 
 #: flatcamGUI/FlatCAMGUI.py:158
 msgid "Export &SVG ..."
-msgstr ""
+msgstr "Exportar &SVG ..."
 
 #: flatcamGUI/FlatCAMGUI.py:161
 msgid "Export DXF ..."
-msgstr ""
+msgstr "Exportar DXF ..."
 
 #: flatcamGUI/FlatCAMGUI.py:166
 msgid "Export &PNG ..."
-msgstr ""
+msgstr "Exportar &PNG ..."
 
 #: flatcamGUI/FlatCAMGUI.py:168
 msgid ""
@@ -4171,10 +4221,13 @@ msgid ""
 "the saved image will contain the visual \n"
 "information currently in FlatCAM Plot Area."
 msgstr ""
+"Exportará uma imagem em formato PNG.\n"
+"A imagem salva conterá as informações\n"
+"visuais atualmente na área gráfica FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:177
 msgid "Export &Excellon ..."
-msgstr ""
+msgstr "Exportar &Excellon ..."
 
 #: flatcamGUI/FlatCAMGUI.py:179
 msgid ""
@@ -4182,10 +4235,13 @@ msgid ""
 "the coordinates format, the file units and zeros\n"
 "are set in Preferences -> Excellon Export."
 msgstr ""
+"Exportará um Objeto Excellon como arquivo Excellon.\n"
+"O formato das coordenadas, das unidades de arquivo e dos zeros\n"
+"são definidos em Preferências -> Exportação de Excellon."
 
 #: flatcamGUI/FlatCAMGUI.py:186
 msgid "Export &Gerber ..."
-msgstr ""
+msgstr "Exportar &Gerber ..."
 
 #: flatcamGUI/FlatCAMGUI.py:188
 msgid ""
@@ -4193,58 +4249,61 @@ msgid ""
 "the coordinates format, the file units and zeros\n"
 "are set in Preferences -> Gerber Export."
 msgstr ""
+"Exportará um Objeto Gerber como arquivo Gerber.\n"
+"O formato das coordenadas, das unidades de arquivo e dos zeros\n"
+"são definidos em Preferências -> Exportar Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:204
 msgid "Backup"
-msgstr ""
+msgstr "Backup"
 
 #: flatcamGUI/FlatCAMGUI.py:208
 msgid "Import Preferences from file ..."
-msgstr ""
+msgstr "Importar preferências de um arquivo ..."
 
 #: flatcamGUI/FlatCAMGUI.py:213
 msgid "Export Preferences to file ..."
-msgstr ""
+msgstr "Exportar Preferências para um arquivo ..."
 
 #: flatcamGUI/FlatCAMGUI.py:219 flatcamGUI/FlatCAMGUI.py:546
 msgid "Save"
-msgstr ""
+msgstr "Salvar"
 
 #: flatcamGUI/FlatCAMGUI.py:222
 msgid "&Save Project ..."
-msgstr ""
+msgstr "&Salvar Projeto ..."
 
 #: flatcamGUI/FlatCAMGUI.py:227
 msgid "Save Project &As ...\tCTRL+S"
-msgstr ""
+msgstr "S&alvar Projeto Como ...\tCTRL+S"
 
 #: flatcamGUI/FlatCAMGUI.py:232
 msgid "Save Project C&opy ..."
-msgstr ""
+msgstr "Salvar Cópia do Pr&ojeto ..."
 
 #: flatcamGUI/FlatCAMGUI.py:239
 msgid "E&xit"
-msgstr ""
+msgstr "Sair"
 
 #: flatcamGUI/FlatCAMGUI.py:245
 msgid "&Edit"
-msgstr ""
+msgstr "&Editar"
 
 #: flatcamGUI/FlatCAMGUI.py:248
 msgid "Edit Object\tE"
-msgstr ""
+msgstr "Editar Objeto\tE"
 
 #: flatcamGUI/FlatCAMGUI.py:249
 msgid "Close Editor\tCTRL+S"
-msgstr ""
+msgstr "Fechar Editor\tCTRL+S"
 
 #: flatcamGUI/FlatCAMGUI.py:257
 msgid "Conversion"
-msgstr ""
+msgstr "Conversão"
 
 #: flatcamGUI/FlatCAMGUI.py:259
 msgid "&Join Geo/Gerber/Exc -> Geo"
-msgstr ""
+msgstr "&Unir Geo/Gerber/Exc -> Geo"
 
 #: flatcamGUI/FlatCAMGUI.py:261
 msgid ""
@@ -4254,86 +4313,95 @@ msgid ""
 "- Geometry\n"
 "into a new combo Geometry object."
 msgstr ""
+"Mescla uma seleção de objetos, que podem ser do tipo:\n"
+"- Gerber\n"
+"- Excellon\n"
+"- Geometria\n"
+" em um novo objeto Geometria."
 
 #: flatcamGUI/FlatCAMGUI.py:268
 msgid "Join Excellon(s) -> Excellon"
-msgstr ""
+msgstr "Unir Excellon(s) -> Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:270
 msgid "Merge a selection of Excellon objects into a new combo Excellon object."
-msgstr ""
+msgstr "Mescla uma seleção de objetos Excellon em um novo objeto Excellon."
 
 #: flatcamGUI/FlatCAMGUI.py:273
 msgid "Join Gerber(s) -> Gerber"
-msgstr ""
+msgstr "Unir Gerber(s) -> Gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:275
 msgid "Merge a selection of Gerber objects into a new combo Gerber object."
-msgstr ""
+msgstr "Mescla uma seleção de objetos Gerber em um novo objeto Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:280
 msgid "Convert Single to MultiGeo"
-msgstr ""
+msgstr "Converter Single para MultiGeo"
 
 #: flatcamGUI/FlatCAMGUI.py:282
 msgid ""
 "Will convert a Geometry object from single_geometry type\n"
 "to a multi_geometry type."
 msgstr ""
+"Converterá um objeto Geometria do tipo single_geometry\n"
+"em um tipo multi_geometry."
 
 #: flatcamGUI/FlatCAMGUI.py:286
 msgid "Convert Multi to SingleGeo"
-msgstr ""
+msgstr "Converter Multi para SingleGeo"
 
 #: flatcamGUI/FlatCAMGUI.py:288
 msgid ""
 "Will convert a Geometry object from multi_geometry type\n"
 "to a single_geometry type."
 msgstr ""
+"Converterá um objeto Geometria do tipo multi_geometry\n"
+"em um tipo single_geometry."
 
 #: flatcamGUI/FlatCAMGUI.py:294
 msgid "Convert Any to Geo"
-msgstr ""
+msgstr "Converter Qualquer para Geo"
 
 #: flatcamGUI/FlatCAMGUI.py:296
 msgid "Convert Any to Gerber"
-msgstr ""
+msgstr "Converter Qualquer para Gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:301
 msgid "&Copy\tCTRL+C"
-msgstr ""
+msgstr "&Copiar\tCTRL+C"
 
 #: flatcamGUI/FlatCAMGUI.py:305
 msgid "&Delete\tDEL"
-msgstr ""
+msgstr "Excluir\tDEL"
 
 #: flatcamGUI/FlatCAMGUI.py:309
 msgid "Se&t Origin\tO"
-msgstr ""
+msgstr "Definir Origem\tO"
 
 #: flatcamGUI/FlatCAMGUI.py:310
 msgid "Jump to Location\tJ"
-msgstr ""
+msgstr "Ir para a localização\tJ"
 
 #: flatcamGUI/FlatCAMGUI.py:315
 msgid "Toggle Units\tQ"
-msgstr ""
+msgstr "Alternar Unidades\tQ"
 
 #: flatcamGUI/FlatCAMGUI.py:316
 msgid "&Select All\tCTRL+A"
-msgstr ""
+msgstr "&Selecionar Tudo\tCTRL+A"
 
 #: flatcamGUI/FlatCAMGUI.py:320
 msgid "&Preferences\tSHIFT+P"
-msgstr ""
+msgstr "&Preferências\tSHIFT+P"
 
 #: flatcamGUI/FlatCAMGUI.py:323
 msgid "&Options"
-msgstr ""
+msgstr "&Opções"
 
 #: flatcamGUI/FlatCAMGUI.py:338
 msgid "&Rotate Selection\tSHIFT+(R)"
-msgstr ""
+msgstr "Gi&rar Seleção\tSHIFT+(R)"
 
 #: flatcamGUI/FlatCAMGUI.py:343
 msgid "&Skew on X axis\tSHIFT+X"
