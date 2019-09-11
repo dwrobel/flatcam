@@ -3396,15 +3396,35 @@ class Gerber (Geometry):
 
             if current_polarity == 'D':
                 self.app.inform.emit('%s' % _("Gerber processing. Applying Gerber polarity."))
-                try:
+                if new_poly.is_valid:
                     self.solid_geometry = self.solid_geometry.union(new_poly)
-                except Exception as e:
-                    # in case in the new_poly are some self intersections try to avoid making union with them
-                    for poly in new_poly:
-                        try:
-                            self.solid_geometry = self.solid_geometry.union(poly)
-                        except:
-                            pass
+                else:
+                    # I do this so whenever the parsed geometry of the file is not valid (intersections) it is still
+                    # loaded. Instead of applying a union I add to a list of polygons.
+                    final_poly = []
+                    try:
+                        for poly in new_poly:
+                            final_poly.append(poly)
+                    except TypeError:
+                        final_poly.append(new_poly)
+
+                    try:
+                        for poly in self.solid_geometry:
+                            final_poly.append(poly)
+                    except TypeError:
+                        final_poly.append(self.solid_geometry)
+
+                    self.solid_geometry = final_poly
+
+                # try:
+                #     self.solid_geometry = self.solid_geometry.union(new_poly)
+                # except Exception as e:
+                #     # in case in the new_poly are some self intersections try to avoid making union with them
+                #     for poly in new_poly:
+                #         try:
+                #             self.solid_geometry = self.solid_geometry.union(poly)
+                #         except:
+                #             pass
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
         except Exception as err:
