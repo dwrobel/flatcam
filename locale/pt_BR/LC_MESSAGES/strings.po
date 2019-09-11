@@ -1301,52 +1301,52 @@ msgstr "Trabalhando ..."
 
 #: FlatCAMApp.py:9967
 msgid "Saving FlatCAM Project"
-msgstr ""
+msgstr "Salvando o Projeto FlatCAM"
 
 #: FlatCAMApp.py:9989 FlatCAMApp.py:10024
 msgid "Project saved to"
-msgstr ""
+msgstr "Projeto salvo em"
 
 #: FlatCAMApp.py:10008
 msgid "Failed to verify project file"
-msgstr ""
+msgstr "Falha ao verificar o arquivo do projeto"
 
 #: FlatCAMApp.py:10008 FlatCAMApp.py:10016 FlatCAMApp.py:10027
 msgid "Retry to save it."
-msgstr ""
+msgstr "Tente salvá-lo novamente."
 
 #: FlatCAMApp.py:10016 FlatCAMApp.py:10027
 msgid "Failed to parse saved project file"
-msgstr ""
+msgstr "Falha ao analisar o arquivo de projeto salvo"
 
 #: FlatCAMApp.py:10238
 msgid "The user requested a graceful exit of the current task."
-msgstr ""
+msgstr "O usuário solicitou uma saída normal da tarefa atual."
 
 #: FlatCAMObj.py:213
 #, python-brace-format
 msgid "[success] Name changed from {old} to {new}"
-msgstr ""
+msgstr "Nome alterado de {old} para {new}"
 
 #: FlatCAMObj.py:222
 msgid "Offsetting..."
-msgstr ""
+msgstr "Deslocando..."
 
 #: FlatCAMObj.py:237
 msgid "Scaling..."
-msgstr ""
+msgstr "Dimensionando..."
 
 #: FlatCAMObj.py:253
 msgid "Skewing..."
-msgstr ""
+msgstr "Inclinando..."
 
 #: FlatCAMObj.py:600 FlatCAMObj.py:2293 FlatCAMObj.py:3571 FlatCAMObj.py:5837
 msgid "<span style=\"color:green;\"><b>Basic</b></span>"
-msgstr ""
+msgstr "<span style=\"color:green;\"><b>Básico</b></span>"
 
 #: FlatCAMObj.py:613 FlatCAMObj.py:2309 FlatCAMObj.py:3593 FlatCAMObj.py:5843
 msgid "<span style=\"color:red;\"><b>Advanced</b></span>"
-msgstr ""
+msgstr "<span style=\"color:red;\"><b>Avançado</b></span>"
 
 #: FlatCAMObj.py:802
 msgid "Buffering solid geometry"
@@ -1364,33 +1364,33 @@ msgstr ""
 
 #: FlatCAMObj.py:811
 msgid "Done"
-msgstr ""
+msgstr "Pronto"
 
 #: FlatCAMObj.py:1071 FlatCAMObj.py:1178
 #: flatcamTools/ToolNonCopperClear.py:1560
 #: flatcamTools/ToolNonCopperClear.py:1888
 msgid "Isolation geometry could not be generated."
-msgstr ""
+msgstr "A geometria de isolação não pôde ser gerada."
 
 #: FlatCAMObj.py:1108 FlatCAMObj.py:3261 FlatCAMObj.py:3528 FlatCAMObj.py:3804
 msgid "Rough"
-msgstr ""
+msgstr "Desbaste"
 
 #: FlatCAMObj.py:1133 FlatCAMObj.py:1201
 msgid "Isolation geometry created"
-msgstr ""
+msgstr "Geometria de isolação criada"
 
 #: FlatCAMObj.py:1386
 msgid "Plotting Apertures"
-msgstr ""
+msgstr "Mostrando Aberturas"
 
 #: FlatCAMObj.py:2121 flatcamEditors/FlatCAMExcEditor.py:2309
 msgid "Total Drills"
-msgstr ""
+msgstr "Total de Furos"
 
 #: FlatCAMObj.py:2153 flatcamEditors/FlatCAMExcEditor.py:2341
 msgid "Total Slots"
-msgstr ""
+msgstr "Total de Fendas"
 
 #: FlatCAMObj.py:2367 FlatCAMObj.py:3644 FlatCAMObj.py:3938 FlatCAMObj.py:4129
 #: FlatCAMObj.py:4140 FlatCAMObj.py:4258 FlatCAMObj.py:4461 FlatCAMObj.py:4668
@@ -1435,19 +1435,19 @@ msgstr ""
 #: flatcamTools/ToolTransform.py:578 flatcamTools/ToolTransform.py:607
 #: flatcamTools/ToolTransform.py:625
 msgid "Wrong value format entered, use a number."
-msgstr ""
+msgstr "Formato incorreto, use um número."
 
 #: FlatCAMObj.py:2608 FlatCAMObj.py:2698 FlatCAMObj.py:2819
 msgid "Please select one or more tools from the list and try again."
-msgstr ""
+msgstr "Selecione uma ou mais ferramentas da lista e tente novamente."
 
 #: FlatCAMObj.py:2614
 msgid "Milling tool for DRILLS is larger than hole size. Cancelled."
-msgstr ""
+msgstr "A ferramenta BROCA é maior que o tamanho do furo. Cancelado."
 
 #: FlatCAMObj.py:2627 FlatCAMObj.py:2720 FlatCAMObj.py:2838
 msgid "Tool_nr"
-msgstr ""
+msgstr "Ferramenta_nr"
 
 #: FlatCAMObj.py:2627 FlatCAMObj.py:2720 FlatCAMObj.py:2838
 #: flatcamEditors/FlatCAMExcEditor.py:1500
@@ -1455,35 +1455,39 @@ msgstr ""
 #: flatcamTools/ToolNonCopperClear.py:107 flatcamTools/ToolPaint.py:106
 #: flatcamTools/ToolPcbWizard.py:76 flatcamTools/ToolSolderPaste.py:81
 msgid "Diameter"
-msgstr ""
+msgstr "Diâmetro"
 
 #: FlatCAMObj.py:2627 FlatCAMObj.py:2720 FlatCAMObj.py:2838
 msgid "Drills_Nr"
-msgstr ""
+msgstr "Furo_Nr"
 
 #: FlatCAMObj.py:2627 FlatCAMObj.py:2720 FlatCAMObj.py:2838
 msgid "Slots_Nr"
-msgstr ""
+msgstr "Fenda_Nr"
 
 #: FlatCAMObj.py:2707
 msgid "Milling tool for SLOTS is larger than hole size. Cancelled."
-msgstr ""
+msgstr "A ferramenta fresa para FENDAS é maior que o tamanho do furo. Cancelado."
 
 #: FlatCAMObj.py:2879 FlatCAMObj.py:4559 FlatCAMObj.py:4777 FlatCAMObj.py:5100
 msgid ""
 "Wrong value format for self.defaults[\"z_pdepth\"] or self.options[\"z_pdepth"
 "\"]"
 msgstr ""
+"Valor com formato incorreto para self.defaults[\"z_pdepth\"] ou "
+"self.options[\"z_pdepth\"]"
 
 #: FlatCAMObj.py:2890 FlatCAMObj.py:4570 FlatCAMObj.py:5111
 msgid ""
 "Wrong value format for self.defaults[\"feedrate_probe\"] or self."
 "options[\"feedrate_probe\"]"
 msgstr ""
+"Valor com formato incorreto para self.defaults[\"feedrate_probe"
+"\"] ou self.options[\"feedrate_probe\"]"
 
 #: FlatCAMObj.py:2920 FlatCAMObj.py:4987 FlatCAMObj.py:4993 FlatCAMObj.py:5145
 msgid "Generating CNC Code"
-msgstr ""
+msgstr "Gerando Código CNC"
 
 #: FlatCAMObj.py:2946 camlib.py:5658 camlib.py:6632
 msgid ""
@@ -1491,98 +1495,107 @@ msgid ""
 "y) \n"
 "but now there is only one value, not two. "
 msgstr ""
+"O campo Troca de Ferramentas X, Y em Editar -> Preferências deve "
+"estar no formato (x, y).\n"
+"Agora existe apenas um valor, não dois."
 
 #: FlatCAMObj.py:3261 FlatCAMObj.py:4180 FlatCAMObj.py:4181 FlatCAMObj.py:4190
 msgid "Iso"
-msgstr ""
+msgstr "Isolação"
 
 #: FlatCAMObj.py:3261
 msgid "Finish"
-msgstr ""
+msgstr "Acabamento"
 
 #: FlatCAMObj.py:3564 flatcamGUI/FlatCAMGUI.py:544 flatcamGUI/FlatCAMGUI.py:746
 #: flatcamGUI/FlatCAMGUI.py:1718 flatcamGUI/FlatCAMGUI.py:2092
 #: flatcamGUI/ObjectUI.py:1061
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: FlatCAMObj.py:3775
 msgid "Please enter the desired tool diameter in Float format."
-msgstr ""
+msgstr "Por favor, insira o diâmetro da ferramenta desejada no formato "
+"Flutuante."
 
 #: FlatCAMObj.py:3849
 msgid "Tool added in Tool Table."
-msgstr ""
+msgstr "Ferramenta adicionada na Tabela de Ferramentas."
 
 #: FlatCAMObj.py:3853
 msgid "Default Tool added. Wrong value format entered."
-msgstr ""
+msgstr "Ferramenta padrão adicionada. Valor inserico com formato incorreto."
 
 #: FlatCAMObj.py:3886 FlatCAMObj.py:3895
 msgid "Failed. Select a tool to copy."
-msgstr ""
+msgstr "Falhou. Selecione uma ferramenta para copiar."
 
 #: FlatCAMObj.py:3923
 msgid "Tool was copied in Tool Table."
-msgstr ""
+msgstr "A ferramenta foi copiada na tabela de ferramentas."
 
 #: FlatCAMObj.py:3953
 msgid "Tool was edited in Tool Table."
-msgstr ""
+msgstr "A ferramenta foi editada na Tabela de Ferramentas."
 
 #: FlatCAMObj.py:3982 FlatCAMObj.py:3991
 msgid "Failed. Select a tool to delete."
-msgstr ""
+msgstr "Falhou. Selecione uma ferramenta para excluir."
 
 #: FlatCAMObj.py:4014
 msgid "Tool was deleted in Tool Table."
-msgstr ""
+msgstr "A ferramenta foi eliminada da Tabela de Ferramentas."
 
 #: FlatCAMObj.py:4444
 #, python-format
 msgid "This Geometry can't be processed because it is %s geometry."
-msgstr ""
+msgstr "Esta Geometria não pode ser processada porque é %s geometria."
 
 #: FlatCAMObj.py:4486
 msgid "Failed. No tool selected in the tool table ..."
-msgstr ""
+msgstr "Falhou. Nenhuma ferramenta selecionada na tabela de ferramentas ..."
 
 #: FlatCAMObj.py:4524
 msgid "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->"
-msgstr ""
+msgstr "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->"
 
 #: FlatCAMObj.py:4673 FlatCAMObj.py:4913
 msgid ""
 "Tool Offset is selected in Tool Table but no value is provided.\n"
 "Add a Tool Offset or change the Offset Type."
 msgstr ""
+"Deslocamento de Ferramenta selecionado na Tabela de Ferramentas, mas nenhum "
+"valor foi fornecido.\n"
+"Adicione um Deslocamento de Ferramenta ou altere o Tipo de Deslocamento."
 
 #: FlatCAMObj.py:4724 FlatCAMObj.py:4954
 msgid "G-Code parsing in progress..."
-msgstr ""
+msgstr "Análisando o G-Code..."
 
 #: FlatCAMObj.py:4726 FlatCAMObj.py:4956
 msgid "G-Code parsing finished..."
-msgstr ""
+msgstr "Análise do G-Code finalisada..."
 
 #: FlatCAMObj.py:4734 FlatCAMObj.py:4966 FlatCAMObj.py:5138
 msgid "Finished G-Code processing..."
-msgstr ""
+msgstr "Processamento do G-Code finalisado..."
 
 #: FlatCAMObj.py:4736 FlatCAMObj.py:4968
 #, python-format
 msgid "G-Code processing failed with error: %s"
-msgstr ""
+msgstr "Processamento do G-Code falhou com erro: %s"
 
 #: FlatCAMObj.py:4788
 msgid ""
 " Wrong value format for self.defaults[\"feedrate_probe\"] or self."
 "options[\"feedrate_probe\"]"
 msgstr ""
+" Valor com formato incorreto para self.defaults[\"feedrate_probe\"] ou self."
+"options[\"feedrate_probe\"]"
 
 #: FlatCAMObj.py:4799 flatcamTools/ToolSolderPaste.py:1187
 msgid "Cancelled. Empty file, it has no geometry"
-msgstr ""
+msgstr "Cancelado. Arquivo vazio, não tem geometria"
 
 #: FlatCAMObj.py:4990 FlatCAMObj.py:4996 FlatCAMObj.py:5148
 msgid "CNCjob created"
@@ -1590,21 +1603,23 @@ msgstr ""
 
 #: FlatCAMObj.py:5180 FlatCAMObj.py:5190 camlib.py:3581 camlib.py:3591
 msgid "Scale factor has to be a number: integer or float."
-msgstr ""
+msgstr "O fator de escala deve ser um número: inteiro ou flutuante."
 
 #: FlatCAMObj.py:5264
 msgid "Geometry Scale done."
-msgstr ""
+msgstr "Redimensionamento de geometria feita."
 
 #: FlatCAMObj.py:5281 camlib.py:3685
 msgid ""
 "An (x,y) pair of values are needed. Probable you entered only one value in "
 "the Offset field."
 msgstr ""
+"Um par (x,y) de valores é necessário. Provavelmente você "
+"digitou apenas um valor no campo Deslocamento."
 
 #: FlatCAMObj.py:5335
 msgid "Geometry Offset done."
-msgstr ""
+msgstr "Deslocamento de Geometria feito."
 
 #: FlatCAMObj.py:5364
 msgid ""
@@ -1615,176 +1630,180 @@ msgstr ""
 
 #: FlatCAMObj.py:5905 FlatCAMObj.py:5910 flatcamTools/ToolSolderPaste.py:1393
 msgid "Export Machine Code ..."
-msgstr ""
+msgstr "Exportar Código da Máquina ..."
 
 #: FlatCAMObj.py:5916 flatcamTools/ToolSolderPaste.py:1397
 msgid "Export Machine Code cancelled ..."
-msgstr ""
+msgstr "Exportar código da máquina cancelado ..."
 
 #: FlatCAMObj.py:5934
 msgid "Machine Code file saved to"
-msgstr ""
+msgstr "Arquivo G-Code salvo em"
 
 #: FlatCAMObj.py:5958
 msgid "FlatCAMCNNJob.on_edit_code_click() -->"
-msgstr ""
+msgstr "FlatCAMCNNJob.on_edit_code_click() -->"
 
 #: FlatCAMObj.py:5966
 msgid "Loaded Machine Code into Code Editor"
-msgstr ""
+msgstr "G-Code aberto no Editor de Códigos"
 
 #: FlatCAMObj.py:6078
 msgid "This CNCJob object can't be processed because it is a"
-msgstr ""
+msgstr "Este objeto Trabalho CNC não pode ser processado porque é um"
 
 #: FlatCAMObj.py:6080
 msgid "CNCJob object"
-msgstr ""
+msgstr "objeto de Trabalho CNC"
 
 #: FlatCAMObj.py:6132
 msgid "G-code does not have a units code: either G20 or G21"
-msgstr ""
+msgstr "O G-Code não possui um código de unidade: G20 ou G21"
 
 #: FlatCAMObj.py:6144
 msgid "Cancelled. The Toolchange Custom code is enabled but it's empty."
-msgstr ""
+msgstr "Cancelado. O código personalizado para Troca de Ferramentas está "
+"ativado, mas está vazio."
 
 #: FlatCAMObj.py:6150
 msgid "Toolchange G-code was replaced by a custom code."
-msgstr ""
+msgstr "O G-Code para Troca de Ferramentas foi substituído por um código personalizado."
 
 #: FlatCAMObj.py:6177
 msgid "Saved to"
-msgstr ""
+msgstr "Salvo em"
 
 #: FlatCAMObj.py:6187 FlatCAMObj.py:6197
 msgid ""
 "The used postprocessor file has to have in it's name: 'toolchange_custom'"
 msgstr ""
+"O arquivo de pós-processamento deve ter em seu nome: 'toolchange_custom'"
 
 #: FlatCAMObj.py:6201
 msgid "There is no postprocessor file."
-msgstr ""
+msgstr "Não há arquivo de pós-processamento."
 
 #: FlatCAMProcess.py:172
 msgid "processes running."
-msgstr ""
+msgstr "processos executando."
 
 #: FlatCAMTranslation.py:91
 msgid "The application will restart."
-msgstr ""
+msgstr "O aplicativo reiniciará."
 
 #: FlatCAMTranslation.py:92
 #, python-format
 msgid "Are you sure do you want to change the current language to %s?"
-msgstr ""
+msgstr "Você tem certeza de que quer alterar o idioma para %s?"
 
 #: FlatCAMTranslation.py:94
 msgid "Apply Language ..."
-msgstr ""
+msgstr "Aplicar o Idioma ..."
 
 #: ObjectCollection.py:426
 #, python-brace-format
 msgid "Object renamed from <b>{old}</b> to <b>{new}</b>"
-msgstr ""
+msgstr "Objeto renomeado de <b>{old}</b> para <b>{new}</b>"
 
 #: ObjectCollection.py:766
 msgid "Cause of error"
-msgstr ""
+msgstr "Motivo do erro"
 
 #: camlib.py:215
 msgid "self.solid_geometry is neither BaseGeometry or list."
-msgstr ""
+msgstr "self.solid_geometry não é nem BaseGeometry nem lista."
 
 #: camlib.py:1522
 msgid "Object was mirrored"
-msgstr ""
+msgstr "O objeto foi espelhado"
 
 #: camlib.py:1525
 msgid "Failed to mirror. No object selected"
-msgstr ""
+msgstr "Falha ao espelhar. Nenhum objeto selecionado"
 
 #: camlib.py:1594
 msgid "Object was rotated"
-msgstr ""
+msgstr "O objeto foi rotacionado"
 
 #: camlib.py:1597
 msgid "Failed to rotate. No object selected"
-msgstr ""
+msgstr "Falha ao girar. Nenhum objeto selecionado"
 
 #: camlib.py:1665
 msgid "Object was skewed"
-msgstr ""
+msgstr "O objeto foi inclinado"
 
 #: camlib.py:1668
 msgid "Failed to skew. No object selected"
-msgstr ""
+msgstr "Falha ao inclinar. Nenhum objeto selecionado"
 
 #: camlib.py:2443
 msgid "Gerber processing. Parsing"
-msgstr ""
+msgstr "Processando Gerber. Analisando."
 
 #: camlib.py:2443
 msgid "lines"
-msgstr ""
+msgstr "linhas"
 
 #: camlib.py:2942 camlib.py:3030
 msgid "Coordinates missing, line ignored"
-msgstr ""
+msgstr "Coordenadas faltando, linha ignorada"
 
 #: camlib.py:2944 camlib.py:3032
 msgid "GERBER file might be CORRUPT. Check the file !!!"
-msgstr ""
+msgstr "O arquivo GERBER pode estar CORROMPIDO. Verifique o arquivo !!!"
 
 #: camlib.py:2994
 msgid ""
 "Region does not have enough points. File will be processed but there are "
 "parser errors. Line number"
 msgstr ""
+"A região não possui pontos suficientes. O arquivo será processado, "
+"mas há erros na análise. Número da linha"
 
 #: camlib.py:3364
 msgid "Gerber processing. Joining"
-msgstr ""
+msgstr "Processando Gerber. Unindo."
 
 #: camlib.py:3364
 msgid "polygons"
-msgstr ""
+msgstr "polígonos"
 
 #: camlib.py:3399
 msgid "Gerber Line"
-msgstr ""
+msgstr "Linha Gerber"
 
 #: camlib.py:3399
 msgid "Gerber Line Content"
-msgstr ""
+msgstr "Conteúdo"
 
 #: camlib.py:3401
 msgid "Gerber Parser ERROR"
-msgstr ""
+msgstr "Erro de Análise"
 
 #: camlib.py:3649
 msgid "Gerber Scale done."
-msgstr ""
+msgstr "Redimensionamento Gerber pronto."
 
 #: camlib.py:3739
 msgid "Gerber Offset done."
-msgstr ""
+msgstr "Deslocamento Gerber pronto."
 
 #: camlib.py:3816
 msgid "Gerber Mirror done."
-msgstr ""
+msgstr "Espelhamento Gerber pronto."
 
 #: camlib.py:3885
 msgid "Gerber Skew done."
-msgstr ""
+msgstr "Inclinação Gerber pronta."
 
 #: camlib.py:3946
 msgid "Gerber Rotate done."
-msgstr ""
+msgstr "Rotação Gerber pronta."
 
 #: camlib.py:4233
 msgid "This is GCODE mark"
-msgstr ""
+msgstr "Esta é a marca G-CODE"
 
 #: camlib.py:4349
 msgid ""
@@ -1800,6 +1819,9 @@ msgid ""
 "The user needs to edit the resulting Excellon object and change the "
 "diameters to reflect the real diameters."
 msgstr ""
+"foi encontrado mas o arquivo Excellon não possui informações sobre os diâmetros "
+"da ferramenta. \nO aplicativo tentará carregá-lo usando alguns diâmetros 'falsos'./nO usuário precisa editar o objeto Excellon resultante e\n"
+"alterar os diâmetros para os valores reais."
 
 #: camlib.py:4807
 #, python-brace-format
@@ -1807,6 +1829,8 @@ msgid ""
 "{e_code} Excellon Parser error.\n"
 "Parsing Failed. Line {l_nr}: {line}\n"
 msgstr ""
+"{e_code} Erro do Analisador Excellon.\n"
+"Análise falhou. Linha {l_nr}: {line}\n"
 
 #: camlib.py:4890
 msgid ""
@@ -1814,10 +1838,13 @@ msgid ""
 "a tool associated.\n"
 "Check the resulting GCode."
 msgstr ""
+"Excellon.create_geometry () -> um furo foi ignorado por não ter "
+"uma ferramenta associada.\n"
+"Verifique o G-Code resultante."
 
 #: camlib.py:5564
 msgid "There is no such parameter"
-msgstr ""
+msgstr "Não existe esse parâmetro"
 
 #: camlib.py:5635
 msgid ""
@@ -1827,38 +1854,43 @@ msgid ""
 "therefore the app will convert the value to negative. Check the resulting "
 "CNC code (Gcode etc)."
 msgstr ""
+"O parâmetro Profundidade de Corte está positivo. Este valor é a\n"
+"profundidade para cortar o material, e deve ser negativo. Supondo que seja\n"
+"um erro de digitação, o aplicativo converterá o valor para negativo.\n"
+"Verifique o código CNC resultante (G-Code, etc.)."
 
 #: camlib.py:5643 camlib.py:6316 camlib.py:6658
 msgid "The Cut Z parameter is zero. There will be no cut, skipping file"
-msgstr ""
+msgstr "O parâmetro Profundidade de Corte é zero. Não haverá corte, "
+"ignorando arquivo"
 
 #: camlib.py:5695
 msgid "Creating a list of points to drill..."
-msgstr ""
+msgstr "Criando uma lista de pontos para furar..."
 
 #: camlib.py:5778
 msgid "Starting G-Code"
-msgstr ""
+msgstr "Iniciando o G-Code"
 
 #: camlib.py:5874 camlib.py:6020 camlib.py:6126 camlib.py:6425 camlib.py:6767
 msgid "Starting G-Code for tool with diameter"
-msgstr ""
+msgstr "Iniciando o G-Code para ferramenta com diâmetro"
 
 #: camlib.py:5931 camlib.py:6077 camlib.py:6184
 msgid "G91 coordinates not implemented"
-msgstr ""
+msgstr "coordenadas G91 não implementadas"
 
 #: camlib.py:5937 camlib.py:6083 camlib.py:6190
 msgid "The loaded Excellon file has no drills"
-msgstr ""
+msgstr "O arquivo Excellon carregado não tem brocas"
 
 #: camlib.py:6089
 msgid "Wrong optimization type selected."
-msgstr ""
+msgstr "Tipo de otimização incorreto selecionado."
 
 #: camlib.py:6212
 msgid "Finished G-Code generation..."
-msgstr ""
+msgstr "Geração de G-Code concluída..."
 
 #: camlib.py:6289
 msgid ""
@@ -1872,6 +1904,8 @@ msgid ""
 "Cut_Z parameter is None or zero. Most likely a bad combinations of other "
 "parameters."
 msgstr ""
+"Profundidade de Corte está vazio ou é zero. Provavelmente é uma "
+"combinação ruim de outros parâmetros."
 
 #: camlib.py:6308 camlib.py:6650
 msgid ""
@@ -1881,10 +1915,14 @@ msgid ""
 "therefore the app will convert the value to negative.Check the resulting CNC "
 "code (Gcode etc)."
 msgstr ""
+"O parâmetro Profundidade de Corte está positivo. Este valor é a\n"
+"profundidade para cortar o material, e deve ser negativo. Supondo que seja\n"
+"um erro de digitação, o aplicativo converterá o valor para negativo.\n"
+"Verifique o código CNC resultante (G-Code, etc.)."
 
 #: camlib.py:6326 camlib.py:6664
 msgid "Travel Z parameter is None or zero."
-msgstr ""
+msgstr "O parâmetro Altura de Deslocamento Z é Nulo ou zero."
 
 #: camlib.py:6331 camlib.py:6669
 msgid ""
@@ -1894,60 +1932,67 @@ msgid ""
 "therefore the app will convert the value to positive.Check the resulting CNC "
 "code (Gcode etc)."
 msgstr ""
+"O parâmetro Altura de Deslocamento tem valor negativo. Este valor\n"
+"é a altura nos deslocamentos entre os cortes, e deve ser positivo. Supondo\n"
+"que seja um erro de digitação, o aplicativo converterá o valor para positivo.\n"
+"Verifique o código CNC resultante (G-Code, etc.)."
 
 #: camlib.py:6339 camlib.py:6677
 msgid "The Z Travel parameter is zero. This is dangerous, skipping file"
-msgstr ""
+msgstr "O parâmetro Altura de Deslocamento é zero. Isso é perigoso, "
+"ignorando arquivo"
 
 #: camlib.py:6354 camlib.py:6696
 msgid "Indexing geometry before generating G-Code..."
-msgstr ""
+msgstr "Indexando geometrias antes de gerar o G-Code..."
 
 #: camlib.py:6408 camlib.py:6753
 msgid "Starting G-Code..."
-msgstr ""
+msgstr "Iniciando o G-Code..."
 
 #: camlib.py:6495 camlib.py:6837
 msgid "Finished G-Code generation"
-msgstr ""
+msgstr "Geração de G-Code concluída..."
 
 #: camlib.py:6497
 msgid "paths traced"
-msgstr ""
+msgstr "caminho traçado"
 
 #: camlib.py:6532
 msgid "Expected a Geometry, got"
-msgstr ""
+msgstr "Esperando uma geometria, recebido"
 
 #: camlib.py:6539
 msgid ""
 "Trying to generate a CNC Job from a Geometry object without solid_geometry."
 msgstr ""
+Tentando gerar um trabalho CNC a partir de um objeto Geometria "
+"sem solid_geometry."
 
 #: camlib.py:6578
 #, python-format
 msgid "[ERROR_NOTCL] %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] %s"
 
 #: camlib.py:6839
 msgid " paths traced."
-msgstr ""
+msgstr " caminhos traçados."
 
 #: camlib.py:6868
 msgid "There is no tool data in the SolderPaste geometry."
-msgstr ""
+msgstr "Não há dados de ferramenta na geometria de Pasta de Solda."
 
 #: camlib.py:6955
 msgid "Finished SolderPste G-Code generation"
-msgstr ""
+msgstr "Geração de G-Code para Pasta de Solda concluída"
 
 #: camlib.py:6957
 msgid "paths traced."
-msgstr ""
+msgstr "caminhos traçados."
 
 #: camlib.py:7430 camlib.py:7708 camlib.py:7811 camlib.py:7858
 msgid "G91 coordinates not implemented ..."
-msgstr ""
+msgstr "Coordenadas G91 não implementadas..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:45 flatcamEditors/FlatCAMExcEditor.py:70
 #: flatcamEditors/FlatCAMExcEditor.py:152
@@ -1956,19 +2001,20 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:238
 #: flatcamEditors/FlatCAMGrbEditor.py:243
 msgid "Click to place ..."
-msgstr ""
+msgstr "Clique para colocar ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:54
 msgid "To add a drill first select a tool"
-msgstr ""
+msgstr "Para adicionar uma broca, primeiro selecione uma ferramenta"
 
 #: flatcamEditors/FlatCAMExcEditor.py:117
 msgid "Done. Drill added."
-msgstr ""
+msgstr "Feito. Broca adicionada."
 
 #: flatcamEditors/FlatCAMExcEditor.py:160
 msgid "To add an Drill Array first select a tool in Tool Table"
-msgstr ""
+msgstr "Para adicionar um Matriz de Brocas, primeiro selecione uma "
+"ferramenta na Tabela de Ferramentas"
 
 #: flatcamEditors/FlatCAMExcEditor.py:176
 #: flatcamEditors/FlatCAMExcEditor.py:386
@@ -1979,108 +2025,112 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:1859
 #: flatcamEditors/FlatCAMGrbEditor.py:1887
 msgid "Click on target location ..."
-msgstr ""
+msgstr "Clique no local de destino ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:193
 msgid "Click on the Drill Circular Array Start position"
-msgstr ""
+msgstr "Clique na posição inicial da Matriz Circular de Brocas"
 
 #: flatcamEditors/FlatCAMExcEditor.py:215
 #: flatcamEditors/FlatCAMExcEditor.py:635
 #: flatcamEditors/FlatCAMGrbEditor.py:505
 msgid "The value is not Float. Check for comma instead of dot separator."
-msgstr ""
+msgstr "O valor não é flutuante. Verifique se há uma vírgula em vez do ponto "
+"no separador decimal."
 
 #: flatcamEditors/FlatCAMExcEditor.py:219
 msgid "The value is mistyped. Check the value"
-msgstr ""
+msgstr "O valor foi digitado incorretamente. Verifique o valor"
 
 #: flatcamEditors/FlatCAMExcEditor.py:318
 msgid "Too many drills for the selected spacing angle."
-msgstr ""
+msgstr "Muitas brocas para o ângulo de espaçamento selecionado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:336
 msgid "Done. Drill Array added."
-msgstr ""
+msgstr "Matriz de Brocas adicionada."
 
 #: flatcamEditors/FlatCAMExcEditor.py:365
 msgid "To add a slot first select a tool"
-msgstr ""
+msgstr "Para adicionar um ranhura, primeiro selecione uma ferramenta"
 
 #: flatcamEditors/FlatCAMExcEditor.py:423
 #: flatcamEditors/FlatCAMExcEditor.py:430
 #: flatcamEditors/FlatCAMExcEditor.py:701
 #: flatcamEditors/FlatCAMExcEditor.py:708
 msgid "Value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "Valor está faltando ou formato errado. Adicione e tente novamente."
 
 #: flatcamEditors/FlatCAMExcEditor.py:529
 msgid "Done. Adding Slot completed."
-msgstr ""
+msgstr "Feito. Ranhura adicionada."
 
 #: flatcamEditors/FlatCAMExcEditor.py:556
 msgid "To add an Slot Array first select a tool in Tool Table"
-msgstr ""
+msgstr "Para adicionar uma matriz de ranhuras, primeiro selecione "
+"uma ferramenta na Tabela de Ferramentas"
 
 #: flatcamEditors/FlatCAMExcEditor.py:613
 msgid "Click on the Slot Circular Array Start position"
-msgstr ""
+msgstr "Clique na posição inicial da matriz circular da ranhura"
 
 #: flatcamEditors/FlatCAMExcEditor.py:639
 #: flatcamEditors/FlatCAMGrbEditor.py:509
 msgid "The value is mistyped. Check the value."
-msgstr ""
+msgstr "O valor digitado está incorreto. Verifique o valor."
 
 #: flatcamEditors/FlatCAMExcEditor.py:818
 msgid "Too many Slots for the selected spacing angle."
-msgstr ""
+msgstr "Muitas Ranhuras para o ângulo de espaçamento selecionado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:841
 msgid "Done. Slot Array added."
-msgstr ""
+msgstr "Feito. Matriz de Ranhuras adicionada."
 
 #: flatcamEditors/FlatCAMExcEditor.py:858
 msgid "Click on the Drill(s) to resize ..."
-msgstr ""
+msgstr "Clique na(s) Broca(s) para redimensionar ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:888
 msgid "Resize drill(s) failed. Please enter a diameter for resize."
-msgstr ""
+msgstr "Redimensionar broca(s) falhou. Por favor insira um diâmetro "
+"para redimensionar."
 
 #: flatcamEditors/FlatCAMExcEditor.py:978
 #: flatcamEditors/FlatCAMExcEditor.py:1048
 msgid "Cancelled."
-msgstr ""
+msgstr "Cancelado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1069
 msgid "Drill/Slot Resize completed."
-msgstr ""
+msgstr "Redimensionamento de broca/ranhura concluído."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1072
 msgid "Cancelled. No drills/slots selected for resize ..."
-msgstr ""
+msgstr "Cancelado. Nenhuma broca/ranhura selecionada para "
+"redimensionar ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1100
 #: flatcamEditors/FlatCAMGrbEditor.py:1861
 msgid "Click on reference location ..."
-msgstr ""
+msgstr "Clique no local de referência ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1156
 msgid "Done. Drill(s) Move completed."
-msgstr ""
+msgstr "Movimento da Broca realizado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1254
 msgid "Done. Drill(s) copied."
-msgstr ""
+msgstr "Broca(s) copiada(s)."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1473 flatcamGUI/FlatCAMGUI.py:5510
 msgid "Excellon Editor"
-msgstr ""
+msgstr "Editor Excellon"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1480
 #: flatcamEditors/FlatCAMGrbEditor.py:2361
 msgid "Name:"
-msgstr ""
+msgstr "Nome:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1486 flatcamGUI/ObjectUI.py:593
 #: flatcamGUI/ObjectUI.py:919 flatcamTools/ToolNonCopperClear.py:96
