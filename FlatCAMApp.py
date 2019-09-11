@@ -7799,8 +7799,15 @@ class App(QtCore.QObject):
     def init_code_editor(self, name):
         # Signals section
         # Disconnect the old signals
-        self.ui.buttonOpen.clicked.disconnect()
-        self.ui.buttonSave.clicked.disconnect()
+        try:
+            self.ui.buttonOpen.clicked.disconnect()
+        except TypeError:
+            pass
+
+        try:
+            self.ui.buttonSave.clicked.disconnect()
+        except TypeError:
+            pass
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _('%s') % name)
@@ -7820,12 +7827,26 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
 
     def on_view_source(self):
+        self.inform.emit('%s' %
+                         _("Viewing the source code of the selected object."))
+        self.proc_container.view.set_busy(_("Loading..."))
+
         try:
             obj = self.collection.get_active()
-        except:
+        except Exception as e:
+            log.debug("App.on_view_source() --> %s" % str(e))
             self.inform.emit('[WARNING_NOTCL] %s' %
                              _("Select an Gerber or Excellon file to view it's source file."))
             return 'fail'
+
+        if obj.kind == 'gerber':
+            flt = "Gerber Files (*.GBR);;All Files (*.*)"
+        else:
+            flt = "Excellon Files (*.DRL);;All Files (*.*)"
+
+        self.init_code_editor(name=_("Source Editor"))
+        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
+        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
 
         # then append the text from GCode to the text editor
         try:
@@ -7835,29 +7856,24 @@ class App(QtCore.QObject):
                              _("There is no selected object for which to see it's source file code."))
             return 'fail'
 
-        if obj.kind == 'gerber':
-            flt = "Gerber Files (*.GBR);;All Files (*.*)"
-        elif obj.kind == 'excellon':
-            flt = "Excellon Files (*.DRL);;All Files (*.*)"
-
-        self.init_code_editor(name=_("Source Editor"))
-        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
-        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
-
+        self.ui.cncjob_frame.hide()
         try:
             for line in file:
+                QtWidgets.QApplication.processEvents()
                 proc_line = str(line).strip('\n')
                 self.ui.code_editor.append(proc_line)
         except Exception as e:
             log.debug('App.on_view_source() -->%s' % str(e))
-            self.inform.emit('[ERROR] %s %s' %
-                             (_('App.on_view_source() -->'), str(e)))
+            self.inform.emit('[ERROR] %s: %s' %
+                             (_('Failed to load the source code for the selected object'), str(e)))
             return
 
-        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
-
         self.handleTextChanged()
-        self.ui.show()
+        self.ui.cncjob_frame.show()
+
+        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+        self.proc_container.view.set_idle()
+        # self.ui.show()
 
     def on_toggle_code_editor(self):
         self.report_usage("on_toggle_code_editor()")

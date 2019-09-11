@@ -1728,10 +1728,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ###################################
         # ## Here we build the CNCJob Tab ###
         # ###################################
+        # self.cncjob_tab = QtWidgets.QWidget()
+        # self.cncjob_tab_layout = QtWidgets.QGridLayout(self.cncjob_tab)
+        # self.cncjob_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.cncjob_tab.setLayout(self.cncjob_tab_layout)
+
         self.cncjob_tab = QtWidgets.QWidget()
-        self.cncjob_tab_layout = QtWidgets.QGridLayout(self.cncjob_tab)
+
+        self.c_temp_layout = QtWidgets.QVBoxLayout(self.cncjob_tab)
+        self.c_temp_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.cncjob_frame = QtWidgets.QFrame()
+        self.cncjob_frame.setContentsMargins(0, 0, 0, 0)
+        self.c_temp_layout.addWidget(self.cncjob_frame)
+
+        self.cncjob_tab_layout = QtWidgets.QGridLayout(self.cncjob_frame)
         self.cncjob_tab_layout.setContentsMargins(2, 2, 2, 2)
-        self.cncjob_tab.setLayout(self.cncjob_tab_layout)
+        self.cncjob_frame.setLayout(self.cncjob_tab_layout)
 
         self.code_editor = FCTextAreaExtended()
         stylesheet = """
