@@ -18,6 +18,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
         ('tools', str),
+        ('drilled_dias', str),
         ('drillz', float),
         ('travelz', float),
         ('feedrate', float),
@@ -25,6 +26,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ('spindlespeed', int),
         ('toolchange', bool),
         ('toolchangez', float),
+        ('toolchangexy', tuple),
         ('endz', float),
         ('ppname_e', str),
         ('outname', str),
@@ -39,7 +41,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         'main': "Generates a Drill CNC Job from a Excellon Object.",
         'args': collections.OrderedDict([
             ('name', 'Name of the source object.'),
-            ('tools', 'Comma separated indexes of tools (example: 1,3 or 2) or select all if not specified.'),
+            ('drilled_dias',
+             'Comma separated tool diameters of the drills to be drilled (example: 0.6, 1.0 or 3.125).'),
             ('drillz', 'Drill depth into material (example: -2.0).'),
             ('travelz', 'Travel distance above material (example: 2.0).'),
             ('feedrate', 'Drilling feed rate.'),
@@ -87,8 +90,51 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ymax = obj.options['ymax']
 
         def job_init(job_obj, app_obj):
+            # tools = args["tools"] if "tools" in args else 'all'
+            units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+            try:
+                if 'drilled_dias' in args and args['drilled_dias'] != 'all':
+                    diameters = [x.strip() for x in args['drilled_dias'].split(",") if x!= '']
+                    nr_diameters = len(diameters)
+
+                    req_tools = []
+                    for tool in obj.tools:
+                        for req_dia in diameters:
+                            obj_dia_form = float('%.2f' % float(obj.tools[tool]["C"])) if units == 'MM' else \
+                                float('%.4f' % float(obj.tools[tool]["C"]))
+                            req_dia_form = float('%.2f' % float(req_dia)) if units == 'MM' else \
+                                float('%.4f' % float(req_dia))
+
+                            if obj_dia_form == req_dia_form:
+                                req_tools.append(tool)
+                                nr_diameters -= 1
+
+                    if nr_diameters > 0:
+                        self.raise_tcl_error("One or more tool diameters of the drills to be drilled passed to the "
+                                             "TclCommand are not actual tool diameters in the Excellon object.")
+
+                    # make a string of diameters separated by comma; this is what generate_from_excellon_by_tool() is
+                    # expecting as tools parameter
+                    tools = ','.join(req_tools)
+
+                    # no longer needed
+                    del args['drilled_dias']
+
+                    # Split and put back. We are passing the whole dictionary later.
+                    # args['milled_dias'] = [x.strip() for x in args['tools'].split(",")]
+                else:
+                    tools = 'all'
+            except Exception as e:
+                tools = 'all'
+                self.raise_tcl_error("Bad tools: %s" % str(e))
 
             drillz = args["drillz"] if "drillz" in args else obj.options["drillz"]
+            toolchangez = args["toolchangez"] if "toolchangez" in args else obj.options["toolchangez"]
+            endz = args["endz"] if "endz" in args else obj.options["endz"]
+            toolchange = True if "toolchange" in args and args["toolchange"] == 1 else False
+            opt_type = args["opt_type"] if "opt_type" in args else 'B'
+
             job_obj.z_move = args["travelz"] if "travelz" in args else obj.options["travelz"]
             job_obj.feedrate = args["feedrate"] if "feedrate" in args else obj.options["feedrate"]
             job_obj.feedrate_rapid = args["feedrate_rapid"] \
@@ -103,8 +149,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
             job_obj.options['type'] = 'Excellon'
 
-            toolchange = True if "toolchange" in args and args["toolchange"] == 1 else False
-            toolchangez = args["toolchangez"] if "toolchangez" in args else obj.options["toolchangez"]
             job_obj.toolchangexy = args["toolchangexy"] if "toolchangexy" in args else obj.options["toolchangexy"]
 
             job_obj.toolchange_xy_type = "excellon"
@@ -113,11 +157,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.options['ymin'] = ymin
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
-
-            endz = args["endz"] if "endz" in args else obj.options["endz"]
-
-            tools = args["tools"] if "tools" in args else 'all'
-            opt_type = args["opt_type"] if "opt_type" in args else 'B'
 
             job_obj.generate_from_excellon_by_tool(obj, tools, drillz=drillz, toolchangez=toolchangez,
                                                    endz=endz,

@@ -66,14 +66,28 @@ class TclCommandMillDrills(TclCommandSignaled):
         if not obj.drills:
             self.raise_tcl_error("The Excellon object has no drills: %s" % name)
 
+        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
         try:
             if 'milled_dias' in args and args['milled_dias'] != 'all':
-                diameters = [x.strip() for x in args['milled_dias'].split(",")]
+                diameters = [x.strip() for x in args['milled_dias'].split(",") if x != '']
+                nr_diameters = len(diameters)
+
                 req_tools = []
                 for tool in obj.tools:
                     for req_dia in diameters:
-                        if float('%.4f' % float(obj.tools[tool]["C"])) == float('%.4f' % float(req_dia)):
+                        obj_dia_form = float('%.2f' % float(obj.tools[tool]["C"])) if units == 'MM' else \
+                            float('%.4f' % float(obj.tools[tool]["C"]))
+                        req_dia_form = float('%.2f' % float(req_dia)) if units == 'MM' else \
+                            float('%.4f' % float(req_dia))
+
+                        if obj_dia_form == req_dia_form:
                             req_tools.append(tool)
+                            nr_diameters -= 1
+
+                if nr_diameters > 0:
+                    self.raise_tcl_error("One or more tool diameters of the drills to be milled passed to the "
+                                         "TclCommand are not actual tool diameters in the Excellon object.")
 
                 args['tools'] = req_tools
 

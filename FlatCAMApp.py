@@ -1854,7 +1854,8 @@ class App(QtCore.QObject):
                                   ]
 
         self.ordinary_keywords = ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
-                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'dist', 'drillz',
+                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'dist',
+                                  'drilled_dias', 'drillz',
                                   'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
                                   'filename', 'follow', 'gaps', 'gapsize', 'grid', 'gridoffset', 'gridoffsetx',
                                   'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',

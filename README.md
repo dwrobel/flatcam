@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - changed the name of TclCommand MillHoles to MillDrills and added a new TclCommand named MillSlots
 - modified the MillDrills and MillSlots TclCommands to accept as parameter a list of tool diameters to be milled instead of tool indexes
 - fixed issue #302 where a copied object lost all the tools
+- modified the TclCommand DrillCncJob to have as parameter a list of tool diameters to be drilled instead of tool indexes
 
 10.09.2019
 
