@@ -30,7 +30,8 @@ import tclCommands.TclCommandFollow
 import tclCommands.TclCommandJoinExcellon
 import tclCommands.TclCommandJoinGeometry
 import tclCommands.TclCommandListSys
-import tclCommands.TclCommandMillHoles
+import tclCommands.TclCommandMillDrills
+import tclCommands.TclCommandMillSlots
 import tclCommands.TclCommandMirror
 import tclCommands.TclCommandNew
 import tclCommands.TclCommandNregions

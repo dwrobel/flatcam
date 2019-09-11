@@ -2,7 +2,7 @@ from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandMillHoles(TclCommandSignaled):
+class TclCommandMillSlots(TclCommandSignaled):
     """
     Tcl shell command to Create Geometry Object for milling holes from Excellon.
 
@@ -11,7 +11,7 @@ class TclCommandMillHoles(TclCommandSignaled):
     """
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['millholes', 'mill']
+    aliases = ['millslots', 'mills']
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -32,7 +32,7 @@ class TclCommandMillHoles(TclCommandSignaled):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Create Geometry Object for milling holes from Excellon.",
+        'main': "Create Geometry Object for milling slot holes from Excellon.",
         'args': collections.OrderedDict([
             ('name', 'Name of the Excellon Object.'),
             ('tools', 'Comma separated indexes of tools (example: 1,3 or 2).'),
@@ -82,7 +82,7 @@ class TclCommandMillHoles(TclCommandSignaled):
             del args['name']
 
             # This runs in the background... Is blocking handled?
-            success, msg = obj.generate_milling_drills(**args)
+            success, msg = obj.generate_milling_slots(**args)
 
         except Exception as e:
             self.raise_tcl_error("Operation failed: %s" % str(e))

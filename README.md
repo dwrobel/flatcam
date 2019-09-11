@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - made faster the Gerber parser for the case of having a not valid geometry when loading a Gerber file without buffering
 - updated code in self.on_view_source() to make it more responsive
 - fixed the TclCommand MillHoles
+- changed the name of TclCommand MillHoles to MillDrills and added a new TclCommand named MillSlots
 
 10.09.2019
 
