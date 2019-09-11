@@ -4405,352 +4405,352 @@ msgstr "Gi&rar Seleção\tSHIFT+(R)"
 
 #: flatcamGUI/FlatCAMGUI.py:343
 msgid "&Skew on X axis\tSHIFT+X"
-msgstr ""
+msgstr "Inclinar no eixo X\tSHIFT+X"
 
 #: flatcamGUI/FlatCAMGUI.py:345
 msgid "S&kew on Y axis\tSHIFT+Y"
-msgstr ""
+msgstr "Inclinar no eixo Y\tSHIFT+Y"
 
 #: flatcamGUI/FlatCAMGUI.py:350
 msgid "Flip on &X axis\tX"
-msgstr ""
+msgstr "Espelhar no eixo &X\tX"
 
 #: flatcamGUI/FlatCAMGUI.py:352
 msgid "Flip on &Y axis\tY"
-msgstr ""
+msgstr "Espelhar no eixo &Y\tY"
 
 #: flatcamGUI/FlatCAMGUI.py:357
 msgid "View source\tALT+S"
-msgstr ""
+msgstr "Ver fonte\tALT+S"
 
 #: flatcamGUI/FlatCAMGUI.py:362
 msgid "&View"
-msgstr ""
+msgstr "&Ver"
 
 #: flatcamGUI/FlatCAMGUI.py:363
 msgid "Enable all plots\tALT+1"
-msgstr ""
+msgstr "Habilitar todos os gráficos\tALT+1"
 
 #: flatcamGUI/FlatCAMGUI.py:365
 msgid "Disable all plots\tALT+2"
-msgstr ""
+msgstr "Desabilitar todos os gráficos\tALT+2"
 
 #: flatcamGUI/FlatCAMGUI.py:367
 msgid "Disable non-selected\tALT+3"
-msgstr ""
+msgstr "Desabilitar os não selecionados\tALT+3"
 
 #: flatcamGUI/FlatCAMGUI.py:370
 msgid "&Zoom Fit\tV"
-msgstr ""
+msgstr "&Zoom Ajustado\tV"
 
 #: flatcamGUI/FlatCAMGUI.py:371
 msgid "&Zoom In\t="
-msgstr ""
+msgstr "&Zoom +\t="
 
 #: flatcamGUI/FlatCAMGUI.py:372
 msgid "&Zoom Out\t-"
-msgstr ""
+msgstr "&Zoom -\t-"
 
 #: flatcamGUI/FlatCAMGUI.py:376
 msgid "Toggle Code Editor\tCTRL+E"
-msgstr ""
+msgstr "Alternar o Editor de Códigos\tCTRL+E"
 
 #: flatcamGUI/FlatCAMGUI.py:379
 msgid "&Toggle FullScreen\tALT+F10"
-msgstr ""
+msgstr "Alternar &Tela Cheia\tALT+F10"
 
 #: flatcamGUI/FlatCAMGUI.py:381
 msgid "&Toggle Plot Area\tCTRL+F10"
-msgstr ""
+msgstr "Al&ternar Área de Gráficos\tCTRL+F10"
 
 #: flatcamGUI/FlatCAMGUI.py:383
 msgid "&Toggle Project/Sel/Tool\t`"
-msgstr ""
+msgstr "Al&ternar Projeto/Sel/Ferram\t`"
 
 #: flatcamGUI/FlatCAMGUI.py:386
 msgid "&Toggle Grid Snap\tG"
-msgstr ""
+msgstr "Al&ternar Encaixe na Grade\tG"
 
 #: flatcamGUI/FlatCAMGUI.py:388
 msgid "&Toggle Axis\tSHIFT+G"
-msgstr ""
+msgstr "Al&ternar Eixo\tSHIFT+G"
 
 #: flatcamGUI/FlatCAMGUI.py:391
 msgid "Toggle Workspace\tSHIFT+W"
-msgstr ""
+msgstr "Alternar Área de Trabalho\tSHIFT+W"
 
 #: flatcamGUI/FlatCAMGUI.py:394
 msgid "&Tool"
-msgstr ""
+msgstr "Ferramen&ta"
 
 #: flatcamGUI/FlatCAMGUI.py:396
 msgid "&Command Line\tS"
-msgstr ""
+msgstr "Linha de &Comando\tS"
 
 #: flatcamGUI/FlatCAMGUI.py:399
 msgid "&Help"
-msgstr ""
+msgstr "Ajuda"
 
 #: flatcamGUI/FlatCAMGUI.py:400
 msgid "Help\tF1"
-msgstr ""
+msgstr "Ajuda\tF1"
 
 #: flatcamGUI/FlatCAMGUI.py:401
 msgid "FlatCAM.org"
-msgstr ""
+msgstr "FlatCAM.org"
 
 #: flatcamGUI/FlatCAMGUI.py:404
 msgid "Shortcuts List\tF3"
-msgstr ""
+msgstr "Lista de Atalhos\tF3"
 
 #: flatcamGUI/FlatCAMGUI.py:405
 msgid "YouTube Channel\tF4"
-msgstr ""
+msgstr "Canal no YouTube\tF4"
 
 #: flatcamGUI/FlatCAMGUI.py:407
 msgid "About"
-msgstr ""
+msgstr "Sobre"
 
 #: flatcamGUI/FlatCAMGUI.py:414
 msgid "Add Circle\tO"
-msgstr ""
+msgstr "Adicionar Círculo\tO"
 
 #: flatcamGUI/FlatCAMGUI.py:416
 msgid "Add Arc\tA"
-msgstr ""
+msgstr "Adicionar Arco\tA"
 
 #: flatcamGUI/FlatCAMGUI.py:419
 msgid "Add Rectangle\tR"
-msgstr ""
+msgstr "Adicionar Retângulo\tR"
 
 #: flatcamGUI/FlatCAMGUI.py:422
 msgid "Add Polygon\tN"
-msgstr ""
+msgstr "Adicionar Polígono\t"
 
 #: flatcamGUI/FlatCAMGUI.py:424
 msgid "Add Path\tP"
-msgstr ""
+msgstr "Adicionar Caminho\tP"
 
 #: flatcamGUI/FlatCAMGUI.py:426
 msgid "Add Text\tT"
-msgstr ""
+msgstr "Adicionar Texto\tT"
 
 #: flatcamGUI/FlatCAMGUI.py:429
 msgid "Polygon Union\tU"
-msgstr ""
+msgstr "Unir Polígonos\tU"
 
 #: flatcamGUI/FlatCAMGUI.py:431
 msgid "Polygon Intersection\tE"
-msgstr ""
+msgstr "Interseção de Polígonos\tE"
 
 #: flatcamGUI/FlatCAMGUI.py:433
 msgid "Polygon Subtraction\tS"
-msgstr ""
+msgstr "Subtração de Polígonos\tS"
 
 #: flatcamGUI/FlatCAMGUI.py:437
 msgid "Cut Path\tX"
-msgstr ""
+msgstr "Caminho de Corte\tX"
 
 #: flatcamGUI/FlatCAMGUI.py:439
 msgid "Copy Geom\tC"
-msgstr ""
+msgstr "Copiar Geom\tC"
 
 #: flatcamGUI/FlatCAMGUI.py:441
 msgid "Delete Shape\tDEL"
-msgstr ""
+msgstr "Excluir Forma\tDEL"
 
 #: flatcamGUI/FlatCAMGUI.py:444 flatcamGUI/FlatCAMGUI.py:521
 msgid "Move\tM"
-msgstr ""
+msgstr "Mover\tM"
 
 #: flatcamGUI/FlatCAMGUI.py:446
 msgid "Buffer Tool\tB"
-msgstr ""
+msgstr "Ferramenta Buffer\tB"
 
 #: flatcamGUI/FlatCAMGUI.py:449
 msgid "Paint Tool\tI"
-msgstr ""
+msgstr "Ferramenta de Pintura\tI"
 
 #: flatcamGUI/FlatCAMGUI.py:452
 msgid "Transform Tool\tALT+R"
-msgstr ""
+msgstr "Ferramenta de Transformação\tALT+R"
 
 #: flatcamGUI/FlatCAMGUI.py:456
 msgid "Toggle Corner Snap\tK"
-msgstr ""
+msgstr "Alternar Encaixe de Canto\tK"
 
 #: flatcamGUI/FlatCAMGUI.py:459
 msgid ">Excellon Editor<"
-msgstr ""
+msgstr ">Editor Excellon<"
 
 #: flatcamGUI/FlatCAMGUI.py:463
 msgid "Add Drill Array\tA"
-msgstr ""
+msgstr "Adicionar Matriz de Brocas\tA"
 
 #: flatcamGUI/FlatCAMGUI.py:465
 msgid "Add Drill\tD"
-msgstr ""
+msgstr "Adicionar Broca\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:469
 msgid "Add Slot Array\tQ"
-msgstr ""
+msgstr "Adic. Matriz de Ranhuras\tQ"
 
 #: flatcamGUI/FlatCAMGUI.py:471
 msgid "Add Slot\tW"
-msgstr ""
+msgstr "Adicionar Ranhura\tW"
 
 #: flatcamGUI/FlatCAMGUI.py:475
 msgid "Resize Drill(S)\tR"
-msgstr ""
+msgstr "Redimensionar Broca(s)\tR"
 
 #: flatcamGUI/FlatCAMGUI.py:477 flatcamGUI/FlatCAMGUI.py:516
 msgid "Copy\tC"
-msgstr ""
+msgstr "Copiar\tC"
 
 #: flatcamGUI/FlatCAMGUI.py:479 flatcamGUI/FlatCAMGUI.py:518
 msgid "Delete\tDEL"
-msgstr ""
+msgstr "Excluir\tDEL"
 
 #: flatcamGUI/FlatCAMGUI.py:484
 msgid "Move Drill(s)\tM"
-msgstr ""
+msgstr "Mover Broca(s)\tM"
 
 #: flatcamGUI/FlatCAMGUI.py:487
 msgid ">Gerber Editor<"
-msgstr ""
+msgstr ">Editor Gerber<"
 
 #: flatcamGUI/FlatCAMGUI.py:491
 msgid "Add Pad\tP"
-msgstr ""
+msgstr "Adicionar Pad\tP"
 
 #: flatcamGUI/FlatCAMGUI.py:493
 msgid "Add Pad Array\tA"
-msgstr ""
+msgstr "Adicionar Matriz de Pads\tA"
 
 #: flatcamGUI/FlatCAMGUI.py:495
 msgid "Add Track\tT"
-msgstr ""
+msgstr "Adicionar Trilha\tT"
 
 #: flatcamGUI/FlatCAMGUI.py:497
 msgid "Add Region\tN"
-msgstr ""
+msgstr "Adicionar Região\tN"
 
 #: flatcamGUI/FlatCAMGUI.py:501
 msgid "Poligonize\tALT+N"
-msgstr ""
+msgstr "Poligonizar\tALT+N"
 
 #: flatcamGUI/FlatCAMGUI.py:503
 msgid "Add SemiDisc\tE"
-msgstr ""
+msgstr "Adicionar SemiDisco\tE"
 
 #: flatcamGUI/FlatCAMGUI.py:504
 msgid "Add Disc\tD"
-msgstr ""
+msgstr "Adicionar Disco\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:506
 msgid "Buffer\tB"
-msgstr ""
+msgstr "Buffer\tB"
 
 #: flatcamGUI/FlatCAMGUI.py:507
 msgid "Scale\tS"
-msgstr ""
+msgstr "Escala\tS"
 
 #: flatcamGUI/FlatCAMGUI.py:509
 msgid "Mark Area\tALT+A"
-msgstr ""
+msgstr "Marcar Área\tALT+A"
 
 #: flatcamGUI/FlatCAMGUI.py:511
 msgid "Eraser\tCTRL+E"
-msgstr ""
+msgstr "Borracha\tCTRL+E"
 
 #: flatcamGUI/FlatCAMGUI.py:513
 msgid "Transform\tALT+R"
-msgstr ""
+msgstr "Transformar\tALT+R"
 
 #: flatcamGUI/FlatCAMGUI.py:537
 msgid "Enable Plot"
-msgstr ""
+msgstr "Habilitar Gráfico"
 
 #: flatcamGUI/FlatCAMGUI.py:538
 msgid "Disable Plot"
-msgstr ""
+msgstr "Desabilitar Gráfico"
 
 #: flatcamGUI/FlatCAMGUI.py:540
 msgid "Generate CNC"
-msgstr ""
+msgstr "Gerar CNC"
 
 #: flatcamGUI/FlatCAMGUI.py:541
 msgid "View Source"
-msgstr ""
+msgstr "Ver Fonte"
 
 #: flatcamGUI/FlatCAMGUI.py:543 flatcamGUI/FlatCAMGUI.py:1720
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: flatcamGUI/FlatCAMGUI.py:549 flatcamGUI/FlatCAMGUI.py:1726
 #: flatcamTools/ToolProperties.py:24
 msgid "Properties"
-msgstr ""
+msgstr "Propriedades"
 
 #: flatcamGUI/FlatCAMGUI.py:578
 msgid "File Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas de Arquivos"
 
 #: flatcamGUI/FlatCAMGUI.py:582
 msgid "Edit Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas Editar"
 
 #: flatcamGUI/FlatCAMGUI.py:586
 msgid "View Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas Ver"
 
 #: flatcamGUI/FlatCAMGUI.py:590
 msgid "Shell Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas Shell"
 
 #: flatcamGUI/FlatCAMGUI.py:594
 msgid "Tools Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas Ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:598
 msgid "Excellon Editor Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas Editor Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:602
 msgid "Geometry Editor Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas Editor de Geometria"
 
 #: flatcamGUI/FlatCAMGUI.py:606
 msgid "Gerber Editor Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas Editor Gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:610
 msgid "Grid Toolbar"
-msgstr ""
+msgstr "Barra de Ferramentas Grade"
 
 #: flatcamGUI/FlatCAMGUI.py:629 flatcamGUI/FlatCAMGUI.py:1973
 msgid "Open project"
-msgstr ""
+msgstr "Abrir projeto"
 
 #: flatcamGUI/FlatCAMGUI.py:630 flatcamGUI/FlatCAMGUI.py:1974
 msgid "Save project"
-msgstr ""
+msgstr "Salvar projeto"
 
 #: flatcamGUI/FlatCAMGUI.py:633 flatcamGUI/FlatCAMGUI.py:1977
 msgid "New Blank Geometry"
-msgstr ""
+msgstr "Nova Geometria em Branco"
 
 #: flatcamGUI/FlatCAMGUI.py:634
 msgid "New Blank Gerber"
-msgstr ""
+msgstr "Novo Gerber em Branco"
 
 #: flatcamGUI/FlatCAMGUI.py:635 flatcamGUI/FlatCAMGUI.py:1978
 msgid "New Blank Excellon"
-msgstr ""
+msgstr "Novo Excellon em Branco"
 
 #: flatcamGUI/FlatCAMGUI.py:637 flatcamGUI/FlatCAMGUI.py:1980
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: flatcamGUI/FlatCAMGUI.py:639 flatcamGUI/FlatCAMGUI.py:1982
 msgid "Save Object and close the Editor"
