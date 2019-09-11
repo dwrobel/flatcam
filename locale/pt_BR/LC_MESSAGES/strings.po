@@ -2136,112 +2136,122 @@ msgstr "Nome:"
 #: flatcamGUI/ObjectUI.py:919 flatcamTools/ToolNonCopperClear.py:96
 #: flatcamTools/ToolPaint.py:95 flatcamTools/ToolSolderPaste.py:70
 msgid "Tools Table"
-msgstr ""
+msgstr "Tabela de Ferramentas"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1488 flatcamGUI/ObjectUI.py:595
 msgid ""
 "Tools in this Excellon object\n"
 "when are used for drilling."
 msgstr ""
+"Ferramentas neste objeto Excellon \n"
+"quando são usadas para perfuração."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1508
 msgid "Add/Delete Tool"
-msgstr ""
+msgstr "Adicionar/Excluir Ferramenta"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1510
 msgid ""
 "Add/Delete a tool to the tool list\n"
 "for this Excellon object."
 msgstr ""
+"Adicionar/Excluir uma ferramenta para a lista de ferramentas\n"
+"para este objeto Excellon."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1518 flatcamGUI/ObjectUI.py:1037
 #: flatcamTools/ToolNonCopperClear.py:212 flatcamTools/ToolPaint.py:162
 msgid "Tool Dia"
-msgstr ""
+msgstr "Diâmetro da Ferramenta:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1520 flatcamGUI/FlatCAMGUI.py:5539
 #: flatcamGUI/ObjectUI.py:1040
 msgid "Diameter for the new tool"
-msgstr ""
+msgstr "Diâmetro da nova ferramenta"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1528
 msgid "Add Tool"
-msgstr ""
+msgstr "Adicionar Ferramenta"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1530
 msgid ""
 "Add a new tool to the tool list\n"
 "with the diameter specified above."
 msgstr ""
+"Adiciona uma nova ferramenta à lista de ferramentas\n"
+"com o diâmetro especificado acima."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1542
 msgid "Delete Tool"
-msgstr ""
+msgstr "Excluir Ferramenta"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1544
 msgid ""
 "Delete a tool in the tool list\n"
 "by selecting a row in the tool table."
 msgstr ""
+"Exclui uma ferramenta da lista de ferramentas selecionando uma linha na "
+"tabela de ferramentas."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1562
 msgid "Resize Drill(s)"
-msgstr ""
+msgstr "Redimensionar Broca(s)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1564
 msgid "Resize a drill or a selection of drills."
-msgstr ""
+msgstr "Redimensiona uma broca ou uma seleção de brocas."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1571
 msgid "Resize Dia"
-msgstr ""
+msgstr "Novo Diâmetro:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1573
 msgid "Diameter to resize to."
-msgstr ""
+msgstr "Novo diâmetro"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1581
 msgid "Resize"
-msgstr ""
+msgstr "Redimensionar"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1583
 msgid "Resize drill(s)"
-msgstr ""
+msgstr "Redimensionar broca(s)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1608 flatcamGUI/FlatCAMGUI.py:1710
 msgid "Add Drill Array"
-msgstr ""
+msgstr "Adicionar Matriz de Brocas"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1610
 msgid "Add an array of drills (linear or circular array)"
-msgstr ""
+msgstr "Adiciona uma matriz de brocas (matriz linear ou circular)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1616
 msgid ""
 "Select the type of drills array to create.\n"
 "It can be Linear X(Y) or Circular"
 msgstr ""
+"Selecione o tipo de matriz de brocas para criar.\n"
+"Pode ser Linear X(Y) ou Circular"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1619
 #: flatcamEditors/FlatCAMExcEditor.py:1821
 #: flatcamEditors/FlatCAMGrbEditor.py:2647
 msgid "Linear"
-msgstr ""
+msgstr "Linear"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1620
 #: flatcamEditors/FlatCAMExcEditor.py:1822
 #: flatcamEditors/FlatCAMGrbEditor.py:2648 flatcamGUI/FlatCAMGUI.py:6460
 #: flatcamTools/ToolNonCopperClear.py:203
 msgid "Circular"
-msgstr ""
+msgstr "Circular"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1628 flatcamGUI/FlatCAMGUI.py:5549
 msgid "Nr of drills"
-msgstr ""
+msgstr "Nº de brocas"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1629 flatcamGUI/FlatCAMGUI.py:5551
 msgid "Specify how many drills to be in the array."
-msgstr ""
+msgstr "Especifique quantas brocas devem estar na matriz."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1646
 #: flatcamEditors/FlatCAMExcEditor.py:1693
@@ -2251,7 +2261,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:2674
 #: flatcamEditors/FlatCAMGrbEditor.py:2719 flatcamGUI/FlatCAMGUI.py:5643
 msgid "Direction"
-msgstr ""
+msgstr "Direção"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1648
 #: flatcamEditors/FlatCAMExcEditor.py:1850
@@ -2263,6 +2273,10 @@ msgid ""
 "- 'Y' - vertical axis or \n"
 "- 'Angle' - a custom angle for the array inclination"
 msgstr ""
+"Direção na qual a matriz linear é orientada: \n"
+"- 'X' - eixo horizontal\n"
+"- 'Y' - eixo vertical ou\n"
+"- 'Ângulo' - um ângulo personalizado para a inclinação da matriz"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1655
 #: flatcamEditors/FlatCAMExcEditor.py:1766
@@ -2271,7 +2285,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5572 flatcamGUI/FlatCAMGUI.py:5652
 #: flatcamGUI/FlatCAMGUI.py:5703
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1656
 #: flatcamEditors/FlatCAMExcEditor.py:1767
@@ -2280,7 +2294,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5573 flatcamGUI/FlatCAMGUI.py:5653
 #: flatcamGUI/FlatCAMGUI.py:5704
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1657
 #: flatcamEditors/FlatCAMExcEditor.py:1671
@@ -2298,21 +2312,21 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5659 flatcamGUI/FlatCAMGUI.py:5705
 #: flatcamGUI/FlatCAMGUI.py:5722 flatcamTools/ToolTransform.py:68
 msgid "Angle"
-msgstr ""
+msgstr "Ângulo"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1661
 #: flatcamEditors/FlatCAMExcEditor.py:1863
 #: flatcamEditors/FlatCAMGrbEditor.py:2689 flatcamGUI/FlatCAMGUI.py:4731
 #: flatcamGUI/FlatCAMGUI.py:5711
 msgid "Pitch"
-msgstr ""
+msgstr "Passo"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1663
 #: flatcamEditors/FlatCAMExcEditor.py:1865
 #: flatcamEditors/FlatCAMGrbEditor.py:2691 flatcamGUI/FlatCAMGUI.py:4733
 #: flatcamGUI/FlatCAMGUI.py:5582 flatcamGUI/FlatCAMGUI.py:5713
 msgid "Pitch = Distance between elements of the array."
-msgstr ""
+msgstr "Passo = Distância entre os elementos da matriz."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1673
 #: flatcamEditors/FlatCAMExcEditor.py:1875
@@ -2323,6 +2337,10 @@ msgid ""
 "Min value is: -359.99 degrees.\n"
 "Max value is:  360.00 degrees."
 msgstr ""
+"Ângulo no qual a matriz linear é colocada.\n"
+"A precisão é de no máximo 2 decimais.\n"
+"Valor mínimo: -359.99 graus.\n"
+"Valor máximo:  360.00 graus."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1694
 #: flatcamEditors/FlatCAMExcEditor.py:1896
@@ -2331,6 +2349,8 @@ msgid ""
 "Direction for circular array.Can be CW = clockwise or CCW = counter "
 "clockwise."
 msgstr ""
+"Sentido da matriz circular. Pode ser CW = horário ou CCW = "
+"anti-horário."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1701
 #: flatcamEditors/FlatCAMExcEditor.py:1903
@@ -2338,7 +2358,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5152 flatcamGUI/FlatCAMGUI.py:5610
 #: flatcamGUI/FlatCAMGUI.py:5741 flatcamGUI/FlatCAMGUI.py:5943
 msgid "CW"
-msgstr ""
+msgstr "CW"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1702
 #: flatcamEditors/FlatCAMExcEditor.py:1904
@@ -2346,7 +2366,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5153 flatcamGUI/FlatCAMGUI.py:5611
 #: flatcamGUI/FlatCAMGUI.py:5742 flatcamGUI/FlatCAMGUI.py:5944
 msgid "CCW"
-msgstr ""
+msgstr "CCW"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1706
 #: flatcamEditors/FlatCAMExcEditor.py:1908
@@ -2355,26 +2375,28 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5619 flatcamGUI/FlatCAMGUI.py:5724
 #: flatcamGUI/FlatCAMGUI.py:5750
 msgid "Angle at which each element in circular array is placed."
-msgstr ""
+msgstr "Ângulo no qual cada elemento na matriz circular é colocado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1736
 msgid "Slot Parameters"
-msgstr ""
+msgstr "Parâmetros de Ranhura"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1738
 msgid ""
 "Parameters for adding a slot (hole with oval shape)\n"
 "either single or as an part of an array."
 msgstr ""
+"Parâmetros para adicionar uma ranhura (furo com forma oval),\n"
+"tanto única quanto parte de uma matriz."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1747 flatcamGUI/FlatCAMGUI.py:5632
 #: flatcamTools/ToolProperties.py:350
 msgid "Length"
-msgstr ""
+msgstr "Comprimento"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1749 flatcamGUI/FlatCAMGUI.py:5634
 msgid "Length = The length of the slot."
-msgstr ""
+msgstr "Comprimento = o comprimento da ranhura."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1759 flatcamGUI/FlatCAMGUI.py:5645
 msgid ""
@@ -2383,6 +2405,10 @@ msgid ""
 "- 'Y' - vertical axis or \n"
 "- 'Angle' - a custom angle for the slot inclination"
 msgstr ""
+"Direção na qual a ranhura é orientada:\n"
+"- 'X' - eixo horizontal\n"
+"- 'Y' - eixo vertical ou\n"
+"- 'Angle' - um ângulo personalizado para a inclinação da ranhura"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1774 flatcamGUI/FlatCAMGUI.py:5661
 msgid ""
@@ -2391,88 +2417,96 @@ msgid ""
 "Min value is: -359.99 degrees.\n"
 "Max value is:  360.00 degrees."
 msgstr ""
+"Ângulo no qual a ranhura é colocada.\n"
+"A precisão é de no máximo 2 decimais.\n"
+"Valor mínimo: -359.99 graus.\n"
+"Valor máximo:  360.00 graus."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1807
 msgid "Slot Array Parameters"
-msgstr ""
+msgstr "Parâm. da matriz de ranhuras"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1809
 msgid "Parameters for the array of slots (linear or circular array)"
-msgstr ""
+msgstr "Parâmetros da matriz de ranhuras (matriz linear ou circular)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1818
 msgid ""
 "Select the type of slot array to create.\n"
 "It can be Linear X(Y) or Circular"
 msgstr ""
+"Selecione o tipo de matriz de ranhuras para criar.\n"
+"Pode ser Linear X(Y) ou Circular"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1830 flatcamGUI/FlatCAMGUI.py:5683
 msgid "Nr of slots"
-msgstr ""
+msgstr "Nº de ranhuras"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1831 flatcamGUI/FlatCAMGUI.py:5685
 msgid "Specify how many slots to be in the array."
-msgstr ""
+msgstr "Especifique o número de ranhuras da matriz."
 
 #: flatcamEditors/FlatCAMExcEditor.py:2428
 msgid ""
 "Tool already in the original or actual tool list.\n"
 "Save and reedit Excellon if you need to add this tool. "
 msgstr ""
+"Ferramenta já na lista de ferramentas original ou atual.\n"
+"Salve e reedite Excellon se precisar adicionar essa ferramenta.
 
 #: flatcamEditors/FlatCAMExcEditor.py:2437
 msgid "Added new tool with dia"
-msgstr ""
+msgstr "Adicionada nova ferramenta com diâmetro"
 
 #: flatcamEditors/FlatCAMExcEditor.py:2469
 msgid "Select a tool in Tool Table"
-msgstr ""
+msgstr "Selecione uma ferramenta na Tabela de Ferramentas"
 
 #: flatcamEditors/FlatCAMExcEditor.py:2502
 msgid "Deleted tool with diameter"
-msgstr ""
+msgstr "Ferramenta excluída com diâmetro"
 
 #: flatcamEditors/FlatCAMExcEditor.py:2652
 msgid "Done. Tool edit completed."
-msgstr ""
+msgstr "Edição de ferramenta concluída."
 
 #: flatcamEditors/FlatCAMExcEditor.py:3187
 msgid "There are no Tools definitions in the file. Aborting Excellon creation."
-msgstr ""
+msgstr "Não há definições de ferramentas no arquivo. Abortando a criação do Excellon."
 
 #: flatcamEditors/FlatCAMExcEditor.py:3191
 msgid "An internal error has ocurred. See Shell.\n"
-msgstr ""
+msgstr "Ocorreu um erro interno. Veja shell (linha de comando).\n"
 
 #: flatcamEditors/FlatCAMExcEditor.py:3197
 msgid "Creating Excellon."
-msgstr ""
+msgstr "Criando Excellon."
 
 #: flatcamEditors/FlatCAMExcEditor.py:3207
 msgid "Excellon editing finished."
-msgstr ""
+msgstr "Edição de Excellon concluída."
 
 #: flatcamEditors/FlatCAMExcEditor.py:3225
 msgid "Cancelled. There is no Tool/Drill selected"
-msgstr ""
+msgstr "Cancelado. Não há ferramenta/broca selecionada"
 
 #: flatcamEditors/FlatCAMExcEditor.py:3810
 msgid "Done. Drill(s) deleted."
-msgstr ""
+msgstr "Brocas(s) excluída(s)."
 
 #: flatcamEditors/FlatCAMExcEditor.py:3882
 #: flatcamEditors/FlatCAMExcEditor.py:3892
 #: flatcamEditors/FlatCAMGrbEditor.py:4576
 msgid "Click on the circular array Center position"
-msgstr ""
+msgstr "Clique na posição central da matriz circular"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:82
 msgid "Buffer distance:"
-msgstr ""
+msgstr "Distância do buffer:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:83
 msgid "Buffer corner:"
-msgstr ""
+msgstr "Canto do buffer:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:85
 msgid ""
@@ -2482,38 +2516,43 @@ msgid ""
 " - 'Beveled:' the corner is a line that directly connects the features "
 "meeting in the corner"
 msgstr ""
+"Existem 3 tipos de cantos:\n"
+" - 'Redondo': o canto é arredondado para buffer externo.\n"
+" - 'Quadrado:' o canto é em um ângulo agudo para buffer externo.\n"
+" - 'Chanfrado:' o canto é uma linha que conecta diretamente os recursos "
+"encontrados no canto"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:91
 #: flatcamEditors/FlatCAMGrbEditor.py:2522
 msgid "Round"
-msgstr ""
+msgstr "Redondo"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:92
 #: flatcamEditors/FlatCAMGrbEditor.py:2523
 msgid "Square"
-msgstr ""
+msgstr "Quadrado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:93
 #: flatcamEditors/FlatCAMGrbEditor.py:2524
 msgid "Beveled"
-msgstr ""
+msgstr "Chanfrado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:100
 msgid "Buffer Interior"
-msgstr ""
+msgstr "Buffer Interior"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:102
 msgid "Buffer Exterior"
-msgstr ""
+msgstr "Buffer Exterior"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:108
 msgid "Full Buffer"
-msgstr ""
+msgstr "Buffer Completo"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:129
 #: flatcamEditors/FlatCAMGeoEditor.py:2720 flatcamGUI/FlatCAMGUI.py:4777
 msgid "Buffer Tool"
-msgstr ""
+msgstr "Ferramenta Buffer"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:141
 #: flatcamEditors/FlatCAMGeoEditor.py:158
@@ -2523,34 +2562,37 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:2800
 #: flatcamEditors/FlatCAMGrbEditor.py:4629
 msgid "Buffer distance value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "O valor da distância do buffer está ausente ou em formato "
+"incorreto. Altere e tente novamente."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:345
 msgid "Text Tool"
-msgstr ""
+msgstr "Ferramenta de Texto"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:403 flatcamGUI/FlatCAMGUI.py:826
 msgid "Tool"
-msgstr ""
+msgstr "Ferramenta"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:434 flatcamGUI/FlatCAMGUI.py:4356
 #: flatcamGUI/FlatCAMGUI.py:5796 flatcamGUI/FlatCAMGUI.py:6699
 #: flatcamGUI/FlatCAMGUI.py:6859 flatcamGUI/ObjectUI.py:264
 #: flatcamTools/ToolCutOut.py:91
 msgid "Tool dia"
-msgstr ""
+msgstr "Diâmetro da Ferramenta"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:436 flatcamGUI/FlatCAMGUI.py:6861
 msgid ""
 "Diameter of the tool to\n"
 "be used in the operation."
 msgstr ""
+"Diâmetro da ferramenta para \n"
+"ser usada na operação."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:445 flatcamGUI/FlatCAMGUI.py:6545
 #: flatcamGUI/FlatCAMGUI.py:6890 flatcamTools/ToolNonCopperClear.py:283
 #: flatcamTools/ToolPaint.py:205
 msgid "Overlap Rate"
-msgstr ""
+msgstr "Taxa de Sobreposição"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:447 flatcamGUI/FlatCAMGUI.py:6892
 #: flatcamTools/ToolPaint.py:207
@@ -2567,12 +2609,22 @@ msgid ""
 "Higher values = slow processing and slow execution on CNC\n"
 "due of too many paths."
 msgstr ""
+"Quanto da largura da ferramenta (fração) é sobreposto em cada passagem da "
+"ferramenta.\n"
+"Exemplo:\n"
+"Um valor de 0.25 significa uma sobreposição de 25% do diâmetro da "
+"ferramenta.\n"
+"Ajuste o valor começando com valores menores, e aumente se alguma área que \n"
+"deveria ser pintada não foi pintada.\n"
+"Valores menores = processamento mais rápido, execução mais rápida no PCB. \n"
+"Valores maiores = processamento lento e execução lenta no CNC \n"
+"                  devido ao número de caminhos."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:463 flatcamGUI/FlatCAMGUI.py:6562
 #: flatcamGUI/FlatCAMGUI.py:6723 flatcamGUI/FlatCAMGUI.py:6907
 #: flatcamTools/ToolNonCopperClear.py:299 flatcamTools/ToolPaint.py:222
 msgid "Margin"
-msgstr ""
+msgstr "Margem"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:465 flatcamGUI/FlatCAMGUI.py:6909
 #: flatcamTools/ToolPaint.py:224
@@ -2581,40 +2633,45 @@ msgid ""
 "the edges of the polygon to\n"
 "be painted."
 msgstr ""
+"Distância pela qual evitar \n"
+"as bordas do polígono para \n"
+"ser pintado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:474 flatcamGUI/FlatCAMGUI.py:6571
 #: flatcamGUI/FlatCAMGUI.py:6918 flatcamTools/ToolNonCopperClear.py:308
 #: flatcamTools/ToolPaint.py:233
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:476
 msgid ""
 "Algorithm to paint the polygon:<BR><B>Standard</B>: Fixed step inwards."
 "<BR><B>Seed-based</B>: Outwards from seed."
 msgstr ""
+"Algoritmo para pintar o polígono: <BR><B>Padrão</B>: Passo fixo para dentro."
+"<BR><B>Baseado em semente</B>: para fora da semente."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:482 flatcamGUI/FlatCAMGUI.py:6580
 #: flatcamGUI/FlatCAMGUI.py:6927 flatcamTools/ToolNonCopperClear.py:317
 #: flatcamTools/ToolPaint.py:242
 msgid "Standard"
-msgstr ""
+msgstr "Padrão"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:483 flatcamGUI/FlatCAMGUI.py:6581
 #: flatcamGUI/FlatCAMGUI.py:6928 flatcamTools/ToolNonCopperClear.py:318
 #: flatcamTools/ToolPaint.py:243
 msgid "Seed-based"
-msgstr ""
+msgstr "Baseado em semente"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:484 flatcamGUI/FlatCAMGUI.py:6582
 #: flatcamGUI/FlatCAMGUI.py:6929 flatcamTools/ToolNonCopperClear.py:319
 #: flatcamTools/ToolPaint.py:244
 msgid "Straight lines"
-msgstr ""
+msgstr "Linhas retas"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:489
 msgid "Connect:"
-msgstr ""
+msgstr "Conectar:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:491 flatcamGUI/FlatCAMGUI.py:6589
 #: flatcamGUI/FlatCAMGUI.py:6936 flatcamTools/ToolNonCopperClear.py:326
@@ -2623,10 +2680,12 @@ msgid ""
 "Draw lines between resulting\n"
 "segments to minimize tool lifts."
 msgstr ""
+"Desenha linhas entre os segmentos resultantes\n"
+"para minimizar as elevações de ferramentas."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:498
 msgid "Contour:"
-msgstr ""
+msgstr "Contorno:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:500 flatcamGUI/FlatCAMGUI.py:6599
 #: flatcamGUI/FlatCAMGUI.py:6946 flatcamTools/ToolNonCopperClear.py:335
@@ -2634,35 +2693,38 @@ msgstr ""
 msgid ""
 "Cut around the perimeter of the polygon\n"
 "to trim rough edges."
-msgstr ""
+msgstr "Corta no perímetro do polígono para cortar as arestas."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:511 flatcamGUI/FlatCAMGUI.py:1673
 msgid "Paint"
-msgstr ""
+msgstr "Pintura"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:529 flatcamGUI/FlatCAMGUI.py:661
 #: flatcamGUI/FlatCAMGUI.py:2004 flatcamGUI/ObjectUI.py:1360
 #: flatcamTools/ToolPaint.py:25 flatcamTools/ToolPaint.py:448
 msgid "Paint Tool"
-msgstr ""
+msgstr "Ferramenta de Pintura"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:566
 msgid "Paint cancelled. No shape selected."
-msgstr ""
+msgstr "Pintura cancelada. Nenhuma forma selecionada."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:578 flatcamTools/ToolCutOut.py:387
 #: flatcamTools/ToolCutOut.py:585 flatcamTools/ToolCutOut.py:755
 #: flatcamTools/ToolCutOut.py:849 flatcamTools/ToolDblSided.py:367
 msgid "Tool diameter value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "O valor do diâmetro da ferramenta está ausente ou em formato "
+"incorreto. Altere e tente novamente."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:589
 msgid "Overlap value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "O valor de sobreposição está ausente ou em formato "
+"incorreto. Altere e tente novamente."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:601
 msgid "Margin distance value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "O valor da distância da margem está ausente ou em formato "
+"incorreto. Altere e tente novamente."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:609
 #: flatcamEditors/FlatCAMGeoEditor.py:2746
@@ -2670,7 +2732,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:2806 flatcamGUI/FlatCAMGUI.py:5792
 #: flatcamTools/ToolProperties.py:113 flatcamTools/ToolProperties.py:139
 msgid "Tools"
-msgstr ""
+msgstr "Ferramentas"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:620
 #: flatcamEditors/FlatCAMGeoEditor.py:993
@@ -2678,7 +2740,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:5197 flatcamGUI/FlatCAMGUI.py:672
 #: flatcamGUI/FlatCAMGUI.py:2017 flatcamTools/ToolTransform.py:403
 msgid "Transform Tool"
-msgstr ""
+msgstr "Ferramenta Transformar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:621
 #: flatcamEditors/FlatCAMGeoEditor.py:682
@@ -2686,12 +2748,12 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:4875 flatcamTools/ToolTransform.py:24
 #: flatcamTools/ToolTransform.py:82
 msgid "Rotate"
-msgstr ""
+msgstr "Girar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:622
 #: flatcamEditors/FlatCAMGrbEditor.py:4814 flatcamTools/ToolTransform.py:25
 msgid "Skew/Shear"
-msgstr ""
+msgstr "Inclinar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:623
 #: flatcamEditors/FlatCAMGrbEditor.py:2569
@@ -2700,12 +2762,12 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:79 flatcamGUI/ObjectUI.py:100
 #: flatcamTools/ToolTransform.py:26
 msgid "Scale"
-msgstr ""
+msgstr "Redimensionar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:624
 #: flatcamEditors/FlatCAMGrbEditor.py:4816 flatcamTools/ToolTransform.py:27
 msgid "Mirror (Flip)"
-msgstr ""
+msgstr "Espelhar (Flip)"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:625
 #: flatcamEditors/FlatCAMGrbEditor.py:4817 flatcamGUI/FlatCAMGUI.py:6622
@@ -2713,18 +2775,18 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:952 flatcamGUI/ObjectUI.py:1517
 #: flatcamTools/ToolNonCopperClear.py:357 flatcamTools/ToolTransform.py:28
 msgid "Offset"
-msgstr ""
+msgstr "Deslocamento"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:636
 #: flatcamEditors/FlatCAMGrbEditor.py:4829
 #, python-format
 msgid "Editor %s"
-msgstr ""
+msgstr "Editor %s"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:668
 #: flatcamEditors/FlatCAMGrbEditor.py:4861
 msgid "Angle:"
-msgstr ""
+msgstr "Ângulo:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:670
 #: flatcamEditors/FlatCAMGrbEditor.py:4863 flatcamGUI/FlatCAMGUI.py:7268
@@ -2735,6 +2797,10 @@ msgid ""
 "Positive numbers for CW motion.\n"
 "Negative numbers for CCW motion."
 msgstr ""
+"Ângulo para a ação Rotação, em graus. \n"
+"Número flutuante entre -360 e 359. \n"
+"Números positivos para movimento horário. \n"
+"Números negativos para movimento anti-horário."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:684
 #: flatcamEditors/FlatCAMGrbEditor.py:4877
@@ -2743,11 +2809,14 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected shapes."
 msgstr ""
+"Gira a(s) forma(s) selecionada(s). \n"
+"O ponto de referência é o meio da caixa\n"
+"delimitadora para todas as formas selecionadas."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:707
 #: flatcamEditors/FlatCAMGrbEditor.py:4900
 msgid "Angle X:"
-msgstr ""
+msgstr "Ângulo X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:709
 #: flatcamEditors/FlatCAMGeoEditor.py:727
@@ -2759,11 +2828,13 @@ msgid ""
 "Angle for Skew action, in degrees.\n"
 "Float number between -360 and 359."
 msgstr ""
+"Ângulo de inclinação, em graus.\n"
+"Número flutuante entre -360 e 359."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:718
 #: flatcamEditors/FlatCAMGrbEditor.py:4911 flatcamTools/ToolTransform.py:118
 msgid "Skew X"
-msgstr ""
+msgstr "Inclinar X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:720
 #: flatcamEditors/FlatCAMGeoEditor.py:738
@@ -2774,31 +2845,34 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected shapes."
 msgstr ""
+"Inclinar/distorcer a(s) forma(s) selecionada(s).\n"
+"O ponto de referência é o meio da caixa\n"
+"delimitadora para todas as formas selecionadas."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:725
 #: flatcamEditors/FlatCAMGrbEditor.py:4918
 msgid "Angle Y:"
-msgstr ""
+msgstr "Ângulo Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:736
 #: flatcamEditors/FlatCAMGrbEditor.py:4929 flatcamTools/ToolTransform.py:136
 msgid "Skew Y"
-msgstr ""
+msgstr "Inclinar Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:764
 #: flatcamEditors/FlatCAMGrbEditor.py:4957
 msgid "Factor X:"
-msgstr ""
+msgstr "Fator X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:766
 #: flatcamEditors/FlatCAMGrbEditor.py:4959
 msgid "Factor for Scale action over X axis."
-msgstr ""
+msgstr "Fator de escala sobre o eixo X."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:774
 #: flatcamEditors/FlatCAMGrbEditor.py:4967 flatcamTools/ToolTransform.py:174
 msgid "Scale X"
-msgstr ""
+msgstr "Redimensionar X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:776
 #: flatcamEditors/FlatCAMGeoEditor.py:793
@@ -2809,27 +2883,30 @@ msgid ""
 "The point of reference depends on \n"
 "the Scale reference checkbox state."
 msgstr ""
+"Redimensiona a(s) forma(s) selecionada(s).\n"
+"O ponto de referência depende\n"
+"do estado da caixa de seleção."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:781
 #: flatcamEditors/FlatCAMGrbEditor.py:4974
 msgid "Factor Y:"
-msgstr ""
+msgstr "Fator Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:783
 #: flatcamEditors/FlatCAMGrbEditor.py:4976
 msgid "Factor for Scale action over Y axis."
-msgstr ""
+msgstr "Fator para ação de escala no eixo Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:791
 #: flatcamEditors/FlatCAMGrbEditor.py:4984 flatcamTools/ToolTransform.py:191
 msgid "Scale Y"
-msgstr ""
+msgstr "Redimensionar Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:800
 #: flatcamEditors/FlatCAMGrbEditor.py:4993 flatcamGUI/FlatCAMGUI.py:7315
 #: flatcamTools/ToolTransform.py:200
 msgid "Link"
-msgstr ""
+msgstr "Fixar Taxa"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:802
 #: flatcamEditors/FlatCAMGrbEditor.py:4995
@@ -2837,12 +2914,14 @@ msgid ""
 "Scale the selected shape(s)\n"
 "using the Scale Factor X for both axis."
 msgstr ""
+"Redimensiona a(s) forma(s) selecionada(s)\n"
+"usando o Fator de Escala X para ambos os eixos."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:808
 #: flatcamEditors/FlatCAMGrbEditor.py:5001 flatcamGUI/FlatCAMGUI.py:7323
 #: flatcamTools/ToolTransform.py:209
 msgid "Scale Reference"
-msgstr ""
+msgstr "Referência de escala"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:810
 #: flatcamEditors/FlatCAMGrbEditor.py:5003
@@ -2852,21 +2931,25 @@ msgid ""
 "and the center of the biggest bounding box\n"
 "of the selected shapes when unchecked."
 msgstr ""
+"Redimensiona a(s) forma(s) selecionada(s)\n"
+"usando a referência de origem quando marcada,\n"
+"e o centro da maior caixa delimitadora\n"
+"de formas selecionadas quando desmarcado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:838
 #: flatcamEditors/FlatCAMGrbEditor.py:5032
 msgid "Value X:"
-msgstr ""
+msgstr "Valor X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:840
 #: flatcamEditors/FlatCAMGrbEditor.py:5034
 msgid "Value for Offset action on X axis."
-msgstr ""
+msgstr "Valor para o deslocamento no eixo X."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:848
 #: flatcamEditors/FlatCAMGrbEditor.py:5042 flatcamTools/ToolTransform.py:249
 msgid "Offset X"
-msgstr ""
+msgstr "Deslocar X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:850
 #: flatcamEditors/FlatCAMGeoEditor.py:868
@@ -2877,26 +2960,29 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected shapes.\n"
 msgstr ""
+"Desloca a(s) forma(s) selecionada(s).\n"
+"O ponto de referência é o meio da\n"
+"caixa delimitadora para todas as formas selecionadas.\n"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:856
 #: flatcamEditors/FlatCAMGrbEditor.py:5050
 msgid "Value Y:"
-msgstr ""
+msgstr "Valor Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:858
 #: flatcamEditors/FlatCAMGrbEditor.py:5052
 msgid "Value for Offset action on Y axis."
-msgstr ""
+msgstr "Valor para a ação de deslocamento no eixo Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:866
 #: flatcamEditors/FlatCAMGrbEditor.py:5060 flatcamTools/ToolTransform.py:266
 msgid "Offset Y"
-msgstr ""
+msgstr "Deslocar Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:897
 #: flatcamEditors/FlatCAMGrbEditor.py:5091 flatcamTools/ToolTransform.py:296
 msgid "Flip on X"
-msgstr ""
+msgstr "Espelhar no X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:899
 #: flatcamEditors/FlatCAMGeoEditor.py:907
@@ -2906,16 +2992,18 @@ msgid ""
 "Flip the selected shape(s) over the X axis.\n"
 "Does not create a new shape."
 msgstr ""
+"Espelha as formas selecionadas sobre o eixo X.\n"
+"Não cria uma nova forma."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:905
 #: flatcamEditors/FlatCAMGrbEditor.py:5099 flatcamTools/ToolTransform.py:304
 msgid "Flip on Y"
-msgstr ""
+msgstr "Espelhar no Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:914
 #: flatcamEditors/FlatCAMGrbEditor.py:5108
 msgid "Ref Pt"
-msgstr ""
+msgstr "Ponto de Referência"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:916
 #: flatcamEditors/FlatCAMGrbEditor.py:5110
@@ -2930,11 +3018,19 @@ msgid ""
 "Or enter the coords in format (x, y) in the\n"
 "Point Entry field and click Flip on X(Y)"
 msgstr ""
+"Espelha a(s) forma(s) selecionada(s)\n"
+"em relação às coordenadas abaixo.\n"
+"\n"
+"As coordenadas do ponto podem ser inseridas:\n"
+"- com clique no botão esquerdo junto com a tecla\n"
+"  SHIFT pressionada, e clicar no botão Adicionar.\n"
+"- ou digitar as coordenadas no formato (x, y) no campo\n"
+"  Ponto de Ref. e clicar em Espelhar no X(Y)"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:928
 #: flatcamEditors/FlatCAMGrbEditor.py:5122
 msgid "Point:"
-msgstr ""
+msgstr "Ponto:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:930
 #: flatcamEditors/FlatCAMGrbEditor.py:5124
@@ -2943,6 +3039,9 @@ msgid ""
 "The 'x' in (x, y) will be used when using Flip on X and\n"
 "the 'y' in (x, y) will be used when using Flip on Y."
 msgstr ""
+"Coordenadas no formato (x, y) usadas como referência para espelhamento. \n"
+"O 'x' em (x, y) será usado ao usar Espelhar em X e\n"
+"o 'y' em (x, y) será usado ao usar Espelhar em Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:942
 #: flatcamEditors/FlatCAMGrbEditor.py:5136 flatcamTools/ToolTransform.py:340
