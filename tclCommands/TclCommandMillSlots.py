@@ -24,7 +24,8 @@ class TclCommandMillSlots(TclCommandSignaled):
         ('milled_dias', str),
         ('outname', str),
         ('tooldia', float),
-        ('use_threads', bool)
+        ('use_threads', bool),
+        ('tol', float)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -38,7 +39,11 @@ class TclCommandMillSlots(TclCommandSignaled):
             ('milled_dias', 'Comma separated tool diameters of the slots to be milled (example: 0.6, 1.0 or 3.125).'),
             ('tooldia', 'Diameter of the milling tool (example: 0.1).'),
             ('outname', 'Name of object to create.'),
-            ('use_thread', 'If to use multithreading: True or False.')
+            ('use_thread', 'If to use multithreading: True or False.'),
+            ('tol', 'Tolerance. Percentange (0.0 ... 100.0) within which dias in milled_dias will be judged to be the'
+                    'same as the ones in the tools from the Excellon object. E.g: if in milled_dias we have a diameter'
+                    'with value 1.0, in the Excellon we have a tool with dia = 1.05 and we set a tolerance tol = 5.0'
+                    'then the slots with the dia 1.05 in Excellon will be processed. Float number.')
         ]),
         'examples': ['millholes mydrills']
     }
@@ -72,7 +77,7 @@ class TclCommandMillSlots(TclCommandSignaled):
                 diameters = [x.strip() for x in args['milled_dias'].split(",")]
                 nr_diameters = len(diameters)
 
-                req_tools = []
+                req_tools = set()
                 for tool in obj.tools:
                     for req_dia in diameters:
                         obj_dia_form = float('%.2f' % float(obj.tools[tool]["C"])) if units == 'MM' else \
@@ -80,9 +85,18 @@ class TclCommandMillSlots(TclCommandSignaled):
                         req_dia_form = float('%.2f' % float(req_dia)) if units == 'MM' else \
                             float('%.4f' % float(req_dia))
 
-                        if obj_dia_form == req_dia_form:
-                            req_tools.append(tool)
-                            nr_diameters -= 1
+                        if 'tol' in args:
+                            tolerance = args['tol'] / 100
+
+                            tolerance = 0.0 if tolerance < 0.0 else tolerance
+                            tolerance = 1.0 if tolerance > 1.0 else tolerance
+                            if math.isclose(obj_dia_form, req_dia_form, rel_tol=tolerance):
+                                req_tools.add(tool)
+                                nr_diameters -= 1
+                        else:
+                            if obj_dia_form == req_dia_form:
+                                req_tools.add(tool)
+                                nr_diameters -= 1
 
                 if nr_diameters > 0:
                     self.raise_tcl_error("One or more tool diameters of the slots to be milled passed to the "

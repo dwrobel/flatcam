@@ -1,7 +1,6 @@
 from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
 
-
 class TclCommandDrillcncjob(TclCommandSignaled):
     """
     Tcl shell command to Generates a Drill CNC Job from a Excellon Object.
@@ -30,7 +29,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ('endz', float),
         ('ppname_e', str),
         ('outname', str),
-        ('opt_type', str)
+        ('opt_type', str),
+        ('tol', float)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -54,8 +54,13 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('endz', 'Z distance at job end (example: 30.0).'),
             ('ppname_e', 'This is the Excellon postprocessor name: case_sensitive, no_quotes'),
             ('outname', 'Name of the resulting Geometry object.'),
-            ('opt_type', 'Name of move optimization type. R by default from Rtree or '
-                         'T from Travelling Salesman Algorithm')
+            ('opt_type', 'Name of move optimization type. B by default for Basic OR-Tools, M for Metaheuristic OR-Tools'
+                         'T from Travelling Salesman Algorithm. B and M works only for 64bit version of FlatCAM and '
+                         'T works only for 32bit version of FlatCAM'),
+            ('tol', 'Tolerance. Percentange (0.0 ... 100.0) within which dias in drilled_dias will be judged to be the'
+                    'same as the ones in the tools from the Excellon object. E.g: if in drill_dias we have a diameter'
+                    'with value 1.0, in the Excellon we have a tool with dia = 1.05 and we set a tolerance tol = 5.0'
+                    'then the drills with the dia 1.05 in Excellon will be processed. Float number.')
         ]),
         'examples': ['drillcncjob test.TXT -drillz -1.5 -travelz 14 -feedrate 222 -feedrate_rapid 456 -spindlespeed 777'
                      ' -toolchange True -toolchangez 33 -endz 22 -ppname_e default\n'
@@ -98,7 +103,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                     diameters = [x.strip() for x in args['drilled_dias'].split(",") if x!= '']
                     nr_diameters = len(diameters)
 
-                    req_tools = []
+                    req_tools = set()
                     for tool in obj.tools:
                         for req_dia in diameters:
                             obj_dia_form = float('%.2f' % float(obj.tools[tool]["C"])) if units == 'MM' else \
@@ -106,9 +111,18 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                             req_dia_form = float('%.2f' % float(req_dia)) if units == 'MM' else \
                                 float('%.4f' % float(req_dia))
 
-                            if obj_dia_form == req_dia_form:
-                                req_tools.append(tool)
-                                nr_diameters -= 1
+                            if 'tol' in args:
+                                tolerance = args['tol'] / 100
+
+                                tolerance = 0.0 if tolerance < 0.0 else tolerance
+                                tolerance = 1.0 if tolerance > 1.0 else tolerance
+                                if math.isclose(obj_dia_form, req_dia_form, rel_tol=tolerance):
+                                    req_tools.add(tool)
+                                    nr_diameters -= 1
+                            else:
+                                if obj_dia_form == req_dia_form:
+                                    req_tools.add(tool)
+                                    nr_diameters -= 1
 
                     if nr_diameters > 0:
                         self.raise_tcl_error("One or more tool diameters of the drills to be drilled passed to the "
