@@ -21,7 +21,7 @@ class TclCommandMillDrills(TclCommandSignaled):
     # Dictionary of types from Tcl command, needs to be ordered.
     # This is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('tools', str),
+        ('milled_dias', str),
         ('outname', str),
         ('tooldia', float),
         ('use_threads', bool)
@@ -35,12 +35,12 @@ class TclCommandMillDrills(TclCommandSignaled):
         'main': "Create Geometry Object for milling drill holes from Excellon.",
         'args': collections.OrderedDict([
             ('name', 'Name of the Excellon Object.'),
-            ('tools', 'Comma separated indexes of tools (example: 1,3 or 2).'),
+            ('milled_dias', 'Comma separated tool diameters of the drills to be milled (example: 0.6, 1.0 or 3.125).'),
             ('tooldia', 'Diameter of the milling tool (example: 0.1).'),
             ('outname', 'Name of object to create.'),
             ('use_thread', 'If to use multithreading: True or False.')
         ]),
-        'examples': ['millholes mydrills']
+        'examples': ['milldrills mydrills']
     }
 
     def execute(self, args, unnamed_args):
@@ -55,21 +55,37 @@ class TclCommandMillDrills(TclCommandSignaled):
         name = args['name']
 
         if 'outname' not in args:
-            args['outname'] = name + "_mill"
-
-        try:
-            if 'tools' in args and args['tools'] != 'all':
-                # Split and put back. We are passing the whole dictionary later.
-                args['tools'] = [x.strip() for x in args['tools'].split(",")]
-            else:
-                args['tools'] = 'all'
-        except Exception as e:
-            self.raise_tcl_error("Bad tools: %s" % str(e))
+            args['outname'] = name + "_mill_drills"
 
         try:
             obj = self.app.collection.get_by_name(str(name))
         except:
+            obj = None
             self.raise_tcl_error("Could not retrieve object: %s" % name)
+
+        if not obj.drills:
+            self.raise_tcl_error("The Excellon object has no drills: %s" % name)
+
+        try:
+            if 'milled_dias' in args and args['milled_dias'] != 'all':
+                diameters = [x.strip() for x in args['tools'].split(",")]
+                req_tools = []
+                for tool in obj.tools:
+                    for req_dia in diameters:
+                        if float('%.4f' % float(obj.tools[tool]["C"])) == float('%.4f' % float(req_dia)):
+                            req_tools.append(tool)
+
+                args['tools'] = req_tools
+
+                # no longer needed
+                del args['milled_dias']
+
+                # Split and put back. We are passing the whole dictionary later.
+                # args['milled_dias'] = [x.strip() for x in args['tools'].split(",")]
+            else:
+                args['tools'] = 'all'
+        except Exception as e:
+            self.raise_tcl_error("Bad tools: %s" % str(e))
 
         if not isinstance(obj, FlatCAMExcellon):
             self.raise_tcl_error('Only Excellon objects can be mill-drilled, got %s %s.' % (name, type(obj)))
@@ -83,8 +99,9 @@ class TclCommandMillDrills(TclCommandSignaled):
 
             # This runs in the background... Is blocking handled?
             success, msg = obj.generate_milling_drills(**args)
-
         except Exception as e:
+            success = None
+            msg = None
             self.raise_tcl_error("Operation failed: %s" % str(e))
 
         if not success:
