@@ -3050,131 +3050,139 @@ msgid ""
 "left click on canvas together with pressing\n"
 "SHIFT key. Then click Add button to insert."
 msgstr ""
+"As coordenadas do ponto podem ser capturadas por\n"
+"botão esquerdo na tela junto com a tecla\n"
+"SHIFT pressionada. Em seguida, clique no botão Adicionar para inserir."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1058
 #: flatcamEditors/FlatCAMGrbEditor.py:5262
 msgid "Transformation cancelled. No shape selected."
-msgstr ""
+msgstr "Transformação cancelada. Nenhuma forma selecionada."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1267
 #: flatcamEditors/FlatCAMGrbEditor.py:5508
 msgid "No shape selected. Please Select a shape to rotate!"
-msgstr ""
+msgstr "Nenhuma forma selecionada. Por favor, selecione uma forma "
+"para girar!""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1270
 #: flatcamEditors/FlatCAMGrbEditor.py:5511 flatcamTools/ToolTransform.py:646
 msgid "Appying Rotate"
-msgstr ""
+msgstr "Aplicando Girar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1299
 #: flatcamEditors/FlatCAMGrbEditor.py:5545
 msgid "Done. Rotate completed."
-msgstr ""
+msgstr "Girar concluído."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1305
 msgid "Rotation action was not executed"
-msgstr ""
+msgstr "O giro não foi executado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1317
 #: flatcamEditors/FlatCAMGrbEditor.py:5566
 msgid "No shape selected. Please Select a shape to flip!"
-msgstr ""
+msgstr "Nenhuma forma selecionada. Por favor, selecione uma forma "
+"para espelhar!"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1320
 #: flatcamEditors/FlatCAMGrbEditor.py:5569 flatcamTools/ToolTransform.py:699
 msgid "Applying Flip"
-msgstr ""
+msgstr "Aplicando Espelhamento"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1351
 #: flatcamEditors/FlatCAMGrbEditor.py:5609 flatcamTools/ToolTransform.py:742
 msgid "Flip on the Y axis done"
-msgstr ""
+msgstr "Concluído o espelhamento no eixo Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1355
 #: flatcamEditors/FlatCAMGrbEditor.py:5618 flatcamTools/ToolTransform.py:752
 msgid "Flip on the X axis done"
-msgstr ""
+msgstr "Concluído o espelhamento no eixo Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1366
 msgid "Flip action was not executed"
-msgstr ""
+msgstr "O espelhamento não foi executado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1376
 #: flatcamEditors/FlatCAMGrbEditor.py:5640
 msgid "No shape selected. Please Select a shape to shear/skew!"
-msgstr ""
+msgstr "Nenhuma forma selecionada. Por favor, selecione uma forma "
+"para inclinar!"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1379
 #: flatcamEditors/FlatCAMGrbEditor.py:5643 flatcamTools/ToolTransform.py:772
 msgid "Applying Skew"
-msgstr ""
+msgstr "Inclinando"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1405
 #: flatcamEditors/FlatCAMGrbEditor.py:5680
 msgid "Skew on the X axis done"
-msgstr ""
+msgstr "Inclinação no eixo X concluída"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1408
 #: flatcamEditors/FlatCAMGrbEditor.py:5683
 msgid "Skew on the Y axis done"
-msgstr ""
+msgstr "Inclinação no eixo Y concluída"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1413
 msgid "Skew action was not executed"
-msgstr ""
+msgstr "A inclinação não foi executada"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1425
 #: flatcamEditors/FlatCAMGrbEditor.py:5708
 msgid "No shape selected. Please Select a shape to scale!"
-msgstr ""
+msgstr "Nenhuma forma selecionada. Por favor, selecione uma forma "
+"para redimensionar!"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1428
 #: flatcamEditors/FlatCAMGrbEditor.py:5711 flatcamTools/ToolTransform.py:823
 msgid "Applying Scale"
-msgstr ""
+msgstr "Redimensionando"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1463
 #: flatcamEditors/FlatCAMGrbEditor.py:5751
 msgid "Scale on the X axis done"
-msgstr ""
+msgstr "Redimensionamento no eixo X concluído"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1466
 #: flatcamEditors/FlatCAMGrbEditor.py:5754
 msgid "Scale on the Y axis done"
-msgstr ""
+msgstr "Redimensionamento no eixo Y concluído"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1470
 msgid "Scale action was not executed"
-msgstr ""
+msgstr "O redimensionamento não foi executado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1480
 #: flatcamEditors/FlatCAMGrbEditor.py:5772
 msgid "No shape selected. Please Select a shape to offset!"
-msgstr ""
+msgstr "Nenhuma forma selecionada. Por favor, selecione uma forma "
+"para deslocar!"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1483
 #: flatcamEditors/FlatCAMGrbEditor.py:5775 flatcamTools/ToolTransform.py:878
 msgid "Applying Offset"
-msgstr ""
+msgstr "Deslocando"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1496
 #: flatcamEditors/FlatCAMGrbEditor.py:5799
 msgid "Offset on the X axis done"
-msgstr ""
+msgstr "Deslocamento no eixo X concluído"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1499
 #: flatcamEditors/FlatCAMGrbEditor.py:5802
 msgid "Offset on the Y axis done"
-msgstr ""
+msgstr "Deslocamento no eixo Y concluído"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1504
 msgid "Offset action was not executed"
-msgstr ""
+msgstr "O deslocamento não foi executado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1508
 #: flatcamEditors/FlatCAMGrbEditor.py:5811
 msgid "Rotate ..."
-msgstr ""
+msgstr "Girar ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1509
 #: flatcamEditors/FlatCAMGeoEditor.py:1564
@@ -3183,265 +3191,268 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:5867
 #: flatcamEditors/FlatCAMGrbEditor.py:5884
 msgid "Enter an Angle Value (degrees)"
-msgstr ""
+msgstr "Digite um valor para o ângulo (graus)"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1518
 #: flatcamEditors/FlatCAMGrbEditor.py:5821
 msgid "Geometry shape rotate done"
-msgstr ""
+msgstr "Rotação da geometria concluída"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1522
 #: flatcamEditors/FlatCAMGrbEditor.py:5825
 msgid "Geometry shape rotate cancelled"
-msgstr ""
+msgstr "Rotação da geometria cancelada"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1527
 #: flatcamEditors/FlatCAMGrbEditor.py:5830
 msgid "Offset on X axis ..."
-msgstr ""
+msgstr "Deslocamento no eixo X ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1528
 #: flatcamEditors/FlatCAMGeoEditor.py:1547
 #: flatcamEditors/FlatCAMGrbEditor.py:5831
 #: flatcamEditors/FlatCAMGrbEditor.py:5850
 msgid "Enter a distance Value"
-msgstr ""
+msgstr "Digite um valor para a distância"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1537
 #: flatcamEditors/FlatCAMGrbEditor.py:5840
 msgid "Geometry shape offset on X axis done"
-msgstr ""
+msgstr "Deslocamento da forma no eixo X concluído"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1541
 #: flatcamEditors/FlatCAMGrbEditor.py:5844
 msgid "Geometry shape offset X cancelled"
-msgstr ""
+msgstr "Deslocamento da forma no eixo X cancelado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1546
 #: flatcamEditors/FlatCAMGrbEditor.py:5849
 msgid "Offset on Y axis ..."
-msgstr ""
+msgstr "Deslocamento no eixo Y ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1556
 #: flatcamEditors/FlatCAMGrbEditor.py:5859
 msgid "Geometry shape offset on Y axis done"
-msgstr ""
+msgstr "Deslocamento da forma no eixo Y concluído"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1560
 msgid "Geometry shape offset on Y axis canceled"
-msgstr ""
+msgstr "Deslocamento da forma no eixo Y cancelado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1563
 #: flatcamEditors/FlatCAMGrbEditor.py:5866
 msgid "Skew on X axis ..."
-msgstr ""
+msgstr "Inclinação no eixo X ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1573
 #: flatcamEditors/FlatCAMGrbEditor.py:5876
 msgid "Geometry shape skew on X axis done"
-msgstr ""
+msgstr "Inclinação no eixo X concluída"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1577
 msgid "Geometry shape skew on X axis canceled"
-msgstr ""
+msgstr "Inclinação no eixo X cancelada"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1580
 #: flatcamEditors/FlatCAMGrbEditor.py:5883
 msgid "Skew on Y axis ..."
-msgstr ""
+msgstr "Inclinação no eixo Y ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1590
 #: flatcamEditors/FlatCAMGrbEditor.py:5893
 msgid "Geometry shape skew on Y axis done"
-msgstr ""
+msgstr "Inclinação no eixo Y concluída"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1594
 msgid "Geometry shape skew on Y axis canceled"
-msgstr ""
+msgstr "Inclinação no eixo Y cancelada"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1958
 #: flatcamEditors/FlatCAMGeoEditor.py:2010
 #: flatcamEditors/FlatCAMGrbEditor.py:1396
 #: flatcamEditors/FlatCAMGrbEditor.py:1466
 msgid "Click on Center point ..."
-msgstr ""
+msgstr "Clique no ponto central ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1965
 #: flatcamEditors/FlatCAMGrbEditor.py:1404
 msgid "Click on Perimeter point to complete ..."
-msgstr ""
+msgstr "Clique no ponto Perímetro para completar ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1995
 msgid "Done. Adding Circle completed."
-msgstr ""
+msgstr "Círculo adicionado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2030
 #: flatcamEditors/FlatCAMGrbEditor.py:1498
 msgid "Click on Start point ..."
-msgstr ""
+msgstr "Clique no ponto inicial ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2032
 #: flatcamEditors/FlatCAMGrbEditor.py:1500
 msgid "Click on Point3 ..."
-msgstr ""
+msgstr "Clique no ponto 3 ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2034
 #: flatcamEditors/FlatCAMGrbEditor.py:1502
 msgid "Click on Stop point ..."
-msgstr ""
+msgstr "Clique no ponto de parada ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2039
 #: flatcamEditors/FlatCAMGrbEditor.py:1507
 msgid "Click on Stop point to complete ..."
-msgstr ""
+msgstr "Clique no ponto de parada para completar ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2041
 #: flatcamEditors/FlatCAMGrbEditor.py:1509
 msgid "Click on Point2 to complete ..."
-msgstr ""
+msgstr "Clique no ponto 2 para completar ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2043
 #: flatcamEditors/FlatCAMGrbEditor.py:1511
 msgid "Click on Center point to complete ..."
-msgstr ""
+msgstr "Clique no ponto central para completar ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2055
 #: flatcamEditors/FlatCAMGrbEditor.py:1523
 #, python-format
 msgid "Direction: %s"
-msgstr ""
+msgstr "Direção: %s"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2065
 #: flatcamEditors/FlatCAMGrbEditor.py:1533
 msgid "Mode: Start -> Stop -> Center. Click on Start point ..."
-msgstr ""
+msgstr "Modo: Iniciar -> Parar -> Centro. Clique no ponto inicial ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2068
 #: flatcamEditors/FlatCAMGrbEditor.py:1536
 msgid "Mode: Point1 -> Point3 -> Point2. Click on Point1 ..."
-msgstr ""
+msgstr "Modo: Ponto 1 -> Ponto 3 -> Ponto 2. Clique no Ponto 1 ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2071
 #: flatcamEditors/FlatCAMGrbEditor.py:1539
 msgid "Mode: Center -> Start -> Stop. Click on Center point ..."
-msgstr ""
+msgstr "Modo: Centro -> Iniciar -> Parar. Clique no ponto central ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2210
 msgid "Done. Arc completed."
-msgstr ""
+msgstr "Arco adicionado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2229
 #: flatcamEditors/FlatCAMGeoEditor.py:2283
 #: flatcamEditors/FlatCAMGeoEditor.py:2656
 msgid "Click on 1st corner ..."
-msgstr ""
+msgstr "Clique no primeiro canto ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2235
 msgid "Click on opposite corner to complete ..."
-msgstr ""
+msgstr "Clique no canto oposto para completar ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2264
 msgid "Done. Rectangle completed."
-msgstr ""
+msgstr "Retângulo adicionado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2290
 msgid "Click on next Point or click right mouse button to complete ..."
-msgstr ""
+msgstr "Clique no próximo ponto ou clique com o botão direito do mouse para "
+"completar ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2319
 msgid "Done. Polygon completed."
-msgstr ""
+msgstr "Polígono adicionado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2329
 #: flatcamEditors/FlatCAMGeoEditor.py:2375
 #: flatcamEditors/FlatCAMGrbEditor.py:1085
 #: flatcamEditors/FlatCAMGrbEditor.py:1287
 msgid "Backtracked one point ..."
-msgstr ""
+msgstr "Retrocedeu um ponto ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2357
 msgid "[success] Done. Path completed."
-msgstr ""
+msgstr "Caminho concluído."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2475
 msgid "MOVE: No shape selected. Select a shape to move"
-msgstr ""
+msgstr "MOVER: Nenhuma forma selecionada. Selecione uma forma para mover"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2477
 #: flatcamEditors/FlatCAMGeoEditor.py:2489
 msgid " MOVE: Click on reference point ..."
-msgstr ""
+msgstr "MOVER: Clique no ponto de referência ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2480
 msgid " Click on destination point ..."
-msgstr ""
+msgstr "Clique no ponto de destino ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2515
 msgid "Done. Geometry(s) Move completed."
-msgstr ""
+msgstr "Movimento de Geometria(s) concluído."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2636
 msgid "Done. Geometry(s) Copy completed."
-msgstr ""
+msgstr "Geometria(s) copiada(s)."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2673
 msgid ""
 "Font not supported. Only Regular, Bold, Italic and BoldItalic are supported. "
 "Error"
 msgstr ""
+"Fonte não suportada. Apenas Regular, Bold, Italic e BoldItalic são "
+"suportados. Erro"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2681
 msgid "No text to add."
-msgstr ""
+msgstr "Nenhum texto para adicionar."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2688
 msgid " Done. Adding Text completed."
-msgstr ""
+msgstr "Texto adicionado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2716
 msgid "Create buffer geometry ..."
-msgstr ""
+msgstr "Criar buffer de geometria ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2728
 #: flatcamEditors/FlatCAMGeoEditor.py:2758
 #: flatcamEditors/FlatCAMGeoEditor.py:2788
 msgid "Buffer cancelled. No shape selected."
-msgstr ""
+msgstr "Buffer cancelado. Nenhuma forma selecionada."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2753
 #: flatcamEditors/FlatCAMGrbEditor.py:4674
 msgid "Done. Buffer Tool completed."
-msgstr ""
+msgstr "Buffer concluído."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2783
 msgid "Done. Buffer Int Tool completed."
-msgstr ""
+msgstr "Buffer Interno concluído."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2813
 msgid "Done. Buffer Ext Tool completed."
-msgstr ""
+msgstr "Buffer Externo concluído."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2848
 #: flatcamEditors/FlatCAMGrbEditor.py:2068
 msgid "Select a shape to act as deletion area ..."
-msgstr ""
+msgstr "Selecione uma forma para atuar como área de exclusão ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2850
 #: flatcamEditors/FlatCAMGeoEditor.py:2869
 #: flatcamEditors/FlatCAMGeoEditor.py:2875
 #: flatcamEditors/FlatCAMGrbEditor.py:2070
 msgid "Click to pick-up the erase shape..."
-msgstr ""
+msgstr "Clique para pegar a forma a apagar ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2879
 #: flatcamEditors/FlatCAMGrbEditor.py:2127
 msgid "Click to erase ..."
-msgstr ""
+msgstr "Clique para apagar ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2909
 #: flatcamEditors/FlatCAMGrbEditor.py:2161
 msgid "Done. Eraser tool action completed."
-msgstr ""
+msgstr "Borracha concluída."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2952
 msgid "Create Paint geometry ..."
