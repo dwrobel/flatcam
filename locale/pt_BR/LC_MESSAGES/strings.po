@@ -583,55 +583,56 @@ msgstr "Excluir"
 
 #: FlatCAMApp.py:6518
 msgid "New Grid ..."
-msgstr ""
+msgstr "Nova Grade ..."
 
 #: FlatCAMApp.py:6519
 msgid "Enter a Grid Value:"
-msgstr ""
+msgstr "Digite um valor para grade:"
 
 #: FlatCAMApp.py:6527 FlatCAMApp.py:6554
 msgid "Please enter a grid value with non-zero value, in Float format."
-msgstr ""
+msgstr "Por favor, insira um valor de grade com valor diferente de "
+"zero, no formato Flutuante."
 
 #: FlatCAMApp.py:6533
 msgid "New Grid added"
-msgstr ""
+msgstr "Nova Grade adicionada"
 
 #: FlatCAMApp.py:6536
 msgid "Grid already exists"
-msgstr ""
+msgstr "Grade já existe"
 
 #: FlatCAMApp.py:6539
 msgid "Adding New Grid cancelled"
-msgstr ""
+msgstr "Adicionar nova grade cancelada"
 
 #: FlatCAMApp.py:6561
 msgid " Grid Value does not exist"
-msgstr ""
+msgstr "O valor da grade não existe"
 
 #: FlatCAMApp.py:6564
 msgid "Grid Value deleted"
-msgstr ""
+msgstr "Grade apagada"
 
 #: FlatCAMApp.py:6567
 msgid "Delete Grid value cancelled"
-msgstr ""
+msgstr "Excluir valor de grade cancelado"
 
 #: FlatCAMApp.py:6573
 msgid "Key Shortcut List"
-msgstr ""
+msgstr "Lista de Teclas de Atalho"
 
 #: FlatCAMApp.py:6607
 msgid " No object selected to copy it's name"
-msgstr ""
+msgstr "Nenhum objeto selecionado para copiar nome"
 
 #: FlatCAMApp.py:6611
 msgid "Name copied on clipboard ..."
-msgstr ""
+msgstr "Nome copiado para a área de transferência"
 
 #: FlatCAMApp.py:6654 flatcamEditors/FlatCAMGrbEditor.py:4122
 msgid "Coordinates copied to clipboard."
-msgstr ""
+msgstr "Coordenadas copiadas para a área de transferência."
 
 #: FlatCAMApp.py:6907 FlatCAMApp.py:6911 FlatCAMApp.py:6915 FlatCAMApp.py:6919
 #: FlatCAMApp.py:6935 FlatCAMApp.py:6939 FlatCAMApp.py:6943 FlatCAMApp.py:6947
@@ -640,7 +641,7 @@ msgstr ""
 #: ObjectCollection.py:734
 #, python-brace-format
 msgid "[selected]<span style=\"color:{color};\">{name}</span> selected"
-msgstr ""
+msgstr "[selected]<span style=\"color:{color};\">{name}</span> selecionado"
 
 #: FlatCAMApp.py:7123
 msgid ""
@@ -648,195 +649,207 @@ msgid ""
 "Creating a New project will delete them.\n"
 "Do you want to Save the project?"
 msgstr ""
+"Existem arquivos/objetos abertos no FlatCAM.\n"
+"Criar um novo projeto irá apagá-los.\n"
+"Você deseja Salvar o Projeto?"
 
 #: FlatCAMApp.py:7145
 msgid "New Project created"
-msgstr ""
+msgstr "Novo Projeto criado"
 
 #: FlatCAMApp.py:7265 FlatCAMApp.py:7269 flatcamGUI/FlatCAMGUI.py:626
 #: flatcamGUI/FlatCAMGUI.py:1970
 msgid "Open Gerber"
-msgstr ""
+msgstr "Abrir Gerber"
 
 #: FlatCAMApp.py:7277
 msgid "Open Gerber cancelled."
-msgstr ""
+msgstr "Abrir Gerber cancelado."
 
 #: FlatCAMApp.py:7297 FlatCAMApp.py:7301 flatcamGUI/FlatCAMGUI.py:627
 #: flatcamGUI/FlatCAMGUI.py:1971
 msgid "Open Excellon"
-msgstr ""
+msgstr "Abrir Excellon"
 
 #: FlatCAMApp.py:7308
 msgid " Open Excellon cancelled."
-msgstr ""
+msgstr "Abrir Excellon cancelado."
 
 #: FlatCAMApp.py:7331 FlatCAMApp.py:7335
 msgid "Open G-Code"
-msgstr ""
+msgstr "Abrir G-Code"
 
 #: FlatCAMApp.py:7343
 msgid "Open G-Code cancelled."
-msgstr ""
+msgstr "Abrir G-Code cancelado."
 
 #: FlatCAMApp.py:7360 FlatCAMApp.py:7363
 msgid "Open Project"
-msgstr ""
+msgstr "Abrir Projeto"
 
 #: FlatCAMApp.py:7372
 msgid "Open Project cancelled."
-msgstr ""
+msgstr "Abrir Projeto cancelado."
 
 #: FlatCAMApp.py:7391 FlatCAMApp.py:7394
 msgid "Open Configuration File"
-msgstr ""
+msgstr "Abrir Arquivo de Configuração"
 
 #: FlatCAMApp.py:7399
 msgid "Open Config cancelled."
-msgstr ""
+msgstr "Abrir Arquivo de Configuração cancelado."
 
 #: FlatCAMApp.py:7415 FlatCAMApp.py:7684 FlatCAMApp.py:10115
 #: FlatCAMApp.py:10136 FlatCAMApp.py:10158 FlatCAMApp.py:10181
 msgid "No object selected."
-msgstr ""
+msgstr "Nenhum objeto selecionado."
 
 #: FlatCAMApp.py:7416 FlatCAMApp.py:7685
 msgid "Please Select a Geometry object to export"
-msgstr ""
+msgstr "Por favor, selecione um objeto Geometria para exportar"
 
 #: FlatCAMApp.py:7430
 msgid "Only Geometry, Gerber and CNCJob objects can be used."
-msgstr ""
+msgstr "omente objetos Geometria, Gerber e Trabalho CNC podem ser "
+"usados."
 
 #: FlatCAMApp.py:7443 FlatCAMApp.py:7447
 msgid "Export SVG"
-msgstr ""
+msgstr "Exportar SVG"
 
 #: FlatCAMApp.py:7453
 msgid " Export SVG cancelled."
-msgstr ""
+msgstr "Exportar SVG cancelado."
 
 #: FlatCAMApp.py:7473
 msgid "Data must be a 3D array with last dimension 3 or 4"
-msgstr ""
+msgstr "Os dados devem ser uma matriz 3D com a última dimensão 3 ou 4"
 
 #: FlatCAMApp.py:7479 FlatCAMApp.py:7483
 msgid "Export PNG Image"
-msgstr ""
+msgstr "Exportar Imagem PNG"
 
 #: FlatCAMApp.py:7488
 msgid "Export PNG cancelled."
-msgstr ""
+msgstr "Exportar PNG cancelado."
 
 #: FlatCAMApp.py:7508
 msgid "No object selected. Please select an Gerber object to export."
-msgstr ""
+msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
+"Gerber para exportar."
 
 #: FlatCAMApp.py:7514 FlatCAMApp.py:7646
 msgid "Failed. Only Gerber objects can be saved as Gerber files..."
-msgstr ""
+msgstr "Falhou. Somente objetos Gerber podem ser salvos como arquivos "
+"Gerber..."
 
 #: FlatCAMApp.py:7526
 msgid "Save Gerber source file"
-msgstr ""
+msgstr "Salvar arquivo fonte Gerber"
 
 #: FlatCAMApp.py:7532
 msgid "Save Gerber source file cancelled."
-msgstr ""
+msgstr "Salvar arquivo fonte Gerber cancelado."
 
 #: FlatCAMApp.py:7552
 msgid "No object selected. Please select an Excellon object to export."
-msgstr ""
+msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
+"Excellon para exportar."
 
 #: FlatCAMApp.py:7558 FlatCAMApp.py:7602
 msgid "Failed. Only Excellon objects can be saved as Excellon files..."
-msgstr ""
+msgstr "Falhou. Somente objetos Excellon podem ser salvos como arquivos "
+"Excellon..."
 
 #: FlatCAMApp.py:7566 FlatCAMApp.py:7570
 msgid "Save Excellon source file"
-msgstr ""
+msgstr "Salvar o arquivo fonte Excellon"
 
 #: FlatCAMApp.py:7576
 msgid "Saving Excellon source file cancelled."
-msgstr ""
+msgstr "Salvar arquivo fonte Excellon cancelado."
 
 #: FlatCAMApp.py:7596
 msgid "No object selected. Please Select an Excellon object to export."
-msgstr ""
+msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
+"Excellon para exportar."
 
 #: FlatCAMApp.py:7610 FlatCAMApp.py:7614
 msgid "Export Excellon"
-msgstr ""
+msgstr "Exportar Excellon"
 
 #: FlatCAMApp.py:7620
 msgid "Export Excellon cancelled."
-msgstr ""
+msgstr "Exportar Excellon cancelado."
 
 #: FlatCAMApp.py:7640
 msgid "No object selected. Please Select an Gerber object to export."
-msgstr ""
+msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
+"Gerber para exportar."
 
 #: FlatCAMApp.py:7654 FlatCAMApp.py:7658
 msgid "Export Gerber"
-msgstr ""
+msgstr "Exportar Gerber"
 
 #: FlatCAMApp.py:7664
 msgid "Export Gerber cancelled."
-msgstr ""
+msgstr "Exportar Gerber cancelado."
 
 #: FlatCAMApp.py:7696
 msgid "Only Geometry objects can be used."
-msgstr ""
+msgstr "Apenas objetos Geometria podem ser usados."
 
 #: FlatCAMApp.py:7710 FlatCAMApp.py:7714
 msgid "Export DXF"
-msgstr ""
+msgstr "Exportar DXF"
 
 #: FlatCAMApp.py:7721
 msgid "Export DXF cancelled."
-msgstr ""
+msgstr "Exportar DXF cancelado."
 
 #: FlatCAMApp.py:7741 FlatCAMApp.py:7744
 msgid "Import SVG"
-msgstr ""
+msgstr "Importar SVG"
 
 #: FlatCAMApp.py:7754
 msgid "Open SVG cancelled."
-msgstr ""
+msgstr "Abrir SVG cancelado."
 
 #: FlatCAMApp.py:7773 FlatCAMApp.py:7777
 msgid "Import DXF"
-msgstr ""
+msgstr "Importar DXF"
 
 #: FlatCAMApp.py:7787
 msgid "Open DXF cancelled."
-msgstr ""
+msgstr "Abrir DXF cancelado."
 
 #: FlatCAMApp.py:7805
 #, python-format
 msgid "%s"
-msgstr ""
+msgstr "%s"
 
 #: FlatCAMApp.py:7826
 msgid "Select an Gerber or Excellon file to view it's source file."
-msgstr ""
+msgstr "Selecione um arquivo Gerber ou Excellon para visualizar o "
+"arquivo fonte."
 
 #: FlatCAMApp.py:7834
 msgid "There is no selected object for which to see it's source file code."
-msgstr ""
+msgstr "Nenhum objeto selecionado para ver o código fonte do "
+"arquivo."
 
 #: FlatCAMApp.py:7842
 msgid "Source Editor"
-msgstr ""
+msgstr "Editor de Fontes"
 
 #: FlatCAMApp.py:7853
 msgid "App.on_view_source() -->"
-msgstr ""
+msgstr "App.on_view_source() -->"
 
 #: FlatCAMApp.py:7865 FlatCAMApp.py:9110 FlatCAMObj.py:5946
 #: flatcamTools/ToolSolderPaste.py:1304
 msgid "Code Editor"
-msgstr ""
+msgstr "Editor de Códigos"
 
 #: FlatCAMApp.py:7877
 msgid "Script Editor"
