@@ -1350,7 +1350,7 @@ msgstr "<span style=\"color:red;\"><b>Avançado</b></span>"
 
 #: FlatCAMObj.py:802
 msgid "Buffering solid geometry"
-msgstr ""
+msgstr "Buffer de geometria sólida"
 
 #: FlatCAMObj.py:805 flatcamGUI/FlatCAMGUI.py:4322
 #: flatcamTools/ToolNonCopperClear.py:1531
@@ -1360,7 +1360,7 @@ msgstr ""
 #: flatcamTools/ToolNonCopperClear.py:1956
 #: flatcamTools/ToolNonCopperClear.py:1968
 msgid "Buffering"
-msgstr ""
+msgstr "Criando buffer"
 
 #: FlatCAMObj.py:811
 msgid "Done"
@@ -1627,6 +1627,9 @@ msgid ""
 "y)\n"
 "but now there is only one value, not two."
 msgstr ""
+"O campo Troca de Ferramentas X, Y em Editar -> Preferências deve "
+"estar no formato (x, y).\n"
+"Agora está com apenas um valor, não dois."
 
 #: FlatCAMObj.py:5905 FlatCAMObj.py:5910 flatcamTools/ToolSolderPaste.py:1393
 msgid "Export Machine Code ..."
@@ -1898,6 +1901,9 @@ msgid ""
 "y) \n"
 "but now there is only one value, not two."
 msgstr ""
+"O campo Troca de Ferramentas X, Y em Editar -> Preferências deve "
+"estar no formato (x, y).\n"
+"Agora está com apenas um valor, não dois."
 
 #: camlib.py:6302 camlib.py:6644
 msgid ""
@@ -8889,19 +8895,19 @@ msgstr "Diâmetro da Ponta"
 #: flatcamGUI/FlatCAMGUI.py:6473 flatcamGUI/ObjectUI.py:1112
 #: flatcamTools/ToolNonCopperClear.py:222
 msgid "The tip diameter for V-Shape Tool"
-msgstr ""
+msgstr "O diâmetro da ponta da ferramenta em forma de V"
 
 #: flatcamGUI/FlatCAMGUI.py:6480 flatcamGUI/ObjectUI.py:1120
 #: flatcamTools/ToolNonCopperClear.py:227
 msgid "V-Tip Angle"
-msgstr ""
+msgstr "Ângulo Ponta-V"
 
 #: flatcamGUI/FlatCAMGUI.py:6482 flatcamGUI/ObjectUI.py:1123
 #: flatcamTools/ToolNonCopperClear.py:229
 msgid ""
 "The tip angle for V-Shape Tool.\n"
 "In degree."
-msgstr ""
+msgstr "O ângulo da ponta da ferramenta em forma de V, em graus."
 
 #: flatcamGUI/FlatCAMGUI.py:6492 flatcamGUI/FlatCAMGUI.py:6500
 #: flatcamTools/ToolNonCopperClear.py:149
@@ -8911,6 +8917,10 @@ msgid ""
 "- climb / best for precision milling and to reduce tool usage\n"
 "- conventional / useful when there is no backlash compensation"
 msgstr ""
+"Tipo de fresamento quando a ferramenta selecionada é do tipo 'iso_op':\n"
+"- subida: melhor para fresamento de precisão e para reduzir o uso da "
+"ferramenta\n"
+"- convencional: útil quando não há compensação de folga"
 
 #: flatcamGUI/FlatCAMGUI.py:6509 flatcamGUI/FlatCAMGUI.py:6869
 #: flatcamTools/ToolNonCopperClear.py:163 flatcamTools/ToolPaint.py:136
@@ -9087,21 +9097,23 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6667 flatcamGUI/FlatCAMGUI.py:6973
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: flatcamGUI/FlatCAMGUI.py:6668 flatcamGUI/FlatCAMGUI.py:6974
 msgid "Progressive"
-msgstr ""
+msgstr "Progressivo"
 
 #: flatcamGUI/FlatCAMGUI.py:6669
 msgid "NCC Plotting"
-msgstr ""
+msgstr "Gráfico NCC"
 
 #: flatcamGUI/FlatCAMGUI.py:6671
 msgid ""
 "- 'Normal' -  normal plotting, done at the end of the NCC job\n"
 "- 'Progressive' - after each shape is generated it will be plotted."
 msgstr ""
+"- 'Normal' - plotagem normal, realizada no final do trabalho de NCC\n"
+"- 'Progressivo' - após cada forma ser gerada, ela será plotada."
 
 #: flatcamGUI/FlatCAMGUI.py:6685
 msgid "Cutout Tool Options"
