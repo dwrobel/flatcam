@@ -8651,27 +8651,31 @@ msgstr "Largura da linha a ser renderizada no gráfico."
 
 #: flatcamGUI/FlatCAMGUI.py:6253
 msgid "Coordinates decimals"
-msgstr ""
+msgstr "Decimais das Coord."
 
 #: flatcamGUI/FlatCAMGUI.py:6255
 msgid ""
 "The number of decimals to be used for \n"
 "the X, Y, Z coordinates in CNC code (GCODE, etc.)"
 msgstr ""
+"Número de decimais a ser usado para as coordenadas\n"
+"X, Y, Z no código do CNC (G-Code, etc.)"
 
 #: flatcamGUI/FlatCAMGUI.py:6263
 msgid "Feedrate decimals"
-msgstr ""
+msgstr "Decimais do Avanço"
 
 #: flatcamGUI/FlatCAMGUI.py:6265
 msgid ""
 "The number of decimals to be used for \n"
 "the Feedrate parameter in CNC code (GCODE, etc.)"
 msgstr ""
+"O número de decimais a ser usado para o parâmetro\n"
+"Taxa de Avanço no código CNC (G-Code, etc.)"
 
 #: flatcamGUI/FlatCAMGUI.py:6273
 msgid "Coordinates type"
-msgstr ""
+msgstr "Tipo de coordenada"
 
 #: flatcamGUI/FlatCAMGUI.py:6275
 msgid ""
@@ -8680,22 +8684,26 @@ msgid ""
 "- Absolute G90 -> the reference is the origin x=0, y=0\n"
 "- Incremental G91 -> the reference is the previous position"
 msgstr ""
+"O tipo de coordenada a ser usada no G-Code.\n"
+"Pode ser:\n"
+"- Absoluta G90 -> a referência é a origem x=0, y=0\n"
+"- Incremental G91 -> a referência é a posição anterior"
 
 #: flatcamGUI/FlatCAMGUI.py:6281
 msgid "Absolute G90"
-msgstr ""
+msgstr "Absoluta G90"
 
 #: flatcamGUI/FlatCAMGUI.py:6282
 msgid "Incremental G91"
-msgstr ""
+msgstr "Incremental G91"
 
 #: flatcamGUI/FlatCAMGUI.py:6299
 msgid "CNC Job Options"
-msgstr ""
+msgstr "Opções de Trabalho CNC"
 
 #: flatcamGUI/FlatCAMGUI.py:6302
 msgid "Export G-Code"
-msgstr ""
+msgstr "Exportar G-Code"
 
 #: flatcamGUI/FlatCAMGUI.py:6304 flatcamGUI/FlatCAMGUI.py:6345
 #: flatcamGUI/ObjectUI.py:1535
@@ -8703,20 +8711,24 @@ msgid ""
 "Export and save G-Code to\n"
 "make this object to a file."
 msgstr ""
+"Exporta e salva em arquivo\n"
+"o G-Code para fazer este objeto."
 
 #: flatcamGUI/FlatCAMGUI.py:6310
 msgid "Prepend to G-Code"
-msgstr ""
+msgstr "Incluir no Início do G-Code"
 
 #: flatcamGUI/FlatCAMGUI.py:6312 flatcamGUI/ObjectUI.py:1543
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to add at the beginning of the G-Code file."
 msgstr ""
+"Digite aqui os comandos G-Code que você gostaria\n"
+"de adicionar no início do arquivo G-Code gerado."
 
 #: flatcamGUI/FlatCAMGUI.py:6321
 msgid "Append to G-Code"
-msgstr ""
+msgstr "Incluir no final do G-Code"
 
 #: flatcamGUI/FlatCAMGUI.py:6323 flatcamGUI/ObjectUI.py:1554
 msgid ""
@@ -8724,18 +8736,21 @@ msgid ""
 "like to append to the generated file.\n"
 "I.e.: M2 (End of program)"
 msgstr ""
+"Digite aqui os comandos G-Code que você gostaria\n"
+"de adicionar no final do arquivo G-Code gerado.\n"
+"M2 (Fim do programa)"
 
 #: flatcamGUI/FlatCAMGUI.py:6340
 msgid "CNC Job Adv. Options"
-msgstr ""
+msgstr "Opções Avançadas"
 
 #: flatcamGUI/FlatCAMGUI.py:6343 flatcamGUI/ObjectUI.py:1533
 msgid "Export CNC Code"
-msgstr ""
+msgstr "Exportar Código CNC"
 
 #: flatcamGUI/FlatCAMGUI.py:6351 flatcamGUI/ObjectUI.py:1571
 msgid "Toolchange G-Code"
-msgstr ""
+msgstr "G-Code para Troca de Ferra."
 
 #: flatcamGUI/FlatCAMGUI.py:6354 flatcamGUI/ObjectUI.py:1574
 msgid ""
@@ -8749,16 +8764,28 @@ msgid ""
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 msgstr ""
+"Digite aqui os comandos do G-Code G que você gostaria de executar quando o "
+"evento do Troca de Ferramentas for encontrado.\n"
+"Ele será um G-Code personalizado para Troca de Ferramentas,\n"
+"ou uma Macro.\n"
+"As variáveis do FlatCAM são circundadas pelo símbolo '%'.\n"
+"\n"
+"ATENÇÃO: pode ser usado apenas com um arquivo de pós-processamento\n"
+"que tenha 'toolchange_custom' em seu nome e este é construído tendo\n"
+"como modelo o arquivo de pós-processamento 'Customização da troca de "
+"ferramentas'."
 
 #: flatcamGUI/FlatCAMGUI.py:6373 flatcamGUI/ObjectUI.py:1593
 msgid "Use Toolchange Macro"
-msgstr ""
+msgstr "Usar Macro de Troca de Ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:6375 flatcamGUI/ObjectUI.py:1595
 msgid ""
 "Check this box if you want to use\n"
 "a Custom Toolchange GCode (macro)."
 msgstr ""
+"Marque esta caixa se você quiser usar a macro G-Code para Troca de "
+"Ferramentas."
 
 #: flatcamGUI/FlatCAMGUI.py:6387 flatcamGUI/ObjectUI.py:1603
 msgid ""
@@ -8766,72 +8793,77 @@ msgid ""
 "in the Toolchange event.\n"
 "They have to be surrounded by the '%' symbol"
 msgstr ""
+"Uma lista das variáveis FlatCAM que podem ser usadas\n"
+"no evento Troca de Ferramentas.\n"
+"Elas devem estar cercadas pelo símbolo '%'"
 
 #: flatcamGUI/FlatCAMGUI.py:6397 flatcamGUI/ObjectUI.py:1613
 msgid "FlatCAM CNC parameters"
-msgstr ""
+msgstr "Parâmetros do FlatCAM CNC"
 
 #: flatcamGUI/FlatCAMGUI.py:6398 flatcamGUI/ObjectUI.py:1614
 msgid "tool = tool number"
-msgstr ""
+msgstr "tool = número da ferramenta"
 
 #: flatcamGUI/FlatCAMGUI.py:6399 flatcamGUI/ObjectUI.py:1615
 msgid "tooldia = tool diameter"
-msgstr ""
+msgstr "tooldia = diâmetro da ferramenta"
 
 #: flatcamGUI/FlatCAMGUI.py:6400 flatcamGUI/ObjectUI.py:1616
 msgid "t_drills = for Excellon, total number of drills"
-msgstr ""
+msgstr "t_drills = para Excellon, número total de brocas"
 
 #: flatcamGUI/FlatCAMGUI.py:6401 flatcamGUI/ObjectUI.py:1617
 msgid "x_toolchange = X coord for Toolchange"
-msgstr ""
+msgstr "x_toolchange = coord. X para troca de ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:6402 flatcamGUI/ObjectUI.py:1618
 msgid "y_toolchange = Y coord for Toolchange"
-msgstr ""
+msgstr "y_toolchange = coord. Y para troca de ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:6403 flatcamGUI/ObjectUI.py:1619
 msgid "z_toolchange = Z coord for Toolchange"
-msgstr ""
+msgstr "z_toolchange = coord. Z para troca de ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:6404
 msgid "z_cut = Z depth for the cut"
-msgstr ""
+msgstr "z_cut = profundidade Z para o corte"
 
 #: flatcamGUI/FlatCAMGUI.py:6405
 msgid "z_move = Z height for travel"
-msgstr ""
+msgstr "z_move = altura Z para deslocamentos"
 
 #: flatcamGUI/FlatCAMGUI.py:6406 flatcamGUI/ObjectUI.py:1622
 msgid "z_depthpercut = the step value for multidepth cut"
-msgstr ""
+msgstr "z_depthpercut = valor do passe para corte múltiplas profundidade"
 
 #: flatcamGUI/FlatCAMGUI.py:6407 flatcamGUI/ObjectUI.py:1623
 msgid "spindlesspeed = the value for the spindle speed"
-msgstr ""
+msgstr "spindlesspeed = velocidade do spindle"
 
 #: flatcamGUI/FlatCAMGUI.py:6409 flatcamGUI/ObjectUI.py:1624
 msgid "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
-msgstr ""
+msgstr "dwelltime = tempo de espera para o spindle atingir sua vel. RPM"
 
 #: flatcamGUI/FlatCAMGUI.py:6430
 msgid "NCC Tool Options"
-msgstr ""
+msgstr "Opções Área Sem Cobre (NCC)"
 
 #: flatcamGUI/FlatCAMGUI.py:6435 flatcamGUI/ObjectUI.py:447
 msgid ""
 "Create a Geometry object with\n"
 "toolpaths to cut all non-copper regions."
 msgstr ""
+"Cria um objeto Geometria com caminho de ferramenta\n"
+"para cortar todas as regiões que não são de cobre."
 
 #: flatcamGUI/FlatCAMGUI.py:6443 flatcamGUI/FlatCAMGUI.py:7397
 msgid "Tools dia"
-msgstr ""
+msgstr "Diâmetro"
 
 #: flatcamGUI/FlatCAMGUI.py:6452 flatcamTools/ToolNonCopperClear.py:195
 msgid "Tool Type"
-msgstr ""
+msgstr "Tipo de Ferramenta"
 
 #: flatcamGUI/FlatCAMGUI.py:6454 flatcamGUI/FlatCAMGUI.py:6462
 #: flatcamTools/ToolNonCopperClear.py:197
@@ -8841,15 +8873,18 @@ msgid ""
 "- 'V-shape'\n"
 "- Circular"
 msgstr ""
+"Tipo padrão das ferramentas:\n"
+"- 'Ponta-V'\n"
+"- Circular"
 
 #: flatcamGUI/FlatCAMGUI.py:6459 flatcamTools/ToolNonCopperClear.py:202
 msgid "V-shape"
-msgstr ""
+msgstr "Ponta-V"
 
 #: flatcamGUI/FlatCAMGUI.py:6471 flatcamGUI/ObjectUI.py:1109
 #: flatcamTools/ToolNonCopperClear.py:220
 msgid "V-Tip Dia"
-msgstr ""
+msgstr "Diâmetro da Ponta"
 
 #: flatcamGUI/FlatCAMGUI.py:6473 flatcamGUI/ObjectUI.py:1112
 #: flatcamTools/ToolNonCopperClear.py:222
@@ -8880,7 +8915,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:6509 flatcamGUI/FlatCAMGUI.py:6869
 #: flatcamTools/ToolNonCopperClear.py:163 flatcamTools/ToolPaint.py:136
 msgid "Tool order"
-msgstr ""
+msgstr "Ordem de Ferramenta"
 
 #: flatcamGUI/FlatCAMGUI.py:6510 flatcamGUI/FlatCAMGUI.py:6520
 #: flatcamGUI/FlatCAMGUI.py:6870 flatcamGUI/FlatCAMGUI.py:6880
@@ -8896,16 +8931,23 @@ msgid ""
 "WARNING: using rest machining will automatically set the order\n"
 "in reverse and disable this control."
 msgstr ""
+"Define o modo como as ferramentas na tabela de ferramentas são usadas.\n"
+"'Não' -> significa que a ordem usada é aquela na tabela de ferramentas\n"
+"'Crescente' -> significa que as ferramentas são ordenadas de menor para maior\n"
+"'Decrescente' -> significa que as ferramentas são ordenadas de maior para menor\n"
+"\n"
+"ATENÇÃO: usando a usinagem de descanso irá definir automaticamente a ordem\n"
+"decrescente e desativa este controle."
 
 #: flatcamGUI/FlatCAMGUI.py:6518 flatcamGUI/FlatCAMGUI.py:6878
 #: flatcamTools/ToolNonCopperClear.py:172 flatcamTools/ToolPaint.py:145
 msgid "Forward"
-msgstr ""
+msgstr "Crescente"
 
 #: flatcamGUI/FlatCAMGUI.py:6519 flatcamGUI/FlatCAMGUI.py:6879
 #: flatcamTools/ToolNonCopperClear.py:173 flatcamTools/ToolPaint.py:146
 msgid "Reverse"
-msgstr ""
+msgstr "Decrescente"
 
 #: flatcamGUI/FlatCAMGUI.py:6532 flatcamGUI/FlatCAMGUI.py:6537
 #: flatcamTools/ToolNonCopperClear.py:271
@@ -8914,6 +8956,8 @@ msgid ""
 "Depth of cut into material. Negative value.\n"
 "In FlatCAM units."
 msgstr ""
+"Profundidade de corte no material. Valor negativo.\n"
+"Em unidades FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:6547 flatcamTools/ToolNonCopperClear.py:285
 #, python-format
@@ -8929,10 +8973,20 @@ msgid ""
 "Higher values = slow processing and slow execution on CNC\n"
 "due of too many paths."
 msgstr ""
+"Quanto da largura da ferramenta (fração) é sobreposto em cada passagem da "
+"ferramenta.\n"
+"Exemplo:\n"
+"Um valor de 0.25 significa uma sobreposição de 25%% do diâmetro da "
+"ferramenta.\n"
+"Ajuste o valor começando com valores menores, e aumente se alguma área que \n"
+"deveria ser limpa não foi limpa.\n"
+"Valores menores = processamento mais rápido, execução mais rápida no PCB. \n"
+"Valores maiores = processamento lento e execução lenta no CNC devido\n"
+"                          ao número de caminhos."
 
 #: flatcamGUI/FlatCAMGUI.py:6564 flatcamTools/ToolNonCopperClear.py:301
 msgid "Bounding box margin."
-msgstr ""
+msgstr "Margem da caixa delimitadora."
 
 #: flatcamGUI/FlatCAMGUI.py:6573 flatcamGUI/FlatCAMGUI.py:6920
 #: flatcamTools/ToolNonCopperClear.py:310
@@ -8941,21 +8995,24 @@ msgid ""
 "<BR><B>Seed-based</B>: Outwards from seed.<BR><B>Line-based</B>: Parallel "
 "lines."
 msgstr ""
+"Algoritmo para retirada do cobre:<BR><B>Padrão</B>: passo fixo para dentro. "
+"<BR><B>Baseado em semente</B>: para fora a partir de uma semente."
+"<BR><B>Baseado em linha</B>: linhas paralelas."
 
 #: flatcamGUI/FlatCAMGUI.py:6587 flatcamGUI/FlatCAMGUI.py:6934
 #: flatcamTools/ToolNonCopperClear.py:324 flatcamTools/ToolPaint.py:249
 msgid "Connect"
-msgstr ""
+msgstr "Conectar"
 
 #: flatcamGUI/FlatCAMGUI.py:6597 flatcamGUI/FlatCAMGUI.py:6944
 #: flatcamTools/ToolNonCopperClear.py:333 flatcamTools/ToolPaint.py:258
 msgid "Contour"
-msgstr ""
+msgstr "Contorno"
 
 #: flatcamGUI/FlatCAMGUI.py:6607 flatcamTools/ToolNonCopperClear.py:342
 #: flatcamTools/ToolPaint.py:267
 msgid "Rest M."
-msgstr ""
+msgstr "Maquinagem Restante"
 
 #: flatcamGUI/FlatCAMGUI.py:6609 flatcamTools/ToolNonCopperClear.py:344
 msgid ""
@@ -8967,6 +9024,12 @@ msgid ""
 "no more copper to clear or there are no more tools.\n"
 "If not checked, use the standard algorithm."
 msgstr ""
+"Se marcada, usa 'usinagem de descanso'.\n"
+"Basicamente, limpará o cobre fora dos recursos do PCB, utilizando\n"
+"a maior ferramenta e continuará com as próximas ferramentas, da\n"
+"maior para a menor, para limpar áreas de cobre que não puderam ser\n"
+"retiradas com a ferramenta anterior.\n"
+"Se não estiver marcada, usa o algoritmo padrão."
 
 #: flatcamGUI/FlatCAMGUI.py:6624 flatcamGUI/FlatCAMGUI.py:6636
 #: flatcamTools/ToolNonCopperClear.py:359
@@ -8977,26 +9040,30 @@ msgid ""
 "from the copper features.\n"
 "The value can be between 0 and 10 FlatCAM units."
 msgstr ""
+"Se usado, ele adicionará um deslocamento aos recursos de cobre.\n"
+"A clareira de cobre terminará a uma distância\n"
+"dos recursos de cobre.\n"
+"O valor pode estar entre 0 e 10 unidades FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:6634 flatcamTools/ToolNonCopperClear.py:369
 msgid "Offset value"
-msgstr ""
+msgstr "Valor de deslocamento"
 
 #: flatcamGUI/FlatCAMGUI.py:6651 flatcamTools/ToolNonCopperClear.py:395
 msgid "Itself"
-msgstr ""
+msgstr "Própria"
 
 #: flatcamGUI/FlatCAMGUI.py:6652 flatcamGUI/FlatCAMGUI.py:6965
 msgid "Area"
-msgstr ""
+msgstr "Área"
 
 #: flatcamGUI/FlatCAMGUI.py:6653
 msgid "Ref"
-msgstr ""
+msgstr "Ref"
 
 #: flatcamGUI/FlatCAMGUI.py:6654
 msgid "Reference"
-msgstr ""
+msgstr "Referência"
 
 #: flatcamGUI/FlatCAMGUI.py:6656 flatcamTools/ToolNonCopperClear.py:401
 msgid ""
@@ -9009,6 +9076,14 @@ msgid ""
 "- 'Reference Object' -  will do non copper clearing within the area\n"
 "specified by another object."
 msgstr ""
+"- 'Própria' - a extensão de limpeza não cobre\n"
+"é baseado no objeto que é cobre limpo.\n"
+"  - 'Seleção de Área' - clique com o botão esquerdo do mouse para iniciar a "
+"seleção da área a ser pintada.\n"
+"Manter uma tecla modificadora pressionada (CTRL ou SHIFT) permitirá "
+"adicionar várias áreas.\n"
+"- 'Objeto de Referência' - fará limpeza não de cobre dentro da área\n"
+"especificado por outro objeto."
 
 #: flatcamGUI/FlatCAMGUI.py:6667 flatcamGUI/FlatCAMGUI.py:6973
 msgid "Normal"
@@ -9030,7 +9105,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6685
 msgid "Cutout Tool Options"
-msgstr ""
+msgstr "Opções da Ferramenta de Recorte"
 
 #: flatcamGUI/FlatCAMGUI.py:6690 flatcamGUI/ObjectUI.py:463
 msgid ""
@@ -9038,16 +9113,18 @@ msgid ""
 "the PCB and separate it from\n"
 "the original board."
 msgstr ""
+"Cria caminhos da ferramenta para cortar\n"
+"o PCB e separá-lo da placa original."
 
 #: flatcamGUI/FlatCAMGUI.py:6701 flatcamTools/ToolCutOut.py:93
 msgid ""
 "Diameter of the tool used to cutout\n"
 "the PCB shape out of the surrounding material."
-msgstr ""
+msgstr "Diâmetro da ferramenta usada para cortar o entorno do PCB."
 
 #: flatcamGUI/FlatCAMGUI.py:6709 flatcamTools/ToolCutOut.py:76
 msgid "Obj kind"
-msgstr ""
+msgstr "Tipo de obj"
 
 #: flatcamGUI/FlatCAMGUI.py:6711 flatcamTools/ToolCutOut.py:78
 msgid ""
@@ -9056,15 +9133,18 @@ msgid ""
 "Gerber object, which is made\n"
 "out of many individual PCB outlines."
 msgstr ""
+"Escolha de qual tipo é o objeto que queremos recortar. <BR>- <B>Único</B>: "
+"contém um único objeto de contorno Gerber PCB.<BR>- <B>Painel</B>: um painel "
+"de objetos PCB Gerber, composto por muitos contornos PCB individuais."
 
 #: flatcamGUI/FlatCAMGUI.py:6718 flatcamGUI/FlatCAMGUI.py:6964
 #: flatcamTools/ToolCutOut.py:84
 msgid "Single"
-msgstr ""
+msgstr "Único"
 
 #: flatcamGUI/FlatCAMGUI.py:6719 flatcamTools/ToolCutOut.py:85
 msgid "Panel"
-msgstr ""
+msgstr "Painel"
 
 #: flatcamGUI/FlatCAMGUI.py:6725 flatcamTools/ToolCutOut.py:102
 msgid ""
@@ -9072,10 +9152,12 @@ msgid ""
 "will make the cutout of the PCB further from\n"
 "the actual PCB border"
 msgstr ""
+"Margem além das bordas. Um valor positivo\n"
+"tornará o recorte do PCB mais longe da borda da PCB"
 
 #: flatcamGUI/FlatCAMGUI.py:6733
 msgid "Gap size"
-msgstr ""
+msgstr "Tamanho da Ponte"
 
 #: flatcamGUI/FlatCAMGUI.py:6735 flatcamTools/ToolCutOut.py:112
 msgid ""
@@ -9084,10 +9166,13 @@ msgid ""
 "the surrounding material (the one \n"
 "from which the PCB is cutout)."
 msgstr ""
+"Tamanho das pontes no recorte, utilizadas\n"
+"para manter a placa conectada ao material\n"
+"circundante (de onde o PCB é recortado)."
 
 #: flatcamGUI/FlatCAMGUI.py:6744 flatcamTools/ToolCutOut.py:148
 msgid "Gaps"
-msgstr ""
+msgstr "Pontes"
 
 #: flatcamGUI/FlatCAMGUI.py:6746
 msgid ""
@@ -9102,55 +9187,69 @@ msgid ""
 "- 2tb  - 2*top + 2*bottom\n"
 "- 8     - 2*left + 2*right +2*top + 2*bottom"
 msgstr ""
+"Número de pontes utilizadas para o recorte.\n"
+"Pode haver um máximo de 8 pontes/lacunas.\n"
+"As opções são:\n"
+"- Nenhum - sem pontes\n"
+"- LR:  esquerda + direita\n"
+"- TB:  topo + baixo\n"
+"- 4:   esquerda + direita + topo + baixo\n"
+"- 2LR: 2*esquerda + 2*direita\n"
+"- 2TB: 2*topo + 2*baixo\n"
+"- 8:   2*esquerda + 2*direita + 2*topo + 2*baixo"
 
 #: flatcamGUI/FlatCAMGUI.py:6768 flatcamTools/ToolCutOut.py:129
 msgid "Convex Sh."
-msgstr ""
+msgstr "Forma Convexa"
 
 #: flatcamGUI/FlatCAMGUI.py:6770 flatcamTools/ToolCutOut.py:131
 msgid ""
 "Create a convex shape surrounding the entire PCB.\n"
 "Used only if the source object type is Gerber."
 msgstr ""
+"Cria uma forma convexa ao redor de toda a PCB.\n"
+"Utilize somente se o tipo de objeto de origem for Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:6784
 msgid "2Sided Tool Options"
-msgstr ""
+msgstr "Opções de PCB 2 Faces"
 
 #: flatcamGUI/FlatCAMGUI.py:6789
 msgid ""
 "A tool to help in creating a double sided\n"
 "PCB using alignment holes."
 msgstr ""
+"Uma ferramenta para ajudar na criação de um\n"
+"PCB de dupla face usando furos de alinhamento."
 
 #: flatcamGUI/FlatCAMGUI.py:6799 flatcamTools/ToolDblSided.py:234
 msgid "Drill dia"
-msgstr ""
+msgstr "Diâmetro"
 
 #: flatcamGUI/FlatCAMGUI.py:6801 flatcamTools/ToolDblSided.py:225
 #: flatcamTools/ToolDblSided.py:236
 msgid "Diameter of the drill for the alignment holes."
-msgstr ""
+msgstr "Diâmetro da broca para os furos de alinhamento."
 
 #: flatcamGUI/FlatCAMGUI.py:6810 flatcamTools/ToolDblSided.py:120
 msgid "Mirror Axis:"
-msgstr ""
+msgstr "Espelhar Eixo:"
 
 #: flatcamGUI/FlatCAMGUI.py:6812 flatcamTools/ToolDblSided.py:122
 msgid "Mirror vertically (X) or horizontally (Y)."
-msgstr ""
+msgstr "Espelha verticalmente (X) ou horizontalmente (Y)."
 
 #: flatcamGUI/FlatCAMGUI.py:6821 flatcamTools/ToolDblSided.py:131
 msgid "Point"
-msgstr ""
+msgstr "Ponto"
 
 #: flatcamGUI/FlatCAMGUI.py:6822 flatcamTools/ToolDblSided.py:132
 msgid "Box"
-msgstr ""
+msgstr "Caixa"
 
 #: flatcamGUI/FlatCAMGUI.py:6823
 msgid "Axis Ref"
-msgstr ""
+msgstr "Eixo de Ref."
 
 #: flatcamGUI/FlatCAMGUI.py:6825 flatcamTools/ToolDblSided.py:135
 msgid ""
@@ -9158,14 +9257,16 @@ msgid ""
 " a specified <b>box</b> (in a FlatCAM object) through \n"
 "the center."
 msgstr ""
+"O eixo deve passar por um <b>ponto</b> ou cortar o centro de uma <b>caixa</b> "
+"especificada (em um objeto FlatCAM)."
 
 #: flatcamGUI/FlatCAMGUI.py:6841
 msgid "Paint Tool Options"
-msgstr ""
+msgstr "Opções de Ferramenta de Pintura"
 
 #: flatcamGUI/FlatCAMGUI.py:6846
 msgid "<b>Parameters:</b>"
-msgstr ""
+msgstr "<b>Parâmetros:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:6848 flatcamGUI/ObjectUI.py:1351
 msgid ""
@@ -9174,10 +9275,13 @@ msgid ""
 "all copper). You will be asked\n"
 "to click on the desired polygon."
 msgstr ""
+"Cria caminhos de ferramenta para cobrir a área\n"
+"inteira de um polígono (remove todo o cobre).\n"
+"Você será solicitado a clicar no polígono desejado."
 
 #: flatcamGUI/FlatCAMGUI.py:6954 flatcamTools/ToolPaint.py:282
 msgid "Selection"
-msgstr ""
+msgstr "Seleção"
 
 #: flatcamGUI/FlatCAMGUI.py:6956 flatcamTools/ToolPaint.py:284
 #: flatcamTools/ToolPaint.py:300
@@ -9192,10 +9296,19 @@ msgid ""
 "- 'Reference Object' -  will do non copper clearing within the area\n"
 "specified by another object."
 msgstr ""
+"Como selecionar polígonos a serem pintados.\n"
+"\n"
+"- 'Seleção de Área' - clique com o botão esquerdo do mouse para iniciar a "
+"seleção da área a ser pintada.\n"
+"Manter uma tecla modificadora pressionada (CTRL ou SHIFT) permitirá "
+"adicionar várias áreas.\n"
+"- 'Todos os polígonos' - o Paint será iniciado após o clique.\n"
+"- 'Objeto de Referência' - fará limpeza não de cobre dentro da área\n"
+"especificado por outro objeto."
 
 #: flatcamGUI/FlatCAMGUI.py:6967
 msgid "Ref."
-msgstr ""
+msgstr "Ref."
 
 #: flatcamGUI/FlatCAMGUI.py:6975
 msgid "Paint Plotting"
@@ -9209,7 +9322,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6991
 msgid "Film Tool Options"
-msgstr ""
+msgstr "Opções da Ferramenta de Filme"
 
 #: flatcamGUI/FlatCAMGUI.py:6996
 msgid ""
@@ -9217,10 +9330,13 @@ msgid ""
 "FlatCAM object.\n"
 "The file is saved in SVG format."
 msgstr ""
+"Cria um filme de PCB a partir de um objeto Gerber\n"
+"ou Geometria FlatCAM.\n"
+"O arquivo é salvo no formato SVG."
 
 #: flatcamGUI/FlatCAMGUI.py:7007
 msgid "Film Type"
-msgstr ""
+msgstr "Tipo de Filme"
 
 #: flatcamGUI/FlatCAMGUI.py:7009 flatcamTools/ToolFilm.py:118
 msgid ""
@@ -9231,10 +9347,16 @@ msgid ""
 "with white on a black canvas.\n"
 "The Film format is SVG."
 msgstr ""
+"Gera um filme Positivo ou Negativo.\n"
+"Positivo significa que os recursos são impressos\n"
+"em preto em uma tela branca.\n"
+"Negativo significa que os recursos são impressos\n"
+"em branco em uma tela preta.\n"
+"O formato do arquivo do filme é SVG ."
 
 #: flatcamGUI/FlatCAMGUI.py:7020 flatcamTools/ToolFilm.py:130
 msgid "Border"
-msgstr ""
+msgstr "Borda"
 
 #: flatcamGUI/FlatCAMGUI.py:7022 flatcamTools/ToolFilm.py:132
 msgid ""
@@ -9247,10 +9369,18 @@ msgid ""
 "white color like the rest and which may confound with the\n"
 "surroundings if not for this border."
 msgstr ""
+"Especifica uma borda ao redor do objeto.\n"
+"Somente para filme negativo.\n"
+"Ajuda se for usado como Objeto Caixa o mesmo\n"
+"objeto do Filme. Será criada uma barra preta\n"
+"ao redor da impressão, permitindo uma melhor\n"
+"delimitação dos contornos dos recursos (que são\n"
+"brancos como o restante e podem ser confundidos\n"
+"com os limites, se não for usada essa borda)."
 
 #: flatcamGUI/FlatCAMGUI.py:7035 flatcamTools/ToolFilm.py:144
 msgid "Scale Stroke"
-msgstr ""
+msgstr "Espessura da Linha"
 
 #: flatcamGUI/FlatCAMGUI.py:7037 flatcamTools/ToolFilm.py:146
 msgid ""
@@ -9259,10 +9389,13 @@ msgid ""
 "thinner,\n"
 "therefore the fine features may be more affected by this parameter."
 msgstr ""
+"Espessura da linha de cada recurso no arquivo SVG.\n"
+"A linha que envolve cada recurso SVG será mais espessa ou mais fina.\n"
+"Os recursos mais finos podem ser afetados por esse parâmetro."
 
 #: flatcamGUI/FlatCAMGUI.py:7052
 msgid "Panelize Tool Options"
-msgstr ""
+msgstr "Opções da Ferramenta Criar Painel"
 
 #: flatcamGUI/FlatCAMGUI.py:7057
 msgid ""
@@ -9270,54 +9403,61 @@ msgid ""
 "each element is a copy of the source object spaced\n"
 "at a X distance, Y distance of each other."
 msgstr ""
+"Cria um objeto que contém uma matriz de elementos (x, y).\n"
+"Cada elemento é uma cópia do objeto de origem espaçado\n"
+"dos demais por uma distância X, Y."
 
 #: flatcamGUI/FlatCAMGUI.py:7068 flatcamTools/ToolPanelize.py:147
 msgid "Spacing cols"
-msgstr ""
+msgstr "Espaço entre Colunas"
 
 #: flatcamGUI/FlatCAMGUI.py:7070 flatcamTools/ToolPanelize.py:149
 msgid ""
 "Spacing between columns of the desired panel.\n"
 "In current units."
 msgstr ""
+"Espaçamento desejado entre colunas do painel.\n"
+"Nas unidades atuais."
 
 #: flatcamGUI/FlatCAMGUI.py:7078 flatcamTools/ToolPanelize.py:156
 msgid "Spacing rows"
-msgstr ""
+msgstr "Espaço entre Linhas"
 
 #: flatcamGUI/FlatCAMGUI.py:7080 flatcamTools/ToolPanelize.py:158
 msgid ""
 "Spacing between rows of the desired panel.\n"
 "In current units."
 msgstr ""
+"Espaçamento desejado entre linhas do painel.\n"
+"Nas unidades atuais."
 
 #: flatcamGUI/FlatCAMGUI.py:7088 flatcamTools/ToolPanelize.py:165
 msgid "Columns"
-msgstr ""
+msgstr "Colunas"
 
 #: flatcamGUI/FlatCAMGUI.py:7090 flatcamTools/ToolPanelize.py:167
 msgid "Number of columns of the desired panel"
-msgstr ""
+msgstr "Número de colunas do painel desejado"
 
 #: flatcamGUI/FlatCAMGUI.py:7097 flatcamTools/ToolPanelize.py:173
 msgid "Rows"
-msgstr ""
+msgstr "Linhas"
 
 #: flatcamGUI/FlatCAMGUI.py:7099 flatcamTools/ToolPanelize.py:175
 msgid "Number of rows of the desired panel"
-msgstr ""
+msgstr "Número de linhas do painel desejado"
 
 #: flatcamGUI/FlatCAMGUI.py:7105 flatcamTools/ToolPanelize.py:181
 msgid "Gerber"
-msgstr ""
+msgstr "Gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:7106 flatcamTools/ToolPanelize.py:182
 msgid "Geo"
-msgstr ""
+msgstr "Geo"
 
 #: flatcamGUI/FlatCAMGUI.py:7107 flatcamTools/ToolPanelize.py:183
 msgid "Panel Type"
-msgstr ""
+msgstr "Tipo de Painel"
 
 #: flatcamGUI/FlatCAMGUI.py:7109
 msgid ""
@@ -9325,10 +9465,13 @@ msgid ""
 "- Gerber\n"
 "- Geometry"
 msgstr ""
+"Escolha o tipo de objeto para o painel:\n"
+"- Gerber\n"
+"- Geometria"
 
 #: flatcamGUI/FlatCAMGUI.py:7118
 msgid "Constrain within"
-msgstr ""
+msgstr "Restringir dentro de"
 
 #: flatcamGUI/FlatCAMGUI.py:7120 flatcamTools/ToolPanelize.py:195
 msgid ""
@@ -9338,34 +9481,43 @@ msgid ""
 "the final panel will have as many columns and rows as\n"
 "they fit completely within selected area."
 msgstr ""
+"Área definida por DX e DY para restringir o painel.\n"
+"Os valores DX e DY estão nas unidades atuais.\n"
+"Desde quantas colunas e linhas forem desejadas,\n"
+"o painel final terá tantas colunas e linhas quantas\n"
+"couberem completamente dentro de área selecionada."
 
 #: flatcamGUI/FlatCAMGUI.py:7129 flatcamTools/ToolPanelize.py:204
 msgid "Width (DX)"
-msgstr ""
+msgstr "Largura (DX)"
 
 #: flatcamGUI/FlatCAMGUI.py:7131 flatcamTools/ToolPanelize.py:206
 msgid ""
 "The width (DX) within which the panel must fit.\n"
 "In current units."
 msgstr ""
+"A largura (DX) na qual o painel deve caber.\n"
+"Nas unidades atuais."
 
 #: flatcamGUI/FlatCAMGUI.py:7138 flatcamTools/ToolPanelize.py:212
 msgid "Height (DY)"
-msgstr ""
+msgstr "Altura (DY)"
 
 #: flatcamGUI/FlatCAMGUI.py:7140 flatcamTools/ToolPanelize.py:214
 msgid ""
 "The height (DY)within which the panel must fit.\n"
 "In current units."
 msgstr ""
+"A altura (DY) na qual o painel deve se ajustar.\n"
+"Nas unidades atuais."
 
 #: flatcamGUI/FlatCAMGUI.py:7154
 msgid "Calculators Tool Options"
-msgstr ""
+msgstr "Opções das Calculadoras"
 
 #: flatcamGUI/FlatCAMGUI.py:7157 flatcamTools/ToolCalculators.py:25
 msgid "V-Shape Tool Calculator"
-msgstr ""
+msgstr "Calculadora Ferramenta Ponta-em-V"
 
 #: flatcamGUI/FlatCAMGUI.py:7159
 msgid ""
@@ -9373,36 +9525,45 @@ msgid ""
 "having the tip diameter, tip angle and\n"
 "depth-of-cut as parameters."
 msgstr ""
+"Calcula o diâmetro equvalente da ferramenta para uma determinada\n"
+"ferramenta em forma de V, com o diâmetro da ponta, o ângulo da ponta e a\n"
+"profundidade de corte como parâmetros."
 
 #: flatcamGUI/FlatCAMGUI.py:7170 flatcamTools/ToolCalculators.py:92
 msgid "Tip Diameter"
-msgstr ""
+msgstr "Diâ. da Ponta"
 
 #: flatcamGUI/FlatCAMGUI.py:7172 flatcamTools/ToolCalculators.py:97
 msgid ""
 "This is the tool tip diameter.\n"
 "It is specified by manufacturer."
 msgstr ""
+"Diâmetro da ponta da ferramenta.\n"
+"Especificado pelo fabricante."
 
 #: flatcamGUI/FlatCAMGUI.py:7180 flatcamTools/ToolCalculators.py:100
 msgid "Tip Angle"
-msgstr ""
+msgstr "Ângulo da Ponta"
 
 #: flatcamGUI/FlatCAMGUI.py:7182
 msgid ""
 "This is the angle on the tip of the tool.\n"
 "It is specified by manufacturer."
 msgstr ""
+"Ângulo na ponta da ferramenta.\n"
+"Especificado pelo fabricante."
 
 #: flatcamGUI/FlatCAMGUI.py:7192
 msgid ""
 "This is depth to cut into material.\n"
 "In the CNCJob object it is the CutZ parameter."
 msgstr ""
+"Profundidade para cortar o material.\n"
+"No objeto CNC, é o parâmetro Profundidade de Corte (z_cut)."
 
 #: flatcamGUI/FlatCAMGUI.py:7199 flatcamTools/ToolCalculators.py:27
 msgid "ElectroPlating Calculator"
-msgstr ""
+msgstr "Calculadora Eletrolítica"
 
 #: flatcamGUI/FlatCAMGUI.py:7201 flatcamTools/ToolCalculators.py:149
 msgid ""
@@ -9410,86 +9571,95 @@ msgid ""
 "using a method like grahite ink or calcium hypophosphite ink or palladium "
 "chloride."
 msgstr ""
+"Esta calculadora é útil para aqueles que fazem os furos\n"
+"(via/pad/broca) usando um método como tinta grahite ou tinta \n"
+"hipofosfito de cálcio ou cloreto de paládio."
 
 #: flatcamGUI/FlatCAMGUI.py:7211 flatcamTools/ToolCalculators.py:158
 msgid "Board Length"
-msgstr ""
+msgstr "Comprimento da Placa"
 
 #: flatcamGUI/FlatCAMGUI.py:7213 flatcamTools/ToolCalculators.py:162
 msgid "This is the board length. In centimeters."
-msgstr ""
+msgstr "Comprimento da placa, em centímetros."
 
 #: flatcamGUI/FlatCAMGUI.py:7219 flatcamTools/ToolCalculators.py:164
 msgid "Board Width"
-msgstr ""
+msgstr "Largura da Placa"
 
 #: flatcamGUI/FlatCAMGUI.py:7221 flatcamTools/ToolCalculators.py:168
 msgid "This is the board width.In centimeters."
-msgstr ""
+msgstr "Largura da placa, em centímetros."
 
 #: flatcamGUI/FlatCAMGUI.py:7226 flatcamTools/ToolCalculators.py:170
 msgid "Current Density"
-msgstr ""
+msgstr "Densidade de Corrente"
 
 #: flatcamGUI/FlatCAMGUI.py:7229 flatcamTools/ToolCalculators.py:174
 msgid ""
 "Current density to pass through the board. \n"
 "In Amps per Square Feet ASF."
 msgstr ""
+"Densidade de corrente para passar pela placa.\n"
+"Em Ampères por Pés Quadrados ASF."
 
 #: flatcamGUI/FlatCAMGUI.py:7235 flatcamTools/ToolCalculators.py:177
 msgid "Copper Growth"
-msgstr ""
+msgstr "Espessura do Cobre"
 
 #: flatcamGUI/FlatCAMGUI.py:7238 flatcamTools/ToolCalculators.py:181
 msgid ""
 "How thick the copper growth is intended to be.\n"
 "In microns."
-msgstr ""
+msgstr "spessura da camada de cobre, em microns."
 
 #: flatcamGUI/FlatCAMGUI.py:7251
 msgid "Transform Tool Options"
-msgstr ""
+msgstr "Opções Transformações"
 
 #: flatcamGUI/FlatCAMGUI.py:7256
 msgid ""
 "Various transformations that can be applied\n"
 "on a FlatCAM object."
 msgstr ""
+"Várias transformações que podem ser aplicadas\n"
+"a um objeto FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:7266
 msgid "Rotate Angle"
-msgstr ""
+msgstr "Ângulo de Giro"
 
 #: flatcamGUI/FlatCAMGUI.py:7278 flatcamTools/ToolTransform.py:107
 msgid "Skew_X angle"
-msgstr ""
+msgstr "Ângulo de Inclinação X"
 
 #: flatcamGUI/FlatCAMGUI.py:7288 flatcamTools/ToolTransform.py:125
 msgid "Skew_Y angle"
-msgstr ""
+msgstr "Ângulo de Inclinação Y"
 
 #: flatcamGUI/FlatCAMGUI.py:7298 flatcamTools/ToolTransform.py:164
 msgid "Scale_X factor"
-msgstr ""
+msgstr "Fator de Escala X"
 
 #: flatcamGUI/FlatCAMGUI.py:7300 flatcamTools/ToolTransform.py:166
 msgid "Factor for scaling on X axis."
-msgstr ""
+msgstr "Fator para redimensionamento no eixo X."
 
 #: flatcamGUI/FlatCAMGUI.py:7307 flatcamTools/ToolTransform.py:181
 msgid "Scale_Y factor"
-msgstr ""
+msgstr "Fator de Escala Y"
 
 #: flatcamGUI/FlatCAMGUI.py:7309 flatcamTools/ToolTransform.py:183
 msgid "Factor for scaling on Y axis."
-msgstr ""
+msgstr "Fator para redimensionamento no eixo Y."
 
 #: flatcamGUI/FlatCAMGUI.py:7317 flatcamTools/ToolTransform.py:202
 msgid ""
 "Scale the selected object(s)\n"
 "using the Scale_X factor for both axis."
 msgstr ""
+"Redimensiona o(s) objeto(s) selecionado(s)\n"
+"usando o Fator de Escala X para ambos os eixos."
 
 #: flatcamGUI/FlatCAMGUI.py:7325 flatcamTools/ToolTransform.py:211
 msgid ""
@@ -9498,26 +9668,29 @@ msgid ""
 "and the center of the biggest bounding box\n"
 "of the selected objects when unchecked."
 msgstr ""
+"Redimensiona o(s) objeto(s) selecionado(s) usando a referência\n"
+"de origem quando marcado, e o centro da maior caixa delimitadora\n"
+"do objeto selecionado quando desmarcado."
 
 #: flatcamGUI/FlatCAMGUI.py:7334 flatcamTools/ToolTransform.py:239
 msgid "Offset_X val"
-msgstr ""
+msgstr "Deslocamento X"
 
 #: flatcamGUI/FlatCAMGUI.py:7336 flatcamTools/ToolTransform.py:241
 msgid "Distance to offset on X axis. In current units."
-msgstr ""
+msgstr "Distância para deslocar no eixo X, nas unidades atuais."
 
 #: flatcamGUI/FlatCAMGUI.py:7343 flatcamTools/ToolTransform.py:256
 msgid "Offset_Y val"
-msgstr ""
+msgstr "Deslocamento Y"
 
 #: flatcamGUI/FlatCAMGUI.py:7345 flatcamTools/ToolTransform.py:258
 msgid "Distance to offset on Y axis. In current units."
-msgstr ""
+msgstr "Distância para deslocar no eixo Y, nas unidades atuais."
 
 #: flatcamGUI/FlatCAMGUI.py:7351 flatcamTools/ToolTransform.py:313
 msgid "Mirror Reference"
-msgstr ""
+msgstr "Referência de Espelho"
 
 #: flatcamGUI/FlatCAMGUI.py:7353 flatcamTools/ToolTransform.py:315
 msgid ""
@@ -9531,10 +9704,18 @@ msgid ""
 "Or enter the coords in format (x, y) in the\n"
 "Point Entry field and click Flip on X(Y)"
 msgstr ""
+"Espelha o(s) objeto(s) selecionado(s)\n"
+"em relação às coordenadas abaixo. \n"
+"\n"
+"As coordenadas do ponto podem ser inseridas:\n"
+"- com clique no botão esquerdo junto com a tecla\n"
+"  SHIFT pressionada, e clicar no botão Adicionar.\n"
+"- ou digitar as coordenadas no formato (x, y) no campo\n"
+"  Ponto de Ref. e clicar em Espelhar no X(Y)"
 
 #: flatcamGUI/FlatCAMGUI.py:7364 flatcamTools/ToolTransform.py:326
 msgid " Mirror Ref. Point"
-msgstr ""
+msgstr "Ponto Ref. Espelho"
 
 #: flatcamGUI/FlatCAMGUI.py:7366 flatcamTools/ToolTransform.py:328
 msgid ""
@@ -9542,174 +9723,195 @@ msgid ""
 "The 'x' in (x, y) will be used when using Flip on X and\n"
 "the 'y' in (x, y) will be used when using Flip on Y and"
 msgstr ""
+"Coordenadas no formato (x, y) usadas como referência para espelhamento.\n"
+"O 'x' em (x, y) será usado ao usar Espelhar em X e\n"
+"o 'y' em (x, y) será usado ao usar Espelhar em Y."
 
 #: flatcamGUI/FlatCAMGUI.py:7383
 msgid "SolderPaste Tool Options"
-msgstr ""
+msgstr "Opções da Ferramenta Pasta de Solda"
 
 #: flatcamGUI/FlatCAMGUI.py:7388
 msgid ""
 "A tool to create GCode for dispensing\n"
 "solder paste onto a PCB."
 msgstr ""
+"Uma ferramenta para criar G-Code para dispensar pasta\n"
+"de solda em um PCB."
 
 #: flatcamGUI/FlatCAMGUI.py:7399
 msgid "Diameters of nozzle tools, separated by ','"
-msgstr ""
+msgstr "Diâmetros dos bicos, separados por ','"
 
 #: flatcamGUI/FlatCAMGUI.py:7406
 msgid "New Nozzle Dia"
-msgstr ""
+msgstr "Diâ. do Novo Bico"
 
 #: flatcamGUI/FlatCAMGUI.py:7408 flatcamTools/ToolSolderPaste.py:103
 msgid "Diameter for the new Nozzle tool to add in the Tool Table"
-msgstr ""
+msgstr "Diâmetro da nova ferramenta Bico para adicionar na tabela de ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:7416 flatcamTools/ToolSolderPaste.py:166
 msgid "Z Dispense Start"
-msgstr ""
+msgstr "Altura Inicial"
 
 #: flatcamGUI/FlatCAMGUI.py:7418 flatcamTools/ToolSolderPaste.py:168
 msgid "The height (Z) when solder paste dispensing starts."
-msgstr ""
+msgstr "A altura (Z) que inicia a distribuição de pasta de solda."
 
 #: flatcamGUI/FlatCAMGUI.py:7425 flatcamTools/ToolSolderPaste.py:174
 msgid "Z Dispense"
-msgstr ""
+msgstr "Altura para Distribuir"
 
 #: flatcamGUI/FlatCAMGUI.py:7427 flatcamTools/ToolSolderPaste.py:176
 msgid "The height (Z) when doing solder paste dispensing."
-msgstr ""
+msgstr "Altura (Z) para distribuir a pasta de solda."
 
 #: flatcamGUI/FlatCAMGUI.py:7434 flatcamTools/ToolSolderPaste.py:182
 msgid "Z Dispense Stop"
-msgstr ""
+msgstr "Altura Final"
 
 #: flatcamGUI/FlatCAMGUI.py:7436 flatcamTools/ToolSolderPaste.py:184
 msgid "The height (Z) when solder paste dispensing stops."
-msgstr ""
+msgstr "Altura (Z) após a distribuição de pasta de solda."
 
 #: flatcamGUI/FlatCAMGUI.py:7443 flatcamTools/ToolSolderPaste.py:190
 msgid "Z Travel"
-msgstr ""
+msgstr "Altura para Deslocamento"
 
 #: flatcamGUI/FlatCAMGUI.py:7445 flatcamTools/ToolSolderPaste.py:192
 msgid ""
 "The height (Z) for travel between pads\n"
 "(without dispensing solder paste)."
 msgstr ""
+"Altura (Z) para deslocamento entre pads\n"
+"(sem dispensar pasta de solda)."
 
 #: flatcamGUI/FlatCAMGUI.py:7453 flatcamTools/ToolSolderPaste.py:199
 msgid "Z Toolchange"
-msgstr ""
+msgstr "Altura Troca de Ferram."
 
 #: flatcamGUI/FlatCAMGUI.py:7455 flatcamTools/ToolSolderPaste.py:201
 msgid "The height (Z) for tool (nozzle) change."
-msgstr ""
+msgstr "Altura (Z) para trocar ferramenta (bico)."
 
 #: flatcamGUI/FlatCAMGUI.py:7462 flatcamTools/ToolSolderPaste.py:207
 msgid "Toolchange X-Y"
-msgstr ""
+msgstr "Troca de ferra. X-Y"
 
 #: flatcamGUI/FlatCAMGUI.py:7464 flatcamTools/ToolSolderPaste.py:209
 msgid ""
 "The X,Y location for tool (nozzle) change.\n"
 "The format is (x, y) where x and y are real numbers."
 msgstr ""
+"Posição X,Y para trocar ferramenta (bico).\n"
+"O formato é (x, y) onde x e y são números reais."
 
 #: flatcamGUI/FlatCAMGUI.py:7472 flatcamTools/ToolSolderPaste.py:216
 msgid "Feedrate X-Y"
-msgstr ""
+msgstr "Avanço X-Y"
 
 #: flatcamGUI/FlatCAMGUI.py:7474 flatcamTools/ToolSolderPaste.py:218
 msgid "Feedrate (speed) while moving on the X-Y plane."
-msgstr ""
+msgstr "Avanço (velocidade) para movimento no plano XY."
 
 #: flatcamGUI/FlatCAMGUI.py:7481 flatcamTools/ToolSolderPaste.py:224
 msgid "Feedrate Z"
-msgstr ""
+msgstr "Avanço Z"
 
 #: flatcamGUI/FlatCAMGUI.py:7483 flatcamTools/ToolSolderPaste.py:226
 msgid ""
 "Feedrate (speed) while moving vertically\n"
 "(on Z plane)."
 msgstr ""
+"Avanço (velocidade) para movimento vertical\n"
+"(no plano Z)."
 
 #: flatcamGUI/FlatCAMGUI.py:7491 flatcamTools/ToolSolderPaste.py:233
 msgid "Feedrate Z Dispense"
-msgstr ""
+msgstr "Avanço Z Distribuição"
 
 #: flatcamGUI/FlatCAMGUI.py:7493
 msgid ""
 "Feedrate (speed) while moving up vertically\n"
 "to Dispense position (on Z plane)."
 msgstr ""
+"Avanço (velocidade) para subir verticalmente\n"
+"para a posição Dispensar (no plano Z)."
 
 #: flatcamGUI/FlatCAMGUI.py:7501 flatcamTools/ToolSolderPaste.py:242
 msgid "Spindle Speed FWD"
-msgstr ""
+msgstr "Velocidade Spindle FWD"
 
 #: flatcamGUI/FlatCAMGUI.py:7503 flatcamTools/ToolSolderPaste.py:244
 msgid ""
 "The dispenser speed while pushing solder paste\n"
 "through the dispenser nozzle."
 msgstr ""
+"A velocidade do dispensador ao empurrar a pasta de solda\n"
+"através do bico do distribuidor."
 
 #: flatcamGUI/FlatCAMGUI.py:7511 flatcamTools/ToolSolderPaste.py:251
 msgid "Dwell FWD"
-msgstr ""
+msgstr "Espera FWD"
 
 #: flatcamGUI/FlatCAMGUI.py:7513 flatcamTools/ToolSolderPaste.py:253
 msgid "Pause after solder dispensing."
-msgstr ""
+msgstr "Pausa após a dispensação de solda."
 
 #: flatcamGUI/FlatCAMGUI.py:7520 flatcamTools/ToolSolderPaste.py:259
 msgid "Spindle Speed REV"
-msgstr ""
+msgstr "Velocidade Spindle REV"
 
 #: flatcamGUI/FlatCAMGUI.py:7522 flatcamTools/ToolSolderPaste.py:261
 msgid ""
 "The dispenser speed while retracting solder paste\n"
 "through the dispenser nozzle."
 msgstr ""
+"A velocidade do dispensador enquanto retrai a pasta de solda\n"
+"através do bico do dispensador."
 
 #: flatcamGUI/FlatCAMGUI.py:7530 flatcamTools/ToolSolderPaste.py:268
 msgid "Dwell REV"
-msgstr ""
+msgstr "Espera REV"
 
 #: flatcamGUI/FlatCAMGUI.py:7532 flatcamTools/ToolSolderPaste.py:270
 msgid ""
 "Pause after solder paste dispenser retracted,\n"
 "to allow pressure equilibrium."
 msgstr ""
+"Pausa após o dispensador de pasta de solda retrair, para permitir o "
+"equilíbrio de pressão."
 
 #: flatcamGUI/FlatCAMGUI.py:7539 flatcamGUI/ObjectUI.py:1297
 #: flatcamTools/ToolSolderPaste.py:276
 msgid "PostProcessor"
-msgstr ""
+msgstr "Pós-processador"
 
 #: flatcamGUI/FlatCAMGUI.py:7541 flatcamTools/ToolSolderPaste.py:278
 msgid "Files that control the GCode generation."
-msgstr ""
+msgstr "Arquivos que controlam a geração de G-Code."
 
 #: flatcamGUI/FlatCAMGUI.py:7556
 msgid "Substractor Tool Options"
-msgstr ""
+msgstr "Opções da ferramenta Substração"
 
 #: flatcamGUI/FlatCAMGUI.py:7561
 msgid ""
 "A tool to substract one Gerber or Geometry object\n"
 "from another of the same type."
 msgstr ""
+"Uma ferramenta para subtrair um objeto Gerber ou Geometry\n"
+"de outro do mesmo tipo."
 
 #: flatcamGUI/FlatCAMGUI.py:7566 flatcamTools/ToolSub.py:135
 msgid "Close paths"
-msgstr ""
+msgstr "Fechar caminhos"
 
 #: flatcamGUI/FlatCAMGUI.py:7567 flatcamTools/ToolSub.py:136
 msgid ""
 "Checking this will close the paths cut by the Geometry substractor object."
-msgstr ""
+msgstr "Marcar isso fechará os caminhos cortados pelo objeto substrair Geometria."
 
 #: flatcamGUI/FlatCAMGUI.py:7578
 msgid "Excellon File associations"
@@ -9746,19 +9948,19 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:7691 flatcamGUI/FlatCAMGUI.py:7697
 msgid "Idle."
-msgstr ""
+msgstr "Ocioso."
 
 #: flatcamGUI/FlatCAMGUI.py:7722
 msgid "Application started ..."
-msgstr ""
+msgstr "Aplicativo iniciado ..."
 
 #: flatcamGUI/FlatCAMGUI.py:7723
 msgid "Hello!"
-msgstr ""
+msgstr "Olá!"
 
 #: flatcamGUI/ObjectUI.py:33
 msgid "FlatCAM Object"
-msgstr ""
+msgstr "Objeto FlatCAM"
 
 #: flatcamGUI/ObjectUI.py:58
 msgid ""
@@ -9770,51 +9972,62 @@ msgid ""
 "Edit -> Preferences -> General and check:\n"
 "'APP. LEVEL' radio button."
 msgstr ""
+"BÁSICO é adequado para um iniciante. Muitos parâmetros\n"
+" estão ocultos do usuário neste modo.\n"
+"O modo AVANÇADO disponibilizará todos os parâmetros.\n"
+"\n"
+"Para alterar o NÍVEL do aplicativo, vá para:\n"
+"Editar -> Preferências -> Geral e verificar\n"
+"o botão de rádio 'Nível do Aplicativo\"."
 
 #: flatcamGUI/ObjectUI.py:81
 msgid "Change the size of the object."
-msgstr ""
+msgstr "Altera o tamanho do objeto."
 
 #: flatcamGUI/ObjectUI.py:89
 msgid "Factor"
-msgstr ""
+msgstr "Fator"
 
 #: flatcamGUI/ObjectUI.py:91
 msgid ""
 "Factor by which to multiply\n"
 "geometric features of this object."
 msgstr ""
+"Fator pelo qual multiplicar recursos\n"
+"geométricos deste objeto."
 
 #: flatcamGUI/ObjectUI.py:102
 msgid "Perform scaling operation."
-msgstr ""
+msgstr "Realiza a operação de dimensionamento."
 
 #: flatcamGUI/ObjectUI.py:110
 msgid "Change the position of this object."
-msgstr ""
+msgstr "Altera a posição deste objeto."
 
 #: flatcamGUI/ObjectUI.py:117
 msgid "Vector"
-msgstr ""
+msgstr "Vetor"
 
 #: flatcamGUI/ObjectUI.py:119
 msgid ""
 "Amount by which to move the object\n"
 "in the x and y axes in (x, y) format."
 msgstr ""
+"Quanto mover o objeto\n"
+"nos eixos x e y no formato (x, y)."
 
 #: flatcamGUI/ObjectUI.py:129
 msgid "Perform the offset operation."
-msgstr ""
+msgstr "Executa a operação de deslocamento."
 
 #: flatcamGUI/ObjectUI.py:143
 msgid "Gerber Object"
-msgstr ""
+msgstr "Objeto Gerber"
 
 #: flatcamGUI/ObjectUI.py:182 flatcamGUI/ObjectUI.py:574
 #: flatcamGUI/ObjectUI.py:900 flatcamGUI/ObjectUI.py:1423
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: flatcamGUI/ObjectUI.py:203
 msgid ""
@@ -9822,10 +10035,13 @@ msgid ""
 "When unchecked, it will delete all mark shapes\n"
 "that are drawn on canvas."
 msgstr ""
+"Alterna a exibição da Tabela de Aberturas Gerber.\n"
+"Quando desmarcada, serão excluídas todas as formas de marcas\n"
+"desenhadas na tela."
 
 #: flatcamGUI/ObjectUI.py:213
 msgid "Mark All"
-msgstr ""
+msgstr "Marcar Todos"
 
 #: flatcamGUI/ObjectUI.py:215
 msgid ""
@@ -9833,10 +10049,13 @@ msgid ""
 "When unchecked, it will delete all mark shapes\n"
 "that are drawn on canvas."
 msgstr ""
+"Quando marcado, serão mostradas todas as aberturas.\n"
+"Quando desmarcado, serão apagadas todas as formas de marcas\n"
+"desenhadas na tela."
 
 #: flatcamGUI/ObjectUI.py:243
 msgid "Mark the aperture instances on canvas."
-msgstr ""
+msgstr "Marque as instâncias de abertura na tela."
 
 #: flatcamGUI/ObjectUI.py:266
 msgid ""
@@ -9846,6 +10065,10 @@ msgid ""
 "feature, use a negative value for\n"
 "this parameter."
 msgstr ""
+"Diâmetro da ferramenta de corte.\n"
+"Se desejar ter um caminho de isolação dentro da forma\n"
+"atual do recurso Gerber, use um valor negativo para\n"
+"este parâmetro."
 
 #: flatcamGUI/ObjectUI.py:324
 msgid "Except"
@@ -9883,7 +10106,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:370
 msgid "Generate Isolation Geometry"
-msgstr ""
+msgstr Gerar Geometria de Isolação
 
 #: flatcamGUI/ObjectUI.py:372
 msgid ""
@@ -9897,6 +10120,14 @@ msgid ""
 "inside the actual Gerber feature, use a negative tool\n"
 "diameter above."
 msgstr ""
+"Cria um objeto Geometria com caminhos da ferramenta para\n"
+"cortar a isolação por fora, por dentro ou em ambos os lados\n"
+"do objeto. Para um objeto Gerber externo significa por fora\n"
+"do recurso Gerber e interno significa por dentro do recurso\n"
+"Gerber, se possível. Isso significa que somente se o recurso\n"
+"Gerber tiver aberturas internas, elas serão isoladas. Se o\n"
+"desejado é cortar a isolação dentro do recurso Gerber, use uma\n"
+"ferramenta negativa diâmetro acima."
 
 #: flatcamGUI/ObjectUI.py:384
 msgid "Buffer Solid Geometry"
@@ -9912,7 +10143,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:393
 msgid "FULL Geo"
-msgstr ""
+msgstr "Geo COMPLETO"
 
 #: flatcamGUI/ObjectUI.py:395
 msgid ""
@@ -9920,10 +10151,13 @@ msgid ""
 "for isolation routing. It contains both\n"
 "the interiors and exteriors geometry."
 msgstr ""
+"Cria o Objeto de Geometria para o roteamento\n"
+"de isolação. Contém tanto a geometria interna\n"
+"quanto a externa."
 
 #: flatcamGUI/ObjectUI.py:404
 msgid "Ext Geo"
-msgstr ""
+msgstr "Geo Ext"
 
 #: flatcamGUI/ObjectUI.py:406
 msgid ""
@@ -9931,10 +10165,12 @@ msgid ""
 "for isolation routing containing\n"
 "only the exteriors geometry."
 msgstr ""
+"Cria o Objeto de Geometria para roteamento\n"
+"de isolação contendo somente a geometria externa."
 
 #: flatcamGUI/ObjectUI.py:413
 msgid "Int Geo"
-msgstr ""
+msgstr "Geo Int"
 
 #: flatcamGUI/ObjectUI.py:415
 msgid ""
@@ -9942,58 +10178,64 @@ msgid ""
 "for isolation routing containing\n"
 "only the interiors geometry."
 msgstr ""
+"Cria o Objeto de Geometria para roteamento\n"
+"de isolação contendo somente a geometria interna."
 
 #: flatcamGUI/ObjectUI.py:445
 msgid "Clear N-copper"
-msgstr ""
+msgstr "Limpa N-cobre"
 
 #: flatcamGUI/ObjectUI.py:454 flatcamTools/ToolNonCopperClear.py:442
 msgid ""
 "Create the Geometry Object\n"
 "for non-copper routing."
 msgstr ""
+"Cria o Objeto de Geometria\n"
+"para roteamento sem cobre."
 
 #: flatcamGUI/ObjectUI.py:461
 msgid "Board cutout"
-msgstr ""
+msgstr "Recorte da placa"
 
 #: flatcamGUI/ObjectUI.py:468 flatcamTools/ToolCutOut.py:343
 msgid "Cutout Tool"
-msgstr ""
+msgstr "Ferramenta de Recorte"
 
 #: flatcamGUI/ObjectUI.py:470
 msgid ""
 "Generate the geometry for\n"
 "the board cutout."
-msgstr ""
+msgstr "Gera a geometria para o recorte da placa."
 
 #: flatcamGUI/ObjectUI.py:508 flatcamGUI/ObjectUI.py:540
 #: flatcamTools/ToolCutOut.py:183 flatcamTools/ToolCutOut.py:203
 #: flatcamTools/ToolCutOut.py:254 flatcamTools/ToolSolderPaste.py:127
 msgid "Generate Geo"
-msgstr ""
+msgstr "Gerar Geo"
 
 #: flatcamGUI/ObjectUI.py:515
 msgid ""
 "Create a geometry surrounding the Gerber object.\n"
 "Square shape."
 msgstr ""
+"Crie uma geometria em torno do objeto Gerber.\n"
+"Forma quadrada."
 
 #: flatcamGUI/ObjectUI.py:542
 msgid "Generate the Geometry object."
-msgstr ""
+msgstr "Gera o objeto Geometria."
 
 #: flatcamGUI/ObjectUI.py:554
 msgid "Excellon Object"
-msgstr ""
+msgstr "Objeto Excellon"
 
 #: flatcamGUI/ObjectUI.py:565
 msgid "Solid circles."
-msgstr ""
+msgstr "Círculos preenchidos ou vazados."
 
 #: flatcamGUI/ObjectUI.py:613
 msgid "Drills"
-msgstr ""
+msgstr "Furos"
 
 #: flatcamGUI/ObjectUI.py:618
 msgid ""
@@ -10003,6 +10245,9 @@ msgid ""
 "\n"
 "Here the tools are selected for G-code generation."
 msgstr ""
+"Número da Ferramenta.\n"
+"Quando Trocar Ferramentas estiver marcado, este valor\n"
+" será mostrado como T1, T2 ... Tn no Código da Máquina."
 
 #: flatcamGUI/ObjectUI.py:623 flatcamGUI/ObjectUI.py:965
 #: flatcamTools/ToolPaint.py:120
@@ -10010,34 +10255,42 @@ msgid ""
 "Tool Diameter. It's value (in current FlatCAM units) \n"
 "is the cut width into the material."
 msgstr ""
+"Diâmetro da Ferramenta. Seu valor (nas unidades FlatCAM atuais)\n"
+"é a largura do corte no material."
 
 #: flatcamGUI/ObjectUI.py:626
 msgid ""
 "The number of Drill holes. Holes that are drilled with\n"
 "a drill bit."
 msgstr ""
+"Número de Furos\n"
+"Serão perfurados com brocas."
 
 #: flatcamGUI/ObjectUI.py:629
 msgid ""
 "The number of Slot holes. Holes that are created by\n"
 "milling them with an endmill bit."
 msgstr ""
+"Número de Fendas\n"
+"Serão criadas com fresas."
 
 #: flatcamGUI/ObjectUI.py:636
 msgid ""
 "Toggle display of the drills for the current tool.\n"
 "This does not select the tools for G-code generation."
 msgstr ""
+"Alterna a exibição da ferramenta atual."
+"Isto não seleciona a ferramenta para geração do G-Code."
 
 #: flatcamGUI/ObjectUI.py:645
 msgid ""
 "Create a CNC Job object\n"
 "for this drill object."
-msgstr ""
+msgstr "Cria um objeto de trabalho CNC para a furação."
 
 #: flatcamGUI/ObjectUI.py:682 flatcamGUI/ObjectUI.py:1177
 msgid "Tool change Z"
-msgstr ""
+msgstr "Altura para a troca"
 
 #: flatcamGUI/ObjectUI.py:799
 msgid ""
@@ -10045,6 +10298,9 @@ msgid ""
 "the hole dias that are to be drilled.\n"
 "Use the # column to make the selection."
 msgstr ""
+"Selecione na Tabela de Ferramentas acima\n"
+"as ferramentas que você deseja incluir.\n"
+"Use a coluna # para selecionar."
 
 #: flatcamGUI/ObjectUI.py:809
 msgid ""
@@ -10053,14 +10309,18 @@ msgid ""
 "When choosing 'Slots' or 'Both', slots will be\n"
 "converted to a series of drills."
 msgstr ""
+"Escolha o que usar para a geração do G-Code:\n"
+"'Brocas', 'Fendas' ou 'Ambos'.\n"
+"Quando escolher 'Fendas' ou 'Ambos', as fendas serão\n"
+"convertidas em uma série de furos."
 
 #: flatcamGUI/ObjectUI.py:824
 msgid "Create Drills GCode"
-msgstr ""
+msgstr "Criar G-Code Furos"
 
 #: flatcamGUI/ObjectUI.py:826
 msgid "Generate the CNC Job."
-msgstr ""
+msgstr "Gera o arquivo G-Code para o CNC."
 
 #: flatcamGUI/ObjectUI.py:838
 msgid ""
@@ -10068,30 +10328,37 @@ msgid ""
 "the hole dias that are to be milled.\n"
 "Use the # column to make the selection."
 msgstr ""
+"Selecione na Tabela de Ferramentas acima\n"
+"os diâmetros dos furo que serão fresados.\n"
+"Use a coluna # para selecionar."
 
 #: flatcamGUI/ObjectUI.py:853
 msgid "Mill Drills Geo"
-msgstr ""
+msgstr "Geo Furos"
 
 #: flatcamGUI/ObjectUI.py:855
 msgid ""
 "Create the Geometry Object\n"
 "for milling DRILLS toolpaths."
 msgstr ""
+"Cria o Objeto Geometria com\n"
+"os caminhos da ferramenta de FUROS."
 
 #: flatcamGUI/ObjectUI.py:870
 msgid "Mill Slots Geo"
-msgstr ""
+msgstr "Geo Fendas"
 
 #: flatcamGUI/ObjectUI.py:872
 msgid ""
 "Create the Geometry Object\n"
 "for milling SLOTS toolpaths."
 msgstr ""
+"Cria o Objeto Geometria com\n"
+"os caminhos da ferramenta de FENDAS."
 
 #: flatcamGUI/ObjectUI.py:890
 msgid "Geometry Object"
-msgstr ""
+msgstr "Objeto Geometria"
 
 #: flatcamGUI/ObjectUI.py:921
 msgid ""
@@ -10108,15 +10375,29 @@ msgid ""
 "grayed out and Cut Z is automatically calculated from the newly \n"
 "showed UI form entries named V-Tip Dia and V-Tip Angle."
 msgstr ""
+"Ferramentas neste objeto Geometria usados para o corte.\n"
+"A entrada 'Deslocamento' define um deslocamento para o corte.\n"
+"'Deslocamento' pode ser dentro, fora, no caminho (nenhum) e personalizado. A "
+"entrada\n"
+"'Tipo' é somente informativo e permite conhecer a necessidade de usar a "
+"ferramenta atual.\n"
+"Pode ser Desbaste, Acabamento ou Isolação.\n"
+"O 'Tipo de Ferramenta' (TF) pode ser circular com 1 a 4 dentes (C1..C4),\n"
+"bola (B) ou Em Forma de V (V).\n"
+"Quando forma em V é selecionada, a entrada 'Tipo' é automaticamente\n"
+"alterada para Isolação, o parâmetro Profundidade de Corte\n"
+"no formulário da interface do usuário é desabilitado e a Profundidade\n"
+"de Corte é calculada automaticamente a partir das entradas do\n"
+"formulário da interface do usuário e do Ângulo da Ponta-V."
 
 #: flatcamGUI/ObjectUI.py:952 flatcamGUI/ObjectUI.py:1517
 msgid "Dia"
-msgstr ""
+msgstr "Dia"
 
 #: flatcamGUI/ObjectUI.py:952 flatcamGUI/ObjectUI.py:1517
 #: flatcamTools/ToolNonCopperClear.py:107 flatcamTools/ToolPaint.py:106
 msgid "TT"
-msgstr ""
+msgstr "TF"
 
 #: flatcamGUI/ObjectUI.py:959
 msgid ""
