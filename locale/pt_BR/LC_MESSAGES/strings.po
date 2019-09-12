@@ -10405,6 +10405,9 @@ msgid ""
 "When ToolChange is checked, on toolchange event this value\n"
 "will be showed as a T1, T2 ... Tn"
 msgstr ""
+"Número da Ferramenta.\n"
+"Quando Trocar Ferramentas estiver marcado, no evento este valor\n"
+" será mostrado como T1, T2 ... Tn"
 
 #: flatcamGUI/ObjectUI.py:970
 msgid ""
@@ -10415,6 +10418,14 @@ msgid ""
 "'pocket'.\n"
 "- Out(side) -> The tool cut will follow the geometry line on the outside."
 msgstr ""
+"O valor para Deslocamento pode ser:\n"
+"- Caminho -> Não há deslocamento, o corte da ferramenta será feito sobre a "
+"linha da geometria.\n"
+"- In(terno) -> O corte da ferramenta seguirá a geometria interna. Será "
+"criado um 'bolso'.\n"
+"- Ex(terno) -> O corte da ferramenta seguirá no lado externo da linha da "
+"geometria.\n"
+"- Personalizado -> Será considerado o valor digitado."
 
 #: flatcamGUI/ObjectUI.py:977
 msgid ""
@@ -10427,6 +10438,17 @@ msgid ""
 "For Isolation we need a lower Feedrate as it use a milling bit with a fine "
 "tip."
 msgstr ""
+"O tipo (operação) tem apenas valor informativo. Normalmente, os valores do "
+"formulário da interface do usuário\n"
+"são escolhidos com base no tipo de operação e isso servirá como um "
+"lembrete.\n"
+"Pode ser 'Desbaste', 'Acabamento' ou 'Isolação'.\n"
+"Para Desbaste, pode-se escolher uma taxa de Avanço inferior e corte de "
+"múltiplas profundidades.\n"
+"Para Acabamento, pode-se escolher uma taxa de avanço mais alta, sem multi-"
+"profundidade.\n"
+"Para Isolação, usa-se uma velocidade de avanço menor, pois é usada uma broca "
+"com ponta fina."
 
 #: flatcamGUI/ObjectUI.py:986
 msgid ""
@@ -10444,6 +10466,19 @@ msgid ""
 "Choosing the V-Shape Tool Type automatically will select the Operation Type "
 "as Isolation."
 msgstr ""
+"O Tipo de Ferramenta (TF) pode ser:\n"
+"- Circular com 1 ... 4 dentes -> apenas informativo. Sendo circular a "
+"largura de corte no material\n"
+" é exatamente o diâmetro da ferramenta.\n"
+"- Bola -> apenas informativo e faz referência à fresa tipo Ball.\n"
+"- Em Forma de V -> o parâmetro Corte Z no formulário de interface do usuário "
+"será desabilitado e dois campos adicionais\n"
+" no formulário UI serão habilitados: Diâmetro Ângulo Ponta-V e Ângulo Ponta-"
+"V. O ajuste desses dois valores ajustará o parâmetro Corte Z, como\n"
+"a largura do corte no material será igual ao valor da coluna Diâmetro da "
+"ferramenta dessa tabela.\n"
+"Escolher o tipo de ferramenta Em Forma de V automaticamente alterará o tipo "
+"de operação para Isolação."
 
 #: flatcamGUI/ObjectUI.py:998
 msgid ""
@@ -10455,10 +10490,17 @@ msgid ""
 "plot on canvas\n"
 "for the corresponding tool."
 msgstr ""
+"Coluna de plotagem. É visível apenas para geometrias MultiGeo, ou seja, "
+"geometrias que contêm os dados da geometria\n"
+"das ferramentas. Para essas geometrias, a exclusão da ferramenta também "
+"excluirá os dados da geometria,\n"
+"assim, esteja ATENTO. Nas caixas de seleção de cada linha, pode ser ativado/"
+"desativado o gráfico na tela\n"
+"para a ferramenta correspondente."
 
 #: flatcamGUI/ObjectUI.py:1011
 msgid "Tool Offset"
-msgstr ""
+msgstr "Deslocamento"
 
 #: flatcamGUI/ObjectUI.py:1014
 msgid ""
@@ -10467,6 +10509,10 @@ msgid ""
 "The value can be positive for 'outside'\n"
 "cut and negative for 'inside' cut."
 msgstr ""
+"O valor para compensar o corte quando\n"
+"o tipo selecionado for 'Deslocamento'.\n"
+"O valor pode ser positivo para corte 'por fora'\n"
+"e negativo para corte 'por dentro'."
 
 #: flatcamGUI/ObjectUI.py:1056 flatcamTools/ToolNonCopperClear.py:239
 #: flatcamTools/ToolPaint.py:178
@@ -10474,32 +10520,40 @@ msgid ""
 "Add a new tool to the Tool Table\n"
 "with the diameter specified above."
 msgstr ""
+"Adicione uma nova ferramenta à Tabela de Ferramentas\n"
+"com o diâmetro especificado."
 
 #: flatcamGUI/ObjectUI.py:1064
 msgid ""
 "Copy a selection of tools in the Tool Table\n"
 "by first selecting a row in the Tool Table."
 msgstr ""
+"Copia uma seleção de ferramentas na Tabela de Ferramentas selecionando "
+"primeiro uma linha na Tabela de Ferramentas."
 
 #: flatcamGUI/ObjectUI.py:1072
 msgid ""
 "Delete a selection of tools in the Tool Table\n"
 "by first selecting a row in the Tool Table."
 msgstr ""
+"Exclui uma seleção de ferramentas na Tabela de Ferramentas selecionando "
+"primeiro uma linha na Tabela de Ferramentas."
 
 #: flatcamGUI/ObjectUI.py:1088
 msgid "Tool Data"
-msgstr ""
+msgstr "Dados"
 
 #: flatcamGUI/ObjectUI.py:1091
 msgid ""
 "The data used for creating GCode.\n"
 "Each tool store it's own set of such data."
 msgstr ""
+"Os dados usados para criar o G-Code.\n"
+"Cada loja de ferramentas possui seu próprio conjunto de dados."
 
 #: flatcamGUI/ObjectUI.py:1158
 msgid "Depth of each pass (positive)."
-msgstr ""
+msgstr "Profundidade de cada passe (positivo)."
 
 #: flatcamGUI/ObjectUI.py:1332
 msgid ""
@@ -10507,50 +10561,57 @@ msgid ""
 "Click the header to select all, or Ctrl + LMB\n"
 "for custom selection of tools."
 msgstr ""
+"Adicione pelo menos uma ferramenta na tabela de ferramentas.\n"
+"Clique no cabeçalho para selecionar todos ou Ctrl + Botão Esquerdo do Mouse\n"
+"para seleção personalizada de ferramentas."
 
 #: flatcamGUI/ObjectUI.py:1339
 msgid "Generate"
-msgstr ""
+msgstr "Gerar"
 
 #: flatcamGUI/ObjectUI.py:1341
 msgid "Generate the CNC Job object."
-msgstr ""
+msgstr "Gera o objeto de Trabalho CNC."
 
 #: flatcamGUI/ObjectUI.py:1348
 msgid "Paint Area"
-msgstr ""
+msgstr "Área de Pintura"
 
 #: flatcamGUI/ObjectUI.py:1362
 msgid "Launch Paint Tool in Tools Tab."
-msgstr ""
+msgstr "Inicia a ferramenta de pintura na guia Ferramentas."
 
 #: flatcamGUI/ObjectUI.py:1378
 msgid "CNC Job Object"
-msgstr ""
+msgstr "Objeto de Trabalho CNC"
 
 #: flatcamGUI/ObjectUI.py:1429
 msgid "Travelled dist."
-msgstr ""
+msgstr "Dist. percorrida"
 
 #: flatcamGUI/ObjectUI.py:1431 flatcamGUI/ObjectUI.py:1436
 msgid ""
 "This is the total travelled distance on X-Y plane.\n"
 "In current units."
 msgstr ""
+"Essa é a distância total percorrida no plano XY,\n"
+"nas unidades atuais."
 
 #: flatcamGUI/ObjectUI.py:1441
 msgid "Estimated time"
-msgstr ""
+msgstr "Tempo estimado"
 
 #: flatcamGUI/ObjectUI.py:1443 flatcamGUI/ObjectUI.py:1448
 msgid ""
 "This is the estimated time to do the routing/drilling,\n"
 "without the time spent in ToolChange events."
 msgstr ""
+"Este é o tempo estimado para fazer o roteamento/perfuração,\n"
+"sem o tempo gasto em eventos de Alteração de Ferramentas."
 
 #: flatcamGUI/ObjectUI.py:1483
 msgid "CNC Tools Table"
-msgstr ""
+msgstr "Tabela de Ferra. CNC"
 
 #: flatcamGUI/ObjectUI.py:1486
 msgid ""
@@ -10564,90 +10625,104 @@ msgid ""
 "The 'Tool type'(TT) can be circular with 1 to 4 teeths(C1..C4),\n"
 "ball(B), or V-Shaped(V)."
 msgstr ""
+"Ferramentas usadas para o corte no  Trabalho CNC.\n"
+"O diâmetro da ferramenta é usado para plotagem na tela.\n"
+"A entrada 'Deslocamento' define um deslocamento para o corte.\n"
+"'Deslocamento' pode ser dentro, fora, no caminho (nenhum) e personalizado. A "
+"entrada\n"
+"'Tipo' é apenas informativa e permite conhecer a necessidade de usar a "
+"ferramenta atual.\n"
+"Pode ser Desbaste, Acabamento ou Isolação.\n"
+"O 'Tipo de Ferramenta' (TF) pode ser circular com 1 a 4 dentes (C1..C4),\n"
+"bola (B) ou Em forma de V (V)."
 
 #: flatcamGUI/ObjectUI.py:1518
 msgid "P"
-msgstr ""
+msgstr "P"
 
 #: flatcamGUI/ObjectUI.py:1524
 msgid "Update Plot"
-msgstr ""
+msgstr "Atualizar Gráfico"
 
 #: flatcamGUI/ObjectUI.py:1526
 msgid "Update the plot."
-msgstr ""
+msgstr "Atualiza o gráfico."
 
 #: flatcamGUI/ObjectUI.py:1541
 msgid "Prepend to CNC Code"
-msgstr ""
+msgstr "Incluir no Início do Código CNC"
 
 #: flatcamGUI/ObjectUI.py:1552
 msgid "Append to CNC Code"
-msgstr ""
+msgstr "Incluir no Final do Código CNC"
 
 #: flatcamGUI/ObjectUI.py:1620
 msgid "z_cut = depth where to cut"
-msgstr ""
+msgstr "z_cut = profundidade de corte"
 
 #: flatcamGUI/ObjectUI.py:1621
 msgid "z_move = height where to travel"
-msgstr ""
+msgstr "z_move = altura para deslocamentos"
 
 #: flatcamGUI/ObjectUI.py:1640
 msgid "View CNC Code"
-msgstr ""
+msgstr "Ver Código CNC"
 
 #: flatcamGUI/ObjectUI.py:1642
 msgid ""
 "Opens TAB to view/modify/print G-Code\n"
 "file."
-msgstr ""
+msgstr "Abre uma ABA para visualizar/modificar/imprimir o arquivo G-Code."
 
 #: flatcamGUI/ObjectUI.py:1647
 msgid "Save CNC Code"
-msgstr ""
+msgstr "Salvar Código CNC"
 
 #: flatcamGUI/ObjectUI.py:1649
 msgid ""
 "Opens dialog to save G-Code\n"
 "file."
-msgstr ""
+msgstr "Abre uma caixa de diálogo para salvar o arquivo G-Code."
 
 #: flatcamParsers/ParseFont.py:305
 msgid "Font not supported, try another one."
-msgstr ""
+msgstr "Fonte não suportada. Tente outra."
 
 #: flatcamTools/ToolCalculators.py:24
 msgid "Calculators"
-msgstr ""
+msgstr "Calculadoras"
 
 #: flatcamTools/ToolCalculators.py:26
 msgid "Units Calculator"
-msgstr ""
+msgstr "Calculadora de Unidades"
 
 #: flatcamTools/ToolCalculators.py:68
 msgid "Here you enter the value to be converted from INCH to MM"
-msgstr ""
+msgstr "Aqui você insere o valor a ser convertido de polegadas para mm"
 
 #: flatcamTools/ToolCalculators.py:73
 msgid "Here you enter the value to be converted from MM to INCH"
-msgstr ""
+msgstr "Aqui você insere o valor a ser convertido de mm para polegadas"
 
 #: flatcamTools/ToolCalculators.py:104
 msgid ""
 "This is the angle of the tip of the tool.\n"
 "It is specified by manufacturer."
 msgstr ""
+"Ângulo da ponta da ferramenta.\n"
+"Especificado pelo fabricante."
 
 #: flatcamTools/ToolCalculators.py:111
 msgid ""
 "This is the depth to cut into the material.\n"
 "In the CNCJob is the CutZ parameter."
 msgstr ""
+"Esta é a profundidade para cortar material.\n"
+"No Trabalho CNC é o parâmetro Profundidade de Corte."
 
 #: flatcamTools/ToolCalculators.py:114
 msgid "Tool Diameter"
-msgstr ""
+msgstr "Diâmetro"
 
 #: flatcamTools/ToolCalculators.py:118
 msgid ""
@@ -10655,50 +10730,59 @@ msgid ""
 "FlatCAM Gerber section.\n"
 "In the CNCJob section it is called >Tool dia<."
 msgstr ""
+"Este é o diâmetro da ferramenta a ser inserido na seção\n"
+"FlatCAM Gerber.\n"
+"Na seção Trabalho CNC é chamado de >Diâmetro da Ferramenta<."
 
 #: flatcamTools/ToolCalculators.py:129 flatcamTools/ToolCalculators.py:210
 msgid "Calculate"
-msgstr ""
+msgstr "Calcular"
 
 #: flatcamTools/ToolCalculators.py:132
 msgid ""
 "Calculate either the Cut Z or the effective tool diameter,\n"
 "  depending on which is desired and which is known. "
 msgstr ""
+"Calcula a Profundidade de Corte Z ou o diâmetro efetivo da\n"
+"ferramenta, dependendo do que é desejado e do que é conhecido."
 
 #: flatcamTools/ToolCalculators.py:186
 msgid "Current Value"
-msgstr ""
+msgstr "Valor da Corrente"
 
 #: flatcamTools/ToolCalculators.py:190
 msgid ""
 "This is the current intensity value\n"
 "to be set on the Power Supply. In Amps."
 msgstr ""
+"Este é o valor de intensidade de corrente\n"
+"a ser ajustado na fonte de alimentação. Em Ampères."
 
 #: flatcamTools/ToolCalculators.py:194
 msgid "Time"
-msgstr ""
+msgstr "Tempo"
 
 #: flatcamTools/ToolCalculators.py:198
 msgid ""
 "This is the calculated time required for the procedure.\n"
 "In minutes."
-msgstr ""
+msgstr "Tempo calculado necessário para o procedimento, em minutos."
 
 #: flatcamTools/ToolCalculators.py:213
 msgid ""
 "Calculate the current intensity value and the procedure time,\n"
 "depending on the parameters above"
 msgstr ""
+"Calcula o valor da intensidade atual e o tempo do\n"
+"procedimento, dependendo dos parâmetros acima"
 
 #: flatcamTools/ToolCalculators.py:262
 msgid "Calc. Tool"
-msgstr ""
+msgstr "Calculadoras"
 
 #: flatcamTools/ToolCutOut.py:18
 msgid "Cutout PCB"
-msgstr ""
+msgstr "Recorte PCB"
 
 #: flatcamTools/ToolCutOut.py:55
 msgid ""
@@ -10707,26 +10791,30 @@ msgid ""
 "What is selected here will dictate the kind\n"
 "of objects that will populate the 'Object' combobox."
 msgstr ""
+"Especifica o tipo de objeto a ser cortado.\n"
+"Pode ser do tipo: Gerber ou Geometria.\n"
+"O que estiver selecionado aqui irá ditar o tipo\n"
+"de objetos que preencherão a caixa de combinação 'Objeto'."
 
 #: flatcamTools/ToolCutOut.py:71
 msgid "Object to be cutout.                        "
-msgstr ""
+msgstr "Objeto a ser recortado."
 
 #: flatcamTools/ToolCutOut.py:100
 msgid "Margin:"
-msgstr ""
+msgstr "Margem:"
 
 #: flatcamTools/ToolCutOut.py:110
 msgid "Gap size:"
-msgstr ""
+msgstr "Tamanho da Ponte:"
 
 #: flatcamTools/ToolCutOut.py:137
 msgid "A. Automatic Bridge Gaps"
-msgstr ""
+msgstr "A. Pontes Automáticas"
 
 #: flatcamTools/ToolCutOut.py:139
 msgid "This section handle creation of automatic bridge gaps."
-msgstr ""
+msgstr "Esta seção trata da criação de pontes automáticas."
 
 #: flatcamTools/ToolCutOut.py:150
 msgid ""
@@ -10741,16 +10829,28 @@ msgid ""
 "- 2tb  - 2*top + 2*bottom\n"
 "- 8     - 2*left + 2*right +2*top + 2*bottom"
 msgstr ""
+"Número de pontes utilizadas no recorte automático.\n"
+"Pode haver um máximo de 8 pontes/lacunas.\n"
+"As opções são:\n"
+"- Nenhum - sem pontes\n"
+"- LR  - esquerda + direita\n"
+"- TB  - topo + baixo\n"
+"- 4   - esquerda + direita + topo + baixo\n"
+"- 2LR - 2*esquerda + 2*direita\n"
+"- 2TB - 2*topo + 2*baixo\n"
+"- 8   - 2*esquerda + 2*direita + 2*topo + 2*baixo"
 
 #: flatcamTools/ToolCutOut.py:174
 msgid "FreeForm"
-msgstr ""
+msgstr "Forma Livre"
 
 #: flatcamTools/ToolCutOut.py:176
 msgid ""
 "The cutout shape can be of ny shape.\n"
 "Useful when the PCB has a non-rectangular shape."
 msgstr ""
+"O recorte pode ter qualquer forma.\n"
+"Útil quando o PCB tem uma forma não retangular."
 
 #: flatcamTools/ToolCutOut.py:185
 msgid ""
@@ -10758,10 +10858,13 @@ msgid ""
 "The cutout shape can be of any shape.\n"
 "Useful when the PCB has a non-rectangular shape."
 msgstr ""
+"Recorta o objeto selecionado.\n"
+"O recorte pode ter qualquer forma.\n"
+"Útil quando o PCB tem uma forma não retangular."
 
 #: flatcamTools/ToolCutOut.py:194
 msgid "Rectangular"
-msgstr ""
+msgstr "Retangular"
 
 #: flatcamTools/ToolCutOut.py:196
 msgid ""
@@ -10769,6 +10872,9 @@ msgid ""
 "always a rectangle shape and it will be\n"
 "the bounding box of the Object."
 msgstr ""
+"O recorte resultante é\n"
+"sempre em forma de retângulo e será\n"
+"a caixa delimitadora do objeto."
 
 #: flatcamTools/ToolCutOut.py:205
 msgid ""
@@ -10777,10 +10883,14 @@ msgid ""
 "always a rectangle shape and it will be\n"
 "the bounding box of the Object."
 msgstr ""
+"Recorta o objeto selecionado.\n"
+"O recorte resultante é\n"
+"sempre em forma de retângulo e será\n"
+"a caixa delimitadora do objeto."
 
 #: flatcamTools/ToolCutOut.py:213
 msgid "B. Manual Bridge Gaps"
-msgstr ""
+msgstr "B. Pontes Manuais"
 
 #: flatcamTools/ToolCutOut.py:215
 msgid ""
@@ -10788,18 +10898,21 @@ msgid ""
 "This is done by mouse clicking on the perimeter of the\n"
 "Geometry object that is used as a cutout object. "
 msgstr ""
+"Esta seção trata da criação de pontes manuais.\n"
+"Isso é feito clicando com o mouse no perímetro do objeto\n"
+"de Geometria que é usado como objeto de recorte."
 
 #: flatcamTools/ToolCutOut.py:231
 msgid "Geo Obj"
-msgstr ""
+msgstr "Obj Geo"
 
 #: flatcamTools/ToolCutOut.py:233
 msgid "Geometry object used to create the manual cutout."
-msgstr ""
+msgstr "Objeto de geometria usado para criar o recorte manual."
 
 #: flatcamTools/ToolCutOut.py:244
 msgid "Manual Geo"
-msgstr ""
+msgstr "Geo Manual"
 
 #: flatcamTools/ToolCutOut.py:246 flatcamTools/ToolCutOut.py:256
 msgid ""
@@ -10808,10 +10921,14 @@ msgid ""
 "to be used as the cutout, if one doesn't exist yet.\n"
 "Select the source Gerber file in the top object combobox."
 msgstr ""
+"Se o objeto a ser recortado for um Gerber\n"
+"primeiro crie uma Geometria que o rodeia,\n"
+"para ser usado como recorte, caso ainda não exista.\n"
+"Selecione o arquivo Gerber de origem na combobox do objeto."
 
 #: flatcamTools/ToolCutOut.py:266
 msgid "Manual Add Bridge Gaps"
-msgstr ""
+msgstr "Adicionar Pontes Manuais"
 
 #: flatcamTools/ToolCutOut.py:268
 msgid ""
@@ -10819,10 +10936,12 @@ msgid ""
 "to create a bridge gap to separate the PCB from\n"
 "the surrounding material."
 msgstr ""
+"Use o botão esquerdo do mouse (BEM), clique para criar\n"
+"pontes (para separar o PCB do material circundante)."
 
 #: flatcamTools/ToolCutOut.py:275
 msgid "Generate Gap"
-msgstr ""
+msgstr "Gerar Ponte"
 
 #: flatcamTools/ToolCutOut.py:277
 msgid ""
@@ -10832,6 +10951,10 @@ msgid ""
 "The LMB click has to be done on the perimeter of\n"
 "the Geometry object used as a cutout geometry."
 msgstr ""
+"Use o botão esquerdo do mouse (BEM): clique\n"
+"para criar uma ponte para separar a PCB do material adjacente.\n"
+"O clique deve ser feito no perímetro\n"
+"do objeto Geometria usado como uma geometria de recorte."
 
 #: flatcamTools/ToolCutOut.py:371 flatcamTools/ToolCutOut.py:571
 #: flatcamTools/ToolNonCopperClear.py:1124
@@ -10842,38 +10965,44 @@ msgstr ""
 #: tclCommands/TclCommandCopperClear.py:131
 #: tclCommands/TclCommandCopperClear.py:207 tclCommands/TclCommandPaint.py:133
 msgid "Could not retrieve object"
-msgstr ""
+msgstr "Não foi possível recuperar o objeto"
 
 #: flatcamTools/ToolCutOut.py:376
 msgid ""
 "There is no object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
+"Não há objeto selecionado para Recorte.\n"
+"Selecione um e tente novamente."
 
 #: flatcamTools/ToolCutOut.py:392 flatcamTools/ToolCutOut.py:590
 #: flatcamTools/ToolCutOut.py:760 flatcamTools/ToolCutOut.py:854
 msgid "Tool Diameter is zero value. Change it to a positive real number."
-msgstr ""
+msgstr "O diâmetro da ferramenta está zerado. Mude para um número "
+"real positivo."
 
 #: flatcamTools/ToolCutOut.py:408 flatcamTools/ToolCutOut.py:606
 #: flatcamTools/ToolCutOut.py:870
 msgid "Margin value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "O valor da margem está ausente ou no formato errado. Altere "
+"e tente novamente."
 
 #: flatcamTools/ToolCutOut.py:419 flatcamTools/ToolCutOut.py:617
 #: flatcamTools/ToolCutOut.py:771
 msgid "Gap size value is missing or wrong format. Add it and retry."
-msgstr ""
+msgstr "O valor do tamanho da ponte está ausente ou no formato "
+"incorreto. Altere e tente novamente."
 
 #: flatcamTools/ToolCutOut.py:425 flatcamTools/ToolCutOut.py:624
 msgid "Number of gaps value is missing. Add it and retry."
-msgstr ""
+msgstr "O número de pontes está ausente. Altere e tente novamente."
 
 #: flatcamTools/ToolCutOut.py:430 flatcamTools/ToolCutOut.py:628
 msgid ""
 "Gaps value can be only one of: 'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
 "Fill in a correct value and retry. "
-msgstr ""
+msgstr "O valor das lacunas pode ser apenas um de: 'Nenhum', 'lr', "
+"'tb', '2lr', '2tb', 4 ou 8. Preencha um valor correto e tente novamente."
 
 #: flatcamTools/ToolCutOut.py:435 flatcamTools/ToolCutOut.py:634
 msgid ""
@@ -10882,6 +11011,11 @@ msgid ""
 "Geometry,\n"
 "and after that perform Cutout."
 msgstr ""
+"A operação de recorte não pode ser feita em uma Geometria multi-"
+"geo.\n"
+"Opcionalmente, essa Geometria Multi-Geo pode ser convertida em Geometria "
+"Única,\n"
+"e depois disso, executar Recorte."
 
 #: flatcamTools/ToolCutOut.py:554 flatcamTools/ToolCutOut.py:739
 msgid "Any form CutOut operation finished."
@@ -10890,44 +11024,50 @@ msgstr ""
 #: flatcamTools/ToolCutOut.py:575 flatcamTools/ToolNonCopperClear.py:1087
 #, python-format
 msgid "Object not found: %s"
-msgstr ""
+msgstr "Objeto não encontrado: %s"
 
 #: flatcamTools/ToolCutOut.py:744
 msgid ""
 "Click on the selected geometry object perimeter to create a bridge gap ..."
 msgstr ""
+"Clique no perímetro do objeto de geometria selecionado para criar uma "
+"ponte ..."
 
 #: flatcamTools/ToolCutOut.py:780 flatcamTools/ToolCutOut.py:799
 msgid "Could not retrieve Geometry object"
-msgstr ""
+msgstr "Não foi possível recuperar o objeto Geometria"
 
 #: flatcamTools/ToolCutOut.py:804
 msgid "Geometry object for manual cutout not found"
-msgstr ""
+msgstr "Objeto de geometria para recorte manual não encontrado"
 
 #: flatcamTools/ToolCutOut.py:814
 msgid "Added manual Bridge Gap."
-msgstr ""
+msgstr "Ponte Manual Adicionada."
 
 #: flatcamTools/ToolCutOut.py:826
 msgid "Could not retrieve Gerber object"
-msgstr ""
+msgstr "Não foi possível recuperar o objeto Gerber"
 
 #: flatcamTools/ToolCutOut.py:831
 msgid ""
 "There is no Gerber object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
+"Não há nenhum objeto Gerber selecionado para o Recorte.\n"
+"Selecione um e tente novamente."
 
 #: flatcamTools/ToolCutOut.py:837
 msgid ""
 "The selected object has to be of Gerber type.\n"
 "Select a Gerber file and try again."
 msgstr ""
+"O objeto selecionado deve ser do tipo Gerber.\n"
+"Selecione um arquivo Gerber e tente novamente."
 
 #: flatcamTools/ToolCutOut.py:892
 msgid "Geometry not supported for cutout"
-msgstr ""
+msgstr "Geometria não suportada para recorte"
 
 #: flatcamTools/ToolCutOut.py:928
 msgid "Making manual bridge gap..."
