@@ -1854,7 +1854,7 @@ class App(QtCore.QObject):
                                   ]
 
         self.ordinary_keywords = ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
-                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'dist',
+                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
                                   'drilled_dias', 'drillz',
                                   'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
                                   'filename', 'follow', 'gaps', 'gapsize', 'grid', 'gridoffset', 'gridoffsetx',
@@ -3757,7 +3757,8 @@ class App(QtCore.QObject):
 
                 # Icon and title
                 self.setWindowIcon(parent.app_icon)
-                self.setWindowTitle("FlatCAM")
+                self.setWindowTitle(_("About FlatCAM"))
+                self.resize(600, 200)
                 # self.setStyleSheet("background-image: url(share/flatcam_icon256.png); background-attachment: fixed")
                 # self.setStyleSheet(
                 #     "border-image: url(share/flatcam_icon256.png) 0 0 0 0 stretch stretch; "
@@ -3770,58 +3771,151 @@ class App(QtCore.QObject):
                 # palette.setBrush(10, QtGui.QBrush(bgimage))  # 10 = Windowrole
                 # self.setPalette(palette)
 
-                layout1 = QtWidgets.QVBoxLayout()
-                self.setLayout(layout1)
-
-                layout2 = QtWidgets.QHBoxLayout()
-                layout1.addLayout(layout2)
 
                 logo = QtWidgets.QLabel()
                 logo.setPixmap(QtGui.QPixmap('share/flatcam_icon256.png'))
-                layout2.addWidget(logo, stretch=0)
 
                 title = QtWidgets.QLabel(
                     _(
                         "<font size=8><B>FlatCAM</B></font><BR>"
-                        "Version {version} {beta} ({date}) - {arch} <BR>"
-                        "<BR>"
                         "2D Computer-Aided Printed Circuit Board<BR>"
                         "Manufacturing.<BR>"
                         "<BR>"
-                        "<B> License: </B><BR>"
-                        "Licensed under MIT license (2014 - 2019)"
                         "<BR>"
-                        "by (c)Juan Pablo Caram <BR>"
-                        "<BR>"
-                        "<B> Programmers:</B><BR>"
-                        "Denis Hayrullin<BR>"
-                        "Kamil Sopko<BR>"
-                        "Marius Stanciu<BR>"
-                        "Matthieu Berthomé<BR>"
-                        "and many others found "
-                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/pull-requests/?state=MERGED\">here.</a><BR>"
-                        "<BR>"
-                        "<B>Development</B> is done "
+                        "<B>Development</B> "
                         "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
                         "<b>DOWNLOAD</B> area "
                         "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
                         ""
+                    )
+                )
+                title.setOpenExternalLinks(True)
+
+                closebtn = QtWidgets.QPushButton(_("Close"))
+
+                tab_widget = QtWidgets.QTabWidget()
+                description_label = QtWidgets.QLabel(
+                    _(
+                        "FlatCAM {version} {beta} ({date}) - {arch}<br>"
+                        "<a href = \"http://flatcam.org/\">http://flatcam.org</a><br>"
                     ).format(version=version,
                              beta=('BETA' if beta else ''),
                              date=version_date,
                              arch=platform.architecture()[0])
                 )
-                title.setOpenExternalLinks(True)
+                description_label.setOpenExternalLinks(True)
 
-                layout2.addWidget(title, stretch=1)
+                programmers_label = QtWidgets.QLabel(
+                    _(
+                        "Juan Pablo Caram <BR>"
+                        "<BR>"
+                        "Denis Hayrullin<BR>"
+                        "Kamil Sopko<BR>"
+                        "Marius Stanciu<BR>"
+                        "Matthieu Berthomé<BR><Br>"
+                        "and many others found "
+                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/pull-requests/?state=MERGED\">here.</a><BR>"
+                        "<BR>"
+                    )
+                )
+                programmers_label.setOpenExternalLinks(True)
 
+                translators_label = QtWidgets.QLabel(
+                    _(
+                        "Brasilian - Portuguese: \t\t Carlos Stein\n"
+                        "German: \t\t Marius Stanciu (Google-Translation)\n"
+                        "Romanian: \t\t Marius Stanciu\n"
+                        "Russian: \t\t Andrey Kultyapov <camellan@yandex.ru>\n"
+                        "Spanish: \t\t Marius Stanciu (Google-Translation)\n"
+                    )
+                )
+                translators_label.setOpenExternalLinks(True)
+
+                license_label = QtWidgets.QLabel(
+                    _(
+                        '(c) Copyright 2014 Juan Pablo Caram.\n\n'
+                        'Licensed under the MIT license:\n'
+                        'http://www.opensource.org/licenses/mit-license.php\n\n'
+                        'Permission is hereby granted, free of charge, to any person obtaining a copy\n'
+                        'of this software and associated documentation files (the "Software"), to deal\n'
+                        'in the Software without restriction, including without limitation the rights\n'
+                        'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n'
+                        'copies of the Software, and to permit persons to whom the Software is\n'
+                       ' furnished to do so, subject to the following conditions:\n\n'
+                        
+                        'The above copyright notice and this permission notice shall be included in\n'
+                        'all copies or substantial portions of the Software.\n\n'
+                        
+                        'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n'
+                        'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n'
+                        'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n'
+                        'AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n'
+                        'LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n'
+                        'OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n'
+                        'THE SOFTWARE.'
+                    )
+                )
+                license_label.setOpenExternalLinks(True)
+
+                # layouts
+                layout1 = QtWidgets.QVBoxLayout()
+                layout1_1 = QtWidgets.QHBoxLayout()
+                layout1_2 = QtWidgets.QHBoxLayout()
+
+                layout2 = QtWidgets.QHBoxLayout()
                 layout3 = QtWidgets.QHBoxLayout()
-                layout1.addLayout(layout3)
-                layout3.addStretch()
-                okbtn = QtWidgets.QPushButton(_("Close"))
-                layout3.addWidget(okbtn)
 
-                okbtn.clicked.connect(self.accept)
+                self.setLayout(layout1)
+                layout1.addLayout(layout1_1)
+                layout1.addLayout(layout1_2)
+
+                layout1.addLayout(layout2)
+                layout1.addLayout(layout3)
+
+                layout1_1.addStretch()
+                layout1_1.addWidget(description_label)
+                layout1_2.addWidget(tab_widget)
+
+                self.splash_tab = QtWidgets.QWidget()
+                self.splash_tab.setObjectName("splash_about")
+                self.splash_tab_layout = QtWidgets.QHBoxLayout(self.splash_tab)
+                self.splash_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.splash_tab, _("Splash"))
+
+                self.programmmers_tab = QtWidgets.QWidget()
+                self.programmmers_tab.setObjectName("programmers_about")
+                self.programmmers_tab_layout = QtWidgets.QVBoxLayout(self.programmmers_tab)
+                self.programmmers_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.programmmers_tab, _("Programmers"))
+
+                self.translators_tab = QtWidgets.QWidget()
+                self.translators_tab.setObjectName("translators_about")
+                self.translators_tab_layout = QtWidgets.QVBoxLayout(self.translators_tab)
+                self.translators_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.translators_tab, _("Translators"))
+
+                self.license_tab = QtWidgets.QWidget()
+                self.license_tab.setObjectName("license_about")
+                self.license_tab_layout = QtWidgets.QVBoxLayout(self.license_tab)
+                self.license_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.license_tab, _("License"))
+
+                self.splash_tab_layout.addWidget(logo, stretch=0)
+                self.splash_tab_layout.addWidget(title, stretch=1)
+
+                self.programmmers_tab_layout.addWidget(programmers_label)
+                self.programmmers_tab_layout.addStretch()
+
+                self.translators_tab_layout.addWidget(translators_label)
+                self.translators_tab_layout.addStretch()
+
+                self.license_tab_layout.addWidget(license_label)
+                self.license_tab_layout.addStretch()
+
+                layout3.addStretch()
+                layout3.addWidget(closebtn)
+
+                closebtn.clicked.connect(self.accept)
 
         AboutDialog(self.ui).exec_()
 

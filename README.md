@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+12.09.2019
+
+- small changes in the TclCommands: MillDrills, MillSlots, DrillCNCJob: the new parameter for tolerance is now named: tooldia
+- cleaned up the 'About FlatCAM' window, started to give credits for the translation team
+
 11.09.2019
 
 - added the Gerber code as source for the panelized object in Panelize Tool

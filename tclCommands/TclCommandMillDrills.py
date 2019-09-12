@@ -25,7 +25,7 @@ class TclCommandMillDrills(TclCommandSignaled):
         ('outname', str),
         ('tooldia', float),
         ('use_threads', bool),
-        ('tol', float)
+        ('diatol', float)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -40,12 +40,13 @@ class TclCommandMillDrills(TclCommandSignaled):
             ('tooldia', 'Diameter of the milling tool (example: 0.1).'),
             ('outname', 'Name of object to create.'),
             ('use_thread', 'If to use multithreading: True or False.'),
-            ('tol', 'Tolerance. Percentange (0.0 ... 100.0) within which dias in milled_dias will be judged to be the'
-                    'same as the ones in the tools from the Excellon object. E.g: if in milled_dias we have a diameter'
-                    'with value 1.0, in the Excellon we have a tool with dia = 1.05 and we set a tolerance tol = 5.0'
-                    'then the drills with the dia 1.05 in Excellon will be processed. Float number.')
+            ('diatol', 'Tolerance. Percentange (0.0 ... 100.0) within which dias in milled_dias will be judged to be '
+                       'the same as the ones in the tools from the Excellon object. E.g: if in milled_dias we have a '
+                       'diameter with value 1.0, in the Excellon we have a tool with dia = 1.05 and we set a tolerance '
+                       'diatol = 5.0 then the drills with the dia = (0.95 ... 1.05) '
+                       'in Excellon will be processed. Float number.')
         ]),
-        'examples': ['milldrills mydrills']
+        'examples': ['milldrills mydrills', 'milld my_excellon.drl']
     }
 
     def execute(self, args, unnamed_args):
@@ -86,8 +87,8 @@ class TclCommandMillDrills(TclCommandSignaled):
                         req_dia_form = float('%.2f' % float(req_dia)) if units == 'MM' else \
                             float('%.4f' % float(req_dia))
 
-                        if 'tol' in args:
-                            tolerance = args['tol'] / 100
+                        if 'diatol' in args:
+                            tolerance = args['diatol'] / 100
 
                             tolerance = 0.0 if tolerance < 0.0 else tolerance
                             tolerance = 1.0 if tolerance > 1.0 else tolerance
@@ -107,6 +108,7 @@ class TclCommandMillDrills(TclCommandSignaled):
 
                 # no longer needed
                 del args['milled_dias']
+                del args['diatol']
 
                 # Split and put back. We are passing the whole dictionary later.
                 # args['milled_dias'] = [x.strip() for x in args['tools'].split(",")]

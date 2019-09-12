@@ -397,14 +397,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # ## Help ###
         self.menuhelp = self.menu.addMenu(_('&Help'))
-        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), _('Help\tF1'))
+        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), _('Online Help\tF1'))
         self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), _('FlatCAM.org'))
         self.menuhelp.addSeparator()
         self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'),
                                                               _('Shortcuts List\tF3'))
         self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), _('YouTube Channel\tF4')
                                                           )
-        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/about32.png'), _('About'))
+        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/about32.png'), _('About FlatCAM'))
 
         # ## FlatCAM Editor menu ###
         self.geo_editor_menu = QtWidgets.QMenu(">Geo Editor<")
