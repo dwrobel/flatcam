@@ -8530,7 +8530,7 @@ class App(QtCore.QObject):
                                "Most likely another app is holding the file open and not accessible."))
             return 'fail'
 
-    def export_excellon(self, obj_name, filename, use_thread=True):
+    def export_excellon(self, obj_name, filename, local_use=None, use_thread=True):
         """
         Exports a Excellon Object to an Excellon file.
 
@@ -8551,11 +8551,14 @@ class App(QtCore.QObject):
                                                )
         units = ''
 
-        try:
-            obj = self.collection.get_by_name(str(obj_name))
-        except:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % obj_name
+        if local_use is None:
+            try:
+                obj = self.collection.get_by_name(str(obj_name))
+            except:
+                # TODO: The return behavior has not been established... should raise exception?
+                return "Could not retrieve object: %s" % obj_name
+        else:
+            obj = local_use
 
         # updated units
         eunits = self.defaults["excellon_exp_units"]
@@ -8635,20 +8638,23 @@ class App(QtCore.QObject):
                 exported_excellon += excellon_code
                 exported_excellon += footer
 
-                try:
-                    with open(filename, 'w') as fp:
-                        fp.write(exported_excellon)
-                except PermissionError:
-                    self.inform.emit('[WARNING] %s' %
-                                     _("Permission denied, saving not possible.\n"
-                                       "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
+                if local_use is None:
+                    try:
+                        with open(filename, 'w') as fp:
+                            fp.write(exported_excellon)
+                    except PermissionError:
+                        self.inform.emit('[WARNING] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                        return 'fail'
 
-                if self.defaults["global_open_style"] is False:
-                    self.file_opened.emit("Excellon", filename)
-                self.file_saved.emit("Excellon", filename)
-                self.inform.emit('[success] %s: %s' %
-                                 (_("Excellon file exported to"), filename))
+                    if self.defaults["global_open_style"] is False:
+                        self.file_opened.emit("Excellon", filename)
+                    self.file_saved.emit("Excellon", filename)
+                    self.inform.emit('[success] %s: %s' %
+                                     (_("Excellon file exported to"), filename))
+                else:
+                    return exported_excellon
             except Exception as e:
                 log.debug("App.export_excellon.make_excellon() --> %s" % str(e))
                 return 'fail'
@@ -8670,7 +8676,9 @@ class App(QtCore.QObject):
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _('Could not export Excellon file.'))
-                return
+                return 'fail'
+            if local_use is not None:
+                return ret
 
     def export_gerber(self, obj_name, filename, local_use=None, use_thread=True):
         """

@@ -3125,7 +3125,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.worker_task.emit({'fcn': self.new_edited_excellon,
                                    'params': [self.edited_obj_name]})
 
-
         self.new_tool_offset = self.exc_obj.tool_offset
 
         # reset the tool table
@@ -3134,8 +3133,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.last_tool_selected = None
 
         # delete the edited Excellon object which will be replaced by a new one having the edited content of the first
-        self.app.collection.set_active(self.exc_obj.options['name'])
-        self.app.collection.delete_active()
+        # self.app.collection.set_active(self.exc_obj.options['name'])
+        # self.app.collection.delete_active()
 
         # restore GUI to the Selected TAB
         # Remove anything else in the GUI
@@ -3193,6 +3192,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                 app_obj.inform.emit(msg)
                 raise
                 # raise
+            excellon_obj.source_file = self.app.export_excellon(obj_name=outname, filename=None,
+                                                                local_use=excellon_obj, use_thread=False)
 
         with self.app.proc_container.new(_("Creating Excellon.")):
 

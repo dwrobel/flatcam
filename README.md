@@ -14,6 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 - small changes in the TclCommands: MillDrills, MillSlots, DrillCNCJob: the new parameter for tolerance is now named: tooldia
 - cleaned up the 'About FlatCAM' window, started to give credits for the translation team
 - started to add an application splash screen
+- now, Excellon and Gerber edited objects will have the source_code updated and ready to be saved
+- the edited Gerber (or Excellon) object now is kept in the app after editing and the edited object is a new object
+- added a message to the splash screen
 
 11.09.2019
 
