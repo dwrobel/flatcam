@@ -3782,11 +3782,12 @@ class App(QtCore.QObject):
                         "Manufacturing.<BR>"
                         "<BR>"
                         "<BR>"
-                        "<B>Development</B> "
+                        "<B>Development</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                         "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
-                        "<b>DOWNLOAD</B> area "
+                        "<b>DOWNLOAD</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
                         "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
-                        ""
+                        "<b>Issue tracker</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>"
                     )
                 )
                 title.setOpenExternalLinks(True)
