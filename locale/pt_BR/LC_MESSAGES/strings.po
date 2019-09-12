@@ -11910,7 +11910,7 @@ msgstr "Não foi possível obter a extensão da área para não ser de "
 
 #: flatcamTools/ToolNonCopperClear.py:1659
 msgid "NCC Tool. Finished calculation of 'empty' area."
-msgstr ""
+msgstr "Ferramenta NCC. Cálculo de área 'vazia' concluído."
 
 #: flatcamTools/ToolNonCopperClear.py:1669
 #: flatcamTools/ToolNonCopperClear.py:2007
@@ -11931,6 +11931,10 @@ msgid ""
 "geometry.\n"
 "Change the painting parameters and try again."
 msgstr ""
+"Não há geometria de pintura no arquivo.\n"
+"Geralmente significa que o diâmetro da ferramenta é muito grande para "
+"a geometria pintada.\n"
+"Altere os parâmetros de pintura e tente novamente."
 
 #: flatcamTools/ToolNonCopperClear.py:1820
 msgid "NCC Tool clear all done."
@@ -11938,28 +11942,30 @@ msgstr "Retirada de cobre concluída."
 
 #: flatcamTools/ToolNonCopperClear.py:1822
 msgid "NCC Tool clear all done but the copper features isolation is broken for"
-msgstr ""
+msgstr "Retirada de cobre concluída, mas a isolação está quebrada por"
 
 #: flatcamTools/ToolNonCopperClear.py:1825
 #: flatcamTools/ToolNonCopperClear.py:2173
 msgid "tools"
-msgstr ""
+msgstr "ferramentas"
 
 #: flatcamTools/ToolNonCopperClear.py:2169
 msgid "NCC Tool Rest Machining clear all done."
-msgstr ""
+msgstr "Retirada de cobre por usinagem de descanso concluída."
 
 #: flatcamTools/ToolNonCopperClear.py:2172
 msgid ""
 "NCC Tool Rest Machining clear all done but the copper features isolation is "
 "broken for"
-msgstr ""
+msgstr "Retirada de cobre por usinagem de descanso concluída, mas a isolação está quebrada por"
 
 #: flatcamTools/ToolNonCopperClear.py:2596
 msgid ""
 "Try to use the Buffering Type = Full in Preferences -> Gerber General. "
 "Reload the Gerber file after this change."
 msgstr ""
+"Tente usar o Tipo de Buffer = Completo em Preferências -> Gerber Geral."
+"Recarregue o arquivo Gerber após esta alteração."
 
 #: flatcamTools/ToolPDF.py:38
 msgid "PDF Import Tool"
@@ -12049,6 +12055,16 @@ msgid ""
 "table.<BR>Choosing the <B>V-Shape</B> Tool Type automatically will select "
 "the Operation Type in the resulting geometry as Isolation."
 msgstr ""
+"O Tipo de Ferramenta (TF) pode ser:<BR>- <B>Circular</B> com 1 ... 4 dentes -"
+"> é apenas informativo. Como é circular, <BR>a largura do corte é igual ao "
+"diâmetro da ferramenta.<BR>- <B>Bola</B> -> apenas informativo e faz "
+"referência a uma fresa do tipo bola.<BR>- <B>Forma em V</B> -> o parâmetro "
+"corte Z será desativado no formulário e serão habilitados dois campos "
+"adicionais: Diâmetro da Ponta-V e Ângulo da Ponta-V. Ajustando esses dois "
+"parâmetros irá alterar o parâmetro Corte Z como a largura de corte no "
+"material, será igual ao valor na coluna Diâmetro da Ferramenta desta tabela."
+"<BR>Escolhendo o tipo <B>Forma em V</B> automaticamente selecionará o Tipo "
+"de Operação Isolação."
 
 #: flatcamTools/ToolPaint.py:164
 msgid "Diameter for the new tool."
@@ -12061,6 +12077,10 @@ msgid ""
 "- Seed-based: Outwards from seed.\n"
 "- Line-based: Parallel lines."
 msgstr ""
+"Algoritmo para pintura:\n"
+"- Padrão: Passo fixo para dentro.\n"
+"- Baseado em semeste: Para fora da semente.\n"
+"- Baseado em linha: Linhas paralelas."
 
 #: flatcamTools/ToolPaint.py:269
 msgid ""
@@ -12120,11 +12140,11 @@ msgstr ""
 
 #: flatcamTools/ToolPaint.py:912
 msgid "Paint Tool. Reading parameters."
-msgstr ""
+msgstr "Ferramenta de Pintura. Lendo parâmetros."
 
 #: flatcamTools/ToolPaint.py:927
 msgid "Overlap value must be between 0 (inclusive) and 1 (exclusive)"
-msgstr ""
+msgstr "O valor de superposição deve ser entre 0 (inclusive) e 1 (exclusive)"
 
 #: flatcamTools/ToolPaint.py:931 flatcamTools/ToolPaint.py:994
 msgid "Click inside the desired polygon."
@@ -12137,7 +12157,7 @@ msgstr "Objeto não encontrado"
 
 #: flatcamTools/ToolPaint.py:959
 msgid "Can't do Paint on MultiGeo geometries"
-msgstr ""
+msgstr "Não é possível pintar geometrias MultiGeo"
 
 #: flatcamTools/ToolPaint.py:1003 flatcamTools/ToolPaint.py:1239
 msgid "Painting polygon..."
@@ -12150,13 +12170,13 @@ msgstr "Clique no ponto inicial da área de pintura."
 #: flatcamTools/ToolPaint.py:1197 flatcamTools/ToolPaint.py:1200
 #: flatcamTools/ToolPaint.py:1202
 msgid "Paint Tool. Normal painting polygon task started."
-msgstr ""
+msgstr "Ferramenta de Pintura. Iniciada a pintura de polígono."
 
 #: flatcamTools/ToolPaint.py:1198 flatcamTools/ToolPaint.py:1588
 #: flatcamTools/ToolPaint.py:1763 flatcamTools/ToolPaint.py:2045
 #: flatcamTools/ToolPaint.py:2224
 msgid "Buffering geometry..."
-msgstr ""
+msgstr "Fazendo buffer de polígono"
 
 #: flatcamTools/ToolPaint.py:1236
 msgid "[WARNING] No polygon found."
@@ -12181,7 +12201,7 @@ msgstr ""
 
 #: flatcamTools/ToolPaint.py:1417
 msgid "Paint Single Done."
-msgstr ""
+msgstr "Pintura concluída."
 
 #: flatcamTools/ToolPaint.py:1442
 msgid "PaintTool.paint_poly()"
@@ -12199,7 +12219,7 @@ msgstr "Pintando políginos..."
 #: flatcamTools/ToolPaint.py:1587 flatcamTools/ToolPaint.py:1590
 #: flatcamTools/ToolPaint.py:1592
 msgid "Paint Tool. Normal painting all task started."
-msgstr ""
+msgstr "Ferramenta de Pintura. Iniciada a pintura total."
 
 #: flatcamTools/ToolPaint.py:1626 flatcamTools/ToolPaint.py:1796
 #: flatcamTools/ToolPaint.py:2090 flatcamTools/ToolPaint.py:2264
@@ -12221,21 +12241,21 @@ msgstr ""
 
 #: flatcamTools/ToolPaint.py:1751
 msgid "[success] Paint All Done."
-msgstr ""
+msgstr "Pintura total concluída."
 
 #: flatcamTools/ToolPaint.py:1762 flatcamTools/ToolPaint.py:1765
 #: flatcamTools/ToolPaint.py:1767
 msgid "Paint Tool. Rest machining painting all task started."
-msgstr ""
+msgstr "Ferramenta de Pintura. Iniciada a pintura total com usinagem de descanso."
 
 #: flatcamTools/ToolPaint.py:1899 flatcamTools/ToolPaint.py:2364
 msgid "Paint All with Rest-Machining done."
-msgstr ""
+msgstr "Pintura total com usinagem de descanso concluída."
 
 #: flatcamTools/ToolPaint.py:2044 flatcamTools/ToolPaint.py:2047
 #: flatcamTools/ToolPaint.py:2049
 msgid "Paint Tool. Normal painting area task started."
-msgstr ""
+msgstr "Ferramenta de Pintura. Iniciada a pintura de área."
 
 #: flatcamTools/ToolPaint.py:2153 flatcamTools/ToolPaint.py:2311
 #, python-format
@@ -12255,7 +12275,7 @@ msgstr "Pintura de área concluída"
 #: flatcamTools/ToolPaint.py:2223 flatcamTools/ToolPaint.py:2226
 #: flatcamTools/ToolPaint.py:2228
 msgid "Paint Tool. Rest machining painting area task started."
-msgstr ""
+msgstr "Ferramenta de Pintura. Iniciada a pintura de área com usinagem de descanso."
 
 #: flatcamTools/ToolPanelize.py:25
 msgid "Panelize PCB"
@@ -13164,64 +13184,69 @@ msgstr "Objetos Trabalho CNC não podem ser redimensionados."
 
 #: flatcamTools/ToolTransform.py:863
 msgid "Scale on the"
-msgstr ""
+msgstr "Redimensionamento no eixo"
 
 #: flatcamTools/ToolTransform.py:863 flatcamTools/ToolTransform.py:898
 msgid "axis done"
-msgstr ""
+msgstr "concluído"
 
 #: flatcamTools/ToolTransform.py:875
 msgid "No object selected. Please Select an object to offset!"
-msgstr ""
+msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
+"para deslocar!"
 
 #: flatcamTools/ToolTransform.py:884
 msgid "CNCJob objects can't be offset."
-msgstr ""
+msgstr "Objetos Trabalho CNC não podem ser deslocados."
 
 #: flatcamTools/ToolTransform.py:898
 msgid "Offset on the"
-msgstr ""
+msgstr "Deslocamento no eixo"
 
 #: tclCommands/TclCommandBbox.py:70 tclCommands/TclCommandNregions.py:68
 msgid "Expected FlatCAMGerber or FlatCAMGeometry, got"
-msgstr ""
+msgstr "Esperando FlatCAMGerber ou FlatCAMGeometry, recebido"
 
 #: tclCommands/TclCommandCopperClear.py:234 tclCommands/TclCommandPaint.py:231
 msgid "Expected -box <value>."
-msgstr ""
+msgstr "Esperando <value> -caixa."
 
 #: tclCommands/TclCommandCopperClear.py:243 tclCommands/TclCommandPaint.py:240
 #: tclCommands/TclCommandScale.py:63
 msgid "Could not retrieve box object"
-msgstr ""
+msgstr "Não foi possível recuperar o objeto caixa"
 
 #: tclCommands/TclCommandCopperClear.py:263
 msgid ""
 "None of the following args: 'ref', 'all' were found or none was set to 1.\n"
 "Copper clearing failed."
 msgstr ""
+"Nenhum dos seguintes argumentos foi encontrado ou nenhum foi configurado como 1: 'ref', 'all'.\n"
+"Retirada de cobre falhou."
 
 #: tclCommands/TclCommandPaint.py:210
 msgid "Expected -x <value> and -y <value>."
-msgstr ""
+msgstr "Esperando -x <value> e -y <value>."
 
 #: tclCommands/TclCommandPaint.py:257
 msgid ""
 "There was none of the following args: 'ref', 'single', 'all'.\n"
 "Paint failed."
 msgstr ""
+"Nenhum dos seguintes argumentos foi encontrado: 'ref', 'single', 'all'.\n"
+"Pintura falhou."
 
 #: tclCommands/TclCommandScale.py:83
 msgid "Expected -origin <origin> or -origin <min_bounds> or -origin <center>."
-msgstr ""
+msgstr "Esperando -origin <origin> ou -origin <min_bounds> ou -origin <center>."
 
 #: tclCommands/TclCommandScale.py:92
 msgid "Expected -x <value> -y <value>."
-msgstr ""
+msgstr "Esperando -x <value> -y <value>."
 
 #: tclCommands/TclCommandSubtractRectangle.py:49
 msgid "No Geometry name in args. Provide a name and try again."
-msgstr ""
+msgstr "Nenhum nome de geometria nos argumentos. Altere e tente novamente."
 
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
@@ -13255,7 +13280,7 @@ msgstr ""
 #~ msgstr "z_move = Z coord for Toolchange"
 
 #~ msgid "%s/Project_%s"
-#~ msgstr "%s/Project_%s"
+#~ msgstr "%s/Projeto_%s"
 
 #~ msgid "tool_tab"
 #~ msgstr "tool_tab"
