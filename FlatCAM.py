@@ -60,17 +60,17 @@ if __name__ == '__main__':
 
     # Create and display the splash screen
     # from here: https://eli.thegreenplace.net/2009/05/09/creating-splash-screens-in-pyqt
-    splash_pix = QtGui.QPixmap('share/flatcam_icon256.png')
-    splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
-    # splash.setMask(splash_pix.mask())
-    splash.show()
-    app.processEvents()
-    splash.showMessage("FlatCAM is initializing ...",
-                       alignment=Qt.AlignBottom | Qt.AlignLeft,
-                       color=QtGui.QColor("gray"))
+    # splash_pix = QtGui.QPixmap('share/splash.png')
+    # splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+    # # splash.setMask(splash_pix.mask())
+    # splash.show()
+    # app.processEvents()
+    # splash.showMessage("FlatCAM is initializing ...",
+    #                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+    #                    color=QtGui.QColor("gray"))
 
     fc = App()
-    splash.finish(fc.ui)
+    # splash.finish(fc.ui)
     fc.ui.show()
 
     sys.exit(app.exec_())

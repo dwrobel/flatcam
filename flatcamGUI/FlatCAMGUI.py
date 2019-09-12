@@ -3947,6 +3947,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.notebook_font_size_spinner.set_value(12)
 
+        # Axis Font Size
         self.axis_font_size_label = QtWidgets.QLabel('%s:' % _('Axis Font Size'))
         self.axis_font_size_label.setToolTip(
             _("This sets the font size for canvas axis.")
@@ -3965,6 +3966,18 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
+        # Splash Screen
+        self.splash_label = QtWidgets.QLabel('%s:' % _('Splash Screen'))
+        self.splash_label.setToolTip(
+            _("Enable display of the splash screen at application startup.")
+        )
+        self.splash_cb = FCCheckBox()
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.value("splash_screen"):
+            self.splash_cb.set_value(True)
+        else:
+            self.splash_cb.set_value(False)
+
         # Add (label - input field) pair to the QFormLayout
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
@@ -3977,6 +3990,8 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.notebook_font_size_label, self.notebook_font_size_spinner)
         self.form_box.addRow(self.axis_font_size_label, self.axis_font_size_spinner)
+        self.form_box.addRow(QtWidgets.QLabel(''))
+        self.form_box.addRow(self.splash_label, self.splash_cb)
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB

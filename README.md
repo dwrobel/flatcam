@@ -17,6 +17,9 @@ CAD program, and create G-Code for Isolation routing.
 - now, Excellon and Gerber edited objects will have the source_code updated and ready to be saved
 - the edited Gerber (or Excellon) object now is kept in the app after editing and the edited object is a new object
 - added a message to the splash screen
+- remade the splash screen to show multiple messages on app initialization
+- added a new splash image
+- added a control in Preferences -> General -> GUI Settings -> Splash Screen that control if the splash screen is shown at startup
 
 11.09.2019
 

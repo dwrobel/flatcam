@@ -337,6 +337,29 @@ class App(QtCore.QObject):
         # #############################################################################
         self.pool = Pool()
 
+        # ##########################################################################
+        # ################## Setting the Splash Screen #############################
+        # ##########################################################################
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("splash_screen"):
+            show_splash = settings.value("splash_screen")
+        else:
+            settings.setValue('splash_screen', 1)
+
+            # This will write the setting to the platform specific storage.
+            del settings
+            show_splash = 1
+
+        if show_splash:
+            splash_pix = QtGui.QPixmap('share/splash.png')
+            splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+            # splash.setMask(splash_pix.mask())
+            splash.show()
+            splash.showMessage(_("FlatCAM is initializing ..."),
+                               alignment=Qt.AlignBottom | Qt.AlignLeft,
+                               color=QtGui.QColor("gray"))
+
         # #############################################################################
         # ##################### Initialize GUI ########################################
         # #############################################################################
@@ -1465,15 +1488,25 @@ class App(QtCore.QObject):
         # ###############################################
         # ############# SETUP Plot Area #################
         # ###############################################
-
+        if show_splash:
+            splash.showMessage(_("FlatCAM is initializing ...\n"
+                                 "Canvas initialization started."),
+                               alignment=Qt.AlignBottom | Qt.AlignLeft,
+                               color=QtGui.QColor("gray"))
         start_plot_time = time.time()   # debug
         self.plotcanvas = None
         self.app_cursor = None
         self.hover_shapes = None
         self.on_plotcanvas_setup()
         end_plot_time = time.time()
-        self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
-
+        used_time = end_plot_time - start_plot_time
+        self.log.debug("Finished Canvas initialization in %s seconds." % str(used_time))
+        if show_splash:
+            splash.showMessage('%s: %ssec' % (_("FlatCAM is initializing ...\n"
+                                                "Canvas initialization started.\n"
+                                                "Canvas initialization finished in"), '%.2f' % used_time),
+                               alignment=Qt.AlignBottom | Qt.AlignLeft,
+                               color=QtGui.QColor("gray"))
         self.ui.splitter.setStretchFactor(1, 2)
 
         # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
@@ -1809,6 +1842,9 @@ class App(QtCore.QObject):
             lambda: self.on_register_files(obj_type='gcode'))
         self.ui.fa_defaults_form.fa_gerber_group.grb_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='gerber'))
+
+        # splash screen button signal
+        self.ui.general_defaults_form.general_gui_set_group.splash_cb.stateChanged.connect(self.on_splash_changed)
 
         # connect the abort_all_tasks related slots to the related signals
         self.proc_container.idle_flag.connect(self.app_is_idle)
@@ -5355,6 +5391,13 @@ class App(QtCore.QObject):
         new_val_sel = str(annotation_color.name())
         self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.set_value(new_val_sel)
         self.defaults['global_proj_item_dis_color'] = new_val_sel
+
+    def on_splash_changed(self, state):
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('splash_screen', 1) if state else settings.setValue('splash_screen', 0)
+
+        # This will write the setting to the platform specific storage.
+        del settings
 
     def on_notebook_tab_rmb_click(self, checked):
         self.ui.notebook.set_detachable(val=checked)
