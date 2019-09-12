@@ -2457,6 +2457,8 @@ class Gerber (Geometry):
         line_num = 0
         gline = ""
 
+        s_tol = float(self.app.defaults["gerber_simp_tolerance"])
+
         self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Parsing"), len(glines), _("lines")))
         try:
             for gline in glines:
@@ -2502,7 +2504,10 @@ class Gerber (Geometry):
 
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo_s.is_empty:
-                            poly_buffer.append(geo_s)
+                            if self.app.defaults['gerber_simplification']:
+                                poly_buffer.append(geo_s.simplify(s_tol))
+                            else:
+                                poly_buffer.append(geo_s)
                             if self.is_lpc is True:
                                 geo_dict['clear'] = geo_s
                             else:
@@ -2692,7 +2697,10 @@ class Gerber (Geometry):
                             geo_dict['follow'] = Point([current_x, current_y])
 
                             if not flash.is_empty:
-                                poly_buffer.append(flash)
+                                if self.app.defaults['gerber_simplification']:
+                                    poly_buffer.append(flash.simplify(s_tol))
+                                else:
+                                    poly_buffer.append(flash)
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = flash
                                 else:
@@ -2743,7 +2751,10 @@ class Gerber (Geometry):
                             width = self.apertures[last_path_aperture]["size"]
                             geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo_s.is_empty:
-                                poly_buffer.append(geo_s)
+                                if self.app.defaults['gerber_simplification']:
+                                    poly_buffer.append(geo_s.simplify(s_tol))
+                                else:
+                                    poly_buffer.append(geo_s)
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = geo_s
                                 else:
@@ -2776,7 +2787,10 @@ class Gerber (Geometry):
                         width = self.apertures[last_path_aperture]["size"]
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo_s.is_empty:
-                            poly_buffer.append(geo_s)
+                            if self.app.defaults['gerber_simplification']:
+                                poly_buffer.append(geo_s.simplify(s_tol))
+                            else:
+                                poly_buffer.append(geo_s)
                             if self.is_lpc is True:
                                 geo_dict['clear'] = geo_s
                             else:
@@ -2817,7 +2831,10 @@ class Gerber (Geometry):
                                     geo_dict['follow'] = geo_f
                             if geo_s:
                                 if not geo_s.is_empty:
-                                    poly_buffer.append(geo_s)
+                                    if self.app.defaults['gerber_simplification']:
+                                        poly_buffer.append(geo_s.simplify(s_tol))
+                                    else:
+                                        poly_buffer.append(geo_s)
                                     if self.is_lpc is True:
                                         geo_dict['clear'] = geo_s
                                     else:
@@ -2850,7 +2867,10 @@ class Gerber (Geometry):
                         region_s = region_s.buffer(0, int(self.steps_per_circle / 4))
 
                     if not region_s.is_empty:
-                        poly_buffer.append(region_s)
+                        if self.app.defaults['gerber_simplification']:
+                            poly_buffer.append(region_s.simplify(s_tol))
+                        else:
+                            poly_buffer.append(region_s)
                         if self.is_lpc is True:
                             geo_dict['clear'] = region_s
                         else:
@@ -2932,7 +2952,11 @@ class Gerber (Geometry):
                                         geo_dict['follow'] = geo_f
 
                                         geo_s = shply_box(minx, miny, maxx, maxy)
-                                        poly_buffer.append(geo_s)
+                                        if self.app.defaults['gerber_simplification']:
+                                            poly_buffer.append(geo_s.simplify(s_tol))
+                                        else:
+                                            poly_buffer.append(geo_s)
+
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = geo_s
                                         else:
@@ -3020,14 +3044,22 @@ class Gerber (Geometry):
                             try:
                                 if self.apertures[last_path_aperture]["type"] != 'R':
                                     if not geo_s.is_empty:
-                                        poly_buffer.append(geo_s)
+                                        if self.app.defaults['gerber_simplification']:
+                                            poly_buffer.append(geo_s.simplify(s_tol))
+                                        else:
+                                            poly_buffer.append(geo_s)
+
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = geo_s
                                         else:
                                             geo_dict['solid'] = geo_s
                             except Exception as e:
                                 log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
-                                poly_buffer.append(geo_s)
+                                if self.app.defaults['gerber_simplification']:
+                                    poly_buffer.append(geo_s.simplify(s_tol))
+                                else:
+                                    poly_buffer.append(geo_s)
+
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = geo_s
                                 else:
@@ -3075,13 +3107,21 @@ class Gerber (Geometry):
                             if not geo_s.is_empty:
                                 try:
                                     if self.apertures[last_path_aperture]["type"] != 'R':
-                                        poly_buffer.append(geo_s)
+                                        if self.app.defaults['gerber_simplification']:
+                                            poly_buffer.append(geo_s.simplify(s_tol))
+                                        else:
+                                            poly_buffer.append(geo_s)
+
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = geo_s
                                         else:
                                             geo_dict['solid'] = geo_s
                                 except:
-                                    poly_buffer.append(geo_s)
+                                    if self.app.defaults['gerber_simplification']:
+                                        poly_buffer.append(geo_s.simplify(s_tol))
+                                    else:
+                                        poly_buffer.append(geo_s)
+
                                     if self.is_lpc is True:
                                         geo_dict['clear'] = geo_s
                                     else:
@@ -3111,7 +3151,11 @@ class Gerber (Geometry):
                             self.steps_per_circle
                         )
                         if not flash.is_empty:
-                            poly_buffer.append(flash)
+                            if self.app.defaults['gerber_simplification']:
+                                poly_buffer.append(flash.simplify(s_tol))
+                            else:
+                                poly_buffer.append(flash)
+
                             if self.is_lpc is True:
                                 geo_dict['clear'] = flash
                             else:
@@ -3210,7 +3254,11 @@ class Gerber (Geometry):
                             # this treats the case when we are storing geometry as solids
                             buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not buffered.is_empty:
-                                poly_buffer.append(buffered)
+                                if self.app.defaults['gerber_simplification']:
+                                    poly_buffer.append(buffered.simplify(s_tol))
+                                else:
+                                    poly_buffer.append(buffered)
+
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = buffered
                                 else:
@@ -3348,7 +3396,11 @@ class Gerber (Geometry):
                     width = self.apertures[last_path_aperture]["size"]
                     geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                     if not geo_s.is_empty:
-                        poly_buffer.append(geo_s)
+                        if self.app.defaults['gerber_simplification']:
+                            poly_buffer.append(geo_s.simplify(s_tol))
+                        else:
+                            poly_buffer.append(geo_s)
+
                         if self.is_lpc is True:
                             geo_dict['clear'] = geo_s
                         else:

@@ -4300,6 +4300,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             self.portability_label.hide()
             self.portability_cb.hide()
 
+
 class GerberGenPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber General Preferences", parent=parent)
@@ -4358,6 +4359,27 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(buffering_label, 2, 0)
         grid0.addWidget(self.buffering_radio, 2, 1)
 
+        # Simplification
+        self.simplify_cb = FCCheckBox(label=_('Simplify'))
+        self.simplify_cb.setToolTip(_("When checked all the Gerber polygons will be\n"
+                                      "loaded with simplification having a set tolerance."))
+        grid0.addWidget(self.simplify_cb, 3, 0)
+
+        # Simplification tolerance
+        self.simplification_tol_label = QtWidgets.QLabel(_('Tolerance'))
+        self.simplification_tol_label.setToolTip(_("Tolerance for poligon simplification."))
+
+        self.simplification_tol_spinner = FCDoubleSpinner()
+        self.simplification_tol_spinner.set_precision(5)
+        self.simplification_tol_spinner.setWrapping(True)
+        self.simplification_tol_spinner.setRange(0.00000, 0.01000)
+        self.simplification_tol_spinner.setSingleStep(0.0001)
+
+        grid0.addWidget(self.simplification_tol_label, 4, 0)
+        grid0.addWidget(self.simplification_tol_spinner, 4, 1)
+        self.ois_simplif = OptionalInputSection(self.simplify_cb,
+                                                [self.simplification_tol_label, self.simplification_tol_spinner],
+                                                logic=True)
         self.layout.addStretch()
 
 

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.09.2019
+
+- added control for simplification when loading a Gerber file in Preferences -> Gerber -> Gerber General -> Simplify
+
 12.09.2019
 
 - small changes in the TclCommands: MillDrills, MillSlots, DrillCNCJob: the new parameter for tolerance is now named: tooldia
