@@ -12847,113 +12847,121 @@ msgstr "Excluir Objeto"
 
 #: flatcamTools/ToolSolderPaste.py:799
 msgid "Adding Nozzle tool cancelled. Tool already in Tool Table."
-msgstr ""
+msgstr "Adição de ferramenta Bocal cancelada. Ferramenta já está na "
+"Tabela de Ferramentas."
 
 #: flatcamTools/ToolSolderPaste.py:805
 msgid "New Nozzle tool added to Tool Table."
-msgstr ""
+msgstr "Nova Ferramenta Bocal adicionada à tabela de ferramentas."
 
 #: flatcamTools/ToolSolderPaste.py:848
 msgid "Nozzle tool from Tool Table was edited."
-msgstr ""
+msgstr "A ferramenta do bocal da tabela de ferramentas foi editada."
 
 #: flatcamTools/ToolSolderPaste.py:906
 msgid "Delete failed. Select a Nozzle tool to delete."
-msgstr ""
+msgstr "Exclusão falhou. Selecione uma ferramenta bico para excluir."
 
 #: flatcamTools/ToolSolderPaste.py:912
 msgid "Nozzle tool(s) deleted from Tool Table."
-msgstr ""
+msgstr "Ferramenta(s) de bico excluída(s) da tabela de ferramentas."
 
 #: flatcamTools/ToolSolderPaste.py:968
 msgid "No SolderPaste mask Gerber object loaded."
-msgstr ""
+msgstr "Nenhum objeto Gerber de máscara de Pasta de Solda carregado."
 
 #: flatcamTools/ToolSolderPaste.py:986
 msgid "Creating Solder Paste dispensing geometry."
-msgstr ""
+msgstr "Criação da geometria de distribuição da pasta de solda."
 
 #: flatcamTools/ToolSolderPaste.py:999
 msgid "No Nozzle tools in the tool table."
-msgstr ""
+msgstr "Nenhuma ferramenta de Bico na tabela de ferramentas."
 
 #: flatcamTools/ToolSolderPaste.py:1126
 msgid "Cancelled. Empty file, it has no geometry..."
-msgstr ""
+msgstr "Cancelado. Arquivo vazio, não há geometria..."
 
 #: flatcamTools/ToolSolderPaste.py:1130
 msgid "Solder Paste geometry generated successfully"
-msgstr ""
+msgstr "Geometria da pasta de solda gerada com sucesso"
 
 #: flatcamTools/ToolSolderPaste.py:1137
 msgid "Some or all pads have no solder due of inadequate nozzle diameters..."
-msgstr ""
+msgstr "Alguns ou todos os pads não possuem pasta de solda devido a "
+"diâmetros inadequados dos bicos..."
 
 #: flatcamTools/ToolSolderPaste.py:1151
 msgid "Generating Solder Paste dispensing geometry..."
-msgstr ""
+msgstr "Gerando geometria dispensadora de Pasta de Solda ..."
 
 #: flatcamTools/ToolSolderPaste.py:1172
 msgid "There is no Geometry object available."
-msgstr ""
+msgstr "Não há objeto de Geometria disponível."
 
 #: flatcamTools/ToolSolderPaste.py:1177
 msgid "This Geometry can't be processed. NOT a solder_paste_tool geometry."
-msgstr ""
+msgstr "Esta geometria não pode ser processada. NÃO é uma geometria "
+"solder_paste_tool."
 
 #: flatcamTools/ToolSolderPaste.py:1285
 msgid "ToolSolderPaste CNCjob created"
-msgstr ""
+msgstr "Trabalho CNC para Ferramenta de Pasta de Solda criado"
 
 #: flatcamTools/ToolSolderPaste.py:1318 flatcamTools/ToolSolderPaste.py:1323
 #: flatcamTools/ToolSolderPaste.py:1378
 msgid ""
 "This CNCJob object can't be processed. NOT a solder_paste_tool CNCJob object."
-msgstr ""
+msgstr "Este objeto Trabalho CNC não pode ser processado. NÃO é um "
+"objeto solder_paste_tool."
 
 #: flatcamTools/ToolSolderPaste.py:1348
 msgid "No Gcode in the object"
-msgstr ""
+msgstr "Nenhum G-Code no objeto"
 
 #: flatcamTools/ToolSolderPaste.py:1358
 msgid "ToolSolderPaste.on_view_gcode()"
-msgstr ""
+msgstr "ToolSolderPaste.on_view_gcode()"
 
 #: flatcamTools/ToolSolderPaste.py:1388
 msgid "Export GCode ..."
-msgstr ""
+msgstr "Exportar G-Code ..."
 
 #: flatcamTools/ToolSolderPaste.py:1436
 msgid "Solder paste dispenser GCode file saved to"
-msgstr ""
+msgstr "Arquivo G-Code com dispensador de pasta de solda salvo em"
 
 #: flatcamTools/ToolSub.py:57
 msgid "Gerber Objects"
-msgstr ""
+msgstr "Objetos Gerber"
 
 #: flatcamTools/ToolSub.py:66 flatcamTools/ToolSub.py:112
 msgid "Target"
-msgstr ""
+msgstr "Alvo"
 
 #: flatcamTools/ToolSub.py:68
 msgid ""
 "Gerber object from which to substract\n"
 "the substractor Gerber object."
 msgstr ""
+"Objeto Gerber do qual subtrair\n"
+"o objeto Gerber subtrator."
 
 #: flatcamTools/ToolSub.py:80 flatcamTools/ToolSub.py:126
 msgid "Substractor"
-msgstr ""
+msgstr "Subtrator"
 
 #: flatcamTools/ToolSub.py:82
 msgid ""
 "Gerber object that will be substracted\n"
 "from the target Gerber object."
 msgstr ""
+"Objeto Gerber que será subtraído\n"
+"do objeto Gerber de destino."
 
 #: flatcamTools/ToolSub.py:89
 msgid "Substract Gerber"
-msgstr ""
+msgstr "Gerber Subtrator"
 
 #: flatcamTools/ToolSub.py:91
 msgid ""
@@ -12962,79 +12970,90 @@ msgid ""
 "Can be used to remove the overlapping silkscreen\n"
 "over the soldermask."
 msgstr ""
+"Removerá a área ocupada pelo Gerber substrator\n"
+"do Gerber de destino.\n"
+"Pode ser usado para remover a serigrafia sobreposta\n"
+"sobre a máscara de solda."
 
 #: flatcamTools/ToolSub.py:103
 msgid "Geometry Objects"
-msgstr ""
+msgstr "Objetos Geometria"
 
 #: flatcamTools/ToolSub.py:114
 msgid ""
 "Geometry object from which to substract\n"
 "the substractor Geometry object."
 msgstr ""
+"Objeto de geometria a partir do qual subtrair\n"
+"o objeto de geometria do substrator."
 
 #: flatcamTools/ToolSub.py:128
 msgid ""
 "Geometry object that will be substracted\n"
 "from the target Geometry object."
 msgstr ""
+"Objeto de geometria que será subtraído\n"
+"do objeto de geometria de destino."
 
 #: flatcamTools/ToolSub.py:139
 msgid "Substract Geometry"
-msgstr ""
+msgstr "Geometria Subtrator"
 
 #: flatcamTools/ToolSub.py:141
 msgid ""
 "Will remove the area occupied by the substractor\n"
 "Geometry from the Target Geometry."
 msgstr ""
+"Removerá a área ocupada pela geometria subtrator\n"
+"da Geometria de destino."
 
 #: flatcamTools/ToolSub.py:228
 msgid "Sub Tool"
-msgstr ""
+msgstr "Ferramenta Sub"
 
 #: flatcamTools/ToolSub.py:245 flatcamTools/ToolSub.py:447
 msgid "No Target object loaded."
-msgstr ""
+msgstr "Nenhum objeto de destino foi carregado."
 
 #: flatcamTools/ToolSub.py:260 flatcamTools/ToolSub.py:462
 msgid "No Substractor object loaded."
-msgstr ""
+msgstr "Nenhum objeto Subtrator carregado."
 
 #: flatcamTools/ToolSub.py:314
 #, python-format
 msgid "Parsing aperture %s geometry ..."
-msgstr ""
+msgstr ""Analisando a geometria de abertura %s ...""
 
 #: flatcamTools/ToolSub.py:416 flatcamTools/ToolSub.py:619
 msgid "Generating new object ..."
-msgstr ""
+msgstr "Gerando novo objeto ..."
 
 #: flatcamTools/ToolSub.py:420 flatcamTools/ToolSub.py:623
 #: flatcamTools/ToolSub.py:704
 msgid "Generating new object failed."
-msgstr ""
+msgstr "A geração de novo objeto falhou."
 
 #: flatcamTools/ToolSub.py:425 flatcamTools/ToolSub.py:629
 msgid "Created"
-msgstr ""
+msgstr "Criado"
 
 #: flatcamTools/ToolSub.py:476
 msgid "Currently, the Substractor geometry cannot be of type Multigeo."
-msgstr ""
+msgstr "Atualmente, a geometria do Subtrator não pode ser do tipo "
+"MultiGeo."
 
 #: flatcamTools/ToolSub.py:521
 msgid "Parsing solid_geometry ..."
-msgstr ""
+msgstr "Analisando solid_geometry ..."
 
 #: flatcamTools/ToolSub.py:523
 #, python-format
 msgid "Parsing tool %s geometry ..."
-msgstr ""
+msgstr "Analisando a geometria da ferramenta %s ..."
 
 #: flatcamTools/ToolTransform.py:23
 msgid "Object Transform"
-msgstr ""
+msgstr "Transformação de Objeto"
 
 #: flatcamTools/ToolTransform.py:84
 msgid ""
@@ -13042,6 +13061,9 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected objects."
 msgstr ""
+"Gira o(s) objeto(s) selecionado(s).\n"
+"O ponto de referência é o meio da\n"
+"caixa delimitadora para todos os objetos selecionados."
 
 #: flatcamTools/ToolTransform.py:120 flatcamTools/ToolTransform.py:138
 msgid ""
@@ -13049,6 +13071,9 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected objects."
 msgstr ""
+"Inclinar/distorcer o(s) objeto(s) selecionado(s).\n"
+"O ponto de referência é o meio da\n"
+"caixa delimitadora para todos os objetos selecionados."
 
 #: flatcamTools/ToolTransform.py:176 flatcamTools/ToolTransform.py:193
 msgid ""
@@ -13056,6 +13081,9 @@ msgid ""
 "The point of reference depends on \n"
 "the Scale reference checkbox state."
 msgstr ""
+"Redimensiona o(s) objeto(s) selecionado(s).\n"
+"O ponto de referência depende\n"
+"do estado da caixa de seleção Escala de referência."
 
 #: flatcamTools/ToolTransform.py:251 flatcamTools/ToolTransform.py:268
 msgid ""
@@ -13063,6 +13091,9 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected objects.\n"
 msgstr ""
+"Desloca o(s) objeto(s) selecionado(s).\n"
+"O ponto de referência é o meio da\n"
+"caixa delimitadora para todos os objetos selecionados.\n"
 
 #: flatcamTools/ToolTransform.py:298 flatcamTools/ToolTransform.py:306
 msgid ""
@@ -13070,59 +13101,66 @@ msgid ""
 "Does not create a new object.\n"
 " "
 msgstr ""
+"Espelha o(s) objeto(s) selecionado(s) no eixo X.\n"
+"Não cria um novo objeto.\n"
+" "
 
 #: flatcamTools/ToolTransform.py:643
 msgid "No object selected. Please Select an object to rotate!"
-msgstr ""
+msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
+"para girar!"
 
 #: flatcamTools/ToolTransform.py:671
 msgid "CNCJob objects can't be rotated."
-msgstr ""
+msgstr "Objetos Trabalho CNC não podem ser girados."
 
 #: flatcamTools/ToolTransform.py:679
 msgid "Rotate done"
-msgstr ""
+msgstr "Rotação pronta"
 
 #: flatcamTools/ToolTransform.py:684 flatcamTools/ToolTransform.py:759
 #: flatcamTools/ToolTransform.py:808 flatcamTools/ToolTransform.py:867
 #: flatcamTools/ToolTransform.py:903
 msgid "Due of"
-msgstr ""
+msgstr "Devido"
 
 #: flatcamTools/ToolTransform.py:684 flatcamTools/ToolTransform.py:759
 #: flatcamTools/ToolTransform.py:808 flatcamTools/ToolTransform.py:867
 #: flatcamTools/ToolTransform.py:903
 msgid "action was not executed."
-msgstr ""
+msgstr "a ação não foi realizada."
 
 #: flatcamTools/ToolTransform.py:696
 msgid "No object selected. Please Select an object to flip"
-msgstr ""
+msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
+"para espelhar!"
 
 #: flatcamTools/ToolTransform.py:731
 msgid "CNCJob objects can't be mirrored/flipped."
-msgstr ""
+msgstr ""Objetos Trabalho CNC não podem ser espelhados/invertidos.""
 
 #: flatcamTools/ToolTransform.py:769
 msgid "No object selected. Please Select an object to shear/skew!"
-msgstr ""
+msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
+"para inclinar!"
 
 #: flatcamTools/ToolTransform.py:791
 msgid "CNCJob objects can't be skewed."
-msgstr ""
+msgstr ""Objetos Trabalho CNC não podem ser inclinados."
 
 #: flatcamTools/ToolTransform.py:803
 #, python-format
 msgid "[success] Skew on the %s axis done ..."
-msgstr ""
+msgstr "Inclinação no eixo %s concluída."
 
 #: flatcamTools/ToolTransform.py:820
 msgid "No object selected. Please Select an object to scale!"
-msgstr ""
+msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
+"para redimensionar!"
 
 #: flatcamTools/ToolTransform.py:853
 msgid "CNCJob objects can't be scaled."
-msgstr ""
+msgstr "Objetos Trabalho CNC não podem ser redimensionados."
 
 #: flatcamTools/ToolTransform.py:863
 msgid "Scale on the"
