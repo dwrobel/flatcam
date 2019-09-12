@@ -9312,13 +9312,15 @@ msgstr "Ref."
 
 #: flatcamGUI/FlatCAMGUI.py:6975
 msgid "Paint Plotting"
-msgstr ""
+msgstr "Mostrar Pinturas"
 
 #: flatcamGUI/FlatCAMGUI.py:6977
 msgid ""
 "- 'Normal' -  normal plotting, done at the end of the Paint job\n"
 "- 'Progressive' - after each shape is generated it will be plotted."
 msgstr ""
+"- 'Normal' - plotagem normal, realizada no final do trabalho de pintura\n"
+"- 'Progressivo' - após cada forma ser gerada, ela será plotada."
 
 #: flatcamGUI/FlatCAMGUI.py:6991
 msgid "Film Tool Options"
@@ -9915,19 +9917,19 @@ msgstr "Marcar isso fechará os caminhos cortados pelo objeto substrair Geometri
 
 #: flatcamGUI/FlatCAMGUI.py:7578
 msgid "Excellon File associations"
-msgstr ""
+msgstr "Associação de Arquivos Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:7581 flatcamGUI/FlatCAMGUI.py:7614
 #: flatcamGUI/FlatCAMGUI.py:7647
 msgid "Extensions list"
-msgstr ""
+msgstr "Lista de extensões"
 
 #: flatcamGUI/FlatCAMGUI.py:7583 flatcamGUI/FlatCAMGUI.py:7616
 #: flatcamGUI/FlatCAMGUI.py:7649
 msgid ""
 "List of file extensions to be\n"
 "associated with FlatCAM."
-msgstr ""
+msgstr "Lista de extensões de arquivos que serão associadas ao FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:7597 flatcamGUI/FlatCAMGUI.py:7630
 #: flatcamGUI/FlatCAMGUI.py:7662
@@ -9937,14 +9939,18 @@ msgid ""
 "They will be active after next logon.\n"
 "This work only in Windows."
 msgstr ""
+"Aplica as associações de arquivos entre o\n"
+"FlatCAM e os arquivos com as extensões acima.\n"
+"Elas serão ativas após o próximo logon.\n"
+"Isso funciona apenas no Windows."
 
 #: flatcamGUI/FlatCAMGUI.py:7611
 msgid "GCode File associations"
-msgstr ""
+msgstr "Associação de arquivos G-Code"
 
 #: flatcamGUI/FlatCAMGUI.py:7644
 msgid "Gerber File associations"
-msgstr ""
+msgstr "Associação de arquivos Gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:7691 flatcamGUI/FlatCAMGUI.py:7697
 msgid "Idle."
@@ -10072,7 +10078,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:324
 msgid "Except"
-msgstr ""
+msgstr "Exceto"
 
 #: flatcamGUI/ObjectUI.py:325
 msgid ""
@@ -10080,11 +10086,14 @@ msgid ""
 "by checking this, the area of the object bellow\n"
 "will be subtracted from the isolation geometry."
 msgstr ""
+"Quando marcado, na geração da geometria de isolação,\n"
+"a área do objeto abaixo será subtraída da geometria\n"
+"de isolação."
 
 #: flatcamGUI/ObjectUI.py:350 flatcamTools/ToolCutOut.py:53
 #: flatcamTools/ToolNonCopperClear.py:69 flatcamTools/ToolPaint.py:68
 msgid "Obj Type"
-msgstr ""
+msgstr "Tipo Obj"
 
 #: flatcamGUI/ObjectUI.py:352
 msgid ""
@@ -10093,20 +10102,24 @@ msgid ""
 "What is selected here will dictate the kind\n"
 "of objects that will populate the 'Object' combobox."
 msgstr ""
+"Especifica o tipo de objeto a ser excluído da isolação.\n"
+"Pode ser do tipo: Gerber ou Geometria.\n"
+"Esta seleção ditará o tipo de objetos que preencherão\n"
+"a caixa de combinação 'Objeto'."
 
 #: flatcamGUI/ObjectUI.py:365 flatcamTools/ToolCutOut.py:69
 #: flatcamTools/ToolNonCopperClear.py:87 flatcamTools/ToolPaint.py:86
 #: flatcamTools/ToolPanelize.py:71 flatcamTools/ToolPanelize.py:84
 msgid "Object"
-msgstr ""
+msgstr "Objeto"
 
 #: flatcamGUI/ObjectUI.py:366
 msgid "Object whose area will be removed from isolation geometry."
-msgstr ""
+msgstr "Objeto cuja área será removida da geometria de isolação."
 
 #: flatcamGUI/ObjectUI.py:370
 msgid "Generate Isolation Geometry"
-msgstr Gerar Geometria de Isolação
+msgstr "Gerar Geometria de Isolação"
 
 #: flatcamGUI/ObjectUI.py:372
 msgid ""
@@ -10131,7 +10144,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:384
 msgid "Buffer Solid Geometry"
-msgstr ""
+msgstr "Buffer de Geometria Sólida"
 
 #: flatcamGUI/ObjectUI.py:386
 msgid ""
@@ -10140,6 +10153,10 @@ msgid ""
 "Clicking this will create the buffered geometry\n"
 "required for isolation."
 msgstr ""
+"Este botão é mostrado apenas quando o arquivo Gerber\n"
+"é carregado sem buffer.\n"
+"Clicar neste botão criará o buffer da geometria\n"
+"necessário para a isolação."
 
 #: flatcamGUI/ObjectUI.py:393
 msgid "FULL Geo"
@@ -11700,6 +11717,8 @@ msgid ""
 "Tool Diameter. It's value (in current FlatCAM units)\n"
 "is the cut width into the material."
 msgstr ""
+"Diâmetro da ferramenta. Valor (nas atuais unidades FlatCAM)\n"
+"da largura de corte no material."
 
 #: flatcamTools/ToolNonCopperClear.py:125
 msgid ""
@@ -11738,10 +11757,14 @@ msgid ""
 "If it's not successful then the non-copper clearing will fail, too.\n"
 "- Clear -> the regular non-copper clearing."
 msgstr ""
+"A 'Operação' pode ser:\n"
+"- Isolação -> garantirá que a retirada de cobre seja completa.\n"
+"Se não for bem-sucedida, a retirada de cobre também falhará.\n"
+"- Limpar -> retirada de cobre padrão."
 
 #: flatcamTools/ToolNonCopperClear.py:191
 msgid "Tool Selection"
-msgstr ""
+msgstr "Seleção de Ferramenta"
 
 #: flatcamTools/ToolNonCopperClear.py:214
 msgid "Diameter for the new tool to add in the Tool Table"
@@ -11837,56 +11860,56 @@ msgstr "O valor de sobreposição deve estar entre 0 (inclusive) e 1 "
 #: flatcamTools/ToolNonCopperClear.py:1083 flatcamTools/ToolPaint.py:945
 #, python-format
 msgid "Could not retrieve object: %s"
-msgstr ""
+msgstr "Não foi possível recuperar o objeto: %s"
 
 #: flatcamTools/ToolNonCopperClear.py:1103
 msgid "Wrong Tool Dia value format entered, use a number."
-msgstr ""
+msgstr "Valor de diâmetro errado. Use um número."
 
 #: flatcamTools/ToolNonCopperClear.py:1112 flatcamTools/ToolPaint.py:981
 msgid "No selected tools in Tool Table."
-msgstr ""
+msgstr "Nenhuma ferramenta selecionada na Tabela"
 
 #: flatcamTools/ToolNonCopperClear.py:1137
 msgid "Click the start point of the area."
-msgstr ""
+msgstr "Clique no ponto inicial da área."
 
 #: flatcamTools/ToolNonCopperClear.py:1148 flatcamTools/ToolPaint.py:1037
 msgid "Click the end point of the paint area."
-msgstr ""
+msgstr "Clique no ponto final da área."
 
 #: flatcamTools/ToolNonCopperClear.py:1154 flatcamTools/ToolPaint.py:1043
 msgid "Zone added. Click to start adding next zone or right click to finish."
-msgstr ""
+msgstr "Zona adicionada. Clique para iniciar a adição da próxima zona ou clique com o botão direito para terminar."
 
 #: flatcamTools/ToolNonCopperClear.py:1318
 msgid "Non-Copper clearing ..."
-msgstr ""
+msgstr "Limpando área de cobre..."
 
 #: flatcamTools/ToolNonCopperClear.py:1327
 msgid "NCC Tool started. Reading parameters."
-msgstr ""
+msgstr "Ferramenta NCC iniciada. Lendo parâmetros."
 
 #: flatcamTools/ToolNonCopperClear.py:1395
 msgid "NCC Tool. Preparing non-copper polygons."
-msgstr ""
+msgstr "Ferramenta NCC. Preparando polígonos."
 
 #: flatcamTools/ToolNonCopperClear.py:1423 flatcamTools/ToolPaint.py:2431
 msgid "No object available."
-msgstr ""
+msgstr "Nenhum objeto disponível."
 
 #: flatcamTools/ToolNonCopperClear.py:1465
 msgid "The reference object type is not supported."
-msgstr ""
+msgstr "O yipo do objeto de referência não é suportado."
 
 #: flatcamTools/ToolNonCopperClear.py:1487
 msgid ""
 "NCC Tool. Finished non-copper polygons. Normal copper clearing task started."
-msgstr ""
+msgstr "Ferramenta NCC. Polígonos concluídos. Tarefa de retirada de cobre iniciada."
 
 #: flatcamTools/ToolNonCopperClear.py:1519
 msgid "NCC Tool. Calculate 'empty' area."
-msgstr ""
+msgstr "Ferramenta NCC. Cálculo de áreas 'vazias'."
 
 #: flatcamTools/ToolNonCopperClear.py:1534
 #: flatcamTools/ToolNonCopperClear.py:1628
@@ -11895,7 +11918,7 @@ msgstr ""
 #: flatcamTools/ToolNonCopperClear.py:1959
 #: flatcamTools/ToolNonCopperClear.py:1971
 msgid "Buffering finished"
-msgstr "Buffering concluído"
+msgstr "Criar Buffer concluído"
 
 #: flatcamTools/ToolNonCopperClear.py:1647
 #: flatcamTools/ToolNonCopperClear.py:1977
