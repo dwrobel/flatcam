@@ -58,5 +58,20 @@ if __name__ == '__main__':
     else:
         app.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
+    # Create and display the splash screen
+    # from here: https://eli.thegreenplace.net/2009/05/09/creating-splash-screens-in-pyqt
+    # splash_pix = QtWidgets.QPixmap('splash_loading.png')
+    # splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+    # splash.setMask(splash_pix.mask())
+    # splash.show()
+    # app.processEvents()
+    #
+    # # Simulate something that takes time
+    # while True:
+    #     pass
+
     fc = App()
+    fc.ui.show()
+    # splash.finish(fc)
+
     sys.exit(app.exec_())

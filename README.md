@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - small changes in the TclCommands: MillDrills, MillSlots, DrillCNCJob: the new parameter for tolerance is now named: tooldia
 - cleaned up the 'About FlatCAM' window, started to give credits for the translation team
+- started to add an application splash screen
 
 11.09.2019
 

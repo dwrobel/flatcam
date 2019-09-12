@@ -1848,7 +1848,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                              ('BETA' if beta else ''),
                              platform.architecture()[0])
                             )
-        self.show()
 
         self.filename = ""
         self.units = ""
