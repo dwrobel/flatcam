@@ -710,7 +710,7 @@ msgstr "Por favor, selecione um objeto Geometria para exportar"
 
 #: FlatCAMApp.py:7430
 msgid "Only Geometry, Gerber and CNCJob objects can be used."
-msgstr "omente objetos Geometria, Gerber e Trabalho CNC podem ser "
+msgstr "Somente objetos Geometria, Gerber e Trabalho CNC podem ser "
 "usados."
 
 #: FlatCAMApp.py:7443 FlatCAMApp.py:7447
@@ -740,8 +740,7 @@ msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
 
 #: FlatCAMApp.py:7514 FlatCAMApp.py:7646
 msgid "Failed. Only Gerber objects can be saved as Gerber files..."
-msgstr "Falhou. Somente objetos Gerber podem ser salvos como arquivos "
-"Gerber..."
+msgstr "Falhou. Somente objetos Gerber podem ser salvos como arquivos Gerber..."
 
 #: FlatCAMApp.py:7526
 msgid "Save Gerber source file"
@@ -758,8 +757,7 @@ msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
 
 #: FlatCAMApp.py:7558 FlatCAMApp.py:7602
 msgid "Failed. Only Excellon objects can be saved as Excellon files..."
-msgstr "Falhou. Somente objetos Excellon podem ser salvos como arquivos "
-"Excellon..."
+msgstr "Falhou. Somente objetos Excellon podem ser salvos como arquivos Excellon..."
 
 #: FlatCAMApp.py:7566 FlatCAMApp.py:7570
 msgid "Save Excellon source file"
@@ -835,8 +833,7 @@ msgstr "Selecione um arquivo Gerber ou Excellon para visualizar o "
 
 #: FlatCAMApp.py:7834
 msgid "There is no selected object for which to see it's source file code."
-msgstr "Nenhum objeto selecionado para ver o código fonte do "
-"arquivo."
+msgstr "Nenhum objeto selecionado para ver o código fonte do arquivo."
 
 #: FlatCAMApp.py:7842
 msgid "Source Editor"
@@ -1599,7 +1596,7 @@ msgstr "Cancelado. Arquivo vazio, não tem geometria"
 
 #: FlatCAMObj.py:4990 FlatCAMObj.py:4996 FlatCAMObj.py:5148
 msgid "CNCjob created"
-msgstr ""
+msgstr "Trabalho CNC criado"
 
 #: FlatCAMObj.py:5180 FlatCAMObj.py:5190 camlib.py:3581 camlib.py:3591
 msgid "Scale factor has to be a number: integer or float."
@@ -1813,6 +1810,8 @@ msgid ""
 "No tool diameter info's. See shell.\n"
 "A tool change event: T"
 msgstr ""
+"Sem informação do diâmetro da ferramenta. Veja linha de comando.\n"
+"Evento de troca de ferramenta: T"
 
 #: camlib.py:4352
 msgid ""
@@ -1972,7 +1971,7 @@ msgstr "Esperando uma geometria, recebido"
 msgid ""
 "Trying to generate a CNC Job from a Geometry object without solid_geometry."
 msgstr ""
-Tentando gerar um trabalho CNC a partir de um objeto Geometria "
+"Tentando gerar um trabalho CNC a partir de um objeto Geometria "
 "sem solid_geometry."
 
 #: camlib.py:6578
@@ -4017,7 +4016,7 @@ msgstr "Edição de Gerber concluída."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3970
 msgid "Cancelled. No aperture is selected"
-msgstr ""
+msgstr "Cancelado. Nenhuma abertura selecionada"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4505
 msgid "Failed. No aperture geometry is selected."
@@ -11048,7 +11047,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:554 flatcamTools/ToolCutOut.py:739
 msgid "Any form CutOut operation finished."
-msgstr ""
+msgstr "Recorte concluído."
 
 #: flatcamTools/ToolCutOut.py:575 flatcamTools/ToolNonCopperClear.py:1087
 #, python-format
@@ -11396,7 +11395,7 @@ msgstr "Negativo"
 
 #: flatcamTools/ToolFilm.py:116
 msgid "Film Type:"
-msgstr ""
+msgstr "Tipo de Filme"
 
 #: flatcamTools/ToolFilm.py:157
 msgid "Save Film"
@@ -11912,7 +11911,7 @@ msgstr "Nenhum objeto disponível."
 
 #: flatcamTools/ToolNonCopperClear.py:1465
 msgid "The reference object type is not supported."
-msgstr "O yipo do objeto de referência não é suportado."
+msgstr "O tipo do objeto de referência não é suportado."
 
 #: flatcamTools/ToolNonCopperClear.py:1487
 msgid ""
