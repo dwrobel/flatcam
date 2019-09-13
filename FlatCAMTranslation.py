@@ -89,7 +89,7 @@ def on_language_apply_click(app, restart=False):
     if restart:
         msgbox = QtWidgets.QMessageBox()
         msgbox.setText(_("The application will restart."))
-        msgbox.setInformativeText(_("Are you sure do you want to change the current language to %s?") %
+        msgbox.setInformativeText('$s %s?' % _("Are you sure do you want to change the current language to"),
                                   name.capitalize())
         msgbox.setWindowTitle(_("Apply Language ..."))
         msgbox.setWindowIcon(QtGui.QIcon('share/language32.png'))

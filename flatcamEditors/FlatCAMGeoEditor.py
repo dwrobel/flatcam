@@ -632,8 +632,9 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
+
         # ## Title
-        title_label = QtWidgets.QLabel("%s" % (_('Editor %s') % self.toolName))
+        title_label = QtWidgets.QLabel("%s %s" % (_('Editor'), str(self.toolName)))
         title_label.setStyleSheet("""
                 QLabel
                 {
@@ -2354,7 +2355,7 @@ class FCPath(FCPolygon):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Path completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Path completed."))
 
     def utility_geometry(self, data=None):
         if len(self.points) > 0:
@@ -4583,9 +4584,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
                         local_results += list(cp.get_objects())
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
-                    self.app.inform.emit('[ERROR] %s' %
-                                         _("Could not do Paint. Try a different combination of parameters. "
-                          "Or a different method of Paint\n%s") % str(e))
+                    self.app.inform.emit('[ERROR] %s\n%s' %
+                                         (_("Could not do Paint. Try a different combination of"
+                                            " parameters. Or a different method of Paint"),
+                                          str(e)
+                                          )
+                                         )
                     return
 
                 # add the result to the results list
@@ -4595,7 +4599,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         for r in results:
             self.add_shape(DrawToolShape(r))
         self.app.inform.emit(
-            _("[success] Paint done."))
+            '[success] %s' % _("Paint done."))
         self.replot()
 
 

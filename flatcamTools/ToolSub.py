@@ -311,7 +311,7 @@ class ToolSub(FlatCAMTool):
 
         log.debug("Working on promise: %s" % str(apid))
 
-        with self.app.proc_container.new(_("Parsing aperture %s geometry ..." % str(apid))):
+        with self.app.proc_container.new('%s %s %s...' % (_("Parsing aperture", str(apid), _("geometry")))):
             for geo_el in geo:
                 new_el = dict()
 
@@ -520,7 +520,7 @@ class ToolSub(FlatCAMTool):
         if tool == "single":
             text = _("Parsing solid_geometry ...")
         else:
-            text = _("Parsing tool %s geometry ...") % str(tool)
+            text = '%s %s %s...' % (_("Parsing tool"), str(tool), _("geometry"))
 
         with self.app.proc_container.new(text):
             # resulting paths are closed resulting into Polygons

@@ -217,7 +217,7 @@ class ToolPDF(FlatCAMTool):
                 time.sleep(0.1)
         except Exception as e:
             log.debug("ToolPDF.open_pdf() --> %s" % str(e))
-        self.app.inform.emit(_("[success] Opened: %s") % filename)
+        self.app.inform.emit('[success] %s: %s' % (_("Opened"),  str(filename)))
 
     def layer_rendering_as_excellon(self, filename, ap_dict, layer_nr):
         outname = filename.split('/')[-1].split('\\')[-1] + "_%s" % str(layer_nr)

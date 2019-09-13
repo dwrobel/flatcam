@@ -68,7 +68,7 @@ class TermWidget(QWidget):
         if detail is None:
             self._edit.setPlainText(_("...proccessing..."))
         else:
-            self._edit.setPlainText(_("...proccessing... [%s]") % detail)
+            self._edit.setPlainText('%s [%s]' % (_("...proccessing..."),  detail))
 
         self._edit.setDisabled(True)
         self._edit.setFocus()

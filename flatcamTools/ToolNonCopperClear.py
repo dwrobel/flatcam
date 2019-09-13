@@ -1080,11 +1080,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         try:
             self.ncc_obj = self.app.collection.get_by_name(self.obj_name)
         except Exception as e:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not retrieve object: %s") % self.obj_name)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"),  str(self.obj_name)))
             return "Could not retrieve object: %s" % self.obj_name
 
         if self.ncc_obj is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Object not found: %s") % self.ncc_obj)
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
             return
 
         # use the selected tools in the tool table; get diameters for non-copper clear

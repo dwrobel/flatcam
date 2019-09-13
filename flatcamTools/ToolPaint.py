@@ -1233,11 +1233,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         # No polygon?
         if poly is None:
             self.app.log.warning('No polygon found.')
-            self.app.inform.emit(_('[WARNING] No polygon found.'))
+            self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
             return
 
         proc = self.app.proc_container.new(_("Painting polygon..."))
-        self.app.inform.emit(_("Paint Tool. Painting polygon at location: %s") % str(inside_pt))
+        self.app.inform.emit('%s: %s' % (_("Paint Tool. Painting polygon at location"), str(inside_pt)))
 
         name = outname if outname is not None else self.obj_name + "_paint"
 
@@ -1748,7 +1748,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
 
-            self.app.inform.emit(_("[success] Paint All Done."))
+            self.app.inform.emit('[success] %s' % _("Paint All Done."))
 
         # Initializes the new geometry object
         def gen_paintarea_rest_machining(geo_obj, app_obj):
@@ -2149,9 +2149,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                         return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
-                        self.app.inform.emit('[ERROR] %s' %
-                                             _("Could not do Paint All. Try a different combination of parameters. "
-                                               "Or a different Method of paint\n%s") % str(e))
+                        self.app.inform.emit('[ERROR] %s\n%s' %
+                                             (_("Could not do Paint All. Try a different combination of parameters. "
+                                               "Or a different Method of paint"), str(e)))
                         return
 
                     pol_nr += 1
@@ -2209,7 +2209,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
 
-            self.app.inform.emit(_("[success] Paint Area Done."))
+            self.app.inform.emit('[success] %s' % _("Paint Area Done."))
 
         # Initializes the new geometry object
         def gen_paintarea_rest_machining(geo_obj, app_obj):
@@ -2307,9 +2307,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                         return "fail"
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
-                        self.app.inform.emit('[ERROR] %s' %
-                                             _("Could not do Paint All. Try a different combination of parameters. "
-                                               "Or a different Method of paint\n%s") % str(e))
+                        self.app.inform.emit('[ERROR] %s\n%s' %
+                                             (_("Could not do Paint All. Try a different combination of parameters. "
+                                               "Or a different Method of paint"), str(e)))
                         return
 
                     pol_nr += 1

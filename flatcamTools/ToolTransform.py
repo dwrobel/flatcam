@@ -800,7 +800,8 @@ class ToolTransform(FlatCAMTool):
                                 sel_obj.options['skew_y'] = num
                             self.app.object_changed.emit(sel_obj)
                         sel_obj.plot()
-                    self.app.inform.emit(_('[success] Skew on the %s axis done ...') % str(axis))
+                    self.app.inform.emit('[success] %s %s %s...' %
+                                         (_('Skew on the'),  str(axis), _("axis done")))
                     self.app.progress.emit(100)
 
                 except Exception as e:
