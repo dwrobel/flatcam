@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - more string changes
 - updated translation files
+- fixed a small bug
 
 13.09.2019
 
