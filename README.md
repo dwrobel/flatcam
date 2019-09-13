@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a grid layout in on_about()
 - upgraded the Script Editor to be able to run Tcl commands in batches
 - added some ToolTips for the buttons in the Code Editor
+- converted the big strings that hold the shortcut keys descriptions to smaller string to make translations easier
 
 12.09.2019
 
