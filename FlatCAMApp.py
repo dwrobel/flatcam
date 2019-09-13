@@ -3810,24 +3810,23 @@ class App(QtCore.QObject):
                 # palette.setBrush(10, QtGui.QBrush(bgimage))  # 10 = Windowrole
                 # self.setPalette(palette)
 
-
                 logo = QtWidgets.QLabel()
                 logo.setPixmap(QtGui.QPixmap('share/flatcam_icon256.png'))
 
                 title = QtWidgets.QLabel(
-                    _(
-                        "<font size=8><B>FlatCAM</B></font><BR>"
-                        "2D Computer-Aided Printed Circuit Board<BR>"
-                        "Manufacturing.<BR>"
-                        "<BR>"
-                        "<BR>"
-                        "<B>Development</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
-                        "<b>DOWNLOAD</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
-                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
-                        "<b>Issue tracker</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>"
-                    )
+                    "<font size=8><B>FlatCAM</B></font><BR>"
+                    "%s<BR>"
+                    "%s.<BR>"
+                    "<BR>"
+                    "<BR>"
+                    "<B>%s</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
+                    "<b>%s</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
+                    "<b>%s</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>" %
+                    (_("2D Computer-Aided Printed Circuit Board"), _("Manufacturing"), _("Development"), _("DOWNLOAD"),
+                     _("Issue tracker"))
                 )
                 title.setOpenExternalLinks(True)
 

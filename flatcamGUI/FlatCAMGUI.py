@@ -1014,13 +1014,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.sh_tab_layout.addWidget(self.sh_title)
         self.sh_tab_layout.addLayout(self.sh_hlay)
 
-        self.app_sh_msg = _(
+        self.app_sh_msg = (
             '''<b>General Shortcut list</b><br>
             <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
                 <tbody>
                     <tr height="20">
                         <td height="20" width="89"><strong>F3</strong></td>
-                        <td width="194"><span style="color:#006400"><strong>&nbsp;SHOW SHORTCUT LIST</strong></span></td>
+                        <td width="194"><span style="color:#006400"><strong>&nbsp;%s</strong></span></td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1028,15 +1028,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>1</strong></td>
-                        <td>&nbsp;Switch to Project Tab</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>2</strong></td>
-                        <td>&nbsp;Switch to Selected Tab</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>3</strong></td>
-                        <td>&nbsp;Switch to Tool Tab</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1044,75 +1044,75 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>B</strong></td>
-                        <td>&nbsp;New Gerber</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>E</strong></td>
-                        <td>&nbsp;Edit Object (if selected)</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>G</strong></td>
-                        <td>&nbsp;Grid On/Off</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>J</strong></td>
-                        <td>&nbsp;Jump to Coordinates</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>L</strong></td>
-                        <td>&nbsp;New Excellon</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>M</strong></td>
-                        <td>&nbsp;Move Obj</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>N</strong></td>
-                        <td>&nbsp;New Geometry</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>O</strong></td>
-                        <td>&nbsp;Set Origin</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Q</strong></td>
-                        <td>&nbsp;Change Units</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>P</strong></td>
-                        <td>&nbsp;Open Properties Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>R</strong></td>
-                        <td>&nbsp;Rotate by 90 degree CW</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>S</strong></td>
-                        <td>&nbsp;Shell Toggle</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>T</strong></td>
-                        <td>&nbsp;Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>V</strong></td>
-                        <td>&nbsp;Zoom Fit</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>X</strong></td>
-                        <td>&nbsp;Flip on X_axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Y</strong></td>
-                        <td>&nbsp;Flip on Y_axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>&#39;-&#39;</strong></td>
-                        <td>&nbsp;Zoom Out</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>&#39;=&#39;</strong></td>
-                        <td>&nbsp;Zoom In</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1120,39 +1120,39 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+A</strong></td>
-                        <td>&nbsp;Select All</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+C</strong></td>
-                        <td>&nbsp;Copy Obj</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+E</strong></td>
-                        <td>&nbsp;Open Excellon File</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+G</strong></td>
-                        <td>&nbsp;Open Gerber File</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+N</strong></td>
-                        <td>&nbsp;New Project</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+M</strong></td>
-                        <td>&nbsp;Measurement Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+O</strong></td>
-                        <td>&nbsp;Open Project</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+S</strong></td>
-                        <td>&nbsp;Save Project As</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+F10</strong></td>
-                        <td>&nbsp;Toggle Plot Area</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1160,39 +1160,39 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+C</strong></td>
-                        <td>&nbsp;Copy Obj_Name</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+E</strong></td>
-                        <td>&nbsp;Toggle Code Editor</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+G</strong></td>
-                        <td>&nbsp;Toggle the axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+P</strong></td>
-                        <td>&nbsp;Open Preferences Window</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+R</strong></td>
-                        <td>&nbsp;Rotate by 90 degree CCW</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+S</strong></td>
-                        <td>&nbsp;Run a Script</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+W</strong></td>
-                        <td>&nbsp;Toggle the workspace</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+X</strong></td>
-                        <td>&nbsp;Skew on X axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+Y</strong></td>
-                        <td>&nbsp;Skew on Y axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1200,59 +1200,59 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+C</strong></td>
-                        <td>&nbsp;Calculators Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+D</strong></td>
-                        <td>&nbsp;2-Sided PCB Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+K</strong></td>
-                        <td>&nbsp;Solder Paste Dispensing Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+L</strong></td>
-                        <td>&nbsp;Film PCB Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+N</strong></td>
-                        <td>&nbsp;Non-Copper Clearing Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+P</strong></td>
-                        <td>&nbsp;Paint Area Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+Q</strong></td>
-                        <td>&nbsp;PDF Import Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+R</strong></td>
-                        <td>&nbsp;Transformations Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+S</strong></td>
-                        <td>&nbsp;View File Source</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+U</strong></td>
-                        <td>&nbsp;Cutout PCB Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+1</strong></td>
-                        <td>&nbsp;Enable all Plots</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+2</strong></td>
-                        <td>&nbsp;Disable all Plots</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+3</strong></td>
-                        <td>&nbsp;Disable Non-selected Plots</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+F10</strong></td>
-                        <td>&nbsp;Toggle Full Screen</td>
+                        <td>&nbsp;%s</td>
                     </tr>                 
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1260,7 +1260,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+ALT+X</strong></td>
-                        <td>&nbsp;Abort current task (gracefully)</td>
+                        <td>&nbsp;%s</td>
                     </tr>                    
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1268,36 +1268,52 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>F1</strong></td>
-                        <td>&nbsp;Open Online Manual</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>F4</strong></td>
-                        <td>&nbsp;Open Online Tutorials</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Del</strong></td>
-                        <td>&nbsp;Delete Object</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Del</strong></td>
-                        <td>&nbsp;Alternate: Delete Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>'`'</strong></td>
-                        <td>&nbsp;(left to Key_1)Toogle Notebook Area (Left Side)</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SPACE</strong></td>
-                        <td>&nbsp;En(Dis)able Obj Plot</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Escape</strong></td>
-                        <td>&nbsp;Deselects all objects</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                 </tbody>
             </table>
-    
-            '''
+            ''' % (
+            _("SHOW SHORTCUT LIST"), _("Switch to Project Tab"), _("Switch to Selected Tab"), _("Switch to Tool Tab"),
+            _("New Gerber"), _("Edit Object (if selected)"), _("Grid On/Off"), _("Jump to Coordinates"),
+            _("New Excellon"), _("Move Obj"), _("New Geometry"), _("Set Origin"), _("Change Units"),
+            _("Open Properties Tool"), _("Rotate by 90 degree CW"), _("Shell Toggle"),
+            _("Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"), _("Zoom Fit"),
+            _("Flip on X_axis"), _("Flip on Y_axis"), _("Zoom Out"), _("Zoom In"), _("Select All"), _("Copy Obj"),
+            _("Open Excellon File"), _("Open Gerber File"), _("New Project"), _("Measurement Tool"), _("Open Project"),
+            _("Save Project As"), _("Toggle Plot Area"), _("Copy Obj_Name"), _("Toggle Code Editor"),
+            _("Toggle the axis"), _("Open Preferences Window"), _("Rotate by 90 degree CCW"), _("Run a Script"),
+            _("Toggle the workspace"), _("Skew on X axis"), _("Skew on Y axis"), _("Calculators Tool"),
+            _("2-Sided PCB Tool"), _("Solder Paste Dispensing Tool"), _("Film PCB Tool"), _("Non-Copper Clearing Tool"),
+            _("Paint Area Tool"), _("PDF Import Tool"), _("Transformations Tool"), _("View File Source"),
+            _("Cutout PCB Tool"), _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
+            _("Toggle Full Screen"), _("Abort current task (gracefully)"), _("Open Online Manual"),
+            _("Open Online Tutorials"), _("Delete Object"), _("Alternate: Delete Tool"),
+            _("(left to Key_1)Toogle Notebook Area (Left Side)"), _("En(Dis)able Obj Plot"), _("Deselects all objects")
+        )
         )
 
         self.sh_app = QtWidgets.QTextEdit()
@@ -1307,88 +1323,90 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.sh_app.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.sh_hlay.addWidget(self.sh_app)
 
-        self.editor_sh_msg = _(
-            '''<b>Editor Shortcut list</b><br>
-            <br>
-            <strong><span style="color:#0000ff">GEOMETRY EDITOR</span></strong><br>
-    
-            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+        editor_title = """
+        <b>%s</b><br>
+        <br>
+        """ % _("Editor Shortcut list")
+
+        geo_sh_messages = """
+        <strong><span style="color:#0000ff">%s</span></strong><br>
+        <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
                 <tbody>
                     <tr height="20">
                         <td height="20" width="89"><strong>A</strong></td>
-                        <td width="194">&nbsp;Draw an Arc</td>
+                        <td width="194">&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>B</strong></td>
-                        <td>&nbsp;Buffer Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>C</strong></td>
-                        <td>&nbsp;Copy Geo Item</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>D</strong></td>
-                        <td>&nbsp;Within Add Arc will toogle the ARC direction: CW or CCW</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>E</strong></td>
-                        <td>&nbsp;Polygon Intersection Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>I</strong></td>
-                        <td>&nbsp;Paint Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>J</strong></td>
-                        <td>&nbsp;Jump to Location (x, y)</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>K</strong></td>
-                        <td>&nbsp;Toggle Corner Snap</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>M</strong></td>
-                        <td>&nbsp;Move Geo Item</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>M</strong></td>
-                        <td>&nbsp;Within Add Arc will cycle through the ARC modes</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>N</strong></td>
-                        <td>&nbsp;Draw a Polygon</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>O</strong></td>
-                        <td>&nbsp;Draw a Circle</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>P</strong></td>
-                        <td>&nbsp;Draw a Path</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>R</strong></td>
-                        <td>&nbsp;Draw Rectangle</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>S</strong></td>
-                        <td>&nbsp;Polygon Substraction Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>T</strong></td>
-                        <td>&nbsp;Add Text Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>U</strong></td>
-                        <td>&nbsp;Polygon Union Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>X</strong></td>
-                        <td>&nbsp;Flip shape on X axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Y</strong></td>
-                        <td>&nbsp;Flip shape on Y axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1396,11 +1414,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+X</strong></td>
-                        <td>&nbsp;Skew shape on X axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>SHIFT+Y</strong></td>
-                        <td>&nbsp;Skew shape on Y axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1408,15 +1426,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+R</strong></td>
-                        <td>&nbsp;Editor Transformation Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+X</strong></td>
-                        <td>&nbsp;Offset shape on X axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+Y</strong></td>
-                        <td>&nbsp;Offset shape on Y axis</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1424,15 +1442,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+M</strong></td>
-                        <td>&nbsp;Measurement Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+S</strong></td>
-                        <td>&nbsp;Save Object and Exit Editor</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+X</strong></td>
-                        <td>&nbsp;Polygon Cut Tool</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1440,194 +1458,226 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Space</strong></td>
-                        <td>&nbsp;Rotate Geometry</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ENTER</strong></td>
-                        <td>&nbsp;Finish drawing for certain tools</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ESC</strong></td>
-                        <td>&nbsp;Abort and return to Select</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>Del</strong></td>
-                        <td>&nbsp;Delete Shape</td>
+                        <td>&nbsp;%s</td>
                     </tr>
                 </tbody>
             </table>
             <br>
-            <br>
-            <strong><span style="color:#ff0000">EXCELLON EDITOR</span></strong><br>
-            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
-                <tbody>
-                    <tr height="20">
-                        <td height="20" width="89"><strong>A</strong></td>
-                        <td width="194">&nbsp;Add Drill Array</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>C</strong></td>
-                        <td>&nbsp;Copy Drill(s)</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>D</strong></td>
-                        <td>&nbsp;Add Drill</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>J</strong></td>
-                        <td>&nbsp;Jump to Location (x, y)</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>M</strong></td>
-                        <td>&nbsp;Move Drill(s)</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20" width="89"><strong>Q</strong></td>
-                        <td width="194">&nbsp;Add Slot Array</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>R</strong></td>
-                        <td>&nbsp;Resize Drill(s)</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>T</strong></td>
-                        <td>&nbsp;Add a new Tool</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20" width="89"><strong>W</strong></td>
-                        <td width="194">&nbsp;Add Slot</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>Del</strong></td>
-                        <td>&nbsp;Delete Drill(s)</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>Del</strong></td>
-                        <td>&nbsp;Alternate: Delete Tool(s)</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ESC</strong></td>
-                        <td>&nbsp;Abort and return to Select</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>CTRL+S</strong></td>
-                        <td>&nbsp;Save Object and Exit Editor</td>
-                    </tr>
-                </tbody>
-            </table>
-            <br>
-            <br>
-            <strong><span style="color:#00ff00">GERBER EDITOR</span></strong><br>
-            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
-                <tbody>
-                    <tr height="20">
-                        <td height="20" width="89"><strong>A</strong></td>
-                        <td width="194">&nbsp;Add Pad Array</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>B</strong></td>
-                        <td>&nbsp;Buffer</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>C</strong></td>
-                        <td>&nbsp;Copy</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>D</strong></td>
-                        <td>&nbsp;Add Disc</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>E</strong></td>
-                        <td>&nbsp;Add SemiDisc</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>J</strong></td>
-                        <td>&nbsp;Jump to Location (x, y)</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>M</strong></td>
-                        <td>&nbsp;Move</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>N</strong></td>
-                        <td>&nbsp;Add Region</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>P</strong></td>
-                        <td>&nbsp;Add Pad</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>R</strong></td>
-                        <td>&nbsp;Within Track & Region Tools will cycle in REVERSE the bend modes</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>S</strong></td>
-                        <td>&nbsp;Scale</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>T</strong></td>
-                        <td>&nbsp;Add Track</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>T</strong></td>
-                        <td>&nbsp;Within Track & Region Tools will cycle FORWARD the bend modes</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>Del</strong></td>
-                        <td>&nbsp;Delete</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>Del</strong></td>
-                        <td>&nbsp;Alternate: Delete Apertures</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ESC</strong></td>
-                        <td>&nbsp;Abort and return to Select</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>CTRL+E</strong></td>
-                        <td>&nbsp;Eraser Tool</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>CTRL+S</strong></td>
-                        <td>&nbsp;Save Object and Exit Editor</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20">&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                     <tr height="20">
-                        <td height="20"><strong>ALT+A</strong></td>
-                        <td>&nbsp;Mark Area Tool</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+N</strong></td>
-                        <td>&nbsp;Poligonize Tool</td>
-                    </tr>
-                    <tr height="20">
-                        <td height="20"><strong>ALT+R</strong></td>
-                        <td>&nbsp;Transformation Tool</td>
-                    </tr>
-                </tbody>
-            </table>
-                    '''
+        """ % (
+            _("GEOMETRY EDITOR"), _("Draw an Arc"), _("Buffer Tool"), _("Copy Geo Item"),
+            _("Within Add Arc will toogle the ARC direction: CW or CCW"), _("Polygon Intersection Tool"),
+            _("Geo Paint Tool"), _("Jump to Location (x, y)"), _("Toggle Corner Snap"), _("Move Geo Item"),
+            _("Within Add Arc will cycle through the ARC modes"), _("Draw a Polygon"), _("Draw a Circle"),
+            _("Draw a Path"), _("Draw Rectangle"), _("Polygon Substraction Tool"), _("Add Text Tool"),
+            _("Polygon Union Tool"), _("Flip shape on X axis"), _("Flip shape on Y axis"), _("Skew shape on X axis"),
+            _("Skew shape on Y axis"), _("Editor Transformation Tool"), _("Offset shape on X axis"),
+            _("Offset shape on Y axis"), _("Measurement Tool"), _("Save Object and Exit Editor"), _("Polygon Cut Tool"),
+            _("Rotate Geometry"), _("Finish drawing for certain tools"), _("Abort and return to Select"),
+            _("Delete Shape")
         )
+
+        exc_sh_messages = """
+        <br>
+        <strong><span style="color:#ff0000">%s</span></strong><br>
+        <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+            <tbody>
+                <tr height="20">
+                    <td height="20" width="89"><strong>A</strong></td>
+                    <td width="194">&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>C</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>D</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>J</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>M</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20" width="89"><strong>Q</strong></td>
+                    <td width="194">&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>R</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>T</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20" width="89"><strong>W</strong></td>
+                    <td width="194">&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>Del</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>Del</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>ESC</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>CTRL+S</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        """ % (
+            _("EXCELLON EDITOR"), _("Add Drill Array"), _("Copy Drill(s)"), _("Add Drill"),
+            _("Jump to Location (x, y)"), _("Move Drill(s)"), _("Add Slot Array"), _("Resize Drill(s)"),
+            _("Add a new Tool"), _("Add Slot"), _("Delete Drill(s)"), _("Alternate: Delete Tool(s)"),
+            _("Abort and return to Select"), _("Save Object and Exit Editor")
+        )
+
+        grb_sh_messages = """
+        <br>
+        <strong><span style="color:#00ff00">%s</span></strong><br>
+        <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+            <tbody>
+                <tr height="20">
+                    <td height="20" width="89"><strong>A</strong></td>
+                    <td width="194">&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>B</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>C</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>D</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>E</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>J</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>M</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>N</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>P</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>R</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>S</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>T</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>T</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>Del</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>Del</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>ESC</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>CTRL+E</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>CTRL+S</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                 <tr height="20">
+                    <td height="20"><strong>ALT+A</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>ALT+N</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20"><strong>ALT+R</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        """ % (
+            _("GERBER EDITOR"), _("Add Pad Array"), _("Buffer"), _("Copy"), _("Add Disc"), _("Add SemiDisc"),
+            _("Jump to Location (x, y)"), _("Move"), _("Add Region"), _("Add Pad"),
+            _("Within Track & Region Tools will cycle in REVERSE the bend modes"), _("Scale"), _("Add Track"),
+            _("Within Track & Region Tools will cycle FORWARD the bend modes"), _("Delete"),
+            _("Alternate: Delete Apertures"), _("Abort and return to Select"), _("Eraser Tool"),
+            _("Save Object and Exit Editor"), _("Mark Area Tool"), _("Poligonize Tool"), _("Transformation Tool")
+        )
+
+        self.editor_sh_msg = editor_title + geo_sh_messages + grb_sh_messages + exc_sh_messages
+
         self.sh_editor = QtWidgets.QTextEdit()
         self.sh_editor.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.sh_editor.setText(self.editor_sh_msg)
