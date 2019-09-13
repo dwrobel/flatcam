@@ -9923,29 +9923,90 @@ class App(QtCore.QObject):
 
         tsize = fsize + int(fsize / 2)
 
-        selected_text = (_('''
-<p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
+#         selected_text = (_('''
+# <p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
+#
+# <p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
+# The normal flow when working in FlatCAM is the following:</span></p>
+#
+# <ol>
+# 	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into
+        # 	FlatCAM using either the menu&#39;s, toolbars, key shortcuts or
+        # 	even dragging and dropping the files on the GUI.<br />
+# 	<br />
+# 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the
+        # 	file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
+# 	&nbsp;</li>
+# 	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it and then
+        # 	focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the
+        # 	Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to
+        # 	it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
+# 	<br />
+# 	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong>
+        # 	is in focus, again the object properties will be displayed into the Selected Tab. Alternatively,
+        # 	double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate
+        # 	it even if it was out of focus.<br />
+# 	<br />
+# 	You can change the parameters in this screen and the flow direction is like this:<br />
+# 	<br />
+# 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object
+        # 	</strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object
+        # 	</strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in
+        # 	<strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
+# </ol>
+#
+# <p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in
+        # <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut:
+        # <strong>F3</strong>.</span></p>
+#
+#         ''').format(fsize=fsize, tsize=tsize))
 
-<p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
-The normal flow when working in FlatCAM is the following:</span></p>
+        selected_text = '''
+        <p><span style="font-size:{tsize}px"><strong>%s</strong></span></p>
 
-<ol>
-	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;s, toolbars, key shortcuts or even dragging and dropping the files on the GUI.<br />
-	<br />
-	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
-	&nbsp;</li>
-	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it and then focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
-	<br />
-	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong> is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate it even if it was out of focus.<br />
-	<br />
-	You can change the parameters in this screen and the flow direction is like this:<br />
-	<br />
-	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object </strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object </strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in <strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
-</ol>
+        <p><span style="font-size:{fsize}px"><strong>%s</strong>:<br />
+        %s:</span></p>
 
-<p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: <strng>F3</strong>.</span></p>
+        <ol>
+            <li><span style="font-size:{fsize}px">%s menu&#39;s, %s.<br />
+            <br />
+            %s &amp; %s.</span><br />
+            &nbsp;</li>
+            <li><span style="font-size:{fsize}px">%s <strong>%s</strong> (%s), <strong>%s</strong> %s it-s %s.<br />
+            <br />
+            %s <strong>%s</strong> %s <strong>%s</strong> %s.<br />
+            <br />
+            %s:<br />
+            <br />
+            <strong>%s</strong> -&gt; %s -&gt; %s -&gt;<strong> %s </strong> -&gt; %s -&gt; %s -&gt;<strong> %s 
+            </strong>-&gt; %s <strong>%s)&nbsp;</strong>-&gt; %s</span></li>
+        </ol>
 
-        ''').format(fsize=fsize, tsize=tsize))
+        <p><span style="font-size:{fsize}px">%s <strong>%s -&gt; %s</strong>&nbsp;%s it&#39;s %s: 
+        <strong>F3</strong>.</span></p>
+        ''' % (
+            _("Selected Tab - Choose an Item from Project Tab"), _("Details"),
+            _("The normal flow when working in FlatCAM is the following"),
+            _("Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the"),
+            _("toolbars, key shortcuts or even dragging and dropping the files on the GUI"),
+            _("You can also load a FlatCAM project by double clicking on the project file, drag"),
+            _("drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app"),
+            _("Once an object is available in the Project Tab, by selecting it and then focusing on"),
+            _("SELECTED TAB"), _("more simpler is to double click the object name in the Project Tab"),
+            _("SELECTED TAB"), _("will be updated with the object properties according to"),
+            _("kind: Gerber, Excellon, Geometry or CNCJob object"),
+            _("If the selection of the object is done on the canvas by single click instead, and the"),
+            _("SELECTED TAB"),
+            _("is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, "
+              "double clicking on the object on the canvas will bring the"),
+            _("SELECTED TAB"), _("and populate it even if it was out of focus"),
+            _("You can change the parameters in this screen and the flow direction is like this"),
+            _("Gerber/Excellon Object"), _("Change Parameter"), _("Generate Geometry"), _("Geometry Object"),
+            _("Add tools (change param in Selected Tab)"), _("Generate CNCJob"), _("CNCJob Object"),
+            _("Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in"), _("SELECTED TAB"),
+            _("Save GCode"), _("A list of key shortcuts is available through an menu entry in"), _("Help"),
+            _("Shortcuts List"), _("or through"), _("own key shortcut"),
+        )
 
         sel_title.setText(selected_text)
         sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)

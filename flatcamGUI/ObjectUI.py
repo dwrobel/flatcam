@@ -289,7 +289,7 @@ class GerberObjectUI(ObjectUI):
         overlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
               "Example:\n"
-              "A value here of 0.25 means an overlap of 25% from the tool diameter found above.")
+              "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
         )
         overlabel.setMinimumWidth(90)
         self.iso_overlap_entry = FloatEntry()

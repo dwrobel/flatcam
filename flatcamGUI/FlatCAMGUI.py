@@ -4515,7 +4515,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         overlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
               "Example:\n"
-              "A value here of 0.25 means an overlap of 25% from the tool diameter found above.")
+              "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
         )
         grid0.addWidget(overlabel, 2, 0)
         self.iso_overlap_entry = FloatEntry()
@@ -6684,7 +6684,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         nccoverlabel.setToolTip(
            _("How much (fraction) of the tool width to overlap each tool pass.\n"
              "Example:\n"
-             "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
+             "A value here of 0.25 means 25%% from the tool diameter found above.\n\n"
              "Adjust the value starting with lower values\n"
              "and increasing it if areas that should be cleared are still \n"
              "not cleared.\n"
@@ -7029,7 +7029,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
               "Example:\n"
-              "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
+              "A value here of 0.25 means 25%% from the tool diameter found above.\n\n"
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be painted are still \n"
               "not painted.\n"
