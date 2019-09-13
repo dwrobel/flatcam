@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 13.09.2019
 
 - added control for simplification when loading a Gerber file in Preferences -> Gerber -> Gerber General -> Simplify
+- added some messages for the Edit -> Conversions -> Join methods() to make sure that there are at least 2 objects selected for join
+- added a grid layout in on_about()
 
 12.09.2019
 

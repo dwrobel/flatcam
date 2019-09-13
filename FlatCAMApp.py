@@ -3861,17 +3861,6 @@ class App(QtCore.QObject):
                 )
                 programmers_label.setOpenExternalLinks(True)
 
-                translators_label = QtWidgets.QLabel(
-                    _(
-                        "Brasilian - Portuguese: \t\t Carlos Stein\n"
-                        "German: \t\t Marius Stanciu (Google-Translation)\n"
-                        "Romanian: \t\t Marius Stanciu\n"
-                        "Russian: \t\t Andrey Kultyapov <camellan@yandex.ru>\n"
-                        "Spanish: \t\t Marius Stanciu (Google-Translation)\n"
-                    )
-                )
-                translators_label.setOpenExternalLinks(True)
-
                 license_label = QtWidgets.QLabel(
                     _(
                         '(c) Copyright 2014 Juan Pablo Caram.\n\n'
@@ -3944,11 +3933,52 @@ class App(QtCore.QObject):
                 self.splash_tab_layout.addWidget(logo, stretch=0)
                 self.splash_tab_layout.addWidget(title, stretch=1)
 
-                self.programmmers_tab_layout.addWidget(programmers_label)
+                self.prog_grid_lay = QtWidgets.QGridLayout()
+
+                prog_widget = QtWidgets.QWidget()
+                prog_widget.setLayout(self.prog_grid_lay)
+                self.programmmers_tab_layout.addWidget(prog_widget)
                 self.programmmers_tab_layout.addStretch()
 
-                self.translators_tab_layout.addWidget(translators_label)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Function")), 0, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram <BR>"), 1, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Program Author")), 1, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Maintainer >=2019"), 4, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Matthieu Berthomé"), 5, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 1)
+
+                self.translator_grid_lay = QtWidgets.QGridLayout()
+                trans_widget = QtWidgets.QWidget()
+                trans_widget.setLayout(self.translator_grid_lay)
+                self.translators_tab_layout.addWidget(trans_widget)
                 self.translators_tab_layout.addStretch()
+
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Language")), 0, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Translator")), 0, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Brasilian - Portuguese"), 1, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Carlos Stein"), 1, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "),  1, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 2, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 2, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 3, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 3, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Russian"), 4, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 4, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 4, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Spanish"), 5, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 5, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 2)
+                self.translator_grid_lay.setColumnStretch(0, 0)
+                # self.translators_tab_layout.addStretch()
 
                 self.license_tab_layout.addWidget(license_label)
                 self.license_tab_layout.addStretch()
@@ -4434,6 +4464,12 @@ class App(QtCore.QObject):
         geo_type_list = set()
 
         objs = self.collection.get_selected()
+
+        if len(objs) < 2:
+            self.inform.emit('[ERROR_NOTCL] %s: %d' %
+                             (_("At least two objects are required for join. Objects currently selected"), len(objs)))
+            return 'fail'
+
         for obj in objs:
             geo_type_list.add(obj.multigeo)
 
@@ -4485,6 +4521,11 @@ class App(QtCore.QObject):
                                  _("Failed. Excellon joining works only on Excellon objects."))
                 return
 
+        if len(objs) < 2:
+            self.inform.emit('[ERROR_NOTCL] %s: %d' %
+                             (_("At least two objects are required for join. Objects currently selected"), len(objs)))
+            return 'fail'
+
         def initialize(obj, app):
             FlatCAMExcellon.merge(self, exc_list=objs, exc_final=obj)
 
@@ -4507,6 +4548,11 @@ class App(QtCore.QObject):
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Failed. Gerber joining works only on Gerber objects."))
                 return
+
+        if len(objs) < 2:
+            self.inform.emit('[ERROR_NOTCL] %s: %d' %
+                             (_("At least two objects are required for join. Objects currently selected"), len(objs)))
+            return 'fail'
 
         def initialize(obj, app):
             FlatCAMGerber.merge(self, grb_list=objs, grb_final=obj)
