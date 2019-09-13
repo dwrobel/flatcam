@@ -210,7 +210,10 @@ class FlatCAMObj(QtCore.QObject):
             self.default_data["name"] = self.ui.name_entry.get_value()
             self.app.collection.update_view()
             if silent:
-                self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
+                self.app.inform.emit('[success] %s: %s %s: %s' % (
+                    _("Name changed from"), str(old_name), _("to"), str(new_name)
+                )
+                                     )
 
     def on_offset_button_click(self):
         self.app.report_usage("obj_on_offset_button")
@@ -4465,9 +4468,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         try:
             if self.special_group:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("This Geometry can't be processed because it is %s geometry."
-                ) % str(self.special_group))
+                self.app.inform.emit('[WARNING_NOTCL] %s %s %s.' %
+                                     (_("This Geometry can't be processed because it is"),
+                                      str(self.special_group),
+                                      _("geometry")
+                                      )
+                                     )
                 return
         except AttributeError:
             pass
@@ -4756,9 +4762,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # dia_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
                 try:
                     dia_cnc_dict['solid_geometry'] = tool_solid_geometry
-                    self.app.inform.emit('[success] %s' % _("Finished G-Code processing..."))
+                    self.app.inform.emit('[success] %s...' % _("Finished G-Code processing"))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR] %s' % _("G-Code processing failed with error: %s") % str(e))
+                    self.app.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(e)))
 
                 app_obj.progress.emit(80)
 
@@ -4990,7 +4996,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     dia_cnc_dict['solid_geometry'] = tool_solid_geometry
                     self.app.inform.emit('[success] %s' % _("Finished G-Code processing..."))
                 except Exception as e:
-                    self.app.inform.emit('[ERROR] %s' % _("G-Code processing failed with error: %s") % str(e))
+                    self.app.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(e)))
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode

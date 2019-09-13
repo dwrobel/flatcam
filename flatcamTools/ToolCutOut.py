@@ -572,7 +572,7 @@ class CutOut(FlatCAMTool):
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found: %s"), cutout_obj))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(name)))
 
         try:
             dia = float(self.dia.get_value())

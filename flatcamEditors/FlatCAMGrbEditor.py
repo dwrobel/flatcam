@@ -1520,7 +1520,7 @@ class FCSemiDisc(FCShapeTool):
     def on_key(self, key):
         if key == 'D' or key == QtCore.Qt.Key_D:
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
-            return _('Direction: %s') % self.direction.upper()
+            return '%s: %s' % (_('Direction'), self.direction.upper())
 
         if key == 'M' or key == QtCore.Qt.Key_M:
             # delete the possible points made before this action; we want to start anew
@@ -3764,7 +3764,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # and then add it to the storage elements (each storage elements is a member of a list
         def job_thread(aperture_id):
-            with self.app.proc_container.new(_("Adding aperture: %s geo ...") % str(aperture_id)):
+            with self.app.proc_container.new('%s: %s %s...' %
+                                             (_("Adding aperture"),  str(aperture_id), _("geo"))):
                 storage_elem = []
                 self.storage_dict[aperture_id] = {}
 
@@ -4849,7 +4850,7 @@ class TransformEditorTool(FlatCAMTool):
         self.layout.addLayout(self.transform_lay)
 
         # Title
-        title_label = QtWidgets.QLabel("%s" % (_('Editor %s') % self.toolName))
+        title_label = QtWidgets.QLabel("%s %s" % (_('Editor'),  self.toolName))
         title_label.setStyleSheet("""
                 QLabel
                 {

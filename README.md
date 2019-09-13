@@ -17,6 +17,9 @@ CAD program, and create G-Code for Isolation routing.
 - upgraded the Script Editor to be able to run Tcl commands in batches
 - added some ToolTips for the buttons in the Code Editor
 - converted the big strings that hold the shortcut keys descriptions to smaller string to make translations easier
+- fixed some of the strings that were left in the old way
+- updated the POT file
+- updated Romanian language partially
 
 12.09.2019
 

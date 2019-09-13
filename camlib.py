@@ -6665,10 +6665,10 @@ class CNCjob(Geometry):
                 # if the offset is less than half of the total length or less than half of the total width of the
                 # solid geometry it's obvious we can't do the offset
                 if -offset > ((c - a) / 2) or -offset > ((d - b) / 2):
-                    self.app.inform.emit(_('[ERROR_NOTCL] %s' %
-                                           "The Tool Offset value is too negative to use "
-                                           "for the current_geometry.\n"
-                                           "Raise the value (in module) and try again."))
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _(
+                        "The Tool Offset value is too negative to use "
+                        "for the current_geometry.\n"
+                        "Raise the value (in module) and try again."))
                     return 'fail'
                 # hack: make offset smaller by 0.0000000001 which is insignificant difference but allow the job
                 # to continue

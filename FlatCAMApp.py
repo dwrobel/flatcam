@@ -3834,30 +3834,13 @@ class App(QtCore.QObject):
 
                 tab_widget = QtWidgets.QTabWidget()
                 description_label = QtWidgets.QLabel(
-                    _(
-                        "FlatCAM {version} {beta} ({date}) - {arch}<br>"
-                        "<a href = \"http://flatcam.org/\">http://flatcam.org</a><br>"
-                    ).format(version=version,
-                             beta=('BETA' if beta else ''),
-                             date=version_date,
-                             arch=platform.architecture()[0])
+                    "FlatCAM {version} {beta} ({date}) - {arch}<br>"
+                    "<a href = \"http://flatcam.org/\">http://flatcam.org</a><br>".format(
+                        version=version,beta=('BETA' if beta else ''),
+                        date=version_date,
+                        arch=platform.architecture()[0])
                 )
                 description_label.setOpenExternalLinks(True)
-
-                programmers_label = QtWidgets.QLabel(
-                    _(
-                        "Juan Pablo Caram <BR>"
-                        "<BR>"
-                        "Denis Hayrullin<BR>"
-                        "Kamil Sopko<BR>"
-                        "Marius Stanciu<BR>"
-                        "Matthieu Berthomé<BR><Br>"
-                        "and many others found "
-                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/pull-requests/?state=MERGED\">here.</a><BR>"
-                        "<BR>"
-                    )
-                )
-                programmers_label.setOpenExternalLinks(True)
 
                 license_label = QtWidgets.QLabel(
                     _(
@@ -4400,7 +4383,7 @@ class App(QtCore.QObject):
             for ext in exc_list:
                 new_ext = new_ext + ext + ', '
             self.defaults["fa_excellon"] = new_ext
-            self.inform.emit(_("[success] Selected Excellon file extensions registered with FlatCAM."))
+            self.inform.emit('[success] %s' % _("Selected Excellon file extensions registered with FlatCAM."))
 
         if obj_type is None or obj_type == 'gcode':
             gco_list = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
@@ -4616,7 +4599,7 @@ class App(QtCore.QObject):
 
         if not isinstance(obj, FlatCAMGeometry):
             self.inform.emit('[ERROR_NOTCL] %s: %s' %
-                             (_("Expected a FlatCAMGeometry, got %s"), type(obj)))
+                             (_("Expected a FlatCAMGeometry, got"), type(obj)))
             return
 
         obj.multigeo = False
@@ -4946,7 +4929,7 @@ class App(QtCore.QObject):
 
             self.plot_all()
             self.inform.emit('[success] %s: %s' %
-                             (_("Converted units to %s"), new_units))
+                             (_("Converted units to"), new_units))
             # self.ui.units_label.setText("[" + self.options["units"] + "]")
             self.set_screen_units(new_units)
         else:
@@ -5725,7 +5708,7 @@ class App(QtCore.QObject):
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("cncjob", filename)
         self.file_saved.emit("cncjob", filename)
-        self.inform.emit(_("Saved to: %s") % filename)
+        self.inform.emit('%s: %s' % (_("Saved to"), str(filename)))
 
     def handleFindGCode(self):
         self.report_usage("handleFindGCode()")
@@ -5854,8 +5837,8 @@ class App(QtCore.QObject):
                         return
                     self.paint_tool.on_tool_add(dia=float(val))
                 else:
-                    self.inform.emit(
-                        _("[WARNING_NOTCL] Adding Tool cancelled ..."))
+                    self.inform.emit('[WARNING_NOTCL] %s...' %
+                                     _("Adding Tool cancelled"))
             # and only if the tool is Solder Paste Dispensing Tool
             elif tool_widget == self.paste_tool.toolName:
                 if ok:
@@ -8017,7 +8000,7 @@ class App(QtCore.QObject):
             pass
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _('%s') % name)
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, '%s' % name)
         self.ui.cncjob_tab.setObjectName('cncjob_tab')
 
         # delete the absolute and relative position and messages in the infobar

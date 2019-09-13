@@ -1065,8 +1065,8 @@ class FCDrillResize(FCShapeTool):
             # we reactivate the signals after the after the tool editing
             self.draw_app.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
 
-            self.draw_app.app.inform.emit('[success] Done. %s' %
-                                          _("Drill/Slot Resize completed."))
+            self.draw_app.app.inform.emit('[success] %s' %
+                                          _("Done. Drill/Slot Resize completed."))
         else:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                           _("Cancelled. No drills/slots selected for resize ..."))

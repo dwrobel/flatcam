@@ -2640,7 +2640,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                             if self.app.geo_editor.active_tool.complete:
                                 self.app.geo_editor.on_shape_complete()
-                                self.app.inform.emit(_("[success] Done."))
+                                self.app.inform.emit('[success] %s' % _("Done."))
                             # automatically make the selection tool active after completing current action
                             self.app.geo_editor.select_tool('select')
                             return
@@ -2652,7 +2652,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                             if self.app.geo_editor.active_tool.complete:
                                 self.app.geo_editor.on_shape_complete()
-                                self.app.inform.emit(_("[success] Done."))
+                                self.app.inform.emit('[success] %s' % _("Done."))
                             # automatically make the selection tool active after completing current action
                             self.app.geo_editor.select_tool('select')
 
@@ -2660,7 +2660,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # TODO: ...?
                     # self.on_tool_select("select")
-                    self.app.inform.emit(_("[WARNING_NOTCL] Cancelled."))
+                    self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                         _("Cancelled."))
 
                     self.app.geo_editor.delete_utility_geometry()
 
@@ -2868,7 +2869,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # self.on_tool_select("select")
-                    self.app.inform.emit(_("[WARNING_NOTCL] Cancelled."))
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
                     self.app.grb_editor.delete_utility_geometry()
 
@@ -2884,7 +2885,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.grb_editor.delete_selected()
                         self.app.grb_editor.plot_all()
                     else:
-                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                             _("Cancelled. Nothing selected to delete."))
                     return
 
                 # Delete aperture in apertures table if delete key event comes from the Selected Tab
@@ -2968,7 +2970,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.grb_editor.active_tool.set_origin(
                                 (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
-                            self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                 _("Cancelled. Nothing selected to copy."))
                         return
 
                     # Add Disc Tool
@@ -3014,7 +3017,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.grb_editor.active_tool.set_origin(
                                 (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
-                            self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
+                            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                 _("Cancelled. Nothing selected to move."))
                         return
 
                     # Add Region Tool
@@ -3079,7 +3083,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # TODO: ...?
                     # self.on_tool_select("select")
-                    self.app.inform.emit(_("[WARNING_NOTCL] Cancelled."))
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
                     self.app.exc_editor.delete_utility_geometry()
 
@@ -3096,7 +3100,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.delete_selected()
                         self.app.exc_editor.replot()
                     else:
-                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                             _("Cancelled. Nothing selected to delete."))
                     return
 
                 # Delete tools in tools table if delete key event comes from the Selected Tab
@@ -3163,7 +3168,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.active_tool.set_origin(
                             (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                     else:
-                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                             _("Cancelled. Nothing selected to copy."))
                     return
 
                 # Add Drill Hole Tool
@@ -3209,7 +3215,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.active_tool.set_origin(
                             (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                     else:
-                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                             _("Cancelled. Nothing selected to move."))
                     return
 
                 # Add Array of Slote Hole Tool
@@ -3243,12 +3250,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     val, ok = tool_add_popup.get_value()
                     if ok:
                         self.app.exc_editor.on_tool_add(tooldia=val)
-                        self.app.inform.emit(
-                            _("[success] Added new tool with dia: {dia} {units}").format(dia='%.4f' % float(val),
-                                                                                         units=str(self.units)))
+                        formated_val = '%.4f' % float(val)
+                        self.app.inform.emit('[success] %s: %s %s' %
+                                             (_("Added new tool with dia"),
+                                              formated_val,
+                                              str(self.units)
+                                              )
+                                             )
                     else:
                         self.app.inform.emit(
-                            _("[WARNING_NOTCL] Adding Tool cancelled ..."))
+                            '[WARNING_NOTCL] %s' % _("Adding Tool cancelled ..."))
                     return
 
                 # Zoom Fit
@@ -3392,7 +3403,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         if self.app.save_in_progress:
-            self.app.inform.emit(_("[WARNING_NOTCL] Application is saving the project. Please wait ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Application is saving the project. Please wait ..."))
         else:
             grect = self.geometry()
 
@@ -4828,7 +4840,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.adddim_entry = FCEntry()
         grid0.addWidget(self.adddim_entry, 5, 1)
 
-        self.grb_array_linear_label = QtWidgets.QLabel(_('<b>%s:</b>' % 'Linear Pad Array'))
+        self.grb_array_linear_label = QtWidgets.QLabel('<b>%s:</b>' % _('Linear Pad Array'))
         grid0.addWidget(self.grb_array_linear_label, 6, 0, 1, 2)
 
         # Linear Pad Array direction
@@ -5697,7 +5709,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_axis_radio, 4, 1)
 
         # Linear Drill Array pitch distance
-        self.drill_pitch_label = QtWidgets.QLabel(_('%s:' % 'Pitch'))
+        self.drill_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
         self.drill_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -6117,7 +6129,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid1)
 
         # Toolchange X,Y
-        toolchange_xy_label = QtWidgets.QLabel(_('%s:' % 'Toolchange X-Y'))
+        toolchange_xy_label = QtWidgets.QLabel('%s:' %  _('Toolchange X-Y'))
         toolchange_xy_label.setToolTip(
             _("Toolchange X,Y position.")
         )
