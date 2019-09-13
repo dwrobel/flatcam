@@ -20,6 +20,9 @@ CAD program, and create G-Code for Isolation routing.
 - fixed some of the strings that were left in the old way
 - updated the POT file
 - updated Romanian language partially
+- added a new way to handle scripts with repeating Tcl commands
+- added new buttons in the Tools toolbar for running, opening and adding new scripts
+- finished the Romanian translation update and updated the POT file
 
 12.09.2019
 
