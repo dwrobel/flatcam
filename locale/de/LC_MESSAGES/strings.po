@@ -1354,7 +1354,7 @@ msgid ""
 "\n"
 "<p><span style=\"font-size:{fsize}px\">A list of key shortcuts is available "
 "through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or "
-"through it&#39;s own key shortcut: <strong>F3</strong>.</span></p>\n"
+"through it&#39;s own key shortcut: <strng>F3</strong>.</span></p>\n"
 "\n"
 "        "
 msgstr ""
@@ -1407,7 +1407,7 @@ msgstr ""
 "<p><span style = \"font-size: {fsize}px\"> Eine Liste der "
 "Tastenkombinationen ist über einen Menüeintrag in der <strong> Hilfe -&gt; "
 "Verknüpfungsliste </strong> oder über eine eigene Tastenkombination: "
-"<strong>F3</strong>. </Span> </p>\n"
+"<strng>F3</strong>. </Span> </p>\n"
 
 #: FlatCAMApp.py:9970
 msgid "Failed checking for latest version. Could not connect."
@@ -6428,6 +6428,16 @@ msgstr "Auswahl2 Füllung"
 #: flatcamGUI/FlatCAMGUI.py:3795
 msgid ""
 <<<<<<< HEAD
+"Set the fill color for the selection box\n"
+"in case that the selection is done from right to left.\n"
+"First 6 digits are the color and the last 2\n"
+"digits are for alpha (transparency) level."
+msgstr ""
+"Legen Sie die Füllfarbe für das Auswahlfeld fest\n"
+"falls die Auswahl von rechts nach links erfolgt.\n"
+"Die ersten 6 Ziffern sind die Farbe und die letzten 2\n"
+"Ziffern sind für Alpha (Transparenz)."
+=======
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
 "A value here of 0.25 means an overlap of 25%% from the tool diameter found "
@@ -6438,17 +6448,7 @@ msgstr ""
 "Beispiel:\n"
 "Ein Wert von 0,25 bedeutet hier eine Überlappung von 25%% \n"
 "vom oben angegebenen Werkzeugdurchmesser."
-=======
-"Set the fill color for the selection box\n"
-"in case that the selection is done from right to left.\n"
-"First 6 digits are the color and the last 2\n"
-"digits are for alpha (transparency) level."
-msgstr ""
-"Legen Sie die Füllfarbe für das Auswahlfeld fest\n"
-"falls die Auswahl von rechts nach links erfolgt.\n"
-"Die ersten 6 Ziffern sind die Farbe und die letzten 2\n"
-"Ziffern sind für Alpha (Transparenz)."
->>>>>>> Original/Beta
+>>>>>>> Update in PT_BR translation
 
 #: flatcamGUI/FlatCAMGUI.py:3812
 msgid "Set the fill transparency for selection 'right to left' box."
@@ -7960,6 +7960,16 @@ msgstr "Schneller Sprung"
 #: flatcamGUI/FlatCAMGUI.py:5462 flatcamGUI/FlatCAMGUI.py:6205
 msgid ""
 <<<<<<< HEAD
+"By checking this, the vertical move from\n"
+"Z_Toolchange to Z_move is done with G0,\n"
+"meaning the fastest speed available.\n"
+"WARNING: the move is done at Toolchange X,Y coords."
+msgstr ""
+"Wenn Sie dies überprüfen, bewegen Sie sich vertikal\n"
+"Z_Toolchange zu Z_move erfolgt mit G0,\n"
+"Das bedeutet die schnellste verfügbare Geschwindigkeit.\n"
+"WARNUNG: Die Verschiebung erfolgt bei Toolchange X, Y-Koordinaten."
+=======
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
 "A value here of 0.25 means 25%% from the tool diameter found above.\n"
@@ -7985,17 +7995,7 @@ msgstr ""
 "Leiterplatten.\n"
 "Höhere Werte = langsame Bearbeitung und langsame Ausführung auf der CNC\n"
 "wegen zu vieler Wege."
-=======
-"By checking this, the vertical move from\n"
-"Z_Toolchange to Z_move is done with G0,\n"
-"meaning the fastest speed available.\n"
-"WARNING: the move is done at Toolchange X,Y coords."
-msgstr ""
-"Wenn Sie dies überprüfen, bewegen Sie sich vertikal\n"
-"Z_Toolchange zu Z_move erfolgt mit G0,\n"
-"Das bedeutet die schnellste verfügbare Geschwindigkeit.\n"
-"WARNUNG: Die Verschiebung erfolgt bei Toolchange X, Y-Koordinaten."
->>>>>>> Original/Beta
+>>>>>>> Update in PT_BR translation
 
 #: flatcamGUI/FlatCAMGUI.py:5471
 msgid "Fast Retract"
