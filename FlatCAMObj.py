@@ -846,40 +846,53 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.app.new_object("geometry", name, geo_init)
 
     def on_ext_iso_button_click(self, *args):
+        obj = self.app.collection.get_active()
 
-        if self.ui.follow_cb.get_value() is True:
-            obj = self.app.collection.get_active()
-            obj.follow_geo()
-            # in the end toggle the visibility of the origin object so we can see the generated Geometry
-            obj.ui.plot_cb.toggle()
-        else:
-            self.app.report_usage("gerber_on_iso_button")
-            self.read_form()
-            self.isolate(iso_type=0)
+        def worker_task(obj, app_obj):
+            with self.app.proc_container.new(_("Isolating...")):
+                if self.ui.follow_cb.get_value() is True:
+                    obj.follow_geo()
+                    # in the end toggle the visibility of the origin object so we can see the generated Geometry
+                    obj.ui.plot_cb.toggle()
+                else:
+                    app_obj.report_usage("gerber_on_iso_button")
+                    self.read_form()
+                    self.isolate(iso_type=0)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
 
     def on_int_iso_button_click(self, *args):
+        obj = self.app.collection.get_active()
 
-        if self.ui.follow_cb.get_value() is True:
-            obj = self.app.collection.get_active()
-            obj.follow_geo()
-            # in the end toggle the visibility of the origin object so we can see the generated Geometry
-            obj.ui.plot_cb.toggle()
-        else:
-            self.app.report_usage("gerber_on_iso_button")
-            self.read_form()
-            self.isolate(iso_type=1)
+        def worker_task(obj, app_obj):
+            with self.app.proc_container.new(_("Isolating...")):
+                if self.ui.follow_cb.get_value() is True:
+                    obj.follow_geo()
+                    # in the end toggle the visibility of the origin object so we can see the generated Geometry
+                    obj.ui.plot_cb.toggle()
+                else:
+                    app_obj.report_usage("gerber_on_iso_button")
+                    self.read_form()
+                    self.isolate(iso_type=1)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
 
     def on_iso_button_click(self, *args):
 
-        if self.ui.follow_cb.get_value() is True:
-            obj = self.app.collection.get_active()
-            obj.follow_geo()
-            # in the end toggle the visibility of the origin object so we can see the generated Geometry
-            obj.ui.plot_cb.toggle()
-        else:
-            self.app.report_usage("gerber_on_iso_button")
-            self.read_form()
-            self.isolate()
+        obj = self.app.collection.get_active()
+
+        def worker_task(obj, app_obj):
+            with self.app.proc_container.new(_("Isolating...")):
+                if self.ui.follow_cb.get_value() is True:
+                    obj.follow_geo()
+                    # in the end toggle the visibility of the origin object so we can see the generated Geometry
+                    obj.ui.plot_cb.toggle()
+                else:
+                    app_obj.report_usage("gerber_on_iso_button")
+                    self.read_form()
+                    self.isolate()
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
 
     def follow_geo(self, outname=None):
         """
@@ -939,7 +952,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         base_name = self.options["name"] + "_iso"
         base_name = outname or base_name
 
-        def generate_envelope(offset, invert, envelope_iso_type=2, follow=None):
+        def generate_envelope(offset, invert, envelope_iso_type=2, follow=None, passes=0):
             # isolation_geometry produces an envelope that is going on the left of the geometry
             # (the copper features). To leave the least amount of burrs on the features
             # the tool needs to travel on the right side of the features (this is called conventional milling)
@@ -947,7 +960,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # the other passes overlap preceding ones and cut the left over copper. It is better for them
             # to cut on the right side of the left over copper i.e on the left side of the features.
             try:
-                geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow)
+                geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow, passes=passes)
             except Exception as e:
                 log.debug('FlatCAMGerber.isolate().generate_envelope() --> %s' % str(e))
                 return 'fail'
@@ -1063,9 +1076,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geom = generate_envelope (offset, i == 0)
-                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type, follow=follow)
+                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type, follow=follow,
+                                                 passes=i)
                     else:
-                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow)
+                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow,
+                                                 passes=i)
                     if geom == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                             _("Isolation geometry could not be generated."))
@@ -1139,6 +1154,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 # ########## AREA SUBTRACTION ################################
                 # ############################################################
                 if self.ui.except_cb.get_value():
+                    self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
                     geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
             # TODO: Do something if this is None. Offer changing name?
@@ -1170,9 +1186,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geo_obj.solid_geometry = generate_envelope(offset, i == 0)
-                        geom = generate_envelope(offset, 1, envelope_iso_type=self.iso_type, follow=follow)
+                        geom = generate_envelope(offset, 1, envelope_iso_type=self.iso_type, follow=follow,
+                                                 passes=i)
                     else:
-                        geom = generate_envelope(offset, 0, envelope_iso_type=self.iso_type, follow=follow)
+                        geom = generate_envelope(offset, 0, envelope_iso_type=self.iso_type, follow=follow,
+                                                 passes=i)
                     if geom == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                             _("Isolation geometry could not be generated."))
@@ -1205,6 +1223,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # ########## AREA SUBTRACTION ################################
                     # ############################################################
                     if self.ui.except_cb.get_value():
+                        self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
                         geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
                 # TODO: Do something if this is None. Offer changing name?
@@ -1500,7 +1519,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def export_gerber(self, whole, fract, g_zeros='L', factor=1):
         """
+        Creates a Gerber file content to be exported to a file.
 
+        :param whole: how many digits in the whole part of coordinates
+        :param fract: how many decimals in coordinates
+        :param g_zeros: type of the zero suppression used: LZ or TZ; string
+        :param factor: factor to be applied onto the Gerber coordinates
         :return: Gerber_code
         """
         log.debug("FlatCAMGerber.export_gerber() --> Generating the Gerber code from the selected Gerber file")
@@ -1651,7 +1675,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         for geo_elem in self.apertures[apid]['geometry']:
                             if 'follow' in geo_elem:
                                 geo = geo_elem['follow']
-                                print(geo)
                                 if not geo.is_empty:
                                     if isinstance(geo, Point):
                                         if g_zeros == 'T':
@@ -2610,8 +2633,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         for tool in tools:
             if tooldia > self.tools[tool]["C"]:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Milling tool for DRILLS is larger than hole size. Cancelled."))
+                self.app.inform.emit('[ERROR_NOTCL] %s %s: %s' % (
+                    _("Milling tool for DRILLS is larger than hole size. Cancelled.",
+                      str(tool))
+                ))
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
@@ -5221,7 +5246,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -5296,7 +5321,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -5881,7 +5906,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
     def on_plot_kind_change(self):
         kind = self.ui.cncplot_method_combo.get_value()
-        self.plot(kind=kind)
+
+        def worker_task():
+            with self.app.proc_container.new(_("Plotting...")):
+                self.plot(kind=kind)
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_exportgcode_button_click(self, *args):
         self.app.report_usage("cncjob_on_exportgcode_button")

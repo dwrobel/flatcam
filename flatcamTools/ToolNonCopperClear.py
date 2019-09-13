@@ -1354,6 +1354,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # determine if to use the progressive plotting
         if self.app.defaults["tools_ncc_plotting"] == 'progressive':
             prog_plot = True
+        else:
+            prog_plot = False
 
         if tools_storage is not None:
             tools_storage = tools_storage
@@ -1748,7 +1750,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     continue
 
                                 pol_nr += 1
-                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                                 # log.debug("Polygons cleared: %d" % pol_nr)
 
                                 if old_disp_number < disp_number <= 100:
@@ -2105,10 +2107,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                 rest_geo.append(poly)
 
                                 pol_nr += 1
-                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
                                 # log.debug("Polygons cleared: %d" % pol_nr)
 
-                                if disp_number > old_disp_number and disp_number <= 100:
+                                if old_disp_number < disp_number <= 100:
                                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                     old_disp_number = disp_number
                                     # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
@@ -2585,9 +2587,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         raise FlatCAMApp.GracefulException
                     boundary = boundary.difference(el)
                     pol_nr += 1
-                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 99]))
+                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                    if disp_number > old_disp_number and disp_number <= 100:
+                    if old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         old_disp_number = disp_number
                 return boundary

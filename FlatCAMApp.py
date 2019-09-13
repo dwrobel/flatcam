@@ -337,6 +337,29 @@ class App(QtCore.QObject):
         # #############################################################################
         self.pool = Pool()
 
+        # ##########################################################################
+        # ################## Setting the Splash Screen #############################
+        # ##########################################################################
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("splash_screen"):
+            show_splash = settings.value("splash_screen")
+        else:
+            settings.setValue('splash_screen', 1)
+
+            # This will write the setting to the platform specific storage.
+            del settings
+            show_splash = 1
+
+        if show_splash:
+            splash_pix = QtGui.QPixmap('share/splash.png')
+            splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+            # splash.setMask(splash_pix.mask())
+            splash.show()
+            splash.showMessage(_("FlatCAM is initializing ..."),
+                               alignment=Qt.AlignBottom | Qt.AlignLeft,
+                               color=QtGui.QColor("gray"))
+
         # #############################################################################
         # ##################### Initialize GUI ########################################
         # #############################################################################
@@ -424,6 +447,8 @@ class App(QtCore.QObject):
             "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
             "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
             "gerber_buffering": self.ui.gerber_defaults_form.gerber_gen_group.buffering_radio,
+            "gerber_simplification": self.ui.gerber_defaults_form.gerber_gen_group.simplify_cb,
+            "gerber_simp_tolerance": self.ui.gerber_defaults_form.gerber_gen_group.simplification_tol_spinner,
 
             # Gerber Options
             "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
@@ -830,6 +855,8 @@ class App(QtCore.QObject):
             "gerber_circle_steps": 128,
             "gerber_use_buffer_for_union": True,
             "gerber_buffering": "full",
+            "gerber_simplification": False,
+            "gerber_simp_tolerance": 0.0005,
 
             # Gerber Options
             "gerber_isotooldia": 0.00787402,
@@ -1465,15 +1492,25 @@ class App(QtCore.QObject):
         # ###############################################
         # ############# SETUP Plot Area #################
         # ###############################################
-
+        if show_splash:
+            splash.showMessage(_("FlatCAM is initializing ...\n"
+                                 "Canvas initialization started."),
+                               alignment=Qt.AlignBottom | Qt.AlignLeft,
+                               color=QtGui.QColor("gray"))
         start_plot_time = time.time()   # debug
         self.plotcanvas = None
         self.app_cursor = None
         self.hover_shapes = None
         self.on_plotcanvas_setup()
         end_plot_time = time.time()
-        self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
-
+        used_time = end_plot_time - start_plot_time
+        self.log.debug("Finished Canvas initialization in %s seconds." % str(used_time))
+        if show_splash:
+            splash.showMessage('%s: %ssec' % (_("FlatCAM is initializing ...\n"
+                                                "Canvas initialization started.\n"
+                                                "Canvas initialization finished in"), '%.2f' % used_time),
+                               alignment=Qt.AlignBottom | Qt.AlignLeft,
+                               color=QtGui.QColor("gray"))
         self.ui.splitter.setStretchFactor(1, 2)
 
         # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
@@ -1810,6 +1847,9 @@ class App(QtCore.QObject):
         self.ui.fa_defaults_form.fa_gerber_group.grb_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='gerber'))
 
+        # splash screen button signal
+        self.ui.general_defaults_form.general_gui_set_group.splash_cb.stateChanged.connect(self.on_splash_changed)
+
         # connect the abort_all_tasks related slots to the related signals
         self.proc_container.idle_flag.connect(self.app_is_idle)
 
@@ -1844,7 +1884,8 @@ class App(QtCore.QObject):
                                   'delete', 'drillcncjob', 'export_gcode', 'export_svg', 'ext', 'exteriors', 'follow',
                                   'geo_union', 'geocutout', 'get_names', 'get_sys', 'getsys', 'help', 'import_svg',
                                   'interiors', 'isolate', 'join_excellon', 'join_excellons', 'join_geometries',
-                                  'join_geometry', 'list_sys', 'listsys', 'mill', 'millholes', 'mirror', 'ncc',
+                                  'join_geometry', 'list_sys', 'listsys', 'milld', 'mills', 'milldrills', 'millslots',
+                                  'mirror', 'ncc',
                                   'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
                                   'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'paint',
                                   'pan', 'panel', 'panelize', 'plot', 'save', 'save_project', 'save_sys', 'scale',
@@ -1853,10 +1894,12 @@ class App(QtCore.QObject):
                                   ]
 
         self.ordinary_keywords = ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
-                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'dist', 'drillz',
+                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
+                                  'drilled_dias', 'drillz',
                                   'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
                                   'filename', 'follow', 'gaps', 'gapsize', 'grid', 'gridoffset', 'gridoffsetx',
                                   'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
+                                  'milled_dias',
                                   'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
                                   'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
                                   'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
@@ -3013,11 +3056,11 @@ class App(QtCore.QObject):
         :return: Output from the command
         """
 
-        text = str(text)
+        tcl_command_string = str(text)
 
         try:
             self.shell.open_proccessing()  # Disables input box.
-            result = self.tcl.eval(str(text))
+            result = self.tcl.eval(str(tcl_command_string))
             if result != 'None':
                 self.shell.append_output(result + '\n')
 
@@ -3029,7 +3072,6 @@ class App(QtCore.QObject):
             # Show error in console and just return or in test raise exception
             if reraise:
                 raise e
-
         finally:
             self.shell.close_proccessing()
             pass
@@ -3537,7 +3579,7 @@ class App(QtCore.QObject):
         # Check units and convert if necessary
         # This condition CAN be true because initialize() can change obj.units
         if self.options["units"].upper() != obj.units.upper():
-            self.inform.emit('[ERROR_NOTCL] %s: %s' %
+            self.inform.emit('%s: %s' %
                              (_("Converting units to "), self.options["units"]))
             obj.convert_units(self.options["units"])
             t3 = time.time()
@@ -3754,7 +3796,8 @@ class App(QtCore.QObject):
 
                 # Icon and title
                 self.setWindowIcon(parent.app_icon)
-                self.setWindowTitle("FlatCAM")
+                self.setWindowTitle(_("About FlatCAM"))
+                self.resize(600, 200)
                 # self.setStyleSheet("background-image: url(share/flatcam_icon256.png); background-attachment: fixed")
                 # self.setStyleSheet(
                 #     "border-image: url(share/flatcam_icon256.png) 0 0 0 0 stretch stretch; "
@@ -3767,58 +3810,182 @@ class App(QtCore.QObject):
                 # palette.setBrush(10, QtGui.QBrush(bgimage))  # 10 = Windowrole
                 # self.setPalette(palette)
 
-                layout1 = QtWidgets.QVBoxLayout()
-                self.setLayout(layout1)
-
-                layout2 = QtWidgets.QHBoxLayout()
-                layout1.addLayout(layout2)
 
                 logo = QtWidgets.QLabel()
                 logo.setPixmap(QtGui.QPixmap('share/flatcam_icon256.png'))
-                layout2.addWidget(logo, stretch=0)
 
                 title = QtWidgets.QLabel(
                     _(
                         "<font size=8><B>FlatCAM</B></font><BR>"
-                        "Version {version} {beta} ({date}) - {arch} <BR>"
-                        "<BR>"
                         "2D Computer-Aided Printed Circuit Board<BR>"
                         "Manufacturing.<BR>"
                         "<BR>"
-                        "<B> License: </B><BR>"
-                        "Licensed under MIT license (2014 - 2019)"
                         "<BR>"
-                        "by (c)Juan Pablo Caram <BR>"
-                        "<BR>"
-                        "<B> Programmers:</B><BR>"
-                        "Denis Hayrullin<BR>"
-                        "Kamil Sopko<BR>"
-                        "Marius Stanciu<BR>"
-                        "Matthieu Berthomé<BR>"
-                        "and many others found "
-                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/pull-requests/?state=MERGED\">here.</a><BR>"
-                        "<BR>"
-                        "<B>Development</B> is done "
+                        "<B>Development</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                         "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
-                        "<b>DOWNLOAD</B> area "
+                        "<b>DOWNLOAD</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
                         "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
-                        ""
+                        "<b>Issue tracker</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>"
+                    )
+                )
+                title.setOpenExternalLinks(True)
+
+                closebtn = QtWidgets.QPushButton(_("Close"))
+
+                tab_widget = QtWidgets.QTabWidget()
+                description_label = QtWidgets.QLabel(
+                    _(
+                        "FlatCAM {version} {beta} ({date}) - {arch}<br>"
+                        "<a href = \"http://flatcam.org/\">http://flatcam.org</a><br>"
                     ).format(version=version,
                              beta=('BETA' if beta else ''),
                              date=version_date,
                              arch=platform.architecture()[0])
                 )
-                title.setOpenExternalLinks(True)
+                description_label.setOpenExternalLinks(True)
 
-                layout2.addWidget(title, stretch=1)
+                programmers_label = QtWidgets.QLabel(
+                    _(
+                        "Juan Pablo Caram <BR>"
+                        "<BR>"
+                        "Denis Hayrullin<BR>"
+                        "Kamil Sopko<BR>"
+                        "Marius Stanciu<BR>"
+                        "Matthieu Berthomé<BR><Br>"
+                        "and many others found "
+                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/pull-requests/?state=MERGED\">here.</a><BR>"
+                        "<BR>"
+                    )
+                )
+                programmers_label.setOpenExternalLinks(True)
 
+                license_label = QtWidgets.QLabel(
+                    _(
+                        '(c) Copyright 2014 Juan Pablo Caram.\n\n'
+                        'Licensed under the MIT license:\n'
+                        'http://www.opensource.org/licenses/mit-license.php\n\n'
+                        'Permission is hereby granted, free of charge, to any person obtaining a copy\n'
+                        'of this software and associated documentation files (the "Software"), to deal\n'
+                        'in the Software without restriction, including without limitation the rights\n'
+                        'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n'
+                        'copies of the Software, and to permit persons to whom the Software is\n'
+                       ' furnished to do so, subject to the following conditions:\n\n'
+                        
+                        'The above copyright notice and this permission notice shall be included in\n'
+                        'all copies or substantial portions of the Software.\n\n'
+                        
+                        'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n'
+                        'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n'
+                        'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n'
+                        'AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n'
+                        'LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n'
+                        'OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n'
+                        'THE SOFTWARE.'
+                    )
+                )
+                license_label.setOpenExternalLinks(True)
+
+                # layouts
+                layout1 = QtWidgets.QVBoxLayout()
+                layout1_1 = QtWidgets.QHBoxLayout()
+                layout1_2 = QtWidgets.QHBoxLayout()
+
+                layout2 = QtWidgets.QHBoxLayout()
                 layout3 = QtWidgets.QHBoxLayout()
-                layout1.addLayout(layout3)
-                layout3.addStretch()
-                okbtn = QtWidgets.QPushButton(_("Close"))
-                layout3.addWidget(okbtn)
 
-                okbtn.clicked.connect(self.accept)
+                self.setLayout(layout1)
+                layout1.addLayout(layout1_1)
+                layout1.addLayout(layout1_2)
+
+                layout1.addLayout(layout2)
+                layout1.addLayout(layout3)
+
+                layout1_1.addStretch()
+                layout1_1.addWidget(description_label)
+                layout1_2.addWidget(tab_widget)
+
+                self.splash_tab = QtWidgets.QWidget()
+                self.splash_tab.setObjectName("splash_about")
+                self.splash_tab_layout = QtWidgets.QHBoxLayout(self.splash_tab)
+                self.splash_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.splash_tab, _("Splash"))
+
+                self.programmmers_tab = QtWidgets.QWidget()
+                self.programmmers_tab.setObjectName("programmers_about")
+                self.programmmers_tab_layout = QtWidgets.QVBoxLayout(self.programmmers_tab)
+                self.programmmers_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.programmmers_tab, _("Programmers"))
+
+                self.translators_tab = QtWidgets.QWidget()
+                self.translators_tab.setObjectName("translators_about")
+                self.translators_tab_layout = QtWidgets.QVBoxLayout(self.translators_tab)
+                self.translators_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.translators_tab, _("Translators"))
+
+                self.license_tab = QtWidgets.QWidget()
+                self.license_tab.setObjectName("license_about")
+                self.license_tab_layout = QtWidgets.QVBoxLayout(self.license_tab)
+                self.license_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.license_tab, _("License"))
+
+                self.splash_tab_layout.addWidget(logo, stretch=0)
+                self.splash_tab_layout.addWidget(title, stretch=1)
+
+                self.prog_grid_lay = QtWidgets.QGridLayout()
+
+                prog_widget = QtWidgets.QWidget()
+                prog_widget.setLayout(self.prog_grid_lay)
+                self.programmmers_tab_layout.addWidget(prog_widget)
+                self.programmmers_tab_layout.addStretch()
+
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Function")), 0, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram <BR>"), 1, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Program Author")), 1, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Maintainer >=2019"), 4, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Matthieu Berthomé"), 5, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 1)
+
+                self.translator_grid_lay = QtWidgets.QGridLayout()
+                trans_widget = QtWidgets.QWidget()
+                trans_widget.setLayout(self.translator_grid_lay)
+                self.translators_tab_layout.addWidget(trans_widget)
+                self.translators_tab_layout.addStretch()
+
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Language")), 0, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Translator")), 0, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Brasilian - Portuguese"), 1, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Carlos Stein"), 1, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "),  1, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 2, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 2, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 3, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 3, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Russian"), 4, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 4, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 4, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Spanish"), 5, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 5, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 2)
+                self.translator_grid_lay.setColumnStretch(0, 0)
+                # self.translators_tab_layout.addStretch()
+
+                self.license_tab_layout.addWidget(license_label)
+                self.license_tab_layout.addStretch()
+
+                layout3.addStretch()
+                layout3.addWidget(closebtn)
+
+                closebtn.clicked.connect(self.accept)
 
         AboutDialog(self.ui).exec_()
 
@@ -4296,6 +4463,12 @@ class App(QtCore.QObject):
         geo_type_list = set()
 
         objs = self.collection.get_selected()
+
+        if len(objs) < 2:
+            self.inform.emit('[ERROR_NOTCL] %s: %d' %
+                             (_("At least two objects are required for join. Objects currently selected"), len(objs)))
+            return 'fail'
+
         for obj in objs:
             geo_type_list.add(obj.multigeo)
 
@@ -4347,6 +4520,11 @@ class App(QtCore.QObject):
                                  _("Failed. Excellon joining works only on Excellon objects."))
                 return
 
+        if len(objs) < 2:
+            self.inform.emit('[ERROR_NOTCL] %s: %d' %
+                             (_("At least two objects are required for join. Objects currently selected"), len(objs)))
+            return 'fail'
+
         def initialize(obj, app):
             FlatCAMExcellon.merge(self, exc_list=objs, exc_final=obj)
 
@@ -4369,6 +4547,11 @@ class App(QtCore.QObject):
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Failed. Gerber joining works only on Gerber objects."))
                 return
+
+        if len(objs) < 2:
+            self.inform.emit('[ERROR_NOTCL] %s: %d' %
+                             (_("At least two objects are required for join. Objects currently selected"), len(objs)))
+            return 'fail'
 
         def initialize(obj, app):
             FlatCAMGerber.merge(self, grb_list=objs, grb_final=obj)
@@ -5258,6 +5441,13 @@ class App(QtCore.QObject):
         self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.set_value(new_val_sel)
         self.defaults['global_proj_item_dis_color'] = new_val_sel
 
+    def on_splash_changed(self, state):
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('splash_screen', 1) if state else settings.setValue('splash_screen', 0)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
     def on_notebook_tab_rmb_click(self, checked):
         self.ui.notebook.set_detachable(val=checked)
         self.defaults["global_tabs_detachable"] = checked
@@ -5579,6 +5769,24 @@ class App(QtCore.QObject):
             # Mark end of undo block
             cursor.endEditBlock()
 
+    def handleRunCode(self):
+        # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
+        # tries to print on a hidden widget, therefore show the dock if hidden
+        if self.ui.shell_dock.isHidden():
+            self.ui.shell_dock.show()
+
+        script_code = self.ui.code_editor.toPlainText()
+        for tcl_command_line in script_code.splitlines():
+            # do not process lines starting with '#' = comment and empty lines
+            if not tcl_command_line.startswith('#') and tcl_command_line != '':
+                # id FlatCAM is run in Windows then replace all the slashes with
+                # the UNIX style slash that TCL understands
+                if sys.platform == 'win32':
+                    if "open" in tcl_command_line:
+                        tcl_command_line = tcl_command_line.replace('\\', '/')
+                # execute the actual Tcl command
+                self.shell._sysShell.exec_command(tcl_command_line)
+
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case
         self.units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
@@ -5734,7 +5942,8 @@ class App(QtCore.QObject):
                             for el in obj_active.mark_shapes:
                                 obj_active.mark_shapes[el].clear(update=True)
                                 obj_active.mark_shapes[el].enabled = False
-                                obj_active.mark_shapes[el] = None
+                                # obj_active.mark_shapes[el] = None
+                                del el
                         elif isinstance(obj_active, FlatCAMCNCjob):
                             try:
                                 obj_active.annotation.clear(update=True)
@@ -5877,24 +6086,24 @@ class App(QtCore.QObject):
         self.report_usage("on_copy_object()")
 
         def initialize(obj_init, app):
-            obj_init.solid_geometry = obj.solid_geometry
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             try:
-                obj_init.follow_geometry = obj.follow_geometry
+                obj_init.follow_geometry = deepcopy(obj.follow_geometry)
             except AttributeError:
                 pass
             try:
-                obj_init.apertures = obj.apertures
+                obj_init.apertures = deepcopy(obj.apertures)
             except AttributeError:
                 pass
 
             try:
                 if obj.tools:
-                    obj_init.tools = obj.tools
+                    obj_init.tools = deepcopy(obj.tools)
             except Exception as e:
                 log.debug("App.on_copy_object() --> %s" % str(e))
 
         def initialize_excellon(obj_init, app):
-            obj_init.tools = obj.tools
+            obj_init.tools = deepcopy(obj.tools)
 
             # drills are offset, so they need to be deep copied
             obj_init.drills = deepcopy(obj.drills)
@@ -5918,29 +6127,29 @@ class App(QtCore.QObject):
     def on_copy_object2(self, custom_name):
 
         def initialize_geometry(obj_init, app):
-            obj_init.solid_geometry = obj.solid_geometry
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             try:
-                obj_init.follow_geometry = obj.follow_geometry
+                obj_init.follow_geometry = deepcopy(obj.follow_geometry)
             except AttributeError:
                 pass
             try:
-                obj_init.apertures = obj.apertures
+                obj_init.apertures = deepcopy(obj.apertures)
             except AttributeError:
                 pass
 
             try:
                 if obj.tools:
-                    obj_init.tools = obj.tools
+                    obj_init.tools = deepcopy(obj.tools)
             except Exception as e:
                 log.debug("on_copy_object2() --> %s" % str(e))
 
         def initialize_gerber(obj_init, app):
-            obj_init.solid_geometry = obj.solid_geometry
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
             obj_init.apertures = deepcopy(obj.apertures)
             obj_init.aperture_macros = deepcopy(obj.aperture_macros)
 
         def initialize_excellon(obj_init, app):
-            obj_init.tools = obj.tools
+            obj_init.tools = deepcopy(obj.tools)
             # drills are offset, so they need to be deep copied
             obj_init.drills = deepcopy(obj.drills)
             # slots are offset, so they need to be deep copied
@@ -7798,8 +8007,15 @@ class App(QtCore.QObject):
     def init_code_editor(self, name):
         # Signals section
         # Disconnect the old signals
-        self.ui.buttonOpen.clicked.disconnect()
-        self.ui.buttonSave.clicked.disconnect()
+        try:
+            self.ui.buttonOpen.clicked.disconnect()
+        except TypeError:
+            pass
+
+        try:
+            self.ui.buttonSave.clicked.disconnect()
+        except TypeError:
+            pass
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _('%s') % name)
@@ -7814,17 +8030,32 @@ class App(QtCore.QObject):
         self.ui.code_editor.setReadOnly(False)
         self.toggle_codeeditor = True
         self.ui.code_editor.completer_enable = False
+        self.ui.buttonRun.hide()
 
         # Switch plot_area to CNCJob tab
         self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
 
     def on_view_source(self):
+        self.inform.emit('%s' %
+                         _("Viewing the source code of the selected object."))
+        self.proc_container.view.set_busy(_("Loading..."))
+
         try:
             obj = self.collection.get_active()
-        except:
+        except Exception as e:
+            log.debug("App.on_view_source() --> %s" % str(e))
             self.inform.emit('[WARNING_NOTCL] %s' %
                              _("Select an Gerber or Excellon file to view it's source file."))
             return 'fail'
+
+        if obj.kind == 'gerber':
+            flt = "Gerber Files (*.GBR);;All Files (*.*)"
+        else:
+            flt = "Excellon Files (*.DRL);;All Files (*.*)"
+
+        self.init_code_editor(name=_("Source Editor"))
+        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
+        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
 
         # then append the text from GCode to the text editor
         try:
@@ -7834,29 +8065,24 @@ class App(QtCore.QObject):
                              _("There is no selected object for which to see it's source file code."))
             return 'fail'
 
-        if obj.kind == 'gerber':
-            flt = "Gerber Files (*.GBR);;All Files (*.*)"
-        elif obj.kind == 'excellon':
-            flt = "Excellon Files (*.DRL);;All Files (*.*)"
-
-        self.init_code_editor(name=_("Source Editor"))
-        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
-        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
-
+        self.ui.cncjob_frame.hide()
         try:
             for line in file:
+                QtWidgets.QApplication.processEvents()
                 proc_line = str(line).strip('\n')
                 self.ui.code_editor.append(proc_line)
         except Exception as e:
             log.debug('App.on_view_source() -->%s' % str(e))
-            self.inform.emit('[ERROR] %s %s' %
-                             (_('App.on_view_source() -->'), str(e)))
+            self.inform.emit('[ERROR] %s: %s' %
+                             (_('Failed to load the source code for the selected object'), str(e)))
             return
 
-        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
-
         self.handleTextChanged()
-        self.ui.show()
+        self.ui.cncjob_frame.show()
+
+        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+        self.proc_container.view.set_idle()
+        # self.ui.show()
 
     def on_toggle_code_editor(self):
         self.report_usage("on_toggle_code_editor()")
@@ -7882,17 +8108,19 @@ class App(QtCore.QObject):
             "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
             "#\n\n"
             "# FlatCAM commands list:\n"
-            "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, Cncjob,\n"
-            "# Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, GetNames, GetSys,\n"
-            "# ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillHoles, Mirror, New,\n"
-            "# NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject, Options, Paint, Panelize,\n"
-            "# Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, SubtractPoly,SubtractRectangle, Version,\n"
-            "# WriteGCode\n"
+            "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, ClearCopper,\n"
+            "# Cncjob, Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, GetNames,\n"
+            "# GetSys, ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillDrills,\n"
+            "# MillSlots, Mirror, New, NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n"
+            "# Options, Paint, Panelize, Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, SubtractPoly,\n"
+            "# SubtractRectangle, Version, WriteGCode\n"
             "#\n\n"
         ))
 
         self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
         self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
+        self.ui.buttonRun.show()
+        self.ui.buttonRun.clicked.connect(self.handleRunCode)
 
         self.handleTextChanged()
         self.ui.code_editor.show()
@@ -8415,7 +8643,7 @@ class App(QtCore.QObject):
                                "Most likely another app is holding the file open and not accessible."))
             return 'fail'
 
-    def export_excellon(self, obj_name, filename, use_thread=True):
+    def export_excellon(self, obj_name, filename, local_use=None, use_thread=True):
         """
         Exports a Excellon Object to an Excellon file.
 
@@ -8436,11 +8664,14 @@ class App(QtCore.QObject):
                                                )
         units = ''
 
-        try:
-            obj = self.collection.get_by_name(str(obj_name))
-        except:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % obj_name
+        if local_use is None:
+            try:
+                obj = self.collection.get_by_name(str(obj_name))
+            except:
+                # TODO: The return behavior has not been established... should raise exception?
+                return "Could not retrieve object: %s" % obj_name
+        else:
+            obj = local_use
 
         # updated units
         eunits = self.defaults["excellon_exp_units"]
@@ -8520,20 +8751,23 @@ class App(QtCore.QObject):
                 exported_excellon += excellon_code
                 exported_excellon += footer
 
-                try:
-                    with open(filename, 'w') as fp:
-                        fp.write(exported_excellon)
-                except PermissionError:
-                    self.inform.emit('[WARNING] %s' %
-                                     _("Permission denied, saving not possible.\n"
-                                       "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
+                if local_use is None:
+                    try:
+                        with open(filename, 'w') as fp:
+                            fp.write(exported_excellon)
+                    except PermissionError:
+                        self.inform.emit('[WARNING] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                        return 'fail'
 
-                if self.defaults["global_open_style"] is False:
-                    self.file_opened.emit("Excellon", filename)
-                self.file_saved.emit("Excellon", filename)
-                self.inform.emit('[success] %s: %s' %
-                                 (_("Excellon file exported to"), filename))
+                    if self.defaults["global_open_style"] is False:
+                        self.file_opened.emit("Excellon", filename)
+                    self.file_saved.emit("Excellon", filename)
+                    self.inform.emit('[success] %s: %s' %
+                                     (_("Excellon file exported to"), filename))
+                else:
+                    return exported_excellon
             except Exception as e:
                 log.debug("App.export_excellon.make_excellon() --> %s" % str(e))
                 return 'fail'
@@ -8555,14 +8789,18 @@ class App(QtCore.QObject):
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _('Could not export Excellon file.'))
-                return
+                return 'fail'
+            if local_use is not None:
+                return ret
 
-    def export_gerber(self, obj_name, filename, use_thread=True):
+    def export_gerber(self, obj_name, filename, local_use=None, use_thread=True):
         """
         Exports a Gerber Object to an Gerber file.
 
         :param obj_name: the name of the FlatCAM object to be saved as Gerber
         :param filename: Path to the Gerber file to save to.
+        :param local_use: if the Gerber code is to be saved to a file (None) or used within FlatCAM.
+        When not None, the value will be the actual Gerber object for which to create the Gerber code
         :param use_thread: if to be run in a separate thread
         :return:
         """
@@ -8573,11 +8811,14 @@ class App(QtCore.QObject):
 
         self.log.debug("export_gerber()")
 
-        try:
-            obj = self.collection.get_by_name(str(obj_name))
-        except:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % obj_name
+        if local_use is None:
+            try:
+                obj = self.collection.get_by_name(str(obj_name))
+            except:
+                # TODO: The return behavior has not been established... should raise exception?
+                return "Could not retrieve object: %s" % obj_name
+        else:
+            obj = local_use
 
         # updated units
         gunits = self.defaults["gerber_exp_units"]
@@ -8649,26 +8890,28 @@ class App(QtCore.QObject):
                 exported_gerber += gerber_code
                 exported_gerber += footer
 
-                try:
-                    with open(filename, 'w') as fp:
-                        fp.write(exported_gerber)
-                except PermissionError:
-                    self.inform.emit('[WARNING] %s' %
-                                     _("Permission denied, saving not possible.\n"
-                                       "Most likely another app is holding the file open and not accessible."))
-                    return 'fail'
+                if local_use is None:
+                    try:
+                        with open(filename, 'w') as fp:
+                            fp.write(exported_gerber)
+                    except PermissionError:
+                        self.inform.emit('[WARNING] %s' %
+                                         _("Permission denied, saving not possible.\n"
+                                           "Most likely another app is holding the file open and not accessible."))
+                        return 'fail'
 
-                if self.defaults["global_open_style"] is False:
-                    self.file_opened.emit("Gerber", filename)
-                self.file_saved.emit("Gerber", filename)
-                self.inform.emit('[success] %s: %s' %
-                                 (_("Gerber file exported to"), filename))
+                    if self.defaults["global_open_style"] is False:
+                        self.file_opened.emit("Gerber", filename)
+                    self.file_saved.emit("Gerber", filename)
+                    self.inform.emit('[success] %s: %s' %
+                                     (_("Gerber file exported to"), filename))
+                else:
+                    return exported_gerber
             except Exception as e:
                 log.debug("App.export_gerber.make_gerber() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
-
             with self.proc_container.new(_("Exporting Gerber")) as proc:
 
                 def job_thread_grb(app_obj):
@@ -8684,7 +8927,9 @@ class App(QtCore.QObject):
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _('Could not export Gerber file.'))
-                return
+                return 'fail'
+            if local_use is not None:
+                return ret
 
     def export_dxf(self, obj_name, filename, use_thread=True):
         """
@@ -9901,6 +10146,11 @@ The normal flow when working in FlatCAM is the following:</span></p>
                 obj.options.set_change_callback(lambda x: None)
                 obj.options['plot'] = False
                 obj.options.set_change_callback(obj.on_options_change)
+
+        try:
+            self.delete_selection_shape()
+        except Exception as e:
+            log.debug("App.disable_plots() --> %s" % str(e))
 
         # self.plots_updated.emit()
         def worker_task(objects):

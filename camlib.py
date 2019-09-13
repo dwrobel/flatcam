@@ -523,7 +523,7 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, iso_type=2, corner=None, follow=None):
+    def isolation_geometry(self, offset, iso_type=2, corner=None, follow=None, passes=0):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -533,35 +533,10 @@ class Geometry(object):
         :param iso_type: type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
         :param corner: type of corner for the isolation: 0 = round; 1 = square; 2= beveled (line that connects the ends)
         :param follow: whether the geometry to be isolated is a follow_geometry
+        :param passes: current pass out of possible multiple passes for which the isolation is done
         :return: The buffered geometry.
         :rtype: Shapely.MultiPolygon or Shapely.Polygon
         """
-
-        # geo_iso = []
-        # In case that the offset value is zero we don't use the buffer as the resulting geometry is actually the
-        # original solid_geometry
-        # if offset == 0:
-        #     geo_iso = self.solid_geometry
-        # else:
-        #     flattened_geo = self.flatten_list(self.solid_geometry)
-        #     try:
-        #         for mp_geo in flattened_geo:
-        #             geo_iso.append(mp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-        #     except TypeError:
-        #         geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-        # return geo_iso
-
-        # commented this because of the bug with multiple passes cutting out of the copper
-        # geo_iso = []
-        # flattened_geo = self.flatten_list(self.solid_geometry)
-        # try:
-        #     for mp_geo in flattened_geo:
-        #         geo_iso.append(mp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-        # except TypeError:
-        #     geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-
-        # the previously commented block is replaced with this block - regression - to solve the bug with multiple
-        # isolation passes cutting from the copper features
 
         if self.app.abort_flag:
             # graceful abort requested by the user
@@ -584,20 +559,62 @@ class Geometry(object):
 
                 # Remember: do not make a buffer for each element in the solid_geometry because it will cut into
                 # other copper features
-                if corner is None:
-                    geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
-                else:
-                    geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                                              join_style=corner)
+                # if corner is None:
+                #     geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                # else:
+                #     geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                #                               join_style=corner)
 
+                # variables to display the percentage of work done
+                geo_len = 0
+                try:
+                    for pol in self.solid_geometry:
+                        geo_len += 1
+                except TypeError:
+                    geo_len = 1
+                disp_number = 0
+                old_disp_number = 0
+                pol_nr = 0
+                # yet, it can be done by issuing an unary_union in the end, thus getting rid of the overlapping geo
+                try:
+                    for pol in self.solid_geometry:
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise FlatCAMApp.GracefulException
+                        if corner is None:
+                            geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+                        else:
+                            geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)),
+                                           join_style=corner)
+                        pol_nr += 1
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+
+                        if  old_disp_number < disp_number <= 100:
+                            self.app.proc_container.update_view_text(' %s %d: %d%%' %
+                                                                     (_("Pass"), int(passes + 1), int(disp_number)))
+                            old_disp_number = disp_number
+                except TypeError:
+                    # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
+                    # MultiPolygon (not an iterable)
+                    if corner is None:
+                        geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+                    else:
+                        geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)),
+                                       join_style=corner)
+                self.app.proc_container.update_view_text(' %s' % _("Buffering"))
+                geo_iso = unary_union(geo_iso)
+
+        self.app.proc_container.update_view_text('')
         # end of replaced block
         if follow:
             return geo_iso
         elif iso_type == 2:
             return geo_iso
         elif iso_type == 0:
+            self.app.proc_container.update_view_text(' %s' % _("Get Exteriors"))
             return self.get_exteriors(geo_iso)
         elif iso_type == 1:
+            self.app.proc_container.update_view_text(' %s' % _("Get Interiors"))
             return self.get_interiors(geo_iso)
         else:
             log.debug("Geometry.isolation_geometry() --> Type of isolation not supported")
@@ -1483,7 +1500,7 @@ class Geometry(object):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -1555,7 +1572,7 @@ class Geometry(object):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -1626,7 +1643,7 @@ class Geometry(object):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -2440,6 +2457,8 @@ class Gerber (Geometry):
         line_num = 0
         gline = ""
 
+        s_tol = float(self.app.defaults["gerber_simp_tolerance"])
+
         self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Parsing"), len(glines), _("lines")))
         try:
             for gline in glines:
@@ -2485,7 +2504,10 @@ class Gerber (Geometry):
 
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo_s.is_empty:
-                            poly_buffer.append(geo_s)
+                            if self.app.defaults['gerber_simplification']:
+                                poly_buffer.append(geo_s.simplify(s_tol))
+                            else:
+                                poly_buffer.append(geo_s)
                             if self.is_lpc is True:
                                 geo_dict['clear'] = geo_s
                             else:
@@ -2675,7 +2697,10 @@ class Gerber (Geometry):
                             geo_dict['follow'] = Point([current_x, current_y])
 
                             if not flash.is_empty:
-                                poly_buffer.append(flash)
+                                if self.app.defaults['gerber_simplification']:
+                                    poly_buffer.append(flash.simplify(s_tol))
+                                else:
+                                    poly_buffer.append(flash)
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = flash
                                 else:
@@ -2726,7 +2751,10 @@ class Gerber (Geometry):
                             width = self.apertures[last_path_aperture]["size"]
                             geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo_s.is_empty:
-                                poly_buffer.append(geo_s)
+                                if self.app.defaults['gerber_simplification']:
+                                    poly_buffer.append(geo_s.simplify(s_tol))
+                                else:
+                                    poly_buffer.append(geo_s)
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = geo_s
                                 else:
@@ -2759,7 +2787,10 @@ class Gerber (Geometry):
                         width = self.apertures[last_path_aperture]["size"]
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo_s.is_empty:
-                            poly_buffer.append(geo_s)
+                            if self.app.defaults['gerber_simplification']:
+                                poly_buffer.append(geo_s.simplify(s_tol))
+                            else:
+                                poly_buffer.append(geo_s)
                             if self.is_lpc is True:
                                 geo_dict['clear'] = geo_s
                             else:
@@ -2800,7 +2831,10 @@ class Gerber (Geometry):
                                     geo_dict['follow'] = geo_f
                             if geo_s:
                                 if not geo_s.is_empty:
-                                    poly_buffer.append(geo_s)
+                                    if self.app.defaults['gerber_simplification']:
+                                        poly_buffer.append(geo_s.simplify(s_tol))
+                                    else:
+                                        poly_buffer.append(geo_s)
                                     if self.is_lpc is True:
                                         geo_dict['clear'] = geo_s
                                     else:
@@ -2833,7 +2867,10 @@ class Gerber (Geometry):
                         region_s = region_s.buffer(0, int(self.steps_per_circle / 4))
 
                     if not region_s.is_empty:
-                        poly_buffer.append(region_s)
+                        if self.app.defaults['gerber_simplification']:
+                            poly_buffer.append(region_s.simplify(s_tol))
+                        else:
+                            poly_buffer.append(region_s)
                         if self.is_lpc is True:
                             geo_dict['clear'] = region_s
                         else:
@@ -2915,7 +2952,11 @@ class Gerber (Geometry):
                                         geo_dict['follow'] = geo_f
 
                                         geo_s = shply_box(minx, miny, maxx, maxy)
-                                        poly_buffer.append(geo_s)
+                                        if self.app.defaults['gerber_simplification']:
+                                            poly_buffer.append(geo_s.simplify(s_tol))
+                                        else:
+                                            poly_buffer.append(geo_s)
+
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = geo_s
                                         else:
@@ -3003,14 +3044,22 @@ class Gerber (Geometry):
                             try:
                                 if self.apertures[last_path_aperture]["type"] != 'R':
                                     if not geo_s.is_empty:
-                                        poly_buffer.append(geo_s)
+                                        if self.app.defaults['gerber_simplification']:
+                                            poly_buffer.append(geo_s.simplify(s_tol))
+                                        else:
+                                            poly_buffer.append(geo_s)
+
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = geo_s
                                         else:
                                             geo_dict['solid'] = geo_s
                             except Exception as e:
                                 log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
-                                poly_buffer.append(geo_s)
+                                if self.app.defaults['gerber_simplification']:
+                                    poly_buffer.append(geo_s.simplify(s_tol))
+                                else:
+                                    poly_buffer.append(geo_s)
+
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = geo_s
                                 else:
@@ -3058,13 +3107,21 @@ class Gerber (Geometry):
                             if not geo_s.is_empty:
                                 try:
                                     if self.apertures[last_path_aperture]["type"] != 'R':
-                                        poly_buffer.append(geo_s)
+                                        if self.app.defaults['gerber_simplification']:
+                                            poly_buffer.append(geo_s.simplify(s_tol))
+                                        else:
+                                            poly_buffer.append(geo_s)
+
                                         if self.is_lpc is True:
                                             geo_dict['clear'] = geo_s
                                         else:
                                             geo_dict['solid'] = geo_s
                                 except:
-                                    poly_buffer.append(geo_s)
+                                    if self.app.defaults['gerber_simplification']:
+                                        poly_buffer.append(geo_s.simplify(s_tol))
+                                    else:
+                                        poly_buffer.append(geo_s)
+
                                     if self.is_lpc is True:
                                         geo_dict['clear'] = geo_s
                                     else:
@@ -3094,7 +3151,11 @@ class Gerber (Geometry):
                             self.steps_per_circle
                         )
                         if not flash.is_empty:
-                            poly_buffer.append(flash)
+                            if self.app.defaults['gerber_simplification']:
+                                poly_buffer.append(flash.simplify(s_tol))
+                            else:
+                                poly_buffer.append(flash)
+
                             if self.is_lpc is True:
                                 geo_dict['clear'] = flash
                             else:
@@ -3193,7 +3254,11 @@ class Gerber (Geometry):
                             # this treats the case when we are storing geometry as solids
                             buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not buffered.is_empty:
-                                poly_buffer.append(buffered)
+                                if self.app.defaults['gerber_simplification']:
+                                    poly_buffer.append(buffered.simplify(s_tol))
+                                else:
+                                    poly_buffer.append(buffered)
+
                                 if self.is_lpc is True:
                                     geo_dict['clear'] = buffered
                                 else:
@@ -3331,7 +3396,11 @@ class Gerber (Geometry):
                     width = self.apertures[last_path_aperture]["size"]
                     geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                     if not geo_s.is_empty:
-                        poly_buffer.append(geo_s)
+                        if self.app.defaults['gerber_simplification']:
+                            poly_buffer.append(geo_s.simplify(s_tol))
+                        else:
+                            poly_buffer.append(geo_s)
+
                         if self.is_lpc is True:
                             geo_dict['clear'] = geo_s
                         else:
@@ -3378,15 +3447,36 @@ class Gerber (Geometry):
                 log.warning("Union done.")
 
             if current_polarity == 'D':
-                try:
+                self.app.inform.emit('%s' % _("Gerber processing. Applying Gerber polarity."))
+                if new_poly.is_valid:
                     self.solid_geometry = self.solid_geometry.union(new_poly)
-                except Exception as e:
-                    # in case in the new_poly are some self intersections try to avoid making union with them
-                    for poly in new_poly:
-                        try:
-                            self.solid_geometry = self.solid_geometry.union(poly)
-                        except:
-                            pass
+                else:
+                    # I do this so whenever the parsed geometry of the file is not valid (intersections) it is still
+                    # loaded. Instead of applying a union I add to a list of polygons.
+                    final_poly = []
+                    try:
+                        for poly in new_poly:
+                            final_poly.append(poly)
+                    except TypeError:
+                        final_poly.append(new_poly)
+
+                    try:
+                        for poly in self.solid_geometry:
+                            final_poly.append(poly)
+                    except TypeError:
+                        final_poly.append(self.solid_geometry)
+
+                    self.solid_geometry = final_poly
+
+                # try:
+                #     self.solid_geometry = self.solid_geometry.union(new_poly)
+                # except Exception as e:
+                #     # in case in the new_poly are some self intersections try to avoid making union with them
+                #     for poly in new_poly:
+                #         try:
+                #             self.solid_geometry = self.solid_geometry.union(poly)
+                #         except:
+                #             pass
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
         except Exception as err:
@@ -3854,7 +3944,7 @@ class Gerber (Geometry):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -3916,7 +4006,7 @@ class Gerber (Geometry):
             else:
                 try:
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -5068,7 +5158,7 @@ class Excellon(Geometry):
             drill['point'] = affinity.scale(drill['point'], xfactor, yfactor, origin=(px, py))
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -5124,7 +5214,7 @@ class Excellon(Geometry):
             drill['point'] = affinity.translate(drill['point'], xoff=dx, yoff=dy)
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -5185,7 +5275,7 @@ class Excellon(Geometry):
             drill['point'] = affinity.scale(drill['point'], xscale, yscale, origin=(px, py))
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -5257,7 +5347,7 @@ class Excellon(Geometry):
                                                origin=(px, py))
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -5278,7 +5368,7 @@ class Excellon(Geometry):
                                                origin=(px, py))
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -5342,7 +5432,7 @@ class Excellon(Geometry):
                 self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'], origin='center')
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -5358,7 +5448,7 @@ class Excellon(Geometry):
                 drill['point'] = affinity.rotate(drill['point'], angle, origin=(px, py))
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -5920,7 +6010,7 @@ class CNCjob(Geometry):
                                     self.oldy = locy
 
                                     loc_nr += 1
-                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
+                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
 
                                     if old_disp_number < disp_number <= 100:
                                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
@@ -6066,7 +6156,7 @@ class CNCjob(Geometry):
                                     self.oldy = locy
 
                                     loc_nr += 1
-                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
+                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
 
                                     if old_disp_number < disp_number <= 100:
                                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
@@ -6174,7 +6264,7 @@ class CNCjob(Geometry):
                                 self.oldy = point[1]
 
                                 loc_nr += 1
-                                disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 99]))
+                                disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
 
                                 if old_disp_number < disp_number <= 100:
                                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
@@ -6473,7 +6563,7 @@ class CNCjob(Geometry):
 
                 pt, geo = storage.nearest(current_pt) # Next
 
-                disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
+                disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     old_disp_number = disp_number
@@ -6815,7 +6905,7 @@ class CNCjob(Geometry):
 
                 pt, geo = storage.nearest(current_pt) # Next
 
-                disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
+                disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     old_disp_number = disp_number
@@ -6943,7 +7033,7 @@ class CNCjob(Geometry):
                 current_pt = geo.coords[-1]
                 pt, geo = storage.nearest(current_pt)  # Next
 
-                disp_number = int(np.interp(path_count, [0, geo_len], [0, 99]))
+                disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     old_disp_number = disp_number
@@ -8149,7 +8239,7 @@ class CNCjob(Geometry):
                     return g['geom']
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -8178,7 +8268,7 @@ class CNCjob(Geometry):
                         return g['geom']
 
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -8259,7 +8349,7 @@ class CNCjob(Geometry):
                     return g['geom']
 
                 self.el_count += 1
-                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                 if self.old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                     self.old_disp_number = disp_number
@@ -8288,7 +8378,7 @@ class CNCjob(Geometry):
                         return g['geom']
 
                     self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
                     if self.old_disp_number < disp_number <= 100:
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
@@ -8327,7 +8417,7 @@ class CNCjob(Geometry):
                 return g['geom']
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -8371,7 +8461,7 @@ class CNCjob(Geometry):
                 return g['geom']
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number
@@ -8407,7 +8497,7 @@ class CNCjob(Geometry):
                 return g['geom']
 
             self.el_count += 1
-            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 99]))
+            disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
             if self.old_disp_number < disp_number <= 100:
                 self.app.proc_container.update_view_text(' %d%%' % disp_number)
                 self.old_disp_number = disp_number

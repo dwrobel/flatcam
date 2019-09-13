@@ -397,14 +397,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # ## Help ###
         self.menuhelp = self.menu.addMenu(_('&Help'))
-        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), _('Help\tF1'))
+        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), _('Online Help\tF1'))
         self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), _('FlatCAM.org'))
         self.menuhelp.addSeparator()
         self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'),
                                                               _('Shortcuts List\tF3'))
         self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), _('YouTube Channel\tF4')
                                                           )
-        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/about32.png'), _('About'))
+        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/about32.png'), _('About FlatCAM'))
 
         # ## FlatCAM Editor menu ###
         self.geo_editor_menu = QtWidgets.QMenu(">Geo Editor<")
@@ -1728,10 +1728,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ###################################
         # ## Here we build the CNCJob Tab ###
         # ###################################
+        # self.cncjob_tab = QtWidgets.QWidget()
+        # self.cncjob_tab_layout = QtWidgets.QGridLayout(self.cncjob_tab)
+        # self.cncjob_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.cncjob_tab.setLayout(self.cncjob_tab_layout)
+
         self.cncjob_tab = QtWidgets.QWidget()
-        self.cncjob_tab_layout = QtWidgets.QGridLayout(self.cncjob_tab)
+
+        self.c_temp_layout = QtWidgets.QVBoxLayout(self.cncjob_tab)
+        self.c_temp_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.cncjob_frame = QtWidgets.QFrame()
+        self.cncjob_frame.setContentsMargins(0, 0, 0, 0)
+        self.c_temp_layout.addWidget(self.cncjob_frame)
+
+        self.cncjob_tab_layout = QtWidgets.QGridLayout(self.cncjob_frame)
         self.cncjob_tab_layout.setContentsMargins(2, 2, 2, 2)
-        self.cncjob_tab.setLayout(self.cncjob_tab_layout)
+        self.cncjob_frame.setLayout(self.cncjob_tab_layout)
 
         self.code_editor = FCTextAreaExtended()
         stylesheet = """
@@ -1743,24 +1756,43 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.code_editor.setStyleSheet(stylesheet)
 
         self.buttonPreview = QtWidgets.QPushButton(_('Print Preview'))
+        self.buttonPreview.setToolTip(_("Open a OS standard Preview Print window."))
         self.buttonPrint = QtWidgets.QPushButton(_('Print Code'))
+        self.buttonPrint.setToolTip(_("Open a OS standard Print window."))
+
         self.buttonFind = QtWidgets.QPushButton(_('Find in Code'))
+        self.buttonFind.setToolTip(_("Will search and highlight in yellow the string in the Find box."))
         self.buttonFind.setMinimumWidth(100)
+
         self.buttonPreview.setMinimumWidth(100)
+
         self.entryFind = FCEntry()
+        self.entryFind.setToolTip(_("Find box. Enter here the strings to be searched in the text."))
         self.entryFind.setMaximumWidth(200)
+
         self.buttonReplace = QtWidgets.QPushButton(_('Replace With'))
+        self.buttonReplace.setToolTip(_("Will replace the string from the Find box with the one in the Replace box."))
+
         self.buttonReplace.setMinimumWidth(100)
         self.entryReplace = FCEntry()
+        self.entryReplace.setToolTip(_("String to replace the one in the Find box throughout the text."))
         self.entryReplace.setMaximumWidth(200)
+
         self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
         self.sel_all_cb.setToolTip(
             _("When checked it will replace all instances in the 'Find' box\n"
               "with the text in the 'Replace' box..")
         )
         self.buttonOpen = QtWidgets.QPushButton(_('Open Code'))
-        self.buttonSave = QtWidgets.QPushButton(_('Save Code'))
+        self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
 
+        self.buttonSave = QtWidgets.QPushButton(_('Save Code'))
+        self.buttonSave.setToolTip(_("Will save the text in the editor into a file."))
+
+        self.buttonRun = QtWidgets.QPushButton(_('Run Code'))
+        self.buttonRun.setToolTip(_("Will run the TCL commands found in the text file, one by one."))
+
+        self.buttonRun.hide()
         self.cncjob_tab_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
         cnc_tab_lay_1 = QtWidgets.QHBoxLayout()
@@ -1782,6 +1814,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         cnc_tab_lay_4.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         cnc_tab_lay_4.addWidget(self.buttonOpen)
         cnc_tab_lay_4.addWidget(self.buttonSave)
+        cnc_tab_lay_4.addWidget(self.buttonRun)
+
         self.cncjob_tab_layout.addLayout(cnc_tab_lay_4, 2, 4, 1, 1)
 
         # #################################
@@ -1835,7 +1869,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                              ('BETA' if beta else ''),
                              platform.architecture()[0])
                             )
-        self.show()
 
         self.filename = ""
         self.units = ""
@@ -3935,6 +3968,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.notebook_font_size_spinner.set_value(12)
 
+        # Axis Font Size
         self.axis_font_size_label = QtWidgets.QLabel('%s:' % _('Axis Font Size'))
         self.axis_font_size_label.setToolTip(
             _("This sets the font size for canvas axis.")
@@ -3953,6 +3987,18 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
+        # Splash Screen
+        self.splash_label = QtWidgets.QLabel('%s:' % _('Splash Screen'))
+        self.splash_label.setToolTip(
+            _("Enable display of the splash screen at application startup.")
+        )
+        self.splash_cb = FCCheckBox()
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.value("splash_screen"):
+            self.splash_cb.set_value(True)
+        else:
+            self.splash_cb.set_value(False)
+
         # Add (label - input field) pair to the QFormLayout
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
@@ -3965,6 +4011,8 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.notebook_font_size_label, self.notebook_font_size_spinner)
         self.form_box.addRow(self.axis_font_size_label, self.axis_font_size_spinner)
+        self.form_box.addRow(QtWidgets.QLabel(''))
+        self.form_box.addRow(self.splash_label, self.splash_cb)
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
@@ -4273,6 +4321,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             self.portability_label.hide()
             self.portability_cb.hide()
 
+
 class GerberGenPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber General Preferences", parent=parent)
@@ -4331,6 +4380,27 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(buffering_label, 2, 0)
         grid0.addWidget(self.buffering_radio, 2, 1)
 
+        # Simplification
+        self.simplify_cb = FCCheckBox(label=_('Simplify'))
+        self.simplify_cb.setToolTip(_("When checked all the Gerber polygons will be\n"
+                                      "loaded with simplification having a set tolerance."))
+        grid0.addWidget(self.simplify_cb, 3, 0)
+
+        # Simplification tolerance
+        self.simplification_tol_label = QtWidgets.QLabel(_('Tolerance'))
+        self.simplification_tol_label.setToolTip(_("Tolerance for poligon simplification."))
+
+        self.simplification_tol_spinner = FCDoubleSpinner()
+        self.simplification_tol_spinner.set_precision(5)
+        self.simplification_tol_spinner.setWrapping(True)
+        self.simplification_tol_spinner.setRange(0.00000, 0.01000)
+        self.simplification_tol_spinner.setSingleStep(0.0001)
+
+        grid0.addWidget(self.simplification_tol_label, 4, 0)
+        grid0.addWidget(self.simplification_tol_spinner, 4, 1)
+        self.ois_simplif = OptionalInputSection(self.simplify_cb,
+                                                [self.simplification_tol_label, self.simplification_tol_spinner],
+                                                logic=True)
         self.layout.addStretch()
 
 

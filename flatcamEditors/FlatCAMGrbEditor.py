@@ -3713,7 +3713,36 @@ class FlatCAMGrbEditor(QtCore.QObject):
         for apid in self.gerber_obj.apertures:
             temp_elem = []
             if 'geometry' in self.gerber_obj.apertures[apid]:
+                # for elem in self.gerber_obj.apertures[apid]['geometry']:
+                #     if 'solid' in elem:
+                #         solid_geo = elem['solid']
+                #         for clear_geo in global_clear_geo:
+                #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
+                #             # delete it
+                #             if clear_geo.within(solid_geo):
+                #                 solid_geo = solid_geo.difference(clear_geo)
+                #         try:
+                #             for poly in solid_geo:
+                #                 new_elem = dict()
+                #
+                #                 new_elem['solid'] = poly
+                #                 if 'clear' in elem:
+                #                     new_elem['clear'] = poly
+                #                 if 'follow' in elem:
+                #                     new_elem['follow'] = poly
+                #                 temp_elem.append(deepcopy(new_elem))
+                #         except TypeError:
+                #             new_elem = dict()
+                #             new_elem['solid'] = solid_geo
+                #             if 'clear' in elem:
+                #                 new_elem['clear'] = solid_geo
+                #             if 'follow' in elem:
+                #                 new_elem['follow'] = solid_geo
+                #             temp_elem.append(deepcopy(new_elem))
                 for elem in self.gerber_obj.apertures[apid]['geometry']:
+                    new_elem = dict()
+
                     if 'solid' in elem:
                         solid_geo = elem['solid']
                         for clear_geo in global_clear_geo:
@@ -3722,24 +3751,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             # delete it
                             if clear_geo.within(solid_geo):
                                 solid_geo = solid_geo.difference(clear_geo)
-                        try:
-                            for poly in solid_geo:
-                                new_elem = dict()
 
-                                new_elem['solid'] = poly
-                                if 'clear' in elem:
-                                    new_elem['clear'] = poly
-                                if 'follow' in elem:
-                                    new_elem['follow'] = poly
-                                temp_elem.append(deepcopy(new_elem))
-                        except TypeError:
-                            new_elem = dict()
-                            new_elem['solid'] = solid_geo
-                            if 'clear' in elem:
-                                new_elem['clear'] = solid_geo
-                            if 'follow' in elem:
-                                new_elem['follow'] = solid_geo
-                            temp_elem.append(deepcopy(new_elem))
+                        new_elem['solid'] = solid_geo
+                    if 'clear' in elem:
+                        new_elem['clear'] = elem['clear']
+                    if 'follow' in elem:
+                        new_elem['follow'] = elem['follow']
+                    temp_elem.append(deepcopy(new_elem))
+
             self.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_elem)
         log.warning("Polygon difference done for %d apertures." % len(self.gerber_obj.apertures))
 
@@ -3876,19 +3895,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         grb_obj.apertures[storage_apid][k] = []
                         for geo_el in val:
                             geometric_data = geo_el.geo
-
                             new_geo_el = dict()
                             if 'solid' in geometric_data:
                                 new_geo_el['solid'] = geometric_data['solid']
                                 poly_buffer.append(deepcopy(new_geo_el['solid']))
 
                             if 'follow' in geometric_data:
-                                if isinstance(geometric_data['follow'], Polygon):
-                                    buff_val = -(int(storage_apid) / 2)
-                                    geo_f = (geometric_data['follow'].buffer(buff_val)).exterior
-                                    new_geo_el['follow'] = geo_f
-                                else:
-                                    new_geo_el['follow'] = geometric_data['follow']
+                                # if isinstance(geometric_data['follow'], Polygon):
+                                #     buff_val = -(int(storage_val['size']) / 2)
+                                #     geo_f = (geometric_data['follow'].buffer(buff_val)).exterior
+                                #     new_geo_el['follow'] = geo_f
+                                # else:
+                                #     new_geo_el['follow'] = geometric_data['follow']
+                                new_geo_el['follow'] = geometric_data['follow']
                                 follow_buffer.append(deepcopy(new_geo_el['follow']))
                             else:
                                 if 'solid' in geometric_data:
@@ -3910,6 +3929,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
             new_poly = new_poly.buffer(0.00000001)
             new_poly = new_poly.buffer(-0.00000001)
 
+            # for ad in grb_obj.apertures:
+            #     print(ad, grb_obj.apertures[ad])
+
             try:
                 __ = iter(new_poly)
             except TypeError:
@@ -3924,7 +3946,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 else:
                     grb_obj.options[k] = deepcopy(v)
 
-            grb_obj.source_file = []
             grb_obj.multigeo = False
             grb_obj.follow = False
             grb_obj.gerber_units = app_obj.defaults['units']
@@ -3940,6 +3961,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 raise
+            grb_obj.source_file = self.app.export_gerber(obj_name=out_name, filename=None,
+                                                         local_use=grb_obj, use_thread=False)
 
         with self.app.proc_container.new(_("Creating Gerber.")):
             try:

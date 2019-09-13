@@ -1,7 +1,7 @@
 import sys
 import os
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings, Qt
 from FlatCAMApp import App
 from flatcamGUI import VisPyPatches
@@ -58,5 +58,19 @@ if __name__ == '__main__':
     else:
         app.setAttribute(Qt.AA_EnableHighDpiScaling, False)
 
+    # Create and display the splash screen
+    # from here: https://eli.thegreenplace.net/2009/05/09/creating-splash-screens-in-pyqt
+    # splash_pix = QtGui.QPixmap('share/splash.png')
+    # splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+    # # splash.setMask(splash_pix.mask())
+    # splash.show()
+    # app.processEvents()
+    # splash.showMessage("FlatCAM is initializing ...",
+    #                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+    #                    color=QtGui.QColor("gray"))
+
     fc = App()
+    # splash.finish(fc.ui)
+    fc.ui.show()
+
     sys.exit(app.exec_())

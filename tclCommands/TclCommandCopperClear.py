@@ -214,7 +214,7 @@ class TclCommandCopperClear(TclCommand):
         if 'all' in args and args['all'] == 1:
             self.app.ncclear_tool.clear_copper(ncc_obj=obj,
                                                select_method='itself',
-                                               tooldia=tooldia,
+                                               ncctooldia=tooldia,
                                                overlap=overlap,
                                                order=order,
                                                margin=margin,

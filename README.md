@@ -9,6 +9,54 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.09.2019
+
+- added control for simplification when loading a Gerber file in Preferences -> Gerber -> Gerber General -> Simplify
+- added some messages for the Edit -> Conversions -> Join methods() to make sure that there are at least 2 objects selected for join
+- added a grid layout in on_about()
+- upgraded the Script Editor to be able to run Tcl commands in batches
+- added some ToolTips for the buttons in the Code Editor
+
+12.09.2019
+
+- small changes in the TclCommands: MillDrills, MillSlots, DrillCNCJob: the new parameter for tolerance is now named: tooldia
+- cleaned up the 'About FlatCAM' window, started to give credits for the translation team
+- started to add an application splash screen
+- now, Excellon and Gerber edited objects will have the source_code updated and ready to be saved
+- the edited Gerber (or Excellon) object now is kept in the app after editing and the edited object is a new object
+- added a message to the splash screen
+- remade the splash screen to show multiple messages on app initialization
+- added a new splash image
+- added a control in Preferences -> General -> GUI Settings -> Splash Screen that control if the splash screen is shown at startup
+
+11.09.2019
+
+- added the Gerber code as source for the panelized object in Panelize Tool
+- whenever a Gerber file is deleted, the mark_shapes objects are deleted also
+- made faster the Gerber parser for the case of having a not valid geometry when loading a Gerber file without buffering
+- updated code in self.on_view_source() to make it more responsive
+- fixed the TclCommand MillHoles
+- changed the name of TclCommand MillHoles to MillDrills and added a new TclCommand named MillSlots
+- modified the MillDrills and MillSlots TclCommands to accept as parameter a list of tool diameters to be milled instead of tool indexes
+- fixed issue #302 where a copied object lost all the tools
+- modified the TclCommand DrillCncJob to have as parameter a list of tool diameters to be drilled instead of tool indexes
+- updated the Spanish translation (Google-translation)
+- added a new parameter in the TclCommands: DrillCNCJob, MillDrills, MillSlots named tol (from tolerance). If the diameters of the milled (drilled) dias are within the tolerance specified of the diameters in the Excellon object than those diameters will be processed. This is to help account for rounding errors when having units conversion
+
+10.09.2019
+
+- made isolation threaded
+- fixed a small typo in TclCommandCopperCLear
+- made changing the Plot kind in CNCJob selected tab, threaded
+- fixed an object used before declaring it in NCC Tool - Area option
+- added progress for the generation of Isolation geometry
+- added progress and possibility of graceful exit in Panel Tool
+- added graceful exit possibility when creating Isolation
+- changed the workers thread priority back to Normal
+- when disabling plots, if the selection shape is visible, it will be deleted
+- small changes in Tool Panel (eliminating some deepcopy() calls)
+- made sure that all the progress counters count to 100%
+
 9.09.2019
 
 - changed the triangulation type in VisPyVisuals for ShapeCollectionVisual class
