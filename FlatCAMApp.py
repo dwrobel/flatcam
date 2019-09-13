@@ -2661,7 +2661,11 @@ class App(QtCore.QObject):
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
         self.ui.delete_btn.triggered.connect(self.on_delete)
+
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
+        self.ui.new_script_btn.triggered.connect(self.on_filenewscript)
+        self.ui.open_script_btn.triggered.connect(self.on_fileopenscript)
+        self.ui.run_script_btn.triggered.connect(self.on_filerunscript)
 
         # Tools Toolbar Signals
         self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
@@ -3028,7 +3032,7 @@ class App(QtCore.QObject):
         self.display_tcl_error(text)
         raise self.TclErrorException(text)
 
-    def exec_command(self, text):
+    def exec_command(self, text, no_plot=None):
         """
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
         Also handles execution in separated threads
@@ -3042,7 +3046,8 @@ class App(QtCore.QObject):
         result = self.exec_command_test(text, False)
 
         # MS: added this method call so the geometry is updated once the TCL command is executed
-        self.plot_all()
+        if no_plot is None:
+            self.plot_all()
 
         return result
 
@@ -3060,6 +3065,7 @@ class App(QtCore.QObject):
 
         try:
             self.shell.open_proccessing()  # Disables input box.
+
             result = self.tcl.eval(str(tcl_command_string))
             if result != 'None':
                 self.shell.append_output(result + '\n')
@@ -5758,6 +5764,9 @@ class App(QtCore.QObject):
             self.ui.shell_dock.show()
 
         script_code = self.ui.code_editor.toPlainText()
+        # self.shell._sysShell.exec_command(script_code)
+
+        old_line = ''
         for tcl_command_line in script_code.splitlines():
             # do not process lines starting with '#' = comment and empty lines
             if not tcl_command_line.startswith('#') and tcl_command_line != '':
@@ -5766,8 +5775,34 @@ class App(QtCore.QObject):
                 if sys.platform == 'win32':
                     if "open" in tcl_command_line:
                         tcl_command_line = tcl_command_line.replace('\\', '/')
+
+                if old_line != '':
+                    new_command = old_line + tcl_command_line + '\n'
+                else:
+                    new_command = tcl_command_line
+
                 # execute the actual Tcl command
-                self.shell._sysShell.exec_command(tcl_command_line)
+                try:
+                    self.shell.open_proccessing()  # Disables input box.
+
+                    result = self.tcl.eval(str(new_command))
+                    if result != 'None':
+                        self.shell.append_output(result + '\n')
+
+                    old_line = ''
+                except tk.TclError as e:
+                    old_line = old_line + tcl_command_line + '\n'
+
+        if old_line != '':
+            # it means that the script finished with an error
+            result = self.tcl.eval("set errorInfo")
+            self.log.error("Exec command Exception: %s" % (result + '\n'))
+            self.shell.append_error('ERROR: ' + result + '\n')
+        else:
+            # success! plot all objects
+            self.plot_all()
+
+        self.shell.close_proccessing()
 
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case

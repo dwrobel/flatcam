@@ -119,7 +119,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufilenewscript = QtWidgets.QAction(QtGui.QIcon('share/script_new16.png'), _('New Script ...'), self)
         self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon('share/script_open16.png'), _('Open Script ...'), self)
         self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'),
-                                                   _('Run Script ...\tSHIFT+S'), self)
+                                                   '%s\tSHIFT+S' % _('Run Script ...'), self)
         self.menufilerunscript.setToolTip(
            _("Will run the opened Tcl Script thus\n"
              "enabling the automation of certain\n"
@@ -653,6 +653,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # ## Shell Toolbar ##
         self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), _("&Command Line"))
+        self.new_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_new24.png'), _('New Script ...'))
+        self.open_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_open18.png'), _('Open Script ...'))
+        self.run_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script16.png'), _('Run Script ...'))
 
         # ## Tools Toolbar ##
         self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), _("2Sided Tool"))
@@ -2079,6 +2082,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # ## Shell Toolbar # ##
         self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), _("&Command Line"))
+        self.new_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_new24.png'), _('New Script ...'))
+        self.open_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_open18.png'), _('Open Script ...'))
+        self.run_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script16.png'), _('Run Script ...'))
 
         # ## Tools Toolbar # ##
         self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), _("2Sided Tool"))
