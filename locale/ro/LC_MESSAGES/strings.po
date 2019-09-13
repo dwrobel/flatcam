@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-09-14 02:12+0300\n"
-"PO-Revision-Date: 2019-09-14 02:12+0300\n"
+"POT-Creation-Date: 2019-09-13 22:48+0300\n"
+"PO-Revision-Date: 2019-09-13 23:29+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -839,8 +839,8 @@ msgstr "Încarcă un fişier de Configurare"
 msgid "Open Config cancelled."
 msgstr "Incărcarea unui fişier configurare FlatCAM este anulată."
 
-#: FlatCAMApp.py:7641 FlatCAMApp.py:7910 FlatCAMApp.py:10443
-#: FlatCAMApp.py:10464 FlatCAMApp.py:10486 FlatCAMApp.py:10509
+#: FlatCAMApp.py:7641 FlatCAMApp.py:7910 FlatCAMApp.py:10382
+#: FlatCAMApp.py:10403 FlatCAMApp.py:10425 FlatCAMApp.py:10448
 msgid "No object selected."
 msgstr "Nici-un obiect nu este selectat."
 
@@ -1279,180 +1279,123 @@ msgstr "Sterge fişierele recente"
 msgid "<b>Shortcut Key List</b>"
 msgstr "<b>Lista cu taste Shortcut</b>"
 
-#: FlatCAMApp.py:9988
-msgid "Selected Tab - Choose an Item from Project Tab"
-msgstr "Tab-ul Selectat - Alege un obiect in Tab-ul Proiect"
-
-#: FlatCAMApp.py:9988
-msgid "Details"
-msgstr "Detalii"
-
-#: FlatCAMApp.py:9989
-msgid "The normal flow when working in FlatCAM is the following"
-msgstr "Fluxul normal de lucru in FlatCAM este urmatorul"
-
-#: FlatCAMApp.py:9990
+#: FlatCAMApp.py:9926
+#, python-brace-format
 msgid ""
-"Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
-"FlatCAM using either the"
+"\n"
+"<p><span style=\"font-size:{tsize}px\"><strong>Selected Tab - Choose an Item "
+"from Project Tab</strong></span></p>\n"
+"\n"
+"<p><span style=\"font-size:{fsize}px\"><strong>Details</strong>:<br />\n"
+"The normal flow when working in FlatCAM is the following:</span></p>\n"
+"\n"
+"<ol>\n"
+"\t<li><span style=\"font-size:{fsize}px\">Loat/Import a Gerber, Excellon, "
+"Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;"
+"s, toolbars, key shortcuts or even dragging and dropping the files on the "
+"GUI.<br />\n"
+"\t<br />\n"
+"\tYou can also load a <strong>FlatCAM project</strong> by double clicking on "
+"the project file, drag &amp; drop of the file into the FLATCAM GUI or "
+"through the menu/toolbar links offered within the app.</span><br />\n"
+"\t&nbsp;</li>\n"
+"\t<li><span style=\"font-size:{fsize}px\">Once an object is available in the "
+"Project Tab, by selecting it and then focusing on <strong>SELECTED TAB </"
+"strong>(more simpler is to double click the object name in the Project Tab), "
+"<strong>SELECTED TAB </strong>will be updated with the object properties "
+"according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br /"
+">\n"
+"\t<br />\n"
+"\tIf the selection of the object is done on the canvas by single click "
+"instead, and the <strong>SELECTED TAB</strong> is in focus, again the object "
+"properties will be displayed into the Selected Tab. Alternatively, double "
+"clicking on the object on the canvas will bring the <strong>SELECTED TAB</"
+"strong> and populate it even if it was out of focus.<br />\n"
+"\t<br />\n"
+"\tYou can change the parameters in this screen and the flow direction is "
+"like this:<br />\n"
+"\t<br />\n"
+"\t<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate "
+"Geometry -&gt;<strong> Geometry Object </strong>-&gt; Add tools (change "
+"param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object </"
+"strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to "
+"GCode (again, done in <strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</"
+"span></li>\n"
+"</ol>\n"
+"\n"
+"<p><span style=\"font-size:{fsize}px\">A list of key shortcuts is available "
+"through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or "
+"through it&#39;s own key shortcut: <strong>F3</strong>.</span></p>\n"
+"\n"
+"        "
 msgstr ""
-"Incarca/Importa unul dintre tipurile de fisiere: Gerber ,Excellon, GCode, "
-"DXF, Imagine Raster sau SVG in FlatCAM folosind ori"
-
-#: FlatCAMApp.py:9991
-msgid ""
-"toolbars, key shortcuts or even dragging and dropping the files on the GUI"
-msgstr "toolbaruri, shortcut-uri si chiar si drag - drop the files in GUI"
-
-#: FlatCAMApp.py:9992
-msgid ""
-"You can also load a FlatCAM project by double clicking on the project file, "
-"drag"
-msgstr ""
-"Se poate incarca un proiect FlatCAM prin dublu click pe fisierul Proiect, "
-"drag"
-
-#: FlatCAMApp.py:9993
-msgid ""
-"drop of the file into the FLATCAM GUI or through the menu/toolbar links "
-"offered within the app"
-msgstr ""
-"drop al fisierului in interfata GUI a FlatCAM sau prin menu-uri/toolbar-uri "
-"care se gasesc in aplicatie"
-
-#: FlatCAMApp.py:9994
-msgid ""
-"Once an object is available in the Project Tab, by selecting it and then "
-"focusing on"
-msgstr ""
-"Odata ce un obiect este disponibil in Tab-ul Proiect, prin selectarea si "
-"apoi focusarea pe "
-
-#: FlatCAMApp.py:9995 FlatCAMApp.py:9996 FlatCAMApp.py:9999 FlatCAMApp.py:10002
-#: FlatCAMApp.py:10006
-msgid "SELECTED TAB"
-msgstr "TAB-ul SELECTED"
-
-#: FlatCAMApp.py:9995
-msgid "more simpler is to double click the object name in the Project Tab"
-msgstr ""
-"mai simplu este sa se faca dublu click pe numele obiectului in Tab-ul Proiect"
-
-#: FlatCAMApp.py:9996
-msgid "will be updated with the object properties according to"
-msgstr "va fi updatat cu proprietatile obiectului conform la"
-
-#: FlatCAMApp.py:9997
-msgid "kind: Gerber, Excellon, Geometry or CNCJob object"
-msgstr "tip: Gerber, Excellon, Geometrie si obiect CNCJob"
-
-#: FlatCAMApp.py:9998
-msgid ""
-"If the selection of the object is done on the canvas by single click "
-"instead, and the"
-msgstr ""
-"Daca selectia obiectului este facuta pe canvas prinsimplu LMB click, si"
-
-#: FlatCAMApp.py:10000
-msgid ""
-"is in focus, again the object properties will be displayed into the Selected "
-"Tab. Alternatively, double clicking on the object on the canvas will bring "
-"the"
-msgstr ""
-"este focalizat, din nou proprietatile obiectului vor fi afisate in Tab-ul "
-"Selected. Alternativ, dublu click pe obiect in canvas va afisa"
-
-#: FlatCAMApp.py:10002
-msgid "and populate it even if it was out of focus"
-msgstr "si il va popula chair si daca ar fi fost nefocalizat"
-
-#: FlatCAMApp.py:10003
-msgid ""
-"You can change the parameters in this screen and the flow direction is like "
-"this"
-msgstr ""
-"Se pot schimba parametrii in acest ecran si directia este in felul urmator"
-
-#: FlatCAMApp.py:10004
-msgid "Gerber/Excellon Object"
-msgstr "Obiect Gerber/Excellon"
-
-#: FlatCAMApp.py:10004
-msgid "Change Parameter"
-msgstr "Schimba Parametri"
-
-#: FlatCAMApp.py:10004 flatcamTools/ToolNonCopperClear.py:440
-msgid "Generate Geometry"
-msgstr "Genereza Geometrie"
-
-#: FlatCAMApp.py:10004 flatcamGUI/ObjectUI.py:890
-msgid "Geometry Object"
-msgstr "Obiect Geometrie"
+"\n"
+"<p><span style=\"font-size:{tsize}\"><strong>Tab Selectat - Alege o intrare "
+"din Tab-ul Proiect</strong></span></p>\n"
+"\n"
+"<p><span style=\"font-size:{fsize}\"><strong>Detalii</strong>:<br />\n"
+"Fluxul normal când se lucrează in FlatCAM este următorul:</span></p>\n"
+"\n"
+"<ol>\n"
+"\t<li><span style=\"font-size:{fsize}\">Încarcă/Importa un fişier Gerber, "
+"Excellon, Gcode, DXF, Imagine Raster sau SVG in FlatCAM folosind ori "
+"meniurile, toolbarurile, tastele shortcut sau chiar tragerea și eliberarea "
+"fişierelor in fereastra FlatCAM.<br />\n"
+"\t<br />\n"
+"\tPoti să incarci și un <strong>proiect FlatCAM</strong> prin dublu click pe "
+"fişierul proiect, tragerea și eliberarea fişierului peste FLATCAM GUI sau "
+"prin sistemul de meniuri/toolbaruri oferit in cadrul aplicaţiei.</span><br /"
+">\n"
+"\t&nbsp;</li>\n"
+"\t<li><span style=\"font-size:{fsize}\">Odata ce un obiect este disponibil "
+"in Tab-ul Proiect, prin selectarea și focalizarea in <strong>Tab-ul "
+"SELECTAT</strong>(mai simplu prin dublu click pe numele obiectului in lista "
+"dinTab-ul Proiect), <strong>Tab-ul SELECTAT </strong>va fi updatat conform "
+"cu tipul sau: Gerber, Excellon, Geometrie sau CNCJob.<br />\n"
+"\t<br />\n"
+"\tDaca selectia este efectuata pe Canvas prin simplu click și <strong>Tab-ul "
+"SELECTAT</strong> este in focus, din nou, proprietatile obiectului vor fi "
+"afisate in Tab-ul SELECTAT. Alternativ, prin dublu click pe obiect in Canvas "
+"se va aduce <strong>Tab-ul SELECTAT</strong> in focus și va fi actualizat cu "
+"informaţie chair daca initial nu era focalizat.<br />\n"
+"\t<br />\n"
+"\tO suma de parametri se pot schimba in acest Tab and directia in lucru este "
+"urmatoarea:<br />\n"
+"\t<br />\n"
+"\t<strong>Obiectul Gerber/Excellon</strong> -&gt; Schimba Parametru -&gt; "
+"Generează Geometrie -&gt;<strong>Obiectul Geometrie </strong>-&gt; Adaugă "
+"unelte (prin schimbare parametru in Tab-ul SELECTAT) -&gt; Generează CNCJob -"
+"&gt;<strong> Obiect CNCJob</strong>-&gt; Verifică GCode (folosind Editare "
+"cod CNC) și/sau Adaugă cod GCode la inceput/la sfârşit (din nou, efectuat in "
+"<strong>Tab-ul SELECTAT)&nbsp;</strong>-&gt; Salvează GCode</span></li>\n"
+"</ol>\n"
+"\n"
+"<p><span style=\"font-size:{fsize}\">O lista cu tastele shortcut este "
+"disponibila ca și meniu  in <strong>Help -&gt;Lista Shortcut-uri</"
+"strong>&nbsp;sau prin propria tasta shortcutt: <strong>F3</strong>.</span></"
+"p>\n"
+"\n"
+"        "
 
 #: FlatCAMApp.py:10005
-msgid "Add tools (change param in Selected Tab)"
-msgstr "Adauga unelte (schimba param. Tab-ul SELECTAT)"
-
-#: FlatCAMApp.py:10005
-msgid "Generate CNCJob"
-msgstr "Generează CNCJob"
-
-#: FlatCAMApp.py:10005
-msgid "CNCJob Object"
-msgstr "Obiect CNCJob"
-
-#: FlatCAMApp.py:10006
-msgid ""
-"Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, "
-"done in"
-msgstr ""
-"Verifica GCode (cu ajutorul Editorului CNC) si/sau adauga la GCode (din nou, "
-"efectuat in"
-
-#: FlatCAMApp.py:10007 flatcamTools/ToolSolderPaste.py:375
-msgid "Save GCode"
-msgstr "Salvează GCode"
-
-#: FlatCAMApp.py:10007
-msgid "A list of key shortcuts is available through an menu entry in"
-msgstr ""
-"O lista de scurtaturi de taste este disponibila in structura de meniuri"
-
-#: FlatCAMApp.py:10007
-msgid "Help"
-msgstr "Ajutor"
-
-#: FlatCAMApp.py:10008
-msgid "Shortcuts List"
-msgstr "Lista shortcut-uri"
-
-#: FlatCAMApp.py:10008
-msgid "or through"
-msgstr "sau prin"
-
-#: FlatCAMApp.py:10008
-msgid "own key shortcut"
-msgstr "propriul sau ShortCut"
-
-#: FlatCAMApp.py:10066
 msgid "Failed checking for latest version. Could not connect."
 msgstr ""
 "Verificarea pentru ultima versiune a eșuat. Nu a fost posibilă conectarea la "
 "server."
 
-#: FlatCAMApp.py:10074
+#: FlatCAMApp.py:10013
 msgid "Could not parse information about latest version."
 msgstr "Informatia cu privire la ultima versiune nu s-a putut interpreta."
 
-#: FlatCAMApp.py:10085
+#: FlatCAMApp.py:10024
 msgid "FlatCAM is up to date!"
 msgstr "FlatCAM este la ultima versiune!"
 
-#: FlatCAMApp.py:10090
+#: FlatCAMApp.py:10029
 msgid "Newer Version Available"
 msgstr "O nouă versiune este disponibila"
 
-#: FlatCAMApp.py:10091
+#: FlatCAMApp.py:10030
 msgid ""
 "There is a newer version of FlatCAM available for download:\n"
 "\n"
@@ -1460,63 +1403,63 @@ msgstr ""
 "O nouă versiune de FlatCAM este disponibilă pentru download::\n"
 "\n"
 
-#: FlatCAMApp.py:10093
+#: FlatCAMApp.py:10032
 msgid "info"
 msgstr "informaţie"
 
-#: FlatCAMApp.py:10148
+#: FlatCAMApp.py:10087
 msgid "All plots disabled."
 msgstr "Toate afişările sunt dezactivate."
 
-#: FlatCAMApp.py:10155
+#: FlatCAMApp.py:10094
 msgid "All non selected plots disabled."
 msgstr "Toate afişările care nu sunt selectate sunt dezactivate."
 
-#: FlatCAMApp.py:10162
+#: FlatCAMApp.py:10101
 msgid "All plots enabled."
 msgstr "Toate afişările sunt activate."
 
-#: FlatCAMApp.py:10169
+#: FlatCAMApp.py:10108
 msgid "Selected plots enabled..."
 msgstr "Toate afişările selectate sunt activate..."
 
-#: FlatCAMApp.py:10178
+#: FlatCAMApp.py:10117
 msgid "Selected plots disabled..."
 msgstr "Toate afişările selectate sunt dezactivate..."
 
-#: FlatCAMApp.py:10196
+#: FlatCAMApp.py:10135
 msgid "Enabling plots ..."
 msgstr "Activează Afișare ..."
 
-#: FlatCAMApp.py:10235
+#: FlatCAMApp.py:10174
 msgid "Disabling plots ..."
 msgstr "Dezactivează Afișare ..."
 
-#: FlatCAMApp.py:10257
+#: FlatCAMApp.py:10196
 msgid "Working ..."
 msgstr "Se lucrează..."
 
-#: FlatCAMApp.py:10295
+#: FlatCAMApp.py:10234
 msgid "Saving FlatCAM Project"
 msgstr "Proiectul FlatCAM este in curs de salvare"
 
-#: FlatCAMApp.py:10317 FlatCAMApp.py:10352
+#: FlatCAMApp.py:10256 FlatCAMApp.py:10291
 msgid "Project saved to"
 msgstr "Proiectul s-a salvat in"
 
-#: FlatCAMApp.py:10336
+#: FlatCAMApp.py:10275
 msgid "Failed to verify project file"
 msgstr "Eşec in incărcarea fişierului proiect"
 
-#: FlatCAMApp.py:10336 FlatCAMApp.py:10344 FlatCAMApp.py:10355
+#: FlatCAMApp.py:10275 FlatCAMApp.py:10283 FlatCAMApp.py:10294
 msgid "Retry to save it."
 msgstr "Încercați din nou pentru a-l salva."
 
-#: FlatCAMApp.py:10344 FlatCAMApp.py:10355
+#: FlatCAMApp.py:10283 FlatCAMApp.py:10294
 msgid "Failed to parse saved project file"
 msgstr "Esec in analizarea fişierului Proiect"
 
-#: FlatCAMApp.py:10566
+#: FlatCAMApp.py:10505
 msgid "The user requested a graceful exit of the current task."
 msgstr "Utilizatorul a solicitat o inchidere grațioasă a taskului curent."
 
@@ -8602,7 +8545,7 @@ msgstr ""
 "Cat de mult (fracţie) din diametrul uneltei să se suprapună la fiecare "
 "trecere a uneltei.\n"
 "Exemplu:\n"
-"O valoare aici de 0.25 inseamna 25%% din diametrul uneltei de mai sus..\n"
+"O valoare aici de 0.25 inseamna 25\\% din diametrul uneltei de mai sus..\n"
 "\n"
 "Ajustează valoarea incepand de la valori mici\n"
 "și pe urma creste daca ariile care ar trebui >curățate< inca\n"
@@ -10028,6 +9971,10 @@ msgid ""
 msgstr ""
 "Crează un obiect tip Geometrie pt.\n"
 "frezarea rutelor create din Sloturi."
+
+#: flatcamGUI/ObjectUI.py:890
+msgid "Geometry Object"
+msgstr "Obiect Geometrie"
 
 #: flatcamGUI/ObjectUI.py:921
 msgid ""
@@ -11490,6 +11437,10 @@ msgid "The FlatCAM object to be used as non copper clearing reference."
 msgstr ""
 "Obiectul FlatCAM pentru a fi utilizat ca referință pt. curățarea de cupru."
 
+#: flatcamTools/ToolNonCopperClear.py:440
+msgid "Generate Geometry"
+msgstr "Genereza Geometrie"
+
 #: flatcamTools/ToolNonCopperClear.py:906 flatcamTools/ToolPaint.py:705
 #: flatcamTools/ToolSolderPaste.py:769
 msgid "Please enter a tool diameter to add, in Float format."
@@ -12545,6 +12496,10 @@ msgstr ""
 "Vizualizează codul GCode generat pt dispensarea de \n"
 "pastă de fludor pe padurile PCB-ului."
 
+#: flatcamTools/ToolSolderPaste.py:375
+msgid "Save GCode"
+msgstr "Salvează GCode"
+
 #: flatcamTools/ToolSolderPaste.py:377
 msgid ""
 "Save the generated GCode for Solder Paste dispensing\n"
@@ -12956,106 +12911,6 @@ msgid "No Geometry name in args. Provide a name and try again."
 msgstr ""
 "Nici-un nume de Geometrie in argumente. Furnizați un nume și încercați din "
 "nou."
-
-#~ msgid ""
-#~ "\n"
-#~ "<p><span style=\"font-size:{tsize}px\"><strong>Selected Tab - Choose an "
-#~ "Item from Project Tab</strong></span></p>\n"
-#~ "\n"
-#~ "<p><span style=\"font-size:{fsize}px\"><strong>Details</strong>:<br />\n"
-#~ "The normal flow when working in FlatCAM is the following:</span></p>\n"
-#~ "\n"
-#~ "<ol>\n"
-#~ "\t<li><span style=\"font-size:{fsize}px\">Loat/Import a Gerber, Excellon, "
-#~ "Gcode, DXF, Raster Image or SVG file into FlatCAM using either the "
-#~ "menu&#39;s, toolbars, key shortcuts or even dragging and dropping the "
-#~ "files on the GUI.<br />\n"
-#~ "\t<br />\n"
-#~ "\tYou can also load a <strong>FlatCAM project</strong> by double clicking "
-#~ "on the project file, drag &amp; drop of the file into the FLATCAM GUI or "
-#~ "through the menu/toolbar links offered within the app.</span><br />\n"
-#~ "\t&nbsp;</li>\n"
-#~ "\t<li><span style=\"font-size:{fsize}px\">Once an object is available in "
-#~ "the Project Tab, by selecting it and then focusing on <strong>SELECTED "
-#~ "TAB </strong>(more simpler is to double click the object name in the "
-#~ "Project Tab), <strong>SELECTED TAB </strong>will be updated with the "
-#~ "object properties according to it&#39;s kind: Gerber, Excellon, Geometry "
-#~ "or CNCJob object.<br />\n"
-#~ "\t<br />\n"
-#~ "\tIf the selection of the object is done on the canvas by single click "
-#~ "instead, and the <strong>SELECTED TAB</strong> is in focus, again the "
-#~ "object properties will be displayed into the Selected Tab. Alternatively, "
-#~ "double clicking on the object on the canvas will bring the "
-#~ "<strong>SELECTED TAB</strong> and populate it even if it was out of focus."
-#~ "<br />\n"
-#~ "\t<br />\n"
-#~ "\tYou can change the parameters in this screen and the flow direction is "
-#~ "like this:<br />\n"
-#~ "\t<br />\n"
-#~ "\t<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; "
-#~ "Generate Geometry -&gt;<strong> Geometry Object </strong>-&gt; Add tools "
-#~ "(change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob "
-#~ "Object </strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/"
-#~ "prepend to GCode (again, done in <strong>SELECTED TAB)&nbsp;</strong>-"
-#~ "&gt; Save GCode</span></li>\n"
-#~ "</ol>\n"
-#~ "\n"
-#~ "<p><span style=\"font-size:{fsize}px\">A list of key shortcuts is "
-#~ "available through an menu entry in <strong>Help -&gt; Shortcuts List</"
-#~ "strong>&nbsp;or through it&#39;s own key shortcut: <strng>F3</strong>.</"
-#~ "span></p>\n"
-#~ "\n"
-#~ "        "
-#~ msgstr ""
-#~ "\n"
-#~ "<p><span style=\"font-size:{tsize}\"><strong>Tab Selectat - Alege o "
-#~ "intrare din Tab-ul Proiect</strong></span></p>\n"
-#~ "\n"
-#~ "<p><span style=\"font-size:{fsize}\"><strong>Detalii</strong>:<br />\n"
-#~ "Fluxul normal când se lucrează in FlatCAM este următorul:</span></p>\n"
-#~ "\n"
-#~ "<ol>\n"
-#~ "\t<li><span style=\"font-size:{fsize}\">Încarcă/Importa un fişier Gerber, "
-#~ "Excellon, Gcode, DXF, Imagine Raster sau SVG in FlatCAM folosind ori "
-#~ "meniurile, toolbarurile, tastele shortcut sau chiar tragerea și "
-#~ "eliberarea fişierelor in fereastra FlatCAM.<br />\n"
-#~ "\t<br />\n"
-#~ "\tPoti să incarci și un <strong>proiect FlatCAM</strong> prin dublu click "
-#~ "pe fişierul proiect, tragerea și eliberarea fişierului peste FLATCAM GUI "
-#~ "sau prin sistemul de meniuri/toolbaruri oferit in cadrul aplicaţiei.</"
-#~ "span><br />\n"
-#~ "\t&nbsp;</li>\n"
-#~ "\t<li><span style=\"font-size:{fsize}\">Odata ce un obiect este "
-#~ "disponibil in Tab-ul Proiect, prin selectarea și focalizarea in "
-#~ "<strong>Tab-ul SELECTAT</strong>(mai simplu prin dublu click pe numele "
-#~ "obiectului in lista dinTab-ul Proiect), <strong>Tab-ul SELECTAT </"
-#~ "strong>va fi updatat conform cu tipul sau: Gerber, Excellon, Geometrie "
-#~ "sau CNCJob.<br />\n"
-#~ "\t<br />\n"
-#~ "\tDaca selectia este efectuata pe Canvas prin simplu click și <strong>Tab-"
-#~ "ul SELECTAT</strong> este in focus, din nou, proprietatile obiectului vor "
-#~ "fi afisate in Tab-ul SELECTAT. Alternativ, prin dublu click pe obiect in "
-#~ "Canvas se va aduce <strong>Tab-ul SELECTAT</strong> in focus și va fi "
-#~ "actualizat cu informaţie chair daca initial nu era focalizat.<br />\n"
-#~ "\t<br />\n"
-#~ "\tO suma de parametri se pot schimba in acest Tab and directia in lucru "
-#~ "este urmatoarea:<br />\n"
-#~ "\t<br />\n"
-#~ "\t<strong>Obiectul Gerber/Excellon</strong> -&gt; Schimba Parametru -&gt; "
-#~ "Generează Geometrie -&gt;<strong>Obiectul Geometrie </strong>-&gt; Adaugă "
-#~ "unelte (prin schimbare parametru in Tab-ul SELECTAT) -&gt; Generează "
-#~ "CNCJob -&gt;<strong> Obiect CNCJob</strong>-&gt; Verifică GCode (folosind "
-#~ "Editare cod CNC) și/sau Adaugă cod GCode la inceput/la sfârşit (din nou, "
-#~ "efectuat in <strong>Tab-ul SELECTAT)&nbsp;</strong>-&gt; Salvează GCode</"
-#~ "span></li>\n"
-#~ "</ol>\n"
-#~ "\n"
-#~ "<p><span style=\"font-size:{fsize}\">O lista cu tastele shortcut este "
-#~ "disponibila ca și meniu  in <strong>Help -&gt;Lista Shortcut-uri</"
-#~ "strong>&nbsp;sau prin propria tasta shortcutt: <strng>F3</strong>.</"
-#~ "span></p>\n"
-#~ "\n"
-#~ "        "
 
 #~ msgid "Run Script ...\tSHIFT+S"
 #~ msgstr "Rulează Script ...\tSHIFT+S"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-09-14 02:11+0300\n"
+"POT-Creation-Date: 2019-09-13 22:47+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -760,8 +760,8 @@ msgstr ""
 msgid "Open Config cancelled."
 msgstr ""
 
-#: FlatCAMApp.py:7641 FlatCAMApp.py:7910 FlatCAMApp.py:10443
-#: FlatCAMApp.py:10464 FlatCAMApp.py:10486 FlatCAMApp.py:10509
+#: FlatCAMApp.py:7641 FlatCAMApp.py:7910 FlatCAMApp.py:10382
+#: FlatCAMApp.py:10403 FlatCAMApp.py:10425 FlatCAMApp.py:10448
 msgid "No object selected."
 msgstr ""
 
@@ -1167,224 +1167,136 @@ msgstr ""
 msgid "<b>Shortcut Key List</b>"
 msgstr ""
 
-#: FlatCAMApp.py:9988
-msgid "Selected Tab - Choose an Item from Project Tab"
-msgstr ""
-
-#: FlatCAMApp.py:9988
-msgid "Details"
-msgstr ""
-
-#: FlatCAMApp.py:9989
-msgid "The normal flow when working in FlatCAM is the following"
-msgstr ""
-
-#: FlatCAMApp.py:9990
+#: FlatCAMApp.py:9926
+#, python-brace-format
 msgid ""
-"Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
-"FlatCAM using either the"
-msgstr ""
-
-#: FlatCAMApp.py:9991
-msgid ""
-"toolbars, key shortcuts or even dragging and dropping the files on the GUI"
-msgstr ""
-
-#: FlatCAMApp.py:9992
-msgid ""
-"You can also load a FlatCAM project by double clicking on the project file, "
-"drag"
-msgstr ""
-
-#: FlatCAMApp.py:9993
-msgid ""
-"drop of the file into the FLATCAM GUI or through the menu/toolbar links "
-"offered within the app"
-msgstr ""
-
-#: FlatCAMApp.py:9994
-msgid ""
-"Once an object is available in the Project Tab, by selecting it and then "
-"focusing on"
-msgstr ""
-
-#: FlatCAMApp.py:9995 FlatCAMApp.py:9996 FlatCAMApp.py:9999 FlatCAMApp.py:10002
-#: FlatCAMApp.py:10006
-msgid "SELECTED TAB"
-msgstr ""
-
-#: FlatCAMApp.py:9995
-msgid "more simpler is to double click the object name in the Project Tab"
-msgstr ""
-
-#: FlatCAMApp.py:9996
-msgid "will be updated with the object properties according to"
-msgstr ""
-
-#: FlatCAMApp.py:9997
-msgid "kind: Gerber, Excellon, Geometry or CNCJob object"
-msgstr ""
-
-#: FlatCAMApp.py:9998
-msgid ""
-"If the selection of the object is done on the canvas by single click "
-"instead, and the"
-msgstr ""
-
-#: FlatCAMApp.py:10000
-msgid ""
-"is in focus, again the object properties will be displayed into the Selected "
-"Tab. Alternatively, double clicking on the object on the canvas will bring "
-"the"
-msgstr ""
-
-#: FlatCAMApp.py:10002
-msgid "and populate it even if it was out of focus"
-msgstr ""
-
-#: FlatCAMApp.py:10003
-msgid ""
-"You can change the parameters in this screen and the flow direction is like "
-"this"
-msgstr ""
-
-#: FlatCAMApp.py:10004
-msgid "Gerber/Excellon Object"
-msgstr ""
-
-#: FlatCAMApp.py:10004
-msgid "Change Parameter"
-msgstr ""
-
-#: FlatCAMApp.py:10004 flatcamTools/ToolNonCopperClear.py:440
-msgid "Generate Geometry"
-msgstr ""
-
-#: FlatCAMApp.py:10004 flatcamGUI/ObjectUI.py:890
-msgid "Geometry Object"
+"\n"
+"<p><span style=\"font-size:{tsize}px\"><strong>Selected Tab - Choose an Item "
+"from Project Tab</strong></span></p>\n"
+"\n"
+"<p><span style=\"font-size:{fsize}px\"><strong>Details</strong>:<br />\n"
+"The normal flow when working in FlatCAM is the following:</span></p>\n"
+"\n"
+"<ol>\n"
+"\t<li><span style=\"font-size:{fsize}px\">Loat/Import a Gerber, Excellon, "
+"Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;"
+"s, toolbars, key shortcuts or even dragging and dropping the files on the "
+"GUI.<br />\n"
+"\t<br />\n"
+"\tYou can also load a <strong>FlatCAM project</strong> by double clicking on "
+"the project file, drag &amp; drop of the file into the FLATCAM GUI or "
+"through the menu/toolbar links offered within the app.</span><br />\n"
+"\t&nbsp;</li>\n"
+"\t<li><span style=\"font-size:{fsize}px\">Once an object is available in the "
+"Project Tab, by selecting it and then focusing on <strong>SELECTED TAB </"
+"strong>(more simpler is to double click the object name in the Project Tab), "
+"<strong>SELECTED TAB </strong>will be updated with the object properties "
+"according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br /"
+">\n"
+"\t<br />\n"
+"\tIf the selection of the object is done on the canvas by single click "
+"instead, and the <strong>SELECTED TAB</strong> is in focus, again the object "
+"properties will be displayed into the Selected Tab. Alternatively, double "
+"clicking on the object on the canvas will bring the <strong>SELECTED TAB</"
+"strong> and populate it even if it was out of focus.<br />\n"
+"\t<br />\n"
+"\tYou can change the parameters in this screen and the flow direction is "
+"like this:<br />\n"
+"\t<br />\n"
+"\t<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate "
+"Geometry -&gt;<strong> Geometry Object </strong>-&gt; Add tools (change "
+"param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object </"
+"strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to "
+"GCode (again, done in <strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</"
+"span></li>\n"
+"</ol>\n"
+"\n"
+"<p><span style=\"font-size:{fsize}px\">A list of key shortcuts is available "
+"through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or "
+"through it&#39;s own key shortcut: <strong>F3</strong>.</span></p>\n"
+"\n"
+"        "
 msgstr ""
 
 #: FlatCAMApp.py:10005
-msgid "Add tools (change param in Selected Tab)"
-msgstr ""
-
-#: FlatCAMApp.py:10005
-msgid "Generate CNCJob"
-msgstr ""
-
-#: FlatCAMApp.py:10005
-msgid "CNCJob Object"
-msgstr ""
-
-#: FlatCAMApp.py:10006
-msgid ""
-"Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, "
-"done in"
-msgstr ""
-
-#: FlatCAMApp.py:10007 flatcamTools/ToolSolderPaste.py:375
-msgid "Save GCode"
-msgstr ""
-
-#: FlatCAMApp.py:10007
-msgid "A list of key shortcuts is available through an menu entry in"
-msgstr ""
-
-#: FlatCAMApp.py:10007
-msgid "Help"
-msgstr ""
-
-#: FlatCAMApp.py:10008
-msgid "Shortcuts List"
-msgstr ""
-
-#: FlatCAMApp.py:10008
-msgid "or through"
-msgstr ""
-
-#: FlatCAMApp.py:10008
-msgid "own key shortcut"
-msgstr ""
-
-#: FlatCAMApp.py:10066
 msgid "Failed checking for latest version. Could not connect."
 msgstr ""
 
-#: FlatCAMApp.py:10074
+#: FlatCAMApp.py:10013
 msgid "Could not parse information about latest version."
 msgstr ""
 
-#: FlatCAMApp.py:10085
+#: FlatCAMApp.py:10024
 msgid "FlatCAM is up to date!"
 msgstr ""
 
-#: FlatCAMApp.py:10090
+#: FlatCAMApp.py:10029
 msgid "Newer Version Available"
 msgstr ""
 
-#: FlatCAMApp.py:10091
+#: FlatCAMApp.py:10030
 msgid ""
 "There is a newer version of FlatCAM available for download:\n"
 "\n"
 msgstr ""
 
-#: FlatCAMApp.py:10093
+#: FlatCAMApp.py:10032
 msgid "info"
 msgstr ""
 
-#: FlatCAMApp.py:10148
+#: FlatCAMApp.py:10087
 msgid "All plots disabled."
 msgstr ""
 
-#: FlatCAMApp.py:10155
+#: FlatCAMApp.py:10094
 msgid "All non selected plots disabled."
 msgstr ""
 
-#: FlatCAMApp.py:10162
+#: FlatCAMApp.py:10101
 msgid "All plots enabled."
 msgstr ""
 
-#: FlatCAMApp.py:10169
+#: FlatCAMApp.py:10108
 msgid "Selected plots enabled..."
 msgstr ""
 
-#: FlatCAMApp.py:10178
+#: FlatCAMApp.py:10117
 msgid "Selected plots disabled..."
 msgstr ""
 
-#: FlatCAMApp.py:10196
+#: FlatCAMApp.py:10135
 msgid "Enabling plots ..."
 msgstr ""
 
-#: FlatCAMApp.py:10235
+#: FlatCAMApp.py:10174
 msgid "Disabling plots ..."
 msgstr ""
 
-#: FlatCAMApp.py:10257
+#: FlatCAMApp.py:10196
 msgid "Working ..."
 msgstr ""
 
-#: FlatCAMApp.py:10295
+#: FlatCAMApp.py:10234
 msgid "Saving FlatCAM Project"
 msgstr ""
 
-#: FlatCAMApp.py:10317 FlatCAMApp.py:10352
+#: FlatCAMApp.py:10256 FlatCAMApp.py:10291
 msgid "Project saved to"
 msgstr ""
 
-#: FlatCAMApp.py:10336
+#: FlatCAMApp.py:10275
 msgid "Failed to verify project file"
 msgstr ""
 
-#: FlatCAMApp.py:10336 FlatCAMApp.py:10344 FlatCAMApp.py:10355
+#: FlatCAMApp.py:10275 FlatCAMApp.py:10283 FlatCAMApp.py:10294
 msgid "Retry to save it."
 msgstr ""
 
-#: FlatCAMApp.py:10344 FlatCAMApp.py:10355
+#: FlatCAMApp.py:10283 FlatCAMApp.py:10294
 msgid "Failed to parse saved project file"
 msgstr ""
 
-#: FlatCAMApp.py:10566
+#: FlatCAMApp.py:10505
 msgid "The user requested a graceful exit of the current task."
 msgstr ""
 
@@ -8808,6 +8720,10 @@ msgid ""
 "for milling SLOTS toolpaths."
 msgstr ""
 
+#: flatcamGUI/ObjectUI.py:890
+msgid "Geometry Object"
+msgstr ""
+
 #: flatcamGUI/ObjectUI.py:921
 msgid ""
 "Tools in this Geometry object used for cutting.\n"
@@ -9975,6 +9891,10 @@ msgstr ""
 msgid "The FlatCAM object to be used as non copper clearing reference."
 msgstr ""
 
+#: flatcamTools/ToolNonCopperClear.py:440
+msgid "Generate Geometry"
+msgstr ""
+
 #: flatcamTools/ToolNonCopperClear.py:906 flatcamTools/ToolPaint.py:705
 #: flatcamTools/ToolSolderPaste.py:769
 msgid "Please enter a tool diameter to add, in Float format."
@@ -10856,6 +10776,10 @@ msgstr ""
 msgid ""
 "View the generated GCode for Solder Paste dispensing\n"
 "on PCB pads."
+msgstr ""
+
+#: flatcamTools/ToolSolderPaste.py:375
+msgid "Save GCode"
 msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:377
