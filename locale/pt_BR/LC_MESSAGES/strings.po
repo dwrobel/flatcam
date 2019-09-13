@@ -13200,7 +13200,7 @@ msgstr "Nenhum objeto selecionado. Por favor, selecione um objeto "
 
 #: flatcamTools/ToolTransform.py:791
 msgid "CNCJob objects can't be skewed."
-msgstr ""Objetos Trabalho CNC não podem ser inclinados."
+msgstr "Objetos Trabalho CNC não podem ser inclinados."
 
 #: flatcamTools/ToolTransform.py:803
 #, python-format
