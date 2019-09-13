@@ -24,8 +24,8 @@ if '_' not in builtins.__dict__:
 
 class TermWidget(QWidget):
     """
-    Widget wich represents terminal. It only displays text and allows to enter text.
-    All highlevel logic should be implemented by client classes
+    Widget which represents terminal. It only displays text and allows to enter text.
+    All high level logic should be implemented by client classes
 
     User pressed Enter. Client class should decide, if command must be executed or user may continue edit it
     """
@@ -57,7 +57,7 @@ class TermWidget(QWidget):
 
     def open_proccessing(self, detail=None):
         """
-        Open processing and disable using shell commands  again until all commands are finished
+        Open processing and disable using shell commands again until all commands are finished
 
         :param detail: text detail about what is currently called from TCL to python
         :return: None
@@ -114,10 +114,10 @@ class TermWidget(QWidget):
         self._browser.moveCursor(QTextCursor.End)
         self._browser.insertHtml(text)
 
-        """TODO When user enters second line to the input, and input is resized, scrollbar changes its positon
+        """TODO When user enters second line to the input, and input is resized, scrollbar changes its position
         and stops moving. As quick fix of this problem, now we always scroll down when add new text.
-        To fix it correctly, srcoll to the bottom, if before intput has been resized,
-        scrollbar was in the bottom, and remove next lien
+        To fix it correctly, scroll to the bottom, if before input has been resized,
+        scrollbar was in the bottom, and remove next line
         """
         scrollattheend = True
 
@@ -129,13 +129,12 @@ class TermWidget(QWidget):
     def exec_current_command(self):
         """
         Save current command in the history. Append it to the log. Clear edit line
-        Reimplement in the child classes to actually execute command
+        Re-implement in the child classes to actually execute command
         """
         text = str(self._edit.toPlainText())
         self._append_to_browser('in', '> ' + text + '\n')
 
-        if len(self._history) < 2 or\
-           self._history[-2] != text:  # don't insert duplicating items
+        if len(self._history) < 2 or self._history[-2] != text:  # don't insert duplicating items
             if text[-1] == '\n':
                 self._history.insert(-1, text[:-1])
             else:
@@ -153,7 +152,7 @@ class TermWidget(QWidget):
 
     def child_exec_command(self, text):
         """
-        Reimplement in the child classes
+        Re-implement in the child classes
         """
         pass
 
@@ -161,7 +160,8 @@ class TermWidget(QWidget):
         self._edit.textCursor().insertText('\n')
 
     def append_output(self, text):
-        """Appent text to output widget
+        """
+        Append text to output widget
         """
         self._append_to_browser('out', text)
 

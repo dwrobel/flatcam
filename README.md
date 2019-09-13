@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - added control for simplification when loading a Gerber file in Preferences -> Gerber -> Gerber General -> Simplify
 - added some messages for the Edit -> Conversions -> Join methods() to make sure that there are at least 2 objects selected for join
 - added a grid layout in on_about()
+- upgraded the Script Editor to be able to run Tcl commands in batches
+- added some ToolTips for the buttons in the Code Editor
 
 12.09.2019
 

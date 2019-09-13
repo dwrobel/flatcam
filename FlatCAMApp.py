@@ -3056,11 +3056,11 @@ class App(QtCore.QObject):
         :return: Output from the command
         """
 
-        text = str(text)
+        tcl_command_string = str(text)
 
         try:
             self.shell.open_proccessing()  # Disables input box.
-            result = self.tcl.eval(str(text))
+            result = self.tcl.eval(str(tcl_command_string))
             if result != 'None':
                 self.shell.append_output(result + '\n')
 
@@ -3072,7 +3072,6 @@ class App(QtCore.QObject):
             # Show error in console and just return or in test raise exception
             if reraise:
                 raise e
-
         finally:
             self.shell.close_proccessing()
             pass
@@ -5770,6 +5769,24 @@ class App(QtCore.QObject):
             # Mark end of undo block
             cursor.endEditBlock()
 
+    def handleRunCode(self):
+        # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
+        # tries to print on a hidden widget, therefore show the dock if hidden
+        if self.ui.shell_dock.isHidden():
+            self.ui.shell_dock.show()
+
+        script_code = self.ui.code_editor.toPlainText()
+        for tcl_command_line in script_code.splitlines():
+            # do not process lines starting with '#' = comment and empty lines
+            if not tcl_command_line.startswith('#') and tcl_command_line != '':
+                # id FlatCAM is run in Windows then replace all the slashes with
+                # the UNIX style slash that TCL understands
+                if sys.platform == 'win32':
+                    if "open" in tcl_command_line:
+                        tcl_command_line = tcl_command_line.replace('\\', '/')
+                # execute the actual Tcl command
+                self.shell._sysShell.exec_command(tcl_command_line)
+
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case
         self.units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
@@ -8013,6 +8030,7 @@ class App(QtCore.QObject):
         self.ui.code_editor.setReadOnly(False)
         self.toggle_codeeditor = True
         self.ui.code_editor.completer_enable = False
+        self.ui.buttonRun.hide()
 
         # Switch plot_area to CNCJob tab
         self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
@@ -8090,17 +8108,19 @@ class App(QtCore.QObject):
             "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
             "#\n\n"
             "# FlatCAM commands list:\n"
-            "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, Cncjob,\n"
-            "# Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, GetNames, GetSys,\n"
-            "# ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillHoles, Mirror, New,\n"
-            "# NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject, Options, Paint, Panelize,\n"
-            "# Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, SubtractPoly,SubtractRectangle, Version,\n"
-            "# WriteGCode\n"
+            "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, ClearCopper,\n"
+            "# Cncjob, Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, GetNames,\n"
+            "# GetSys, ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillDrills,\n"
+            "# MillSlots, Mirror, New, NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n"
+            "# Options, Paint, Panelize, Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, SubtractPoly,\n"
+            "# SubtractRectangle, Version, WriteGCode\n"
             "#\n\n"
         ))
 
         self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
         self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
+        self.ui.buttonRun.show()
+        self.ui.buttonRun.clicked.connect(self.handleRunCode)
 
         self.handleTextChanged()
         self.ui.code_editor.show()
