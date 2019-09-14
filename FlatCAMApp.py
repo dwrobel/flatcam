@@ -10131,7 +10131,7 @@ class App(QtCore.QObject):
         ''' % (
             _("Selected Tab - Choose an Item from Project Tab"), _("Details"),
             _("The normal flow when working in FlatCAM is the following"),
-            _("Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the"),
+            _("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the"),
             _("toolbars, key shortcuts or even dragging and dropping the files on the GUI"),
             _("You can also load a FlatCAM project by double clicking on the project file, drag"),
             _("drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app"),
