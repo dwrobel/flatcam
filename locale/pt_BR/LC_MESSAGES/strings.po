@@ -1543,7 +1543,7 @@ msgstr "N° Furos"
 
 #: FlatCAMObj.py:2179 flatcamEditors/FlatCAMExcEditor.py:2341
 msgid "Total Slots"
-msgstr "N° Fendas"
+msgstr "N° Ranhuras"
 
 #: FlatCAMObj.py:2393 FlatCAMObj.py:3672 FlatCAMObj.py:3966 FlatCAMObj.py:4157
 #: FlatCAMObj.py:4168 FlatCAMObj.py:4286 FlatCAMObj.py:4492 FlatCAMObj.py:4699
@@ -1616,12 +1616,12 @@ msgstr "Furo_Nr"
 
 #: FlatCAMObj.py:2655 FlatCAMObj.py:2748 FlatCAMObj.py:2866
 msgid "Slots_Nr"
-msgstr "Fenda_Nr"
+msgstr "Ranhura_Nr"
 
 #: FlatCAMObj.py:2735
 msgid "Milling tool for SLOTS is larger than hole size. Cancelled."
 msgstr ""
-"A ferramenta fresa para FENDAS é maior que o tamanho do furo. Cancelado."
+"A ferramenta fresa para RANHURAS é maior que o tamanho do furo. Cancelado."
 
 #: FlatCAMObj.py:2907 FlatCAMObj.py:4590 FlatCAMObj.py:4808 FlatCAMObj.py:5131
 msgid ""
@@ -7470,8 +7470,8 @@ msgid ""
 "converted to drills."
 msgstr ""
 "Escolha o que usar para a geração de G-Code:\n"
-"'Furos', 'Fendas' ou 'Ambos'.\n"
-"Quando escolher 'Fendas' ou 'Ambos', as fendas serão\n"
+"'Furos', 'Ranhuras' ou 'Ambos'.\n"
+"Quando escolher 'Ranhuras' ou 'Ambos', as ranhuras serão\n"
 "convertidos para furos."
 
 #: flatcamGUI/FlatCAMGUI.py:5338 flatcamGUI/ObjectUI.py:831
@@ -7768,7 +7768,7 @@ msgstr "Matriz Circular de Furos"
 
 #: flatcamGUI/FlatCAMGUI.py:5760 flatcamGUI/ObjectUI.py:613
 msgid "Slots"
-msgstr "Fendas"
+msgstr "Rnhuras"
 
 #: flatcamGUI/FlatCAMGUI.py:5811
 msgid "Linear Slot Array"
@@ -9719,9 +9719,7 @@ msgstr "Número de Furos. Serão perfurados com brocas."
 msgid ""
 "The number of Slot holes. Holes that are created by\n"
 "milling them with an endmill bit."
-msgstr ""
-"Número de Fendas\n"
-"Serão criadas com fresas."
+msgstr "Número de Ranhuras (Fendas). Serão criadas com fresas."
 
 #: flatcamGUI/ObjectUI.py:636
 msgid ""
@@ -9759,8 +9757,8 @@ msgid ""
 "converted to a series of drills."
 msgstr ""
 "Escolha o que usar para a geração do G-Code:\n"
-"'Furos', 'Fendas' ou 'Ambos'.\n"
-"Quando escolher 'Fendas' ou 'Ambos', as fendas serão\n"
+"'Furos', 'Ranhuras' ou 'Ambos'.\n"
+"Quando escolher 'Ranhuras' ou 'Ambos', as ranhuras/fendas serão\n"
 "convertidas em uma série de furos."
 
 #: flatcamGUI/ObjectUI.py:824
@@ -9795,7 +9793,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:870
 msgid "Mill Slots Geo"
-msgstr "Geo Fendas"
+msgstr "Geo Ranhuras"
 
 #: flatcamGUI/ObjectUI.py:872
 msgid ""
@@ -9803,7 +9801,7 @@ msgid ""
 "for milling SLOTS toolpaths."
 msgstr ""
 "Cria o Objeto Geometria com\n"
-"os caminhos da ferramenta de FENDAS."
+"os caminhos da ferramenta de RANHURAS."
 
 #: flatcamGUI/ObjectUI.py:890
 msgid "Geometry Object"
