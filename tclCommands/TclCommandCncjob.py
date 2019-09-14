@@ -111,5 +111,7 @@ class TclCommandCncjob(TclCommandSignaled):
         # HACK !!! Should be solved elsewhere!!!
         # default option for multidepth is False
         obj.options['multidepth'] = False
-
-        obj.generatecncjob(use_thread=False, **args)
+        if not obj.multigeo:
+            obj.generatecncjob(use_thread=False, **args)
+        else:
+            self.raise_tcl_error('The object is a multi-geo geometry which is not supported in cncjob Tcl Command')

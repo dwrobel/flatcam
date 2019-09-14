@@ -225,7 +225,8 @@ class TclCommandCopperClear(TclCommand):
                                                connect=connect,
                                                contour=contour,
                                                rest=rest,
-                                               tools_storage=ncc_tools)
+                                               tools_storage=ncc_tools,
+                                               run_threaded=False)
             return
 
         # Non-Copper clear all polygons found within the box object from the the non_copper cleared object
@@ -257,7 +258,8 @@ class TclCommandCopperClear(TclCommand):
                                                    connect=connect,
                                                    contour=contour,
                                                    rest=rest,
-                                                   tools_storage=ncc_tools)
+                                                   tools_storage=ncc_tools,
+                                                   run_threaded=False)
             return
         else:
             self.raise_tcl_error("%s:" % _("None of the following args: 'ref', 'all' were found or none was set to 1.\n"

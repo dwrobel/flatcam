@@ -1291,7 +1291,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                      order=None,
                      method=None,
                      rest=None,
-                     tools_storage=None):
+                     tools_storage=None,
+                     run_threaded=True):
         """
         Clear the excess copper from the entire object.
 
@@ -1312,6 +1313,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         :param rest: True if to use rest-machining
         :param tools_storage: whether to use the current tools_storage self.ncc_tools or a different one.
         Usage of the different one is related to when this function is called from a TcL command.
+        :param run_threaded: If True the method will be run in a threaded way suitable for GUI usage; if False it will
+        run non-threaded for TclShell usage
         :return:
         """
 
@@ -2200,11 +2203,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # focus on Selected Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
-        # Promise object with the new name
-        self.app.collection.promise(name)
+        if run_threaded:
+            # Promise object with the new name
+            self.app.collection.promise(name)
 
-        # Background
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+            # Background
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        else:
+            job_thread(app_obj=self.app)
 
     # def on_ncc(self):
     #
