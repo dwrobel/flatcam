@@ -9128,7 +9128,7 @@ msgstr "Distância para deslocar no eixo Y, nas unidades atuais."
 
 #: flatcamGUI/FlatCAMGUI.py:7483 flatcamTools/ToolTransform.py:313
 msgid "Mirror Reference"
-msgstr "Referência de Espelho"
+msgstr "Referência do Espelhamento"
 
 #: flatcamGUI/FlatCAMGUI.py:7485 flatcamTools/ToolTransform.py:315
 msgid ""
@@ -10531,7 +10531,7 @@ msgstr "PCB de 2 faces"
 #: flatcamTools/ToolDblSided.py:52 flatcamTools/ToolDblSided.py:76
 #: flatcamTools/ToolDblSided.py:100
 msgid "Mirror"
-msgstr "Espelho"
+msgstr "Espelhar"
 
 #: flatcamTools/ToolDblSided.py:54 flatcamTools/ToolDblSided.py:78
 #: flatcamTools/ToolDblSided.py:102
@@ -12429,7 +12429,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:89
 msgid "Substract Gerber"
-msgstr "Gerber Subtrator"
+msgstr "Subtrair Gerber"
 
 #: flatcamTools/ToolSub.py:91
 msgid ""
@@ -12465,7 +12465,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:139
 msgid "Substract Geometry"
-msgstr "Geometria Subtrator"
+msgstr "Subtrair Geometria"
 
 #: flatcamTools/ToolSub.py:141
 msgid ""
