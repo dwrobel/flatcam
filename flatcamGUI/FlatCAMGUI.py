@@ -1278,6 +1278,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>F5</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>Del</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1314,7 +1318,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             _("Paint Area Tool"), _("PDF Import Tool"), _("Transformations Tool"), _("View File Source"),
             _("Cutout PCB Tool"), _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
             _("Toggle Full Screen"), _("Abort current task (gracefully)"), _("Open Online Manual"),
-            _("Open Online Tutorials"), _("Delete Object"), _("Alternate: Delete Tool"),
+            _("Open Online Tutorials"), _("Refresh Plots"), _("Delete Object"), _("Alternate: Delete Tool"),
             _("(left to Key_1)Toogle Notebook Area (Left Side)"), _("En(Dis)able Obj Plot"), _("Deselects all objects")
         )
         )
@@ -1483,7 +1487,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             _("Within Add Arc will toogle the ARC direction: CW or CCW"), _("Polygon Intersection Tool"),
             _("Geo Paint Tool"), _("Jump to Location (x, y)"), _("Toggle Corner Snap"), _("Move Geo Item"),
             _("Within Add Arc will cycle through the ARC modes"), _("Draw a Polygon"), _("Draw a Circle"),
-            _("Draw a Path"), _("Draw Rectangle"), _("Polygon Substraction Tool"), _("Add Text Tool"),
+            _("Draw a Path"), _("Draw Rectangle"), _("Polygon Subtraction Tool"), _("Add Text Tool"),
             _("Polygon Union Tool"), _("Flip shape on X axis"), _("Flip shape on Y axis"), _("Skew shape on X axis"),
             _("Skew shape on Y axis"), _("Editor Transformation Tool"), _("Offset shape on X axis"),
             _("Offset shape on Y axis"), _("Measurement Tool"), _("Save Object and Exit Editor"), _("Polygon Cut Tool"),
@@ -1821,7 +1825,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.entryFind = FCEntry()
         self.entryFind.setToolTip(_("Find box. Enter here the strings to be searched in the text."))
-        self.entryFind.setMaximumWidth(200)
 
         self.buttonReplace = QtWidgets.QPushButton(_('Replace With'))
         self.buttonReplace.setToolTip(_("Will replace the string from the Find box with the one in the Replace box."))
@@ -1829,13 +1832,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.buttonReplace.setMinimumWidth(100)
         self.entryReplace = FCEntry()
         self.entryReplace.setToolTip(_("String to replace the one in the Find box throughout the text."))
-        self.entryReplace.setMaximumWidth(200)
 
         self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
-        self.sel_all_cb.setToolTip(
-            _("When checked it will replace all instances in the 'Find' box\n"
-              "with the text in the 'Replace' box..")
-        )
+        self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
+                                     "with the text in the 'Replace' box.."))
+
         self.buttonOpen = QtWidgets.QPushButton(_('Open Code'))
         self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
 
@@ -1849,13 +1850,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.cncjob_tab_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
         cnc_tab_lay_1 = QtWidgets.QHBoxLayout()
-        cnc_tab_lay_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        # cnc_tab_lay_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         cnc_tab_lay_1.addWidget(self.buttonFind)
         cnc_tab_lay_1.addWidget(self.entryFind)
         cnc_tab_lay_1.addWidget(self.buttonReplace)
         cnc_tab_lay_1.addWidget(self.entryReplace)
         cnc_tab_lay_1.addWidget(self.sel_all_cb)
-        self.cncjob_tab_layout.addLayout(cnc_tab_lay_1, 1, 0, 1, 1, QtCore.Qt.AlignLeft)
+        self.cncjob_tab_layout.addLayout(cnc_tab_lay_1, 1, 0, 1, 5)
 
         cnc_tab_lay_3 = QtWidgets.QHBoxLayout()
         cnc_tab_lay_3.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
@@ -2441,6 +2442,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Open Video Help
                 if key == QtCore.Qt.Key_F4 or key == 'F4':
                     webbrowser.open(self.app.video_url)
+
+                # Open Video Help
+                if key == QtCore.Qt.Key_F5 or key == 'F5':
+                    self.app.plot_all()
 
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1:

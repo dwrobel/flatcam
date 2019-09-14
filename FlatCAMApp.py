@@ -3821,18 +3821,17 @@ class App(QtCore.QObject):
 
                 title = QtWidgets.QLabel(
                     "<font size=8><B>FlatCAM</B></font><BR>"
-                    "%s<BR>"
-                    "%s.<BR>"
+                    "{title}<BR>"
                     "<BR>"
                     "<BR>"
-                    "<B>%s</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<B>{devel}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
-                    "<b>%s</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<b>{down}</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
-                    "<b>%s</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>" %
-                    (_("2D Computer-Aided Printed Circuit Board"), _("Manufacturing"), _("Development"), _("DOWNLOAD"),
-                     _("Issue tracker"))
+                    "<b> {issue}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>".
+                        format(title=_("2D Computer-Aided Printed Circuit Board Manufacturing"),
+                               devel=_("Development"), down=_("DOWNLOAD"), issue=_("Issue tracker"))
                 )
                 title.setOpenExternalLinks(True)
 
@@ -3928,15 +3927,15 @@ class App(QtCore.QObject):
                 self.programmmers_tab_layout.addStretch()
 
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Function")), 0, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram <BR>"), 1, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Status")), 0, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Program Author")), 1, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Maintainer >=2019"), 4, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Maintainer >=2019")), 4, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Matthieu Berthomé"), 5, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 1)
 

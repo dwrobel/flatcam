@@ -14,6 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 - more string changes
 - updated translation files
 - fixed a small bug
+- minor changes in the Code Editor GUI
+- minor changes in the 'FlatCAM About' GUI
+- added a new shortcut key F5 for doing the 'Plot All'
 
 13.09.2019
 
@@ -32,7 +35,7 @@ CAD program, and create G-Code for Isolation routing.
 
 12.09.2019
 
-- small changes in the TclCommands: MillDrills, MillSlots, DrillCNCJob: the new parameter for tolerance is now named: tooldia
+- small changes in the TclCommands: MillDrills, MillSlots, DrillCNCJob: the new parameter for tolerance is now named: diatol
 - cleaned up the 'About FlatCAM' window, started to give credits for the translation team
 - started to add an application splash screen
 - now, Excellon and Gerber edited objects will have the source_code updated and ready to be saved
