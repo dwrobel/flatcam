@@ -5664,7 +5664,7 @@ class CNCjob(Geometry):
         go to the nearest city.
 
         Even if this algorithm is extremely simple, it works pretty well
-        giving a solution only about 25% longer than the optimal one (cit. Wikipedia),
+        giving a solution only about 25%% longer than the optimal one (cit. Wikipedia),
         and runs very fast in O(N^2) time complexity.
 
         >>> optimized_travelling_salesman([[i,j] for i in range(5) for j in range(5)])

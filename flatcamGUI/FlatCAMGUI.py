@@ -599,6 +599,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
         self.addToolBar(self.exc_edit_toolbar)
 
+        self.addToolBarBreak()
+
         self.geo_edit_toolbar = QtWidgets.QToolBar(_('Geometry Editor Toolbar'))
         self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
         self.addToolBar(self.geo_edit_toolbar)
@@ -1278,6 +1280,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>F5</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>Del</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1314,7 +1320,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             _("Paint Area Tool"), _("PDF Import Tool"), _("Transformations Tool"), _("View File Source"),
             _("Cutout PCB Tool"), _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
             _("Toggle Full Screen"), _("Abort current task (gracefully)"), _("Open Online Manual"),
-            _("Open Online Tutorials"), _("Delete Object"), _("Alternate: Delete Tool"),
+            _("Open Online Tutorials"), _("Refresh Plots"), _("Delete Object"), _("Alternate: Delete Tool"),
             _("(left to Key_1)Toogle Notebook Area (Left Side)"), _("En(Dis)able Obj Plot"), _("Deselects all objects")
         )
         )
@@ -1483,7 +1489,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             _("Within Add Arc will toogle the ARC direction: CW or CCW"), _("Polygon Intersection Tool"),
             _("Geo Paint Tool"), _("Jump to Location (x, y)"), _("Toggle Corner Snap"), _("Move Geo Item"),
             _("Within Add Arc will cycle through the ARC modes"), _("Draw a Polygon"), _("Draw a Circle"),
-            _("Draw a Path"), _("Draw Rectangle"), _("Polygon Substraction Tool"), _("Add Text Tool"),
+            _("Draw a Path"), _("Draw Rectangle"), _("Polygon Subtraction Tool"), _("Add Text Tool"),
             _("Polygon Union Tool"), _("Flip shape on X axis"), _("Flip shape on Y axis"), _("Skew shape on X axis"),
             _("Skew shape on Y axis"), _("Editor Transformation Tool"), _("Offset shape on X axis"),
             _("Offset shape on Y axis"), _("Measurement Tool"), _("Save Object and Exit Editor"), _("Polygon Cut Tool"),
@@ -1821,7 +1827,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.entryFind = FCEntry()
         self.entryFind.setToolTip(_("Find box. Enter here the strings to be searched in the text."))
-        self.entryFind.setMaximumWidth(200)
 
         self.buttonReplace = QtWidgets.QPushButton(_('Replace With'))
         self.buttonReplace.setToolTip(_("Will replace the string from the Find box with the one in the Replace box."))
@@ -1829,13 +1834,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.buttonReplace.setMinimumWidth(100)
         self.entryReplace = FCEntry()
         self.entryReplace.setToolTip(_("String to replace the one in the Find box throughout the text."))
-        self.entryReplace.setMaximumWidth(200)
 
         self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
-        self.sel_all_cb.setToolTip(
-            _("When checked it will replace all instances in the 'Find' box\n"
-              "with the text in the 'Replace' box..")
-        )
+        self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
+                                     "with the text in the 'Replace' box.."))
+
         self.buttonOpen = QtWidgets.QPushButton(_('Open Code'))
         self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
 
@@ -1849,13 +1852,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.cncjob_tab_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
         cnc_tab_lay_1 = QtWidgets.QHBoxLayout()
-        cnc_tab_lay_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        # cnc_tab_lay_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         cnc_tab_lay_1.addWidget(self.buttonFind)
         cnc_tab_lay_1.addWidget(self.entryFind)
         cnc_tab_lay_1.addWidget(self.buttonReplace)
         cnc_tab_lay_1.addWidget(self.entryReplace)
         cnc_tab_lay_1.addWidget(self.sel_all_cb)
-        self.cncjob_tab_layout.addLayout(cnc_tab_lay_1, 1, 0, 1, 1, QtCore.Qt.AlignLeft)
+        self.cncjob_tab_layout.addLayout(cnc_tab_lay_1, 1, 0, 1, 5)
 
         cnc_tab_lay_3 = QtWidgets.QHBoxLayout()
         cnc_tab_lay_3.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
@@ -2227,11 +2230,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
             if layout == 'standard':
-                self.exc_edit_toolbar.setVisible(False)
+                self.exc_edit_toolbar.setVisible(True)
                 self.exc_edit_toolbar.setDisabled(True)
-                self.geo_edit_toolbar.setVisible(False)
+                self.geo_edit_toolbar.setVisible(True)
                 self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setVisible(False)
+                self.grb_edit_toolbar.setVisible(True)
                 self.grb_edit_toolbar.setDisabled(True)
 
                 self.corner_snap_btn.setVisible(False)
@@ -2441,6 +2444,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Open Video Help
                 if key == QtCore.Qt.Key_F4 or key == 'F4':
                     webbrowser.open(self.app.video_url)
+
+                # Open Video Help
+                if key == QtCore.Qt.Key_F5 or key == 'F5':
+                    self.app.plot_all()
 
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1:
@@ -4515,7 +4522,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         overlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
               "Example:\n"
-              "A value here of 0.25 means an overlap of 25% from the tool diameter found above.")
+              "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
         )
         grid0.addWidget(overlabel, 2, 0)
         self.iso_overlap_entry = FloatEntry()
@@ -5130,10 +5137,16 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(self.excellon_units_radio, 1, 1)
 
-        grid2.addWidget(QtWidgets.QLabel(""), 2, 0)
+        self.update_excellon_cb = FCCheckBox(label=_('Update Export settings'))
+        self.update_excellon_cb.setToolTip(
+            "If checked, the Excellon Export settings will be updated with the ones above."
+        )
+        grid2.addWidget(self.update_excellon_cb, 2, 0)
+
+        grid2.addWidget(QtWidgets.QLabel(""), 3, 0)
 
         self.excellon_general_label = QtWidgets.QLabel("<b>%s:</b>" % _("Excellon Optimization"))
-        grid2.addWidget(self.excellon_general_label, 3, 0, 1, 2)
+        grid2.addWidget(self.excellon_general_label, 4, 0, 1, 2)
 
         self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:   '))
         self.excellon_optimization_label.setToolTip(
@@ -5146,7 +5159,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
               "Travelling Salesman algorithm for path optimization.")
         )
-        grid2.addWidget(self.excellon_optimization_label, 4, 0)
+        grid2.addWidget(self.excellon_optimization_label, 5, 0)
 
         self.excellon_optimization_radio = RadioSet([{'label': _('MH'), 'value': 'M'},
                                                      {'label': _('Basic'), 'value': 'B'}])
@@ -5160,7 +5173,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
               "Travelling Salesman algorithm for path optimization.")
         )
-        grid2.addWidget(self.excellon_optimization_radio, 4, 1)
+        grid2.addWidget(self.excellon_optimization_radio, 5, 1)
 
         self.optimization_time_label = QtWidgets.QLabel('%s:' % _('Optimization Time'))
         self.optimization_time_label.setAlignment(QtCore.Qt.AlignLeft)
@@ -5171,11 +5184,11 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "In seconds.")
 
         )
-        grid2.addWidget(self.optimization_time_label, 5, 0)
+        grid2.addWidget(self.optimization_time_label, 6, 0)
 
         self.optimization_time_entry = IntEntry()
         self.optimization_time_entry.setValidator(QtGui.QIntValidator(0, 999))
-        grid2.addWidget(self.optimization_time_entry, 5, 1)
+        grid2.addWidget(self.optimization_time_entry, 6, 1)
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
@@ -6684,7 +6697,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         nccoverlabel.setToolTip(
            _("How much (fraction) of the tool width to overlap each tool pass.\n"
              "Example:\n"
-             "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
+             "A value here of 0.25 means 25%% from the tool diameter found above.\n\n"
              "Adjust the value starting with lower values\n"
              "and increasing it if areas that should be cleared are still \n"
              "not cleared.\n"
@@ -7029,7 +7042,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
               "Example:\n"
-              "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
+              "A value here of 0.25 means 25%% from the tool diameter found above.\n\n"
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be painted are still \n"
               "not painted.\n"

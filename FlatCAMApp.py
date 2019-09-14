@@ -504,6 +504,7 @@ class App(QtCore.QObject):
                 self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
             "excellon_zeros": self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
             "excellon_units": self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
+            "excellon_update": self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb,
             "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
             "excellon_search_time": self.ui.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
 
@@ -907,6 +908,7 @@ class App(QtCore.QObject):
             "excellon_format_lower_mm": 3,
             "excellon_zeros": "L",
             "excellon_units": "INCH",
+            "excellon_update": True,
             "excellon_optimization_type": 'B',
             "excellon_search_time": 3,
 
@@ -1827,6 +1829,14 @@ class App(QtCore.QObject):
 
         # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
         self.ui.general_defaults_form.general_app_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
+
+        # Make sure that when the Excellon loading parameters are changed, the change is reflected in the
+        # Export Excellon parameters.
+        self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb.stateChanged.connect(
+            self.on_update_exc_export
+        )
+        # call it once to make sure it is updated at startup
+        self.on_update_exc_export(state=self.defaults["excellon_update"])
 
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
         self.ui.excellon_defaults_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
@@ -3821,18 +3831,17 @@ class App(QtCore.QObject):
 
                 title = QtWidgets.QLabel(
                     "<font size=8><B>FlatCAM</B></font><BR>"
-                    "%s<BR>"
-                    "%s.<BR>"
+                    "{title}<BR>"
                     "<BR>"
                     "<BR>"
-                    "<B>%s</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<B>{devel}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
-                    "<b>%s</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<b>{down}</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
-                    "<b>%s</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>" %
-                    (_("2D Computer-Aided Printed Circuit Board"), _("Manufacturing"), _("Development"), _("DOWNLOAD"),
-                     _("Issue tracker"))
+                    "<b> {issue}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>".
+                        format(title=_("2D Computer-Aided Printed Circuit Board Manufacturing"),
+                               devel=_("Development"), down=_("DOWNLOAD"), issue=_("Issue tracker"))
                 )
                 title.setOpenExternalLinks(True)
 
@@ -3928,15 +3937,15 @@ class App(QtCore.QObject):
                 self.programmmers_tab_layout.addStretch()
 
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Function")), 0, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram <BR>"), 1, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Status")), 0, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Program Author")), 1, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Maintainer >=2019"), 4, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Maintainer >=2019")), 4, 1)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Matthieu Berthomé"), 5, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 1)
 
@@ -5135,6 +5144,134 @@ class App(QtCore.QObject):
         self.options_form_fields["excellon_units"].set_value('INCH')
         log.debug("Excellon options defaults loaded ...")
 
+    def on_update_exc_export(self, state):
+        """
+        This is handling the update of Excellon Export parameters based on the ones in the Excellon General but only
+        if the update_excellon_cb checkbox is checked
+
+        :param state: state of the checkbox whose signals is tied to his slot
+        :return:
+        """
+        if state:
+            # first try to disconnect
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged.\
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged.\
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged.\
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged.\
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom.\
+                    disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom.\
+                    disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+
+            # the connect them
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged.connect(
+                self.on_excellon_format_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged.connect(
+                self.on_excellon_format_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged.connect(
+                self.on_excellon_format_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged.connect(
+                self.on_excellon_format_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom.connect(
+                self.on_excellon_zeros_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom.connect(
+                self.on_excellon_units_changed)
+        else:
+            # disconnect the signals
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged. \
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged. \
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged. \
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged. \
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom. \
+                    disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom. \
+                    disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+
+    def on_excellon_format_changed(self):
+        """
+        Slot activated when the user changes the Excellon format values in Preferences -> Excellon -> Excellon General
+        :return: None
+        """
+        if self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.get_value().upper() == 'METRIC':
+            self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.get_value()
+            )
+            self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.get_value()
+            )
+        else:
+            self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.get_value()
+            )
+            self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.get_value()
+            )
+
+    def on_excellon_zeros_changed(self):
+        """
+        Slot activated when the user changes the Excellon zeros values in Preferences -> Excellon -> Excellon General
+        :return: None
+        """
+        self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio.set_value(
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.get_value() + 'Z'
+        )
+
+    def on_excellon_units_changed(self):
+        """
+        Slot activated when the user changes the Excellon unit values in Preferences -> Excellon -> Excellon General
+        :return: None
+        """
+        self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio.set_value(
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.get_value()
+        )
+        self.on_excellon_format_changed()
+
     # Setting plot colors handlers
     def on_pf_color_entry(self):
         self.defaults['global_plot_fill'] = \
@@ -5519,17 +5656,19 @@ class App(QtCore.QObject):
             self.ui.addToolBar(self.ui.toolbartools)
 
             self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-            self.ui.exc_edit_toolbar.setVisible(False)
+            # self.ui.exc_edit_toolbar.setVisible(False)
             self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
             self.ui.addToolBar(self.ui.exc_edit_toolbar)
 
+            self.ui.addToolBarBreak()
+
             self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            self.ui.geo_edit_toolbar.setVisible(False)
+            # self.ui.geo_edit_toolbar.setVisible(False)
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(self.ui.geo_edit_toolbar)
 
             self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
-            self.ui.grb_edit_toolbar.setVisible(False)
+            # self.ui.grb_edit_toolbar.setVisible(False)
             self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
             self.ui.addToolBar(self.ui.grb_edit_toolbar)
 
@@ -5545,12 +5684,11 @@ class App(QtCore.QObject):
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
             self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarfile)
+
             self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
             self.ui.toolbargeo.setObjectName('Edit_TB')
             self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbargeo)
-            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
-            self.ui.toolbarview.setObjectName('View_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarview)
+
 
             self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
             self.ui.toolbarshell.setObjectName('Shell_TB')
@@ -5564,6 +5702,12 @@ class App(QtCore.QObject):
             # self.ui.geo_edit_toolbar.setVisible(False)
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
+
+            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.ui.toolbarview.setObjectName('View_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.toolbarview)
+
+            self.ui.addToolBarBreak(area=Qt.RightToolBarArea)
 
             self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
             # self.ui.grb_edit_toolbar.setVisible(False)
@@ -9923,29 +10067,90 @@ class App(QtCore.QObject):
 
         tsize = fsize + int(fsize / 2)
 
-        selected_text = (_('''
-<p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
+#         selected_text = (_('''
+# <p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
+#
+# <p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
+# The normal flow when working in FlatCAM is the following:</span></p>
+#
+# <ol>
+# 	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into
+        # 	FlatCAM using either the menu&#39;s, toolbars, key shortcuts or
+        # 	even dragging and dropping the files on the GUI.<br />
+# 	<br />
+# 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the
+        # 	file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
+# 	&nbsp;</li>
+# 	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it and then
+        # 	focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the
+        # 	Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to
+        # 	it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
+# 	<br />
+# 	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong>
+        # 	is in focus, again the object properties will be displayed into the Selected Tab. Alternatively,
+        # 	double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate
+        # 	it even if it was out of focus.<br />
+# 	<br />
+# 	You can change the parameters in this screen and the flow direction is like this:<br />
+# 	<br />
+# 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object
+        # 	</strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object
+        # 	</strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in
+        # 	<strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
+# </ol>
+#
+# <p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in
+        # <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut:
+        # <strong>F3</strong>.</span></p>
+#
+#         ''').format(fsize=fsize, tsize=tsize))
 
-<p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
-The normal flow when working in FlatCAM is the following:</span></p>
+        selected_text = '''
+        <p><span style="font-size:{tsize}px"><strong>%s</strong></span></p>
 
-<ol>
-	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;s, toolbars, key shortcuts or even dragging and dropping the files on the GUI.<br />
-	<br />
-	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
-	&nbsp;</li>
-	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it and then focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
-	<br />
-	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong> is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate it even if it was out of focus.<br />
-	<br />
-	You can change the parameters in this screen and the flow direction is like this:<br />
-	<br />
-	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object </strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object </strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in <strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
-</ol>
+        <p><span style="font-size:{fsize}px"><strong>%s</strong>:<br />
+        %s:</span></p>
 
-<p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: <strng>F3</strong>.</span></p>
+        <ol>
+            <li><span style="font-size:{fsize}px">%s menu&#39;s, %s.<br />
+            <br />
+            %s &amp; %s.</span><br />
+            &nbsp;</li>
+            <li><span style="font-size:{fsize}px">%s <strong>%s</strong> (%s), <strong>%s</strong> %s it-s %s.<br />
+            <br />
+            %s <strong>%s</strong> %s <strong>%s</strong> %s.<br />
+            <br />
+            %s:<br />
+            <br />
+            <strong>%s</strong> -&gt; %s -&gt; %s -&gt;<strong> %s </strong> -&gt; %s -&gt; %s -&gt;<strong> %s 
+            </strong>-&gt; %s <strong>%s)&nbsp;</strong>-&gt; %s</span></li>
+        </ol>
 
-        ''').format(fsize=fsize, tsize=tsize))
+        <p><span style="font-size:{fsize}px">%s <strong>%s -&gt; %s</strong>&nbsp;%s it&#39;s %s: 
+        <strong>F3</strong>.</span></p>
+        ''' % (
+            _("Selected Tab - Choose an Item from Project Tab"), _("Details"),
+            _("The normal flow when working in FlatCAM is the following"),
+            _("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the"),
+            _("toolbars, key shortcuts or even dragging and dropping the files on the GUI"),
+            _("You can also load a FlatCAM project by double clicking on the project file, drag"),
+            _("drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app"),
+            _("Once an object is available in the Project Tab, by selecting it and then focusing on"),
+            _("SELECTED TAB"), _("more simpler is to double click the object name in the Project Tab"),
+            _("SELECTED TAB"), _("will be updated with the object properties according to"),
+            _("kind: Gerber, Excellon, Geometry or CNCJob object"),
+            _("If the selection of the object is done on the canvas by single click instead, and the"),
+            _("SELECTED TAB"),
+            _("is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, "
+              "double clicking on the object on the canvas will bring the"),
+            _("SELECTED TAB"), _("and populate it even if it was out of focus"),
+            _("You can change the parameters in this screen and the flow direction is like this"),
+            _("Gerber/Excellon Object"), _("Change Parameter"), _("Generate Geometry"), _("Geometry Object"),
+            _("Add tools (change param in Selected Tab)"), _("Generate CNCJob"), _("CNCJob Object"),
+            _("Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in"), _("SELECTED TAB"),
+            _("Save GCode"), _("A list of key shortcuts is available through an menu entry in"), _("Help"),
+            _("Shortcuts List"), _("or through"), _("own key shortcut"),
+        )
 
         sel_title.setText(selected_text)
         sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
