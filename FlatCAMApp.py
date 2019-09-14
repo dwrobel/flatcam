@@ -1828,6 +1828,21 @@ class App(QtCore.QObject):
         # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
         self.ui.general_defaults_form.general_app_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
 
+        # make sure that when the Excellon loading parameters are changed, the change is reflected in the
+        # Export Excellon paraemters. That's because users expect to load the exported file and show correctly
+        self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged.connect(
+            self.on_excellon_format_changed)
+        self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged.connect(
+            self.on_excellon_format_changed)
+        self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged.connect(
+            self.on_excellon_format_changed)
+        self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged.connect(
+            self.on_excellon_format_changed)
+        self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom.connect(
+            self.on_excellon_zeros_changed)
+        self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom.connect(
+            self.on_excellon_units_changed)
+
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
         self.ui.excellon_defaults_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
             self.on_excellon_defaults_button)
@@ -5133,6 +5148,45 @@ class App(QtCore.QObject):
         self.options_form_fields["excellon_zeros"].set_value('L')
         self.options_form_fields["excellon_units"].set_value('INCH')
         log.debug("Excellon options defaults loaded ...")
+
+    def on_excellon_format_changed(self):
+        """
+        Slot activated when the user changes the Excellon format values in Preferences -> Excellon -> Excellon General
+        :return: None
+        """
+        if self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.get_value().upper() == 'METRIC':
+            self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.get_value()
+            )
+            self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.get_value()
+            )
+        else:
+            self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry.set_value(
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.get_value()
+            )
+            self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry.set_value(
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.get_value()
+            )
+
+    def on_excellon_zeros_changed(self):
+        """
+        Slot activated when the user changes the Excellon zeros values in Preferences -> Excellon -> Excellon General
+        :return: None
+        """
+        self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio.set_value(
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.get_value() + 'Z'
+        )
+
+    def on_excellon_units_changed(self):
+        """
+        Slot activated when the user changes the Excellon unit values in Preferences -> Excellon -> Excellon General
+        :return: None
+        """
+        self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio.set_value(
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.get_value()
+        )
+        self.on_excellon_format_changed()
 
     # Setting plot colors handlers
     def on_pf_color_entry(self):
