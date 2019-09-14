@@ -322,7 +322,7 @@ msgstr ""
 
 #: FlatCAMApp.py:3909
 msgid "Splash"
-msgstr "Respingo"
+msgstr "Abertura"
 
 #: FlatCAMApp.py:3915
 msgid "Programmers"
@@ -433,9 +433,9 @@ msgid ""
 "Check the generated GCODE."
 msgstr ""
 "Falha ao unir. Os objetos Geometria são de tipos diferentes.\n"
-"Pelo menos um é do tipo MultiGeo e o outro é do tipo SingleGeo. Uma "
+"Pelo menos um é do tipo MultiGeo e o outro é do tipo Único. Uma "
 "possibilidade é converter de um para outro e tentar unir,\n"
-"mas no caso de converter de MultiGeo para SingleGeo, as informações podem "
+"mas no caso de converter de MultiGeo para Único, as informações podem "
 "ser perdidas e o resultado pode não ser o esperado.\n"
 "Verifique o G-CODE gerado."
 
@@ -461,7 +461,7 @@ msgstr "Um objeto Geometria foi convertido para o tipo MultiGeo."
 
 #: FlatCAMApp.py:4632
 msgid "A Geometry object was converted to SingleGeo type."
-msgstr "Um objeto Geometria foi convertido para o tipo SingleGeo."
+msgstr "Um objeto Geometria foi convertido para o tipo Único."
 
 #: FlatCAMApp.py:4893
 msgid "Toggle Units"
@@ -1600,11 +1600,11 @@ msgstr "Mostrando Aberturas"
 
 #: FlatCAMObj.py:2147 flatcamEditors/FlatCAMExcEditor.py:2309
 msgid "Total Drills"
-msgstr "Total de Furos"
+msgstr "N° Furos"
 
 #: FlatCAMObj.py:2179 flatcamEditors/FlatCAMExcEditor.py:2341
 msgid "Total Slots"
-msgstr "Total de Fendas"
+msgstr "N° Ranhuras"
 
 #: FlatCAMObj.py:2393 FlatCAMObj.py:3672 FlatCAMObj.py:3966 FlatCAMObj.py:4157
 #: FlatCAMObj.py:4168 FlatCAMObj.py:4286 FlatCAMObj.py:4492 FlatCAMObj.py:4699
@@ -1677,12 +1677,12 @@ msgstr "Furo_Nr"
 
 #: FlatCAMObj.py:2655 FlatCAMObj.py:2748 FlatCAMObj.py:2866
 msgid "Slots_Nr"
-msgstr "Fenda_Nr"
+msgstr "Ranhura_Nr"
 
 #: FlatCAMObj.py:2735
 msgid "Milling tool for SLOTS is larger than hole size. Cancelled."
 msgstr ""
-"A ferramenta fresa para FENDAS é maior que o tamanho do furo. Cancelado."
+"A ferramenta fresa para RANHURAS é maior que o tamanho do furo. Cancelado."
 
 #: FlatCAMObj.py:2907 FlatCAMObj.py:4590 FlatCAMObj.py:4808 FlatCAMObj.py:5131
 msgid ""
@@ -1843,7 +1843,7 @@ msgstr ""
 
 #: FlatCAMObj.py:5366
 msgid "Geometry Offset done."
-msgstr "Deslocamento de Geometria feito."
+msgstr "Deslocamento de Geometria concluído."
 
 #: FlatCAMObj.py:5395
 msgid ""
@@ -2104,7 +2104,7 @@ msgid ""
 "CNC code (Gcode etc)."
 msgstr ""
 "O parâmetro Profundidade de Corte está positivo. Este valor é a\n"
-"profundidade para cortar o material, e deve ser negativo. Supondo que seja\n"
+"profundidade para furar o material, e deve ser negativo. Supondo que seja\n"
 "um erro de digitação, o aplicativo converterá o valor para negativo.\n"
 "Verifique o código CNC resultante (G-Code, etc.)."
 
@@ -2131,7 +2131,7 @@ msgstr "coordenadas G91 não implementadas"
 
 #: camlib.py:6027 camlib.py:6173 camlib.py:6280
 msgid "The loaded Excellon file has no drills"
-msgstr "O arquivo Excellon carregado não tem brocas"
+msgstr "O arquivo Excellon carregado não tem furos"
 
 #: camlib.py:6179
 msgid "Wrong optimization type selected."
@@ -2262,16 +2262,16 @@ msgstr "Clique para colocar ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:54
 msgid "To add a drill first select a tool"
-msgstr "Para adicionar uma broca, primeiro selecione uma ferramenta"
+msgstr "Para adicionar um furo, primeiro selecione uma ferramenta"
 
 #: flatcamEditors/FlatCAMExcEditor.py:117
 msgid "Done. Drill added."
-msgstr "Feito. Broca adicionada."
+msgstr "Feito. Furo adicionado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:160
 msgid "To add an Drill Array first select a tool in Tool Table"
 msgstr ""
-"Para adicionar um Matriz de Brocas, primeiro selecione uma ferramenta na "
+"Para adicionar um Matriz de Furos, primeiro selecione uma ferramenta na "
 "Tabela de Ferramentas"
 
 #: flatcamEditors/FlatCAMExcEditor.py:176
@@ -2287,7 +2287,7 @@ msgstr "Clique no local de destino ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:193
 msgid "Click on the Drill Circular Array Start position"
-msgstr "Clique na posição inicial da Matriz Circular de Brocas"
+msgstr "Clique na posição inicial da Matriz Circular de Furos"
 
 #: flatcamEditors/FlatCAMExcEditor.py:215
 #: flatcamEditors/FlatCAMExcEditor.py:635
@@ -2303,11 +2303,11 @@ msgstr "O valor foi digitado incorretamente. Verifique o valor"
 
 #: flatcamEditors/FlatCAMExcEditor.py:318
 msgid "Too many drills for the selected spacing angle."
-msgstr "Muitas brocas para o ângulo de espaçamento selecionado."
+msgstr "Muitos furos para o ângulo de espaçamento selecionado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:336
 msgid "Done. Drill Array added."
-msgstr "Matriz de Brocas adicionada."
+msgstr "Matriz de Furos adicionada."
 
 #: flatcamEditors/FlatCAMExcEditor.py:365
 msgid "To add a slot first select a tool"
@@ -2349,12 +2349,12 @@ msgstr "Feito. Matriz de Ranhuras adicionada."
 
 #: flatcamEditors/FlatCAMExcEditor.py:858
 msgid "Click on the Drill(s) to resize ..."
-msgstr "Clique na(s) Broca(s) para redimensionar ..."
+msgstr "Clique no(s) Furo(s) para redimensionar ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:888
 msgid "Resize drill(s) failed. Please enter a diameter for resize."
 msgstr ""
-"Redimensionar broca(s) falhou. Por favor insira um diâmetro para "
+"Redimensionar furo(s) falhou. Por favor insira um diâmetro para "
 "redimensionar."
 
 #: flatcamEditors/FlatCAMExcEditor.py:978
@@ -2365,11 +2365,11 @@ msgstr "Cancelado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1069
 msgid "Done. Drill/Slot Resize completed."
-msgstr "Redimensionamento de broca/ranhura concluído."
+msgstr "Redimensionamento de furo/ranhura concluído."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1072
 msgid "Cancelled. No drills/slots selected for resize ..."
-msgstr "Cancelado. Nenhuma broca/ranhura selecionada para redimensionar ..."
+msgstr "Cancelado. Nenhum furo/ranhura selecionado para redimensionar ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1100
 #: flatcamEditors/FlatCAMGrbEditor.py:1861
@@ -2378,11 +2378,11 @@ msgstr "Clique no local de referência ..."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1156
 msgid "Done. Drill(s) Move completed."
-msgstr "Movimento da Broca realizado."
+msgstr "Movimento do Furo realizado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1254
 msgid "Done. Drill(s) copied."
-msgstr "Broca(s) copiada(s)."
+msgstr "Furo(s) copiado(s)."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1473 flatcamGUI/FlatCAMGUI.py:5661
 msgid "Excellon Editor"
@@ -2455,11 +2455,11 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMExcEditor.py:1562 flatcamGUI/FlatCAMGUI.py:1570
 msgid "Resize Drill(s)"
-msgstr "Redimensionar Broca(s)"
+msgstr "Redimensionar Furo(s)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1564
 msgid "Resize a drill or a selection of drills."
-msgstr "Redimensiona uma broca ou uma seleção de brocas."
+msgstr "Redimensiona um furo ou uma seleção de furos."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1571
 msgid "Resize Dia"
@@ -2475,23 +2475,23 @@ msgstr "Redimensionar"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1583
 msgid "Resize drill(s)"
-msgstr "Redimensionar broca(s)"
+msgstr "Redimensionar furo(s)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1608 flatcamGUI/FlatCAMGUI.py:1569
 #: flatcamGUI/FlatCAMGUI.py:1769
 msgid "Add Drill Array"
-msgstr "Adicionar Matriz de Brocas"
+msgstr "Adicionar Matriz de Furos"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1610
 msgid "Add an array of drills (linear or circular array)"
-msgstr "Adiciona uma matriz de brocas (matriz linear ou circular)"
+msgstr "Adiciona uma matriz de furos (matriz linear ou circular)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1616
 msgid ""
 "Select the type of drills array to create.\n"
 "It can be Linear X(Y) or Circular"
 msgstr ""
-"Selecione o tipo de matriz de brocas para criar.\n"
+"Selecione o tipo de matriz de furos para criar.\n"
 "Pode ser Linear X(Y) ou Circular"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1619
@@ -2509,11 +2509,11 @@ msgstr "Circular"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1628 flatcamGUI/FlatCAMGUI.py:5700
 msgid "Nr of drills"
-msgstr "Nº de brocas"
+msgstr "Nº de furos"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1629 flatcamGUI/FlatCAMGUI.py:5702
 msgid "Specify how many drills to be in the array."
-msgstr "Especifique quantas brocas devem estar na matriz."
+msgstr "Especifique quantos furos devem estar na matriz."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1646
 #: flatcamEditors/FlatCAMExcEditor.py:1693
@@ -2755,7 +2755,7 @@ msgstr "Cancelado. Não há ferramenta/broca selecionada"
 
 #: flatcamEditors/FlatCAMExcEditor.py:3811
 msgid "Done. Drill(s) deleted."
-msgstr "Brocas(s) excluída(s)."
+msgstr "Furo(s) excluída(s)."
 
 #: flatcamEditors/FlatCAMExcEditor.py:3883
 #: flatcamEditors/FlatCAMExcEditor.py:3893
@@ -3043,7 +3043,7 @@ msgstr "Espelhar (Flip)"
 #: flatcamGUI/ObjectUI.py:952 flatcamGUI/ObjectUI.py:1517
 #: flatcamTools/ToolNonCopperClear.py:357 flatcamTools/ToolTransform.py:28
 msgid "Offset"
-msgstr "Deslocamento"
+msgstr "Deslocar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:637
 #: flatcamEditors/FlatCAMGrbEditor.py:4853 flatcamGUI/FlatCAMGUI.py:639
@@ -4620,7 +4620,7 @@ msgstr "Mescla uma seleção de objetos Gerber em um novo objeto Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:280
 msgid "Convert Single to MultiGeo"
-msgstr "Converter Single para MultiGeo"
+msgstr "Converter Único para MultiGeo"
 
 #: flatcamGUI/FlatCAMGUI.py:282
 msgid ""
@@ -4632,7 +4632,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:286
 msgid "Convert Multi to SingleGeo"
-msgstr "Converter Multi para SingleGeo"
+msgstr "Converter MultiGeo para Único"
 
 #: flatcamGUI/FlatCAMGUI.py:288
 msgid ""
@@ -4864,11 +4864,11 @@ msgstr ">Editor Excellon<"
 
 #: flatcamGUI/FlatCAMGUI.py:463
 msgid "Add Drill Array\tA"
-msgstr "Adicionar Matriz de Brocas\tA"
+msgstr "Adicionar Matriz de Furos\tA"
 
 #: flatcamGUI/FlatCAMGUI.py:465
 msgid "Add Drill\tD"
-msgstr "Adicionar Broca\tD"
+msgstr "Adicionar Furo\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:469
 msgid "Add Slot Array\tQ"
@@ -4880,7 +4880,7 @@ msgstr "Adicionar Ranhura\tW"
 
 #: flatcamGUI/FlatCAMGUI.py:475
 msgid "Resize Drill(S)\tR"
-msgstr "Redimensionar Broca(s)\tR"
+msgstr "Redimensionar Furo(s)\tR"
 
 #: flatcamGUI/FlatCAMGUI.py:477 flatcamGUI/FlatCAMGUI.py:516
 msgid "Copy\tC"
@@ -4892,7 +4892,7 @@ msgstr "Excluir\tDEL"
 
 #: flatcamGUI/FlatCAMGUI.py:484
 msgid "Move Drill(s)\tM"
-msgstr "Mover Broca(s)\tM"
+msgstr "Mover Furo(s)\tM"
 
 #: flatcamGUI/FlatCAMGUI.py:487
 msgid ">Gerber Editor<"
@@ -5126,19 +5126,19 @@ msgstr "Adicionar Matriz de Ranhuras"
 #: flatcamGUI/FlatCAMGUI.py:687 flatcamGUI/FlatCAMGUI.py:1774
 #: flatcamGUI/FlatCAMGUI.py:2116
 msgid "Resize Drill"
-msgstr "Redimensionar Broca"
+msgstr "Redimensionar Furo"
 
 #: flatcamGUI/FlatCAMGUI.py:690 flatcamGUI/FlatCAMGUI.py:2122
 msgid "Copy Drill"
-msgstr "Copiar Broca"
+msgstr "Copiar Furo"
 
 #: flatcamGUI/FlatCAMGUI.py:691 flatcamGUI/FlatCAMGUI.py:2124
 msgid "Delete Drill"
-msgstr "Excluir Broca"
+msgstr "Excluir Furo"
 
 #: flatcamGUI/FlatCAMGUI.py:694 flatcamGUI/FlatCAMGUI.py:2127
 msgid "Move Drill"
-msgstr "Mover Broca"
+msgstr "Mover Furo"
 
 #: flatcamGUI/FlatCAMGUI.py:698 flatcamGUI/FlatCAMGUI.py:2131
 msgid "Add Circle"
@@ -5740,15 +5740,15 @@ msgstr "Editor Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:1569
 msgid "Copy Drill(s)"
-msgstr "Copiar Broca(s)"
+msgstr "Copiar Furo(s)"
 
 #: flatcamGUI/FlatCAMGUI.py:1569 flatcamGUI/FlatCAMGUI.py:1768
 msgid "Add Drill"
-msgstr "Adicionar Broca"
+msgstr "Adicionar Furo"
 
 #: flatcamGUI/FlatCAMGUI.py:1570
 msgid "Move Drill(s)"
-msgstr "Mover Broca(s)"
+msgstr "Mover Furo(s)"
 
 #: flatcamGUI/FlatCAMGUI.py:1571
 msgid "Add a new Tool"
@@ -5756,7 +5756,7 @@ msgstr "Adicionar Ferramenta"
 
 #: flatcamGUI/FlatCAMGUI.py:1571
 msgid "Delete Drill(s)"
-msgstr "Excluir Broca(s)"
+msgstr "Excluir Furo(s)"
 
 #: flatcamGUI/FlatCAMGUI.py:1571
 msgid "Alternate: Delete Tool(s)"
@@ -7224,7 +7224,7 @@ msgid ""
 "Sprint Layout 2:4 INCH LZ\n"
 "KiCAD 3:5 INCH TZ"
 msgstr ""
-"Os arquivos de broca NC, normalmente chamados arquivos Excellon\n"
+"Os arquivos de furos NC, normalmente chamados arquivos Excellon\n"
 "são arquivos que podem ser encontrados em diferentes formatos.\n"
 "Aqui é definido o formato usado quando as coordenadas\n"
 "fornecidas não estiverem usando ponto.\n"
@@ -7412,20 +7412,20 @@ msgid ""
 "Drill depth (negative)\n"
 "below the copper surface."
 msgstr ""
-"Profundidade da broca (negativo)\n"
+"Profundidade do furo (negativo)\n"
 "abaixo da superfície de cobre."
 
 #: flatcamGUI/FlatCAMGUI.py:5246 flatcamGUI/FlatCAMGUI.py:6018
 #: flatcamGUI/ObjectUI.py:664 flatcamGUI/ObjectUI.py:1166
 msgid "Travel Z"
-msgstr "Alt. Desloc."
+msgstr "Altura do Deslocamento"
 
 #: flatcamGUI/FlatCAMGUI.py:5248 flatcamGUI/ObjectUI.py:666
 msgid ""
 "Tool height when travelling\n"
 "across the XY plane."
 msgstr ""
-"Altura da ferramenta durante\n"
+"Altura da ferramenta durante os\n"
 "deslocamentos sobre o plano XY."
 
 #: flatcamGUI/FlatCAMGUI.py:5256 flatcamGUI/FlatCAMGUI.py:6028
@@ -7542,9 +7542,9 @@ msgid ""
 "converted to drills."
 msgstr ""
 "Escolha o que usar para a geração de G-Code:\n"
-"'Brocas', 'Fendas' ou 'Ambos'.\n"
-"Quando escolher 'Fendas' ou 'Ambos', as fendas serão\n"
-"convertidos para brocas."
+"'Furos', 'Ranhuras' ou 'Ambos'.\n"
+"Quando escolher 'Ranhuras' ou 'Ambos', as ranhuras serão\n"
+"convertidos para furos."
 
 #: flatcamGUI/FlatCAMGUI.py:5357 flatcamGUI/ObjectUI.py:831
 msgid "Mill Holes"
@@ -7738,7 +7738,7 @@ msgid ""
 "Here we set the format used when the provided\n"
 "coordinates are not using period."
 msgstr ""
-"Os arquivos com a furação, geralmente chamados de arquivos Excellon\n"
+"Os arquivos NC com a furação, geralmente chamados de arquivos Excellon\n"
 "são arquivos que podem ser encontrados em diferentes formatos.\n"
 "Aqui é definido o formato usado quando as coordenadas\n"
 "fornecidas não usam ponto."
@@ -7796,9 +7796,9 @@ msgid ""
 "using the Drilled slot command (G85)."
 msgstr ""
 "Definição de como as ranhuras serão exportadas.\n"
-"Se roteado, as ranhuras serão roteadas\n"
+"Se ROTEADO, as ranhuras serão roteadas\n"
 "usando os comandos M15/M16.\n"
-"Se perfurado as ranhuras serão exportadas\n"
+"Se PERFURADO as ranhuras serão exportadas\n"
 "usando o comando Perfuração (G85)."
 
 #: flatcamGUI/FlatCAMGUI.py:5633
@@ -7832,15 +7832,15 @@ msgstr "Novo Diâmetro"
 
 #: flatcamGUI/FlatCAMGUI.py:5711
 msgid "Linear Drill Array"
-msgstr "Matriz Linear de Brocas"
+msgstr "Matriz Linear de Furos"
 
 #: flatcamGUI/FlatCAMGUI.py:5751
 msgid "Circular Drill Array"
-msgstr "Matriz Circular de Brocas"
+msgstr "Matriz Circular de Furos"
 
 #: flatcamGUI/FlatCAMGUI.py:5779 flatcamGUI/ObjectUI.py:613
 msgid "Slots"
-msgstr "Fendas"
+msgstr "Ranhuras"
 
 #: flatcamGUI/FlatCAMGUI.py:5830
 msgid "Linear Slot Array"
@@ -8319,7 +8319,7 @@ msgstr "tooldia = diâmetro da ferramenta"
 
 #: flatcamGUI/FlatCAMGUI.py:6551 flatcamGUI/ObjectUI.py:1616
 msgid "t_drills = for Excellon, total number of drills"
-msgstr "t_drills = para Excellon, número total de brocas"
+msgstr "t_drills = para Excellon, número total de furos"
 
 #: flatcamGUI/FlatCAMGUI.py:6552 flatcamGUI/ObjectUI.py:1617
 msgid "x_toolchange = X coord for Toolchange"
@@ -9045,7 +9045,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:7321 flatcamTools/ToolCalculators.py:92
 msgid "Tip Diameter"
-msgstr "Diâ. da Ponta"
+msgstr "Diâmetro da Ponta"
 
 #: flatcamGUI/FlatCAMGUI.py:7323 flatcamTools/ToolCalculators.py:97
 msgid ""
@@ -9086,7 +9086,7 @@ msgid ""
 "chloride."
 msgstr ""
 "Esta calculadora é útil para aqueles que fazem os furos\n"
-"(via/pad/broca) usando um método como tinta grahite ou tinta \n"
+"(via/pad/furos) usando um método como tinta grahite ou tinta \n"
 "hipofosfito de cálcio ou cloreto de paládio."
 
 #: flatcamGUI/FlatCAMGUI.py:7362 flatcamTools/ToolCalculators.py:158
@@ -9204,7 +9204,7 @@ msgstr "Distância para deslocar no eixo Y, nas unidades atuais."
 
 #: flatcamGUI/FlatCAMGUI.py:7502 flatcamTools/ToolTransform.py:313
 msgid "Mirror Reference"
-msgstr "Referência de Espelho"
+msgstr "Referência do Espelhamento"
 
 #: flatcamGUI/FlatCAMGUI.py:7504 flatcamTools/ToolTransform.py:315
 msgid ""
@@ -9259,7 +9259,7 @@ msgstr "Diâmetros dos bicos, separados por ','"
 
 #: flatcamGUI/FlatCAMGUI.py:7557
 msgid "New Nozzle Dia"
-msgstr "Diâ. do Novo Bico"
+msgstr "Diâmetro do Novo Bico"
 
 #: flatcamGUI/FlatCAMGUI.py:7559 flatcamTools/ToolSolderPaste.py:103
 msgid "Diameter for the new Nozzle tool to add in the Tool Table"
@@ -9782,31 +9782,27 @@ msgid ""
 "Tool Diameter. It's value (in current FlatCAM units) \n"
 "is the cut width into the material."
 msgstr ""
-"Diâmetro da Ferramenta. Seu valor (nas unidades FlatCAM atuais)\n"
-"é a largura do corte no material."
+"Diâmetro da Ferramenta. É a largura do corte no material\n"
+"(nas unidades atuais do FlatCAM)."
 
 #: flatcamGUI/ObjectUI.py:626
 msgid ""
 "The number of Drill holes. Holes that are drilled with\n"
 "a drill bit."
-msgstr ""
-"Número de Furos\n"
-"Serão perfurados com brocas."
+msgstr "Número de Furos. Serão perfurados com brocas."
 
 #: flatcamGUI/ObjectUI.py:629
 msgid ""
 "The number of Slot holes. Holes that are created by\n"
 "milling them with an endmill bit."
-msgstr ""
-"Número de Fendas\n"
-"Serão criadas com fresas."
+msgstr "Número de Ranhuras (Fendas). Serão criadas com fresas."
 
 #: flatcamGUI/ObjectUI.py:636
 msgid ""
 "Toggle display of the drills for the current tool.\n"
 "This does not select the tools for G-code generation."
 msgstr ""
-"Alterna a exibição da ferramenta atual.Isto não seleciona a ferramenta para "
+"Alterna a exibição da ferramenta atual. Isto não seleciona a ferramenta para "
 "geração do G-Code."
 
 #: flatcamGUI/ObjectUI.py:645
@@ -9826,7 +9822,7 @@ msgid ""
 "Use the # column to make the selection."
 msgstr ""
 "Selecione na Tabela de Ferramentas acima\n"
-"as ferramentas que você deseja incluir.\n"
+"os diâmetros dos furos que serão feitos.\n"
 "Use a coluna # para selecionar."
 
 #: flatcamGUI/ObjectUI.py:809
@@ -9837,8 +9833,8 @@ msgid ""
 "converted to a series of drills."
 msgstr ""
 "Escolha o que usar para a geração do G-Code:\n"
-"'Brocas', 'Fendas' ou 'Ambos'.\n"
-"Quando escolher 'Fendas' ou 'Ambos', as fendas serão\n"
+"'Furos', 'Ranhuras' ou 'Ambos'.\n"
+"Quando escolher 'Ranhuras' ou 'Ambos', as ranhuras/fendas serão\n"
 "convertidas em uma série de furos."
 
 #: flatcamGUI/ObjectUI.py:824
@@ -9856,7 +9852,7 @@ msgid ""
 "Use the # column to make the selection."
 msgstr ""
 "Selecione na Tabela de Ferramentas acima\n"
-"os diâmetros dos furo que serão fresados.\n"
+"os diâmetros dos furos que serão fresados.\n"
 "Use a coluna # para selecionar."
 
 #: flatcamGUI/ObjectUI.py:853
@@ -9873,7 +9869,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:870
 msgid "Mill Slots Geo"
-msgstr "Geo Fendas"
+msgstr "Geo Ranhuras"
 
 #: flatcamGUI/ObjectUI.py:872
 msgid ""
@@ -9881,7 +9877,7 @@ msgid ""
 "for milling SLOTS toolpaths."
 msgstr ""
 "Cria o Objeto Geometria com\n"
-"os caminhos da ferramenta de FENDAS."
+"os caminhos da ferramenta de RANHURAS."
 
 #: flatcamGUI/ObjectUI.py:921
 msgid ""
@@ -10607,7 +10603,7 @@ msgstr "PCB de 2 faces"
 #: flatcamTools/ToolDblSided.py:52 flatcamTools/ToolDblSided.py:76
 #: flatcamTools/ToolDblSided.py:100
 msgid "Mirror"
-msgstr "Espelho"
+msgstr "Espelhar"
 
 #: flatcamTools/ToolDblSided.py:54 flatcamTools/ToolDblSided.py:78
 #: flatcamTools/ToolDblSided.py:102
@@ -10680,7 +10676,7 @@ msgstr "Objeto Caixa de Referência de Geometria"
 
 #: flatcamTools/ToolDblSided.py:192
 msgid "Alignment Drill Coordinates"
-msgstr "Coords de Alinhamento de Broca"
+msgstr "Coords Furos de Alinhamento"
 
 #: flatcamTools/ToolDblSided.py:194
 msgid ""
@@ -10694,10 +10690,10 @@ msgid ""
 msgstr ""
 "Furos de alinhamento (x1, y1), (x2, y2), ... em um lado do eixo do espelho. "
 "Para cada conjunto de coordenadas (x, y)\n"
-"indicado aqui, um par de brocas será criado:\n"
+"indicado aqui, um par de furos será criado:\n"
 "\n"
-"- uma broca nas coordenadas do campo\n"
-"- uma broca na posição do espelho sobre o eixo selecionado acima."
+"- uma furo nas coordenadas do campo\n"
+"- uma furo na posição espelhada sobre o eixo selecionado acima."
 
 #: flatcamTools/ToolDblSided.py:209
 msgid ""
@@ -10727,7 +10723,7 @@ msgstr ""
 
 #: flatcamTools/ToolDblSided.py:223
 msgid "Alignment Drill Diameter"
-msgstr "Diâmetro da Broca de Alinhamento"
+msgstr "Diâmetro do Furo de Alinhamento"
 
 #: flatcamTools/ToolDblSided.py:246
 msgid "Create Excellon Object"
@@ -10771,18 +10767,18 @@ msgstr ""
 #: flatcamTools/ToolDblSided.py:373
 msgid "No value or wrong format in Drill Dia entry. Add it and retry."
 msgstr ""
-"Nenhum valor ou formato incorreto para Diâmetro de Broca. Altere e tente "
+"Nenhum valor ou formato incorreto para o Diâmetro do Furo. Altere e tente "
 "novamente."
 
 #: flatcamTools/ToolDblSided.py:380
 msgid "There are no Alignment Drill Coordinates to use. Add them and retry."
 msgstr ""
-"Não há Coordenadas de Broca de Alinhamento para usar. Adicione-as e tente "
+"Não há Coordenadas para usar no Furo de Alinhamento. Adicione-as e tente "
 "novamente."
 
 #: flatcamTools/ToolDblSided.py:403
 msgid "Excellon object with alignment drills created..."
-msgstr "Objeto Excellon com brocas de alinhamento criado ..."
+msgstr "Objeto Excellon com furos de alinhamento criado ..."
 
 #: flatcamTools/ToolDblSided.py:412
 msgid "There is no Gerber object loaded ..."
@@ -11233,8 +11229,8 @@ msgid ""
 "Tool Diameter. It's value (in current FlatCAM units)\n"
 "is the cut width into the material."
 msgstr ""
-"Diâmetro da ferramenta. Valor da largura de corte no material.\n"
-"(nas unidades atuais FlatCAM)"
+"Diâmetro da ferramenta. É a largura do corte no material.\n"
+"(nas unidades atuais do FlatCAM)"
 
 #: flatcamTools/ToolNonCopperClear.py:125
 msgid ""
@@ -12081,7 +12077,7 @@ msgid ""
 msgstr ""
 "O arquivo INF não contém a tabela de ferramentas.\n"
 "Tente abrir o arquivo Excellon em Arquivo -> Abrir -> Excellon\n"
-"e edite os diâmetros das brocas manualmente."
+"e edite os diâmetros dos furos manualmente."
 
 #: flatcamTools/ToolPcbWizard.py:387
 msgid "PcbWizard .INF file loaded."
@@ -12498,7 +12494,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:89
 msgid "Substract Gerber"
-msgstr "Gerber Subtrator"
+msgstr "Subtrair Gerber"
 
 #: flatcamTools/ToolSub.py:91
 msgid ""
@@ -12534,7 +12530,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:139
 msgid "Substract Geometry"
-msgstr "Geometria Subtrator"
+msgstr "Subtrair Geometria"
 
 #: flatcamTools/ToolSub.py:141
 msgid ""
