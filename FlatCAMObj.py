@@ -5150,15 +5150,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
             # to a value of 0.0005 which is 20 times less than 0.01
             tol = float(self.app.defaults['global_tolerance']) / 20
-            job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=tol,
-                                             z_cut=z_cut, z_move=z_move,
-                                             feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                                             spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
-                                             multidepth=multidepth, depthpercut=depthperpass,
-                                             toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                                             extracut=extracut, startz=startz, endz=endz,
-                                             pp_geometry_name=ppname_g
-                                             )
+            job_obj.generate_from_geometry_2(
+                self, tooldia=tooldia, offset=offset, tolerance=tol,
+                z_cut=z_cut, z_move=z_move,
+                feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
+                spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
+                multidepth=multidepth, depthpercut=depthperpass,
+                toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
+                extracut=extracut, startz=startz, endz=endz,
+                pp_geometry_name=ppname_g
+            )
 
             app_obj.progress.emit(50)
             # tell gcode_parse from which point to start drawing the lines depending on what kind of object is the
