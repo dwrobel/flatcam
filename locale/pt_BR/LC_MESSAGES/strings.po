@@ -1,4 +1,4 @@
-msgid ""
+﻿msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-09-13 14:57-0300\n"
@@ -2897,7 +2897,7 @@ msgstr "Contorno:"
 msgid ""
 "Cut around the perimeter of the polygon\n"
 "to trim rough edges."
-msgstr "Corta no perímetro do polígono para cortar as arestas."
+msgstr "Corta no perímetro do polígono para retirar as arestas."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:511 flatcamGUI/FlatCAMGUI.py:1723
 msgid "Paint"
@@ -6815,7 +6815,7 @@ msgstr "Combinar todos os passes em um objeto"
 
 #: flatcamGUI/FlatCAMGUI.py:4538 flatcamGUI/ObjectUI.py:477
 msgid "Non-copper regions"
-msgstr "Regiões sem cobre"
+msgstr "Zona sem cobre"
 
 #: flatcamGUI/FlatCAMGUI.py:4540 flatcamGUI/ObjectUI.py:479
 msgid ""
@@ -6826,7 +6826,7 @@ msgid ""
 "copper from a specified region."
 msgstr ""
 "Cria polígonos cobrindo as\n"
-"áreas sem cobre no PCB.\n"
+"zonas sem cobre no PCB.\n"
 "Equivalente ao inverso do\n"
 "objeto. Pode ser usado para remover todo o\n"
 "cobre de uma região especificada."
@@ -8291,7 +8291,7 @@ msgid ""
 "toolpaths to cut all non-copper regions."
 msgstr ""
 "Cria um objeto Geometria com caminho de ferramenta\n"
-"para cortar todas as regiões que não são de cobre."
+"para cortar todas as regiões com retirada de cobre."
 
 #: flatcamGUI/FlatCAMGUI.py:6575 flatcamGUI/FlatCAMGUI.py:7529
 msgid "Tools dia"
@@ -8355,7 +8355,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:6641 flatcamGUI/FlatCAMGUI.py:7001
 #: flatcamTools/ToolNonCopperClear.py:163 flatcamTools/ToolPaint.py:136
 msgid "Tool order"
-msgstr "Ordem de Ferramenta"
+msgstr "Ordem das Ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:6642 flatcamGUI/FlatCAMGUI.py:6652
 #: flatcamGUI/FlatCAMGUI.py:7002 flatcamGUI/FlatCAMGUI.py:7012
@@ -8371,15 +8371,13 @@ msgid ""
 "WARNING: using rest machining will automatically set the order\n"
 "in reverse and disable this control."
 msgstr ""
-"Define o modo como as ferramentas na tabela de ferramentas são usadas.\n"
-"'Não' -> significa que a ordem usada é aquela na tabela de ferramentas\n"
-"'Crescente' -> significa que as ferramentas são ordenadas de menor para "
-"maior\n"
-"'Decrescente' -> significa que as ferramentas são ordenadas de maior para "
-"menor\n"
+"Define a ordem em que as ferramentas da Tabela de Ferramentas são usadas.\n"
+"'Não' -> utiliza a ordem da tabela de ferramentas\n"
+"'Crescente' -> as ferramentas são ordenadas de menor para maior\n"
+"'Decrescente' -> as ferramentas são ordenadas de maior para menor\n"
 "\n"
-"ATENÇÃO: usando a usinagem de descanso irá definir automaticamente a ordem\n"
-"decrescente e desativa este controle."
+"ATENÇÃO: se for utilizada usinagem de descanso, será utilizada automaticamente a ordem\n"
+"decrescente e este controle é desativado."
 
 #: flatcamGUI/FlatCAMGUI.py:6650 flatcamGUI/FlatCAMGUI.py:7010
 #: flatcamTools/ToolNonCopperClear.py:172 flatcamTools/ToolPaint.py:145
@@ -8437,9 +8435,9 @@ msgid ""
 "<BR><B>Seed-based</B>: Outwards from seed.<BR><B>Line-based</B>: Parallel "
 "lines."
 msgstr ""
-"Algoritmo para retirada do cobre:<BR><B>Padrão</B>: passo fixo para dentro. "
+"Algoritmo para retirada do cobre:<BR><B>Padrão</B>: passo fixo para dentro."
 "<BR><B>Baseado em semente</B>: para fora a partir de uma semente."
-"<BR><B>Baseado em linha</B>: linhas paralelas."
+"<BR><B>Linhas retas</B>: linhas paralelas."
 
 #: flatcamGUI/FlatCAMGUI.py:6719 flatcamGUI/FlatCAMGUI.py:7066
 #: flatcamTools/ToolNonCopperClear.py:324 flatcamTools/ToolPaint.py:249
@@ -8482,14 +8480,13 @@ msgid ""
 "from the copper features.\n"
 "The value can be between 0 and 10 FlatCAM units."
 msgstr ""
-"Se usado, ele adicionará um deslocamento aos recursos de cobre.\n"
-"A clareira de cobre terminará a uma distância\n"
-"dos recursos de cobre.\n"
+"Se usado, será adicionado um deslocamento aos recursos de cobre.\n"
+"A retirada de cobre terminará a uma distância dos recursos de cobre.\n"
 "O valor pode estar entre 0 e 10 unidades FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:6766 flatcamTools/ToolNonCopperClear.py:369
 msgid "Offset value"
-msgstr "Valor de deslocamento"
+msgstr "Valor do deslocamento"
 
 #: flatcamGUI/FlatCAMGUI.py:6783 flatcamTools/ToolNonCopperClear.py:395
 msgid "Itself"
@@ -8518,14 +8515,11 @@ msgid ""
 "- 'Reference Object' -  will do non copper clearing within the area\n"
 "specified by another object."
 msgstr ""
-"- 'Própria' - a extensão de limpeza não cobre\n"
-"é baseado no objeto que é cobre limpo.\n"
+"- 'Própria' - a retirada de cobre é baseada no próprio objeto a ser limpo.\n"
 "  - 'Seleção de Área' - clique com o botão esquerdo do mouse para iniciar a "
 "seleção da área a ser pintada.\n"
-"Manter uma tecla modificadora pressionada (CTRL ou SHIFT) permitirá "
-"adicionar várias áreas.\n"
-"- 'Objeto de Referência' - fará limpeza não de cobre dentro da área\n"
-"especificado por outro objeto."
+"Manter uma tecla modificadora pressionada (CTRL ou SHIFT) permite adicionar várias áreas.\n"
+"- 'Objeto de Referência' - retirará o cobre dentro da área do objeto especificado."
 
 #: flatcamGUI/FlatCAMGUI.py:6799 flatcamGUI/FlatCAMGUI.py:7105
 msgid "Normal"
@@ -8577,9 +8571,9 @@ msgid ""
 "Gerber object, which is made\n"
 "out of many individual PCB outlines."
 msgstr ""
-"Escolha de qual tipo é o objeto que queremos recortar. <BR>- <B>Único</B>: "
-"contém um único objeto de contorno Gerber PCB.<BR>- <B>Painel</B>: um painel "
-"de objetos PCB Gerber, composto por muitos contornos PCB individuais."
+"Escolha o tipo do objeto a recortar. <BR>- <B>Único</B>: "
+"contém um único objeto Gerber de contorno PCB.<BR>- <B>Painel</B>: um painel "
+"de objetos Gerber PCB, composto por muitos contornos PCB individuais."
 
 #: flatcamGUI/FlatCAMGUI.py:6850 flatcamGUI/FlatCAMGUI.py:7096
 #: flatcamTools/ToolCutOut.py:84
@@ -8706,7 +8700,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6973
 msgid "Paint Tool Options"
-msgstr "Opções de Ferramenta de Pintura"
+msgstr "Opções da Ferramenta de Pintura"
 
 #: flatcamGUI/FlatCAMGUI.py:6978
 msgid "<b>Parameters:</b>"
@@ -8744,11 +8738,9 @@ msgstr ""
 "\n"
 "- 'Seleção de Área' - clique com o botão esquerdo do mouse para iniciar a "
 "seleção da área a ser pintada.\n"
-"Manter uma tecla modificadora pressionada (CTRL ou SHIFT) permitirá "
-"adicionar várias áreas.\n"
-"- 'Todos os polígonos' - o Paint será iniciado após o clique.\n"
-"- 'Objeto de Referência' - fará limpeza não de cobre dentro da área\n"
-"especificado por outro objeto."
+"Manter uma tecla modificadora pressionada (CTRL ou SHIFT) permite adicionar várias áreas.\n"
+"- 'Todos os polígonos' - a Pintura será iniciada após o clique.\n"
+"- 'Objeto de Referência' - pintará dentro da área do objeto especificado."
 
 #: flatcamGUI/FlatCAMGUI.py:7099
 msgid "Ref."
@@ -9650,7 +9642,7 @@ msgid ""
 "for non-copper routing."
 msgstr ""
 "Cria o Objeto de Geometria\n"
-"para roteamento sem cobre."
+"para roteamento de zona sem cobre."
 
 #: flatcamGUI/ObjectUI.py:461
 msgid "Board cutout"
@@ -11128,9 +11120,9 @@ msgid ""
 "of objects that will populate the 'Object' combobox."
 msgstr ""
 "Especifique o tipo de objeto a ser limpo do excesso de cobre.\n"
-"Pode ser do tipo: Gerber ou Geometry.\n"
-"O que é selecionado aqui irá ditar o tipo\n"
-"de objetos que preencherão a caixa de combinação 'Objeto'."
+"Pode ser do tipo: Gerber ou Geometria.\n"
+"O tipo selecionado aqui ditará o tipo\n"
+"de objetos da caixa de combinação 'Objeto'."
 
 #: flatcamTools/ToolNonCopperClear.py:88
 msgid "Object to be cleared of excess copper."
@@ -11159,8 +11151,8 @@ msgid ""
 msgstr ""
 "Este é o Número da Ferramenta.\n"
 "A retirada de cobre (NCC) começará com a ferramenta de maior diâmetro,\n"
-"continuando até que não haja mais ferramentas. As únicas ferramentas\n"
-"que criam a geometria de NCC ainda estarão presentes na geometria\n"
+"continuando até que não haja mais ferramentas. Somente ferramentas\n"
+"que criam a geometria de NCC estarão presentes na geometria\n"
 "resultante. Isso ocorre porque com algumas ferramentas esta função\n"
 "não será capaz de criar geometria de pintura."
 
@@ -11169,8 +11161,8 @@ msgid ""
 "Tool Diameter. It's value (in current FlatCAM units)\n"
 "is the cut width into the material."
 msgstr ""
-"Diâmetro da ferramenta. Valor (nas atuais unidades FlatCAM)\n"
-"da largura de corte no material."
+"Diâmetro da ferramenta. Valor da largura de corte no material.\n"
+"(nas unidades atuais FlatCAM)"
 
 #: flatcamTools/ToolNonCopperClear.py:125
 msgid ""
@@ -11221,7 +11213,7 @@ msgstr "Seleção de Ferramenta"
 #: flatcamTools/ToolNonCopperClear.py:214
 msgid "Diameter for the new tool to add in the Tool Table"
 msgstr ""
-"Diâmetro para a nova ferramenta para adicionar na tabela de ferramentas"
+"Diâmetro da nova ferramenta a ser adicionada na tabela de ferramentas"
 
 #: flatcamTools/ToolNonCopperClear.py:251 flatcamTools/ToolPaint.py:190
 #: flatcamTools/ToolSolderPaste.py:123
@@ -11238,7 +11230,7 @@ msgstr "Seleção de Área"
 
 #: flatcamTools/ToolNonCopperClear.py:397 flatcamTools/ToolPaint.py:297
 msgid "Reference Object"
-msgstr "Objeto de referência"
+msgstr "Objeto de Referência"
 
 #: flatcamTools/ToolNonCopperClear.py:399
 msgid "Reference:"
@@ -11253,7 +11245,7 @@ msgid ""
 "The type of FlatCAM object to be used as non copper clearing reference.\n"
 "It can be Gerber, Excellon or Geometry."
 msgstr ""
-"O tipo de objeto FlatCAM a ser usado como referência de limpeza não cobre.\n"
+"O tipo de objeto FlatCAM a ser usado como referência para retirada de cobre.\n"
 "Pode ser Gerber, Excellon ou Geometria."
 
 #: flatcamTools/ToolNonCopperClear.py:425 flatcamTools/ToolPaint.py:323
@@ -11262,7 +11254,7 @@ msgstr "Objeto de Ref."
 
 #: flatcamTools/ToolNonCopperClear.py:427 flatcamTools/ToolPaint.py:325
 msgid "The FlatCAM object to be used as non copper clearing reference."
-msgstr "O objeto FlatCAM a ser usado como referência de limpeza não cobre."
+msgstr "O objeto FlatCAM a ser usado como referência para retirada de cobre."
 
 #: flatcamTools/ToolNonCopperClear.py:440
 msgid "Generate Geometry"
@@ -11310,7 +11302,7 @@ msgstr ""
 
 #: flatcamTools/ToolNonCopperClear.py:1103
 msgid "Wrong Tool Dia value format entered, use a number."
-msgstr "Valor de diâmetro errado. Use um número."
+msgstr "Valor errado para o diâmetro. Use um número."
 
 #: flatcamTools/ToolNonCopperClear.py:1112 flatcamTools/ToolPaint.py:981
 msgid "No selected tools in Tool Table."
@@ -11332,7 +11324,7 @@ msgstr ""
 
 #: flatcamTools/ToolNonCopperClear.py:1318
 msgid "Non-Copper clearing ..."
-msgstr "Limpando área de cobre..."
+msgstr "Retirando cobre da área..."
 
 #: flatcamTools/ToolNonCopperClear.py:1327
 msgid "NCC Tool started. Reading parameters."
@@ -11372,12 +11364,12 @@ msgstr "Criar Buffer concluído"
 #: flatcamTools/ToolNonCopperClear.py:1649
 #: flatcamTools/ToolNonCopperClear.py:1979
 msgid "The selected object is not suitable for copper clearing."
-msgstr "O objeto selecionado não é adequado para limpeza de cobre."
+msgstr "O objeto selecionado não é adequado para retirada de cobre."
 
 #: flatcamTools/ToolNonCopperClear.py:1654
 #: flatcamTools/ToolNonCopperClear.py:1984
 msgid "Could not get the extent of the area to be non copper cleared."
-msgstr "Não foi possível obter a extensão da área para não ser de cobre limpo."
+msgstr "Não foi possível obter a extensão da área para retirada de cobre."
 
 #: flatcamTools/ToolNonCopperClear.py:1661
 msgid "NCC Tool. Finished calculation of 'empty' area."
@@ -11386,7 +11378,7 @@ msgstr "Ferramenta NCC. Cálculo de área 'vazia' concluído."
 #: flatcamTools/ToolNonCopperClear.py:1671
 #: flatcamTools/ToolNonCopperClear.py:2009
 msgid "NCC Tool clearing with tool diameter = "
-msgstr "Limpeza de Área Sem-Cobre com Diâmetro = "
+msgstr "NCC. Ferramenta com Diâmetro = "
 
 #: flatcamTools/ToolNonCopperClear.py:1674
 #: flatcamTools/ToolNonCopperClear.py:2012
@@ -11543,8 +11535,8 @@ msgid ""
 msgstr ""
 "Algoritmo para pintura:\n"
 "- Padrão: Passo fixo para dentro.\n"
-"- Baseado em semeste: Para fora da semente.\n"
-"- Baseado em linha: Linhas paralelas."
+"- Baseado em semeste: Para fora a partir de uma semente.\n"
+"- Linhas retas: Linhas paralelas."
 
 #: flatcamTools/ToolPaint.py:269
 msgid ""
@@ -11596,11 +11588,9 @@ msgid ""
 msgstr ""
 "- 'Seleção de Área' - clique com o botão esquerdo do mouse para iniciar a "
 "seleção da área a ser pintada.\n"
-"Manter uma tecla modificadora pressionada (CTRL ou SHIFT) permitirá "
-"adicionar várias áreas.\n"
-"- 'Todos os polígonos' - o Pintura será iniciada após o clique.\n"
-"- 'Objeto de Referência' - fará limpeza não de cobre dentro da área\n"
-"especificado por outro objeto."
+"Manter uma tecla modificadora pressionada (CTRL ou SHIFT) permite adicionar várias áreas.\n"
+"- 'Todos os polígonos' - a Pintura será iniciada após o clique.\n"
+"- 'Objeto de Referência' - pintará dentro da área do objeto especificado."
 
 #: flatcamTools/ToolPaint.py:912
 msgid "Paint Tool. Reading parameters."
