@@ -1782,7 +1782,7 @@ msgstr ""
 
 #: FlatCAMObj.py:5366
 msgid "Geometry Offset done."
-msgstr "Deslocamento de Geometria feito."
+msgstr "Deslocamento de Geometria concluído."
 
 #: FlatCAMObj.py:5395
 msgid ""
@@ -2982,7 +2982,7 @@ msgstr "Espelhar (Flip)"
 #: flatcamGUI/ObjectUI.py:952 flatcamGUI/ObjectUI.py:1517
 #: flatcamTools/ToolNonCopperClear.py:357 flatcamTools/ToolTransform.py:28
 msgid "Offset"
-msgstr "Deslocamento"
+msgstr "Deslocar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:637
 #: flatcamEditors/FlatCAMGrbEditor.py:4853 flatcamGUI/FlatCAMGUI.py:637
@@ -7346,14 +7346,14 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5227 flatcamGUI/FlatCAMGUI.py:5999
 #: flatcamGUI/ObjectUI.py:664 flatcamGUI/ObjectUI.py:1166
 msgid "Travel Z"
-msgstr "Alt. Desloc."
+msgstr "Altura do Deslocamento"
 
 #: flatcamGUI/FlatCAMGUI.py:5229 flatcamGUI/ObjectUI.py:666
 msgid ""
 "Tool height when travelling\n"
 "across the XY plane."
 msgstr ""
-"Altura da ferramenta durante\n"
+"Altura da ferramenta durante os\n"
 "deslocamentos sobre o plano XY."
 
 #: flatcamGUI/FlatCAMGUI.py:5237 flatcamGUI/FlatCAMGUI.py:6009
@@ -7768,7 +7768,7 @@ msgstr "Matriz Circular de Furos"
 
 #: flatcamGUI/FlatCAMGUI.py:5760 flatcamGUI/ObjectUI.py:613
 msgid "Slots"
-msgstr "Rnhuras"
+msgstr "Ranhuras"
 
 #: flatcamGUI/FlatCAMGUI.py:5811
 msgid "Linear Slot Array"
@@ -8969,7 +8969,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:7302 flatcamTools/ToolCalculators.py:92
 msgid "Tip Diameter"
-msgstr "Diâ. da Ponta"
+msgstr "Diâmetro da Ponta"
 
 #: flatcamGUI/FlatCAMGUI.py:7304 flatcamTools/ToolCalculators.py:97
 msgid ""
@@ -9183,7 +9183,7 @@ msgstr "Diâmetros dos bicos, separados por ','"
 
 #: flatcamGUI/FlatCAMGUI.py:7538
 msgid "New Nozzle Dia"
-msgstr "Diâ. do Novo Bico"
+msgstr "Diâmetro do Novo Bico"
 
 #: flatcamGUI/FlatCAMGUI.py:7540 flatcamTools/ToolSolderPaste.py:103
 msgid "Diameter for the new Nozzle tool to add in the Tool Table"
@@ -9706,8 +9706,8 @@ msgid ""
 "Tool Diameter. It's value (in current FlatCAM units) \n"
 "is the cut width into the material."
 msgstr ""
-"Diâmetro da Ferramenta. Seu valor (nas unidades FlatCAM atuais)\n"
-"é a largura do corte no material."
+"Diâmetro da Ferramenta. É a largura do corte no material\n"
+"(nas unidades atuais do FlatCAM)."
 
 #: flatcamGUI/ObjectUI.py:626
 msgid ""
@@ -9746,7 +9746,7 @@ msgid ""
 "Use the # column to make the selection."
 msgstr ""
 "Selecione na Tabela de Ferramentas acima\n"
-"os diâmetros dod furos que você deseja furar.\n"
+"os diâmetros dos furos que serão feitos.\n"
 "Use a coluna # para selecionar."
 
 #: flatcamGUI/ObjectUI.py:809
@@ -9776,7 +9776,7 @@ msgid ""
 "Use the # column to make the selection."
 msgstr ""
 "Selecione na Tabela de Ferramentas acima\n"
-"os diâmetros dos furo que serão fresados.\n"
+"os diâmetros dos furos que serão fresados.\n"
 "Use a coluna # para selecionar."
 
 #: flatcamGUI/ObjectUI.py:853
@@ -11157,8 +11157,8 @@ msgid ""
 "Tool Diameter. It's value (in current FlatCAM units)\n"
 "is the cut width into the material."
 msgstr ""
-"Diâmetro da ferramenta. Valor da largura de corte no material.\n"
-"(nas unidades atuais FlatCAM)"
+"Diâmetro da ferramenta. É a largura do corte no material.\n"
+"(nas unidades atuais do FlatCAM)"
 
 #: flatcamTools/ToolNonCopperClear.py:125
 msgid ""
