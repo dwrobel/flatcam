@@ -432,9 +432,9 @@ msgid ""
 "Check the generated GCODE."
 msgstr ""
 "Falha ao unir. Os objetos Geometria são de tipos diferentes.\n"
-"Pelo menos um é do tipo MultiGeo e o outro é do tipo SingleGeo. Uma "
+"Pelo menos um é do tipo MultiGeo e o outro é do tipo Único. Uma "
 "possibilidade é converter de um para outro e tentar unir,\n"
-"mas no caso de converter de MultiGeo para SingleGeo, as informações podem "
+"mas no caso de converter de MultiGeo para Único, as informações podem "
 "ser perdidas e o resultado pode não ser o esperado.\n"
 "Verifique o G-CODE gerado."
 
@@ -460,7 +460,7 @@ msgstr "Um objeto Geometria foi convertido para o tipo MultiGeo."
 
 #: FlatCAMApp.py:4617
 msgid "A Geometry object was converted to SingleGeo type."
-msgstr "Um objeto Geometria foi convertido para o tipo SingleGeo."
+msgstr "Um objeto Geometria foi convertido para o tipo Único."
 
 #: FlatCAMApp.py:4878
 msgid "Toggle Units"
@@ -4556,7 +4556,7 @@ msgstr "Mescla uma seleção de objetos Gerber em um novo objeto Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:280
 msgid "Convert Single to MultiGeo"
-msgstr "Converter Single para MultiGeo"
+msgstr "Converter Único para MultiGeo"
 
 #: flatcamGUI/FlatCAMGUI.py:282
 msgid ""
@@ -4568,7 +4568,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:286
 msgid "Convert Multi to SingleGeo"
-msgstr "Converter Multi para SingleGeo"
+msgstr "Converter MultiGeo para Único"
 
 #: flatcamGUI/FlatCAMGUI.py:288
 msgid ""
