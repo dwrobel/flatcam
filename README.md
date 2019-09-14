@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - minor changes in the 'FlatCAM About' GUI
 - added a new shortcut key F5 for doing the 'Plot All'
 - updated the google-translated Spanish translation strings
+- fixed the layouts to include toolbars breaks where it was needed
 
 13.09.2019
 

@@ -599,6 +599,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
         self.addToolBar(self.exc_edit_toolbar)
 
+        self.addToolBarBreak()
+
         self.geo_edit_toolbar = QtWidgets.QToolBar(_('Geometry Editor Toolbar'))
         self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
         self.addToolBar(self.geo_edit_toolbar)
@@ -2228,11 +2230,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
             if layout == 'standard':
-                self.exc_edit_toolbar.setVisible(False)
+                self.exc_edit_toolbar.setVisible(True)
                 self.exc_edit_toolbar.setDisabled(True)
-                self.geo_edit_toolbar.setVisible(False)
+                self.geo_edit_toolbar.setVisible(True)
                 self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setVisible(False)
+                self.grb_edit_toolbar.setVisible(True)
                 self.grb_edit_toolbar.setDisabled(True)
 
                 self.corner_snap_btn.setVisible(False)

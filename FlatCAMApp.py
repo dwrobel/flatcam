@@ -5518,17 +5518,19 @@ class App(QtCore.QObject):
             self.ui.addToolBar(self.ui.toolbartools)
 
             self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-            self.ui.exc_edit_toolbar.setVisible(False)
+            # self.ui.exc_edit_toolbar.setVisible(False)
             self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
             self.ui.addToolBar(self.ui.exc_edit_toolbar)
 
+            self.ui.addToolBarBreak()
+
             self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            self.ui.geo_edit_toolbar.setVisible(False)
+            # self.ui.geo_edit_toolbar.setVisible(False)
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(self.ui.geo_edit_toolbar)
 
             self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
-            self.ui.grb_edit_toolbar.setVisible(False)
+            # self.ui.grb_edit_toolbar.setVisible(False)
             self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
             self.ui.addToolBar(self.ui.grb_edit_toolbar)
 
@@ -5544,12 +5546,11 @@ class App(QtCore.QObject):
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
             self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarfile)
+
             self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
             self.ui.toolbargeo.setObjectName('Edit_TB')
             self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbargeo)
-            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
-            self.ui.toolbarview.setObjectName('View_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarview)
+
 
             self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
             self.ui.toolbarshell.setObjectName('Shell_TB')
@@ -5563,6 +5564,12 @@ class App(QtCore.QObject):
             # self.ui.geo_edit_toolbar.setVisible(False)
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
+
+            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.ui.toolbarview.setObjectName('View_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.toolbarview)
+
+            self.ui.addToolBarBreak(area=Qt.RightToolBarArea)
 
             self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
             # self.ui.grb_edit_toolbar.setVisible(False)
