@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the google-translated Spanish translation strings
 - fixed the layouts to include toolbars breaks where it was needed
 - whenever the user changes the Excellon format values for loading files, the Export Excellon Format values will be updated
+- made optional the behavior of Excellon Export values following the values in the Excellon Loading section
 
 13.09.2019
 

@@ -504,6 +504,7 @@ class App(QtCore.QObject):
                 self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
             "excellon_zeros": self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
             "excellon_units": self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
+            "excellon_update": self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb,
             "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
             "excellon_search_time": self.ui.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
 
@@ -907,6 +908,7 @@ class App(QtCore.QObject):
             "excellon_format_lower_mm": 3,
             "excellon_zeros": "L",
             "excellon_units": "INCH",
+            "excellon_update": True,
             "excellon_optimization_type": 'B',
             "excellon_search_time": 3,
 
@@ -1828,20 +1830,13 @@ class App(QtCore.QObject):
         # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
         self.ui.general_defaults_form.general_app_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
 
-        # make sure that when the Excellon loading parameters are changed, the change is reflected in the
-        # Export Excellon paraemters. That's because users expect to load the exported file and show correctly
-        self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged.connect(
-            self.on_excellon_format_changed)
-        self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged.connect(
-            self.on_excellon_format_changed)
-        self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged.connect(
-            self.on_excellon_format_changed)
-        self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged.connect(
-            self.on_excellon_format_changed)
-        self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom.connect(
-            self.on_excellon_zeros_changed)
-        self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom.connect(
-            self.on_excellon_units_changed)
+        # Make sure that when the Excellon loading parameters are changed, the change is reflected in the
+        # Export Excellon parameters.
+        self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb.stateChanged.connect(
+            self.on_update_exc_export
+        )
+        # call it once to make sure it is updated at startup
+        self.on_update_exc_export(state=self.defaults["excellon_update"])
 
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
         self.ui.excellon_defaults_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
@@ -5148,6 +5143,95 @@ class App(QtCore.QObject):
         self.options_form_fields["excellon_zeros"].set_value('L')
         self.options_form_fields["excellon_units"].set_value('INCH')
         log.debug("Excellon options defaults loaded ...")
+
+    def on_update_exc_export(self, state):
+        """
+        This is handling the update of Excellon Export parameters based on the ones in the Excellon General but only
+        if the update_excellon_cb checkbox is checked
+
+        :param state: state of the checkbox whose signals is tied to his slot
+        :return:
+        """
+        if state:
+            # first try to disconnect
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged.\
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged.\
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged.\
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged.\
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom.\
+                    disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom.\
+                    disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+
+            # the connect them
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged.connect(
+                self.on_excellon_format_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged.connect(
+                self.on_excellon_format_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged.connect(
+                self.on_excellon_format_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged.connect(
+                self.on_excellon_format_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom.connect(
+                self.on_excellon_zeros_changed)
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom.connect(
+                self.on_excellon_units_changed)
+        else:
+            # disconnect the signals
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged. \
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged. \
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged. \
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged. \
+                    disconnect(self.on_excellon_format_changed)
+            except TypeError:
+                pass
+
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom. \
+                    disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
+            try:
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.activated_custom. \
+                    disconnect(self.on_excellon_zeros_changed)
+            except TypeError:
+                pass
 
     def on_excellon_format_changed(self):
         """

@@ -5137,10 +5137,16 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(self.excellon_units_radio, 1, 1)
 
-        grid2.addWidget(QtWidgets.QLabel(""), 2, 0)
+        self.update_excellon_cb = FCCheckBox(label=_('Update Export settings'))
+        self.update_excellon_cb.setToolTip(
+            "If checked, the Excellon Export settings will be updated with the ones above."
+        )
+        grid2.addWidget(self.update_excellon_cb, 2, 0)
+
+        grid2.addWidget(QtWidgets.QLabel(""), 3, 0)
 
         self.excellon_general_label = QtWidgets.QLabel("<b>%s:</b>" % _("Excellon Optimization"))
-        grid2.addWidget(self.excellon_general_label, 3, 0, 1, 2)
+        grid2.addWidget(self.excellon_general_label, 4, 0, 1, 2)
 
         self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:   '))
         self.excellon_optimization_label.setToolTip(
@@ -5153,7 +5159,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
               "Travelling Salesman algorithm for path optimization.")
         )
-        grid2.addWidget(self.excellon_optimization_label, 4, 0)
+        grid2.addWidget(self.excellon_optimization_label, 5, 0)
 
         self.excellon_optimization_radio = RadioSet([{'label': _('MH'), 'value': 'M'},
                                                      {'label': _('Basic'), 'value': 'B'}])
@@ -5167,7 +5173,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
               "Travelling Salesman algorithm for path optimization.")
         )
-        grid2.addWidget(self.excellon_optimization_radio, 4, 1)
+        grid2.addWidget(self.excellon_optimization_radio, 5, 1)
 
         self.optimization_time_label = QtWidgets.QLabel('%s:' % _('Optimization Time'))
         self.optimization_time_label.setAlignment(QtCore.Qt.AlignLeft)
@@ -5178,11 +5184,11 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "In seconds.")
 
         )
-        grid2.addWidget(self.optimization_time_label, 5, 0)
+        grid2.addWidget(self.optimization_time_label, 6, 0)
 
         self.optimization_time_entry = IntEntry()
         self.optimization_time_entry.setValidator(QtGui.QIntValidator(0, 999))
-        grid2.addWidget(self.optimization_time_entry, 5, 1)
+        grid2.addWidget(self.optimization_time_entry, 6, 1)
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
