@@ -61,4 +61,4 @@ class TclCommandJoinExcellon(TclCommand):
             FlatCAMExcellon.merge(objs, obj_)
 
         if objs is not None:
-            self.app.new_object("excellon", outname, initialize)
+            self.app.new_object("excellon", outname, initialize, plot=False)

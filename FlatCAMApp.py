@@ -5948,15 +5948,14 @@ class App(QtCore.QObject):
                 except tk.TclError as e:
                     log.debug("App.handleRunCode() --> %s" % str(e))
                     old_line = old_line + tcl_command_line + '\n'
+                except Exception as e:
+                    log.debug("App.handleRunCode() --> %s" % str(e))
 
         if old_line != '':
             # it means that the script finished with an error
             result = self.tcl.eval("set errorInfo")
             self.log.error("Exec command Exception: %s" % (result + '\n'))
             self.shell.append_error('ERROR: ' + result + '\n')
-        else:
-            # success! plot all objects
-            self.plot_all()
 
         self.shell.close_proccessing()
 
@@ -8310,6 +8309,10 @@ class App(QtCore.QObject):
         self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
         self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
         self.ui.buttonRun.show()
+        try:
+            self.ui.buttonRun.clicked.disconnect(self.handleRunCode)
+        except TypeError:
+            pass
         self.ui.buttonRun.clicked.connect(self.handleRunCode)
 
         self.handleTextChanged()

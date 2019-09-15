@@ -90,7 +90,7 @@ class TclCommandPanelize(TclCommand):
         if 'threaded' in args:
             threaded = args['threaded']
         else:
-            threaded = 1
+            threaded = 0
 
         if 'spacing_columns' in args:
             spacing_columns = args['spacing_columns']
@@ -265,10 +265,10 @@ class TclCommandPanelize(TclCommand):
 
                 if isinstance(obj, FlatCAMExcellon):
                     self.app.progress.emit(50)
-                    self.app.new_object("excellon", outname, job_init_excellon, plot=True, autoselected=True)
+                    self.app.new_object("excellon", outname, job_init_excellon, plot=False, autoselected=True)
                 else:
                     self.app.progress.emit(50)
-                    self.app.new_object("geometry", outname, job_init_geometry, plot=True, autoselected=True)
+                    self.app.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)
 
         if threaded == 1:
             proc = self.app.proc_container.new("Generating panel ... Please wait.")

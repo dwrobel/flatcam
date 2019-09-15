@@ -924,7 +924,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             return "Operation failed: %s" % str(e)
 
     def isolate(self, iso_type=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
-                milling_type=None, follow=None):
+                milling_type=None, follow=None, plot=True):
         """
         Creates an isolation routing geometry object in the project.
 
@@ -1164,7 +1164,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
             # TODO: Do something if this is None. Offer changing name?
-            self.app.new_object("geometry", iso_name, iso_init)
+            self.app.new_object("geometry", iso_name, iso_init, plot=plot)
         else:
             for i in range(passes):
 
@@ -1239,7 +1239,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
                 # TODO: Do something if this is None. Offer changing name?
-                self.app.new_object("geometry", iso_name, iso_init)
+                self.app.new_object("geometry", iso_name, iso_init, plot=plot)
 
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
@@ -2604,7 +2604,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         return has_slots, excellon_code
 
-    def generate_milling_drills(self, tools=None, outname=None, tooldia=None, use_thread=False):
+    def generate_milling_drills(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
@@ -2683,7 +2683,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                             Point(hole['point']).buffer(buffer_value).exterior)
         if use_thread:
             def geo_thread(app_obj):
-                app_obj.new_object("geometry", outname, geo_init)
+                app_obj.new_object("geometry", outname, geo_init, plot=plot)
                 app_obj.progress.emit(100)
 
             # Create a promise with the new name
@@ -2692,11 +2692,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # Send to worker
             self.app.worker_task.emit({'fcn': geo_thread, 'params': [self.app]})
         else:
-            self.app.new_object("geometry", outname, geo_init)
+            self.app.new_object("geometry", outname, geo_init, plot=plot)
 
         return True, ""
 
-    def generate_milling_slots(self, tools=None, outname=None, tooldia=None, use_thread=False):
+    def generate_milling_slots(self, tools=None, outname=None, tooldia=None, plot=True, use_thread=False):
         """
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
@@ -2790,7 +2790,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         if use_thread:
             def geo_thread(app_obj):
-                app_obj.new_object("geometry", outname + '_slot', geo_init)
+                app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
                 app_obj.progress.emit(100)
 
             # Create a promise with the new name
@@ -2799,7 +2799,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # Send to worker
             self.app.worker_task.emit({'fcn': geo_thread, 'params': [self.app]})
         else:
-            self.app.new_object("geometry", outname + '_slot', geo_init)
+            self.app.new_object("geometry", outname + '_slot', geo_init, plot=plot)
 
         return True, ""
 
@@ -4527,7 +4527,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Failed. No tool selected in the tool table ..."))
 
-    def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None, use_thread=True):
+    def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
+                         plot=True, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target FlatCAMCNCjob object's
@@ -4884,7 +4885,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             def job_thread(app_obj):
                 if self.solid_geometry:
                     with self.app.proc_container.new(_("Generating CNC Code")):
-                        if app_obj.new_object("cncjob", outname, job_init_single_geometry) != 'fail':
+                        if app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot) != 'fail':
                             app_obj.inform.emit('[success] %s: %s' %
                                                 (_("CNCjob created")), outname)
                             app_obj.progress.emit(100)
@@ -4901,9 +4902,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
             if self.solid_geometry:
-                self.app.new_object("cncjob", outname, job_init_single_geometry)
+                self.app.new_object("cncjob", outname, job_init_single_geometry, plot=plot)
             else:
-                self.app.new_object("cncjob", outname, job_init_multi_geometry)
+                self.app.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
 
     def generatecncjob(
             self, outname=None,
@@ -4916,7 +4917,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             extracut=None, startz=None, endz=None,
             ppname_g=None,
             segx=None, segy=None,
-            use_thread=True):
+            use_thread=True,
+            plot=True):
         """
         Only used for TCL Command.
         Creates a CNCJob out of this Geometry object. The actual
@@ -5043,7 +5045,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # To be run in separate thread
             def job_thread(app_obj):
                 with self.app.proc_container.new(_("Generating CNC Code")):
-                    app_obj.new_object("cncjob", outname, job_init)
+                    app_obj.new_object("cncjob", outname, job_init, plot=plot)
                     app_obj.inform.emit('[success] %s: %s' %
                                         (_("CNCjob created")), outname)
                     app_obj.progress.emit(100)
@@ -5053,7 +5055,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # Send to worker
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            self.app.new_object("cncjob", outname, job_init)
+            self.app.new_object("cncjob", outname, job_init, plot=plot)
 
     # def on_plot_cb_click(self, *args):  # TODO: args not needed
     #     if self.muted_ui:

@@ -89,7 +89,7 @@ class TclCommandNregions(TclCommand):
                 non_copper = bounding_box.difference(geo)
                 geo_obj.solid_geometry = non_copper
 
-            self.app.new_object("geometry", args['outname'], geo_init)
+            self.app.new_object("geometry", args['outname'], geo_init, plot=False)
         except Exception as e:
             return "Operation failed: %s" % str(e)
 

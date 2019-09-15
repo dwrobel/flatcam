@@ -178,7 +178,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
 
                 obj.app.new_object("excellon",
                                    name + "_aligndrill",
-                                   alligndrill_init_me)
+                                   alligndrill_init_me, plot=False)
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -194,8 +194,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
             try:
                 px = dist
                 py = dist
-                obj.app.new_object("excellon", name + "_alligndrill", alligndrill_init_me)
+                obj.app.new_object("excellon", name + "_alligndrill", alligndrill_init_me, plot=False)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
-        return 'Ok'
+        return 'Ok. Align Drills Excelon object created'

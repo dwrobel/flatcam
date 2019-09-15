@@ -23,7 +23,9 @@ CAD program, and create G-Code for Isolation routing.
 - added possibility to see the GCode when right clicking on the Project tab on a CNCJob object and then clicking View Source
 - added a new TclCommand named PlotObjects which will plot a list of FlatCAM objects
 - made that after opening an object in FlatCAM it is not automatically plotted. If the user wants to plot it can use the TclCommands PlotAll or PlotObjects
-- modified the TclCommands that open files to not plot the opened files automatically
+- modified the TclCommands so that open files do not plot the opened files automatically
+- made all TclCommands not to be plotted automatically
+- made sure that all TclCommands are not threaded
 
 14.09.2019
 
