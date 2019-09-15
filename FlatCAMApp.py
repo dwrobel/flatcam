@@ -2322,6 +2322,9 @@ class App(QtCore.QObject):
 
         self.set_ui_title(name=_("New Project - Not saved"))
 
+        # finish the splash
+        # splash.finish(self.ui)
+
         # ###############################################################################
         # ####################### Finished the CONSTRUCTOR ##############################
         # ###############################################################################
@@ -6493,7 +6496,7 @@ class App(QtCore.QObject):
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.preferences_tab)
-        self.ui.show()
+        # self.ui.show()
 
         # this disconnect() is done so the slot will be connected only once
         try:
@@ -6948,7 +6951,7 @@ class App(QtCore.QObject):
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.shortcuts_tab)
-        self.ui.show()
+        # self.ui.show()
 
     def on_select_tab(self, name):
         # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -8320,7 +8323,7 @@ class App(QtCore.QObject):
                     self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
                     self.handleTextChanged()
-                    self.ui.show()
+                    # self.ui.show()
 
             except Exception as e:
                 log.debug("App.on_fileopenscript() -> %s" % str(e))
@@ -9672,12 +9675,6 @@ class App(QtCore.QObject):
                                 self.defaults["global_def_win_w"],
                                 self.defaults["global_def_win_h"])
             self.ui.splitter.setSizes([self.defaults["global_def_notebook_width"], 0])
-
-            settings = QSettings("Open Source", "FlatCAM")
-            if settings.contains("maximized_gui"):
-                maximized_ui = settings.value('maximized_gui', type=bool)
-                if maximized_ui is True:
-                    self.ui.showMaximized()
         except KeyError as e:
             log.debug("App.restore_main_win_geom() --> %s" % str(e))
 

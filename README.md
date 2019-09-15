@@ -9,6 +9,15 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.09.2019
+
+- refactored FlatCAMGeometry.mtool_gen_cncjob() method
+- fixed the TclCommandCncjob to work for multigeometry Geometry objects; still I had to fix the list of tools parameter, right now I am setting it to an empty list
+- update the Tcl Command isolate to be able to isolate exteriors, interiors besides the full isolation, using the iso_type parameter
+- fixed issue in ToolPaint that could not allow area painting of a geometry that was a list and not a Geometric element (polygon or MultiPolygon)
+- fixed UI showing before the initialization of FlatCAM is finished when the last state of GUI was maximized
+- finished updating the TclCommand cncjob to work for multi-geo Geometry objects with the parameters from the args
+
 14.09.2019
 
 - more string changes
