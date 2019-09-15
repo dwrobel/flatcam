@@ -19,7 +19,6 @@ import shutil
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
 import ctypes
-import winreg
 
 import tkinter as tk
 from PyQt5 import QtPrintSupport
@@ -61,6 +60,9 @@ import tclCommands
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
+if sys.platform == 'win32':
+    import winreg
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
