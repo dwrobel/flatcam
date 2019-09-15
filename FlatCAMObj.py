@@ -5842,11 +5842,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
-        gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
-        if gc == 'fail':
+
+        gco = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
+        if gco == 'fail':
             return
         else:
-            self.app.gcode_edited = gc
+            self.app.gcode_edited = gco
 
         self.app.init_code_editor(name=_("Code Editor"))
         self.app.ui.buttonOpen.clicked.connect(self.app.handleOpen)

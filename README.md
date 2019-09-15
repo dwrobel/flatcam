@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the TclCommand cncjob to use the -outname parameter
 - added some more keywords in the data_model for auto-completer
 - fixed isolate TclCommand to use correctly the -outname parameter
+- added possibility to see the GCode when right clicking on the Project tab on a CNCJob object and then clicking View Source
 
 14.09.2019
 

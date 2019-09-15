@@ -8217,20 +8217,34 @@ class App(QtCore.QObject):
 
         if obj.kind == 'gerber':
             flt = "Gerber Files (*.GBR);;All Files (*.*)"
-        else:
+        elif obj.kind == 'excellon':
             flt = "Excellon Files (*.DRL);;All Files (*.*)"
+        elif obj.kind == 'cncjob':
+            "GCode Files (*.NC);;All Files (*.*)"
+        else:
+            flt = "All Files (*.*)"
 
         self.init_code_editor(name=_("Source Editor"))
         self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
         self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
 
         # then append the text from GCode to the text editor
-        try:
-            file = StringIO(obj.source_file)
-        except AttributeError:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("There is no selected object for which to see it's source file code."))
-            return 'fail'
+        if obj.kind == 'cncjob':
+            try:
+                file = obj.export_gcode(preamble='', postamble='', to_file=True)
+                if file == 'fail':
+                    return 'fail'
+            except AttributeError:
+                self.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("There is no selected object for which to see it's source file code."))
+                return 'fail'
+        else:
+            try:
+                file = StringIO(obj.source_file)
+            except AttributeError:
+                self.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("There is no selected object for which to see it's source file code."))
+                return 'fail'
 
         self.ui.cncjob_frame.hide()
         try:
