@@ -1905,7 +1905,7 @@ class App(QtCore.QObject):
 
         self.ordinary_keywords = ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
                                   'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
-                                  'drilled_dias', 'drillz',
+                                  'drilled_dias', 'drillz', 'pp',
                                   'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
                                   'filename', 'follow', 'gaps', 'gapsize', 'grid', 'gridoffset', 'gridoffsetx',
                                   'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
@@ -1914,7 +1914,10 @@ class App(QtCore.QObject):
                                   'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
                                   'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
                                   'toolchange', 'toolchangez', 'tooldia', 'tools', 'travelz', 'True', 'true', 'type',
-                                  'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
+                                  'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
+                                  'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
+                                  'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
+                                  'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy'
                                   ]
 
         self.tcl_keywords = [

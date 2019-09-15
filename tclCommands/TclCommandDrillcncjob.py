@@ -1,6 +1,7 @@
 from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
 
+
 class TclCommandDrillcncjob(TclCommandSignaled):
     """
     Tcl shell command to Generates a Drill CNC Job from a Excellon Object.
@@ -27,7 +28,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ('toolchangez', float),
         ('toolchangexy', tuple),
         ('endz', float),
-        ('ppname_e', str),
+        ('pp', str),
         ('outname', str),
         ('opt_type', str),
         ('diatol', float)
@@ -52,7 +53,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('toolchangez', 'Z distance for toolchange (example: 30.0).'),
             ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
             ('endz', 'Z distance at job end (example: 30.0).'),
-            ('ppname_e', 'This is the Excellon postprocessor name: case_sensitive, no_quotes'),
+            ('pp', 'This is the Excellon postprocessor name: case_sensitive, no_quotes'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('opt_type', 'Name of move optimization type. B by default for Basic OR-Tools, M for Metaheuristic OR-Tools'
                          'T from Travelling Salesman Algorithm. B and M works only for 64bit version of FlatCAM and '
@@ -64,7 +65,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                        'in Excellon will be processed. Float number.')
         ]),
         'examples': ['drillcncjob test.TXT -drillz -1.5 -travelz 14 -feedrate 222 -feedrate_rapid 456 -spindlespeed 777'
-                     ' -toolchange True -toolchangez 33 -endz 22 -ppname_e default\n'
+                     ' -toolchange True -toolchangez 33 -endz 22 -pp default\n'
                      'Usage of -feedrate_rapid matter only when the posptocessor is using it, like -marlin-.']
     }
 
@@ -157,7 +158,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 if "feedrate_rapid" in args else obj.options["feedrate_rapid"]
 
             job_obj.spindlespeed = args["spindlespeed"] if "spindlespeed" in args else None
-            job_obj.pp_excellon_name = args["ppname_e"] if "ppname_e" in args \
+            job_obj.pp_excellon_name = args["pp"] if "pp" in args \
                 else obj.options["ppname_e"]
 
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
