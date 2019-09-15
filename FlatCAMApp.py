@@ -1898,7 +1898,8 @@ class App(QtCore.QObject):
                                   'mirror', 'ncc',
                                   'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
                                   'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'paint',
-                                  'pan', 'panel', 'panelize', 'plot', 'save', 'save_project', 'save_sys', 'scale',
+                                  'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'save', 'save_project',
+                                  'save_sys', 'scale',
                                   'set_active', 'set_sys', 'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
                                   'version', 'write_gcode'
                                   ]
@@ -1917,7 +1918,8 @@ class App(QtCore.QObject):
                                   'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
                                   'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
                                   'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
-                                  'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type'
+                                  'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type',
+                                  'Desktop', 'FlatPrj', 'FlatConfig', 'Users', 'Documents', 'My Documents', 'Marius'
                                   ]
 
         self.tcl_keywords = [
@@ -2252,6 +2254,9 @@ class App(QtCore.QObject):
 
         # Variable to store the GCODE that was edited
         self.gcode_edited = ""
+
+        # reference for the self.ui.code_editor
+        self.reference_code_editor = None
 
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
@@ -3062,8 +3067,8 @@ class App(QtCore.QObject):
         result = self.exec_command_test(text, False)
 
         # MS: added this method call so the geometry is updated once the TCL command is executed
-        if no_plot is None:
-            self.plot_all()
+        # if no_plot is None:
+        #     self.plot_all()
 
         return result
 
@@ -5941,6 +5946,7 @@ class App(QtCore.QObject):
 
                     old_line = ''
                 except tk.TclError as e:
+                    log.debug("App.handleRunCode() --> %s" % str(e))
                     old_line = old_line + tcl_command_line + '\n'
 
         if old_line != '':
@@ -8199,6 +8205,9 @@ class App(QtCore.QObject):
         self.ui.code_editor.completer_enable = False
         self.ui.buttonRun.hide()
 
+        # make sure to keep a reference to the code editor
+        self.reference_code_editor = self.ui.code_editor
+
         # Switch plot_area to CNCJob tab
         self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
 
@@ -9387,7 +9396,7 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s: %s' %
                              (_("Opened"), filename))
 
-    def open_excellon(self, filename, outname=None):
+    def open_excellon(self, filename, outname=None, plot=True):
         """
         Opens an Excellon file, parses it and creates a new object for
         it in the program. Thread-safe.
@@ -9441,7 +9450,7 @@ class App(QtCore.QObject):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
-            ret_val = self.new_object("excellon", name, obj_init, autoselected=False)
+            ret_val = self.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
             if ret_val == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _('Open Excellon file failed. Probable not an Excellon file.'))
@@ -9454,7 +9463,7 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s: %s' %
                              (_("Opened"), filename))
 
-    def open_gcode(self, filename, outname=None):
+    def open_gcode(self, filename, outname=None, plot=True):
         """
         Opens a G-gcode file, parses it and creates a new object for
         it in the program. Thread-safe.
@@ -9506,7 +9515,7 @@ class App(QtCore.QObject):
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             # New object creation and file processing
-            ret = self.new_object("cncjob", name, obj_init, autoselected=False)
+            ret = self.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Failed to create CNCJob Object. Probable not a GCode file.\n "
@@ -9554,7 +9563,7 @@ class App(QtCore.QObject):
                              (_("Failed to open config file"), filename))
             return
 
-    def open_project(self, filename, run_from_arg=None):
+    def open_project(self, filename, run_from_arg=None, plot=True, cli=None):
         """
         Loads a project from the specified file.
 
@@ -9568,11 +9577,14 @@ class App(QtCore.QObject):
         :param filename:  Name of the file from which to load.
         :type filename: str
         :param run_from_arg: True if run for arguments
+        :param plot: If True plot all objects in the project
+        :param cli: run from command line
         :return: None
         """
         App.log.debug("Opening project: " + filename)
 
-        self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
+        if cli is None:
+            self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
 
         # Open and parse an uncompressed Project file
         try:
@@ -9604,7 +9616,7 @@ class App(QtCore.QObject):
 
         # Clear the current project
         # # NOT THREAD SAFE # ##
-        if run_from_arg is True:
+        if run_from_arg is True or cli is True:
             pass
         else:
             self.on_file_new()
@@ -9620,16 +9632,18 @@ class App(QtCore.QObject):
         for obj in d['objs']:
             def obj_init(obj_inst, app_inst):
                 obj_inst.from_dict(obj)
+
             App.log.debug("Recreating from opened project an %s object: %s" %
                           (obj['kind'].capitalize(), obj['options']['name']))
 
-            self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
-                                                      obj['kind'].upper(),
-                                                      obj['options']['name']
-                                                      )
-                              )
+            if cli is None:
+                self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
+                                                          obj['kind'].upper(),
+                                                          obj['options']['name']
+                                                          )
+                                  )
 
-            self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
+            self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
 
         # self.plot_all()
         self.inform.emit('[success] %s: %s' %

@@ -163,35 +163,36 @@ class TclCommand(object):
 
     @staticmethod
     def parse_arguments(args):
-            """
-            Pre-processes arguments to detect '-keyword value' pairs into dictionary
-            and standalone parameters into list.
+        """
+        Pre-processes arguments to detect '-keyword value' pairs into dictionary
+        and standalone parameters into list.
 
-            This is copy from FlatCAMApp.setup_shell().h() just for accessibility,
-            original should  be removed  after all commands will be converted
+        This is copy from FlatCAMApp.setup_shell().h() just for accessibility,
+        original should  be removed  after all commands will be converted
 
-            :param args: arguments from tcl to parse
-            :return: arguments, options
-            """
+        :param args: arguments from tcl to parse
+        :return: arguments, options
+        """
 
-            options = {}
-            arguments = []
-            n = len(args)
-            name = None
-            for i in range(n):
-                match = re.search(r'^-([a-zA-Z].*)', args[i])
-                if match:
-                    assert name is None
-                    name = match.group(1)
-                    continue
+        options = {}
+        arguments = []
+        n = len(args)
 
-                if name is None:
-                    arguments.append(args[i])
-                else:
-                    options[name] = args[i]
-                    name = None
+        name = None
+        for i in range(n):
+            match = re.search(r'^-([a-zA-Z].*)', args[i])
+            if match:
+                assert name is None
+                name = match.group(1)
+                continue
 
-            return arguments, options
+            if name is None:
+                arguments.append(args[i])
+            else:
+                options[name] = args[i]
+                name = None
+
+        return arguments, options
 
     def check_args(self, args):
         """
@@ -274,7 +275,6 @@ class TclCommand(object):
         """
 
         # self.worker_task.emit({'fcn': self.exec_command_test, 'params': [text, False]})
-
         try:
             self.log.debug("TCL command '%s' executed." % str(self.__class__))
             self.original_args = args

@@ -45,5 +45,5 @@ class TclCommandOpenGCode(TclCommandSignaled):
             without -somename and  we do not have them in known arg_names
         :return: None or exception
         """
-
+        args['plot'] = False
         self.app.open_gcode(args['filename'], **args)

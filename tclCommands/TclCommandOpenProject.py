@@ -43,5 +43,5 @@ class TclCommandOpenProject(TclCommandSignaled):
             without -somename and  we do not have them in known arg_names
         :return: None or exception
         """
-
-        self.app.open_project(args['filename'])
+        filename = args['filename']
+        self.app.open_project(filename, cli=True, plot=False)

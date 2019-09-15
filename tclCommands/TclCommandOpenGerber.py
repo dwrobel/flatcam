@@ -30,7 +30,7 @@ class TclCommandOpenGerber(TclCommandSignaled):
             ('filename', 'Path to file to open.'),
             ('outname', 'Name of the resulting Gerber object.')
         ]),
-        'examples': []
+        'examples': ["open_gerber gerber_object_path -outname bla"]
     }
 
     def execute(self, args, unnamed_args):
@@ -76,12 +76,13 @@ class TclCommandOpenGerber(TclCommandSignaled):
             outname = filename.split('/')[-1].split('\\')[-1]
 
         if 'follow' in args:
-            self.raise_tcl_error("The 'follow' parameter is obsolete. To create 'follow' geometry use the 'follow' parameter for the Tcl Command isolate()")
+            self.raise_tcl_error("The 'follow' parameter is obsolete. To create 'follow' geometry use the 'follow' "
+                                 "parameter for the Tcl Command isolate()")
 
         with self.app.proc_container.new("Opening Gerber"):
 
             # Object creation
-            self.app.new_object("gerber", outname, obj_init)
+            self.app.new_object("gerber", outname, obj_init, plot=False)
 
             # Register recent file
             self.app.file_opened.emit("gerber", filename)

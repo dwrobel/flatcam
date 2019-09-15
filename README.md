@@ -21,6 +21,9 @@ CAD program, and create G-Code for Isolation routing.
 - added some more keywords in the data_model for auto-completer
 - fixed isolate TclCommand to use correctly the -outname parameter
 - added possibility to see the GCode when right clicking on the Project tab on a CNCJob object and then clicking View Source
+- added a new TclCommand named PlotObjects which will plot a list of FlatCAM objects
+- made that after opening an object in FlatCAM it is not automatically plotted. If the user wants to plot it can use the TclCommands PlotAll or PlotObjects
+- modified the TclCommands that open files to not plot the opened files automatically
 
 14.09.2019
 

@@ -44,7 +44,8 @@ import tclCommands.TclCommandOpenProject
 import tclCommands.TclCommandOptions
 import tclCommands.TclCommandPaint
 import tclCommands.TclCommandPanelize
-import tclCommands.TclCommandPlot
+import tclCommands.TclCommandPlotAll
+import tclCommands.TclCommandPlotObjects
 import tclCommands.TclCommandSaveProject
 import tclCommands.TclCommandSaveSys
 import tclCommands.TclCommandScale
