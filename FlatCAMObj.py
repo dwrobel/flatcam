@@ -2923,16 +2923,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # job_obj.options["tooldia"] =
 
             tools_csv = ','.join(tools)
-            ret_val = job_obj.generate_from_excellon_by_tool(self, tools_csv,
-                                                             drillz=float(self.options['drillz']),
-                                                             toolchange=self.options["toolchange"],
-                                                             toolchangexy=self.app.defaults["excellon_toolchangexy"],
-                                                             toolchangez=float(self.options["toolchangez"]),
-                                                             startz=float(self.options["startz"]) if
-                                                             self.options["startz"] else None,
-                                                             endz=float(self.options["endz"]),
-                                                             excellon_optimization_type=self.app.defaults[
-                                                                 "excellon_optimization_type"])
+            ret_val = job_obj.generate_from_excellon_by_tool(
+                self, tools_csv,
+                drillz=float(self.options['drillz']),
+                toolchange=self.options["toolchange"],
+                toolchangexy=self.app.defaults["excellon_toolchangexy"],
+                toolchangez=float(self.options["toolchangez"]),
+                startz=float(self.options["startz"]) if self.options["startz"] else None,
+                endz=float(self.options["endz"]),
+                excellon_optimization_type=self.app.defaults["excellon_optimization_type"])
+
             if ret_val == 'fail':
                 return 'fail'
             app_obj.progress.emit(50)
@@ -4462,6 +4462,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def on_generatecnc_button_click(self, *args):
         log.debug("Generating CNCJob from Geometry ...")
         self.app.report_usage("geometry_on_generatecnc_button")
+
+        # this reads the values in the UI form to the self.options dictionary
         self.read_form()
 
         self.sel_tools = {}
@@ -4516,30 +4518,29 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Failed. No tool selected in the tool table ..."))
 
-    def mtool_gen_cncjob(self, segx=None, segy=None, use_thread=True):
+    def mtool_gen_cncjob(self, tools_dict=None, tools_in_use=None, segx=None, segy=None, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target FlatCAMCNCjob object's
         `generate_from_geometry_2()` method.
 
-        :param z_cut: Cut depth (negative)
-        :param z_move: Hight of the tool when travelling (not cutting)
-        :param feedrate: Feed rate while cutting on X - Y plane
-        :param feedrate_z: Feed rate while cutting on Z plane
-        :param feedrate_rapid: Feed rate while moving with rapids
-        :param tooldia: Tool diameter
-        :param outname: Name of the new object
-        :param spindlespeed: Spindle speed (RPM)
-        :param ppname_g Name of the postprocessor
+        :param tools_dict: a dictionary that holds the whole data needed to create the Gcode
+        (including the solid_geometry)
+
+        :param tools_in_use: the tools that are used, needed by some postprocessors
+        :type list of lists, each list in the list is made out of row elements of tools table from GUI
+
+        :param segx: number of segments on the X axis, for auto-levelling
+        :param segy: number of segments on the Y axis, for auto-levelling
+        :param use_thread: if True use threading
         :return: None
         """
-
-        offset_str = ''
-        multitool_gcode = ''
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
         outname = "%s_%s" % (self.options["name"], 'cnc')
 
+        tools_dict = self.sel_tools if tools_dict is None else tools_dict
+        tools_in_use = tools_in_use if tools_in_use is not None else self.get_selected_tools_table_items()
         segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
@@ -4564,6 +4565,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
+            job_obj.options['xmin'] = xmin
+            job_obj.options['ymin'] = ymin
+            job_obj.options['xmax'] = xmax
+            job_obj.options['ymax'] = ymax
+
             # count the tools
             tool_cnt = 0
 
@@ -4573,121 +4579,28 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             job_obj.multitool = True
             job_obj.multigeo = False
             job_obj.cnc_tools.clear()
-            # job_obj.create_geometry()
 
-            job_obj.options['Tools_in_use'] = self.get_selected_tools_table_items()
-            job_obj.segx = segx
-            job_obj.segy = segy
+            job_obj.options['Tools_in_use'] = tools_in_use
+            job_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
+            job_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
 
-            try:
-                job_obj.z_pdepth = float(self.options["z_pdepth"])
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Wrong value format for self.defaults["z_pdepth"] or '
-                                           'self.options["z_pdepth"]'))
+            job_obj.z_pdepth = float(self.app.defaults["geometry_z_pdepth"])
+            job_obj.feedrate_probe = float(self.app.defaults["geometry_feedrate_probe"])
 
-            try:
-                job_obj.feedrate_probe = float(self.options["feedrate_probe"])
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Wrong value format for self.defaults["feedrate_probe"] or '
-                                           'self.options["feedrate_probe"]'))
-
-            for tooluid_key in self.sel_tools:
+            for tooluid_key in list(tools_dict.keys()):
                 tool_cnt += 1
-                app_obj.progress.emit(20)
 
-                for diadict_key, diadict_value in self.sel_tools[tooluid_key].items():
-                    if diadict_key == 'tooldia':
-                        tooldia_val = float('%.4f' % float(diadict_value))
-                        dia_cnc_dict.update({
-                            diadict_key: tooldia_val
-                        })
-                    if diadict_key == 'offset':
-                        o_val = diadict_value.lower()
-                        dia_cnc_dict.update({
-                            diadict_key: o_val
-                        })
-
-                    if diadict_key == 'type':
-                        t_val = diadict_value
-                        dia_cnc_dict.update({
-                            diadict_key: t_val
-                        })
-
-                    if diadict_key == 'tool_type':
-                        tt_val = diadict_value
-                        dia_cnc_dict.update({
-                            diadict_key: tt_val
-                        })
-
-                    if diadict_key == 'data':
-                        for data_key, data_value in diadict_value.items():
-                            if data_key == "multidepth":
-                                multidepth = data_value
-                            if data_key == "depthperpass":
-                                depthpercut = data_value
-
-                            if data_key == "extracut":
-                                extracut = data_value
-                            if data_key == "startz":
-                                startz = data_value
-                            if data_key == "endz":
-                                endz = data_value
-
-                            if data_key == "toolchangez":
-                                toolchangez = data_value
-                            if data_key == "toolchangexy":
-                                toolchangexy = data_value
-                            if data_key == "toolchange":
-                                toolchange = data_value
-
-                            if data_key == "cutz":
-                                z_cut = data_value
-                            if data_key == "travelz":
-                                z_move = data_value
-
-                            if data_key == "feedrate":
-                                feedrate = data_value
-                            if data_key == "feedrate_z":
-                                feedrate_z = data_value
-                            if data_key == "feedrate_rapid":
-                                feedrate_rapid = data_value
-
-                            if data_key == "ppname_g":
-                                pp_geometry_name = data_value
-
-                            if data_key == "spindlespeed":
-                                spindlespeed = data_value
-                            if data_key == "dwell":
-                                dwell = data_value
-                            if data_key == "dwelltime":
-                                dwelltime = data_value
-
-                        datadict = deepcopy(diadict_value)
-                        dia_cnc_dict.update({
-                            diadict_key: datadict
-                        })
+                dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
+                tooldia_val = float('%.4f' % float(tools_dict[tooluid_key]['tooldia']))
+                dia_cnc_dict.update({
+                    'tooldia': tooldia_val
+                })
 
                 if dia_cnc_dict['offset'] == 'in':
                     tool_offset = -dia_cnc_dict['tooldia'] / 2
-                    offset_str = 'inside'
                 elif dia_cnc_dict['offset'].lower() == 'out':
                     tool_offset = dia_cnc_dict['tooldia'] / 2
-                    offset_str = 'outside'
-                elif dia_cnc_dict['offset'].lower() == 'path':
-                    offset_str = 'onpath'
-                    tool_offset = 0.0
-                else:
-                    offset_str = 'custom'
+                elif dia_cnc_dict['offset'].lower() == 'custom':
                     try:
                         offset_value = float(self.ui.tool_offset_entry.get_value())
                     except ValueError:
@@ -4705,9 +4618,30 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                                                 "no value is provided.\n"
                                                                 "Add a Tool Offset or change the Offset Type."))
                         return
+                else:
+                    tool_offset = 0.0
+
                 dia_cnc_dict.update({
                     'offset_value': tool_offset
                 })
+
+                z_cut = tools_dict[tooluid_key]['data']["cutz"]
+                z_move = tools_dict[tooluid_key]['data']["travelz"]
+                feedrate = tools_dict[tooluid_key]['data']["feedrate"]
+                feedrate_z = tools_dict[tooluid_key]['data']["feedrate_z"]
+                feedrate_rapid = tools_dict[tooluid_key]['data']["feedrate_rapid"]
+                multidepth = tools_dict[tooluid_key]['data']["multidepth"]
+                extracut = tools_dict[tooluid_key]['data']["extracut"]
+                depthpercut = tools_dict[tooluid_key]['data']["depthperpass"]
+                toolchange = tools_dict[tooluid_key]['data']["toolchange"]
+                toolchangez = tools_dict[tooluid_key]['data']["toolchangez"]
+                toolchangexy = tools_dict[tooluid_key]['data']["toolchangexy"]
+                startz = tools_dict[tooluid_key]['data']["startz"]
+                endz = tools_dict[tooluid_key]['data']["endz"]
+                spindlespeed = tools_dict[tooluid_key]['data']["spindlespeed"]
+                dwell = tools_dict[tooluid_key]['data']["dwell"]
+                dwelltime = tools_dict[tooluid_key]['data']["dwelltime"]
+                pp_geometry_name = tools_dict[tooluid_key]['data']["ppname_g"]
 
                 spindledir = self.app.defaults['geometry_spindledir']
                 tool_solid_geometry = self.solid_geometry
@@ -4719,13 +4653,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 job_obj.options["tooldia"] = tooldia_val
                 job_obj.options['type'] = 'Geometry'
                 job_obj.options['tool_dia'] = tooldia_val
-
-                job_obj.options['xmin'] = xmin
-                job_obj.options['ymin'] = ymin
-                job_obj.options['xmax'] = xmax
-                job_obj.options['ymax'] = ymax
-
-                app_obj.progress.emit(40)
 
                 # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
                 # to a value of 0.0005 which is 20 times less than 0.01
@@ -4780,44 +4707,29 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
-            # count the tools
-            tool_cnt = 0
-
-            dia_cnc_dict = {}
-
             current_uid = int(1)
-
-            # this turn on the FlatCAMCNCJob plot for multiple tools
-            job_obj.multitool = True
-            job_obj.multigeo = True
-            job_obj.cnc_tools.clear()
 
             job_obj.options['xmin'] = xmin
             job_obj.options['ymin'] = ymin
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
 
-            try:
-                job_obj.z_pdepth = float(self.options["z_pdepth"])
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Wrong value format for self.defaults["z_pdepth"] or '
-                                           'self.options["z_pdepth"]'))
+            # count the tools
+            tool_cnt = 0
 
-            try:
-                job_obj.feedrate_probe = float(self.options["feedrate_probe"])
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL]%s' %
-                                         _(' Wrong value format for self.defaults["feedrate_probe"] or '
-                                           'self.options["feedrate_probe"]'))
+            dia_cnc_dict = {}
+
+            # this turn on the FlatCAMCNCJob plot for multiple tools
+            job_obj.multitool = True
+            job_obj.multigeo = True
+            job_obj.cnc_tools.clear()
+
+            job_obj.options['Tools_in_use'] = tools_in_use
+            job_obj.segx = segx if segx else float(self.app.defaults["geometry_segx"])
+            job_obj.segy = segy if segy else float(self.app.defaults["geometry_segy"])
+
+            job_obj.z_pdepth = float(self.app.defaults["geometry_z_pdepth"])
+            job_obj.feedrate_probe = float(self.app.defaults["geometry_feedrate_probe"])
 
             # make sure that trying to make a CNCJob from an empty file is not creating an app crash
             if not self.solid_geometry:
@@ -4830,103 +4742,28 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                          _('Cancelled. Empty file, it has no geometry'))
                     return 'fail'
 
-            for tooluid_key in self.sel_tools:
+            for tooluid_key in list(tools_dict.keys()):
                 tool_cnt += 1
-                app_obj.progress.emit(20)
+                dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
+                tooldia_val = float('%.4f' % float(tools_dict[tooluid_key]['tooldia']))
+
+                dia_cnc_dict.update({
+                    'tooldia': tooldia_val
+                })
 
                 # find the tool_dia associated with the tooluid_key
-                sel_tool_dia = self.sel_tools[tooluid_key]['tooldia']
-
                 # search in the self.tools for the sel_tool_dia and when found see what tooluid has
                 # on the found tooluid in self.tools we also have the solid_geometry that interest us
                 for k, v in self.tools.items():
-                    if float('%.4f' % float(v['tooldia'])) == float('%.4f' % float(sel_tool_dia)):
+                    if float('%.4f' % float(v['tooldia'])) == tooldia_val:
                         current_uid = int(k)
                         break
 
-                for diadict_key, diadict_value in self.sel_tools[tooluid_key].items():
-                    if diadict_key == 'tooldia':
-                        tooldia_val = float('%.4f' % float(diadict_value))
-                        dia_cnc_dict.update({
-                            diadict_key: tooldia_val
-                        })
-                    if diadict_key == 'offset':
-                        o_val = diadict_value.lower()
-                        dia_cnc_dict.update({
-                            diadict_key: o_val
-                        })
-
-                    if diadict_key == 'type':
-                        t_val = diadict_value
-                        dia_cnc_dict.update({
-                            diadict_key: t_val
-                        })
-
-                    if diadict_key == 'tool_type':
-                        tt_val = diadict_value
-                        dia_cnc_dict.update({
-                            diadict_key: tt_val
-                        })
-
-                    if diadict_key == 'data':
-                        for data_key, data_value in diadict_value.items():
-                            if data_key == "multidepth":
-                                multidepth = data_value
-                            if data_key == "depthperpass":
-                                depthpercut = data_value
-
-                            if data_key == "extracut":
-                                extracut = data_value
-                            if data_key == "startz":
-                                startz = data_value
-                            if data_key == "endz":
-                                endz = data_value
-
-                            if data_key == "toolchangez":
-                                toolchangez = data_value
-                            if data_key == "toolchangexy":
-                                toolchangexy = data_value
-                            if data_key == "toolchange":
-                                toolchange = data_value
-
-                            if data_key == "cutz":
-                                z_cut = data_value
-                            if data_key == "travelz":
-                                z_move = data_value
-
-                            if data_key == "feedrate":
-                                feedrate = data_value
-                            if data_key == "feedrate_z":
-                                feedrate_z = data_value
-                            if data_key == "feedrate_rapid":
-                                feedrate_rapid = data_value
-
-                            if data_key == "ppname_g":
-                                pp_geometry_name = data_value
-
-                            if data_key == "spindlespeed":
-                                spindlespeed = data_value
-                            if data_key == "dwell":
-                                dwell = data_value
-                            if data_key == "dwelltime":
-                                dwelltime = data_value
-
-                        datadict = deepcopy(diadict_value)
-                        dia_cnc_dict.update({
-                            diadict_key: datadict
-                        })
-
                 if dia_cnc_dict['offset'] == 'in':
-                    tool_offset = -dia_cnc_dict['tooldia'] / 2
-                    offset_str = 'inside'
+                    tool_offset = -tooldia_val / 2
                 elif dia_cnc_dict['offset'].lower() == 'out':
-                    tool_offset = dia_cnc_dict['tooldia'] / 2
-                    offset_str = 'outside'
-                elif dia_cnc_dict['offset'].lower() == 'path':
-                    offset_str = 'onpath'
-                    tool_offset = 0.0
-                else:
-                    offset_str = 'custom'
+                    tool_offset = tooldia_val / 2
+                elif dia_cnc_dict['offset'].lower() == 'custom':
                     try:
                         offset_value = float(self.ui.tool_offset_entry.get_value())
                     except ValueError:
@@ -4945,9 +4782,33 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                                "no value is provided.\n"
                                                "Add a Tool Offset or change the Offset Type."))
                         return
+                else:
+                    tool_offset = 0.0
+
                 dia_cnc_dict.update({
                     'offset_value': tool_offset
                 })
+
+                z_cut = tools_dict[tooluid_key]['data']["cutz"]
+                z_move = tools_dict[tooluid_key]['data']["travelz"]
+                feedrate = tools_dict[tooluid_key]['data']["feedrate"]
+                feedrate_z = tools_dict[tooluid_key]['data']["feedrate_z"]
+                feedrate_rapid = tools_dict[tooluid_key]['data']["feedrate_rapid"]
+                multidepth = tools_dict[tooluid_key]['data']["multidepth"]
+                extracut = tools_dict[tooluid_key]['data']["extracut"]
+                depthpercut = tools_dict[tooluid_key]['data']["depthperpass"]
+                toolchange = tools_dict[tooluid_key]['data']["toolchange"]
+                toolchangez = tools_dict[tooluid_key]['data']["toolchangez"]
+                toolchangexy = tools_dict[tooluid_key]['data']["toolchangexy"]
+                startz = tools_dict[tooluid_key]['data']["startz"]
+                endz = tools_dict[tooluid_key]['data']["endz"]
+                spindlespeed = tools_dict[tooluid_key]['data']["spindlespeed"]
+                dwell = tools_dict[tooluid_key]['data']["dwell"]
+                dwelltime = tools_dict[tooluid_key]['data']["dwelltime"]
+                pp_geometry_name = tools_dict[tooluid_key]['data']["ppname_g"]
+
+                spindledir = self.app.defaults['geometry_spindledir']
+                tool_solid_geometry = self.tools[current_uid]['solid_geometry']
 
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
                 job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
@@ -4956,11 +4817,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 job_obj.options["tooldia"] = tooldia_val
                 job_obj.options['type'] = 'Geometry'
                 job_obj.options['tool_dia'] = tooldia_val
-
-                app_obj.progress.emit(40)
-
-                spindledir = self.app.defaults['geometry_spindledir']
-                tool_solid_geometry = self.tools[current_uid]['solid_geometry']
 
                 # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
                 # to a value of 0.0005 which is 20 times less than 0.01
@@ -4993,7 +4849,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 #     geo['geom'] for geo in dia_cnc_dict['gcode_parsed'] if geo['geom'].is_valid is True
                 # ])
                 try:
-                    dia_cnc_dict['solid_geometry'] = tool_solid_geometry
+                    dia_cnc_dict['solid_geometry'] = deepcopy(tool_solid_geometry)
                     self.app.inform.emit('[success] %s' % _("Finished G-Code processing..."))
                 except Exception as e:
                     self.app.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(e)))

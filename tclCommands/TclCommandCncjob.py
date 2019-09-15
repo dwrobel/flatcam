@@ -28,15 +28,19 @@ class TclCommandCncjob(TclCommandSignaled):
         ('z_cut', float),
         ('z_move', float),
         ('feedrate', float),
+        ('feedrate_z', float),
         ('feedrate_rapid', float),
-        ('spindlespeed', int),
         ('multidepth', bool),
         ('extracut', bool),
         ('depthperpass', float),
         ('toolchange', int),
         ('toolchangez', float),
         ('toolchangexy', tuple),
+        ('startz', float),
         ('endz', float),
+        ('spindlespeed', int),
+        ('dwell', bool),
+        ('dwelltime', float),
         ('ppname_g', str),
         ('outname', str)
     ])
@@ -52,16 +56,20 @@ class TclCommandCncjob(TclCommandSignaled):
             ('tooldia', 'Tool diameter to show on screen.'),
             ('z_cut', 'Z-axis cutting position.'),
             ('z_move', 'Z-axis moving position.'),
-            ('feedrate', 'Moving speed when cutting.'),
+            ('feedrate', 'Moving speed on X-Y plane when cutting.'),
+            ('feedrate_z', 'Moving speed on Z plane when cutting.'),
             ('feedrate_rapid', 'Rapid moving at speed when cutting.'),
-            ('spindlespeed', 'Speed of the spindle in rpm (example: 4000).'),
             ('multidepth', 'Use or not multidepth cnccut. (True or False)'),
-            ('depthperpass', 'Height of one layer for multidepth.'),
             ('extracut', 'Use or not an extra cnccut over the first point in path,in the job end (example: True)'),
+            ('depthperpass', 'Height of one layer for multidepth.'),
             ('toolchange', 'Enable tool changes (example: True).'),
             ('toolchangez', 'Z distance for toolchange (example: 30.0).'),
             ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
+            ('startz', 'Height before the first move.'),
             ('endz', 'Height where the last move will park.'),
+            ('spindlespeed', 'Speed of the spindle in rpm (example: 4000).'),
+            ('dwell', 'True or False; use (or not) the dwell'),
+            ('dwelltime', 'Time to pause to allow the spindle to reach the full speed'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('ppname_g', 'Name of the Geometry postprocessor. No quotes, case sensitive')
         ]),
@@ -99,7 +107,7 @@ class TclCommandCncjob(TclCommandSignaled):
         args["multidepth"] = args["multidepth"] if "multidepth" in args else obj.options["multidepth"]
         args["depthperpass"] = args["depthperpass"] if "depthperpass" in args else obj.options["depthperpass"]
         args["extracut"] = args["extracut"] if "extracut" in args else obj.options["extracut"]
-        args["endz"]= args["endz"] if "endz" in args else obj.options["endz"]
+        args["endz"] = args["endz"] if "endz" in args else obj.options["endz"]
         args["ppname_g"] = args["ppname_g"] if "ppname_g" in args else obj.options["ppname_g"]
 
         args["toolchange"] = True if "toolchange" in args and args["toolchange"] == 1 else False
@@ -114,4 +122,5 @@ class TclCommandCncjob(TclCommandSignaled):
         if not obj.multigeo:
             obj.generatecncjob(use_thread=False, **args)
         else:
-            self.raise_tcl_error('The object is a multi-geo geometry which is not supported in cncjob Tcl Command')
+            obj.mtool_gen_cncjob(tools_dict=obj.tools, tools_in_use=[], use_thread=False)
+            # self.raise_tcl_error('The object is a multi-geo geometry which is not supported in cncjob Tcl Command')

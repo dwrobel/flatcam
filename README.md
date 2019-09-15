@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.09.2019
+
+- refactored FlatCAMGeometry.mtool_gen_cncjob() method
+- fixed the TclCommandCncjob to work for multigeometry Geometry objects; still I had to fix the list of tools parameter, right now I am setting it to an empty list
+
 14.09.2019
 
 - more string changes
