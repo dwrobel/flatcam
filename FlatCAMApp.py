@@ -1917,7 +1917,7 @@ class App(QtCore.QObject):
                                   'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
                                   'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
                                   'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
-                                  'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy'
+                                  'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type'
                                   ]
 
         self.tcl_keywords = [

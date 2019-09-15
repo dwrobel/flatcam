@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished updating the TclCommand cncjob to work for multi-geo Geometry objects with the parameters from the args
 - fixed the TclCommand cncjob to use the -outname parameter
 - added some more keywords in the data_model for auto-completer
+- fixed isolate TclCommand to use correctly the -outname parameter
 
 14.09.2019
 

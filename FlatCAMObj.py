@@ -923,8 +923,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except Exception as e:
             return "Operation failed: %s" % str(e)
 
-    def isolate(self, iso_type=None, dia=None, passes=None, overlap=None,
-                outname=None, combine=None, milling_type=None, follow=None):
+    def isolate(self, iso_type=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
+                milling_type=None, follow=None):
         """
         Creates an isolation routing geometry object in the project.
 
@@ -947,13 +947,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             combine = bool(combine)
         if milling_type is None:
             milling_type = self.options["milling_type"]
+
         if iso_type is None:
             self.iso_type = 2
         else:
             self.iso_type = iso_type
 
-        base_name = self.options["name"] + "_iso"
-        base_name = outname or base_name
+        base_name = self.options["name"]
 
         def generate_envelope(offset, invert, envelope_iso_type=2, follow=None, passes=0):
             # isolation_geometry produces an envelope that is going on the left of the geometry
@@ -1061,12 +1061,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             return new_geometry
 
         if combine:
-            if self.iso_type == 0:
-                iso_name = self.options["name"] + "_ext_iso"
-            elif self.iso_type == 1:
-                iso_name = self.options["name"] + "_int_iso"
+            if outname is None:
+                if self.iso_type == 0:
+                    iso_name = base_name + "_ext_iso"
+                elif self.iso_type == 1:
+                    iso_name = base_name + "_int_iso"
+                else:
+                    iso_name = base_name + "_iso"
             else:
-                iso_name = base_name
+                iso_name = outname
 
             # TODO: This is ugly. Create way to pass data into init function.
             def iso_init(geo_obj, app_obj):
@@ -1167,19 +1170,25 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
                 if passes > 1:
-                    if self.iso_type == 0:
-                        iso_name = self.options["name"] + "_ext_iso" + str(i + 1)
-                    elif self.iso_type == 1:
-                        iso_name = self.options["name"] + "_int_iso" + str(i + 1)
+                    if outname is None:
+                        if self.iso_type == 0:
+                            iso_name = base_name + "_ext_iso" + str(i + 1)
+                        elif self.iso_type == 1:
+                            iso_name = base_name + "_int_iso" + str(i + 1)
+                        else:
+                            iso_name = base_name + "_iso" + str(i + 1)
                     else:
-                        iso_name = base_name + str(i + 1)
+                        iso_name = outname
                 else:
-                    if self.iso_type == 0:
-                        iso_name = self.options["name"] + "_ext_iso"
-                    elif self.iso_type == 1:
-                        iso_name = self.options["name"] + "_int_iso"
+                    if outname is None:
+                        if self.iso_type == 0:
+                            iso_name = base_name + "_ext_iso"
+                        elif self.iso_type == 1:
+                            iso_name = base_name + "_int_iso"
+                        else:
+                            iso_name = base_name + "_iso"
                     else:
-                        iso_name = base_name
+                        iso_name = outname
 
                 # TODO: This is ugly. Create way to pass data into init function.
                 def iso_init(geo_obj, app_obj):
