@@ -3842,12 +3842,12 @@ class App(QtCore.QObject):
                     "{title}<BR>"
                     "<BR>"
                     "<BR>"
-                    "<B>{devel}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
-                    "<b>{down}</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
-                    "<b> {issue}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>".
+                    # "<B>{devel}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\"><B>{devel}</B></a><BR>"
+                    # "<b>{down}</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\"><b>{down}</B></a><BR>"
+                    # "<b> {issue}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\"><B>{issue}</B></a><BR>".
                         format(title=_("2D Computer-Aided Printed Circuit Board Manufacturing"),
                                devel=_("Development"), down=_("DOWNLOAD"), issue=_("Issue tracker"))
                 )

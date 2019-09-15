@@ -246,15 +246,15 @@ msgstr "2D Computer-Aided Printed Circuit Board Manufacturing"
 
 #: FlatCAMApp.py:3844
 msgid "Development"
-msgstr "Разработка"
+msgstr "Исходный код"
 
 #: FlatCAMApp.py:3844
 msgid "DOWNLOAD"
-msgstr "ЗАГРУЗИТЬ"
+msgstr "Страница загрузок"
 
 #: FlatCAMApp.py:3844
 msgid "Issue tracker"
-msgstr "Отслеживание проблем"
+msgstr "Issue-трекер"
 
 #: FlatCAMApp.py:3848
 msgid "Close"
@@ -320,7 +320,7 @@ msgstr ""
 
 #: FlatCAMApp.py:3909
 msgid "Splash"
-msgstr "Заставка"
+msgstr "Информация"
 
 #: FlatCAMApp.py:3915
 msgid "Programmers"
@@ -360,7 +360,7 @@ msgstr "Переводчик"
 
 #: FlatCAMApp.py:3960
 msgid "E-mail"
-msgstr "Эл. почта"
+msgstr "E-mail"
 
 #: FlatCAMApp.py:4114 FlatCAMApp.py:6604
 msgid "Preferences saved."
@@ -481,11 +481,11 @@ msgstr "Да"
 
 #: FlatCAMApp.py:4947
 msgid "Converted units to"
-msgstr "Конвертирование единиц в "
+msgstr "Конвертирование единиц в"
 
 #: FlatCAMApp.py:4959
 msgid " Units conversion cancelled."
-msgstr "Изменение единиц отменено."
+msgstr " Изменение единиц отменено."
 
 #: FlatCAMApp.py:5799
 msgid "Open file"
@@ -516,7 +516,7 @@ msgstr ""
 
 #: FlatCAMApp.py:5976 FlatCAMApp.py:6009 FlatCAMApp.py:6020 FlatCAMApp.py:6031
 msgid "Adding Tool cancelled"
-msgstr "Добавление инструмента отменено ..."
+msgstr "Добавление инструмента отменено"
 
 #: FlatCAMApp.py:5979
 msgid ""
@@ -734,7 +734,7 @@ msgstr "Добавление новой сетки отменено"
 
 #: FlatCAMApp.py:6931
 msgid " Grid Value does not exist"
-msgstr "Значение сетки не существует"
+msgstr " Значение сетки не существует"
 
 #: FlatCAMApp.py:6934
 msgid "Grid Value deleted"
@@ -750,7 +750,7 @@ msgstr "Список комбинаций клавиш"
 
 #: FlatCAMApp.py:6977
 msgid " No object selected to copy it's name"
-msgstr "Нет объекта, выбранного для копирования его имени"
+msgstr " Нет объекта, выбранного для копирования его имени"
 
 #: FlatCAMApp.py:6981
 msgid "Name copied on clipboard ..."
@@ -799,7 +799,7 @@ msgstr "Открыть Excellon"
 
 #: FlatCAMApp.py:7678
 msgid " Open Excellon cancelled."
-msgstr "Открытие Excellon отменено."
+msgstr " Открытие Excellon отменено."
 
 #: FlatCAMApp.py:7701 FlatCAMApp.py:7705
 msgid "Open G-Code"
@@ -844,7 +844,7 @@ msgstr "Экспорт SVG"
 
 #: FlatCAMApp.py:7823
 msgid " Export SVG cancelled."
-msgstr "Экспорт SVG отменён."
+msgstr " Экспорт SVG отменён."
 
 #: FlatCAMApp.py:7843
 msgid "Data must be a 3D array with last dimension 3 or 4"
@@ -1065,7 +1065,7 @@ msgstr "Файл SVG экспортируется в"
 
 #: FlatCAMApp.py:8545 FlatCAMApp.py:8676 flatcamTools/ToolPanelize.py:381
 msgid "No object Box. Using instead"
-msgstr "Нет объекта Box. Используйте взамен "
+msgstr "Нет объекта Box. Используйте взамен"
 
 #: FlatCAMApp.py:8630 FlatCAMApp.py:8756
 msgid "Generating Film ... Please wait."
@@ -1156,7 +1156,7 @@ msgstr "Открытие Gerber"
 
 #: FlatCAMApp.py:9358
 msgid " Open Gerber failed. Probable not a Gerber file."
-msgstr "Открыть Gerber не удалось. Вероятно это не Gerber файл."
+msgstr " Открыть Gerber не удалось. Вероятно это не Gerber файл."
 
 #: FlatCAMApp.py:9393 flatcamTools/ToolPcbWizard.py:427
 msgid "This is not Excellon file."
@@ -1305,8 +1305,8 @@ msgid ""
 "drop of the file into the FLATCAM GUI or through the menu/toolbar links "
 "offered within the app"
 msgstr ""
-"его в окно программы или через ссылки меню/панелей инструментов, "
-"предлагаемых в приложении."
+"его в окно программы или через элементы меню/панелей инструментов, "
+"предлагаемых в приложении"
 
 #: FlatCAMApp.py:10138
 msgid ""
@@ -1350,7 +1350,7 @@ msgstr ""
 
 #: FlatCAMApp.py:10146
 msgid "and populate it even if it was out of focus"
-msgstr "и заполнит ее, даже если она была не в фокусе."
+msgstr "и заполнит ее, даже если она была не в фокусе"
 
 #: FlatCAMApp.py:10147
 msgid ""
@@ -1412,7 +1412,7 @@ msgstr "Список комбинаций клавиш"
 
 #: FlatCAMApp.py:10152
 msgid "or through"
-msgstr "или через "
+msgstr "или через"
 
 #: FlatCAMApp.py:10152
 msgid "own key shortcut"
@@ -1497,7 +1497,7 @@ msgstr "Повторите попытку, чтобы сохранить его.
 
 #: FlatCAMApp.py:10488 FlatCAMApp.py:10499
 msgid "Failed to parse saved project file"
-msgstr "Не удалось проанализировать сохраненный файл проекта "
+msgstr "Не удалось проанализировать сохраненный файл проекта"
 
 #: FlatCAMApp.py:10710
 msgid "The user requested a graceful exit of the current task."
@@ -1551,7 +1551,7 @@ msgstr "Готово"
 
 #: FlatCAMObj.py:855 FlatCAMObj.py:871 FlatCAMObj.py:888
 msgid "Isolating..."
-msgstr "изоляция..."
+msgstr "Изоляция..."
 
 #: FlatCAMObj.py:1089 FlatCAMObj.py:1199
 #: flatcamTools/ToolNonCopperClear.py:1562
@@ -1788,12 +1788,12 @@ msgid ""
 " Wrong value format for self.defaults[\"feedrate_probe\"] or self."
 "options[\"feedrate_probe\"]"
 msgstr ""
-"Неправильный формат значения для self.defaults[\"feedrate_probe\"] или self."
+" Неправильный формат значения для self.defaults[\"feedrate_probe\"] или self."
 "options[\"feedrate_probe\"]"
 
 #: FlatCAMObj.py:4830 flatcamTools/ToolSolderPaste.py:1187
 msgid "Cancelled. Empty file, it has no geometry"
-msgstr "Отмена. Пустой файл, он не имеет геометрии..."
+msgstr "Отмена. Пустой файл, он не имеет геометрии"
 
 #: FlatCAMObj.py:4997 FlatCAMObj.py:5169
 msgid "Finished G-Code processing..."
@@ -1898,7 +1898,7 @@ msgstr "Приложение будет перезапущено."
 
 #: FlatCAMTranslation.py:93
 msgid "Are you sure do you want to change the current language to"
-msgstr "Вы уверены, что хотите изменить текущий язык на "
+msgstr "Вы уверены, что хотите изменить текущий язык на"
 
 #: FlatCAMTranslation.py:94
 msgid "Apply Language ..."
@@ -2095,7 +2095,7 @@ msgstr "Создание списка точек для сверления ..."
 
 #: camlib.py:5868
 msgid "Starting G-Code"
-msgstr "Открытие G-Code."
+msgstr "Открытие G-Code"
 
 #: camlib.py:5964 camlib.py:6110 camlib.py:6216 camlib.py:6515 camlib.py:6857
 msgid "Starting G-Code for tool with diameter"
@@ -2206,7 +2206,7 @@ msgstr ""
 
 #: camlib.py:6929
 msgid " paths traced."
-msgstr "путей проложено"
+msgstr "путей проложено."
 
 #: camlib.py:6958
 msgid "There is no tool data in the SolderPaste geometry."
@@ -2307,12 +2307,12 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMExcEditor.py:613
 msgid "Click on the Slot Circular Array Start position"
-msgstr "Нажмите на начальную позицию круглого массива слота."
+msgstr "Нажмите на начальную позицию круглого массива слота"
 
 #: flatcamEditors/FlatCAMExcEditor.py:639
 #: flatcamEditors/FlatCAMGrbEditor.py:509
 msgid "The value is mistyped. Check the value."
-msgstr "Значение введено с ошибкой. Проверьте значение"
+msgstr "Значение введено с ошибкой. Проверьте значение."
 
 #: flatcamEditors/FlatCAMExcEditor.py:818
 msgid "Too many Slots for the selected spacing angle."
@@ -3346,7 +3346,7 @@ msgstr "Отражение по оси Х завершёно"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1367
 msgid "Flip action was not executed"
-msgstr "Операция переворота не была выполнена."
+msgstr "Операция переворота не была выполнена"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1377
 #: flatcamEditors/FlatCAMGrbEditor.py:5664
@@ -3370,7 +3370,7 @@ msgstr "Наклон по оси Y выполнен"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1414
 msgid "Skew action was not executed"
-msgstr "Наклон не был выполнен."
+msgstr "Наклон не был выполнен"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1426
 #: flatcamEditors/FlatCAMGrbEditor.py:5732
@@ -3394,7 +3394,7 @@ msgstr "Масштабирование по оси Y выполнено"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1471
 msgid "Scale action was not executed"
-msgstr "Операция масштабирования не была выполнена."
+msgstr "Операция масштабирования не была выполнена"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1481
 #: flatcamEditors/FlatCAMGrbEditor.py:5796
@@ -3648,7 +3648,7 @@ msgstr "Нет текста для добавления."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2689
 msgid " Done. Adding Text completed."
-msgstr "Готово. Добавление текста завершено."
+msgstr " Готово. Добавление текста завершено."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2717
 msgid "Create buffer geometry ..."
@@ -3935,7 +3935,7 @@ msgstr "Отметьте полигональные области в отред
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1852
 msgid "Nothing selected to move"
-msgstr "Отменено. Ничего не выбрано для перемещения."
+msgstr "Отменено. Ничего не выбрано для перемещения"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1976
 msgid "Done. Apertures Move completed."
@@ -4013,7 +4013,7 @@ msgstr "Код для нового отверстия"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2430
 msgid "Aperture Size"
-msgstr "Размер отверстия:"
+msgstr "Размер отверстия"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2432
 msgid ""
@@ -4047,7 +4047,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2457
 msgid "Aperture Dim"
-msgstr "Размер отверстия:"
+msgstr "Размер нового отверстия"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2459
 msgid ""
@@ -4223,7 +4223,7 @@ msgstr "Добавлено новое отверстие с кодом"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3254
 msgid " Select an aperture in Aperture Table"
-msgstr "Выберите отверстие в таблице отверстий"
+msgstr " Выберите отверстие в таблице отверстий"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3261
 msgid "Select an aperture in Aperture Table -->"
@@ -5975,7 +5975,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:2022
 msgid "Lock Toolbars"
-msgstr "Блокировка панелей инстр."
+msgstr "Заблокировать панели"
 
 #: flatcamGUI/FlatCAMGUI.py:2130
 msgid "Select 'Esc'"
@@ -6203,7 +6203,7 @@ msgstr "Установите цвет для фигуры."
 
 #: flatcamGUI/FlatCAMGUI.py:3870
 msgid "Editor Draw Sel."
-msgstr "Редактор рисования выбранного"
+msgstr "Цвет выделения в редакторе"
 
 #: flatcamGUI/FlatCAMGUI.py:3872
 msgid "Set the color of the shape when selected."
@@ -7463,7 +7463,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5295 flatcamGUI/FlatCAMGUI.py:6086
 msgid "Spindle dir."
-msgstr "Направление вращения"
+msgstr "Направление вращения шпинделя"
 
 #: flatcamGUI/FlatCAMGUI.py:5297 flatcamGUI/FlatCAMGUI.py:6088
 msgid ""
@@ -7851,7 +7851,7 @@ msgid ""
 "circle and arc shapes linear approximation."
 msgstr ""
 "Количество шагов круга для <b>геометрии</b>\n"
-"линейная аппроксимация окружности и дуги"
+"линейная аппроксимация окружности и дуги."
 
 #: flatcamGUI/FlatCAMGUI.py:5963
 msgid "Geometry Options"
@@ -8033,7 +8033,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6234
 msgid "Seg. X size"
-msgstr "Сегмент. размер X"
+msgstr "Размер сегмента по X"
 
 #: flatcamGUI/FlatCAMGUI.py:6236
 msgid ""
@@ -8047,7 +8047,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6245
 msgid "Seg. Y size"
-msgstr "Сегмент. размер Y "
+msgstr "Размер сегмента по Y"
 
 #: flatcamGUI/FlatCAMGUI.py:6247
 msgid ""
@@ -8603,14 +8603,14 @@ msgid ""
 "- 'Reference Object' -  will do non copper clearing within the area\n"
 "specified by another object."
 msgstr ""
-"- «Сам» - степень очистки без меди\n"
-"основан на объекте, который очищен от меди.\n"
-"  - «Выбор области» - щелчок левой кнопкой мыши, чтобы начать выбор области "
+"- «Самостоятельно» - степень очистки меди\n"
+"основан на объекте, который очищается от меди.\n"
+" - «Выбор области» - щелкните левой кнопкой мыши для начала выбора области "
 "для рисования.\n"
-"Удерживая нажатой клавишу-модификатор (CTRL или SHIFT), можно добавить "
-"несколько областей.\n"
+"Удерживая нажатой клавишу (CTRL или SHIFT), можно добавить несколько "
+"областей.\n"
 "- «Контрольный объект» - будет выполнять очистку от меди в области\n"
-"указано другим объектом."
+"указаной другим объектом."
 
 #: flatcamGUI/FlatCAMGUI.py:6818 flatcamGUI/FlatCAMGUI.py:7124
 msgid "Normal"
@@ -9262,7 +9262,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:7515 flatcamTools/ToolTransform.py:326
 msgid " Mirror Ref. Point"
-msgstr "Точка зеркалирования"
+msgstr " Точка зеркалирования"
 
 #: flatcamGUI/FlatCAMGUI.py:7517 flatcamTools/ToolTransform.py:328
 msgid ""
@@ -9476,6 +9476,10 @@ msgid ""
 msgstr ""
 "Список расширений файлов, которые будут\n"
 "связаны с FlatCAM."
+
+#: flatcamGUI/FlatCAMGUI.py:7747
+msgid "Apply"
+msgstr "Применить"
 
 #: flatcamGUI/FlatCAMGUI.py:7748 flatcamGUI/FlatCAMGUI.py:7781
 #: flatcamGUI/FlatCAMGUI.py:7813
@@ -10313,7 +10317,7 @@ msgid ""
 "  depending on which is desired and which is known. "
 msgstr ""
 "Рассчитывает любую глубину резания или эффективный диаметр инструмента,\n"
-" в зависимости от того, что желательно и что известно."
+" в зависимости от того, что желательно и что известно. "
 
 #: flatcamTools/ToolCalculators.py:186
 msgid "Current Value"
@@ -10580,7 +10584,7 @@ msgid ""
 "Fill in a correct value and retry. "
 msgstr ""
 "Значение перемычки может быть только одним из: «None», «lr», «tb», «2lr», "
-"«2tb», 4 или 8. Введите правильное значение и повторите попытку."
+"«2tb», 4 или 8. Введите правильное значение и повторите попытку. "
 
 #: flatcamTools/ToolCutOut.py:435 flatcamTools/ToolCutOut.py:634
 msgid ""
@@ -11157,7 +11161,7 @@ msgstr "Это расстояние, измеренное по оси X."
 
 #: flatcamTools/ToolMeasurement.py:57
 msgid "Dy"
-msgstr "Дистанция по Y:"
+msgstr "Дистанция по Y"
 
 #: flatcamTools/ToolMeasurement.py:58 flatcamTools/ToolMeasurement.py:77
 msgid "This is the distance measured over the Y axis."
@@ -11504,7 +11508,7 @@ msgstr "Очистка от меди. Закончен расчёт «пусто
 #: flatcamTools/ToolNonCopperClear.py:1671
 #: flatcamTools/ToolNonCopperClear.py:2009
 msgid "NCC Tool clearing with tool diameter = "
-msgstr "Очистка от меди инструментом с диаметром ="
+msgstr "Очистка от меди инструментом с диаметром = "
 
 #: flatcamTools/ToolNonCopperClear.py:1674
 #: flatcamTools/ToolNonCopperClear.py:2012
@@ -11564,7 +11568,7 @@ msgstr "Открыть PDF"
 
 #: flatcamTools/ToolPDF.py:159
 msgid "Open PDF cancelled"
-msgstr "Открытие PDF отменено."
+msgstr "Открытие PDF отменено"
 
 #: flatcamTools/ToolPDF.py:190
 msgid "Parsing PDF file ..."
@@ -11809,7 +11813,7 @@ msgstr "Инструмент рисования. Запущены все зад�
 #: flatcamTools/ToolPaint.py:1626 flatcamTools/ToolPaint.py:1796
 #: flatcamTools/ToolPaint.py:2090 flatcamTools/ToolPaint.py:2264
 msgid "Painting with tool diameter = "
-msgstr "Покраска инструментом с диаметром ="
+msgstr "Покраска инструментом с диаметром = "
 
 #: flatcamTools/ToolPaint.py:1629 flatcamTools/ToolPaint.py:1799
 #: flatcamTools/ToolPaint.py:2093 flatcamTools/ToolPaint.py:2267
@@ -12092,7 +12096,7 @@ msgstr "Нет подавления"
 
 #: flatcamTools/ToolPcbWizard.py:114
 msgid "Zeros supp."
-msgstr "Поддержка нулей"
+msgstr "Подавление нулей"
 
 #: flatcamTools/ToolPcbWizard.py:116
 msgid ""
@@ -12176,7 +12180,7 @@ msgstr "Не удалось импортировать файл Excellon."
 
 #: flatcamTools/ToolPcbWizard.py:471
 msgid "Imported"
-msgstr "импортированный"
+msgstr "Импортирован"
 
 #: flatcamTools/ToolPcbWizard.py:475
 msgid "Excellon merging is in progress. Please wait..."
@@ -12487,7 +12491,7 @@ msgstr "Отмена. Пустой файл, он не имеет геометр
 
 #: flatcamTools/ToolSolderPaste.py:1130
 msgid "Solder Paste geometry generated successfully"
-msgstr "Геометрия дозатора паяльной пасты успешно создана..."
+msgstr "Геометрия дозатора паяльной пасты успешно создана"
 
 #: flatcamTools/ToolSolderPaste.py:1137
 msgid "Some or all pads have no solder due of inadequate nozzle diameters..."
@@ -12523,7 +12527,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:1348
 msgid "No Gcode in the object"
-msgstr "Нет Gcode в этом объекте......"
+msgstr "Нет Gcode в этом объекте"
 
 #: flatcamTools/ToolSolderPaste.py:1358
 msgid "ToolSolderPaste.on_view_gcode()"
@@ -12724,7 +12728,7 @@ msgstr "Поворот выполнен"
 #: flatcamTools/ToolTransform.py:809 flatcamTools/ToolTransform.py:868
 #: flatcamTools/ToolTransform.py:904
 msgid "Due of"
-msgstr "из-за"
+msgstr "Из-за"
 
 #: flatcamTools/ToolTransform.py:684 flatcamTools/ToolTransform.py:759
 #: flatcamTools/ToolTransform.py:809 flatcamTools/ToolTransform.py:868
