@@ -3874,10 +3874,10 @@ class App(QtCore.QObject):
                         'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n'
                         'copies of the Software, and to permit persons to whom the Software is\n'
                        ' furnished to do so, subject to the following conditions:\n\n'
-                        
+
                         'The above copyright notice and this permission notice shall be included in\n'
                         'all copies or substantial portions of the Software.\n\n'
-                        
+
                         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n'
                         'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n'
                         'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n'
@@ -10122,11 +10122,11 @@ class App(QtCore.QObject):
             <br />
             %s:<br />
             <br />
-            <strong>%s</strong> -&gt; %s -&gt; %s -&gt;<strong> %s </strong> -&gt; %s -&gt; %s -&gt;<strong> %s 
+            <strong>%s</strong> -&gt; %s -&gt; %s -&gt;<strong> %s </strong> -&gt; %s -&gt; %s -&gt;<strong> %s
             </strong>-&gt; %s <strong>%s)&nbsp;</strong>-&gt; %s</span></li>
         </ol>
 
-        <p><span style="font-size:{fsize}px">%s <strong>%s -&gt; %s</strong>&nbsp;%s it&#39;s %s: 
+        <p><span style="font-size:{fsize}px">%s <strong>%s -&gt; %s</strong>&nbsp;%s it&#39;s %s:
         <strong>F3</strong>.</span></p>
         ''' % (
             _("Selected Tab - Choose an Item from Project Tab"), _("Details"),
