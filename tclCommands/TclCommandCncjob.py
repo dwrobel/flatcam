@@ -98,21 +98,33 @@ class TclCommandCncjob(TclCommandSignaled):
         if not isinstance(obj, FlatCAMGeometry):
             self.raise_tcl_error('Expected FlatCAMGeometry, got %s %s.' % (str(name), type(obj)))
 
+        args["tooldia"] = args["tooldia"] if "tooldia" in args else obj.options["cnctooldia"]
+
         args["z_cut"] = args["z_cut"] if "z_cut" in args else obj.options["cutz"]
         args["z_move"] = args["z_move"] if "z_move" in args else obj.options["travelz"]
+
         args["feedrate"] = args["feedrate"] if "feedrate" in args else obj.options["feedrate"]
+        args["feedrate_z"] = args["feedrate_z"] if "feedrate_z" in args else obj.options["feedrate_z"]
         args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args else obj.options["feedrate_rapid"]
-        args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args else None
-        args["tooldia"] = args["tooldia"] if "tooldia" in args else obj.options["cnctooldia"]
+
         args["multidepth"] = args["multidepth"] if "multidepth" in args else obj.options["multidepth"]
-        args["depthperpass"] = args["depthperpass"] if "depthperpass" in args else obj.options["depthperpass"]
         args["extracut"] = args["extracut"] if "extracut" in args else obj.options["extracut"]
+        args["depthperpass"] = args["depthperpass"] if "depthperpass" in args else obj.options["depthperpass"]
+
+        args["startz"] = args["startz"] if "startz" in args else \
+            self.app.defaults["geometry_startz"]
         args["endz"] = args["endz"] if "endz" in args else obj.options["endz"]
+
+        args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args else None
+        args["dwell"] = args["dwell"] if "dwell" in args else obj.options["dwell"]
+        args["dwelltime"] = args["dwelltime"] if "dwelltime" in args else obj.options["dwelltime"]
+
         args["ppname_g"] = args["ppname_g"] if "ppname_g" in args else obj.options["ppname_g"]
 
         args["toolchange"] = True if "toolchange" in args and args["toolchange"] == 1 else False
         args["toolchangez"] = args["toolchangez"] if "toolchangez" in args else obj.options["toolchangez"]
-        args["toolchangexy"] = args["toolchangexy"] if "toolchangexy" in args else obj.options["toolchangexy"]
+        args["toolchangexy"] = args["toolchangexy"] if "toolchangexy" in args else \
+            self.app.defaults["geometry_toolchangexy"]
 
         del args['name']
 
@@ -122,7 +134,28 @@ class TclCommandCncjob(TclCommandSignaled):
         if not obj.multigeo:
             obj.generatecncjob(use_thread=False, **args)
         else:
-            # TODO: needs to update the local_tools_dict values with the args value
+            # Update the local_tools_dict values with the args value
             local_tools_dict = deepcopy(obj.tools)
+
+            for tool_uid in list(local_tools_dict.keys()):
+                if 'data' in local_tools_dict[tool_uid]:
+                    local_tools_dict[tool_uid]['data']['cutz'] = args["z_cut"]
+                    local_tools_dict[tool_uid]['data']['travelz'] = args["z_move"]
+                    local_tools_dict[tool_uid]['data']['feedrate'] = args["feedrate"]
+                    local_tools_dict[tool_uid]['data']['feedrate_z'] = args["feedrate_z"]
+                    local_tools_dict[tool_uid]['data']['feedrate_rapid'] = args["feedrate_rapid"]
+                    local_tools_dict[tool_uid]['data']['multidepth'] = args["multidepth"]
+                    local_tools_dict[tool_uid]['data']['extracut'] = args["extracut"]
+                    local_tools_dict[tool_uid]['data']['depthperpass'] = args["depthperpass"]
+                    local_tools_dict[tool_uid]['data']['toolchange'] = args["toolchange"]
+                    local_tools_dict[tool_uid]['data']['toolchangez'] = args["toolchangez"]
+                    local_tools_dict[tool_uid]['data']['toolchangexy'] = args["toolchangexy"]
+                    local_tools_dict[tool_uid]['data']['startz'] = args["startz"]
+                    local_tools_dict[tool_uid]['data']['endz'] = args["endz"]
+                    local_tools_dict[tool_uid]['data']['spindlespeed'] = args["spindlespeed"]
+                    local_tools_dict[tool_uid]['data']['dwell'] = args["dwell"]
+                    local_tools_dict[tool_uid]['data']['dwelltime'] = args["dwelltime"]
+                    local_tools_dict[tool_uid]['data']['ppname_g'] = args["ppname_g"]
+                    print(local_tools_dict[tool_uid]['data'])
             obj.mtool_gen_cncjob(tools_dict=local_tools_dict, tools_in_use=[], use_thread=False)
             # self.raise_tcl_error('The object is a multi-geo geometry which is not supported in cncjob Tcl Command')

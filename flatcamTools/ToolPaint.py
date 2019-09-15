@@ -2057,7 +2057,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 pass
 
             # this is were heavy lifting is done and creating the geometry to be painted
-            target_geo = obj.solid_geometry
+            target_geo = MultiPolygon(obj.solid_geometry)
 
             if isinstance(obj, FlatCAMGerber):
                 if self.app.defaults["tools_paint_plotting"] == 'progressive':

@@ -3247,10 +3247,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "depthperpass": 0.002,
             "extracut": False,
             "endz": 2.0,
+            "startz": None,
             "toolchange": False,
             "toolchangez": 1.0,
             "toolchangexy": "0.0, 0.0",
-            "startz": None,
             "ppname_g": 'default',
             "z_pdepth": -0.02,
             "feedrate_probe": 3.0,
@@ -4893,18 +4893,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             else:
                 self.app.new_object("cncjob", outname, job_init_multi_geometry)
 
-    def generatecncjob(self, outname=None,
-                       tooldia=None, offset=None,
-                       z_cut=None, z_move=None,
-                       feedrate=None, feedrate_z=None, feedrate_rapid=None,
-                       spindlespeed=None, dwell=None, dwelltime=None,
-                       multidepth=None, depthperpass=None,
-                       toolchange=None, toolchangez=None, toolchangexy=None,
-                       extracut=None, startz=None, endz=None,
-                       ppname_g=None,
-                       segx=None,
-                       segy=None,
-                       use_thread=True):
+    def generatecncjob(
+            self, outname=None,
+            tooldia=None, offset=None,
+            z_cut=None, z_move=None,
+            feedrate=None, feedrate_z=None, feedrate_rapid=None,
+            spindlespeed=None, dwell=None, dwelltime=None,
+            multidepth=None, depthperpass=None,
+            toolchange=None, toolchangez=None, toolchangexy=None,
+            extracut=None, startz=None, endz=None,
+            ppname_g=None,
+            segx=None, segy=None,
+            use_thread=True):
         """
         Only used for TCL Command.
         Creates a CNCJob out of this Geometry object. The actual
