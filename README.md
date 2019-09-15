@@ -26,6 +26,8 @@ CAD program, and create G-Code for Isolation routing.
 - modified the TclCommands so that open files do not plot the opened files automatically
 - made all TclCommands not to be plotted automatically
 - made sure that all TclCommands are not threaded
+- added new TclCommands: NewExcellon, NewGerber
+- fixed the TclCommand open_project
 
 14.09.2019
 

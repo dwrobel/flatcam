@@ -78,8 +78,7 @@ class TclCommand(object):
 
         :return: current command
         """
-
-        command_string = []
+        command_string = list()
         command_string.append(self.aliases[0])
 
         if self.original_args is not None:
@@ -117,7 +116,7 @@ class TclCommand(object):
             if help_key in self.arg_names:
                 arg_type = self.arg_names[help_key]
                 type_name = str(arg_type.__name__)
-                #in_command_name = help_key + "<" + type_name + ">"
+                # in_command_name = help_key + "<" + type_name + ">"
                 in_command_name = help_key
 
             elif help_key in self.option_types:
@@ -415,7 +414,6 @@ class TclCommandSignaled(TclCommand):
                 # but it does not mean anything for child itself
                 # when operation  will be  really long is good  to set it higher then defqault 30s
                 self.app.worker_task.emit({'fcn': self.execute_call, 'params': [args, unnamed_args]})
-
 
             return self.output
 

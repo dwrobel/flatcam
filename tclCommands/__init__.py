@@ -35,7 +35,9 @@ import tclCommands.TclCommandMillSlots
 import tclCommands.TclCommandMirror
 import tclCommands.TclCommandNew
 import tclCommands.TclCommandNregions
+import tclCommands.TclCommandNewExcellon
 import tclCommands.TclCommandNewGeometry
+import tclCommands.TclCommandNewGerber
 import tclCommands.TclCommandOffset
 import tclCommands.TclCommandOpenExcellon
 import tclCommands.TclCommandOpenGCode

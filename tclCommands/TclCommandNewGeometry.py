@@ -23,7 +23,7 @@ class TclCommandNewGeometry(TclCommandSignaled):
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['name']
+    required = []
 
     # structured help for current command, args needs to be ordered
     help = {
@@ -43,7 +43,9 @@ class TclCommandNewGeometry(TclCommandSignaled):
             without -somename and  we do not have them in known arg_names
         :return: None or exception
         """
-
-        name = args['name']
+        if 'name' in args:
+            name = args['name']
+        else:
+            name = 'new_geo'
 
         self.app.new_object('geometry', str(name), lambda x, y: None, plot=False)

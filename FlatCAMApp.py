@@ -9575,7 +9575,7 @@ class App(QtCore.QObject):
         3) Calls on_file_new()
         4) Updates options
         5) Calls new_object() with the object's from_dict() as init method.
-        6) Calls plot_all()
+        6) Calls plot_all() if plot=True
 
         :param filename:  Name of the file from which to load.
         :type filename: str
@@ -9586,6 +9586,8 @@ class App(QtCore.QObject):
         """
         App.log.debug("Opening project: " + filename)
 
+        # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+        # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
         if cli is None:
             self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
 
@@ -9610,7 +9612,6 @@ class App(QtCore.QObject):
                 with lzma.open(filename) as f:
                     file_content = f.read().decode('utf-8')
                     d = json.loads(file_content, object_hook=dict2obj)
-
             except Exception as e:
                 App.log.error("Failed to open project file: %s with error: %s" % (filename, str(e)))
                 self.inform.emit('[ERROR_NOTCL] %s: %s' %
@@ -9619,15 +9620,21 @@ class App(QtCore.QObject):
 
         # Clear the current project
         # # NOT THREAD SAFE # ##
-        if run_from_arg is True or cli is True:
+        if run_from_arg is True:
             pass
+        elif cli is True:
+            self.delete_selection_shape()
         else:
             self.on_file_new()
 
         # Project options
         self.options.update(d['options'])
         self.project_filename = filename
-        self.set_screen_units(self.options["units"])
+
+        # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+        # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+        if cli is None:
+            self.set_screen_units(self.options["units"])
 
         # Re create objects
         App.log.debug(" **************** Started PROEJCT loading... **************** ")
@@ -9639,6 +9646,8 @@ class App(QtCore.QObject):
             App.log.debug("Recreating from opened project an %s object: %s" %
                           (obj['kind'].capitalize(), obj['options']['name']))
 
+            # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+            # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
             if cli is None:
                 self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
                                                           obj['kind'].upper(),
@@ -9648,13 +9657,16 @@ class App(QtCore.QObject):
 
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
 
-        # self.plot_all()
         self.inform.emit('[success] %s: %s' %
                          (_("Project loaded from"), filename))
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
-        self.set_ui_title(name=self.project_filename)
+
+        # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+        # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+        if cli is None:
+            self.set_ui_title(name=self.project_filename)
 
         App.log.debug(" **************** Finished PROJECT loading... **************** ")
 

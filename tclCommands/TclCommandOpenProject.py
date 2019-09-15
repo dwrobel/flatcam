@@ -44,4 +44,6 @@ class TclCommandOpenProject(TclCommandSignaled):
         :return: None or exception
         """
         filename = args['filename']
+        filename = filename.replace(' ', '')
+
         self.app.open_project(filename, cli=True, plot=False)
