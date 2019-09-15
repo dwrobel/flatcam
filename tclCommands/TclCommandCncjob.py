@@ -122,5 +122,7 @@ class TclCommandCncjob(TclCommandSignaled):
         if not obj.multigeo:
             obj.generatecncjob(use_thread=False, **args)
         else:
-            obj.mtool_gen_cncjob(tools_dict=obj.tools, tools_in_use=[], use_thread=False)
+            # TODO: needs to update the local_tools_dict values with the args value
+            local_tools_dict = deepcopy(obj.tools)
+            obj.mtool_gen_cncjob(tools_dict=local_tools_dict, tools_in_use=[], use_thread=False)
             # self.raise_tcl_error('The object is a multi-geo geometry which is not supported in cncjob Tcl Command')
