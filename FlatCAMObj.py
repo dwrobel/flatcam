@@ -4518,7 +4518,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Failed. No tool selected in the tool table ..."))
 
-    def mtool_gen_cncjob(self, tools_dict=None, tools_in_use=None, segx=None, segy=None, use_thread=True):
+    def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target FlatCAMCNCjob object's
@@ -4537,7 +4537,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         """
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
-        outname = "%s_%s" % (self.options["name"], 'cnc')
+        if outname is None:
+            outname = "%s_%s" % (self.options["name"], 'cnc')
+        else:
+            outname = outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
         tools_in_use = tools_in_use if tools_in_use is not None else self.get_selected_tools_table_items()

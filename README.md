@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue in ToolPaint that could not allow area painting of a geometry that was a list and not a Geometric element (polygon or MultiPolygon)
 - fixed UI showing before the initialization of FlatCAM is finished when the last state of GUI was maximized
 - finished updating the TclCommand cncjob to work for multi-geo Geometry objects with the parameters from the args
+- fixed the TclCommand cncjob to use the -outname parameter
+- added some more keywords in the data_model for auto-completer
 
 14.09.2019
 
