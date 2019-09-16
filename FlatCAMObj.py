@@ -600,7 +600,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
+                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
             ))
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
@@ -613,7 +613,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.except_cb.hide()
         else:
             self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
+                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
             ))
 
         if self.app.defaults["gerber_buffering"] == 'no':
@@ -2325,14 +2325,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
+                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
             ))
 
             self.ui.tools_table.setColumnHidden(4, True)
             self.ui.estartz_label.hide()
             self.ui.estartz_entry.hide()
-            self.ui.eendz_label.hide()
-            self.ui.eendz_entry.hide()
             self.ui.feedrate_rapid_label.hide()
             self.ui.feedrate_rapid_entry.hide()
             self.ui.pdepth_label.hide()
@@ -2341,7 +2339,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.feedrate_probe_entry.hide()
         else:
             self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
+                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
             ))
 
         assert isinstance(self.ui, ExcellonObjectUI), \
@@ -3605,7 +3603,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
+                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
             ))
 
             self.ui.geo_tools_table.setColumnHidden(2, True)
@@ -3616,8 +3614,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.addtool_btn.hide()
             self.ui.copytool_btn.hide()
             self.ui.deltool_btn.hide()
-            self.ui.endzlabel.hide()
-            self.ui.gendz_entry.hide()
+            # self.ui.endzlabel.hide()
+            # self.ui.gendz_entry.hide()
             self.ui.fr_rapidlabel.hide()
             self.ui.cncfeedrate_rapid_entry.hide()
             self.ui.extracut_cb.hide()
@@ -3627,7 +3625,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.feedrate_probe_entry.hide()
         else:
             self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
+                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
             ))
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
@@ -4908,14 +4906,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
     def generatecncjob(
             self, outname=None,
-            tooldia=None, offset=None,
+            dia=None, offset=None,
             z_cut=None, z_move=None,
             feedrate=None, feedrate_z=None, feedrate_rapid=None,
             spindlespeed=None, dwell=None, dwelltime=None,
             multidepth=None, depthperpass=None,
             toolchange=None, toolchangez=None, toolchangexy=None,
             extracut=None, startz=None, endz=None,
-            ppname_g=None,
+            pp=None,
             segx=None, segy=None,
             use_thread=True,
             plot=True):
@@ -4930,14 +4928,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param feedrate: Feed rate while cutting on X - Y plane
         :param feedrate_z: Feed rate while cutting on Z plane
         :param feedrate_rapid: Feed rate while moving with rapids
-        :param tooldia: Tool diameter
+        :param dia: Tool diameter
         :param outname: Name of the new object
         :param spindlespeed: Spindle speed (RPM)
-        :param ppname_g Name of the postprocessor
+        :param pp Name of the postprocessor
         :return: None
         """
 
-        tooldia = tooldia if tooldia else float(self.options["cnctooldia"])
+        tooldia = dia if dia else float(self.options["cnctooldia"])
         outname = outname if outname is not None else self.options["name"]
 
         z_cut = z_cut if z_cut is not None else float(self.options["cutz"])
@@ -4968,7 +4966,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         dwell = dwell if dwell else self.options["dwell"]
         dwelltime = dwelltime if dwelltime else float(self.options["dwelltime"])
 
-        ppname_g = ppname_g if ppname_g else self.options["ppname_g"]
+        ppname_g = pp if pp else self.options["ppname_g"]
 
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!

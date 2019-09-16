@@ -5685,10 +5685,11 @@ class CNCjob(Geometry):
             must_visit.remove(nearest)
         return path
 
-    def generate_from_excellon_by_tool(self, exobj, tools="all", drillz = 3.0,
-                                       toolchange=False, toolchangez=0.1, toolchangexy='',
-                                       endz=2.0, startz=None,
-                                       excellon_optimization_type='B'):
+    def generate_from_excellon_by_tool(
+            self, exobj, tools="all", drillz = 3.0,
+            toolchange=False, toolchangez=0.1, toolchangexy='',
+            endz=2.0, startz=None,
+            excellon_optimization_type='B'):
         """
         Creates gcode for this object from an Excellon object
         for the specified tools.
@@ -6482,11 +6483,18 @@ class CNCjob(Geometry):
             #     self.gcode += self.doformat(p.toolchange_code)
             self.gcode += self.doformat(p.toolchange_code)
 
-            self.gcode += self.doformat(p.spindle_code)     # Spindle start
+            if 'laser' not in self.pp_geometry_name:
+                self.gcode += self.doformat(p.spindle_code)     # Spindle start
+            else:
+                # for laser this will disable the laser
+                self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
+
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
         else:
-            self.gcode += self.doformat(p.spindle_code)     # Spindle start
+            if 'laser' not in self.pp_geometry_name:
+                self.gcode += self.doformat(p.spindle_code)  # Spindle start
+
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
 
@@ -6589,15 +6597,16 @@ class CNCjob(Geometry):
                              )
         return self.gcode
 
-    def generate_from_geometry_2(self, geometry, append=True,
-                                 tooldia=None, offset=0.0, tolerance=0,
-                                 z_cut=1.0, z_move=2.0,
-                                 feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-                                 spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
-                                 multidepth=False, depthpercut=None,
-                                 toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0",
-                                 extracut=False, startz=None, endz=2.0,
-                                 pp_geometry_name=None, tool_no=1):
+    def generate_from_geometry_2(
+            self, geometry, append=True,
+            tooldia=None, offset=0.0, tolerance=0,
+            z_cut=1.0, z_move=2.0,
+            feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
+            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
+            multidepth=False, depthpercut=None,
+            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0",
+            extracut=False, startz=None, endz=2.0,
+            pp_geometry_name=None, tool_no=1):
         """
         Second algorithm to generate from Geometry.
 
@@ -6825,13 +6834,18 @@ class CNCjob(Geometry):
             #     self.gcode += self.doformat(p.toolchange_code)
             self.gcode += self.doformat(p.toolchange_code)
 
-            self.gcode += self.doformat(p.spindle_code)     # Spindle start
+            if 'laser' not in self.pp_geometry_name:
+                self.gcode += self.doformat(p.spindle_code)     # Spindle start
+            else:
+                # for laser this will disable the laser
+                self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
 
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
-
         else:
-            self.gcode += self.doformat(p.spindle_code)     # Spindle start
+            if 'laser' not in self.pp_geometry_name:
+                self.gcode += self.doformat(p.spindle_code)  # Spindle start
+
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
 
@@ -7247,7 +7261,7 @@ class CNCjob(Geometry):
 
             match_lsr_pos = re.search(r"^(M0[3|5])", gline)
             if match_lsr_pos:
-                if match_lsr_pos.group(1) == 'M05':
+                if 'M05' in match_lsr_pos.group(1):
                     # the value does not matter, only that it is positive so the gcode_parse() know it is > 0,
                     # therefore the move is of kind T (travel)
                     command['Z'] = 1
@@ -7316,7 +7330,7 @@ class CNCjob(Geometry):
                     pass
                 elif 'hpgl' in self.pp_excellon_name or 'hpgl' in self.pp_geometry_name:
                     pass
-                elif 'grbl_laser' in self.pp_excellon_name or 'grbl_laser' in self.pp_geometry_name:
+                elif 'laser' in self.pp_excellon_name or 'laser' in self.pp_geometry_name:
                     pass
                 elif ('X' in gobj or 'Y' in gobj) and gobj['Z'] != current['Z']:
                     if self.pp_geometry_name == 'line_xyz' or self.pp_excellon_name == 'line_xyz':

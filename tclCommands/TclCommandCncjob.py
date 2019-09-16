@@ -24,7 +24,7 @@ class TclCommandCncjob(TclCommandSignaled):
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('tooldia', float),
+        ('dia', float),
         ('z_cut', float),
         ('z_move', float),
         ('feedrate', float),
@@ -54,7 +54,7 @@ class TclCommandCncjob(TclCommandSignaled):
         'main': "Generates a CNC Job from a Geometry Object.",
         'args': collections.OrderedDict([
             ('name', 'Name of the source object.'),
-            ('tooldia', 'Tool diameter to show on screen.'),
+            ('dia', 'Tool diameter to show on screen.'),
             ('z_cut', 'Z-axis cutting position.'),
             ('z_move', 'Z-axis moving position.'),
             ('feedrate', 'Moving speed on X-Y plane when cutting.'),
@@ -95,6 +95,8 @@ class TclCommandCncjob(TclCommandSignaled):
 
         if 'muted' in args:
             muted = args['muted']
+        else:
+            muted = 0
 
         obj = self.app.collection.get_by_name(str(name), isCaseSensitive=False)
 
@@ -110,7 +112,7 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 return
 
-        args["tooldia"] = args["tooldia"] if "tooldia" in args else obj.options["cnctooldia"]
+        args["dia"] = args["dia"] if "dia" in args else obj.options["cnctooldia"]
 
         args["z_cut"] = args["z_cut"] if "z_cut" in args else obj.options["cutz"]
         args["z_move"] = args["z_move"] if "z_move" in args else obj.options["travelz"]
@@ -141,10 +143,11 @@ class TclCommandCncjob(TclCommandSignaled):
         del args['name']
 
         for arg in args:
-            if arg == "toolchange_xy" or arg == "spindlespeed":
+            if arg == "toolchange_xy" or arg == "spindlespeed" or arg == "startz":
                 continue
             else:
                 if args[arg] is None:
+                    print(arg, args[arg])
                     if not muted:
                         self.raise_tcl_error('One of the command parameters that have to be not None, is None.\n'
                                              'The parameter that is None is in the default values found in the list \n'

@@ -214,8 +214,12 @@ class ToolPaint(FlatCAMTool, Gerber):
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
+        self.paintoverlap_entry = FCDoubleSpinner()
+        self.paintoverlap_entry.set_precision(3)
+        self.paintoverlap_entry.setWrapping(True)
+        self.paintoverlap_entry.setRange(0.000, 0.999)
+        self.paintoverlap_entry.setSingleStep(0.1)
         grid3.addWidget(ovlabel, 1, 0)
-        self.paintoverlap_entry = FCEntry()
         grid3.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
