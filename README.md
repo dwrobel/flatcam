@@ -12,8 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 17.09.2019
 
 - added more programmers that contributed to FlatCAM over the years, in the "About FlatCAM" -> Programmers window
-- fixed #315 where a script run with the --shellfile argument crashed the program if it contained a TclCommand New
+- fixed issue #315 where a script run with the --shellfile argument crashed the program if it contained a TclCommand New
 - added messages in the Splash Screen when running FlatCAM with arguments at startup
+- fixed issue #313 where TclCommand drillcncjob is spitting errors in Tcl Shell which should be ignored
 
 16.09.2019
 

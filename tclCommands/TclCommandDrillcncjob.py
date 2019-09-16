@@ -92,13 +92,16 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
         obj = self.app.collection.get_by_name(name)
         if obj is None:
-            self.raise_tcl_error("Object not found: %s" % name)
+            if muted == 0:
+                self.raise_tcl_error("Object not found: %s" % name)
+            else:
+                return "fail"
 
         if not isinstance(obj, FlatCAMExcellon):
-            if not muted:
+            if muted == 0:
                 self.raise_tcl_error('Expected FlatCAMExcellon, got %s %s.' % (name, type(obj)))
             else:
-                return
+                return "fail"
 
         xmin = obj.options['xmin']
         ymin = obj.options['ymin']
@@ -136,11 +139,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                                     nr_diameters -= 1
 
                     if nr_diameters > 0:
-                        if not muted:
+                        if muted == 0:
                             self.raise_tcl_error("One or more tool diameters of the drills to be drilled passed to the "
                                                  "TclCommand are not actual tool diameters in the Excellon object.")
                         else:
-                            return
+                            return "fail"
 
                     # make a string of diameters separated by comma; this is what generate_from_excellon_by_tool() is
                     # expecting as tools parameter
@@ -156,7 +159,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                     tools = 'all'
             except Exception as e:
                 tools = 'all'
-                self.raise_tcl_error("Bad tools: %s" % str(e))
+
+                if muted == 0:
+                    self.raise_tcl_error("Bad tools: %s" % str(e))
+                else:
+                    return "fail"
 
             drillz = args["drillz"] if "drillz" in args and args["drillz"] else obj.options["drillz"]
             toolchangez = args["toolchangez"] if "toolchangez" in args and args["toolchangez"] else \

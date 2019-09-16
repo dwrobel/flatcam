@@ -90,10 +90,10 @@ class TclCommandWriteGCode(TclCommandSignaled):
         try:
             obj = self.app.collection.get_by_name(str(obj_name))
         except:
-            if not muted:
+            if muted == 0:
                 return "Could not retrieve object: %s" % obj_name
             else:
-                return
+                return "fail"
 
         try:
             obj.export_gcode(str(filename), str(preamble), str(postamble))
