@@ -30,7 +30,7 @@ class TclCommandOpenGerber(TclCommandSignaled):
             ('filename', 'Path to file to open.'),
             ('outname', 'Name of the resulting Gerber object.')
         ]),
-        'examples': []
+        'examples': ["open_gerber gerber_object_path -outname bla"]
     }
 
     def execute(self, args, unnamed_args):
@@ -50,25 +50,19 @@ class TclCommandOpenGerber(TclCommandSignaled):
                 self.raise_tcl_error('Expected FlatCAMGerber, got %s %s.' % (outname, type(gerber_obj)))
 
             # Opening the file happens here
-            self.app.progress.emit(30)
             try:
                 gerber_obj.parse_file(filename)
-
             except IOError:
                 app_obj.inform.emit("[ERROR_NOTCL] Failed to open file: %s " % filename)
-                app_obj.progress.emit(0)
                 self.raise_tcl_error('Failed to open file: %s' % filename)
 
             except ParseError as e:
                 app_obj.inform.emit("[ERROR_NOTCL] Failed to parse file: %s, %s " % (filename, str(e)))
-                app_obj.progress.emit(0)
                 self.log.error(str(e))
                 return
 
-            # Further parsing
-            app_obj.progress.emit(70)
-
         filename = args['filename']
+        filename = filename.replace(' ', '')
 
         if 'outname' in args:
             outname = args['outname']
@@ -76,17 +70,16 @@ class TclCommandOpenGerber(TclCommandSignaled):
             outname = filename.split('/')[-1].split('\\')[-1]
 
         if 'follow' in args:
-            self.raise_tcl_error("The 'follow' parameter is obsolete. To create 'follow' geometry use the 'follow' parameter for the Tcl Command isolate()")
+            self.raise_tcl_error("The 'follow' parameter is obsolete. To create 'follow' geometry use the 'follow' "
+                                 "parameter for the Tcl Command isolate()")
 
         with self.app.proc_container.new("Opening Gerber"):
 
             # Object creation
-            self.app.new_object("gerber", outname, obj_init)
+            self.app.new_object("gerber", outname, obj_init, plot=False)
 
             # Register recent file
             self.app.file_opened.emit("gerber", filename)
-
-            self.app.progress.emit(100)
 
             # GUI feedback
             self.app.inform.emit("[success] Opened: " + filename)

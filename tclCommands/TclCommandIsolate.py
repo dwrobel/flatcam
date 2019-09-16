@@ -85,4 +85,4 @@ class TclCommandIsolate(TclCommandSignaled):
             self.raise_tcl_error('Expected FlatCAMGerber, got %s %s.' % (name, type(obj)))
 
         del args['name']
-        obj.isolate(**args)
+        obj.isolate(plot=False, **args)

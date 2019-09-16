@@ -279,7 +279,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 app_obj.inform.emit("[success] Any-form Cutout operation finished.")
 
             outname = cutout_obj.options["name"] + "_cutout"
-            self.app.new_object('geometry', outname, geo_init)
+            self.app.new_object('geometry', outname, geo_init, plot=False)
 
             # cutout_obj.plot()
             # self.app.inform.emit("[success] Any-form Cutout operation finished.")
@@ -338,7 +338,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 app_obj.inform.emit("[success] Any-form Cutout operation finished.")
 
             outname = cutout_obj.options["name"] + "_cutout"
-            self.app.new_object('geometry', outname, geo_init)
+            self.app.new_object('geometry', outname, geo_init, plot=False)
 
             cutout_obj = self.app.collection.get_by_name(outname)
         else:

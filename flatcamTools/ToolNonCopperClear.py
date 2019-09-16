@@ -1292,6 +1292,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                      method=None,
                      rest=None,
                      tools_storage=None,
+                     plot=True,
                      run_threaded=True):
         """
         Clear the excess copper from the entire object.
@@ -2189,9 +2190,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         def job_thread(app_obj):
             try:
                 if rest_machining_choice is True:
-                    app_obj.new_object("geometry", name, gen_clear_area_rest)
+                    app_obj.new_object("geometry", name, gen_clear_area_rest, plot=plot)
                 else:
-                    app_obj.new_object("geometry", name, gen_clear_area)
+                    app_obj.new_object("geometry", name, gen_clear_area, plot=plot)
             except FlatCAMApp.GracefulException:
                 proc.done()
                 return

@@ -844,6 +844,22 @@ class App(QtCore.QObject):
             "global_point_clipboard_format": "(%.4f, %.4f)",
             "global_zdownrate": None,
 
+            # autocomplete keywords
+            "global_autocomplete_keywords":
+                ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
+                 'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
+                 'drilled_dias', 'drillz', 'pp',
+                 'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
+                 'milled_dias',
+                 'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
+                 'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
+                 'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
+                 'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
+                 'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
+                 'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
+                 'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type',
+                 'Desktop', 'FlatPrj', 'FlatConfig', 'Users', 'Documents', 'My Documents', 'Marius'
+                 ],
             # General GUI Settings
             "global_hover": False,
             "global_selection_shape": True,
@@ -1898,27 +1914,13 @@ class App(QtCore.QObject):
                                   'mirror', 'ncc',
                                   'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
                                   'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'paint',
-                                  'pan', 'panel', 'panelize', 'plot', 'save', 'save_project', 'save_sys', 'scale',
+                                  'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'save', 'save_project',
+                                  'save_sys', 'scale',
                                   'set_active', 'set_sys', 'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
                                   'version', 'write_gcode'
                                   ]
 
-        self.ordinary_keywords = ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
-                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
-                                  'drilled_dias', 'drillz', 'pp',
-                                  'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
-                                  'filename', 'follow', 'gaps', 'gapsize', 'grid', 'gridoffset', 'gridoffsetx',
-                                  'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
-                                  'milled_dias',
-                                  'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
-                                  'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
-                                  'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
-                                  'toolchange', 'toolchangez', 'tooldia', 'tools', 'travelz', 'True', 'true', 'type',
-                                  'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
-                                  'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
-                                  'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
-                                  'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy'
-                                  ]
+        self.ordinary_keywords = self.defaults["global_autocomplete_keywords"]
 
         self.tcl_keywords = [
             'after', 'append', 'apply', 'argc', 'argv', 'argv0', 'array', 'attemptckalloc', 'attemptckrealloc',
@@ -2252,6 +2254,10 @@ class App(QtCore.QObject):
 
         # Variable to store the GCODE that was edited
         self.gcode_edited = ""
+
+        # reference for the self.ui.code_editor
+        self.reference_code_editor = None
+        self.script_code = ''
 
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
@@ -3062,8 +3068,8 @@ class App(QtCore.QObject):
         result = self.exec_command_test(text, False)
 
         # MS: added this method call so the geometry is updated once the TCL command is executed
-        if no_plot is None:
-            self.plot_all()
+        # if no_plot is None:
+        #     self.plot_all()
 
         return result
 
@@ -5913,11 +5919,11 @@ class App(QtCore.QObject):
         if self.ui.shell_dock.isHidden():
             self.ui.shell_dock.show()
 
-        script_code = self.ui.code_editor.toPlainText()
+        self.script_code = deepcopy(self.ui.code_editor.toPlainText())
         # self.shell._sysShell.exec_command(script_code)
 
         old_line = ''
-        for tcl_command_line in script_code.splitlines():
+        for tcl_command_line in self.script_code.splitlines():
             # do not process lines starting with '#' = comment and empty lines
             if not tcl_command_line.startswith('#') and tcl_command_line != '':
                 # id FlatCAM is run in Windows then replace all the slashes with
@@ -5940,17 +5946,16 @@ class App(QtCore.QObject):
                         self.shell.append_output(result + '\n')
 
                     old_line = ''
-                except tk.TclError as e:
+                except tk.TclError:
                     old_line = old_line + tcl_command_line + '\n'
+                except Exception as e:
+                    log.debug("App.handleRunCode() --> %s" % str(e))
 
         if old_line != '':
             # it means that the script finished with an error
             result = self.tcl.eval("set errorInfo")
             self.log.error("Exec command Exception: %s" % (result + '\n'))
             self.shell.append_error('ERROR: ' + result + '\n')
-        else:
-            # success! plot all objects
-            self.plot_all()
 
         self.shell.close_proccessing()
 
@@ -7520,7 +7525,7 @@ class App(QtCore.QObject):
         self.inform.emit('[success] %s...' %
                          _("New Project created"))
 
-    def on_file_new(self):
+    def on_file_new(self, cli=None):
         """
         Callback for menu item File->New. Returns the application to its
         startup state. This method is thread-safe.
@@ -7580,15 +7585,16 @@ class App(QtCore.QObject):
         # Init Tools
         self.init_tools()
 
-        # Close any Tabs opened in the Plot Tab Area section
-        for index in range(self.ui.plot_tab_area.count()):
-            self.ui.plot_tab_area.closeTab(index)
-            # for whatever reason previous command does not close the last tab so I do it manually
-        self.ui.plot_tab_area.closeTab(0)
+        if cli is None:
+            # Close any Tabs opened in the Plot Tab Area section
+            for index in range(self.ui.plot_tab_area.count()):
+                self.ui.plot_tab_area.closeTab(index)
+                # for whatever reason previous command does not close the last tab so I do it manually
+            self.ui.plot_tab_area.closeTab(0)
 
-        # # And then add again the Plot Area
-        self.ui.plot_tab_area.addTab(self.ui.plot_tab, "Plot Area")
-        self.ui.plot_tab_area.protectTab(0)
+            # # And then add again the Plot Area
+            self.ui.plot_tab_area.addTab(self.ui.plot_tab, "Plot Area")
+            self.ui.plot_tab_area.protectTab(0)
 
         # take the focus of the Notebook on Project Tab.
         self.ui.notebook.setCurrentWidget(self.ui.project_tab)
@@ -8199,6 +8205,9 @@ class App(QtCore.QObject):
         self.ui.code_editor.completer_enable = False
         self.ui.buttonRun.hide()
 
+        # make sure to keep a reference to the code editor
+        self.reference_code_editor = self.ui.code_editor
+
         # Switch plot_area to CNCJob tab
         self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
 
@@ -8217,20 +8226,34 @@ class App(QtCore.QObject):
 
         if obj.kind == 'gerber':
             flt = "Gerber Files (*.GBR);;All Files (*.*)"
-        else:
+        elif obj.kind == 'excellon':
             flt = "Excellon Files (*.DRL);;All Files (*.*)"
+        elif obj.kind == 'cncjob':
+            "GCode Files (*.NC);;All Files (*.*)"
+        else:
+            flt = "All Files (*.*)"
 
         self.init_code_editor(name=_("Source Editor"))
         self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
         self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
 
         # then append the text from GCode to the text editor
-        try:
-            file = StringIO(obj.source_file)
-        except AttributeError:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("There is no selected object for which to see it's source file code."))
-            return 'fail'
+        if obj.kind == 'cncjob':
+            try:
+                file = obj.export_gcode(preamble='', postamble='', to_file=True)
+                if file == 'fail':
+                    return 'fail'
+            except AttributeError:
+                self.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("There is no selected object for which to see it's source file code."))
+                return 'fail'
+        else:
+            try:
+                file = StringIO(obj.source_file)
+            except AttributeError:
+                self.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("There is no selected object for which to see it's source file code."))
+                return 'fail'
 
         self.ui.cncjob_frame.hide()
         try:
@@ -8287,6 +8310,10 @@ class App(QtCore.QObject):
         self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
         self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
         self.ui.buttonRun.show()
+        try:
+            self.ui.buttonRun.clicked.disconnect(self.handleRunCode)
+        except TypeError:
+            pass
         self.ui.buttonRun.clicked.connect(self.handleRunCode)
 
         self.handleTextChanged()
@@ -9373,7 +9400,7 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s: %s' %
                              (_("Opened"), filename))
 
-    def open_excellon(self, filename, outname=None):
+    def open_excellon(self, filename, outname=None, plot=True):
         """
         Opens an Excellon file, parses it and creates a new object for
         it in the program. Thread-safe.
@@ -9427,7 +9454,7 @@ class App(QtCore.QObject):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
-            ret_val = self.new_object("excellon", name, obj_init, autoselected=False)
+            ret_val = self.new_object("excellon", name, obj_init, autoselected=False, plot=plot)
             if ret_val == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _('Open Excellon file failed. Probable not an Excellon file.'))
@@ -9440,7 +9467,7 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s: %s' %
                              (_("Opened"), filename))
 
-    def open_gcode(self, filename, outname=None):
+    def open_gcode(self, filename, outname=None, plot=True):
         """
         Opens a G-gcode file, parses it and creates a new object for
         it in the program. Thread-safe.
@@ -9492,7 +9519,7 @@ class App(QtCore.QObject):
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             # New object creation and file processing
-            ret = self.new_object("cncjob", name, obj_init, autoselected=False)
+            ret = self.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Failed to create CNCJob Object. Probable not a GCode file.\n "
@@ -9540,7 +9567,7 @@ class App(QtCore.QObject):
                              (_("Failed to open config file"), filename))
             return
 
-    def open_project(self, filename, run_from_arg=None):
+    def open_project(self, filename, run_from_arg=None, plot=True, cli=None):
         """
         Loads a project from the specified file.
 
@@ -9549,16 +9576,21 @@ class App(QtCore.QObject):
         3) Calls on_file_new()
         4) Updates options
         5) Calls new_object() with the object's from_dict() as init method.
-        6) Calls plot_all()
+        6) Calls plot_all() if plot=True
 
         :param filename:  Name of the file from which to load.
         :type filename: str
         :param run_from_arg: True if run for arguments
+        :param plot: If True plot all objects in the project
+        :param cli: run from command line
         :return: None
         """
         App.log.debug("Opening project: " + filename)
 
-        self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
+        # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+        # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+        if cli is None:
+            self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
 
         # Open and parse an uncompressed Project file
         try:
@@ -9581,7 +9613,6 @@ class App(QtCore.QObject):
                 with lzma.open(filename) as f:
                     file_content = f.read().decode('utf-8')
                     d = json.loads(file_content, object_hook=dict2obj)
-
             except Exception as e:
                 App.log.error("Failed to open project file: %s with error: %s" % (filename, str(e)))
                 self.inform.emit('[ERROR_NOTCL] %s: %s' %
@@ -9592,13 +9623,19 @@ class App(QtCore.QObject):
         # # NOT THREAD SAFE # ##
         if run_from_arg is True:
             pass
+        elif cli is True:
+            self.delete_selection_shape()
         else:
             self.on_file_new()
 
         # Project options
         self.options.update(d['options'])
         self.project_filename = filename
-        self.set_screen_units(self.options["units"])
+
+        # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+        # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+        if cli is None:
+            self.set_screen_units(self.options["units"])
 
         # Re create objects
         App.log.debug(" **************** Started PROEJCT loading... **************** ")
@@ -9606,24 +9643,31 @@ class App(QtCore.QObject):
         for obj in d['objs']:
             def obj_init(obj_inst, app_inst):
                 obj_inst.from_dict(obj)
+
             App.log.debug("Recreating from opened project an %s object: %s" %
                           (obj['kind'].capitalize(), obj['options']['name']))
 
-            self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
-                                                      obj['kind'].upper(),
-                                                      obj['options']['name']
-                                                      )
-                              )
+            # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+            # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+            if cli is None:
+                self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
+                                                          obj['kind'].upper(),
+                                                          obj['options']['name']
+                                                          )
+                                  )
 
-            self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
+            self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
 
-        # self.plot_all()
         self.inform.emit('[success] %s: %s' %
                          (_("Project loaded from"), filename))
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
-        self.set_ui_title(name=self.project_filename)
+
+        # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+        # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+        if cli is None:
+            self.set_ui_title(name=self.project_filename)
 
         App.log.debug(" **************** Finished PROJECT loading... **************** ")
 

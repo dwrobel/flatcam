@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.09.2019
+
+- modified the TclCommand New so it will no longer close all tabs when called (it closed the Code Editor tab which may have been holding the code that run)
+
 15.09.2019
 
 - refactored FlatCAMGeometry.mtool_gen_cncjob() method
@@ -19,6 +23,18 @@ CAD program, and create G-Code for Isolation routing.
 - finished updating the TclCommand cncjob to work for multi-geo Geometry objects with the parameters from the args
 - fixed the TclCommand cncjob to use the -outname parameter
 - added some more keywords in the data_model for auto-completer
+- fixed isolate TclCommand to use correctly the -outname parameter
+- added possibility to see the GCode when right clicking on the Project tab on a CNCJob object and then clicking View Source
+- added a new TclCommand named PlotObjects which will plot a list of FlatCAM objects
+- made that after opening an object in FlatCAM it is not automatically plotted. If the user wants to plot it can use the TclCommands PlotAll or PlotObjects
+- modified the TclCommands so that open files do not plot the opened files automatically
+- made all TclCommands not to be plotted automatically
+- made sure that all TclCommands are not threaded
+- added new TclCommands: NewExcellon, NewGerber
+- fixed the TclCommand open_project
+- added the outname parameter (and established an default name when outname not used) for the AlignDrillGrid and AlignDrill TclCommands
+- fixed Scripts repeating multiple time when the Code Editor is used. This repetition was correlated with multiple openings of the Code Editor window (especially after an error)
+- added the autocomplete keywords that can be changed to the defaults dictionary
 
 14.09.2019
 

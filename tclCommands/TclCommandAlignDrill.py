@@ -29,6 +29,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
         ('axisoffset', float),
         ('dia', float),
         ('dist', float),
+        ('outname', str),
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -47,9 +48,11 @@ class TclCommandAlignDrill(TclCommandSignaled):
             ('minoffset', 'min and max distance between align hole and pcb.'),
             ('axisoffset', 'Offset on second axis before aligment holes'),
             ('axis', 'Mirror axis parallel to the X or Y axis.'),
-            ('dist', 'Distance of the mirror axis to the X or Y axis.')
+            ('dist', 'Distance of the mirror axis to the X or Y axis.'),
+            ('outname', 'Name of the resulting Excellon object.'),
         ]),
-        'examples': []
+        'examples': ['aligndrill my_object -axis X -box my_object -dia 3.125 -grid 1 '
+                     '-gridoffset 0 -minoffset 2 -axisoffset 2']
     }
 
     def execute(self, args, unnamed_args):
@@ -63,6 +66,11 @@ class TclCommandAlignDrill(TclCommandSignaled):
         """
 
         name = args['name']
+
+        if 'outname' in args:
+            outname = args['outname']
+        else:
+            outname = name + "_aligndrill"
 
         # Get source object.
         try:
@@ -176,9 +184,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
                 px = 0.5 * (xmin + xmax)
                 py = 0.5 * (ymin + ymax)
 
-                obj.app.new_object("excellon",
-                                   name + "_aligndrill",
-                                   alligndrill_init_me)
+                obj.app.new_object("excellon", outname, alligndrill_init_me, plot=False)
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -194,8 +200,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
             try:
                 px = dist
                 py = dist
-                obj.app.new_object("excellon", name + "_alligndrill", alligndrill_init_me)
+                obj.app.new_object("excellon", outname, alligndrill_init_me, plot=False)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
-        return 'Ok'
+        return 'Ok. Align Drills Excellon object created'

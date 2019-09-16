@@ -1168,7 +1168,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                    outname=None,
                    connect=None,
                    contour=None,
-                   tools_storage=None):
+                   tools_storage=None,
+                   plot=True,
+                   run_threaded=True):
         """
         Paints a polygon selected by clicking on its interior or by having a point coordinates given
 
@@ -1432,7 +1434,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         def job_thread(app_obj):
             try:
-                app_obj.new_object("geometry", name, gen_paintarea)
+                app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
             except FlatCAMApp.GracefulException:
                 proc.done()
                 return
@@ -1451,8 +1453,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         # Promise object with the new name
         self.app.collection.promise(name)
 
-        # Background
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        if run_threaded:
+            # Background
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        else:
+            job_thread(app_obj=self.app)
 
     def paint_poly_all(self, obj,
                        tooldia=None,
@@ -1463,7 +1468,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                        outname=None,
                        connect=None,
                        contour=None,
-                       tools_storage=None):
+                       tools_storage=None,
+                       plot=True,
+                       run_threaded=True):
         """
         Paints all polygons in this object.
 
@@ -1901,9 +1908,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         def job_thread(app_obj):
             try:
                 if self.rest_cb.isChecked():
-                    app_obj.new_object("geometry", name, gen_paintarea_rest_machining)
+                    app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
                 else:
-                    app_obj.new_object("geometry", name, gen_paintarea)
+                    app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
             except FlatCAMApp.GracefulException:
                 proc.done()
                 return
@@ -1920,8 +1927,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         # Promise object with the new name
         self.app.collection.promise(name)
 
-        # Background
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        if run_threaded:
+            # Background
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        else:
+            job_thread(app_obj=self.app)
 
     def paint_poly_area(self, obj, sel_obj,
                         tooldia=None,
@@ -1932,7 +1942,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                         outname=None,
                         connect=None,
                         contour=None,
-                        tools_storage=None):
+                        tools_storage=None,
+                        plot=True,
+                        run_threaded=True):
         """
         Paints all polygons in this object that are within the sel_obj object
 
@@ -2366,9 +2378,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         def job_thread(app_obj):
             try:
                 if self.rest_cb.isChecked():
-                    app_obj.new_object("geometry", name, gen_paintarea_rest_machining)
+                    app_obj.new_object("geometry", name, gen_paintarea_rest_machining, plot=plot)
                 else:
-                    app_obj.new_object("geometry", name, gen_paintarea)
+                    app_obj.new_object("geometry", name, gen_paintarea, plot=plot)
             except FlatCAMApp.GracefulException:
                 proc.done()
                 return
@@ -2385,8 +2397,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         # Promise object with the new name
         self.app.collection.promise(name)
 
-        # Background
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        if run_threaded:
+            # Background
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        else:
+            job_thread(app_obj=self.app)
 
     def paint_poly_ref(self, obj, sel_obj,
                        tooldia=None,
@@ -2397,7 +2412,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                        outname=None,
                        connect=None,
                        contour=None,
-                       tools_storage=None):
+                       tools_storage=None,
+                       plot=True,
+                       run_threaded=True):
         """
         Paints all polygons in this object that are within the sel_obj object
 
@@ -2441,7 +2458,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                              outname=outname,
                              connect=connect,
                              contour=contour,
-                             tools_storage=tools_storage)
+                             tools_storage=tools_storage,
+                             plot=plot,
+                             run_threaded=run_threaded)
 
     @staticmethod
     def paint_bounds(geometry):
