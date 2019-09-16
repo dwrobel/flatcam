@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.09.2019
+
+- modified the TclCommand New so it will no longer close all tabs when called (it closed the Code Editor tab which may have been holding the code that run)
+
 15.09.2019
 
 - refactored FlatCAMGeometry.mtool_gen_cncjob() method

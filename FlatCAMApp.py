@@ -2257,6 +2257,7 @@ class App(QtCore.QObject):
 
         # reference for the self.ui.code_editor
         self.reference_code_editor = None
+        self.script_code = ''
 
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
@@ -5918,11 +5919,11 @@ class App(QtCore.QObject):
         if self.ui.shell_dock.isHidden():
             self.ui.shell_dock.show()
 
-        script_code = self.ui.code_editor.toPlainText()
+        self.script_code = deepcopy(self.ui.code_editor.toPlainText())
         # self.shell._sysShell.exec_command(script_code)
 
         old_line = ''
-        for tcl_command_line in script_code.splitlines():
+        for tcl_command_line in self.script_code.splitlines():
             # do not process lines starting with '#' = comment and empty lines
             if not tcl_command_line.startswith('#') and tcl_command_line != '':
                 # id FlatCAM is run in Windows then replace all the slashes with
@@ -5945,8 +5946,7 @@ class App(QtCore.QObject):
                         self.shell.append_output(result + '\n')
 
                     old_line = ''
-                except tk.TclError as e:
-                    log.debug("App.handleRunCode() --> %s" % str(e))
+                except tk.TclError:
                     old_line = old_line + tcl_command_line + '\n'
                 except Exception as e:
                     log.debug("App.handleRunCode() --> %s" % str(e))
@@ -7525,7 +7525,7 @@ class App(QtCore.QObject):
         self.inform.emit('[success] %s...' %
                          _("New Project created"))
 
-    def on_file_new(self):
+    def on_file_new(self, cli=None):
         """
         Callback for menu item File->New. Returns the application to its
         startup state. This method is thread-safe.
@@ -7585,15 +7585,16 @@ class App(QtCore.QObject):
         # Init Tools
         self.init_tools()
 
-        # Close any Tabs opened in the Plot Tab Area section
-        for index in range(self.ui.plot_tab_area.count()):
-            self.ui.plot_tab_area.closeTab(index)
-            # for whatever reason previous command does not close the last tab so I do it manually
-        self.ui.plot_tab_area.closeTab(0)
+        if cli is None:
+            # Close any Tabs opened in the Plot Tab Area section
+            for index in range(self.ui.plot_tab_area.count()):
+                self.ui.plot_tab_area.closeTab(index)
+                # for whatever reason previous command does not close the last tab so I do it manually
+            self.ui.plot_tab_area.closeTab(0)
 
-        # # And then add again the Plot Area
-        self.ui.plot_tab_area.addTab(self.ui.plot_tab, "Plot Area")
-        self.ui.plot_tab_area.protectTab(0)
+            # # And then add again the Plot Area
+            self.ui.plot_tab_area.addTab(self.ui.plot_tab, "Plot Area")
+            self.ui.plot_tab_area.protectTab(0)
 
         # take the focus of the Notebook on Project Tab.
         self.ui.notebook.setCurrentWidget(self.ui.project_tab)
