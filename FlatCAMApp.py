@@ -8240,7 +8240,10 @@ class App(QtCore.QObject):
         # then append the text from GCode to the text editor
         if obj.kind == 'cncjob':
             try:
-                file = obj.export_gcode(preamble='', postamble='', to_file=True)
+                file = obj.export_gcode(
+                    preamble=self.defaults["cncjob_prepend"],
+                    postamble=self.defaults["cncjob_append"],
+                    to_file=True)
                 if file == 'fail':
                     return 'fail'
             except AttributeError:

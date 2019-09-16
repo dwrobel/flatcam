@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 16.09.2019
 
 - modified the TclCommand New so it will no longer close all tabs when called (it closed the Code Editor tab which may have been holding the code that run)
+- fixed the App.on_view_source() method for CNCJob objects: the Gcode will now contain the Prepend and Append code from the Edit -> Preferences -> CNCJob -> CNCJob Options
 
 15.09.2019
 
