@@ -17,7 +17,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('tools', str),
         ('drilled_dias', str),
         ('drillz', float),
         ('travelz', float),
@@ -88,6 +87,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
         if 'muted' in args:
             muted = args['muted']
+        else:
+            muted = 0
 
         obj = self.app.collection.get_by_name(name)
         if obj is None:

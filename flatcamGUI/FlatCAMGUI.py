@@ -7792,7 +7792,7 @@ class FAExcPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.exc_list_label)
 
         self.exc_list_text = FCTextArea()
-        self.exc_list_text.sizeHint(custom_sizehint=150)
+        # self.exc_list_text.sizeHint(custom_sizehint=150)
         font = QtGui.QFont()
         font.setPointSize(12)
         self.exc_list_text.setFont(font)
@@ -7825,7 +7825,7 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.gco_list_label)
 
         self.gco_list_text = FCTextArea()
-        self.gco_list_text.sizeHint(custom_sizehint=150)
+        # self.gco_list_text.sizeHint(custom_sizehint=150)
         font = QtGui.QFont()
         font.setPointSize(12)
         self.gco_list_text.setFont(font)
@@ -7858,7 +7858,7 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.grb_list_label)
 
         self.grb_list_text = FCTextArea()
-        self.grb_list_text.sizeHint(custom_sizehint=150)
+        # self.grb_list_text.sizeHint(custom_sizehint=150)
         self.layout.addWidget(self.grb_list_text)
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -7869,6 +7869,7 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"
                                        "This work only in Windows."))
+
         self.layout.addWidget(self.grb_list_btn)
 
         # self.layout.addStretch()

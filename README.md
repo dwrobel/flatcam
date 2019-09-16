@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - some GUI optimizations
 - more GUI optimizations related to being part of the Advanced category or not
 - added possibility to change the positive SVG exported file color in Tool Film
+- fixed some issues recently introduced in the TclCommands CNCJob, DrillCNCJob adn write_gcode; changed some parameters names
 
 15.09.2019
 

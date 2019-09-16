@@ -67,6 +67,8 @@ class TclCommandWriteGCode(TclCommandSignaled):
 
         if 'muted' in args:
             muted = args['muted']
+        else:
+            muted = 0
 
         # TODO: This is not needed any more? All targets should be present.
         # If there are promised objects, wait until all promises have been fulfilled.

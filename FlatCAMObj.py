@@ -4906,14 +4906,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
     def generatecncjob(
             self, outname=None,
-            tooldia=None, offset=None,
+            dia=None, offset=None,
             z_cut=None, z_move=None,
             feedrate=None, feedrate_z=None, feedrate_rapid=None,
             spindlespeed=None, dwell=None, dwelltime=None,
             multidepth=None, depthperpass=None,
             toolchange=None, toolchangez=None, toolchangexy=None,
             extracut=None, startz=None, endz=None,
-            ppname_g=None,
+            pp=None,
             segx=None, segy=None,
             use_thread=True,
             plot=True):
@@ -4928,14 +4928,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param feedrate: Feed rate while cutting on X - Y plane
         :param feedrate_z: Feed rate while cutting on Z plane
         :param feedrate_rapid: Feed rate while moving with rapids
-        :param tooldia: Tool diameter
+        :param dia: Tool diameter
         :param outname: Name of the new object
         :param spindlespeed: Spindle speed (RPM)
-        :param ppname_g Name of the postprocessor
+        :param pp Name of the postprocessor
         :return: None
         """
 
-        tooldia = tooldia if tooldia else float(self.options["cnctooldia"])
+        tooldia = dia if dia else float(self.options["cnctooldia"])
         outname = outname if outname is not None else self.options["name"]
 
         z_cut = z_cut if z_cut is not None else float(self.options["cutz"])
@@ -4966,7 +4966,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         dwell = dwell if dwell else self.options["dwell"]
         dwelltime = dwelltime if dwelltime else float(self.options["dwelltime"])
 
-        ppname_g = ppname_g if ppname_g else self.options["ppname_g"]
+        ppname_g = pp if pp else self.options["ppname_g"]
 
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
