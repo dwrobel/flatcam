@@ -107,7 +107,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.97
-    version_date = "2019/09/15"
+    version_date = "2019/09/20"
     beta = True
 
     # current date now
@@ -359,17 +359,17 @@ class App(QtCore.QObject):
 
         if show_splash:
             splash_pix = QtGui.QPixmap('share/splash.png')
-            splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
-            # splash.setMask(splash_pix.mask())
+            self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+            # self.splash.setMask(splash_pix.mask())
 
             # move splashscreen to the current monitor
             desktop = QtWidgets.QApplication.desktop()
             screen = desktop.screenNumber(QtGui.QCursor.pos())
             current_screen_center = desktop.availableGeometry(screen).center()
-            splash.move(current_screen_center - splash.rect().center())
+            self.splash.move(current_screen_center - self.splash.rect().center())
 
-            splash.show()
-            splash.showMessage(_("FlatCAM is initializing ..."),
+            self.splash.show()
+            self.splash.showMessage(_("FlatCAM is initializing ..."),
                                alignment=Qt.AlignBottom | Qt.AlignLeft,
                                color=QtGui.QColor("gray"))
 
@@ -1543,24 +1543,24 @@ class App(QtCore.QObject):
         # ############# SETUP Plot Area #################
         # ###############################################
         if show_splash:
-            splash.showMessage(_("FlatCAM is initializing ...\n"
-                                 "Canvas initialization started."),
-                               alignment=Qt.AlignBottom | Qt.AlignLeft,
-                               color=QtGui.QColor("gray"))
+            self.splash.showMessage(_("FlatCAM is initializing ...\n"
+                                      "Canvas initialization started."),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
         start_plot_time = time.time()   # debug
         self.plotcanvas = None
         self.app_cursor = None
         self.hover_shapes = None
         self.on_plotcanvas_setup()
         end_plot_time = time.time()
-        used_time = end_plot_time - start_plot_time
-        self.log.debug("Finished Canvas initialization in %s seconds." % str(used_time))
+        self.used_time = end_plot_time - start_plot_time
+        self.log.debug("Finished Canvas initialization in %s seconds." % str(self.used_time))
         if show_splash:
-            splash.showMessage('%s: %ssec' % (_("FlatCAM is initializing ...\n"
-                                                "Canvas initialization started.\n"
-                                                "Canvas initialization finished in"), '%.2f' % used_time),
-                               alignment=Qt.AlignBottom | Qt.AlignLeft,
-                               color=QtGui.QColor("gray"))
+            self.splash.showMessage('%s: %ssec' % (_("FlatCAM is initializing ...\n"
+                                                     "Canvas initialization started.\n"
+                                                     "Canvas initialization finished in"), '%.2f' % self.used_time),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
         self.ui.splitter.setStretchFactor(1, 2)
 
         # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
@@ -2228,20 +2228,6 @@ class App(QtCore.QObject):
         # self.parse_system_fonts()
 
         # #####################################################################################
-        # ########################## START-UP ARGUMENTS #######################################
-        # #####################################################################################
-
-        # test if the program was started with a script as parameter
-        if self.cmd_line_shellfile:
-            try:
-                with open(self.cmd_line_shellfile, "r") as myfile:
-                    cmd_line_shellfile_text = myfile.read()
-                    self.shell._sysShell.exec_command(cmd_line_shellfile_text)
-            except Exception as ext:
-                print("ERROR: ", ext)
-                sys.exit(2)
-
-        # #####################################################################################
         # ######################## Check for updates ##########################################
         # #####################################################################################
 
@@ -2288,10 +2274,10 @@ class App(QtCore.QObject):
 
         # List to store the objects that are currently loaded in FlatCAM
         # This list is updated on each object creation or object delete
-        self.all_objects_list = []
+        self.all_objects_list = list()
 
         # List to store the objects that are selected
-        self.sel_objects_list = []
+        self.sel_objects_list = list()
 
         # holds the key modifier if pressed (CTRL, SHIFT or ALT)
         self.key_modifiers = None
@@ -2389,9 +2375,6 @@ class App(QtCore.QObject):
 
         self.set_ui_title(name=_("New Project - Not saved"))
 
-        # finish the splash
-        # splash.finish(self.ui)
-
         # disable the Excellon path optimizations made with Google OR-Tools if the app is run on a 32bit platform
         current_platform = platform.architecture()[0]
         if current_platform != '64bit':
@@ -2403,10 +2386,34 @@ class App(QtCore.QObject):
         # ###############################################################################
         App.log.debug("END of constructor. Releasing control.")
 
+        # #####################################################################################
+        # ########################## START-UP ARGUMENTS #######################################
+        # #####################################################################################
+
+        # test if the program was started with a script as parameter
+        if self.cmd_line_shellfile:
+            try:
+                with open(self.cmd_line_shellfile, "r") as myfile:
+                    if show_splash:
+                        self.splash.showMessage('%s: %ssec\n%s' % (
+                            _("Canvas initialization started.\n"
+                              "Canvas initialization finished in"), '%.2f' % self.used_time,
+                            _("Executing Tcl Script ...")),
+                                                alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                                color=QtGui.QColor("gray"))
+                    cmd_line_shellfile_text = myfile.read()
+                    self.shell._sysShell.exec_command(cmd_line_shellfile_text)
+            except Exception as ext:
+                print("ERROR: ", ext)
+                sys.exit(2)
+
         # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
         if App.args:
             self.args_at_startup.emit(App.args)
+
+        # finish the splash
+        self.splash.finish(self.ui)
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -2463,10 +2470,10 @@ class App(QtCore.QObject):
                     if file_name == "":
                         self.inform.emit(_("Open Config file failed."))
                     else:
-                        # run_from_arg = True
+                        run_from_arg = True
                         # self.worker_task.emit({'fcn': self.open_config_file,
                         #                        'params': [file_name, run_from_arg]})
-                        self.open_config_file(file_name, run_from_arg=True)
+                        self.open_config_file(file_name, run_from_arg=run_from_arg)
                 except Exception as e:
                     log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
@@ -4048,7 +4055,7 @@ class App(QtCore.QObject):
                 self.prog_form_lay.addRow(QtWidgets.QLabel(''))
 
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Cedric Dussud"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Christopher Hemingway"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Chris Hemingway"))
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Damian Wrobel"))
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Daniel Sallin"))
                 self.prog_form_lay.addRow(QtWidgets.QLabel(''))
@@ -7385,8 +7392,10 @@ class App(QtCore.QObject):
     def select_objects(self, key=None):
         # list where we store the overlapped objects under our mouse left click position
         objects_under_the_click_list = []
+
         # Populate the list with the overlapped objects on the click position
         curr_x, curr_y = self.pos
+
         for obj in self.all_objects_list:
             if (curr_x >= obj.options['xmin']) and (curr_x <= obj.options['xmax']) and \
                     (curr_y >= obj.options['ymin']) and (curr_y <= obj.options['ymax']):
@@ -7400,6 +7409,7 @@ class App(QtCore.QObject):
             # because we selected "nothing"
             if not objects_under_the_click_list:
                 self.collection.set_all_inactive()
+
                 # delete the possible selection box around a possible selected object
                 self.delete_selection_shape()
 
@@ -7416,7 +7426,6 @@ class App(QtCore.QObject):
                     self.inform.emit("")
                 else:
                     self.call_source = 'app'
-
             else:
                 # case when there is only an object under the click and we toggle it
                 if len(objects_under_the_click_list) == 1:
@@ -7711,7 +7720,7 @@ class App(QtCore.QObject):
                 except AttributeError:
                     pass
 
-        # tcl needs to be reinitialized, otherwise  old shell variables etc  remains
+        # tcl needs to be reinitialized, otherwise old shell variables etc  remains
         self.init_tcl()
 
         self.delete_selection_shape()
@@ -7799,6 +7808,11 @@ class App(QtCore.QObject):
             filenames = [str(filename) for filename in filenames]
         else:
             filenames = [name]
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening Gerber file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL] %s' %
@@ -7830,6 +7844,11 @@ class App(QtCore.QObject):
             filenames = [str(filename) for filename in filenames]
         else:
             filenames = [str(name)]
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening Excellon file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL]%s' %
@@ -7865,6 +7884,11 @@ class App(QtCore.QObject):
             filenames = [str(filename) for filename in filenames]
         else:
             filenames = [name]
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening G-Code file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL] %s' %
@@ -8519,6 +8543,11 @@ class App(QtCore.QObject):
 
         if name:
             filename = name
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Executing FlatCAMScript file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
         else:
             _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
             try:
@@ -9688,6 +9717,12 @@ class App(QtCore.QObject):
         """
         App.log.debug("Opening config file: " + filename)
 
+        if run_from_arg:
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening FlatCAM Config file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Code Editor"))
         # first clear previous text in text editor (if any)
@@ -9734,6 +9769,13 @@ class App(QtCore.QObject):
         # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
         if cli is None:
             self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
+
+        if run_from_arg:
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening FlatCAM Project file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
 
         # Open and parse an uncompressed Project file
         try:
