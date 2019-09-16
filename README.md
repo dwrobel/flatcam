@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.09.2019
+
+- added more programmers that contributed to FlatCAM over the years, in the "About FlatCAM" -> Programmers window
+
 16.09.2019
 
 - modified the TclCommand New so it will no longer close all tabs when called (it closed the Code Editor tab which may have been holding the code that run)

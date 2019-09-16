@@ -5175,8 +5175,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:'))
         self.excellon_optimization_label.setToolTip(
             _("This sets the optimization type for the Excellon drill path.\n"
-              "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with MetaHeuristic\n"
-              "Guided Local Path is used. Default search time is 3sec.\n"
+              "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with\n"
+              "MetaHeuristic Guided Local Path is used. Default search time is 3sec.\n"
               "If <<Basic>> is checked then Google OR-Tools Basic algorithm is used.\n"
               "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
               "drill path optimization.\n"
@@ -5192,8 +5192,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
                                                     orientation='vertical', stretch=False)
         self.excellon_optimization_radio.setToolTip(
             _("This sets the optimization type for the Excellon drill path.\n"
-              "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with MetaHeuristic\n"
-              "Guided Local Path is used. Default search time is 3sec.\n"
+              "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with\n"
+              "MetaHeuristic Guided Local Path is used. Default search time is 3sec.\n"
               "If <<Basic>> is checked then Google OR-Tools Basic algorithm is used.\n"
               "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
               "drill path optimization.\n"
