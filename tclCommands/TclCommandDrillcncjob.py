@@ -31,7 +31,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ('pp', str),
         ('outname', str),
         ('opt_type', str),
-        ('diatol', float)
+        ('diatol', float),
+        ('muted', int)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -62,7 +63,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                        'the same as the ones in the tools from the Excellon object. E.g: if in drill_dias we have a '
                        'diameter with value 1.0, in the Excellon we have a tool with dia = 1.05 and we set a tolerance '
                        'diatol = 5.0 then the drills with the dia = (0.95 ... 1.05) '
-                       'in Excellon will be processed. Float number.')
+                       'in Excellon will be processed. Float number.'),
+            ('muted', 'It will not put errors in the Shell or status bar.')
         ]),
         'examples': ['drillcncjob test.TXT -drillz -1.5 -travelz 14 -feedrate 222 -feedrate_rapid 456 -spindlespeed 777'
                      ' -toolchange True -toolchangez 33 -endz 22 -pp default\n'
@@ -84,12 +86,18 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         if 'outname' not in args:
             args['outname'] = name + "_cnc"
 
+        if 'muted' in args:
+            muted = args['muted']
+
         obj = self.app.collection.get_by_name(name)
         if obj is None:
             self.raise_tcl_error("Object not found: %s" % name)
 
         if not isinstance(obj, FlatCAMExcellon):
-            self.raise_tcl_error('Expected FlatCAMExcellon, got %s %s.' % (name, type(obj)))
+            if not muted:
+                self.raise_tcl_error('Expected FlatCAMExcellon, got %s %s.' % (name, type(obj)))
+            else:
+                return
 
         xmin = obj.options['xmin']
         ymin = obj.options['ymin']
@@ -127,8 +135,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                                     nr_diameters -= 1
 
                     if nr_diameters > 0:
-                        self.raise_tcl_error("One or more tool diameters of the drills to be drilled passed to the "
-                                             "TclCommand are not actual tool diameters in the Excellon object.")
+                        if not muted:
+                            self.raise_tcl_error("One or more tool diameters of the drills to be drilled passed to the "
+                                                 "TclCommand are not actual tool diameters in the Excellon object.")
+                        else:
+                            return
 
                     # make a string of diameters separated by comma; this is what generate_from_excellon_by_tool() is
                     # expecting as tools parameter
