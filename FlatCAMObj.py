@@ -600,7 +600,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
+                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
             ))
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
@@ -613,7 +613,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.except_cb.hide()
         else:
             self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
+                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
             ))
 
         if self.app.defaults["gerber_buffering"] == 'no':
@@ -2325,14 +2325,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
+                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
             ))
 
             self.ui.tools_table.setColumnHidden(4, True)
             self.ui.estartz_label.hide()
             self.ui.estartz_entry.hide()
-            self.ui.eendz_label.hide()
-            self.ui.eendz_entry.hide()
             self.ui.feedrate_rapid_label.hide()
             self.ui.feedrate_rapid_entry.hide()
             self.ui.pdepth_label.hide()
@@ -2341,7 +2339,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.feedrate_probe_entry.hide()
         else:
             self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
+                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
             ))
 
         assert isinstance(self.ui, ExcellonObjectUI), \
@@ -3605,7 +3603,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
+                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
             ))
 
             self.ui.geo_tools_table.setColumnHidden(2, True)
@@ -3616,8 +3614,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.addtool_btn.hide()
             self.ui.copytool_btn.hide()
             self.ui.deltool_btn.hide()
-            self.ui.endzlabel.hide()
-            self.ui.gendz_entry.hide()
+            # self.ui.endzlabel.hide()
+            # self.ui.gendz_entry.hide()
             self.ui.fr_rapidlabel.hide()
             self.ui.cncfeedrate_rapid_entry.hide()
             self.ui.extracut_cb.hide()
@@ -3627,7 +3625,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.feedrate_probe_entry.hide()
         else:
             self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
+                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
             ))
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)

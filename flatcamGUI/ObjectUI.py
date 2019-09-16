@@ -713,11 +713,12 @@ class ExcellonObjectUI(ObjectUI):
         self.eendz_entry = LengthEntry()
         grid1.addWidget(self.eendz_entry, 5, 1)
 
-        # Excellon Feedrate
-        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate (Plunge)'))
+        # Excellon Feedrate Z
+        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
         frlabel.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
+              "So called 'Plunge' feedrate.\n"
               "This is for linear move G01.")
         )
         grid1.addWidget(frlabel, 6, 0)

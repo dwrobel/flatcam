@@ -399,20 +399,15 @@ class App(QtCore.QObject):
             "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
             "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
 
-            "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
             "global_version_check": self.ui.general_defaults_form.general_app_group.version_check_cb,
             "global_send_stats": self.ui.general_defaults_form.general_app_group.send_stats_cb,
             "global_pan_button": self.ui.general_defaults_form.general_app_group.pan_button_radio,
             "global_mselect_key": self.ui.general_defaults_form.general_app_group.mselect_radio,
 
-            "global_project_at_startup": self.ui.general_defaults_form.general_app_group.project_startup_cb,
-            "global_project_autohide": self.ui.general_defaults_form.general_app_group.project_autohide_cb,
-            "global_toggle_tooltips": self.ui.general_defaults_form.general_app_group.toggle_tooltips_cb,
             "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
             "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
 
             "global_open_style": self.ui.general_defaults_form.general_app_group.open_style_cb,
-            "global_delete_confirmation": self.ui.general_defaults_form.general_app_group.delete_conf_cb,
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
@@ -440,6 +435,11 @@ class App(QtCore.QObject):
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
             "global_selection_shape": self.ui.general_defaults_form.general_gui_set_group.selection_cb,
+            "global_shell_at_startup": self.ui.general_defaults_form.general_gui_set_group.shell_startup_cb,
+            "global_project_at_startup": self.ui.general_defaults_form.general_gui_set_group.project_startup_cb,
+            "global_project_autohide": self.ui.general_defaults_form.general_gui_set_group.project_autohide_cb,
+            "global_toggle_tooltips": self.ui.general_defaults_form.general_gui_set_group.toggle_tooltips_cb,
+            "global_delete_confirmation": self.ui.general_defaults_form.general_gui_set_group.delete_conf_cb,
 
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
@@ -511,9 +511,9 @@ class App(QtCore.QObject):
             # Excellon Options
             "excellon_drillz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
             "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
+            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.eendz_entry,
             "excellon_feedrate": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_entry,
             "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
-            "excellon_spindledir": self.ui.excellon_defaults_form.excellon_opt_group.spindledir_radio,
             "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
             "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
             "excellon_toolchange": self.ui.excellon_defaults_form.excellon_opt_group.toolchange_cb,
@@ -527,10 +527,10 @@ class App(QtCore.QObject):
             "excellon_offset": self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
             "excellon_toolchangexy": self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
             "excellon_startz": self.ui.excellon_defaults_form.excellon_adv_opt_group.estartz_entry,
-            "excellon_endz": self.ui.excellon_defaults_form.excellon_adv_opt_group.eendz_entry,
             "excellon_feedrate_rapid": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_rapid_entry,
             "excellon_z_pdepth": self.ui.excellon_defaults_form.excellon_adv_opt_group.pdepth_entry,
             "excellon_feedrate_probe": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_probe_entry,
+            "excellon_spindledir": self.ui.excellon_defaults_form.excellon_adv_opt_group.spindledir_radio,
             "excellon_f_plunge": self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
             "excellon_f_retract": self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
 
@@ -583,23 +583,23 @@ class App(QtCore.QObject):
             "geometry_feedrate": self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
             "geometry_feedrate_z": self.ui.geometry_defaults_form.geometry_opt_group.cncplunge_entry,
             "geometry_spindlespeed": self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
-            "geometry_spindledir": self.ui.geometry_defaults_form.geometry_opt_group.spindledir_radio,
             "geometry_dwell": self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
             "geometry_dwelltime": self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
             "geometry_ppname_g": self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
             "geometry_toolchange": self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
             "geometry_toolchangez": self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
+            "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.gendz_entry,
             "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
             "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
 
             # Geometry Advanced Options
             "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
             "geometry_startz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
-            "geometry_endz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gendz_entry,
             "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.cncfeedrate_rapid_entry,
             "geometry_extracut": self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
             "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
             "geometry_feedrate_probe": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
+            "geometry_spindledir": self.ui.geometry_defaults_form.geometry_adv_opt_group.spindledir_radio,
             "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
             "geometry_segx": self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
             "geometry_segy": self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
@@ -611,8 +611,6 @@ class App(QtCore.QObject):
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
             "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
             "cncjob_annotation": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_cb,
-            "cncjob_annotation_fontsize": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontsize_sp,
-            "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry,
 
             "cncjob_tooldia": self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
             "cncjob_coords_type": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_type_radio,
@@ -627,6 +625,8 @@ class App(QtCore.QObject):
             # CNC Job Advanced Options
             "cncjob_toolchange_macro": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
             "cncjob_toolchange_macro_enable": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,
+            "cncjob_annotation_fontsize": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontsize_sp,
+            "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry,
 
             # NCC Tool
             "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
@@ -675,6 +675,7 @@ class App(QtCore.QObject):
             "tools_film_type": self.ui.tools_defaults_form.tools_film_group.film_type_radio,
             "tools_film_boundary": self.ui.tools_defaults_form.tools_film_group.film_boundary_entry,
             "tools_film_scale": self.ui.tools_defaults_form.tools_film_group.film_scale_entry,
+            "tools_film_color": self.ui.tools_defaults_form.tools_film_group.film_color_entry,
 
             # Panelize Tool
             "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,
@@ -931,9 +932,9 @@ class App(QtCore.QObject):
             # Excellon Options
             "excellon_drillz": -0.0590551,
             "excellon_travelz": 0.0787402,
+            "excellon_endz": 0.5,
             "excellon_feedrate": 3.14961,
             "excellon_spindlespeed": None,
-            "excellon_spindledir": 'CW',
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
             "excellon_toolchange": False,
@@ -947,10 +948,10 @@ class App(QtCore.QObject):
             "excellon_offset": 0.0,
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_startz": None,
-            "excellon_endz": 0.5,
             "excellon_feedrate_rapid": 31.4961,
             "excellon_z_pdepth": -0.02,
             "excellon_feedrate_probe": 3.14961,
+            "excellon_spindledir": 'CW',
             "excellon_f_plunge": False,
             "excellon_f_retract": False,
 
@@ -997,10 +998,10 @@ class App(QtCore.QObject):
             "geometry_travelz": 0.0787402,
             "geometry_toolchange": False,
             "geometry_toolchangez": 0.5,
+            "geometry_endz": 0.5,
             "geometry_feedrate": 3.14961,
             "geometry_feedrate_z": 3.14961,
             "geometry_spindlespeed": None,
-            "geometry_spindledir": 'CW',
             "geometry_dwell": False,
             "geometry_dwelltime": 1,
             "geometry_ppname_g": 'default',
@@ -1008,11 +1009,11 @@ class App(QtCore.QObject):
             # Geometry Advanced Options
             "geometry_toolchangexy": "0.0, 0.0",
             "geometry_startz": None,
-            "geometry_endz": 0.5,
             "geometry_feedrate_rapid": 3.14961,
             "geometry_extracut": False,
             "geometry_z_pdepth": -0.02,
             "geometry_f_plunge": False,
+            "geometry_spindledir": 'CW',
             "geometry_feedrate_probe": 3.14961,
             "geometry_segx": 0.0,
             "geometry_segy": 0.0,
@@ -1024,8 +1025,6 @@ class App(QtCore.QObject):
             "cncjob_plot": True,
             "cncjob_plot_kind": 'all',
             "cncjob_annotation": True,
-            "cncjob_annotation_fontsize": 9,
-            "cncjob_annotation_fontcolor": '#990000',
             "cncjob_tooldia": 0.0393701,
             "cncjob_coords_type": "G90",
             "cncjob_coords_decimals": 4,
@@ -1039,7 +1038,10 @@ class App(QtCore.QObject):
             # CNC Job Advanced Options
             "cncjob_toolchange_macro": "",
             "cncjob_toolchange_macro_enable": False,
+            "cncjob_annotation_fontsize": 9,
+            "cncjob_annotation_fontcolor": '#990000',
 
+            # NCC Tool
             "tools_ncctools": "0.0393701, 0.019685",
             "tools_nccorder": 'rev',
             "tools_nccoverlap": 0.015748,
@@ -1058,6 +1060,7 @@ class App(QtCore.QObject):
             "tools_ncctipdia": 0.00393701,
             "tools_ncctipangle": 30,
 
+            # Cutout Tool
             "tools_cutouttooldia": 0.0944882,
             "tools_cutoutkind": "single",
             "tools_cutoutmargin": 0.00393701,
@@ -1065,6 +1068,7 @@ class App(QtCore.QObject):
             "tools_gaps_ff": "4",
             "tools_cutout_convexshape": False,
 
+            # Paint Tool
             "tools_painttooldia": 0.023622,
             "tools_paintorder": 'rev',
             "tools_paintoverlap": 0.015748,
@@ -1075,14 +1079,18 @@ class App(QtCore.QObject):
             "tools_paintcontour": True,
             "tools_paint_plotting": 'normal',
 
+            # 2-Sided Tool
             "tools_2sided_mirror_axis": "X",
             "tools_2sided_axis_loc": "point",
             "tools_2sided_drilldia": 0.0393701,
 
+            # Film Tool
             "tools_film_type": 'neg',
             "tools_film_boundary": 0.0393701,
             "tools_film_scale": 0,
+            "tools_film_color": '#000000',
 
+            # Panel Tool
             "tools_panelize_spacing_columns": 0,
             "tools_panelize_spacing_rows": 0,
             "tools_panelize_columns": 1,
@@ -1092,6 +1100,7 @@ class App(QtCore.QObject):
             "tools_panelize_constrainy": 0.0,
             "tools_panelize_panel_type": 'gerber',
 
+            # Calculators Tool
             "tools_calc_vshape_tip_dia": 0.007874,
             "tools_calc_vshape_tip_angle": 30,
             "tools_calc_vshape_cut_z": 0.000787,
@@ -1100,6 +1109,7 @@ class App(QtCore.QObject):
             "tools_calc_electro_cdensity": 13.0,
             "tools_calc_electro_growth": 10.0,
 
+            # Transform Tool
             "tools_transform_rotate": 90,
             "tools_transform_skew_x": 0.0,
             "tools_transform_skew_y": 0.0,
@@ -1112,6 +1122,7 @@ class App(QtCore.QObject):
             "tools_transform_mirror_reference": False,
             "tools_transform_mirror_point": (0, 0),
 
+            # SolderPaste Tool
             "tools_solderpaste_tools": "0.0393701, 0.011811",
             "tools_solderpaste_new": 0.011811,
             "tools_solderpaste_z_start": 0.00019685039,
@@ -1129,6 +1140,7 @@ class App(QtCore.QObject):
             "tools_solderpaste_dwellrev": 1,
             "tools_solderpaste_pp": 'Paste_1',
 
+            # Subtract Tool
             "tools_sub_close_paths": True,
 
             # file associations
@@ -1218,9 +1230,9 @@ class App(QtCore.QObject):
 
             "excellon_drillz": self.ui.excellon_options_form.excellon_opt_group.cutz_entry,
             "excellon_travelz": self.ui.excellon_options_form.excellon_opt_group.travelz_entry,
+            "excellon_endz": self.ui.excellon_options_form.excellon_opt_group.eendz_entry,
             "excellon_feedrate": self.ui.excellon_options_form.excellon_opt_group.feedrate_entry,
             "excellon_spindlespeed": self.ui.excellon_options_form.excellon_opt_group.spindlespeed_entry,
-            "excellon_spindledir": self.ui.excellon_options_form.excellon_opt_group.spindledir_radio,
             "excellon_dwell": self.ui.excellon_options_form.excellon_opt_group.dwell_cb,
             "excellon_dwelltime": self.ui.excellon_options_form.excellon_opt_group.dwelltime_entry,
             "excellon_toolchange": self.ui.excellon_options_form.excellon_opt_group.toolchange_cb,
@@ -1232,7 +1244,7 @@ class App(QtCore.QObject):
             "excellon_toolchangexy": self.ui.excellon_options_form.excellon_adv_opt_group.toolchangexy_entry,
             "excellon_f_plunge": self.ui.excellon_options_form.excellon_adv_opt_group.fplunge_cb,
             "excellon_startz": self.ui.excellon_options_form.excellon_adv_opt_group.estartz_entry,
-            "excellon_endz": self.ui.excellon_options_form.excellon_adv_opt_group.eendz_entry,
+            "excellon_spindledir": self.ui.excellon_options_form.excellon_adv_opt_group.spindledir_radio,
 
             "geometry_plot": self.ui.geometry_options_form.geometry_gen_group.plot_cb,
             "geometry_cnctooldia": self.ui.geometry_options_form.geometry_gen_group.cnctooldia_entry,
@@ -1242,12 +1254,12 @@ class App(QtCore.QObject):
             "geometry_feedrate": self.ui.geometry_options_form.geometry_opt_group.cncfeedrate_entry,
             "geometry_feedrate_z": self.ui.geometry_options_form.geometry_opt_group.cncplunge_entry,
             "geometry_spindlespeed": self.ui.geometry_options_form.geometry_opt_group.cncspindlespeed_entry,
-            "geometry_spindledir": self.ui.geometry_options_form.geometry_opt_group.spindledir_radio,
             "geometry_dwell": self.ui.geometry_options_form.geometry_opt_group.dwell_cb,
             "geometry_dwelltime": self.ui.geometry_options_form.geometry_opt_group.dwelltime_entry,
             "geometry_ppname_g": self.ui.geometry_options_form.geometry_opt_group.pp_geometry_name_cb,
             "geometry_toolchange": self.ui.geometry_options_form.geometry_opt_group.toolchange_cb,
             "geometry_toolchangez": self.ui.geometry_options_form.geometry_opt_group.toolchangez_entry,
+            "geometry_endz": self.ui.geometry_options_form.geometry_opt_group.gendz_entry,
             "geometry_depthperpass": self.ui.geometry_options_form.geometry_opt_group.depthperpass_entry,
             "geometry_multidepth": self.ui.geometry_options_form.geometry_opt_group.multidepth_cb,
 
@@ -1255,9 +1267,9 @@ class App(QtCore.QObject):
             "geometry_segy": self.ui.geometry_options_form.geometry_adv_opt_group.segy_entry,
             "geometry_feedrate_rapid": self.ui.geometry_options_form.geometry_adv_opt_group.cncfeedrate_rapid_entry,
             "geometry_f_plunge": self.ui.geometry_options_form.geometry_adv_opt_group.fplunge_cb,
+            "geometry_spindledir": self.ui.geometry_options_form.geometry_adv_opt_group.spindledir_radio,
             "geometry_toolchangexy": self.ui.geometry_options_form.geometry_adv_opt_group.toolchangexy_entry,
             "geometry_startz": self.ui.geometry_options_form.geometry_adv_opt_group.gstartz_entry,
-            "geometry_endz": self.ui.geometry_options_form.geometry_adv_opt_group.gendz_entry,
             "geometry_extracut": self.ui.geometry_options_form.geometry_adv_opt_group.extracut_cb,
 
             "cncjob_plot": self.ui.cncjob_options_form.cncjob_gen_group.plot_cb,
@@ -1501,10 +1513,17 @@ class App(QtCore.QObject):
             "background-color:%s" % str(self.defaults['global_proj_item_dis_color'])[:7])
 
         # Init the Annotation CNC Job color
-        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.set_value(
+        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(
             self.defaults['cncjob_annotation_fontcolor'])
-        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.setStyleSheet(
+        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
+
+        # Init the Tool Film color
+        self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(
+            self.defaults['tools_film_color'])
+        self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['tools_film_color'])[:7])
+
         # ### End of Data ####
 
         # ###############################################
@@ -1823,10 +1842,16 @@ class App(QtCore.QObject):
         # ########## CNC Job related signals #############
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.tc_variable_combo.currentIndexChanged[str].connect(
             self.on_cnc_custom_parameters)
-        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.editingFinished.connect(
+        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.editingFinished.connect(
             self.on_annotation_fontcolor_entry)
-        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.clicked.connect(
+        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.clicked.connect(
             self.on_annotation_fontcolor_button)
+
+        # ########## Tools related signals #############
+        self.ui.tools_defaults_form.tools_film_group.film_color_entry.editingFinished.connect(
+            self.on_film_color_entry)
+        self.ui.tools_defaults_form.tools_film_group.film_color_button.clicked.connect(
+            self.on_film_color_button)
 
         # ########## Modify G-CODE Plot Area TAB ###########
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -1844,7 +1869,7 @@ class App(QtCore.QObject):
         self.collection.view.activated.connect(self.on_row_activated)
 
         # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
-        self.ui.general_defaults_form.general_app_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
+        self.ui.general_defaults_form.general_gui_set_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
 
         # Make sure that when the Excellon loading parameters are changed, the change is reflected in the
         # Export Excellon parameters.
@@ -5558,8 +5583,8 @@ class App(QtCore.QObject):
 
     def on_annotation_fontcolor_entry(self):
         self.defaults['cncjob_annotation_fontcolor'] = \
-            self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.get_value()
-        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.setStyleSheet(
+            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.get_value()
+        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor']))
 
     def on_annotation_fontcolor_button(self):
@@ -5571,12 +5596,38 @@ class App(QtCore.QObject):
         if annotation_color.isValid() is False:
             return
 
-        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.setStyleSheet(
+        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
             "background-color:%s" % str(annotation_color.name()))
 
         new_val_sel = str(annotation_color.name())
-        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.set_value(new_val_sel)
-        self.defaults['global_proj_item_dis_color'] = new_val_sel
+        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(new_val_sel)
+        self.defaults['cncjob_annotation_fontcolor'] = new_val_sel
+
+    def on_film_color_entry(self):
+        self.defaults['tools_film_color'] = \
+            self.ui.tools_defaults_form.tools_film_group.film_color_entry.get_value()
+        self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['tools_film_color']))
+
+    def on_film_color_button(self):
+        current_color = QtGui.QColor(self.defaults['tools_film_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        film_color = c_dialog.getColor(initial=current_color)
+
+        if film_color.isValid() is False:
+            return
+
+        # if new color is different then mark that the Preferences are changed
+        if film_color != current_color:
+            self.on_preferences_edited()
+
+        self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
+            "background-color:%s" % str(film_color.name()))
+
+        new_val_sel = str(film_color.name())
+        self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(new_val_sel)
+        self.defaults['tools_film_color'] = new_val_sel
 
     def on_splash_changed(self, state):
         settings = QSettings("Open Source", "FlatCAM")
@@ -8584,8 +8635,6 @@ class App(QtCore.QObject):
         def make_negative_film():
             exported_svg = obj.export_svg(scale_factor=scale_factor)
 
-            self.progress.emit(40)
-
             # Determine bounding area for svg export
             bounds = box.bounds()
             size = box.size()
@@ -8610,8 +8659,6 @@ class App(QtCore.QObject):
             svg_header += '>'
             svg_header += '<g transform="scale(1,-1)">'
             svg_footer = '</g> </svg>'
-
-            self.progress.emit(60)
 
             # Change the attributes of the exported SVG
             # We don't need stroke-width - wrong, we do when we have lines with certain width
@@ -8641,7 +8688,6 @@ class App(QtCore.QObject):
             exported_svg = ET.tostring(root)
 
             svg_elem = svg_header + str(exported_svg) + svg_footer
-            self.progress.emit(80)
 
             # Parse the xml through a xml parser just to add line feeds
             # and to make it look more pretty for the output
@@ -8655,7 +8701,6 @@ class App(QtCore.QObject):
                                    "Most likely another app is holding the file open and not accessible."))
                 return 'fail'
 
-            self.progress.emit(100)
             if self.defaults["global_open_style"] is False:
                 self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
@@ -8677,7 +8722,7 @@ class App(QtCore.QObject):
         else:
             make_negative_film()
 
-    def export_svg_black(self, obj_name, box_name, filename, scale_factor=0.00, use_thread=True):
+    def export_svg_positive(self, obj_name, box_name, filename, scale_factor=0.00, use_thread=True):
         """
         Exports a Geometry Object to an SVG file in positive black.
 
@@ -8688,7 +8733,7 @@ class App(QtCore.QObject):
         :param use_thread: if to be run in a separate thread; boolean
         :return:
         """
-        self.report_usage("export_svg_black()")
+        self.report_usage("export_svg_positive()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
@@ -8712,7 +8757,7 @@ class App(QtCore.QObject):
                              (_("No object Box. Using instead"), obj))
             box = obj
 
-        def make_black_film():
+        def make_positive_film():
             exported_svg = obj.export_svg(scale_factor=scale_factor)
 
             self.progress.emit(40)
@@ -8723,9 +8768,9 @@ class App(QtCore.QObject):
             # We set the colour to WHITE
             root = ET.fromstring(exported_svg)
             for child in root:
-                child.set('fill', '#000000')
+                child.set('fill', str(self.defaults['tools_film_color']))
                 child.set('opacity', '1.0')
-                child.set('stroke', '#000000')
+                child.set('stroke', str(self.defaults['tools_film_color']))
 
             exported_svg = ET.tostring(root)
 
@@ -8793,7 +8838,7 @@ class App(QtCore.QObject):
 
             def job_thread_film(app_obj):
                 try:
-                    make_black_film()
+                    make_positive_film()
                 except Exception as e:
                     proc.done()
                     return
@@ -8801,7 +8846,7 @@ class App(QtCore.QObject):
 
             self.worker_task.emit({'fcn': job_thread_film, 'params': [self]})
         else:
-            make_black_film()
+            make_positive_film()
 
     def save_source_file(self, obj_name, filename, use_thread=True):
         """

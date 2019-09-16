@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the App.on_view_source() method for CNCJob objects: the Gcode will now contain the Prepend and Append code from the Edit -> Preferences -> CNCJob -> CNCJob Options
 - added a new parameter named 'muted' for the TclCommands: cncjob, drillcncjob and write_gcode. Setting it as -muted 1 will disable the error reporting in TCL Shell
 - some GUI optimizations
+- more GUI optimizations related to being part of the Advanced category or not
+- added possibility to change the positive SVG exported file color in Tool Film
 
 15.09.2019
 
