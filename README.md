@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - added possibility to change the positive SVG exported file color in Tool Film
 - fixed some issues recently introduced in the TclCommands CNCJob, DrillCNCJob and write_gcode; changed some parameters names
 - fixed issue in the Laser postprocessor where the laser was turned on as soon as the GCode started creating an unwanted cut up until the job start
+- added new links in Menu -> Help (Excellon, Gerber specifications and a Report Bug)
 
 15.09.2019
 

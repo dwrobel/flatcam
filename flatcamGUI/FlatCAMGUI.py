@@ -400,6 +400,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), _('Online Help\tF1'))
         self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), _('FlatCAM.org'))
         self.menuhelp.addSeparator()
+        self.menuhelp_report_bug = self.menuhelp.addAction(QtGui.QIcon('share/bug16.png'), _('Report a bug'))
+        self.menuhelp.addSeparator()
+        self.menuhelp_exc_spec = self.menuhelp.addAction(QtGui.QIcon('share/pdf_link16.png'),
+                                                         _('Excellon Specification'))
+        self.menuhelp_gerber_spec = self.menuhelp.addAction(QtGui.QIcon('share/pdf_link16.png'),
+                                                            _('Gerber Specification'))
+
+        self.menuhelp.addSeparator()
+
         self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'),
                                                               _('Shortcuts List\tF3'))
         self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), _('YouTube Channel\tF4')
