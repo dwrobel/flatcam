@@ -28,6 +28,7 @@ CAD program, and create G-Code for Isolation routing.
 - made sure that all TclCommands are not threaded
 - added new TclCommands: NewExcellon, NewGerber
 - fixed the TclCommand open_project
+- added the outname parameter (and established an default name when outname not used) for the AlignDrillGrid and AlignDrill TclCommands
 
 14.09.2019
 
