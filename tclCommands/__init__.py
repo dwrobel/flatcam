@@ -35,7 +35,9 @@ import tclCommands.TclCommandMillSlots
 import tclCommands.TclCommandMirror
 import tclCommands.TclCommandNew
 import tclCommands.TclCommandNregions
+import tclCommands.TclCommandNewExcellon
 import tclCommands.TclCommandNewGeometry
+import tclCommands.TclCommandNewGerber
 import tclCommands.TclCommandOffset
 import tclCommands.TclCommandOpenExcellon
 import tclCommands.TclCommandOpenGCode
@@ -44,7 +46,8 @@ import tclCommands.TclCommandOpenProject
 import tclCommands.TclCommandOptions
 import tclCommands.TclCommandPaint
 import tclCommands.TclCommandPanelize
-import tclCommands.TclCommandPlot
+import tclCommands.TclCommandPlotAll
+import tclCommands.TclCommandPlotObjects
 import tclCommands.TclCommandSaveProject
 import tclCommands.TclCommandSaveSys
 import tclCommands.TclCommandScale

@@ -2,35 +2,34 @@ from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandOpenExcellon(TclCommandSignaled):
+class TclCommandNewGerber(TclCommandSignaled):
     """
-    Tcl shell command to open an Excellon file.
+    Tcl shell command to subtract polygon from the given Geometry object.
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['open_excellon']
+    aliases = ['new_gerber']
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
-        ('filename', str)
+        ('name', str)
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For options like -optionname value
     option_types = collections.OrderedDict([
-        ('outname', str)
+
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['filename']
+    required = []
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Opens an Excellon file.",
+        'main': "Creates a new empty Gerber object.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
-            ('outname', 'Name of the resulting Excellon object.')
+            ('name', 'New object name.'),
         ]),
         'examples': []
     }
@@ -45,8 +44,25 @@ class TclCommandOpenExcellon(TclCommandSignaled):
         :return: None or exception
         """
 
-        filename = args.pop('filename')
-        filename = filename.replace(' ', '')
+        if 'name' in args:
+            name = args['name']
+        else:
+            name = 'new_grb'
 
-        args['plot'] = False
-        self.app.open_excellon(filename, **args)
+        def initialize(grb_obj, self):
+            grb_obj.multitool = False
+            grb_obj.source_file = []
+            grb_obj.multigeo = False
+            grb_obj.follow = False
+            grb_obj.apertures = {}
+            grb_obj.solid_geometry = []
+
+            try:
+                grb_obj.options['xmin'] = 0
+                grb_obj.options['ymin'] = 0
+                grb_obj.options['xmax'] = 0
+                grb_obj.options['ymax'] = 0
+            except KeyError:
+                pass
+
+        self.app.new_object('gerber', name, initialize, plot=False)

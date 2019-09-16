@@ -274,7 +274,7 @@ class Film(FlatCAMTool):
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export SVG positive cancelled."))
                 return
             else:
-                self.app.export_svg_black(name, boxname, filename, scale_factor=scale_stroke_width)
+                self.app.export_svg_positive(name, boxname, filename, scale_factor=scale_stroke_width)
         else:
             try:
                 filename, _f = QtWidgets.QFileDialog.getSaveFileName(

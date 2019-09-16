@@ -103,6 +103,5 @@ class TclCommandMirror(TclCommandSignaled):
 
             try:
                 obj.mirror(axis, [dist, dist])
-                obj.plot()
             except Exception as e:
                 return "Operation failed: %s" % str(e)

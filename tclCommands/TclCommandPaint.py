@@ -201,7 +201,9 @@ class TclCommandPaint(TclCommand):
                                                outname=outname,
                                                connect=connect,
                                                contour=contour,
-                                               tools_storage=paint_tools)
+                                               tools_storage=paint_tools,
+                                               plot=False,
+                                               run_threaded=False)
             return
 
         # Paint single polygon in the painted object
@@ -222,7 +224,9 @@ class TclCommandPaint(TclCommand):
                                                outname=outname,
                                                connect=connect,
                                                contour=contour,
-                                               tools_storage=paint_tools)
+                                               tools_storage=paint_tools,
+                                               plot=False,
+                                               run_threaded=False)
             return
 
         # Paint all polygons found within the box object from the the painted object
@@ -250,7 +254,9 @@ class TclCommandPaint(TclCommand):
                                                    outname=outname,
                                                    connect=connect,
                                                    contour=contour,
-                                                   tools_storage=paint_tools)
+                                                   tools_storage=paint_tools,
+                                                   plot=False,
+                                                   run_threaded=False)
             return
 
         else:

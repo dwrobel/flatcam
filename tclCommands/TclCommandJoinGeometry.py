@@ -61,4 +61,4 @@ class TclCommandJoinGeometry(TclCommand):
             FlatCAMGeometry.merge(objs, obj_)
 
         if objs is not None:
-            self.app.new_object("geometry", outname, initialize)
+            self.app.new_object("geometry", outname, initialize, plot=False)

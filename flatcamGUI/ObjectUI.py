@@ -292,7 +292,11 @@ class GerberObjectUI(ObjectUI):
               "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
         )
         overlabel.setMinimumWidth(90)
-        self.iso_overlap_entry = FloatEntry()
+        self.iso_overlap_entry = FCDoubleSpinner()
+        self.iso_overlap_entry.set_precision(3)
+        self.iso_overlap_entry.setWrapping(True)
+        self.iso_overlap_entry.setRange(0.000, 0.999)
+        self.iso_overlap_entry.setSingleStep(0.1)
         grid1.addWidget(overlabel, 2, 0)
         grid1.addWidget(self.iso_overlap_entry, 2, 1, 1, 2)
 
@@ -709,11 +713,12 @@ class ExcellonObjectUI(ObjectUI):
         self.eendz_entry = LengthEntry()
         grid1.addWidget(self.eendz_entry, 5, 1)
 
-        # Excellon Feedrate
-        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate (Plunge)'))
+        # Excellon Feedrate Z
+        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
         frlabel.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
+              "So called 'Plunge' feedrate.\n"
               "This is for linear move G01.")
         )
         grid1.addWidget(frlabel, 6, 0)

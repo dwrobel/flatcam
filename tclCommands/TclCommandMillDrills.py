@@ -128,7 +128,7 @@ class TclCommandMillDrills(TclCommandSignaled):
             del args['name']
 
             # This runs in the background... Is blocking handled?
-            success, msg = obj.generate_milling_drills(**args)
+            success, msg = obj.generate_milling_drills(plot=False, **args)
         except Exception as e:
             success = None
             msg = None

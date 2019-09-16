@@ -17,7 +17,7 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
-        ('outname', str)
+
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered.
@@ -29,11 +29,12 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
         ('gridy', float),
         ('gridoffsety', float),
         ('columns', int),
-        ('rows', int)
+        ('rows', int),
+        ('outname', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['outname', 'gridx', 'gridy', 'columns', 'rows']
+    required = ['gridx', 'gridy', 'columns', 'rows']
 
     # structured help for current command, args needs to be ordered
     help = {
@@ -48,7 +49,7 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
             ('colums', 'Number of grid holes on X axis.'),
             ('rows', 'Number of grid holes on Y axis.'),
         ]),
-        'examples': []
+        'examples': ['aligndrillgrid -rows 2 -columns 2 -gridoffsetx 10 -gridoffsety 10 -gridx 2.54 -gridy 5.08']
     }
 
     def execute(self, args, unnamed_args):
@@ -60,6 +61,11 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
             without -somename and  we do not have them in known arg_names
         :return: None or exception
         """
+
+        if 'outname' in args:
+            outname = args['outname']
+        else:
+            outname = "new_aligndrill_grid"
 
         if 'gridoffsetx' not in args:
             gridoffsetx = 0
@@ -102,4 +108,4 @@ class TclCommandAlignDrillGrid(TclCommandSignaled):
             init_obj.create_geometry()
 
         # Create the new object
-        self.app.new_object("excellon", args['outname'], aligndrillgrid_init_me)
+        self.app.new_object("excellon", outname, aligndrillgrid_init_me, plot=False)

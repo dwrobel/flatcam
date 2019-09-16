@@ -22,7 +22,8 @@ class TclCommandWriteGCode(TclCommandSignaled):
     # For options like -optionname value
     option_types = collections.OrderedDict([
         ('preamble', str),
-        ('postamble', str)
+        ('postamble', str),
+        ('muted', int)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -35,7 +36,9 @@ class TclCommandWriteGCode(TclCommandSignaled):
             ('name', 'Source CNC Job object.'),
             ('filename', 'Output filename.'),
             ('preamble', 'Text to append at the beginning.'),
-            ('postamble', 'Text to append at the end.')
+            ('postamble', 'Text to append at the end.'),
+            ('muted', 'It will not put errors in the Shell or status bar.')
+
         ]),
         'examples': ["write_gcode name c:\\\\gcode_repo"]
     }
@@ -62,6 +65,11 @@ class TclCommandWriteGCode(TclCommandSignaled):
         preamble = args['preamble'] if 'preamble' in args else ''
         postamble = args['postamble'] if 'postamble' in args else ''
 
+        if 'muted' in args:
+            muted = args['muted']
+        else:
+            muted = 0
+
         # TODO: This is not needed any more? All targets should be present.
         # If there are promised objects, wait until all promises have been fulfilled.
         # if self.collection.has_promises():
@@ -82,9 +90,15 @@ class TclCommandWriteGCode(TclCommandSignaled):
         try:
             obj = self.app.collection.get_by_name(str(obj_name))
         except:
-            return "Could not retrieve object: %s" % obj_name
+            if not muted:
+                return "Could not retrieve object: %s" % obj_name
+            else:
+                return
 
         try:
             obj.export_gcode(str(filename), str(preamble), str(postamble))
         except Exception as e:
-            return "Operation failed: %s" % str(e)
+            if not muted:
+                return "Operation failed: %s" % str(e)
+            else:
+                return

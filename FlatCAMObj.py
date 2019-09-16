@@ -600,7 +600,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
+                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
             ))
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
@@ -613,7 +613,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.except_cb.hide()
         else:
             self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
+                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
             ))
 
         if self.app.defaults["gerber_buffering"] == 'no':
@@ -923,8 +923,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except Exception as e:
             return "Operation failed: %s" % str(e)
 
-    def isolate(self, iso_type=None, dia=None, passes=None, overlap=None,
-                outname=None, combine=None, milling_type=None, follow=None):
+    def isolate(self, iso_type=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
+                milling_type=None, follow=None, plot=True):
         """
         Creates an isolation routing geometry object in the project.
 
@@ -947,13 +947,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             combine = bool(combine)
         if milling_type is None:
             milling_type = self.options["milling_type"]
+
         if iso_type is None:
             self.iso_type = 2
         else:
             self.iso_type = iso_type
 
-        base_name = self.options["name"] + "_iso"
-        base_name = outname or base_name
+        base_name = self.options["name"]
 
         def generate_envelope(offset, invert, envelope_iso_type=2, follow=None, passes=0):
             # isolation_geometry produces an envelope that is going on the left of the geometry
@@ -1061,12 +1061,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             return new_geometry
 
         if combine:
-            if self.iso_type == 0:
-                iso_name = self.options["name"] + "_ext_iso"
-            elif self.iso_type == 1:
-                iso_name = self.options["name"] + "_int_iso"
+            if outname is None:
+                if self.iso_type == 0:
+                    iso_name = base_name + "_ext_iso"
+                elif self.iso_type == 1:
+                    iso_name = base_name + "_int_iso"
+                else:
+                    iso_name = base_name + "_iso"
             else:
-                iso_name = base_name
+                iso_name = outname
 
             # TODO: This is ugly. Create way to pass data into init function.
             def iso_init(geo_obj, app_obj):
@@ -1161,25 +1164,31 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
             # TODO: Do something if this is None. Offer changing name?
-            self.app.new_object("geometry", iso_name, iso_init)
+            self.app.new_object("geometry", iso_name, iso_init, plot=plot)
         else:
             for i in range(passes):
 
                 offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
                 if passes > 1:
-                    if self.iso_type == 0:
-                        iso_name = self.options["name"] + "_ext_iso" + str(i + 1)
-                    elif self.iso_type == 1:
-                        iso_name = self.options["name"] + "_int_iso" + str(i + 1)
+                    if outname is None:
+                        if self.iso_type == 0:
+                            iso_name = base_name + "_ext_iso" + str(i + 1)
+                        elif self.iso_type == 1:
+                            iso_name = base_name + "_int_iso" + str(i + 1)
+                        else:
+                            iso_name = base_name + "_iso" + str(i + 1)
                     else:
-                        iso_name = base_name + str(i + 1)
+                        iso_name = outname
                 else:
-                    if self.iso_type == 0:
-                        iso_name = self.options["name"] + "_ext_iso"
-                    elif self.iso_type == 1:
-                        iso_name = self.options["name"] + "_int_iso"
+                    if outname is None:
+                        if self.iso_type == 0:
+                            iso_name = base_name + "_ext_iso"
+                        elif self.iso_type == 1:
+                            iso_name = base_name + "_int_iso"
+                        else:
+                            iso_name = base_name + "_iso"
                     else:
-                        iso_name = base_name
+                        iso_name = outname
 
                 # TODO: This is ugly. Create way to pass data into init function.
                 def iso_init(geo_obj, app_obj):
@@ -1230,7 +1239,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
 
                 # TODO: Do something if this is None. Offer changing name?
-                self.app.new_object("geometry", iso_name, iso_init)
+                self.app.new_object("geometry", iso_name, iso_init, plot=plot)
 
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
@@ -2316,14 +2325,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
+                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
             ))
 
             self.ui.tools_table.setColumnHidden(4, True)
             self.ui.estartz_label.hide()
             self.ui.estartz_entry.hide()
-            self.ui.eendz_label.hide()
-            self.ui.eendz_entry.hide()
             self.ui.feedrate_rapid_label.hide()
             self.ui.feedrate_rapid_entry.hide()
             self.ui.pdepth_label.hide()
@@ -2332,7 +2339,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.feedrate_probe_entry.hide()
         else:
             self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
+                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
             ))
 
         assert isinstance(self.ui, ExcellonObjectUI), \
@@ -2595,7 +2602,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         return has_slots, excellon_code
 
-    def generate_milling_drills(self, tools=None, outname=None, tooldia=None, use_thread=False):
+    def generate_milling_drills(self, tools=None, outname=None, tooldia=None, plot=False, use_thread=False):
         """
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
@@ -2674,7 +2681,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                             Point(hole['point']).buffer(buffer_value).exterior)
         if use_thread:
             def geo_thread(app_obj):
-                app_obj.new_object("geometry", outname, geo_init)
+                app_obj.new_object("geometry", outname, geo_init, plot=plot)
                 app_obj.progress.emit(100)
 
             # Create a promise with the new name
@@ -2683,11 +2690,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # Send to worker
             self.app.worker_task.emit({'fcn': geo_thread, 'params': [self.app]})
         else:
-            self.app.new_object("geometry", outname, geo_init)
+            self.app.new_object("geometry", outname, geo_init, plot=plot)
 
         return True, ""
 
-    def generate_milling_slots(self, tools=None, outname=None, tooldia=None, use_thread=False):
+    def generate_milling_slots(self, tools=None, outname=None, tooldia=None, plot=True, use_thread=False):
         """
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
@@ -2781,7 +2788,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         if use_thread:
             def geo_thread(app_obj):
-                app_obj.new_object("geometry", outname + '_slot', geo_init)
+                app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
                 app_obj.progress.emit(100)
 
             # Create a promise with the new name
@@ -2790,7 +2797,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # Send to worker
             self.app.worker_task.emit({'fcn': geo_thread, 'params': [self.app]})
         else:
-            self.app.new_object("geometry", outname + '_slot', geo_init)
+            self.app.new_object("geometry", outname + '_slot', geo_init, plot=plot)
 
         return True, ""
 
@@ -3596,7 +3603,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
-                '<span style="color:green;"><b>Basic</b></span>'
+                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
             ))
 
             self.ui.geo_tools_table.setColumnHidden(2, True)
@@ -3607,8 +3614,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.addtool_btn.hide()
             self.ui.copytool_btn.hide()
             self.ui.deltool_btn.hide()
-            self.ui.endzlabel.hide()
-            self.ui.gendz_entry.hide()
+            # self.ui.endzlabel.hide()
+            # self.ui.gendz_entry.hide()
             self.ui.fr_rapidlabel.hide()
             self.ui.cncfeedrate_rapid_entry.hide()
             self.ui.extracut_cb.hide()
@@ -3618,7 +3625,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.feedrate_probe_entry.hide()
         else:
             self.ui.level.setText(_(
-                '<span style="color:red;"><b>Advanced</b></span>'
+                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
             ))
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
@@ -4518,7 +4525,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Failed. No tool selected in the tool table ..."))
 
-    def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None, use_thread=True):
+    def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
+                         plot=True, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target FlatCAMCNCjob object's
@@ -4875,7 +4883,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             def job_thread(app_obj):
                 if self.solid_geometry:
                     with self.app.proc_container.new(_("Generating CNC Code")):
-                        if app_obj.new_object("cncjob", outname, job_init_single_geometry) != 'fail':
+                        if app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot) != 'fail':
                             app_obj.inform.emit('[success] %s: %s' %
                                                 (_("CNCjob created")), outname)
                             app_obj.progress.emit(100)
@@ -4892,22 +4900,23 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
             if self.solid_geometry:
-                self.app.new_object("cncjob", outname, job_init_single_geometry)
+                self.app.new_object("cncjob", outname, job_init_single_geometry, plot=plot)
             else:
-                self.app.new_object("cncjob", outname, job_init_multi_geometry)
+                self.app.new_object("cncjob", outname, job_init_multi_geometry, plot=plot)
 
     def generatecncjob(
             self, outname=None,
-            tooldia=None, offset=None,
+            dia=None, offset=None,
             z_cut=None, z_move=None,
             feedrate=None, feedrate_z=None, feedrate_rapid=None,
             spindlespeed=None, dwell=None, dwelltime=None,
             multidepth=None, depthperpass=None,
             toolchange=None, toolchangez=None, toolchangexy=None,
             extracut=None, startz=None, endz=None,
-            ppname_g=None,
+            pp=None,
             segx=None, segy=None,
-            use_thread=True):
+            use_thread=True,
+            plot=True):
         """
         Only used for TCL Command.
         Creates a CNCJob out of this Geometry object. The actual
@@ -4919,14 +4928,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param feedrate: Feed rate while cutting on X - Y plane
         :param feedrate_z: Feed rate while cutting on Z plane
         :param feedrate_rapid: Feed rate while moving with rapids
-        :param tooldia: Tool diameter
+        :param dia: Tool diameter
         :param outname: Name of the new object
         :param spindlespeed: Spindle speed (RPM)
-        :param ppname_g Name of the postprocessor
+        :param pp Name of the postprocessor
         :return: None
         """
 
-        tooldia = tooldia if tooldia else float(self.options["cnctooldia"])
+        tooldia = dia if dia else float(self.options["cnctooldia"])
         outname = outname if outname is not None else self.options["name"]
 
         z_cut = z_cut if z_cut is not None else float(self.options["cutz"])
@@ -4957,7 +4966,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         dwell = dwell if dwell else self.options["dwell"]
         dwelltime = dwelltime if dwelltime else float(self.options["dwelltime"])
 
-        ppname_g = ppname_g if ppname_g else self.options["ppname_g"]
+        ppname_g = pp if pp else self.options["ppname_g"]
 
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
@@ -5034,7 +5043,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # To be run in separate thread
             def job_thread(app_obj):
                 with self.app.proc_container.new(_("Generating CNC Code")):
-                    app_obj.new_object("cncjob", outname, job_init)
+                    app_obj.new_object("cncjob", outname, job_init, plot=plot)
                     app_obj.inform.emit('[success] %s: %s' %
                                         (_("CNCjob created")), outname)
                     app_obj.progress.emit(100)
@@ -5044,7 +5053,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # Send to worker
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            self.app.new_object("cncjob", outname, job_init)
+            self.app.new_object("cncjob", outname, job_init, plot=plot)
 
     # def on_plot_cb_click(self, *args):  # TODO: args not needed
     #     if self.muted_ui:
@@ -5833,11 +5842,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
-        gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
-        if gc == 'fail':
+
+        gco = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
+        if gco == 'fail':
             return
         else:
-            self.app.gcode_edited = gc
+            self.app.gcode_edited = gco
 
         self.app.init_code_editor(name=_("Code Editor"))
         self.app.ui.buttonOpen.clicked.connect(self.app.handleOpen)

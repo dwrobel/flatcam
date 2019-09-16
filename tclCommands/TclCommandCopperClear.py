@@ -226,6 +226,7 @@ class TclCommandCopperClear(TclCommand):
                                                contour=contour,
                                                rest=rest,
                                                tools_storage=ncc_tools,
+                                               plot=False,
                                                run_threaded=False)
             return
 
@@ -259,6 +260,7 @@ class TclCommandCopperClear(TclCommand):
                                                    contour=contour,
                                                    rest=rest,
                                                    tools_storage=ncc_tools,
+                                                   plot=False,
                                                    run_threaded=False)
             return
         else:

@@ -2,36 +2,34 @@ from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandOpenGCode(TclCommandSignaled):
+class TclCommandNewExcellon(TclCommandSignaled):
     """
-    Tcl shell command to open a G-Code file.
+    Tcl shell command to subtract polygon from the given Geometry object.
     """
 
-    # array of all command aliases, to be able use  old names for
-    # backward compatibility (add_poly, add_polygon)
-    aliases = ['open_gcode']
+    # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
+    aliases = ['new_excellon']
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
-        ('filename', str)
+        ('name', str)
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For options like -optionname value
     option_types = collections.OrderedDict([
-        ('outname', str)
+
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['filename']
+    required = []
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Opens a G-Code file.",
+        'main': "Creates a new empty Excellon object.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file to open.'),
-            ('outname', 'Name of the resulting CNCJob object.')
+            ('name', 'New object name.'),
         ]),
         'examples': []
     }
@@ -45,8 +43,9 @@ class TclCommandOpenGCode(TclCommandSignaled):
             without -somename and  we do not have them in known arg_names
         :return: None or exception
         """
-        args['plot'] = False
-        filename = args["filename"]
-        filename = filename.replace(' ', '')
 
-        self.app.open_gcode(filename, **args)
+        if 'name' in args:
+            name = args['name']
+        else:
+            name = 'new_exc'
+        self.app.new_object('excellon', name, lambda x, y: None, plot=False)
