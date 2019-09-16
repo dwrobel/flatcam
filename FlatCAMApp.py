@@ -446,9 +446,6 @@ class App(QtCore.QObject):
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
             "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
             "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
-            "gerber_buffering": self.ui.gerber_defaults_form.gerber_gen_group.buffering_radio,
-            "gerber_simplification": self.ui.gerber_defaults_form.gerber_gen_group.simplify_cb,
-            "gerber_simp_tolerance": self.ui.gerber_defaults_form.gerber_gen_group.simplification_tol_spinner,
 
             # Gerber Options
             "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
@@ -466,6 +463,9 @@ class App(QtCore.QObject):
             # "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
             # "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
             "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
+            "gerber_buffering": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffering_radio,
+            "gerber_simplification": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplify_cb,
+            "gerber_simp_tolerance": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplification_tol_spinner,
 
             # Gerber Export
             "gerber_exp_units": self.ui.gerber_defaults_form.gerber_exp_group.gerber_units_radio,
@@ -871,9 +871,6 @@ class App(QtCore.QObject):
             "gerber_multicolored": False,
             "gerber_circle_steps": 128,
             "gerber_use_buffer_for_union": True,
-            "gerber_buffering": "full",
-            "gerber_simplification": False,
-            "gerber_simp_tolerance": 0.0005,
 
             # Gerber Options
             "gerber_isotooldia": 0.00787402,
@@ -891,6 +888,9 @@ class App(QtCore.QObject):
             "gerber_aperture_scale_factor": 1.0,
             "gerber_aperture_buffer_factor": 0.0,
             "gerber_follow": False,
+            "gerber_buffering": "full",
+            "gerber_simplification": False,
+            "gerber_simp_tolerance": 0.0005,
 
             # Gerber Export
             "gerber_exp_units": 'IN',

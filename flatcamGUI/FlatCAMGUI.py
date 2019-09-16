@@ -4442,40 +4442,6 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.circle_steps_label, 1, 0)
         grid0.addWidget(self.circle_steps_entry, 1, 1)
 
-        # Milling Type
-        buffering_label = QtWidgets.QLabel('%s:' % _('Buffering'))
-        buffering_label.setToolTip(
-            _("Buffering type:\n"
-              "- None --> best performance, fast file loading but no so good display\n"
-              "- Full --> slow file loading but good visuals. This is the default.\n"
-              "<<WARNING>>: Don't change this unless you know what you are doing !!!")
-        )
-        self.buffering_radio = RadioSet([{'label': _('None'), 'value': 'no'},
-                                          {'label': _('Full'), 'value': 'full'}])
-        grid0.addWidget(buffering_label, 2, 0)
-        grid0.addWidget(self.buffering_radio, 2, 1)
-
-        # Simplification
-        self.simplify_cb = FCCheckBox(label=_('Simplify'))
-        self.simplify_cb.setToolTip(_("When checked all the Gerber polygons will be\n"
-                                      "loaded with simplification having a set tolerance."))
-        grid0.addWidget(self.simplify_cb, 3, 0)
-
-        # Simplification tolerance
-        self.simplification_tol_label = QtWidgets.QLabel(_('Tolerance'))
-        self.simplification_tol_label.setToolTip(_("Tolerance for poligon simplification."))
-
-        self.simplification_tol_spinner = FCDoubleSpinner()
-        self.simplification_tol_spinner.set_precision(5)
-        self.simplification_tol_spinner.setWrapping(True)
-        self.simplification_tol_spinner.setRange(0.00000, 0.01000)
-        self.simplification_tol_spinner.setSingleStep(0.0001)
-
-        grid0.addWidget(self.simplification_tol_label, 4, 0)
-        grid0.addWidget(self.simplification_tol_spinner, 4, 1)
-        self.ois_simplif = OptionalInputSection(self.simplify_cb,
-                                                [self.simplification_tol_label, self.simplification_tol_spinner],
-                                                logic=True)
         self.layout.addStretch()
 
 
@@ -4525,7 +4491,11 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
         )
         grid0.addWidget(overlabel, 2, 0)
-        self.iso_overlap_entry = FloatEntry()
+        self.iso_overlap_entry = FCDoubleSpinner()
+        self.iso_overlap_entry.set_precision(3)
+        self.iso_overlap_entry.setWrapping(True)
+        self.iso_overlap_entry.setRange(0.000, 0.999)
+        self.iso_overlap_entry.setSingleStep(0.1)
         grid0.addWidget(self.iso_overlap_entry, 2, 1)
 
         # Milling Type
@@ -4633,7 +4603,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
               "This means that it will cut through\n"
               "the middle of the trace.")
         )
-        grid0.addWidget(self.follow_cb, 0, 0)
+        grid0.addWidget(self.follow_cb, 0, 0, 1, 2)
 
         # Aperture Table Visibility CB
         self.aperture_table_visibility_cb = FCCheckBox(label=_('Table Show/Hide'))
@@ -4643,7 +4613,43 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
               "that are drawn on canvas.")
 
         )
-        grid0.addWidget(self.aperture_table_visibility_cb, 1, 0)
+        grid0.addWidget(self.aperture_table_visibility_cb, 1, 0, 1, 2)
+
+        # Buffering Type
+        buffering_label = QtWidgets.QLabel('%s:' % _('Buffering'))
+        buffering_label.setToolTip(
+            _("Buffering type:\n"
+              "- None --> best performance, fast file loading but no so good display\n"
+              "- Full --> slow file loading but good visuals. This is the default.\n"
+              "<<WARNING>>: Don't change this unless you know what you are doing !!!")
+        )
+        self.buffering_radio = RadioSet([{'label': _('None'), 'value': 'no'},
+                                          {'label': _('Full'), 'value': 'full'}],
+                                        orientation='vertical', stretch=False)
+        grid0.addWidget(buffering_label, 2, 0)
+        grid0.addWidget(self.buffering_radio, 2, 1)
+
+        # Simplification
+        self.simplify_cb = FCCheckBox(label=_('Simplify'))
+        self.simplify_cb.setToolTip(_("When checked all the Gerber polygons will be\n"
+                                      "loaded with simplification having a set tolerance."))
+        grid0.addWidget(self.simplify_cb, 3, 0, 1, 2)
+
+        # Simplification tolerance
+        self.simplification_tol_label = QtWidgets.QLabel(_('Tolerance'))
+        self.simplification_tol_label.setToolTip(_("Tolerance for poligon simplification."))
+
+        self.simplification_tol_spinner = FCDoubleSpinner()
+        self.simplification_tol_spinner.set_precision(5)
+        self.simplification_tol_spinner.setWrapping(True)
+        self.simplification_tol_spinner.setRange(0.00000, 0.01000)
+        self.simplification_tol_spinner.setSingleStep(0.0001)
+
+        grid0.addWidget(self.simplification_tol_label, 4, 0)
+        grid0.addWidget(self.simplification_tol_spinner, 4, 1)
+        self.ois_simplif = OptionalInputSection(self.simplify_cb,
+                                                [self.simplification_tol_label, self.simplification_tol_spinner],
+                                                logic=True)
 
         # Scale Aperture Factor
         # self.scale_aperture_label = QtWidgets.QLabel(_('Ap. Scale Factor:'))
@@ -5141,7 +5147,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.update_excellon_cb.setToolTip(
             "If checked, the Excellon Export settings will be updated with the ones above."
         )
-        grid2.addWidget(self.update_excellon_cb, 2, 0)
+        grid2.addWidget(self.update_excellon_cb, 2, 0, 1, 2)
 
         grid2.addWidget(QtWidgets.QLabel(""), 3, 0)
 
@@ -5161,8 +5167,10 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(self.excellon_optimization_label, 5, 0)
 
-        self.excellon_optimization_radio = RadioSet([{'label': _('MH'), 'value': 'M'},
-                                                     {'label': _('Basic'), 'value': 'B'}])
+        self.excellon_optimization_radio = RadioSet([{'label': _('MetaHeuristic'), 'value': 'M'},
+                                                     {'label': _('Basic'), 'value': 'B'},
+                                                     {'label': _('TSA'), 'value': 'T'}],
+                                                    orientation='vertical', stretch=False)
         self.excellon_optimization_radio.setToolTip(
             _("This sets the optimization type for the Excellon drill path.\n"
               "If MH is checked then Google OR-Tools algorithm with MetaHeuristic\n"
@@ -6705,8 +6713,12 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
              "Higher values = slow processing and slow execution on CNC\n"
              "due of too many paths.")
         )
+        self.ncc_overlap_entry = FCDoubleSpinner()
+        self.ncc_overlap_entry.set_precision(3)
+        self.ncc_overlap_entry.setWrapping(True)
+        self.ncc_overlap_entry.setRange(0.000, 0.999)
+        self.ncc_overlap_entry.setSingleStep(0.1)
         grid0.addWidget(nccoverlabel, 7, 0)
-        self.ncc_overlap_entry = FloatEntry()
         grid0.addWidget(self.ncc_overlap_entry, 7, 1)
 
         # Margin entry
@@ -7050,8 +7062,12 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
+        self.paintoverlap_entry = FCDoubleSpinner()
+        self.paintoverlap_entry.set_precision(3)
+        self.paintoverlap_entry.setWrapping(True)
+        self.paintoverlap_entry.setRange(0.000, 0.999)
+        self.paintoverlap_entry.setSingleStep(0.1)
         grid0.addWidget(ovlabel, 2, 0)
-        self.paintoverlap_entry = LengthEntry()
         grid0.addWidget(self.paintoverlap_entry, 2, 1)
 
         # Margin

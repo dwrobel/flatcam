@@ -292,7 +292,11 @@ class GerberObjectUI(ObjectUI):
               "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
         )
         overlabel.setMinimumWidth(90)
-        self.iso_overlap_entry = FloatEntry()
+        self.iso_overlap_entry = FCDoubleSpinner()
+        self.iso_overlap_entry.set_precision(3)
+        self.iso_overlap_entry.setWrapping(True)
+        self.iso_overlap_entry.setRange(0.000, 0.999)
+        self.iso_overlap_entry.setSingleStep(0.1)
         grid1.addWidget(overlabel, 2, 0)
         grid1.addWidget(self.iso_overlap_entry, 2, 1, 1, 2)
 

@@ -292,7 +292,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
-        self.ncc_overlap_entry = FCEntry()
+        self.ncc_overlap_entry = FCDoubleSpinner()
+        self.ncc_overlap_entry.set_precision(3)
+        self.ncc_overlap_entry.setWrapping(True)
+        self.ncc_overlap_entry.setRange(0.000, 0.999)
+        self.ncc_overlap_entry.setSingleStep(0.1)
         grid3.addWidget(nccoverlabel, 2, 0)
         grid3.addWidget(self.ncc_overlap_entry, 2, 1)
 
