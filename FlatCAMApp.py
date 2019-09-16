@@ -19,7 +19,6 @@ import shutil
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
 import ctypes
-import winreg
 
 import tkinter as tk
 from PyQt5 import QtPrintSupport
@@ -61,6 +60,9 @@ import tclCommands
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
+if sys.platform == 'win32':
+    import winreg
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -3878,12 +3880,12 @@ class App(QtCore.QObject):
                     "{title}<BR>"
                     "<BR>"
                     "<BR>"
-                    "<B>{devel}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
-                    "<b>{down}</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
-                    "<b> {issue}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">here.</a><BR>".
+                    # "<B>{devel}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\"><B>{devel}</B></a><BR>"
+                    # "<b>{down}</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\"><b>{down}</B></a><BR>"
+                    # "<b> {issue}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\"><B>{issue}</B></a><BR>".
                         format(title=_("2D Computer-Aided Printed Circuit Board Manufacturing"),
                                devel=_("Development"), down=_("DOWNLOAD"), issue=_("Issue tracker"))
                 )
@@ -3912,10 +3914,10 @@ class App(QtCore.QObject):
                         'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n'
                         'copies of the Software, and to permit persons to whom the Software is\n'
                        ' furnished to do so, subject to the following conditions:\n\n'
-                        
+
                         'The above copyright notice and this permission notice shall be included in\n'
                         'all copies or substantial portions of the Software.\n\n'
-                        
+
                         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n'
                         'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n'
                         'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n'
@@ -10221,11 +10223,11 @@ class App(QtCore.QObject):
             <br />
             %s:<br />
             <br />
-            <strong>%s</strong> -&gt; %s -&gt; %s -&gt;<strong> %s </strong> -&gt; %s -&gt; %s -&gt;<strong> %s 
+            <strong>%s</strong> -&gt; %s -&gt; %s -&gt;<strong> %s </strong> -&gt; %s -&gt; %s -&gt;<strong> %s
             </strong>-&gt; %s <strong>%s)&nbsp;</strong>-&gt; %s</span></li>
         </ol>
 
-        <p><span style="font-size:{fsize}px">%s <strong>%s -&gt; %s</strong>&nbsp;%s it&#39;s %s: 
+        <p><span style="font-size:{fsize}px">%s <strong>%s -&gt; %s</strong>&nbsp;%s it&#39;s %s:
         <strong>F3</strong>.</span></p>
         ''' % (
             _("Selected Tab - Choose an Item from Project Tab"), _("Details"),

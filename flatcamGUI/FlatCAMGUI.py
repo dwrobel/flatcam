@@ -1267,7 +1267,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <tr height="20">
                         <td height="20"><strong>ALT+F10</strong></td>
                         <td>&nbsp;%s</td>
-                    </tr>                 
+                    </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
@@ -1275,7 +1275,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <tr height="20">
                         <td height="20"><strong>CTRL+ALT+X</strong></td>
                         <td>&nbsp;%s</td>
-                    </tr>                    
+                    </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
@@ -6438,7 +6438,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         # hidden for the time being, until implemented
         coords_type_label.hide()
         self.coords_type_radio.hide()
-        
+
         self.layout.addStretch()
 
 
@@ -7808,7 +7808,7 @@ class FAExcPrefGroupUI(OptionsGroupUI):
 
         self.layout.addWidget(self.exc_list_text)
 
-        self.exc_list_btn = FCButton("Apply")
+        self.exc_list_btn = FCButton(_("Apply"))
         self.exc_list_btn.setToolTip(_("Apply the file associations between\n"
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"
@@ -7841,7 +7841,7 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
 
         self.layout.addWidget(self.gco_list_text)
 
-        self.gco_list_btn = FCButton("Apply")
+        self.gco_list_btn = FCButton(_("Apply"))
         self.gco_list_btn.setToolTip(_("Apply the file associations between\n"
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"
@@ -7873,7 +7873,7 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
         font.setPointSize(12)
         self.grb_list_text.setFont(font)
 
-        self.grb_list_btn = FCButton("Apply")
+        self.grb_list_btn = FCButton(_("Apply"))
         self.grb_list_btn.setToolTip(_("Apply the file associations between\n"
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"

@@ -8454,6 +8454,10 @@ msgid ""
 "associated with FlatCAM."
 msgstr ""
 
+#: flatcamGUI/FlatCAMGUI.py:7747 flatcamGUI/FlatCAMGUI.py:7780 flatcamGUI/FlatCAMGUI.py:7812
+msgid "Apply"
+msgstr ""
+
 #: flatcamGUI/FlatCAMGUI.py:7748 flatcamGUI/FlatCAMGUI.py:7781
 #: flatcamGUI/FlatCAMGUI.py:7813
 msgid ""
