@@ -844,6 +844,22 @@ class App(QtCore.QObject):
             "global_point_clipboard_format": "(%.4f, %.4f)",
             "global_zdownrate": None,
 
+            # autocomplete keywords
+            "global_autocomplete_keywords":
+                ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
+                 'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
+                 'drilled_dias', 'drillz', 'pp',
+                 'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
+                 'milled_dias',
+                 'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
+                 'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
+                 'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
+                 'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
+                 'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
+                 'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
+                 'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type',
+                 'Desktop', 'FlatPrj', 'FlatConfig', 'Users', 'Documents', 'My Documents', 'Marius'
+                 ],
             # General GUI Settings
             "global_hover": False,
             "global_selection_shape": True,
@@ -1904,23 +1920,7 @@ class App(QtCore.QObject):
                                   'version', 'write_gcode'
                                   ]
 
-        self.ordinary_keywords = ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
-                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
-                                  'drilled_dias', 'drillz', 'pp',
-                                  'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
-                                  'filename', 'follow', 'gaps', 'gapsize', 'grid', 'gridoffset', 'gridoffsetx',
-                                  'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
-                                  'milled_dias',
-                                  'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
-                                  'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
-                                  'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
-                                  'toolchange', 'toolchangez', 'tooldia', 'tools', 'travelz', 'True', 'true', 'type',
-                                  'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
-                                  'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
-                                  'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
-                                  'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type',
-                                  'Desktop', 'FlatPrj', 'FlatConfig', 'Users', 'Documents', 'My Documents', 'Marius'
-                                  ]
+        self.ordinary_keywords = self.defaults["global_autocomplete_keywords"]
 
         self.tcl_keywords = [
             'after', 'append', 'apply', 'argc', 'argv', 'argv0', 'array', 'attemptckalloc', 'attemptckrealloc',

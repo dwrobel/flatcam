@@ -29,6 +29,8 @@ CAD program, and create G-Code for Isolation routing.
 - added new TclCommands: NewExcellon, NewGerber
 - fixed the TclCommand open_project
 - added the outname parameter (and established an default name when outname not used) for the AlignDrillGrid and AlignDrill TclCommands
+- fixed Scripts repeating multiple time when the Code Editor is used. This repetition was correlated with multiple openings of the Code Editor window (especially after an error)
+- added the autocomplete keywords that can be changed to the defaults dictionary
 
 14.09.2019
 
