@@ -20,6 +20,11 @@ CAD program, and create G-Code for Isolation routing.
 - fixed some issues recently introduced in the TclCommands CNCJob, DrillCNCJob and write_gcode; changed some parameters names
 - fixed issue in the Laser postprocessor where the laser was turned on as soon as the GCode started creating an unwanted cut up until the job start
 - added new links in Menu -> Help (Excellon, Gerber specifications and a Report Bug)
+- made the splashscreen to be showed on the current monitor on systems with multiple monitors
+- added a new entry in Menu -> View -> Redraw All which is doing what the name says: redraw all loaded objects
+- fixed issue where in TCl Shell the Windows paths were not understood due of backslash symbol understood as escape symbol instead of path separator
+- made sure that in for the TclCommand cncjob and for the drillcncjob if one of the args is stated but no value then the value used will be the default one
+- made available the TSA algorithm for drill path optimization when the used OS is 64bit. When used OS is 32bit the only available algorithm is TSA
 
 15.09.2019
 

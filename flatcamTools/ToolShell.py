@@ -12,6 +12,7 @@ from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
 from flatcamGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit
 import html
+import sys
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -132,6 +133,12 @@ class TermWidget(QWidget):
         Re-implement in the child classes to actually execute command
         """
         text = str(self._edit.toPlainText())
+
+        # in Windows replace all backslash symbols '\' with '\\' slash because Windows paths are made with backslash
+        # and in Python single slash is the escape symbol
+        if sys.platform == 'win32':
+            text = text.replace('\\', '\\\\')
+
         self._append_to_browser('in', '> ' + text + '\n')
 
         if len(self._history) < 2 or self._history[-2] != text:  # don't insert duplicating items

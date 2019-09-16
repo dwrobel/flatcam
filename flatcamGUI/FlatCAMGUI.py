@@ -372,6 +372,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), _("&Zoom Out\t-"))
         self.menuview.addSeparator()
 
+        # Replot all
+        self.menuview_replot = self.menuview.addAction(QtGui.QIcon('share/replot32.png'), _("Redraw All\tF5"))
+        self.menuview.addSeparator()
+
         self.menuview_toggle_code_editor = self.menuview.addAction(QtGui.QIcon('share/code_editor32.png'),
                                                                    _('Toggle Code Editor\tCTRL+E'))
         self.menuview.addSeparator()
@@ -5168,15 +5172,16 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.excellon_general_label = QtWidgets.QLabel("<b>%s:</b>" % _("Excellon Optimization"))
         grid2.addWidget(self.excellon_general_label, 4, 0, 1, 2)
 
-        self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:   '))
+        self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:'))
         self.excellon_optimization_label.setToolTip(
             _("This sets the optimization type for the Excellon drill path.\n"
-              "If MH is checked then Google OR-Tools algorithm with MetaHeuristic\n"
+              "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with MetaHeuristic\n"
               "Guided Local Path is used. Default search time is 3sec.\n"
-              "Use set_sys excellon_search_time value Tcl Command to set other values.\n"
-              "If Basic is checked then Google OR-Tools Basic algorithm is used.\n"
+              "If <<Basic>> is checked then Google OR-Tools Basic algorithm is used.\n"
+              "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
+              "drill path optimization.\n"
               "\n"
-              "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
+              "If this control is disabled, then FlatCAM works in 32bit mode and it uses\n"
               "Travelling Salesman algorithm for path optimization.")
         )
         grid2.addWidget(self.excellon_optimization_label, 5, 0)
@@ -5187,12 +5192,13 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
                                                     orientation='vertical', stretch=False)
         self.excellon_optimization_radio.setToolTip(
             _("This sets the optimization type for the Excellon drill path.\n"
-              "If MH is checked then Google OR-Tools algorithm with MetaHeuristic\n"
+              "If <<MetaHeuristic>> is checked then Google OR-Tools algorithm with MetaHeuristic\n"
               "Guided Local Path is used. Default search time is 3sec.\n"
-              "Use set_sys excellon_search_time value Tcl Command to set other values.\n"
-              "If Basic is checked then Google OR-Tools Basic algorithm is used.\n"
+              "If <<Basic>> is checked then Google OR-Tools Basic algorithm is used.\n"
+              "If <<TSA>> is checked then Travelling Salesman algorithm is used for\n"
+              "drill path optimization.\n"
               "\n"
-              "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
+              "If this control is disabled, then FlatCAM works in 32bit mode and it uses\n"
               "Travelling Salesman algorithm for path optimization.")
         )
         grid2.addWidget(self.excellon_optimization_radio, 5, 1)

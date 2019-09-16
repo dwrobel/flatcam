@@ -158,19 +158,20 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 tools = 'all'
                 self.raise_tcl_error("Bad tools: %s" % str(e))
 
-            drillz = args["drillz"] if "drillz" in args else obj.options["drillz"]
-            toolchangez = args["toolchangez"] if "toolchangez" in args else obj.options["toolchangez"]
-            endz = args["endz"] if "endz" in args else obj.options["endz"]
+            drillz = args["drillz"] if "drillz" in args and args["drillz"] else obj.options["drillz"]
+            toolchangez = args["toolchangez"] if "toolchangez" in args and args["toolchangez"] else \
+                obj.options["toolchangez"]
+            endz = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
             toolchange = True if "toolchange" in args and args["toolchange"] == 1 else False
-            opt_type = args["opt_type"] if "opt_type" in args else 'B'
+            opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 
-            job_obj.z_move = args["travelz"] if "travelz" in args else obj.options["travelz"]
-            job_obj.feedrate = args["feedrate"] if "feedrate" in args else obj.options["feedrate"]
+            job_obj.z_move = args["travelz"] if "travelz" in args and args["travelz"] else obj.options["travelz"]
+            job_obj.feedrate = args["feedrate"] if "feedrate" in args and args["feedrate"] else obj.options["feedrate"]
             job_obj.feedrate_rapid = args["feedrate_rapid"] \
-                if "feedrate_rapid" in args else obj.options["feedrate_rapid"]
+                if "feedrate_rapid" in args and args["feedrate_rapid"] else obj.options["feedrate_rapid"]
 
             job_obj.spindlespeed = args["spindlespeed"] if "spindlespeed" in args else None
-            job_obj.pp_excellon_name = args["pp"] if "pp" in args \
+            job_obj.pp_excellon_name = args["pp"] if "pp" in args and args["pp"] \
                 else obj.options["ppname_e"]
 
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
@@ -178,7 +179,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
             job_obj.options['type'] = 'Excellon'
 
-            job_obj.toolchangexy = args["toolchangexy"] if "toolchangexy" in args else obj.options["toolchangexy"]
+            job_obj.toolchangexy = args["toolchangexy"] if "toolchangexy" in args and args["toolchangexy"] else \
+                obj.options["toolchangexy"]
 
             job_obj.toolchange_xy_type = "excellon"
 

@@ -361,6 +361,13 @@ class App(QtCore.QObject):
             splash_pix = QtGui.QPixmap('share/splash.png')
             splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
             # splash.setMask(splash_pix.mask())
+
+            # move splashscreen to the current monitor
+            desktop = QtWidgets.QApplication.desktop()
+            screen = desktop.screenNumber(QtGui.QCursor.pos())
+            current_screen_center = desktop.availableGeometry(screen).center()
+            splash.move(current_screen_center - splash.rect().center())
+
             splash.show()
             splash.showMessage(_("FlatCAM is initializing ..."),
                                alignment=Qt.AlignBottom | Qt.AlignLeft,
@@ -1695,6 +1702,7 @@ class App(QtCore.QObject):
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
         self.ui.menuview_zoom_in.triggered.connect(self.on_zoom_in)
         self.ui.menuview_zoom_out.triggered.connect(self.on_zoom_out)
+        self.ui.menuview_replot.triggered.connect(self.plot_all)
 
         self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
@@ -2145,6 +2153,22 @@ class App(QtCore.QObject):
 
         self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
 
+        self.default_autocomplete_keywords = [
+            'all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
+            'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
+            'drilled_dias', 'drillz', 'pp',
+            'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
+            'milled_dias',
+            'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
+            'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
+            'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
+            'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
+            'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
+            'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
+            'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type',
+            'Desktop', 'FlatPrj', 'FlatConfig', 'Users', 'Documents', 'My Documents', 'Marius'
+        ]
+
         # ####################################################################################
         # ####################### Shell SETUP ################################################
         # ####################################################################################
@@ -2367,6 +2391,12 @@ class App(QtCore.QObject):
 
         # finish the splash
         # splash.finish(self.ui)
+
+        # disable the Excellon path optimizations made with Google OR-Tools if the app is run on a 32bit platform
+        current_platform = platform.architecture()[0]
+        if current_platform != '64bit':
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.setDisabled(True)
 
         # ###############################################################################
         # ####################### Finished the CONSTRUCTOR ##############################
@@ -9789,6 +9819,7 @@ class App(QtCore.QObject):
         :return: None
         """
         self.log.debug("Plot_all()")
+        self.inform.emit('[success] %s...' % _("Redrawing all objects"))
 
         for obj in self.collection.get_list():
             def worker_task(obj):
