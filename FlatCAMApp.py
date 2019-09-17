@@ -82,7 +82,7 @@ class App(QtCore.QObject):
     cmd_line_shellfile = ''
     cmd_line_shellvar = ''
 
-    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>\nFlatCam.py --shellvar=<cmd_line_shellvar>"
+    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>\nFlatCam.py --shellvar=<1,'C:\path',23>"
     try:
         # Multiprocessing pool will spawn additional processes with 'multiprocessing-fork' flag
         cmd_line_options, args = getopt.getopt(sys.argv[1:], "h:", ["shellfile=",
