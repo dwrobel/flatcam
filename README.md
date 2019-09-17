@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.09.2019
+
+- added more programmers that contributed to FlatCAM over the years, in the "About FlatCAM" -> Programmers window
+- fixed issue #315 where a script run with the --shellfile argument crashed the program if it contained a TclCommand New
+- added messages in the Splash Screen when running FlatCAM with arguments at startup
+- fixed issue #313 where TclCommand drillcncjob is spitting errors in Tcl Shell which should be ignored
+
 16.09.2019
 
 - modified the TclCommand New so it will no longer close all tabs when called (it closed the Code Editor tab which may have been holding the code that run)
@@ -20,6 +27,11 @@ CAD program, and create G-Code for Isolation routing.
 - fixed some issues recently introduced in the TclCommands CNCJob, DrillCNCJob and write_gcode; changed some parameters names
 - fixed issue in the Laser postprocessor where the laser was turned on as soon as the GCode started creating an unwanted cut up until the job start
 - added new links in Menu -> Help (Excellon, Gerber specifications and a Report Bug)
+- made the splashscreen to be showed on the current monitor on systems with multiple monitors
+- added a new entry in Menu -> View -> Redraw All which is doing what the name says: redraw all loaded objects
+- fixed issue where in TCl Shell the Windows paths were not understood due of backslash symbol understood as escape symbol instead of path separator
+- made sure that in for the TclCommand cncjob and for the drillcncjob if one of the args is stated but no value then the value used will be the default one
+- made available the TSA algorithm for drill path optimization when the used OS is 64bit. When used OS is 32bit the only available algorithm is TSA
 
 15.09.2019
 
