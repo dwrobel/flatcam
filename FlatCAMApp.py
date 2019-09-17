@@ -107,7 +107,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.97
-    version_date = "2019/09/15"
+    version_date = "2019/09/20"
     beta = True
 
     # current date now
@@ -359,10 +359,17 @@ class App(QtCore.QObject):
 
         if show_splash:
             splash_pix = QtGui.QPixmap('share/splash.png')
-            splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
-            # splash.setMask(splash_pix.mask())
-            splash.show()
-            splash.showMessage(_("FlatCAM is initializing ..."),
+            self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+            # self.splash.setMask(splash_pix.mask())
+
+            # move splashscreen to the current monitor
+            desktop = QtWidgets.QApplication.desktop()
+            screen = desktop.screenNumber(QtGui.QCursor.pos())
+            current_screen_center = desktop.availableGeometry(screen).center()
+            self.splash.move(current_screen_center - self.splash.rect().center())
+
+            self.splash.show()
+            self.splash.showMessage(_("FlatCAM is initializing ..."),
                                alignment=Qt.AlignBottom | Qt.AlignLeft,
                                color=QtGui.QColor("gray"))
 
@@ -1536,24 +1543,24 @@ class App(QtCore.QObject):
         # ############# SETUP Plot Area #################
         # ###############################################
         if show_splash:
-            splash.showMessage(_("FlatCAM is initializing ...\n"
-                                 "Canvas initialization started."),
-                               alignment=Qt.AlignBottom | Qt.AlignLeft,
-                               color=QtGui.QColor("gray"))
+            self.splash.showMessage(_("FlatCAM is initializing ...\n"
+                                      "Canvas initialization started."),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
         start_plot_time = time.time()   # debug
         self.plotcanvas = None
         self.app_cursor = None
         self.hover_shapes = None
         self.on_plotcanvas_setup()
         end_plot_time = time.time()
-        used_time = end_plot_time - start_plot_time
-        self.log.debug("Finished Canvas initialization in %s seconds." % str(used_time))
+        self.used_time = end_plot_time - start_plot_time
+        self.log.debug("Finished Canvas initialization in %s seconds." % str(self.used_time))
         if show_splash:
-            splash.showMessage('%s: %ssec' % (_("FlatCAM is initializing ...\n"
-                                                "Canvas initialization started.\n"
-                                                "Canvas initialization finished in"), '%.2f' % used_time),
-                               alignment=Qt.AlignBottom | Qt.AlignLeft,
-                               color=QtGui.QColor("gray"))
+            self.splash.showMessage('%s: %ssec' % (_("FlatCAM is initializing ...\n"
+                                                     "Canvas initialization started.\n"
+                                                     "Canvas initialization finished in"), '%.2f' % self.used_time),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
         self.ui.splitter.setStretchFactor(1, 2)
 
         # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
@@ -1695,6 +1702,7 @@ class App(QtCore.QObject):
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
         self.ui.menuview_zoom_in.triggered.connect(self.on_zoom_in)
         self.ui.menuview_zoom_out.triggered.connect(self.on_zoom_out)
+        self.ui.menuview_replot.triggered.connect(self.plot_all)
 
         self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
@@ -2145,6 +2153,22 @@ class App(QtCore.QObject):
 
         self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
 
+        self.default_autocomplete_keywords = [
+            'all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
+            'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
+            'drilled_dias', 'drillz', 'pp',
+            'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
+            'milled_dias',
+            'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
+            'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
+            'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
+            'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
+            'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
+            'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
+            'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type',
+            'Desktop', 'FlatPrj', 'FlatConfig', 'Users', 'Documents', 'My Documents', 'Marius'
+        ]
+
         # ####################################################################################
         # ####################### Shell SETUP ################################################
         # ####################################################################################
@@ -2204,20 +2228,6 @@ class App(QtCore.QObject):
         # self.parse_system_fonts()
 
         # #####################################################################################
-        # ########################## START-UP ARGUMENTS #######################################
-        # #####################################################################################
-
-        # test if the program was started with a script as parameter
-        if self.cmd_line_shellfile:
-            try:
-                with open(self.cmd_line_shellfile, "r") as myfile:
-                    cmd_line_shellfile_text = myfile.read()
-                    self.shell._sysShell.exec_command(cmd_line_shellfile_text)
-            except Exception as ext:
-                print("ERROR: ", ext)
-                sys.exit(2)
-
-        # #####################################################################################
         # ######################## Check for updates ##########################################
         # #####################################################################################
 
@@ -2264,10 +2274,10 @@ class App(QtCore.QObject):
 
         # List to store the objects that are currently loaded in FlatCAM
         # This list is updated on each object creation or object delete
-        self.all_objects_list = []
+        self.all_objects_list = list()
 
         # List to store the objects that are selected
-        self.sel_objects_list = []
+        self.sel_objects_list = list()
 
         # holds the key modifier if pressed (CTRL, SHIFT or ALT)
         self.key_modifiers = None
@@ -2365,18 +2375,45 @@ class App(QtCore.QObject):
 
         self.set_ui_title(name=_("New Project - Not saved"))
 
-        # finish the splash
-        # splash.finish(self.ui)
+        # disable the Excellon path optimizations made with Google OR-Tools if the app is run on a 32bit platform
+        current_platform = platform.architecture()[0]
+        if current_platform != '64bit':
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.set_value('T')
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio.setDisabled(True)
 
         # ###############################################################################
         # ####################### Finished the CONSTRUCTOR ##############################
         # ###############################################################################
         App.log.debug("END of constructor. Releasing control.")
 
+        # #####################################################################################
+        # ########################## START-UP ARGUMENTS #######################################
+        # #####################################################################################
+
+        # test if the program was started with a script as parameter
+        if self.cmd_line_shellfile:
+            try:
+                with open(self.cmd_line_shellfile, "r") as myfile:
+                    if show_splash:
+                        self.splash.showMessage('%s: %ssec\n%s' % (
+                            _("Canvas initialization started.\n"
+                              "Canvas initialization finished in"), '%.2f' % self.used_time,
+                            _("Executing Tcl Script ...")),
+                                                alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                                color=QtGui.QColor("gray"))
+                    cmd_line_shellfile_text = myfile.read()
+                    self.shell._sysShell.exec_command(cmd_line_shellfile_text)
+            except Exception as ext:
+                print("ERROR: ", ext)
+                sys.exit(2)
+
         # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
         if App.args:
             self.args_at_startup.emit(App.args)
+
+        # finish the splash
+        self.splash.finish(self.ui)
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -2433,10 +2470,10 @@ class App(QtCore.QObject):
                     if file_name == "":
                         self.inform.emit(_("Open Config file failed."))
                     else:
-                        # run_from_arg = True
+                        run_from_arg = True
                         # self.worker_task.emit({'fcn': self.open_config_file,
                         #                        'params': [file_name, run_from_arg]})
-                        self.open_config_file(file_name, run_from_arg=True)
+                        self.open_config_file(file_name, run_from_arg=run_from_arg)
                 except Exception as e:
                     log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
@@ -3885,9 +3922,12 @@ class App(QtCore.QObject):
                     # "<b>{down}</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\"><b>{down}</B></a><BR>"
                     # "<b> {issue}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\"><B>{issue}</B></a><BR>".
-                        format(title=_("2D Computer-Aided Printed Circuit Board Manufacturing"),
-                               devel=_("Development"), down=_("DOWNLOAD"), issue=_("Issue tracker"))
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">"
+                    "<B>{issue}</B></a><BR>".format(
+                        title=_("2D Computer-Aided Printed Circuit Board Manufacturing"),
+                        devel=_("Development"),
+                        down=_("DOWNLOAD"),
+                        issue=_("Issue tracker"))
                 )
                 title.setOpenExternalLinks(True)
 
@@ -3897,7 +3937,8 @@ class App(QtCore.QObject):
                 description_label = QtWidgets.QLabel(
                     "FlatCAM {version} {beta} ({date}) - {arch}<br>"
                     "<a href = \"http://flatcam.org/\">http://flatcam.org</a><br>".format(
-                        version=version,beta=('BETA' if beta else ''),
+                        version=version,
+                        beta=('BETA' if beta else ''),
                         date=version_date,
                         arch=platform.architecture()[0])
                 )
@@ -3975,31 +4016,83 @@ class App(QtCore.QObject):
                 self.splash_tab_layout.addWidget(logo, stretch=0)
                 self.splash_tab_layout.addWidget(title, stretch=1)
 
-                self.prog_grid_lay = QtWidgets.QGridLayout()
+                pal = QtGui.QPalette()
+                pal.setColor(QtGui.QPalette.Background, Qt.white)
+
+                self.prog_form_lay = QtWidgets.QFormLayout()
+                self.prog_form_lay.setHorizontalSpacing(20)
 
                 prog_widget = QtWidgets.QWidget()
-                prog_widget.setLayout(self.prog_grid_lay)
-                self.programmmers_tab_layout.addWidget(prog_widget)
-                self.programmmers_tab_layout.addStretch()
+                prog_widget.setLayout(self.prog_form_lay)
+                prog_scroll = QtWidgets.QScrollArea()
+                prog_scroll.setWidget(prog_widget)
+                prog_scroll.setWidgetResizable(True)
+                prog_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+                prog_scroll.setPalette(pal)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Status")), 0, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Program Author")), 1, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("Maintainer >=2019")), 4, 1)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Matthieu Berthomé"), 5, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 1)
+                self.programmmers_tab_layout.addWidget(prog_scroll)
+
+                self.prog_form_lay.addRow(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")),
+                                          QtWidgets.QLabel('<b>%s</b>' % _("Status")))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Juan Pablo Caram"),
+                                          QtWidgets.QLabel('%s' % _("Program Author")))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Denis Hayrullin"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Kamil Sopko"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Marius Stanciu"),
+                                          QtWidgets.QLabel('%s' % _("Maintainer >=2019")))
+                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Alexandru Lazar"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Matthieu Berthomé"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Mike Evans"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Victor Benso"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Barnaby Walters"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Jørn Sandvik Nilsson"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Lei Zheng"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Marco A Quezada"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Cedric Dussud"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Chris Hemingway"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Damian Wrobel"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Daniel Sallin"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Bruno Vunderl"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Gonzalo Lopez"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Jakob Staudt"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Mike Smith"))
+
+                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Lubos Medovarsky"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Steve Martina"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Thomas Duffin"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@Idechix"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@SM"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@grbf"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@Symonty"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@mgix"))
 
                 self.translator_grid_lay = QtWidgets.QGridLayout()
+
+                # trans_widget = QtWidgets.QWidget()
+                # trans_widget.setLayout(self.translator_grid_lay)
+                # self.translators_tab_layout.addWidget(trans_widget)
+                # self.translators_tab_layout.addStretch()
+
                 trans_widget = QtWidgets.QWidget()
                 trans_widget.setLayout(self.translator_grid_lay)
-                self.translators_tab_layout.addWidget(trans_widget)
-                self.translators_tab_layout.addStretch()
+                trans_scroll = QtWidgets.QScrollArea()
+                trans_scroll.setWidget(trans_widget)
+                trans_scroll.setWidgetResizable(True)
+                trans_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+                trans_scroll.setPalette(pal)
+                self.translators_tab_layout.addWidget(trans_scroll)
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Language")), 0, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Translator")), 0, 1)
@@ -4020,7 +4113,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 5, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 2)
                 self.translator_grid_lay.setColumnStretch(0, 0)
-                # self.translators_tab_layout.addStretch()
+                self.translators_tab_layout.addStretch()
 
                 self.license_tab_layout.addWidget(license_label)
                 self.license_tab_layout.addStretch()
@@ -7299,8 +7392,10 @@ class App(QtCore.QObject):
     def select_objects(self, key=None):
         # list where we store the overlapped objects under our mouse left click position
         objects_under_the_click_list = []
+
         # Populate the list with the overlapped objects on the click position
         curr_x, curr_y = self.pos
+
         for obj in self.all_objects_list:
             if (curr_x >= obj.options['xmin']) and (curr_x <= obj.options['xmax']) and \
                     (curr_y >= obj.options['ymin']) and (curr_y <= obj.options['ymax']):
@@ -7314,6 +7409,7 @@ class App(QtCore.QObject):
             # because we selected "nothing"
             if not objects_under_the_click_list:
                 self.collection.set_all_inactive()
+
                 # delete the possible selection box around a possible selected object
                 self.delete_selection_shape()
 
@@ -7330,7 +7426,6 @@ class App(QtCore.QObject):
                     self.inform.emit("")
                 else:
                     self.call_source = 'app'
-
             else:
                 # case when there is only an object under the click and we toggle it
                 if len(objects_under_the_click_list) == 1:
@@ -7625,7 +7720,7 @@ class App(QtCore.QObject):
                 except AttributeError:
                     pass
 
-        # tcl needs to be reinitialized, otherwise  old shell variables etc  remains
+        # tcl needs to be reinitialized, otherwise old shell variables etc  remains
         self.init_tcl()
 
         self.delete_selection_shape()
@@ -7713,6 +7808,11 @@ class App(QtCore.QObject):
             filenames = [str(filename) for filename in filenames]
         else:
             filenames = [name]
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening Gerber file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL] %s' %
@@ -7744,6 +7844,11 @@ class App(QtCore.QObject):
             filenames = [str(filename) for filename in filenames]
         else:
             filenames = [str(name)]
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening Excellon file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL]%s' %
@@ -7779,6 +7884,11 @@ class App(QtCore.QObject):
             filenames = [str(filename) for filename in filenames]
         else:
             filenames = [name]
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening G-Code file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
 
         if len(filenames) == 0:
             self.inform.emit('[WARNING_NOTCL] %s' %
@@ -8433,6 +8543,11 @@ class App(QtCore.QObject):
 
         if name:
             filename = name
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Executing FlatCAMScript file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
         else:
             _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
             try:
@@ -9602,6 +9717,12 @@ class App(QtCore.QObject):
         """
         App.log.debug("Opening config file: " + filename)
 
+        if run_from_arg:
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening FlatCAM Config file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Code Editor"))
         # first clear previous text in text editor (if any)
@@ -9648,6 +9769,13 @@ class App(QtCore.QObject):
         # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
         if cli is None:
             self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
+
+        if run_from_arg:
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening FlatCAM Project file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
 
         # Open and parse an uncompressed Project file
         try:
@@ -9789,6 +9917,7 @@ class App(QtCore.QObject):
         :return: None
         """
         self.log.debug("Plot_all()")
+        self.inform.emit('[success] %s...' % _("Redrawing all objects"))
 
         for obj in self.collection.get_list():
             def worker_task(obj):

@@ -101,43 +101,48 @@ class TclCommandCncjob(TclCommandSignaled):
         obj = self.app.collection.get_by_name(str(name), isCaseSensitive=False)
 
         if obj is None:
-            if not muted:
+            if muted == 0:
                 self.raise_tcl_error("Object not found: %s" % str(name))
             else:
-                return
+                return "fail"
 
         if not isinstance(obj, FlatCAMGeometry):
-            if not muted:
+            if muted == 0:
                 self.raise_tcl_error('Expected FlatCAMGeometry, got %s %s.' % (str(name), type(obj)))
             else:
                 return
 
-        args["dia"] = args["dia"] if "dia" in args else obj.options["cnctooldia"]
+        args["dia"] = args["dia"] if "dia" in args and args["dia"] else obj.options["cnctooldia"]
 
-        args["z_cut"] = args["z_cut"] if "z_cut" in args else obj.options["cutz"]
-        args["z_move"] = args["z_move"] if "z_move" in args else obj.options["travelz"]
+        args["z_cut"] = args["z_cut"] if "z_cut" in args and args["z_cut"] else obj.options["cutz"]
+        args["z_move"] = args["z_move"] if "z_move" in args and args["z_move"] else obj.options["travelz"]
 
-        args["feedrate"] = args["feedrate"] if "feedrate" in args else obj.options["feedrate"]
-        args["feedrate_z"] = args["feedrate_z"] if "feedrate_z" in args else obj.options["feedrate_z"]
-        args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args else obj.options["feedrate_rapid"]
+        args["feedrate"] = args["feedrate"] if "feedrate" in args and args["feedrate"] else obj.options["feedrate"]
+        args["feedrate_z"] = args["feedrate_z"] if "feedrate_z" in args and args["feedrate_z"] else \
+            obj.options["feedrate_z"]
+        args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args and args["feedrate_rapid"] else \
+            obj.options["feedrate_rapid"]
 
-        args["multidepth"] = args["multidepth"] if "multidepth" in args else obj.options["multidepth"]
-        args["extracut"] = args["extracut"] if "extracut" in args else obj.options["extracut"]
-        args["depthperpass"] = args["depthperpass"] if "depthperpass" in args else obj.options["depthperpass"]
+        args["multidepth"] = args["multidepth"] if "multidepth" in args and args["multidepth"] else \
+            obj.options["multidepth"]
+        args["extracut"] = args["extracut"] if "extracut" in args and args["extracut"] else obj.options["extracut"]
+        args["depthperpass"] = args["depthperpass"] if "depthperpass" in args and args["depthperpass"] else \
+            obj.options["depthperpass"]
 
-        args["startz"] = args["startz"] if "startz" in args else \
+        args["startz"] = args["startz"] if "startz" in args and args["startz"] else \
             self.app.defaults["geometry_startz"]
-        args["endz"] = args["endz"] if "endz" in args else obj.options["endz"]
+        args["endz"] = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
 
-        args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args else None
-        args["dwell"] = args["dwell"] if "dwell" in args else obj.options["dwell"]
-        args["dwelltime"] = args["dwelltime"] if "dwelltime" in args else obj.options["dwelltime"]
+        args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] else None
+        args["dwell"] = args["dwell"] if "dwell" in args and args["dwell"] else obj.options["dwell"]
+        args["dwelltime"] = args["dwelltime"] if "dwelltime" in args and args["dwelltime"] else obj.options["dwelltime"]
 
-        args["pp"] = args["pp"] if "pp" in args else obj.options["ppname_g"]
+        args["pp"] = args["pp"] if "pp" in args and args["pp"] else obj.options["ppname_g"]
 
         args["toolchange"] = True if "toolchange" in args and args["toolchange"] == 1 else False
-        args["toolchangez"] = args["toolchangez"] if "toolchangez" in args else obj.options["toolchangez"]
-        args["toolchangexy"] = args["toolchangexy"] if "toolchangexy" in args else \
+        args["toolchangez"] = args["toolchangez"] if "toolchangez" in args and args["toolchangez"] else \
+            obj.options["toolchangez"]
+        args["toolchangexy"] = args["toolchangexy"] if "toolchangexy" in args and args["toolchangexy"] else \
             self.app.defaults["geometry_toolchangexy"]
 
         del args['name']
@@ -148,7 +153,7 @@ class TclCommandCncjob(TclCommandSignaled):
             else:
                 if args[arg] is None:
                     print(arg, args[arg])
-                    if not muted:
+                    if muted == 0:
                         self.raise_tcl_error('One of the command parameters that have to be not None, is None.\n'
                                              'The parameter that is None is in the default values found in the list \n'
                                              'generated by the TclCommand "list_sys geom". or in the arguments.')

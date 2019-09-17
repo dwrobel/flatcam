@@ -210,6 +210,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         QtCore.QAbstractItemModel.__init__(self)
 
+        self.app = app
+
         # ## Icons for the list view
         self.icons = {}
         for kind in ObjectCollection.icon_files:
@@ -243,10 +245,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # same as above only for objects that are plotted
         self.plot_promises = set()
 
-        self.app = app
-
         # ## View
-        self.view = KeySensitiveListView(app)
+        self.view = KeySensitiveListView(self.app)
         self.view.setModel(self)
 
         self.view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -606,14 +606,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
 
-        self.beginResetModel()
-
-        self.checked_indexes = []
-        for group in self.root_item.child_items:
-            group.remove_children()
-
-        self.endResetModel()
-
         self.app.plotcanvas.redraw()
 
         self.app.all_objects_list.clear()
@@ -629,6 +621,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.app.cutout_tool.reset_fields()
 
         self.app.film_tool.reset_fields()
+
+        self.beginResetModel()
+
+        self.checked_indexes = []
+        for group in self.root_item.child_items:
+            group.remove_children()
+
+        self.endResetModel()
 
     def get_active(self):
         """
