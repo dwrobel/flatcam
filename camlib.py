@@ -5867,8 +5867,9 @@ class CNCjob(Geometry):
 
         self.app.inform.emit('%s...' %
                              _("Starting G-Code"))
+
         current_platform = platform.architecture()[0]
-        if current_platform != '64bit':
+        if current_platform == '64bit':
             used_excellon_optimization_type = excellon_optimization_type
             if used_excellon_optimization_type == 'M':
                 log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")

@@ -1905,7 +1905,7 @@ class App(QtCore.QObject):
             self.on_excellon_options_button)
 
         # when there are arguments at application startup this get launched
-        self.args_at_startup[list].connect(lambda: self.on_startup_args())
+        self.args_at_startup[list].connect(self.on_startup_args)
 
         # connect the 'Apply' buttons from the Preferences/File Associations
         self.ui.fa_defaults_form.fa_excellon_group.exc_list_btn.clicked.connect(
@@ -2415,6 +2415,18 @@ class App(QtCore.QObject):
         # finish the splash
         self.splash.finish(self.ui)
 
+        # #####################################################################################
+        # ########################## SHOW GUI #################################################
+        # #####################################################################################
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("maximized_gui"):
+            maximized_ui = settings.value('maximized_gui', type=bool)
+            if maximized_ui is True:
+                self.ui.showMaximized()
+            else:
+                self.ui.show()
+
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
         """
@@ -2433,14 +2445,15 @@ class App(QtCore.QObject):
             from_new_path = os.path.dirname(os.path.realpath(__file__)) + '\\flatcamGUI\\VisPyData\\data'
             shutil.copytree(from_new_path, to_path)
 
-    def on_startup_args(self, args=None):
+    def on_startup_args(self, args):
         """
         This will process any arguments provided to the application at startup. Like trying to launch a file or project.
 
         :param args: a list containing the application args at startup
         :return: None
         """
-        if args:
+
+        if args is not None:
             args_to_process = args
         else:
             args_to_process = App.args
@@ -2491,6 +2504,13 @@ class App(QtCore.QObject):
                 except Exception as e:
                     log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
+            elif 'quit' in argument or 'exit' in argument:
+                log.debug("App.on_startup_args() --> Quit event.")
+                sys.exit()
+
+            elif 'save' in argument:
+                log.debug("App.on_startup_args() --> Save event. App Defaults saved.")
+                self.save_defaults()
             else:
                 exc_list = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
                 proc_arg = argument.lower()
