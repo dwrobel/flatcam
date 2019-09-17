@@ -11,7 +11,9 @@ CAD program, and create G-Code for Isolation routing.
 
 18.09.2019
 
-- added more funtionality to the Extension registration with FLatCAM and added to the GUI in Edit -> Preferences -> Utilities
+- added more functionality to the Extension registration with FLatCAM and added to the GUI in Edit -> Preferences -> Utilities
+- fixed the parsing of the Manufacturing files when double clicking them and they are registered with FlatCAM
+- fixed showing the GUI when some settings (maximized_GUI) are missing from QSettings
 
 17.09.2019
 

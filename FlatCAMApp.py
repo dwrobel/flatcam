@@ -2439,6 +2439,8 @@ class App(QtCore.QObject):
                 self.ui.showMaximized()
             else:
                 self.ui.show()
+        else:
+            self.ui.show()
 
         # #####################################################################################
         # ########################## START-UP ARGUMENTS #######################################
@@ -2580,6 +2582,7 @@ class App(QtCore.QObject):
                 proc_arg = argument.lower()
                 for ext in exc_list:
                     proc_ext = ext.replace(' ', '')
+                    proc_ext = '.%s' % proc_ext
                     if proc_ext.lower() in proc_arg and proc_ext != '':
                         file_name = str(argument)
                         if file_name == "":
@@ -2591,7 +2594,9 @@ class App(QtCore.QObject):
                 gco_list = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
                 for ext in gco_list:
                     proc_ext = ext.replace(' ', '')
+                    proc_ext = '.%s' % proc_ext
                     if proc_ext.lower() in proc_arg and proc_ext != '':
+                        print(proc_ext, proc_arg)
                         file_name = str(argument)
                         if file_name == "":
                             self.inform.emit(_("Open GCode file failed."))
@@ -2602,6 +2607,7 @@ class App(QtCore.QObject):
                 grb_list = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
                 for ext in grb_list:
                     proc_ext = ext.replace(' ', '')
+                    proc_ext = '.%s' % proc_ext
                     if proc_ext.lower() in proc_arg and proc_ext != '':
                         file_name = str(argument)
                         if file_name == "":
