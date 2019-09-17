@@ -80,10 +80,14 @@ class App(QtCore.QObject):
 
     # Get Cmd Line Options
     cmd_line_shellfile = ''
-    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>"
+    cmd_line_shellvars = ''
+
+    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>\nFlatCam.py --shellvars=<cmd_line_shellvars"
     try:
         # Multiprocessing pool will spawn additional processes with 'multiprocessing-fork' flag
-        cmd_line_options, args = getopt.getopt(sys.argv[1:], "h:", ["shellfile=", "multiprocessing-fork="])
+        cmd_line_options, args = getopt.getopt(sys.argv[1:], "h:", ["shellfile=",
+                                                                    "shellvars=",
+                                                                    "multiprocessing-fork="])
     except getopt.GetoptError:
         print(cmd_line_help)
         sys.exit(2)
@@ -93,6 +97,8 @@ class App(QtCore.QObject):
             sys.exit()
         elif opt == '--shellfile':
             cmd_line_shellfile = arg
+        elif opt == '--shellvars':
+            cmd_line_shellvars = arg
 
     # ## Logging ###
     log = logging.getLogger('base')
@@ -1905,7 +1911,7 @@ class App(QtCore.QObject):
             self.on_excellon_options_button)
 
         # when there are arguments at application startup this get launched
-        self.args_at_startup[list].connect(lambda: self.on_startup_args())
+        self.args_at_startup[list].connect(self.on_startup_args)
 
         # connect the 'Apply' buttons from the Preferences/File Associations
         self.ui.fa_defaults_form.fa_excellon_group.exc_list_btn.clicked.connect(
@@ -2406,7 +2412,26 @@ class App(QtCore.QObject):
             except Exception as ext:
                 print("ERROR: ", ext)
                 sys.exit(2)
-
+        elif self.cmd_line_shellvars:
+            try:
+                with open(self.cmd_line_shellvars, "r") as myfile:
+                    if show_splash:
+                        self.splash.showMessage('%s: %ssec\n%s' % (
+                            _("Canvas initialization started.\n"
+                              "Canvas initialization finished in"), '%.2f' % self.used_time,
+                            _("Reading Shell vars ...")),
+                                                alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                                color=QtGui.QColor("gray"))
+                    cmd_line_shellvars_text = myfile.read()
+                    for line in cmd_line_shellvars_text.splitlines():
+                        var, __, var_value = line.partition('=')
+                        var = var.replace(' ', '')
+                        var_value = var_value.replace(' ', '')
+                        command_tcl = 'set {var} {var_value}'.format(var=var, var_value=var_value)
+                        self.shell._sysShell.exec_command(command_tcl, no_echo=True)
+            except Exception as ext:
+                print("ERROR: ", ext)
+                sys.exit(2)
         # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
         if App.args:
@@ -2414,6 +2439,18 @@ class App(QtCore.QObject):
 
         # finish the splash
         self.splash.finish(self.ui)
+
+        # #####################################################################################
+        # ########################## SHOW GUI #################################################
+        # #####################################################################################
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("maximized_gui"):
+            maximized_ui = settings.value('maximized_gui', type=bool)
+            if maximized_ui is True:
+                self.ui.showMaximized()
+            else:
+                self.ui.show()
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -2433,14 +2470,15 @@ class App(QtCore.QObject):
             from_new_path = os.path.dirname(os.path.realpath(__file__)) + '\\flatcamGUI\\VisPyData\\data'
             shutil.copytree(from_new_path, to_path)
 
-    def on_startup_args(self, args=None):
+    def on_startup_args(self, args):
         """
         This will process any arguments provided to the application at startup. Like trying to launch a file or project.
 
         :param args: a list containing the application args at startup
         :return: None
         """
-        if args:
+
+        if args is not None:
             args_to_process = args
         else:
             args_to_process = App.args
@@ -2491,6 +2529,13 @@ class App(QtCore.QObject):
                 except Exception as e:
                     log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
+            elif 'quit' in argument or 'exit' in argument:
+                log.debug("App.on_startup_args() --> Quit event.")
+                sys.exit()
+
+            elif 'save' in argument:
+                log.debug("App.on_startup_args() --> Save event. App Defaults saved.")
+                self.save_defaults()
             else:
                 exc_list = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
                 proc_arg = argument.lower()
@@ -3125,18 +3170,20 @@ class App(QtCore.QObject):
         self.display_tcl_error(text)
         raise self.TclErrorException(text)
 
-    def exec_command(self, text, no_plot=None):
+    def exec_command(self, text, no_echo=False):
         """
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
         Also handles execution in separated threads
 
         :param text: FlatCAM TclCommand with parameters
+        :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
+        will create crashes of the _Expandable_Edit widget
         :return: output if there was any
         """
 
         self.report_usage('exec_command')
 
-        result = self.exec_command_test(text, False)
+        result = self.exec_command_test(text, False, no_echo=no_echo)
 
         # MS: added this method call so the geometry is updated once the TCL command is executed
         # if no_plot is None:
@@ -3144,35 +3191,40 @@ class App(QtCore.QObject):
 
         return result
 
-    def exec_command_test(self, text, reraise=True):
+    def exec_command_test(self, text, reraise=True, no_echo=False):
         """
         Same as exec_command(...) with additional control over  exceptions.
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
 
         :param text: Input command
         :param reraise: Re-raise TclError exceptions in Python (mostly for unitttests).
+        :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
+        will create crashes of the _Expandable_Edit widget
         :return: Output from the command
         """
 
         tcl_command_string = str(text)
 
         try:
-            self.shell.open_proccessing()  # Disables input box.
+            if no_echo is False:
+                self.shell.open_proccessing()  # Disables input box.
 
             result = self.tcl.eval(str(tcl_command_string))
-            if result != 'None':
+            if result != 'None' and no_echo is False:
                 self.shell.append_output(result + '\n')
 
         except tk.TclError as e:
             # This will display more precise answer if something in TCL shell fails
             result = self.tcl.eval("set errorInfo")
             self.log.error("Exec command Exception: %s" % (result + '\n'))
-            self.shell.append_error('ERROR: ' + result + '\n')
+            if no_echo is False:
+                self.shell.append_error('ERROR: ' + result + '\n')
             # Show error in console and just return or in test raise exception
             if reraise:
                 raise e
         finally:
-            self.shell.close_proccessing()
+            if no_echo is False:
+                self.shell.close_proccessing()
             pass
         return result
 

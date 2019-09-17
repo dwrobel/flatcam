@@ -15,6 +15,9 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue #315 where a script run with the --shellfile argument crashed the program if it contained a TclCommand New
 - added messages in the Splash Screen when running FlatCAM with arguments at startup
 - fixed issue #313 where TclCommand drillcncjob is spitting errors in Tcl Shell which should be ignored
+- fixed an bug where the pywrapcp name from Google OR-Tools is not defined; fix issue #316
+- if FlatCAM is started with the 'quit' or 'exit' as argument it will close immediately and it will close also another instance of FlatCAM that may be running
+- added a new command line parameter for FlatCAM named '--shellvars' which can load a text file with variables for Tcl Shell in the format: one variable assignment per line and looking like: 'a=3' without quotes
 
 16.09.2019
 

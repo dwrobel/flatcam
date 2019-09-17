@@ -60,11 +60,4 @@ if __name__ == '__main__':
 
     fc = App()
 
-    if settings.contains("maximized_gui"):
-        maximized_ui = settings.value('maximized_gui', type=bool)
-        if maximized_ui is True:
-            fc.ui.showMaximized()
-        else:
-            fc.ui.show()
-
     sys.exit(app.exec_())
