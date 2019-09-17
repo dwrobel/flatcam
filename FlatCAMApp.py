@@ -1163,12 +1163,13 @@ class App(QtCore.QObject):
             "tools_sub_close_paths": True,
 
             # file associations
-            "fa_excellon": ".drl, .xln, .drd, .tap, .exc, .ncd",
-            "fa_gcode": ".nc, .ncc, .tap, .gcode, .cnc, .ecs, .fnc, .dnc, .ncg, .gc, .fan, .fgc, .din, .xpi,"
-                        " .hnc, .h, .i, .ncp, .min, .gcd, .rol, .mpr, .ply, .out, .eia, .plt, .sbp, .mpf",
-            "fa_gerber": ".gbr, .ger, .gtl, .gbl, .gts, .gbs, .gtp, .gbp, .gto, .gbo, .gm1, .gml, .gm3, .gko, .cmp, "
-                         ".sol, .stc, .sts, .plc, .pls, .crc, .crs, .tsm, .bsm, .ly2, .ly15, .dim, .mil, .grb, .top, "
-                         ".bot, .smt, .smb, .sst, .ssb, .spt, .spb, .pho, .gdo, .art, .gbd",
+            "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
+            "fa_gcode": 'cnc, din, dnc, ecs, eia, fan, fgc, fnc, gc, gcd, gcode, h, hnc, i, min, mpf, mpr, nc, ncc, '
+                        'ncg, ncp, out, plt, ply, rol, sbp, tap, xpi',
+            "fa_gerber": 'art, bot, bsm, cmp, crc, crs, dim, g4, gb0, gb1, gb2, gb3, gb5, gb6, gb7, gb8, gb9, gbd, '
+                         'gbl, gbo, gbp, gbr, gbs, gdo, ger, gko, gm1, gm2, gm3, grb, gtl, gto, gtp, gts, ly15, ly2, '
+                         'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm'
+,
         })
 
         # ############################################################
@@ -1913,6 +1914,38 @@ class App(QtCore.QObject):
         # when there are arguments at application startup this get launched
         self.args_at_startup[list].connect(self.on_startup_args)
 
+        # ##############################################################
+        # ############### FILE ASSOCIATIONS SIGNALS ####################
+        # ##############################################################
+
+        self.ui.fa_defaults_form.fa_excellon_group.restore_btn.clicked.connect(
+            lambda: self.restore_extensions(ext_type='excellon'))
+        self.ui.fa_defaults_form.fa_gcode_group.restore_btn.clicked.connect(
+            lambda: self.restore_extensions(ext_type='gcode'))
+        self.ui.fa_defaults_form.fa_gerber_group.restore_btn.clicked.connect(
+            lambda: self.restore_extensions(ext_type='gerber'))
+
+        self.ui.fa_defaults_form.fa_excellon_group.del_all_btn.clicked.connect(
+            lambda: self.delete_all_extensions(ext_type='excellon'))
+        self.ui.fa_defaults_form.fa_gcode_group.del_all_btn.clicked.connect(
+            lambda: self.delete_all_extensions(ext_type='gcode'))
+        self.ui.fa_defaults_form.fa_gerber_group.del_all_btn.clicked.connect(
+            lambda: self.delete_all_extensions(ext_type='gerber'))
+
+        self.ui.fa_defaults_form.fa_excellon_group.add_btn.clicked.connect(
+            lambda: self.add_extension(ext_type='excellon'))
+        self.ui.fa_defaults_form.fa_gcode_group.add_btn.clicked.connect(
+            lambda: self.add_extension(ext_type='gcode'))
+        self.ui.fa_defaults_form.fa_gerber_group.add_btn.clicked.connect(
+            lambda: self.add_extension(ext_type='gerber'))
+
+        self.ui.fa_defaults_form.fa_excellon_group.del_btn.clicked.connect(
+            lambda: self.del_extension(ext_type='excellon'))
+        self.ui.fa_defaults_form.fa_gcode_group.del_btn.clicked.connect(
+            lambda: self.del_extension(ext_type='gcode'))
+        self.ui.fa_defaults_form.fa_gerber_group.del_btn.clicked.connect(
+            lambda: self.del_extension(ext_type='gerber'))
+
         # connect the 'Apply' buttons from the Preferences/File Associations
         self.ui.fa_defaults_form.fa_excellon_group.exc_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='excellon'))
@@ -2312,16 +2345,16 @@ class App(QtCore.QObject):
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
 
-        self.grb_list = ['gbr', 'ger', 'gtl', 'gbl', 'gts', 'gbs', 'gtp', 'gbp', 'gto', 'gbo', 'gm1', 'gm2', 'gm3',
-                         'gko', 'cmp', 'sol', 'stc', 'sts', 'plc', 'pls', 'crc', 'crs', 'tsm', 'bsm', 'ly2', 'ly15',
-                         'dim', 'mil', 'grb', 'top', 'bot', 'smt', 'smb', 'sst', 'ssb', 'spt', 'spb', 'pho', 'gdo',
-                         'art', 'gbd', 'gb0', 'gb1', 'gb2', 'gb3', 'g4', 'gb5', 'gb6', 'gb7', 'gb8', 'gb9'
-                         ]
-        self.exc_list = ['drl', 'txt', 'xln', 'drd', 'tap', 'exc', 'ncd']
-        self.gcode_list = ['nc', 'ncc', 'tap', 'gcode', 'cnc', 'ecs', 'fnc', 'dnc', 'ncg', 'gc', 'fan', 'fgc', 'din',
-                           'xpi', 'hnc', 'h', 'i', 'ncp', 'min', 'gcd', 'rol', 'mpr', 'ply', 'out', 'eia', 'plt', 'sbp',
-                           'mpf'
-                           ]
+        self.grb_list = ['art', 'bot', 'bsm', 'cmp', 'crc', 'crs', 'dim', 'g4', 'gb0', 'gb1', 'gb2', 'gb3', 'gb5',
+                         'gb6', 'gb7', 'gb8', 'gb9', 'gbd', 'gbl', 'gbo', 'gbp', 'gbr', 'gbs', 'gdo', 'ger', 'gko',
+                         'gml', 'gm1', 'gm2', 'gm3', 'grb', 'gtl', 'gto', 'gtp', 'gts', 'ly15', 'ly2', 'mil', 'pho',
+                         'plc', 'pls', 'smb', 'smt', 'sol', 'spb', 'spt', 'ssb', 'sst', 'stc', 'sts', 'top', 'tsm']
+
+        self.exc_list = ['drd', 'drl', 'exc', 'ncd', 'tap', 'txt', 'xln']
+
+        self.gcode_list = ['cnc', 'din', 'dnc', 'ecs', 'eia', 'fan', 'fgc', 'fnc', 'gc', 'gcd', 'gcode', 'h', 'hnc',
+                           'i', 'min', 'mpf', 'mpr', 'nc', 'ncc', 'ncg', 'ncp', 'out', 'plt', 'ply', 'rol', 'sbp',
+                           'tap', 'xpi']
         self.svg_list = ['svg']
         self.dxf_list = ['dxf']
         self.pdf_list = ['pdf']
@@ -4582,19 +4615,19 @@ class App(QtCore.QObject):
 
             # register all keys in the Preferences window
             for ext in exc_list:
-                new_k = new_reg_path + ext
+                new_k = new_reg_path + '.%s' % ext
                 set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
 
             # and unregister those that are no longer in the Preferences windows but are in the file
             for ext in self.defaults["fa_excellon"].replace(' ', '').split(','):
                 if ext not in exc_list:
-                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del=ext)
+                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del='.%s' % ext)
 
             # now write the updated extensions to the self.defaults
-            new_ext = ''
-            for ext in exc_list:
-                new_ext = new_ext + ext + ', '
-            self.defaults["fa_excellon"] = new_ext
+            # new_ext = ''
+            # for ext in exc_list:
+            #     new_ext = new_ext + ext + ', '
+            # self.defaults["fa_excellon"] = new_ext
             self.inform.emit('[success] %s' % _("Selected Excellon file extensions registered with FlatCAM."))
 
         if obj_type is None or obj_type == 'gcode':
@@ -4603,19 +4636,19 @@ class App(QtCore.QObject):
 
             # register all keys in the Preferences window
             for ext in gco_list:
-                new_k = new_reg_path + ext
+                new_k = new_reg_path + '.%s' % ext
                 set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
 
             # and unregister those that are no longer in the Preferences windows but are in the file
             for ext in self.defaults["fa_gcode"].replace(' ', '').split(','):
                 if ext not in gco_list:
-                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del=ext)
+                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del='.%s' % ext)
 
             # now write the updated extensions to the self.defaults
-            new_ext = ''
-            for ext in gco_list:
-                new_ext = new_ext + ext + ', '
-            self.defaults["fa_gcode"] = new_ext
+            # new_ext = ''
+            # for ext in gco_list:
+            #     new_ext = new_ext + ext + ', '
+            # self.defaults["fa_gcode"] = new_ext
             self.inform.emit('[success] %s' %
                              _("Selected GCode file extensions registered with FlatCAM."))
 
@@ -4625,21 +4658,115 @@ class App(QtCore.QObject):
 
             # register all keys in the Preferences window
             for ext in grb_list:
-                new_k = new_reg_path + ext
+                new_k = new_reg_path + '.%s' % ext
                 set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
 
             # and unregister those that are no longer in the Preferences windows but are in the file
             for ext in self.defaults["fa_gerber"].replace(' ', '').split(','):
                 if ext not in grb_list:
-                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del=ext)
+                    delete_reg(root_path=root_path, reg_path=new_reg_path, key_to_del='.%s' % ext)
 
             # now write the updated extensions to the self.defaults
-            new_ext = ''
-            for ext in grb_list:
-                new_ext = new_ext + ext + ', '
-            self.defaults["fa_gerber"] = new_ext
+            # new_ext = ''
+            # for ext in grb_list:
+            #     new_ext = new_ext + ext + ', '
+            # self.defaults["fa_gerber"] = new_ext
             self.inform.emit('[success] %s' %
                              _("Selected Gerber file extensions registered with FlatCAM."))
+
+    def add_extension(self, ext_type):
+        if ext_type == 'excellon':
+            new_ext = self.ui.fa_defaults_form.fa_excellon_group.ext_entry.get_value()
+            if new_ext == '':
+                return
+
+            old_val = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
+            if new_ext in old_val:
+                return
+            old_val.append(new_ext)
+            old_val.sort()
+            self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
+        if ext_type == 'gcode':
+            new_ext = self.ui.fa_defaults_form.fa_gcode_group.ext_entry.get_value()
+            if new_ext == '':
+                return
+
+            old_val = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
+            if new_ext in old_val:
+                return
+            old_val.append(new_ext)
+            old_val.sort()
+            self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
+        if ext_type == 'gerber':
+            new_ext = self.ui.fa_defaults_form.fa_gerber_group.ext_entry.get_value()
+            if new_ext == '':
+                return
+
+            old_val = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
+            if new_ext in old_val:
+                return
+            old_val.append(new_ext)
+            old_val.sort()
+            self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
+
+    def del_extension(self, ext_type):
+        if ext_type == 'excellon':
+            new_ext = self.ui.fa_defaults_form.fa_excellon_group.ext_entry.get_value()
+            if new_ext == '':
+                return
+
+            old_val = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
+            if new_ext not in old_val:
+                return
+            old_val.remove(new_ext)
+            old_val.sort()
+            self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
+        if ext_type == 'gcode':
+            new_ext = self.ui.fa_defaults_form.fa_gcode_group.ext_entry.get_value()
+            if new_ext == '':
+                return
+
+            old_val = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
+            if new_ext not in old_val:
+                return
+            old_val.remove(new_ext)
+            old_val.sort()
+            self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
+        if ext_type == 'gerber':
+            new_ext = self.ui.fa_defaults_form.fa_gerber_group.ext_entry.get_value()
+            if new_ext == '':
+                return
+
+            old_val = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
+            if new_ext not in old_val:
+                return
+            old_val.remove(new_ext)
+            old_val.sort()
+            self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
+
+    def restore_extensions(self, ext_type):
+        if ext_type == 'excellon':
+            # don't add 'txt' to the associations (too many files are .txt and not Excellon) but keep it in the list
+            # for the ability to open Excellon files with .txt extension
+            new_exc_list = deepcopy(self.exc_list)
+
+            try:
+                new_exc_list.remove('txt')
+            except ValueError:
+                pass
+            self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(new_exc_list))
+        if ext_type == 'gcode':
+            self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(self.gcode_list))
+        if ext_type == 'gerber':
+            self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(self.grb_list))
+
+    def delete_all_extensions(self, ext_type):
+        if ext_type == 'excellon':
+            self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.set_value('')
+        if ext_type == 'gcode':
+            self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.set_value('')
+        if ext_type == 'gerber':
+            self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.set_value('')
 
     def on_edit_join(self, name=None):
         """

@@ -958,7 +958,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.fa_tab = QtWidgets.QWidget()
         self.fa_tab.setObjectName("fa_tab")
-        self.pref_tab_area.addTab(self.fa_tab, _("FILE ASSOCIATIONS"))
+        self.pref_tab_area.addTab(self.fa_tab, _("UTILITIES"))
         self.fa_tab_lay = QtWidgets.QVBoxLayout()
         self.fa_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.fa_tab.setLayout(self.fa_tab_lay)
@@ -7794,34 +7794,77 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
 class FAExcPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon File associations Preferences", parent=None)
-        super(FAExcPrefGroupUI, self).__init__(self)
+        super().__init__(self)
 
         self.setTitle(str(_("Excellon File associations")))
 
-        # ## Export G-Code
-        self.exc_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
-        self.exc_list_label.setToolTip(
+        self.layout.setContentsMargins(2, 2, 2, 2)
+
+        self.vertical_lay = QtWidgets.QVBoxLayout()
+        scroll_widget = QtWidgets.QWidget()
+
+        scroll = VerticalScrollArea()
+        scroll.setWidget(scroll_widget)
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+
+        self.restore_btn = FCButton(_("Restore"))
+        self.restore_btn.setToolTip(_("Restore the extension list to the default state."))
+        self.del_all_btn = FCButton(_("Delete All"))
+        self.del_all_btn.setToolTip(_("Delete all extensions from the list."))
+
+        hlay0 = QtWidgets.QHBoxLayout()
+        hlay0.addWidget(self.restore_btn)
+        hlay0.addWidget(self.del_all_btn)
+        self.vertical_lay.addLayout(hlay0)
+
+        # # ## Excellon associations
+        list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
+        list_label.setToolTip(
             _("List of file extensions to be\n"
               "associated with FlatCAM.")
         )
-        self.layout.addWidget(self.exc_list_label)
+        self.vertical_lay.addWidget(list_label)
 
         self.exc_list_text = FCTextArea()
+        self.exc_list_text.setReadOnly(True)
         # self.exc_list_text.sizeHint(custom_sizehint=150)
         font = QtGui.QFont()
         font.setPointSize(12)
         self.exc_list_text.setFont(font)
 
-        self.layout.addWidget(self.exc_list_text)
+        self.vertical_lay.addWidget(self.exc_list_text)
 
-        self.exc_list_btn = FCButton(_("Apply"))
+        self.ext_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.ext_label.setToolTip(_("A file extension to be added or deleted to the list."))
+        self.ext_entry = FCEntry()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.vertical_lay.addLayout(hlay1)
+        hlay1.addWidget(self.ext_label)
+        hlay1.addWidget(self.ext_entry)
+
+        self.add_btn = FCButton(_("Add Extension"))
+        self.add_btn.setToolTip(_("Add a file extension to the list"))
+        self.del_btn = FCButton(_("Delete Extension"))
+        self.del_btn.setToolTip(_("Delete a file extension from the list"))
+
+        hlay2 = QtWidgets.QHBoxLayout()
+        self.vertical_lay.addLayout(hlay2)
+        hlay2.addWidget(self.add_btn)
+        hlay2.addWidget(self.del_btn)
+
+        self.exc_list_btn = FCButton(_("Apply Association"))
         self.exc_list_btn.setToolTip(_("Apply the file associations between\n"
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"
                                        "This work only in Windows."))
-        self.layout.addWidget(self.exc_list_btn)
+        self.vertical_lay.addWidget(self.exc_list_btn)
 
-        # self.layout.addStretch()
+        scroll_widget.setLayout(self.vertical_lay)
+        self.layout.addWidget(scroll)
+
+        # self.vertical_lay.addStretch()
 
 
 class FAGcoPrefGroupUI(OptionsGroupUI):
@@ -7831,7 +7874,17 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("GCode File associations")))
 
-        # ## Export G-Code
+        self.restore_btn = FCButton(_("Restore"))
+        self.restore_btn.setToolTip(_("Restore the extension list to the default state."))
+        self.del_all_btn = FCButton(_("Delete All"))
+        self.del_all_btn.setToolTip(_("Delete all extensions from the list."))
+
+        hlay0 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay0)
+        hlay0.addWidget(self.restore_btn)
+        hlay0.addWidget(self.del_all_btn)
+
+        # ## G-Code associations
         self.gco_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
         self.gco_list_label.setToolTip(
             _("List of file extensions to be\n"
@@ -7840,6 +7893,7 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.gco_list_label)
 
         self.gco_list_text = FCTextArea()
+        self.gco_list_text.setReadOnly(True)
         # self.gco_list_text.sizeHint(custom_sizehint=150)
         font = QtGui.QFont()
         font.setPointSize(12)
@@ -7847,7 +7901,26 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
 
         self.layout.addWidget(self.gco_list_text)
 
-        self.gco_list_btn = FCButton(_("Apply"))
+        self.ext_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.ext_label.setToolTip(_("A file extension to be added or deleted to the list."))
+        self.ext_entry = FCEntry()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+        hlay1.addWidget(self.ext_label)
+        hlay1.addWidget(self.ext_entry)
+
+        self.add_btn = FCButton(_("Add Extension"))
+        self.add_btn.setToolTip(_("Add a file extension to the list"))
+        self.del_btn = FCButton(_("Delete Extension"))
+        self.del_btn.setToolTip(_("Delete a file extension from the list"))
+
+        hlay2 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay2)
+        hlay2.addWidget(self.add_btn)
+        hlay2.addWidget(self.del_btn)
+
+        self.gco_list_btn = FCButton(_("Apply Association"))
         self.gco_list_btn.setToolTip(_("Apply the file associations between\n"
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"
@@ -7864,7 +7937,17 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("Gerber File associations")))
 
-        # ## Export G-Code
+        self.restore_btn = FCButton(_("Restore"))
+        self.restore_btn.setToolTip(_("Restore the extension list to the default state."))
+        self.del_all_btn = FCButton(_("Delete All"))
+        self.del_all_btn.setToolTip(_("Delete all extensions from the list."))
+
+        hlay0 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay0)
+        hlay0.addWidget(self.restore_btn)
+        hlay0.addWidget(self.del_all_btn)
+
+        # ## Gerber associations
         self.grb_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
         self.grb_list_label.setToolTip(
             _("List of file extensions to be\n"
@@ -7873,13 +7956,33 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.grb_list_label)
 
         self.grb_list_text = FCTextArea()
+        self.grb_list_text.setReadOnly(True)
         # self.grb_list_text.sizeHint(custom_sizehint=150)
         self.layout.addWidget(self.grb_list_text)
         font = QtGui.QFont()
         font.setPointSize(12)
         self.grb_list_text.setFont(font)
 
-        self.grb_list_btn = FCButton(_("Apply"))
+        self.ext_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.ext_label.setToolTip(_("A file extension to be added or deleted to the list."))
+        self.ext_entry = FCEntry()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+        hlay1.addWidget(self.ext_label)
+        hlay1.addWidget(self.ext_entry)
+
+        self.add_btn = FCButton(_("Add Extension"))
+        self.add_btn.setToolTip(_("Add a file extension to the list"))
+        self.del_btn = FCButton(_("Delete Extension"))
+        self.del_btn.setToolTip(_("Delete a file extension from the list"))
+
+        hlay2 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay2)
+        hlay2.addWidget(self.add_btn)
+        hlay2.addWidget(self.del_btn)
+
+        self.grb_list_btn = FCButton(_("Apply Association"))
         self.grb_list_btn.setToolTip(_("Apply the file associations between\n"
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"

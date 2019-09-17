@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+18.09.2019
+
+- added more funtionality to the Extension registration with FLatCAM and added to the GUI in Edit -> Preferences -> Utilities
+
 17.09.2019
 
 - added more programmers that contributed to FlatCAM over the years, in the "About FlatCAM" -> Programmers window
