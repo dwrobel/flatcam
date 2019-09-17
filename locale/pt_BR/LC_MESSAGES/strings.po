@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-09-16 21:22-0300\n"
-"PO-Revision-Date: 2019-09-16 21:36-0300\n"
+"POT-Creation-Date: 2019-09-17 07:38-0300\n"
+"PO-Revision-Date: 2019-09-17 07:39-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.2\n"
+"X-Generator: Poedit 2.2.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -811,10 +811,8 @@ msgid "Open Gerber"
 msgstr "Abrir Gerber"
 
 #: FlatCAMApp.py:7813
-#, fuzzy
-#| msgid "Open Gerber File"
 msgid "Opening Gerber file."
-msgstr "Abrir Gerber"
+msgstr "Abrindo Arquivo Gerber."
 
 #: FlatCAMApp.py:7819
 msgid "Open Gerber cancelled."
@@ -826,10 +824,8 @@ msgid "Open Excellon"
 msgstr "Abrir Excellon"
 
 #: FlatCAMApp.py:7849
-#, fuzzy
-#| msgid "Opening Excellon."
 msgid "Opening Excellon file."
-msgstr "Abrindo Excellon."
+msgstr "Abrindo Arquivo Excellon."
 
 #: FlatCAMApp.py:7855
 msgid " Open Excellon cancelled."
@@ -840,10 +836,8 @@ msgid "Open G-Code"
 msgstr "Abrir G-Code"
 
 #: FlatCAMApp.py:7889
-#, fuzzy
-#| msgid "Opening G-Code."
 msgid "Opening G-Code file."
-msgstr "Abrindo G-Code."
+msgstr "Abrindo Arquivo G-Code."
 
 #: FlatCAMApp.py:7895
 msgid "Open G-Code cancelled."
