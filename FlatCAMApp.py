@@ -80,13 +80,13 @@ class App(QtCore.QObject):
 
     # Get Cmd Line Options
     cmd_line_shellfile = ''
-    cmd_line_shellvars = ''
+    cmd_line_shellvar = ''
 
-    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>\nFlatCam.py --shellvars=<cmd_line_shellvars"
+    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>\nFlatCam.py --shellvar=<1,'C:\path',23>"
     try:
         # Multiprocessing pool will spawn additional processes with 'multiprocessing-fork' flag
         cmd_line_options, args = getopt.getopt(sys.argv[1:], "h:", ["shellfile=",
-                                                                    "shellvars=",
+                                                                    "shellvar=",
                                                                     "multiprocessing-fork="])
     except getopt.GetoptError:
         print(cmd_line_help)
@@ -97,8 +97,8 @@ class App(QtCore.QObject):
             sys.exit()
         elif opt == '--shellfile':
             cmd_line_shellfile = arg
-        elif opt == '--shellvars':
-            cmd_line_shellvars = arg
+        elif opt == '--shellvar':
+            cmd_line_shellvar = arg
 
     # ## Logging ###
     log = logging.getLogger('base')
@@ -2412,26 +2412,28 @@ class App(QtCore.QObject):
             except Exception as ext:
                 print("ERROR: ", ext)
                 sys.exit(2)
-        elif self.cmd_line_shellvars:
+        elif self.cmd_line_shellvar:
             try:
-                with open(self.cmd_line_shellvars, "r") as myfile:
-                    if show_splash:
-                        self.splash.showMessage('%s: %ssec\n%s' % (
-                            _("Canvas initialization started.\n"
-                              "Canvas initialization finished in"), '%.2f' % self.used_time,
-                            _("Reading Shell vars ...")),
-                                                alignment=Qt.AlignBottom | Qt.AlignLeft,
-                                                color=QtGui.QColor("gray"))
-                    cmd_line_shellvars_text = myfile.read()
-                    for line in cmd_line_shellvars_text.splitlines():
-                        var, __, var_value = line.partition('=')
-                        var = var.replace(' ', '')
-                        var_value = var_value.replace(' ', '')
-                        command_tcl = 'set {var} {var_value}'.format(var=var, var_value=var_value)
-                        self.shell._sysShell.exec_command(command_tcl, no_echo=True)
+                cnt = 0
+                command_tcl = 0
+                for i in self.cmd_line_shellvar.split(','):
+                    if i is not None:
+                        try:
+                            command_tcl = eval(i)
+                        except:
+                            command_tcl = i
+
+                    command_tcl_formatted = 'set shellvar_{nr} {cmd}'.format(cmd=str(command_tcl), nr=str(cnt))
+                    cnt += 1
+
+                    # if there are Windows paths then replace the path separator with a Unix like one
+                    if sys.platform == 'win32':
+                        command_tcl_formatted = command_tcl_formatted.replace('\\', '/')
+                    self.shell._sysShell.exec_command(command_tcl_formatted, no_echo=True)
             except Exception as ext:
                 print("ERROR: ", ext)
                 sys.exit(2)
+
         # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
         if App.args:
