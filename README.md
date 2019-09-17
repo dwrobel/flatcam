@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a new command line parameter for FlatCAM named '--shellvars' which can load a text file with variables for Tcl Shell in the format: one variable assignment per line and looking like: 'a=3' without quotes
 - made --shellvars into --shellvar and make it only one list of commands passed to the Tcl. The list is separated by comma but without spaces. The variables are accessed in Tcl with the names shellvar_x where x is the index in the list of command comma separated values
 - fixed an issue in the TclShell that generated an exception IndexError which crashed the software
+- fixed the --shellvar and --shellfile FlatCAM arguments to work together but the --shellvar has precedence over --shellfile as it is most likely that whatever variable set by --shellvar will be used in the script file run by --shellfile
 
 16.09.2019
 

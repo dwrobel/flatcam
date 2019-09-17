@@ -2393,26 +2393,26 @@ class App(QtCore.QObject):
         App.log.debug("END of constructor. Releasing control.")
 
         # #####################################################################################
+        # ########################## SHOW GUI #################################################
+        # #####################################################################################
+
+        # finish the splash
+        self.splash.finish(self.ui)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("maximized_gui"):
+            maximized_ui = settings.value('maximized_gui', type=bool)
+            if maximized_ui is True:
+                self.ui.showMaximized()
+            else:
+                self.ui.show()
+
+        # #####################################################################################
         # ########################## START-UP ARGUMENTS #######################################
         # #####################################################################################
 
         # test if the program was started with a script as parameter
-        if self.cmd_line_shellfile:
-            try:
-                with open(self.cmd_line_shellfile, "r") as myfile:
-                    if show_splash:
-                        self.splash.showMessage('%s: %ssec\n%s' % (
-                            _("Canvas initialization started.\n"
-                              "Canvas initialization finished in"), '%.2f' % self.used_time,
-                            _("Executing Tcl Script ...")),
-                                                alignment=Qt.AlignBottom | Qt.AlignLeft,
-                                                color=QtGui.QColor("gray"))
-                    cmd_line_shellfile_text = myfile.read()
-                    self.shell._sysShell.exec_command(cmd_line_shellfile_text)
-            except Exception as ext:
-                print("ERROR: ", ext)
-                sys.exit(2)
-        elif self.cmd_line_shellvar:
+        if self.cmd_line_shellvar:
             try:
                 cnt = 0
                 command_tcl = 0
@@ -2434,25 +2434,29 @@ class App(QtCore.QObject):
                 print("ERROR: ", ext)
                 sys.exit(2)
 
-        # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
-        # the path/file_name must be enclosed in quotes if it contain spaces
+        if self.cmd_line_shellfile:
+            try:
+                if self.ui.shell_dock.isHidden():
+                    self.ui.shell_dock.show()
+
+                with open(self.cmd_line_shellfile, "r") as myfile:
+                    if show_splash:
+                        self.splash.showMessage('%s: %ssec\n%s' % (
+                            _("Canvas initialization started.\n"
+                              "Canvas initialization finished in"), '%.2f' % self.used_time,
+                            _("Executing Tcl Script ...")),
+                                                alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                                color=QtGui.QColor("gray"))
+                    cmd_line_shellfile_text = myfile.read()
+                    self.shell._sysShell.exec_command(cmd_line_shellfile_text)
+            except Exception as ext:
+                print("ERROR: ", ext)
+                sys.exit(2)
+
+            # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
+            # the path/file_name must be enclosed in quotes if it contain spaces
         if App.args:
             self.args_at_startup.emit(App.args)
-
-        # finish the splash
-        self.splash.finish(self.ui)
-
-        # #####################################################################################
-        # ########################## SHOW GUI #################################################
-        # #####################################################################################
-
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("maximized_gui"):
-            maximized_ui = settings.value('maximized_gui', type=bool)
-            if maximized_ui is True:
-                self.ui.showMaximized()
-            else:
-                self.ui.show()
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
