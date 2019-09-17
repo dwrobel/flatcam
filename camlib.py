@@ -5867,314 +5867,320 @@ class CNCjob(Geometry):
 
         self.app.inform.emit('%s...' %
                              _("Starting G-Code"))
+        current_platform = platform.architecture()[0]
+        if current_platform != '64bit':
+            used_excellon_optimization_type = excellon_optimization_type
+            if used_excellon_optimization_type == 'M':
+                log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
+                if exobj.drills:
+                    for tool in tools:
+                        self.tool=tool
+                        self.postdata['toolC'] = exobj.tools[tool]["C"]
+                        self.tooldia = exobj.tools[tool]["C"]
 
-        if excellon_optimization_type == 'M':
-            log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
-            if exobj.drills:
-                for tool in tools:
-                    self.tool=tool
-                    self.postdata['toolC'] = exobj.tools[tool]["C"]
-                    self.tooldia = exobj.tools[tool]["C"]
-
-                    if self.app.abort_flag:
-                        # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
-
-                    # ###############################################
-                    # ############ Create the data. #################
-                    # ###############################################
-
-                    node_list = []
-                    locations = create_data_array()
-                    tsp_size = len(locations)
-                    num_routes = 1  # The number of routes, which is 1 in the TSP.
-                    # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
-                    depot = 0
-                    # Create routing model.
-                    if tsp_size > 0:
-                        manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
-                        routing = pywrapcp.RoutingModel(manager)
-                        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-                        search_parameters.local_search_metaheuristic = (
-                            routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
-
-                        # Set search time limit in milliseconds.
-                        if float(self.app.defaults["excellon_search_time"]) != 0:
-                            search_parameters.time_limit.seconds = int(
-                                float(self.app.defaults["excellon_search_time"]))
-                        else:
-                            search_parameters.time_limit.seconds = 3
-
-                        # Callback to the distance function. The callback takes two
-                        # arguments (the from and to node indices) and returns the distance between them.
-                        dist_between_locations = CreateDistanceCallback()
-                        dist_callback = dist_between_locations.Distance
-                        transit_callback_index = routing.RegisterTransitCallback(dist_callback)
-                        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-
-                        # Solve, returns a solution if any.
-                        assignment = routing.SolveWithParameters(search_parameters)
-
-                        if assignment:
-                            # Solution cost.
-                            log.info("Total distance: " + str(assignment.ObjectiveValue()))
-
-                            # Inspect solution.
-                            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                            route_number = 0
-                            node = routing.Start(route_number)
-                            start_node = node
-
-                            while not routing.IsEnd(node):
-                                if self.app.abort_flag:
-                                    # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
-
-                                node_list.append(node)
-                                node = assignment.Value(routing.NextVar(node))
-                        else:
-                            log.warning('No solution found.')
-                    else:
-                        log.warning('Specify an instance greater than 0.')
-                    # ############################################# ##
-
-                    # Only if tool has points.
-                    if tool in points:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
                             raise FlatCAMApp.GracefulException
 
-                        # Tool change sequence (optional)
-                        if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
-                            gcode += self.doformat(p.spindle_code)  # Spindle start
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
+                        # ###############################################
+                        # ############ Create the data. #################
+                        # ###############################################
+
+                        node_list = []
+                        locations = create_data_array()
+                        tsp_size = len(locations)
+                        num_routes = 1  # The number of routes, which is 1 in the TSP.
+                        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
+                        depot = 0
+                        # Create routing model.
+                        if tsp_size > 0:
+                            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+                            routing = pywrapcp.RoutingModel(manager)
+                            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+                            search_parameters.local_search_metaheuristic = (
+                                routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
+
+                            # Set search time limit in milliseconds.
+                            if float(self.app.defaults["excellon_search_time"]) != 0:
+                                search_parameters.time_limit.seconds = int(
+                                    float(self.app.defaults["excellon_search_time"]))
+                            else:
+                                search_parameters.time_limit.seconds = 3
+
+                            # Callback to the distance function. The callback takes two
+                            # arguments (the from and to node indices) and returns the distance between them.
+                            dist_between_locations = CreateDistanceCallback()
+                            dist_callback = dist_between_locations.Distance
+                            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+                            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+                            # Solve, returns a solution if any.
+                            assignment = routing.SolveWithParameters(search_parameters)
+
+                            if assignment:
+                                # Solution cost.
+                                log.info("Total distance: " + str(assignment.ObjectiveValue()))
+
+                                # Inspect solution.
+                                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+                                route_number = 0
+                                node = routing.Start(route_number)
+                                start_node = node
+
+                                while not routing.IsEnd(node):
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
+
+                                    node_list.append(node)
+                                    node = assignment.Value(routing.NextVar(node))
+                            else:
+                                log.warning('No solution found.')
                         else:
-                            gcode += self.doformat(p.spindle_code)
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
+                            log.warning('Specify an instance greater than 0.')
+                        # ############################################# ##
 
-                        if self.units == 'MM':
-                            current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
-                        else:
-                            current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
+                        # Only if tool has points.
+                        if tool in points:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise FlatCAMApp.GracefulException
 
-                        self.app.inform.emit(
-                            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                                           str(current_tooldia),
-                                           str(self.units))
-                        )
+                            # Tool change sequence (optional)
+                            if toolchange:
+                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                                gcode += self.doformat(p.spindle_code)  # Spindle start
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
+                            else:
+                                gcode += self.doformat(p.spindle_code)
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                        # TODO apply offset only when using the GUI, for TclCommand this will create an error
-                        # because the values for Z offset are created in build_ui()
-                        try:
-                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
-                        except KeyError:
-                            z_offset = 0
-                        self.z_cut += z_offset
+                            if self.units == 'MM':
+                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
+                            else:
+                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
-                        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
-                        if self.coordinates_type == "G90":
-                            # Drillling! for Absolute coordinates type G90
-                            # variables to display the percentage of work done
-                            geo_len = len(node_list)
-                            disp_number = 0
-                            old_disp_number = 0
-                            log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+                            self.app.inform.emit(
+                                '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                               str(current_tooldia),
+                                               str(self.units))
+                            )
 
-                            loc_nr = 0
-                            for k in node_list:
-                                if self.app.abort_flag:
-                                    # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
+                            # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                            # because the values for Z offset are created in build_ui()
+                            try:
+                                z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            except KeyError:
+                                z_offset = 0
+                            self.z_cut += z_offset
 
-                                locx = locations[k][0]
-                                locy = locations[k][1]
+                            self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+                            if self.coordinates_type == "G90":
+                                # Drillling! for Absolute coordinates type G90
+                                # variables to display the percentage of work done
+                                geo_len = len(node_list)
+                                disp_number = 0
+                                old_disp_number = 0
+                                log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
-                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+                                loc_nr = 0
+                                for k in node_list:
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
 
-                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                    locx = locations[k][0]
+                                    locy = locations[k][1]
 
-                                if self.f_retract is False:
-                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                    measured_up_to_zero_distance += abs(self.z_cut)
-                                    measured_lift_distance += abs(self.z_move)
-                                else:
-                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                                self.oldx = locx
-                                self.oldy = locy
+                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
 
-                                loc_nr += 1
-                                disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
+                                    if self.f_retract is False:
+                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                        measured_up_to_zero_distance += abs(self.z_cut)
+                                        measured_lift_distance += abs(self.z_move)
+                                    else:
+                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
 
-                                if old_disp_number < disp_number <= 100:
-                                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                    old_disp_number = disp_number
+                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                    self.oldx = locx
+                                    self.oldy = locy
 
-                        else:
-                            self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                                 _('G91 coordinates not implemented'))
-                            return 'fail'
-            else:
-                log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
-                          "The loaded Excellon file has no drills ...")
-                self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                     _('The loaded Excellon file has no drills'))
-                return 'fail'
+                                    loc_nr += 1
+                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
 
-            log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
-        elif excellon_optimization_type == 'B':
-            log.debug("Using OR-Tools Basic drill path optimization.")
-            if exobj.drills:
-                for tool in tools:
-                    if self.app.abort_flag:
-                        # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
+                                    if old_disp_number < disp_number <= 100:
+                                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                                        old_disp_number = disp_number
 
-                    self.tool=tool
-                    self.postdata['toolC']=exobj.tools[tool]["C"]
-                    self.tooldia = exobj.tools[tool]["C"]
+                            else:
+                                self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                                     _('G91 coordinates not implemented'))
+                                return 'fail'
+                else:
+                    log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                              "The loaded Excellon file has no drills ...")
+                    self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                         _('The loaded Excellon file has no drills'))
+                    return 'fail'
 
-                    # ############################################# ##
-                    node_list = []
-                    locations = create_data_array()
-                    tsp_size = len(locations)
-                    num_routes = 1  # The number of routes, which is 1 in the TSP.
+                log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
 
-                    # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
-                    depot = 0
-
-                    # Create routing model.
-                    if tsp_size > 0:
-                        manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
-                        routing = pywrapcp.RoutingModel(manager)
-                        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-
-                        # Callback to the distance function. The callback takes two
-                        # arguments (the from and to node indices) and returns the distance between them.
-                        dist_between_locations = CreateDistanceCallback()
-                        dist_callback = dist_between_locations.Distance
-                        transit_callback_index = routing.RegisterTransitCallback(dist_callback)
-                        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-
-                        # Solve, returns a solution if any.
-                        assignment = routing.SolveWithParameters(search_parameters)
-
-                        if assignment:
-                            # Solution cost.
-                            log.info("Total distance: " + str(assignment.ObjectiveValue()))
-
-                            # Inspect solution.
-                            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                            route_number = 0
-                            node = routing.Start(route_number)
-                            start_node = node
-
-                            while not routing.IsEnd(node):
-                                node_list.append(node)
-                                node = assignment.Value(routing.NextVar(node))
-                        else:
-                            log.warning('No solution found.')
-                    else:
-                        log.warning('Specify an instance greater than 0.')
-                    # ############################################# ##
-
-                    # Only if tool has points.
-                    if tool in points:
+            if used_excellon_optimization_type == 'B':
+                log.debug("Using OR-Tools Basic drill path optimization.")
+                if exobj.drills:
+                    for tool in tools:
                         if self.app.abort_flag:
                             # graceful abort requested by the user
                             raise FlatCAMApp.GracefulException
 
-                        # Tool change sequence (optional)
-                        if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
-                            gcode += self.doformat(p.spindle_code)  # Spindle start)
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
+                        self.tool=tool
+                        self.postdata['toolC']=exobj.tools[tool]["C"]
+                        self.tooldia = exobj.tools[tool]["C"]
+
+                        # ############################################# ##
+                        node_list = []
+                        locations = create_data_array()
+                        tsp_size = len(locations)
+                        num_routes = 1  # The number of routes, which is 1 in the TSP.
+
+                        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
+                        depot = 0
+
+                        # Create routing model.
+                        if tsp_size > 0:
+                            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+                            routing = pywrapcp.RoutingModel(manager)
+                            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+
+                            # Callback to the distance function. The callback takes two
+                            # arguments (the from and to node indices) and returns the distance between them.
+                            dist_between_locations = CreateDistanceCallback()
+                            dist_callback = dist_between_locations.Distance
+                            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+                            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+                            # Solve, returns a solution if any.
+                            assignment = routing.SolveWithParameters(search_parameters)
+
+                            if assignment:
+                                # Solution cost.
+                                log.info("Total distance: " + str(assignment.ObjectiveValue()))
+
+                                # Inspect solution.
+                                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+                                route_number = 0
+                                node = routing.Start(route_number)
+                                start_node = node
+
+                                while not routing.IsEnd(node):
+                                    node_list.append(node)
+                                    node = assignment.Value(routing.NextVar(node))
+                            else:
+                                log.warning('No solution found.')
                         else:
-                            gcode += self.doformat(p.spindle_code)
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
+                            log.warning('Specify an instance greater than 0.')
+                        # ############################################# ##
 
-                        if self.units == 'MM':
-                            current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
-                        else:
-                            current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
+                        # Only if tool has points.
+                        if tool in points:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise FlatCAMApp.GracefulException
 
-                        self.app.inform.emit(
-                            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                                           str(current_tooldia),
-                                           str(self.units))
-                        )
+                            # Tool change sequence (optional)
+                            if toolchange:
+                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                                gcode += self.doformat(p.spindle_code)  # Spindle start)
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
+                            else:
+                                gcode += self.doformat(p.spindle_code)
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                        # TODO apply offset only when using the GUI, for TclCommand this will create an error
-                        # because the values for Z offset are created in build_ui()
-                        try:
-                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
-                        except KeyError:
-                            z_offset = 0
-                        self.z_cut += z_offset
+                            if self.units == 'MM':
+                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
+                            else:
+                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
-                        self.coordinates_type = self.app.defaults["cncjob_coords_type"]
-                        if self.coordinates_type == "G90":
-                            # Drillling! for Absolute coordinates type G90
-                            # variables to display the percentage of work done
-                            geo_len = len(node_list)
-                            disp_number = 0
-                            old_disp_number = 0
-                            log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
+                            self.app.inform.emit(
+                                '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                               str(current_tooldia),
+                                               str(self.units))
+                            )
 
-                            loc_nr = 0
-                            for k in node_list:
-                                if self.app.abort_flag:
-                                    # graceful abort requested by the user
-                                    raise FlatCAMApp.GracefulException
+                            # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                            # because the values for Z offset are created in build_ui()
+                            try:
+                                z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            except KeyError:
+                                z_offset = 0
+                            self.z_cut += z_offset
 
-                                locx = locations[k][0]
-                                locy = locations[k][1]
+                            self.coordinates_type = self.app.defaults["cncjob_coords_type"]
+                            if self.coordinates_type == "G90":
+                                # Drillling! for Absolute coordinates type G90
+                                # variables to display the percentage of work done
+                                geo_len = len(node_list)
+                                disp_number = 0
+                                old_disp_number = 0
+                                log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
-                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+                                loc_nr = 0
+                                for k in node_list:
+                                    if self.app.abort_flag:
+                                        # graceful abort requested by the user
+                                        raise FlatCAMApp.GracefulException
 
-                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                    locx = locations[k][0]
+                                    locy = locations[k][1]
 
-                                if self.f_retract is False:
-                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                    measured_up_to_zero_distance += abs(self.z_cut)
-                                    measured_lift_distance += abs(self.z_move)
-                                else:
-                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                    gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                                self.oldx = locx
-                                self.oldy = locy
+                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
 
-                                loc_nr += 1
-                                disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
+                                    if self.f_retract is False:
+                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                        measured_up_to_zero_distance += abs(self.z_cut)
+                                        measured_lift_distance += abs(self.z_move)
+                                    else:
+                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
 
-                                if old_disp_number < disp_number <= 100:
-                                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                                    old_disp_number = disp_number
+                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                    measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                    self.oldx = locx
+                                    self.oldy = locy
 
-                        else:
-                            self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                                 _('G91 coordinates not implemented'))
-                            return 'fail'
-            else:
-                log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
-                          "The loaded Excellon file has no drills ...")
-                self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                     _('The loaded Excellon file has no drills'))
-                return 'fail'
+                                    loc_nr += 1
+                                    disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))
 
-            log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
+                                    if old_disp_number < disp_number <= 100:
+                                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                                        old_disp_number = disp_number
+
+                            else:
+                                self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                                     _('G91 coordinates not implemented'))
+                                return 'fail'
+                else:
+                    log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                              "The loaded Excellon file has no drills ...")
+                    self.app.inform.emit('[ERROR_NOTCL] %s...' %
+                                         _('The loaded Excellon file has no drills'))
+                    return 'fail'
+
+                log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
         else:
+            used_excellon_optimization_type = 'T'
+
+        if used_excellon_optimization_type == 'T':
             log.debug("Using Travelling Salesman drill path optimization.")
             for tool in tools:
                 if self.app.abort_flag:
