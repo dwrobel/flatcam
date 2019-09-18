@@ -2055,6 +2055,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.lock_toolbar(lock=lock_state)
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
 
+        # #################################################################
+        # ####################### SYS TRAY ################################
+        # #################################################################
+
+        self.w = QtWidgets.QWidget()
+        self.trayIcon = FlatCAMSystemTray(self.app, QtGui.QIcon('share/flatcam_icon32.png'), self.w)
+
+
     def eventFilter(self, obj, event):
         # filter the ToolTips display based on a Preferences setting
         if self.general_defaults_form.general_gui_set_group.toggle_tooltips_cb.get_value() is False:
@@ -8073,4 +8081,49 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
 
         self.set_text_(text)
         self.icon.setPixmap(self.pmap)
+
+
+class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
+
+    def __init__(self, app, icon, parent=None):
+        # QtWidgets.QSystemTrayIcon.__init__(self, icon, parent)
+        super().__init__(icon, parent=parent)
+        self.app = app
+
+        menu = QtWidgets.QMenu(parent)
+
+        menu_open = menu.addMenu(QtGui.QIcon('share/folder32_bis.png'), _('Open'))
+
+        # Open Project ...
+        menu_openproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), _('Open Project ...'), self)
+        menu_open.addAction(menu_openproject)
+        menu_open.addSeparator()
+
+        # Open Gerber ...
+        menu_opengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
+                                                    _('Open &Gerber ...\tCTRL+G'), self)
+        menu_open.addAction(menu_opengerber)
+
+        # Open Excellon ...
+        menu_openexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'),
+                                                      _('Open &Excellon ...\tCTRL+E'), self)
+        menu_open.addAction(menu_openexcellon)
+
+        # Open G-Code ...
+        menu_opengcode = QtWidgets.QAction(QtGui.QIcon('share/code.png'), _('Open G-&Code ...'), self)
+        menu_open.addAction(menu_opengcode)
+
+        menu_open.addSeparator()
+
+        exitAction = menu.addAction(_("Exit"))
+        exitAction.setIcon(QtGui.QIcon('share/power16.png'))
+        self.setContextMenu(menu)
+
+        menu_openproject.triggered.connect(self.app.on_file_openproject)
+        menu_opengerber.triggered.connect(self.app.on_fileopengerber)
+        menu_openexcellon.triggered.connect(self.app.on_fileopenexcellon)
+        menu_opengcode.triggered.connect(self.app.on_fileopengcode)
+
+        exitAction.triggered.connect(self.app.final_save)
+
 # end of file
