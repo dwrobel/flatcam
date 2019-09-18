@@ -4114,6 +4114,13 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.splash_cb.set_value(False)
 
+        # Sys Tray Icon
+        self.systray_label = QtWidgets.QLabel('%s:' % _('Sys Tray Icon'))
+        self.systray_label.setToolTip(
+            _("Enable display of FlatCAM icon in Sys Tray.")
+        )
+        self.systray_cb = FCCheckBox()
+
         # Shell StartUp CB
         self.shell_startup_label = QtWidgets.QLabel('%s:' % _('Shell at StartUp'))
         self.shell_startup_label.setToolTip(
@@ -4179,6 +4186,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.textbox_font_size_label, self.textbox_font_size_spinner)
         self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.splash_label, self.splash_cb)
+        self.form_box.addRow(self.systray_label, self.systray_cb)
         self.form_box.addRow(self.shell_startup_label, self.shell_startup_cb)
         self.form_box.addRow(self.project_startup_label, self.project_startup_cb)
         self.form_box.addRow(self.project_autohide_label, self.project_autohide_cb)

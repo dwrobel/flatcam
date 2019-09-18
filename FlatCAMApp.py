@@ -82,7 +82,7 @@ class App(QtCore.QObject):
     cmd_line_shellfile = ''
     cmd_line_shellvar = ''
 
-    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>\nFlatCam.py --shellvar=<1,'C:\path',23>"
+    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>\nFlatCam.py --shellvar=<1,'C:\\path',23>"
     try:
         # Multiprocessing pool will spawn additional processes with 'multiprocessing-fork' flag
         cmd_line_options, args = getopt.getopt(sys.argv[1:], "h:", ["shellfile=",
@@ -312,6 +312,7 @@ class App(QtCore.QObject):
             json.dump({}, f)
             f.close()
 
+        # create a recent files json file if there is none
         try:
             f = open(self.data_path + '/recent.json')
             f.close()
@@ -321,6 +322,7 @@ class App(QtCore.QObject):
             json.dump([], f)
             f.close()
 
+        # create a recent projects json file if there is none
         try:
             fp = open(self.data_path + '/recent_projects.json')
             fp.close()
@@ -395,14 +397,6 @@ class App(QtCore.QObject):
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
 
-        # #################################################################
-        # ####################### SYS TRAY ################################
-        # #################################################################
-
-        self.parent_w = QtWidgets.QWidget()
-        self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
-                                          parent=self.parent_w)
-
         # #############################################################################
         # ############################## Data #########################################
         # #############################################################################
@@ -462,6 +456,7 @@ class App(QtCore.QObject):
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
             "global_selection_shape": self.ui.general_defaults_form.general_gui_set_group.selection_cb,
+            "global_systray_icon": self.ui.general_defaults_form.general_gui_set_group.systray_cb,
             "global_shell_at_startup": self.ui.general_defaults_form.general_gui_set_group.shell_startup_cb,
             "global_project_at_startup": self.ui.general_defaults_form.general_gui_set_group.project_startup_cb,
             "global_project_autohide": self.ui.general_defaults_form.general_gui_set_group.project_autohide_cb,
@@ -809,6 +804,7 @@ class App(QtCore.QObject):
             "global_pan_button": '2',
             "global_mselect_key": 'Control',
             "global_project_at_startup": False,
+            "global_systray_icon": True,
             "global_project_autohide": True,
             "global_toggle_tooltips": True,
             "global_worker_number": 2,
@@ -1578,9 +1574,13 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
         self.ui.splitter.setStretchFactor(1, 2)
 
-        # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
-        # depending on from where those tools are called different actions can be done
-        self.call_source = 'app'
+        # #################################################################
+        # ####################### SYS TRAY ################################
+        # #################################################################
+        if self.defaults["global_systray_icon"]:
+            self.parent_w = QtWidgets.QWidget()
+            self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
+                                              parent=self.parent_w)
 
         # ##############################################
         # ######### SETUP OBJECT COLLECTION ############
@@ -1989,6 +1989,10 @@ class App(QtCore.QObject):
         # ########################## Other setups #############################################
         # #####################################################################################
 
+        # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
+        # depending on from where those tools are called different actions can be done
+        self.call_source = 'app'
+
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
         self.tool_tab_locked = False
 
@@ -2226,22 +2230,6 @@ class App(QtCore.QObject):
         self.autocomplete_kw_list = self.defaults['util_autocomplete_keywords'].replace(' ', '').split(',')
         self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
 
-        self.default_autocomplete_keywords = [
-            'all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
-            'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
-            'drilled_dias', 'drillz', 'pp',
-            'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
-            'milled_dias',
-            'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
-            'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
-            'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
-            'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
-            'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
-            'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
-            'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type',
-            'Desktop', 'FlatPrj', 'FlatConfig', 'Users', 'Documents', 'My Documents', 'Marius'
-        ]
-
         # ####################################################################################
         # ####################### Shell SETUP ################################################
         # ####################################################################################
@@ -2316,12 +2304,15 @@ class App(QtCore.QObject):
             self.thr2.start(QtCore.QThread.LowPriority)
 
         # #####################################################################################
-        # ###################### Variables for global usage ###################################
+        # ######################### Register files with FlatCAM;  #############################
+        # ######################### It works only for Windows for now  ########################
         # #####################################################################################
-
-        # register files with FlatCAM; it works only for Windows for now
         if sys.platform == 'win32' and self.defaults["first_run"] is True:
             self.on_register_files()
+
+        # #####################################################################################
+        # ###################### Variables for global usage ###################################
+        # #####################################################################################
 
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
@@ -2476,7 +2467,8 @@ class App(QtCore.QObject):
         else:
             self.ui.show()
 
-        self.trayIcon.show()
+        if self.defaults["global_systray_icon"]:
+            self.trayIcon.show()
 
         # #####################################################################################
         # ########################## START-UP ARGUMENTS #######################################
@@ -2547,7 +2539,7 @@ class App(QtCore.QObject):
             from_new_path = os.path.dirname(os.path.realpath(__file__)) + '\\flatcamGUI\\VisPyData\\data'
             shutil.copytree(from_new_path, to_path)
 
-    def on_startup_args(self, args):
+    def on_startup_args(self, args, silent=False):
         """
         This will process any arguments provided to the application at startup. Like trying to launch a file or project.
 
@@ -2563,12 +2555,13 @@ class App(QtCore.QObject):
         log.debug("Application was started with arguments: %s. Processing ..." % str(args_to_process))
 
         for argument in args_to_process:
-            if '.FlatPrj' in argument:
+            if '.FlatPrj'.lower() in argument.lower():
                 try:
                     project_name = str(argument)
 
                     if project_name == "":
-                        self.inform.emit(_("Open cancelled."))
+                        if silent is False:
+                            self.inform.emit(_("Open cancelled."))
                     else:
                         # self.open_project(project_name)
                         run_from_arg = True
@@ -2578,12 +2571,13 @@ class App(QtCore.QObject):
                 except Exception as e:
                     log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
 
-            elif '.FlatConfig' in argument:
+            elif '.FlatConfig'.lower() in argument.lower():
                 try:
                     file_name = str(argument)
 
                     if file_name == "":
-                        self.inform.emit(_("Open Config file failed."))
+                        if silent is False:
+                            self.inform.emit(_("Open Config file failed."))
                     else:
                         run_from_arg = True
                         # self.worker_task.emit({'fcn': self.open_config_file,
@@ -2592,25 +2586,26 @@ class App(QtCore.QObject):
                 except Exception as e:
                     log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
-            elif '.FlatScript' in argument:
+            elif '.FlatScript'.lower() in argument.lower() or '.TCL'.lower() in argument.lower():
                 try:
                     file_name = str(argument)
 
                     if file_name == "":
-                        self.inform.emit(_("Open Script file failed."))
+                        if silent is False:
+                            self.inform.emit(_("Open Script file failed."))
                     else:
-                        # run_from_arg = True
-                        # self.worker_task.emit({'fcn': self.open_script_file,
-                        #                        'params': [file_name, run_from_arg]})
+                        if silent is False:
+                            self.on_fileopenscript(name=file_name)
+                            self.ui.plot_tab_area.setCurrentWidget(self.ui.plot_tab)
                         self.on_filerunscript(name=file_name)
                 except Exception as e:
                     log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
-            elif 'quit' in argument or 'exit' in argument:
+            elif 'quit'.lower() in argument.lower() or 'exit'.lower() in argument.lower():
                 log.debug("App.on_startup_args() --> Quit event.")
                 sys.exit()
 
-            elif 'save' in argument:
+            elif 'save'.lower() in argument.lower():
                 log.debug("App.on_startup_args() --> Save event. App Defaults saved.")
                 self.save_defaults()
             else:
@@ -2619,10 +2614,11 @@ class App(QtCore.QObject):
                 for ext in exc_list:
                     proc_ext = ext.replace(' ', '')
                     proc_ext = '.%s' % proc_ext
-                    if proc_ext.lower() in proc_arg and proc_ext != '':
+                    if proc_ext.lower() in proc_arg and proc_ext != '.':
                         file_name = str(argument)
                         if file_name == "":
-                            self.inform.emit(_("Open Excellon file failed."))
+                            if silent is False:
+                                self.inform.emit(_("Open Excellon file failed."))
                         else:
                             self.on_fileopenexcellon(name=file_name)
                             return
@@ -2631,11 +2627,12 @@ class App(QtCore.QObject):
                 for ext in gco_list:
                     proc_ext = ext.replace(' ', '')
                     proc_ext = '.%s' % proc_ext
-                    if proc_ext.lower() in proc_arg and proc_ext != '':
+                    if proc_ext.lower() in proc_arg and proc_ext != '.':
                         print(proc_ext, proc_arg)
                         file_name = str(argument)
                         if file_name == "":
-                            self.inform.emit(_("Open GCode file failed."))
+                            if silent is False:
+                                self.inform.emit(_("Open GCode file failed."))
                         else:
                             self.on_fileopengcode(name=file_name)
                             return
@@ -2644,13 +2641,18 @@ class App(QtCore.QObject):
                 for ext in grb_list:
                     proc_ext = ext.replace(' ', '')
                     proc_ext = '.%s' % proc_ext
-                    if proc_ext.lower() in proc_arg and proc_ext != '':
+                    if proc_ext.lower() in proc_arg and proc_ext != '.':
                         file_name = str(argument)
                         if file_name == "":
-                            self.inform.emit(_("Open Gerber file failed."))
+                            if silent is False:
+                                self.inform.emit(_("Open Gerber file failed."))
                         else:
                             self.on_fileopengerber(name=file_name)
                             return
+
+                # if it reached here without already returning then the app was registered with a file that it does not
+                # recognize therefore we must quit
+                sys.exit(2)
 
     def set_ui_title(self, name):
         """
@@ -4470,15 +4472,24 @@ class App(QtCore.QObject):
             response = msgbox.clickedButton()
 
             if response == bt_yes:
-                self.trayIcon.hide()
+                try:
+                    self.trayIcon.hide()
+                except:
+                    pass
                 self.on_file_saveprojectas(use_thread=True, quit_action=True)
             elif response == bt_no:
-                self.trayIcon.hide()
+                try:
+                    self.trayIcon.hide()
+                except:
+                    pass
                 self.quit_application()
             elif response == bt_cancel:
                 return
         else:
-            self.trayIcon.hide()
+            try:
+                self.trayIcon.hide()
+            except:
+                pass
             self.quit_application()
 
     def quit_application(self):
@@ -4632,7 +4643,7 @@ class App(QtCore.QObject):
             is_admin = ctypes.windll.shell32.IsUserAnAdmin() == 1
 
         if is_admin is True:
-            root_path = winreg.HKEY_CLASSES_ROOT
+            root_path = winreg.HKEY_LOCAL_MACHINE
         else:
             root_path = winreg.HKEY_CURRENT_USER
 
@@ -8748,7 +8759,16 @@ class App(QtCore.QObject):
                     break
             self.toggle_codeeditor = False
 
-    def on_filenewscript(self):
+    def on_filenewscript(self, silent=False):
+        """
+        Will create a new script file and open it in the Code Editor
+        :param silent: if True will not display status messages
+        :return: None
+        """
+        if silent is False:
+            self.inform.emit('[success] %s' %
+                             _("New TCL script file created in Code Editor."))
+
         flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
         self.init_code_editor(name=_("Script Editor"))
         self.ui.code_editor.completer_enable = True
@@ -8779,13 +8799,23 @@ class App(QtCore.QObject):
         self.handleTextChanged()
         self.ui.code_editor.show()
 
-    def on_fileopenscript(self):
-        _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
-        try:
-            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"),
-                                                                 directory=self.get_last_folder(), filter=_filter_)
-        except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"), filter=_filter_)
+    def on_fileopenscript(self, name=None, silent=False):
+        """
+        Will open a Tcl script file into the Code Editor
+
+        :param silent: if True will not display status messages
+        :param name: name of a Tcl script file to open
+        :return:
+        """
+        if name:
+            filename = name
+        else:
+            _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+            try:
+                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"),
+                                                                     directory=self.get_last_folder(), filter=_filter_)
+            except TypeError:
+                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"), filter=_filter_)
 
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
@@ -8793,8 +8823,9 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Open TCL script cancelled."))
+            if silent is False:
+                self.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Open TCL script cancelled."))
         else:
             self.on_filenewscript()
 
@@ -8806,24 +8837,30 @@ class App(QtCore.QObject):
                             self.ui.code_editor.append(proc_line)
                     except Exception as e:
                         log.debug('App.on_fileopenscript() -->%s' % str(e))
-                        self.inform.emit('[ERROR] %s %s' %
-                                         (_('App.on_fileopenscript() -->'), str(e)))
+                        if silent is False:
+                            self.inform.emit('[ERROR] %s %s' %
+                                             (_('App.on_fileopenscript() -->'), str(e)))
                         return
 
                     self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
                     self.handleTextChanged()
+                    if silent is False:
+                        self.inform.emit('[success] %s' %
+                                         _("TCL script file opened in Code Editor."))
                     # self.ui.show()
 
             except Exception as e:
                 log.debug("App.on_fileopenscript() -> %s" % str(e))
 
-    def on_filerunscript(self, name=None):
+    def on_filerunscript(self, name=None, silent=False):
         """
-                File menu callback for loading and running a TCL script.
+        File menu callback for loading and running a TCL script.
 
-                :return: None
-                """
+        :param silent: if True will not display status messages
+        :param name: name of a Tcl script file to be run by FlatCAM
+        :return: None
+        """
 
         self.report_usage("on_filerunscript")
         App.log.debug("on_file_runscript()")
@@ -8849,23 +8886,30 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Run TCL script cancelled."))
+            if silent is False:
+                self.inform.emit('[WARNING_NOTCL] %s' %
+                                 _("Run TCL script cancelled."))
         else:
+            if self.ui.shell_dock.isHidden():
+                self.ui.shell_dock.show()
             try:
                 with open(filename, "r") as tcl_script:
                     cmd_line_shellfile_content = tcl_script.read()
                     self.shell._sysShell.exec_command(cmd_line_shellfile_content)
+                if silent is False:
+                    self.inform.emit('[success] %s' %
+                                     _("TCL script file opened in Code Editor and executed."))
             except Exception as e:
                 log.debug("App.on_filerunscript() -> %s" % str(e))
                 sys.exit(2)
 
-    def on_file_saveproject(self):
+    def on_file_saveproject(self, silent=False):
         """
         Callback for menu item File->Save Project. Saves the project to
         ``self.project_filename`` or calls ``self.on_file_saveprojectas()``
         if set to None. The project is saved by calling ``self.save_project()``.
 
+        :param silent: if True will not display status messages
         :return: None
         """
 
@@ -8875,7 +8919,7 @@ class App(QtCore.QObject):
             self.on_file_saveprojectas()
         else:
             self.worker_task.emit({'fcn': self.save_project,
-                                   'params': [self.project_filename]})
+                                   'params': [self.project_filename, silent]})
             if self.defaults["global_open_style"] is False:
                 self.file_opened.emit("project", self.project_filename)
             self.file_saved.emit("project", self.project_filename)
@@ -10941,19 +10985,20 @@ class App(QtCore.QObject):
         for obj in objects:
             obj.on_generatecnc_button_click()
 
-    def save_project(self, filename, quit_action=False):
+    def save_project(self, filename, quit_action=False, silent=False):
         """
         Saves the current project to the specified file.
 
         :param filename: Name of the file in which to save.
         :type filename: str
         :param quit_action: if the project saving will be followed by an app quit; boolean
+        :param silent: if True will not display status messages
         :return: None
         """
         self.log.debug("save_project()")
         self.save_in_progress = True
 
-        with self.proc_container.new(_("Saving FlatCAM Project")) as proc:
+        with self.proc_container.new(_("Saving FlatCAM Project")):
             # Capture the latest changes
             # Current object
             try:
@@ -10993,28 +11038,31 @@ class App(QtCore.QObject):
                 try:
                     saved_f = open(filename, 'r')
                 except IOError:
-                    self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                     (_("Failed to verify project file"), filename, _("Retry to save it."))
-                                     )
+                    if silent is False:
+                        self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
+                                         (_("Failed to verify project file"), filename, _("Retry to save it."))
+                                         )
                     return
 
                 try:
                     saved_d = json.load(saved_f, object_hook=dict2obj)
                 except:
-                    self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                     (_("Failed to parse saved project file"), filename, _("Retry to save it."))
-                                     )
+                    if silent is False:
+                        self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
+                                         (_("Failed to parse saved project file"), filename, _("Retry to save it."))
+                                         )
                     f.close()
                     return
                 saved_f.close()
 
-                if 'version' in saved_d:
-                    self.inform.emit('[success] %s: %s' %
-                                     (_("Project saved to"), filename))
-                else:
-                    self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                     (_("Failed to parse saved project file"), filename, _("Retry to save it."))
-                                     )
+                if silent is False:
+                    if 'version' in saved_d:
+                        self.inform.emit('[success] %s: %s' %
+                                         (_("Project saved to"), filename))
+                    else:
+                        self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
+                                         (_("Failed to parse saved project file"), filename, _("Retry to save it."))
+                                         )
 
                 settings = QSettings("Open Source", "FlatCAM")
                 lock_state = self.ui.lock_action.isChecked()

@@ -9,6 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.09.2019
+
+- made sure that if FlatCAM is registered with a file extension that it does not recognize it will exit
+- added some fixes in the the file extension detection
+- added some status messages for the Tcl script related methods
+- made sure that optionally, when a script is run then it is also loaded into the code editor
+- added control over the display of Sys Tray Icon in Edit -> Preferences -> General -> GUI Settings -> Sys Tray Icon checkbox
+
 18.09.2019
 
 - added more functionality to the Extension registration with FLatCAM and added to the GUI in Edit -> Preferences -> Utilities
@@ -16,7 +24,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed showing the GUI when some settings (maximized_GUI) are missing from QSettings
 - added sys tray menu
 - added possibility to edit the custom keywords used by the autocompleter (in Tcl Shell and in the Code Editor). It is done in the Edit -> Preferences -> Utilities
-- added a new setting in Edit -> Preferences -> General -> GUI Settings -> Textbox Font which control the font on the texbox GUI elements
+- added a new setting in Edit -> Preferences -> General -> GUI Settings -> Textbox Font which control the font on the Textbox GUI elements
 - fixed issue with the sys tray icon not hiding after application close
 - added option to run a script from the context menu of the sys tray icon. Changed the color of the sys tray icon to a green one so it will be visible on light and dark themes
 
