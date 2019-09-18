@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - added sys tray menu
 - added possibility to edit the custom keywords used by the autocompleter (in Tcl Shell and in the Code Editor). It is done in the Edit -> Preferences -> Utilities
 - added a new setting in Edit -> Preferences -> General -> GUI Settings -> Textbox Font which control the font on the texbox GUI elements
+- fixed issue with the sys tray icon not hiding after application close
 
 17.09.2019
 

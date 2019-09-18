@@ -2055,14 +2055,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.lock_toolbar(lock=lock_state)
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
 
-        # #################################################################
-        # ####################### SYS TRAY ################################
-        # #################################################################
-
-        self.w = QtWidgets.QWidget()
-        self.trayIcon = FlatCAMSystemTray(self.app, QtGui.QIcon('share/flatcam_icon32.png'), self.w)
-
-
     def eventFilter(self, obj, event):
         # filter the ToolTips display based on a Preferences setting
         if self.general_defaults_form.general_gui_set_group.toggle_tooltips_cb.get_value() is False:

@@ -395,6 +395,13 @@ class App(QtCore.QObject):
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
 
+        # #################################################################
+        # ####################### SYS TRAY ################################
+        # #################################################################
+
+        self.parent_w = QtWidgets.QWidget()
+        self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32.png'), parent=self.parent_w)
+
         # #############################################################################
         # ############################## Data #########################################
         # #############################################################################
@@ -2468,6 +2475,8 @@ class App(QtCore.QObject):
         else:
             self.ui.show()
 
+        self.trayIcon.show()
+
         # #####################################################################################
         # ########################## START-UP ARGUMENTS #######################################
         # #####################################################################################
@@ -4460,12 +4469,15 @@ class App(QtCore.QObject):
             response = msgbox.clickedButton()
 
             if response == bt_yes:
+                self.trayIcon.hide()
                 self.on_file_saveprojectas(use_thread=True, quit_action=True)
             elif response == bt_no:
+                self.trayIcon.hide()
                 self.quit_application()
             elif response == bt_cancel:
                 return
         else:
+            self.trayIcon.hide()
             self.quit_application()
 
     def quit_application(self):
