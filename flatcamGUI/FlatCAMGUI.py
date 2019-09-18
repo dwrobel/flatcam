@@ -8211,6 +8211,16 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
         menu = QtWidgets.QMenu(parent)
 
+        menu_runscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), '%s' % _('Run Script ...'), self)
+        menu_runscript.setToolTip(
+            _("Will run the opened Tcl Script thus\n"
+              "enabling the automation of certain\n"
+              "functions of FlatCAM.")
+        )
+        menu.addAction(menu_runscript)
+
+        menu.addSeparator()
+
         menu_open = menu.addMenu(QtGui.QIcon('share/folder32_bis.png'), _('Open'))
 
         # Open Project ...
@@ -8238,6 +8248,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
         exitAction.setIcon(QtGui.QIcon('share/power16.png'))
         self.setContextMenu(menu)
 
+        menu_runscript.triggered.connect(self.app.on_filerunscript)
         menu_openproject.triggered.connect(self.app.on_file_openproject)
         menu_opengerber.triggered.connect(self.app.on_fileopengerber)
         menu_openexcellon.triggered.connect(self.app.on_fileopenexcellon)

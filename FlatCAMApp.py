@@ -400,7 +400,8 @@ class App(QtCore.QObject):
         # #################################################################
 
         self.parent_w = QtWidgets.QWidget()
-        self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32.png'), parent=self.parent_w)
+        self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
+                                          parent=self.parent_w)
 
         # #############################################################################
         # ############################## Data #########################################
