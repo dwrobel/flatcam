@@ -1972,7 +1972,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_defaults_form = GeometryPreferencesUI()
         self.cncjob_defaults_form = CNCJobPreferencesUI()
         self.tools_defaults_form = ToolsPreferencesUI()
-        self.fa_defaults_form = FAPreferencesUI()
+        self.util_defaults_form = UtilPreferencesUI()
 
         self.general_options_form = GeneralPreferencesUI()
         self.gerber_options_form = GerberPreferencesUI()
@@ -1980,7 +1980,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_options_form = GeometryPreferencesUI()
         self.cncjob_options_form = CNCJobPreferencesUI()
         self.tools_options_form = ToolsPreferencesUI()
-        self.fa_options_form = FAPreferencesUI()
+        self.util_options_form = UtilPreferencesUI()
 
         QtWidgets.qApp.installEventFilter(self)
 
@@ -3639,23 +3639,32 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         self.layout.addStretch()
 
 
-class FAPreferencesUI(QtWidgets.QWidget):
+class UtilPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
 
+        self.vlay = QtWidgets.QVBoxLayout()
         self.fa_excellon_group = FAExcPrefGroupUI()
         self.fa_excellon_group.setMinimumWidth(260)
+
         self.fa_gcode_group = FAGcoPrefGroupUI()
         self.fa_gcode_group.setMinimumWidth(260)
+
+        self.vlay.addWidget(self.fa_excellon_group)
+        self.vlay.addWidget(self.fa_gcode_group)
+
         self.fa_gerber_group = FAGrbPrefGroupUI()
         self.fa_gerber_group.setMinimumWidth(260)
 
-        self.layout.addWidget(self.fa_excellon_group)
-        self.layout.addWidget(self.fa_gcode_group)
+        self.kw_group = AutoCompletePrefGroupUI()
+        self.kw_group.setMinimumWidth(260)
+
+        self.layout.addLayout(self.vlay)
         self.layout.addWidget(self.fa_gerber_group)
+        self.layout.addWidget(self.kw_group)
 
         self.layout.addStretch()
 
@@ -4081,6 +4090,23 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.axis_font_size_spinner.set_value(8)
 
+        # TextBox Font Size
+        self.textbox_font_size_label = QtWidgets.QLabel('%s:' % _('Textbox Font Size'))
+        self.textbox_font_size_label.setToolTip(
+            _("This sets the font size for the Textbox GUI\n"
+              "elements that are used in FlatCAM.")
+        )
+
+        self.textbox_font_size_spinner = FCSpinner()
+        self.textbox_font_size_spinner.setRange(8, 40)
+        self.textbox_font_size_spinner.setWrapping(True)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            self.textbox_font_size_spinner.set_value(settings.value('textbox_font_size', type=int))
+        else:
+            self.textbox_font_size_spinner.set_value(10)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -4158,6 +4184,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.notebook_font_size_label, self.notebook_font_size_spinner)
         self.form_box.addRow(self.axis_font_size_label, self.axis_font_size_spinner)
+        self.form_box.addRow(self.textbox_font_size_label, self.textbox_font_size_spinner)
         self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.splash_label, self.splash_cb)
         self.form_box.addRow(self.shell_startup_label, self.shell_startup_cb)
@@ -6471,6 +6498,14 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.export_gcode_label)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+        font = QtGui.QFont()
+        font.setPointSize(tb_fsize)
+
         # Prepend to G-Code
         prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to G-Code'))
         prependlabel.setToolTip(
@@ -6481,6 +6516,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.prepend_text = FCTextArea()
         self.layout.addWidget(self.prepend_text)
+        self.prepend_text.setFont(font)
 
         # Append text to G-Code
         appendlabel = QtWidgets.QLabel('%s:' % _('Append to G-Code'))
@@ -6493,6 +6529,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.append_text = FCTextArea()
         self.layout.addWidget(self.append_text)
+        self.append_text.setFont(font)
 
         self.layout.addStretch()
 
@@ -6528,8 +6565,17 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(toolchangelabel)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+        font = QtGui.QFont()
+        font.setPointSize(tb_fsize)
+
         self.toolchange_text = FCTextArea()
         self.layout.addWidget(self.toolchange_text)
+        self.toolchange_text.setFont(font)
 
         hlay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay)
@@ -7834,11 +7880,17 @@ class FAExcPrefGroupUI(OptionsGroupUI):
         )
         self.vertical_lay.addWidget(list_label)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+
         self.exc_list_text = FCTextArea()
         self.exc_list_text.setReadOnly(True)
         # self.exc_list_text.sizeHint(custom_sizehint=150)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(tb_fsize)
         self.exc_list_text.setFont(font)
 
         self.vertical_lay.addWidget(self.exc_list_text)
@@ -7900,11 +7952,17 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.gco_list_label)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+
         self.gco_list_text = FCTextArea()
         self.gco_list_text.setReadOnly(True)
         # self.gco_list_text.sizeHint(custom_sizehint=150)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(tb_fsize)
         self.gco_list_text.setFont(font)
 
         self.layout.addWidget(self.gco_list_text)
@@ -7963,12 +8021,18 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.grb_list_label)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+
         self.grb_list_text = FCTextArea()
         self.grb_list_text.setReadOnly(True)
         # self.grb_list_text.sizeHint(custom_sizehint=150)
         self.layout.addWidget(self.grb_list_text)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(tb_fsize)
         self.grb_list_text.setFont(font)
 
         self.ext_label = QtWidgets.QLabel('%s:' % _("Extension"))
@@ -7997,6 +8061,69 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
                                        "This work only in Windows."))
 
         self.layout.addWidget(self.grb_list_btn)
+
+        # self.layout.addStretch()
+
+
+class AutoCompletePrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber File associations Preferences", parent=None)
+        super().__init__(self, parent=parent)
+
+        self.setTitle(str(_("Autocompleter Keywords")))
+
+        self.restore_btn = FCButton(_("Restore"))
+        self.restore_btn.setToolTip(_("Restore the autocompleter keywords list to the default state."))
+        self.del_all_btn = FCButton(_("Delete All"))
+        self.del_all_btn.setToolTip(_("Delete all autocompleter keywords from the list."))
+
+        hlay0 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay0)
+        hlay0.addWidget(self.restore_btn)
+        hlay0.addWidget(self.del_all_btn)
+
+        # ## Gerber associations
+        self.grb_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Keywords list"))
+        self.grb_list_label.setToolTip(
+            _("List of keywords used by\n"
+              "the autocompleter in FlatCAM.\n"
+              "The autocompleter is installed\n"
+              "in the Code Editor and for the Tcl Shell.")
+        )
+        self.layout.addWidget(self.grb_list_label)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+
+        self.kw_list_text = FCTextArea()
+        self.kw_list_text.setReadOnly(True)
+        # self.grb_list_text.sizeHint(custom_sizehint=150)
+        self.layout.addWidget(self.kw_list_text)
+        font = QtGui.QFont()
+        font.setPointSize(tb_fsize)
+        self.kw_list_text.setFont(font)
+
+        self.kw_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.kw_label.setToolTip(_("A keyword to be added or deleted to the list."))
+        self.kw_entry = FCEntry()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+        hlay1.addWidget(self.kw_label)
+        hlay1.addWidget(self.kw_entry)
+
+        self.add_btn = FCButton(_("Add keyword"))
+        self.add_btn.setToolTip(_("Add a keyword to the list"))
+        self.del_btn = FCButton(_("Delete keyword"))
+        self.del_btn.setToolTip(_("Delete a keyword from the list"))
+
+        hlay2 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay2)
+        hlay2.addWidget(self.add_btn)
+        hlay2.addWidget(self.del_btn)
 
         # self.layout.addStretch()
 

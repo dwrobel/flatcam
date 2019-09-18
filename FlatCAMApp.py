@@ -747,11 +747,13 @@ class App(QtCore.QObject):
             "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
             "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb,
 
-            # file associations
-            "fa_excellon": self.ui.fa_defaults_form.fa_excellon_group.exc_list_text,
-            "fa_gcode": self.ui.fa_defaults_form.fa_gcode_group.gco_list_text,
-            # "fa_geometry": self.ui.fa_defaults_form.fa_geometry_group.close_paths_cb,
-            "fa_gerber": self.ui.fa_defaults_form.fa_gerber_group.grb_list_text,
+            # Utilities
+            # File associations
+            "fa_excellon": self.ui.util_defaults_form.fa_excellon_group.exc_list_text,
+            "fa_gcode": self.ui.util_defaults_form.fa_gcode_group.gco_list_text,
+            # "fa_geometry": self.ui.util_defaults_form.fa_geometry_group.close_paths_cb,
+            "fa_gerber": self.ui.util_defaults_form.fa_gerber_group.grb_list_text,
+            "util_autocomplete_keywords": self.ui.util_defaults_form.kw_group.kw_list_text,
 
         }
 
@@ -864,22 +866,6 @@ class App(QtCore.QObject):
             "global_point_clipboard_format": "(%.4f, %.4f)",
             "global_zdownrate": None,
 
-            # autocomplete keywords
-            "global_autocomplete_keywords":
-                ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
-                 'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'diatol', 'dist',
-                 'drilled_dias', 'drillz', 'pp',
-                 'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
-                 'milled_dias',
-                 'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
-                 'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
-                 'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
-                 'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move',
-                 'default', 'feedrate_z', 'grbl_11', 'grbl_laser', 'hpgl', 'line_xyz', 'marlin',
-                 'Paste_1', 'Repetier', 'Toolchange_Custom', 'Roland_MDX_20', 'Toolchange_manual',
-                 'Toolchange_Probe_MACH3', 'dwell', 'dwelltime', 'toolchange_xy', 'iso_type',
-                 'Desktop', 'FlatPrj', 'FlatConfig', 'Users', 'Documents', 'My Documents', 'Marius'
-                 ],
             # General GUI Settings
             "global_hover": False,
             "global_selection_shape": True,
@@ -1162,14 +1148,28 @@ class App(QtCore.QObject):
             # Subtract Tool
             "tools_sub_close_paths": True,
 
+            # Utilities
             # file associations
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
             "fa_gcode": 'cnc, din, dnc, ecs, eia, fan, fgc, fnc, gc, gcd, gcode, h, hnc, i, min, mpf, mpr, nc, ncc, '
                         'ncg, ncp, out, plt, ply, rol, sbp, tap, xpi',
             "fa_gerber": 'art, bot, bsm, cmp, crc, crs, dim, g4, gb0, gb1, gb2, gb3, gb5, gb6, gb7, gb8, gb9, gbd, '
                          'gbl, gbo, gbp, gbr, gbs, gdo, ger, gko, gm1, gm2, gm3, grb, gtl, gto, gtp, gts, ly15, ly2, '
-                         'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm'
+                         'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
+            # Keyword list
+            "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, Marius, My Documents, Paste_1, '
+                                          'Repetier, Roland_MDX_20, Toolchange_Custom, Toolchange_Probe_MACH3, '
+                                          'Toolchange_manual, Users, all, angle_x, angle_y, axis, axisoffset, box, '
+                                          'center_x, center_y, columns, combine, connect, contour, default, '
+                                          'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwell, dwelltime, '
+                                          'feedrate_z, grbl_11, grbl_laser, gridoffsety, gridx, gridy, has_offset, '
+                                          'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
+                                          'minoffset, multidepth, name, offset, opt_type, order, outname, overlap, '
+                                          'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
+                                          'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '
+                                          'toolchange_xy, use_threads, value, x, x0, x1, y, y0, y1, z_cut, z_move'
 ,
+
         })
 
         # ############################################################
@@ -1918,41 +1918,53 @@ class App(QtCore.QObject):
         # ############### FILE ASSOCIATIONS SIGNALS ####################
         # ##############################################################
 
-        self.ui.fa_defaults_form.fa_excellon_group.restore_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_excellon_group.restore_btn.clicked.connect(
             lambda: self.restore_extensions(ext_type='excellon'))
-        self.ui.fa_defaults_form.fa_gcode_group.restore_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gcode_group.restore_btn.clicked.connect(
             lambda: self.restore_extensions(ext_type='gcode'))
-        self.ui.fa_defaults_form.fa_gerber_group.restore_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gerber_group.restore_btn.clicked.connect(
             lambda: self.restore_extensions(ext_type='gerber'))
 
-        self.ui.fa_defaults_form.fa_excellon_group.del_all_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_excellon_group.del_all_btn.clicked.connect(
             lambda: self.delete_all_extensions(ext_type='excellon'))
-        self.ui.fa_defaults_form.fa_gcode_group.del_all_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gcode_group.del_all_btn.clicked.connect(
             lambda: self.delete_all_extensions(ext_type='gcode'))
-        self.ui.fa_defaults_form.fa_gerber_group.del_all_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gerber_group.del_all_btn.clicked.connect(
             lambda: self.delete_all_extensions(ext_type='gerber'))
 
-        self.ui.fa_defaults_form.fa_excellon_group.add_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_excellon_group.add_btn.clicked.connect(
             lambda: self.add_extension(ext_type='excellon'))
-        self.ui.fa_defaults_form.fa_gcode_group.add_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gcode_group.add_btn.clicked.connect(
             lambda: self.add_extension(ext_type='gcode'))
-        self.ui.fa_defaults_form.fa_gerber_group.add_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gerber_group.add_btn.clicked.connect(
             lambda: self.add_extension(ext_type='gerber'))
 
-        self.ui.fa_defaults_form.fa_excellon_group.del_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_excellon_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='excellon'))
-        self.ui.fa_defaults_form.fa_gcode_group.del_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gcode_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='gcode'))
-        self.ui.fa_defaults_form.fa_gerber_group.del_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gerber_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='gerber'))
 
         # connect the 'Apply' buttons from the Preferences/File Associations
-        self.ui.fa_defaults_form.fa_excellon_group.exc_list_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_excellon_group.exc_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='excellon'))
-        self.ui.fa_defaults_form.fa_gcode_group.gco_list_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gcode_group.gco_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='gcode'))
-        self.ui.fa_defaults_form.fa_gerber_group.grb_list_btn.clicked.connect(
+        self.ui.util_defaults_form.fa_gerber_group.grb_list_btn.clicked.connect(
             lambda: self.on_register_files(obj_type='gerber'))
+
+        # ##############################################################
+        # ###################### KEYWORDS SIGNALS ######################
+        # ##############################################################
+        self.ui.util_defaults_form.kw_group.restore_btn.clicked.connect(
+            lambda: self.restore_extensions(ext_type='keyword'))
+        self.ui.util_defaults_form.kw_group.del_all_btn.clicked.connect(
+            lambda: self.delete_all_extensions(ext_type='keyword'))
+        self.ui.util_defaults_form.kw_group.add_btn.clicked.connect(
+            lambda: self.add_extension(ext_type='keyword'))
+        self.ui.util_defaults_form.kw_group.del_btn.clicked.connect(
+            lambda: self.del_extension(ext_type='keyword'))
 
         # splash screen button signal
         self.ui.general_defaults_form.general_gui_set_group.splash_cb.stateChanged.connect(self.on_splash_changed)
@@ -2001,7 +2013,20 @@ class App(QtCore.QObject):
                                   'version', 'write_gcode'
                                   ]
 
-        self.ordinary_keywords = self.defaults["global_autocomplete_keywords"]
+        self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'Marius', 'My Documents', 'Paste_1',
+                                 'Repetier', 'Roland_MDX_20', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
+                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'axis', 'axisoffset',
+                                 'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
+                                 'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dwell',
+                                 'dwelltime', 'feedrate_z', 'grbl_11', 'grbl_laser', 'gridoffsety', 'gridx', 'gridy',
+                                 'has_offset', 'holes', 'hpgl', 'iso_type', 'line_xyz', 'margin', 'marlin', 'method',
+                                 'milled_dias', 'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order',
+                                 'outname', 'overlap', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
+                                 'preamble', 'radius', 'ref', 'rest', 'rows', 'shellvar_', 'scale_factor',
+                                 'spacing_columns',
+                                 'spacing_rows', 'spindlespeed', 'toolchange_xy', 'use_threads', 'value', 'x',
+                                 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
+                                 ]
 
         self.tcl_keywords = [
             'after', 'append', 'apply', 'argc', 'argv', 'argv0', 'array', 'attemptckalloc', 'attemptckrealloc',
@@ -2190,7 +2215,8 @@ class App(QtCore.QObject):
             'unload', 'unset', 'update', 'uplevel', 'upvar', 'variable', 'vwait', 'while', 'yield', 'yieldto', 'zlib'
         ]
 
-        self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
+        self.autocomplete_kw_list = self.defaults['util_autocomplete_keywords'].replace(' ', '').split(',')
+        self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
 
         self.default_autocomplete_keywords = [
             'all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
@@ -2578,7 +2604,7 @@ class App(QtCore.QObject):
                 log.debug("App.on_startup_args() --> Save event. App Defaults saved.")
                 self.save_defaults()
             else:
-                exc_list = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
+                exc_list = self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
                 proc_arg = argument.lower()
                 for ext in exc_list:
                     proc_ext = ext.replace(' ', '')
@@ -2591,7 +2617,7 @@ class App(QtCore.QObject):
                             self.on_fileopenexcellon(name=file_name)
                             return
 
-                gco_list = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
+                gco_list = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
                 for ext in gco_list:
                     proc_ext = ext.replace(' ', '')
                     proc_ext = '.%s' % proc_ext
@@ -2604,7 +2630,7 @@ class App(QtCore.QObject):
                             self.on_fileopengcode(name=file_name)
                             return
 
-                grb_list = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
+                grb_list = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
                 for ext in grb_list:
                     proc_ext = ext.replace(' ', '')
                     proc_ext = '.%s' % proc_ext
@@ -4460,7 +4486,8 @@ class App(QtCore.QObject):
                           self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value())
         settings.setValue('axis_font_size',
                           self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value())
-
+        settings.setValue('textbox_font_size',
+                          self.ui.general_defaults_form.general_gui_set_group.textbox_font_size_spinner.get_value())
         settings.setValue('toolbar_lock', self.ui.lock_action.isChecked())
 
         # This will write the setting to the platform specific storage.
@@ -4616,7 +4643,7 @@ class App(QtCore.QObject):
                 return False
 
         if obj_type is None or obj_type == 'excellon':
-            exc_list = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
+            exc_list = self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
             exc_list = [x for x in exc_list if x != '']
 
             # register all keys in the Preferences window
@@ -4637,7 +4664,7 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s' % _("Selected Excellon file extensions registered with FlatCAM."))
 
         if obj_type is None or obj_type == 'gcode':
-            gco_list = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
+            gco_list = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
             gco_list = [x for x in gco_list if x != '']
 
             # register all keys in the Preferences window
@@ -4659,7 +4686,7 @@ class App(QtCore.QObject):
                              _("Selected GCode file extensions registered with FlatCAM."))
 
         if obj_type is None or obj_type == 'gerber':
-            grb_list = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
+            grb_list = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
             grb_list = [x for x in grb_list if x != '']
 
             # register all keys in the Preferences window
@@ -4682,73 +4709,109 @@ class App(QtCore.QObject):
 
     def add_extension(self, ext_type):
         if ext_type == 'excellon':
-            new_ext = self.ui.fa_defaults_form.fa_excellon_group.ext_entry.get_value()
+            new_ext = self.ui.util_defaults_form.fa_excellon_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
             if new_ext in old_val:
                 return
             old_val.append(new_ext)
             old_val.sort()
-            self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
+            self.ui.util_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
         if ext_type == 'gcode':
-            new_ext = self.ui.fa_defaults_form.fa_gcode_group.ext_entry.get_value()
+            new_ext = self.ui.util_defaults_form.fa_gcode_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
             if new_ext in old_val:
                 return
             old_val.append(new_ext)
             old_val.sort()
-            self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
+            self.ui.util_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
         if ext_type == 'gerber':
-            new_ext = self.ui.fa_defaults_form.fa_gerber_group.ext_entry.get_value()
+            new_ext = self.ui.util_defaults_form.fa_gerber_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
             if new_ext in old_val:
                 return
             old_val.append(new_ext)
             old_val.sort()
-            self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
+            self.ui.util_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
+        if ext_type == 'keyword':
+            new_kw = self.ui.util_defaults_form.kw_group.kw_entry.get_value()
+            if new_kw == '':
+                return
+
+            old_val = self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
+            if new_kw in old_val:
+                return
+            old_val.append(new_kw)
+            old_val.sort()
+            self.ui.util_defaults_form.kw_group.kw_list_text.set_value(', '.join(old_val))
+
+            # update the self.myKeywords so the model is updated
+            self.autocomplete_kw_list = \
+                self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
+            self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
+            self.shell._edit.set_model_data(self.myKeywords)
+            self.ui.code_editor.set_model_data(self.myKeywords)
 
     def del_extension(self, ext_type):
         if ext_type == 'excellon':
-            new_ext = self.ui.fa_defaults_form.fa_excellon_group.ext_entry.get_value()
+            new_ext = self.ui.util_defaults_form.fa_excellon_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_defaults_form.fa_excellon_group.exc_list_text.get_value().replace(' ', '').split(',')
             if new_ext not in old_val:
                 return
             old_val.remove(new_ext)
             old_val.sort()
-            self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
+            self.ui.util_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(old_val))
         if ext_type == 'gcode':
-            new_ext = self.ui.fa_defaults_form.fa_gcode_group.ext_entry.get_value()
+            new_ext = self.ui.util_defaults_form.fa_gcode_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_defaults_form.fa_gcode_group.gco_list_text.get_value().replace(' ', '').split(',')
             if new_ext not in old_val:
                 return
             old_val.remove(new_ext)
             old_val.sort()
-            self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
+            self.ui.util_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(old_val))
         if ext_type == 'gerber':
-            new_ext = self.ui.fa_defaults_form.fa_gerber_group.ext_entry.get_value()
+            new_ext = self.ui.util_defaults_form.fa_gerber_group.ext_entry.get_value()
             if new_ext == '':
                 return
 
-            old_val = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
+            old_val = self.ui.util_defaults_form.fa_gerber_group.grb_list_text.get_value().replace(' ', '').split(',')
             if new_ext not in old_val:
                 return
             old_val.remove(new_ext)
             old_val.sort()
-            self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
+            self.ui.util_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(old_val))
+        if ext_type == 'keyword':
+            new_kw = self.ui.util_defaults_form.kw_group.kw_entry.get_value()
+            if new_kw == '':
+                return
+
+            old_val = self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
+            if new_kw not in old_val:
+                return
+            old_val.remove(new_kw)
+            old_val.sort()
+            self.ui.util_defaults_form.kw_group.kw_list_text.set_value(', '.join(old_val))
+
+            # update the self.myKeywords so the model is updated
+            self.autocomplete_kw_list = \
+                self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
+            self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
+            self.shell._edit.set_model_data(self.myKeywords)
+            self.ui.code_editor.set_model_data(self.myKeywords)
 
     def restore_extensions(self, ext_type):
         if ext_type == 'excellon':
@@ -4760,19 +4823,34 @@ class App(QtCore.QObject):
                 new_exc_list.remove('txt')
             except ValueError:
                 pass
-            self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(new_exc_list))
+            self.ui.util_defaults_form.fa_excellon_group.exc_list_text.set_value(', '.join(new_exc_list))
         if ext_type == 'gcode':
-            self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(self.gcode_list))
+            self.ui.util_defaults_form.fa_gcode_group.gco_list_text.set_value(', '.join(self.gcode_list))
         if ext_type == 'gerber':
-            self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(self.grb_list))
+            self.ui.util_defaults_form.fa_gerber_group.grb_list_text.set_value(', '.join(self.grb_list))
+        if ext_type == 'keyword':
+            self.ui.util_defaults_form.kw_group.kw_list_text.set_value(', '.join(self.default_keywords))
+
+            # update the self.myKeywords so the model is updated
+            self.autocomplete_kw_list = self.default_keywords
+            self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
+            self.shell._edit.set_model_data(self.myKeywords)
+            self.ui.code_editor.set_model_data(self.myKeywords)
 
     def delete_all_extensions(self, ext_type):
         if ext_type == 'excellon':
-            self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.set_value('')
+            self.ui.util_defaults_form.fa_excellon_group.exc_list_text.set_value('')
         if ext_type == 'gcode':
-            self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.set_value('')
+            self.ui.util_defaults_form.fa_gcode_group.gco_list_text.set_value('')
         if ext_type == 'gerber':
-            self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.set_value('')
+            self.ui.util_defaults_form.fa_gerber_group.grb_list_text.set_value('')
+        if ext_type == 'keyword':
+            self.ui.util_defaults_form.kw_group.kw_list_text.set_value('')
+
+            # update the self.myKeywords so the model is updated
+            self.myKeywords = self.tcl_commands_list + self.tcl_keywords
+            self.shell._edit.set_model_data(self.myKeywords)
+            self.ui.code_editor.set_model_data(self.myKeywords)
 
     def on_edit_join(self, name=None):
         """
@@ -5390,7 +5468,7 @@ class App(QtCore.QObject):
             self.geo_form = self.ui.geometry_defaults_form
             self.cnc_form = self.ui.cncjob_defaults_form
             self.tools_form = self.ui.tools_defaults_form
-            self.fa_form = self.ui.fa_defaults_form
+            self.fa_form = self.ui.util_defaults_form
         elif sel == 1:
             self.gen_form = self.ui.general_options_form
             self.ger_form = self.ui.gerber_options_form
@@ -5398,7 +5476,7 @@ class App(QtCore.QObject):
             self.geo_form = self.ui.geometry_options_form
             self.cnc_form = self.ui.cncjob_options_form
             self.tools_form = self.ui.tools_options_form
-            self.fa_form = self.ui.fa_options_form
+            self.fa_form = self.ui.util_options_form
         else:
             return
 
@@ -6110,14 +6188,19 @@ class App(QtCore.QObject):
         # Re-fresh project options
         self.on_options_app2project()
 
-        # save the notebook font size
         settings = QSettings("Open Source", "FlatCAM")
+
+        # save the notebook font size
         fsize = self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value()
         settings.setValue('notebook_font_size', fsize)
 
         # save the axis font size
         g_fsize = self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value()
         settings.setValue('axis_font_size', g_fsize)
+
+        # save the textbox font size
+        tb_fsize = self.ui.general_defaults_form.general_gui_set_group.textbox_font_size_spinner.get_value()
+        settings.setValue('textbox_font_size', tb_fsize)
 
         # This will write the setting to the platform specific storage.
         del settings

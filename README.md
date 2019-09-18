@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the parsing of the Manufacturing files when double clicking them and they are registered with FlatCAM
 - fixed showing the GUI when some settings (maximized_GUI) are missing from QSettings
 - added sys tray menu
+- added possibility to edit the custom keywords used by the autocompleter (in Tcl Shell and in the Code Editor). It is done in the Edit -> Preferences -> Utilities
+- added a new setting in Edit -> Preferences -> General -> GUI Settings -> Textbox Font which control the font on the texbox GUI elements
 
 17.09.2019
 
