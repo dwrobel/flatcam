@@ -808,7 +808,7 @@ class App(QtCore.QObject):
             "global_project_autohide": True,
             "global_toggle_tooltips": True,
             "global_worker_number": 2,
-            "global_tolerance": 0.01,
+            "global_tolerance": 0.005,
             "global_open_style": True,
             "global_delete_confirmation": True,
             "global_compression_level": 3,
@@ -1091,7 +1091,7 @@ class App(QtCore.QObject):
             # 2-Sided Tool
             "tools_2sided_mirror_axis": "X",
             "tools_2sided_axis_loc": "point",
-            "tools_2sided_drilldia": 0.0393701,
+            "tools_2sided_drilldia": 0.11811,
 
             # Film Tool
             "tools_film_type": 'neg',

@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - added some status messages for the Tcl script related methods
 - made sure that optionally, when a script is run then it is also loaded into the code editor
 - added control over the display of Sys Tray Icon in Edit -> Preferences -> General -> GUI Settings -> Sys Tray Icon checkbox
+- updated some of the default values to more reasonable ones
 
 18.09.2019
 
