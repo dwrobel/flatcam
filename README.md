@@ -23,6 +23,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in Gerber editor that did not allow to display all shapes after it encountered one shape without 'solid' geometry
 - fixed bug in Gerber Editor -> selection area handler where if some of the selected shapes did not had the 'solid' geometry will silently abort selection of further shapes
 - added new control in Edit -> Preferences -> General -> Gui Preferences -> Activity Icon. Will select a GIF from a selection, the one used to show that FlatCAM is working.
+- changed the script icon to a smaller one in the sys tray menu
 
 18.09.2019
 

@@ -8231,7 +8231,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
         menu = QtWidgets.QMenu(parent)
 
-        menu_runscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), '%s' % _('Run Script ...'), self)
+        menu_runscript = QtWidgets.QAction(QtGui.QIcon('share/script14.png'), '%s' % _('Run Script ...'), self)
         menu_runscript.setToolTip(
             _("Will run the opened Tcl Script thus\n"
               "enabling the automation of certain\n"
