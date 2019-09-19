@@ -958,7 +958,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.fa_tab = QtWidgets.QWidget()
         self.fa_tab.setObjectName("fa_tab")
-        self.pref_tab_area.addTab(self.fa_tab, _("FILE ASSOCIATIONS"))
+        self.pref_tab_area.addTab(self.fa_tab, _("UTILITIES"))
         self.fa_tab_lay = QtWidgets.QVBoxLayout()
         self.fa_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.fa_tab.setLayout(self.fa_tab_lay)
@@ -1972,7 +1972,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_defaults_form = GeometryPreferencesUI()
         self.cncjob_defaults_form = CNCJobPreferencesUI()
         self.tools_defaults_form = ToolsPreferencesUI()
-        self.fa_defaults_form = FAPreferencesUI()
+        self.util_defaults_form = UtilPreferencesUI()
 
         self.general_options_form = GeneralPreferencesUI()
         self.gerber_options_form = GerberPreferencesUI()
@@ -1980,7 +1980,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_options_form = GeometryPreferencesUI()
         self.cncjob_options_form = CNCJobPreferencesUI()
         self.tools_options_form = ToolsPreferencesUI()
-        self.fa_options_form = FAPreferencesUI()
+        self.util_options_form = UtilPreferencesUI()
 
         QtWidgets.qApp.installEventFilter(self)
 
@@ -3631,23 +3631,32 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         self.layout.addStretch()
 
 
-class FAPreferencesUI(QtWidgets.QWidget):
+class UtilPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
 
+        self.vlay = QtWidgets.QVBoxLayout()
         self.fa_excellon_group = FAExcPrefGroupUI()
         self.fa_excellon_group.setMinimumWidth(260)
+
         self.fa_gcode_group = FAGcoPrefGroupUI()
         self.fa_gcode_group.setMinimumWidth(260)
+
+        self.vlay.addWidget(self.fa_excellon_group)
+        self.vlay.addWidget(self.fa_gcode_group)
+
         self.fa_gerber_group = FAGrbPrefGroupUI()
         self.fa_gerber_group.setMinimumWidth(260)
 
-        self.layout.addWidget(self.fa_excellon_group)
-        self.layout.addWidget(self.fa_gcode_group)
+        self.kw_group = AutoCompletePrefGroupUI()
+        self.kw_group.setMinimumWidth(260)
+
+        self.layout.addLayout(self.vlay)
         self.layout.addWidget(self.fa_gerber_group)
+        self.layout.addWidget(self.kw_group)
 
         self.layout.addStretch()
 
@@ -4073,6 +4082,23 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.axis_font_size_spinner.set_value(8)
 
+        # TextBox Font Size
+        self.textbox_font_size_label = QtWidgets.QLabel('%s:' % _('Textbox Font Size'))
+        self.textbox_font_size_label.setToolTip(
+            _("This sets the font size for the Textbox GUI\n"
+              "elements that are used in FlatCAM.")
+        )
+
+        self.textbox_font_size_spinner = FCSpinner()
+        self.textbox_font_size_spinner.setRange(8, 40)
+        self.textbox_font_size_spinner.setWrapping(True)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            self.textbox_font_size_spinner.set_value(settings.value('textbox_font_size', type=int))
+        else:
+            self.textbox_font_size_spinner.set_value(10)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -4087,6 +4113,13 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             self.splash_cb.set_value(True)
         else:
             self.splash_cb.set_value(False)
+
+        # Sys Tray Icon
+        self.systray_label = QtWidgets.QLabel('%s:' % _('Sys Tray Icon'))
+        self.systray_label.setToolTip(
+            _("Enable display of FlatCAM icon in Sys Tray.")
+        )
+        self.systray_cb = FCCheckBox()
 
         # Shell StartUp CB
         self.shell_startup_label = QtWidgets.QLabel('%s:' % _('Shell at StartUp'))
@@ -4150,8 +4183,10 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.notebook_font_size_label, self.notebook_font_size_spinner)
         self.form_box.addRow(self.axis_font_size_label, self.axis_font_size_spinner)
+        self.form_box.addRow(self.textbox_font_size_label, self.textbox_font_size_spinner)
         self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.splash_label, self.splash_cb)
+        self.form_box.addRow(self.systray_label, self.systray_cb)
         self.form_box.addRow(self.shell_startup_label, self.shell_startup_cb)
         self.form_box.addRow(self.project_startup_label, self.project_startup_cb)
         self.form_box.addRow(self.project_autohide_label, self.project_autohide_cb)
@@ -6463,6 +6498,14 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.export_gcode_label)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+        font = QtGui.QFont()
+        font.setPointSize(tb_fsize)
+
         # Prepend to G-Code
         prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to G-Code'))
         prependlabel.setToolTip(
@@ -6473,6 +6516,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.prepend_text = FCTextArea()
         self.layout.addWidget(self.prepend_text)
+        self.prepend_text.setFont(font)
 
         # Append text to G-Code
         appendlabel = QtWidgets.QLabel('%s:' % _('Append to G-Code'))
@@ -6485,6 +6529,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.append_text = FCTextArea()
         self.layout.addWidget(self.append_text)
+        self.append_text.setFont(font)
 
         self.layout.addStretch()
 
@@ -6520,8 +6565,17 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(toolchangelabel)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+        font = QtGui.QFont()
+        font.setPointSize(tb_fsize)
+
         self.toolchange_text = FCTextArea()
         self.layout.addWidget(self.toolchange_text)
+        self.toolchange_text.setFont(font)
 
         hlay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay)
@@ -7794,34 +7848,83 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
 class FAExcPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon File associations Preferences", parent=None)
-        super(FAExcPrefGroupUI, self).__init__(self)
+        super().__init__(self)
 
         self.setTitle(str(_("Excellon File associations")))
 
-        # ## Export G-Code
-        self.exc_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
-        self.exc_list_label.setToolTip(
+        self.layout.setContentsMargins(2, 2, 2, 2)
+
+        self.vertical_lay = QtWidgets.QVBoxLayout()
+        scroll_widget = QtWidgets.QWidget()
+
+        scroll = VerticalScrollArea()
+        scroll.setWidget(scroll_widget)
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+
+        self.restore_btn = FCButton(_("Restore"))
+        self.restore_btn.setToolTip(_("Restore the extension list to the default state."))
+        self.del_all_btn = FCButton(_("Delete All"))
+        self.del_all_btn.setToolTip(_("Delete all extensions from the list."))
+
+        hlay0 = QtWidgets.QHBoxLayout()
+        hlay0.addWidget(self.restore_btn)
+        hlay0.addWidget(self.del_all_btn)
+        self.vertical_lay.addLayout(hlay0)
+
+        # # ## Excellon associations
+        list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
+        list_label.setToolTip(
             _("List of file extensions to be\n"
               "associated with FlatCAM.")
         )
-        self.layout.addWidget(self.exc_list_label)
+        self.vertical_lay.addWidget(list_label)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
 
         self.exc_list_text = FCTextArea()
+        self.exc_list_text.setReadOnly(True)
         # self.exc_list_text.sizeHint(custom_sizehint=150)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(tb_fsize)
         self.exc_list_text.setFont(font)
 
-        self.layout.addWidget(self.exc_list_text)
+        self.vertical_lay.addWidget(self.exc_list_text)
 
-        self.exc_list_btn = FCButton(_("Apply"))
+        self.ext_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.ext_label.setToolTip(_("A file extension to be added or deleted to the list."))
+        self.ext_entry = FCEntry()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.vertical_lay.addLayout(hlay1)
+        hlay1.addWidget(self.ext_label)
+        hlay1.addWidget(self.ext_entry)
+
+        self.add_btn = FCButton(_("Add Extension"))
+        self.add_btn.setToolTip(_("Add a file extension to the list"))
+        self.del_btn = FCButton(_("Delete Extension"))
+        self.del_btn.setToolTip(_("Delete a file extension from the list"))
+
+        hlay2 = QtWidgets.QHBoxLayout()
+        self.vertical_lay.addLayout(hlay2)
+        hlay2.addWidget(self.add_btn)
+        hlay2.addWidget(self.del_btn)
+
+        self.exc_list_btn = FCButton(_("Apply Association"))
         self.exc_list_btn.setToolTip(_("Apply the file associations between\n"
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"
                                        "This work only in Windows."))
-        self.layout.addWidget(self.exc_list_btn)
+        self.vertical_lay.addWidget(self.exc_list_btn)
 
-        # self.layout.addStretch()
+        scroll_widget.setLayout(self.vertical_lay)
+        self.layout.addWidget(scroll)
+
+        # self.vertical_lay.addStretch()
 
 
 class FAGcoPrefGroupUI(OptionsGroupUI):
@@ -7831,7 +7934,17 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("GCode File associations")))
 
-        # ## Export G-Code
+        self.restore_btn = FCButton(_("Restore"))
+        self.restore_btn.setToolTip(_("Restore the extension list to the default state."))
+        self.del_all_btn = FCButton(_("Delete All"))
+        self.del_all_btn.setToolTip(_("Delete all extensions from the list."))
+
+        hlay0 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay0)
+        hlay0.addWidget(self.restore_btn)
+        hlay0.addWidget(self.del_all_btn)
+
+        # ## G-Code associations
         self.gco_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
         self.gco_list_label.setToolTip(
             _("List of file extensions to be\n"
@@ -7839,15 +7952,41 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.gco_list_label)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+
         self.gco_list_text = FCTextArea()
+        self.gco_list_text.setReadOnly(True)
         # self.gco_list_text.sizeHint(custom_sizehint=150)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(tb_fsize)
         self.gco_list_text.setFont(font)
 
         self.layout.addWidget(self.gco_list_text)
 
-        self.gco_list_btn = FCButton(_("Apply"))
+        self.ext_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.ext_label.setToolTip(_("A file extension to be added or deleted to the list."))
+        self.ext_entry = FCEntry()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+        hlay1.addWidget(self.ext_label)
+        hlay1.addWidget(self.ext_entry)
+
+        self.add_btn = FCButton(_("Add Extension"))
+        self.add_btn.setToolTip(_("Add a file extension to the list"))
+        self.del_btn = FCButton(_("Delete Extension"))
+        self.del_btn.setToolTip(_("Delete a file extension from the list"))
+
+        hlay2 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay2)
+        hlay2.addWidget(self.add_btn)
+        hlay2.addWidget(self.del_btn)
+
+        self.gco_list_btn = FCButton(_("Apply Association"))
         self.gco_list_btn.setToolTip(_("Apply the file associations between\n"
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"
@@ -7864,7 +8003,17 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("Gerber File associations")))
 
-        # ## Export G-Code
+        self.restore_btn = FCButton(_("Restore"))
+        self.restore_btn.setToolTip(_("Restore the extension list to the default state."))
+        self.del_all_btn = FCButton(_("Delete All"))
+        self.del_all_btn.setToolTip(_("Delete all extensions from the list."))
+
+        hlay0 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay0)
+        hlay0.addWidget(self.restore_btn)
+        hlay0.addWidget(self.del_all_btn)
+
+        # ## Gerber associations
         self.grb_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
         self.grb_list_label.setToolTip(
             _("List of file extensions to be\n"
@@ -7872,20 +8021,109 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.grb_list_label)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+
         self.grb_list_text = FCTextArea()
+        self.grb_list_text.setReadOnly(True)
         # self.grb_list_text.sizeHint(custom_sizehint=150)
         self.layout.addWidget(self.grb_list_text)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(tb_fsize)
         self.grb_list_text.setFont(font)
 
-        self.grb_list_btn = FCButton(_("Apply"))
+        self.ext_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.ext_label.setToolTip(_("A file extension to be added or deleted to the list."))
+        self.ext_entry = FCEntry()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+        hlay1.addWidget(self.ext_label)
+        hlay1.addWidget(self.ext_entry)
+
+        self.add_btn = FCButton(_("Add Extension"))
+        self.add_btn.setToolTip(_("Add a file extension to the list"))
+        self.del_btn = FCButton(_("Delete Extension"))
+        self.del_btn.setToolTip(_("Delete a file extension from the list"))
+
+        hlay2 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay2)
+        hlay2.addWidget(self.add_btn)
+        hlay2.addWidget(self.del_btn)
+
+        self.grb_list_btn = FCButton(_("Apply Association"))
         self.grb_list_btn.setToolTip(_("Apply the file associations between\n"
                                        "FlatCAM and the files with above extensions.\n"
                                        "They will be active after next logon.\n"
                                        "This work only in Windows."))
 
         self.layout.addWidget(self.grb_list_btn)
+
+        # self.layout.addStretch()
+
+
+class AutoCompletePrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber File associations Preferences", parent=None)
+        super().__init__(self, parent=parent)
+
+        self.setTitle(str(_("Autocompleter Keywords")))
+
+        self.restore_btn = FCButton(_("Restore"))
+        self.restore_btn.setToolTip(_("Restore the autocompleter keywords list to the default state."))
+        self.del_all_btn = FCButton(_("Delete All"))
+        self.del_all_btn.setToolTip(_("Delete all autocompleter keywords from the list."))
+
+        hlay0 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay0)
+        hlay0.addWidget(self.restore_btn)
+        hlay0.addWidget(self.del_all_btn)
+
+        # ## Gerber associations
+        self.grb_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Keywords list"))
+        self.grb_list_label.setToolTip(
+            _("List of keywords used by\n"
+              "the autocompleter in FlatCAM.\n"
+              "The autocompleter is installed\n"
+              "in the Code Editor and for the Tcl Shell.")
+        )
+        self.layout.addWidget(self.grb_list_label)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("textbox_font_size"):
+            tb_fsize = settings.value('textbox_font_size', type=int)
+        else:
+            tb_fsize = 10
+
+        self.kw_list_text = FCTextArea()
+        self.kw_list_text.setReadOnly(True)
+        # self.grb_list_text.sizeHint(custom_sizehint=150)
+        self.layout.addWidget(self.kw_list_text)
+        font = QtGui.QFont()
+        font.setPointSize(tb_fsize)
+        self.kw_list_text.setFont(font)
+
+        self.kw_label = QtWidgets.QLabel('%s:' % _("Extension"))
+        self.kw_label.setToolTip(_("A keyword to be added or deleted to the list."))
+        self.kw_entry = FCEntry()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+        hlay1.addWidget(self.kw_label)
+        hlay1.addWidget(self.kw_entry)
+
+        self.add_btn = FCButton(_("Add keyword"))
+        self.add_btn.setToolTip(_("Add a keyword to the list"))
+        self.del_btn = FCButton(_("Delete keyword"))
+        self.del_btn.setToolTip(_("Delete a keyword from the list"))
+
+        hlay2 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay2)
+        hlay2.addWidget(self.add_btn)
+        hlay2.addWidget(self.del_btn)
 
         # self.layout.addStretch()
 
@@ -7970,4 +8208,63 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
 
         self.set_text_(text)
         self.icon.setPixmap(self.pmap)
+
+
+class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
+
+    def __init__(self, app, icon, headless=None, parent=None):
+        # QtWidgets.QSystemTrayIcon.__init__(self, icon, parent)
+        super().__init__(icon, parent=parent)
+        self.app = app
+
+        menu = QtWidgets.QMenu(parent)
+
+        menu_runscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), '%s' % _('Run Script ...'), self)
+        menu_runscript.setToolTip(
+            _("Will run the opened Tcl Script thus\n"
+              "enabling the automation of certain\n"
+              "functions of FlatCAM.")
+        )
+        menu.addAction(menu_runscript)
+
+        menu.addSeparator()
+
+        if headless is None:
+            self.menu_open = menu.addMenu(QtGui.QIcon('share/folder32_bis.png'), _('Open'))
+
+            # Open Project ...
+            menu_openproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), _('Open Project ...'), self)
+            self.menu_open.addAction(menu_openproject)
+            self.menu_open.addSeparator()
+
+            # Open Gerber ...
+            menu_opengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
+                                                        _('Open &Gerber ...\tCTRL+G'), self)
+            self.menu_open.addAction(menu_opengerber)
+
+            # Open Excellon ...
+            menu_openexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'),
+                                                          _('Open &Excellon ...\tCTRL+E'), self)
+            self.menu_open.addAction(menu_openexcellon)
+
+            # Open G-Code ...
+            menu_opengcode = QtWidgets.QAction(QtGui.QIcon('share/code.png'), _('Open G-&Code ...'), self)
+            self.menu_open.addAction(menu_opengcode)
+
+            self.menu_open.addSeparator()
+
+            menu_openproject.triggered.connect(self.app.on_file_openproject)
+            menu_opengerber.triggered.connect(self.app.on_fileopengerber)
+            menu_openexcellon.triggered.connect(self.app.on_fileopenexcellon)
+            menu_opengcode.triggered.connect(self.app.on_fileopengcode)
+
+        exitAction = menu.addAction(_("Exit"))
+        exitAction.setIcon(QtGui.QIcon('share/power16.png'))
+        self.setContextMenu(menu)
+
+        menu_runscript.triggered.connect(lambda: self.app.on_filerunscript(
+            silent=True if self.app.cmd_line_headless == 1 else False))
+
+        exitAction.triggered.connect(self.app.final_save)
+
 # end of file

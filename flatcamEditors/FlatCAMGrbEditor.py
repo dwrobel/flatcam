@@ -3742,7 +3742,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 #             temp_elem.append(deepcopy(new_elem))
                 for elem in self.gerber_obj.apertures[apid]['geometry']:
                     new_elem = dict()
-
                     if 'solid' in elem:
                         solid_geo = elem['solid']
                         for clear_geo in global_clear_geo:
@@ -4434,16 +4433,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             self.plot_shape(geometry=geometric_data,
                                             color=self.app.defaults['global_sel_draw_color'],
                                             linewidth=2)
-                            continue
-                        self.plot_shape(geometry=geometric_data,
-                                        color=self.app.defaults['global_draw_color'])
+
+                        else:
+                            self.plot_shape(geometry=geometric_data,
+                                            color=self.app.defaults['global_draw_color'])
                 except KeyError:
                     pass
 
-            for elem in self.utility:
-                geometric_data = elem.geo['solid']
-                self.plot_shape(geometry=geometric_data, linewidth=1)
-                continue
+            if self.utility:
+                for elem in self.utility:
+                    geometric_data = elem.geo['solid']
+                    self.plot_shape(geometry=geometric_data, linewidth=1)
+                    continue
 
             self.shapes.redraw()
 

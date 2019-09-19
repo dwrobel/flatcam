@@ -42,5 +42,5 @@ class TclCommandPlotAll(TclCommand):
         :param unnamed_args:
         :return:
         """
-
-        self.app.plot_all()
+        if self.app.cmd_line_headless != 1:
+            self.app.plot_all()
