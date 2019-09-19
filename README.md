@@ -26,6 +26,7 @@ CAD program, and create G-Code for Isolation routing.
 - changed the script icon to a smaller one in the sys tray menu
 - fixed bug with losing the visibility of toolbars if at first startup the user tries to change something in the Preferences before doing a first save of Preferences
 - changed a bit the splash PNG file
+- moved all the GUI Preferences classes into it's own file flatcamGUI.PreferencesUI.py
 
 18.09.2019
 
