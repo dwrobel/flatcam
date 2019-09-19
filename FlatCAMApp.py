@@ -2050,7 +2050,8 @@ class App(QtCore.QObject):
                                   'mirror', 'ncc',
                                   'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
                                   'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'paint',
-                                  'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'save', 'save_project',
+                                  'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'quit_flatcam',
+                                  'save', 'save_project',
                                   'save_sys', 'scale',
                                   'set_active', 'set_sys', 'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
                                   'version', 'write_gcode'
@@ -4536,21 +4537,27 @@ class App(QtCore.QObject):
         self.save_defaults()
         log.debug("App.final_save() --> App Defaults saved.")
 
-        # save toolbar state to file
-        settings = QSettings("Open Source", "FlatCAM")
-        settings.setValue('saved_gui_state', self.ui.saveState())
-        settings.setValue('maximized_gui', self.ui.isMaximized())
-        settings.setValue('language', self.ui.general_defaults_form.general_app_group.language_cb.get_value())
-        settings.setValue('notebook_font_size',
-                          self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value())
-        settings.setValue('axis_font_size',
-                          self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value())
-        settings.setValue('textbox_font_size',
-                          self.ui.general_defaults_form.general_gui_set_group.textbox_font_size_spinner.get_value())
-        settings.setValue('toolbar_lock', self.ui.lock_action.isChecked())
+        if self.cmd_line_headless != 1:
+            # save app state to file
+            settings = QSettings("Open Source", "FlatCAM")
+            settings.setValue('saved_gui_state', self.ui.saveState())
+            settings.setValue('maximized_gui', self.ui.isMaximized())
+            settings.setValue('language', self.ui.general_defaults_form.general_app_group.language_cb.get_value())
+            settings.setValue(
+                'notebook_font_size',
+                self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value()
+            )
+            settings.setValue('axis_font_size',
+                              self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value())
+            settings.setValue(
+                'textbox_font_size',
+                self.ui.general_defaults_form.general_gui_set_group.textbox_font_size_spinner.get_value()
+            )
+            settings.setValue('toolbar_lock', self.ui.lock_action.isChecked())
 
-        # This will write the setting to the platform specific storage.
-        del settings
+            # This will write the setting to the platform specific storage.
+            del settings
+
         log.debug("App.final_save() --> App UI state saved.")
         QtWidgets.qApp.quit()
 

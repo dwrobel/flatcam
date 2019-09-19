@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - added control over the display of Sys Tray Icon in Edit -> Preferences -> General -> GUI Settings -> Sys Tray Icon checkbox
 - updated some of the default values to more reasonable ones
 - FlatCAM can be run in HEADLESS mode now. This node can be selected by using the --headless=1 command line argument or by changing the line headless=False to True in config/configuration.txt file. In this mod the Sys Tray Icon menu will hold only the Run Scrip menu entry and Exit entry.
+- added a new TclCommand named quit_flatcam which will ... quit FlatCAM from Tcl Shell or from a script
 
 18.09.2019
 
