@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.09.2019
+
+- final fix for the --shellvar having spaces within the assigned value; now they are retained
+
 19.09.2019
 
 - made sure that if FlatCAM is registered with a file extension that it does not recognize it will exit
