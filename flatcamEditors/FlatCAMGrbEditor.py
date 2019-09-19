@@ -3702,6 +3702,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # list of clear geos that are to be applied to the entire file
         global_clear_geo = []
 
+        # create one big geometry made out of all 'negative' (clear) polygons
         for apid in self.gerber_obj.apertures:
             # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
             if 'geometry' in self.gerber_obj.apertures[apid]:
@@ -3710,8 +3711,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         global_clear_geo.append(elem['clear'])
         log.warning("Found %d clear polygons." % len(global_clear_geo))
 
+        global_clear_geo = MultiPolygon(global_clear_geo)
+        if isinstance(global_clear_geo, Polygon):
+            global_clear_geo = list(global_clear_geo)
+
+        # for debugging
+        # for geo in global_clear_geo:
+        #     self.shapes.add(shape=geo, color='black', face_color='#000000'+'AF', layer=0, tolerance=self.tolerance)
+        # self.shapes.redraw()
+
+        # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of clear geometry
+        # that fits inside the solid. otherwise we may loose the solid
         for apid in self.gerber_obj.apertures:
-            temp_elem = []
+            temp_solid_geometry= []
             if 'geometry' in self.gerber_obj.apertures[apid]:
                 # for elem in self.gerber_obj.apertures[apid]['geometry']:
                 #     if 'solid' in elem:
@@ -3744,6 +3756,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     new_elem = dict()
                     if 'solid' in elem:
                         solid_geo = elem['solid']
+
                         for clear_geo in global_clear_geo:
                             # Make sure that the clear_geo is within the solid_geo otherwise we loose
                             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
@@ -3756,9 +3769,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         new_elem['clear'] = elem['clear']
                     if 'follow' in elem:
                         new_elem['follow'] = elem['follow']
-                    temp_elem.append(deepcopy(new_elem))
+                    temp_solid_geometry.append(deepcopy(new_elem))
 
-            self.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_elem)
+                self.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_solid_geometry)
         log.warning("Polygon difference done for %d apertures." % len(self.gerber_obj.apertures))
 
         # and then add it to the storage elements (each storage elements is a member of a list
@@ -3780,6 +3793,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
                     except Exception as e:
                         log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+
                 # Check promises and clear if exists
                 while True:
                     try:
@@ -3788,6 +3802,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     except ValueError:
                         break
 
+        # we create a job work each aperture, job that work in a threaded way to store the geometry in local storage
+        # as DrawToolShapes
         for ap_id in self.gerber_obj.apertures:
             self.grb_plot_promises.append(ap_id)
             self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_id]})
@@ -4419,12 +4435,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :rtype: None
         """
         with self.app.proc_container.new("Plotting"):
-
             self.shapes.clear(update=True)
 
             for storage in self.storage_dict:
-                try:
-                    for elem in self.storage_dict[storage]['geometry']:
+                for elem in self.storage_dict[storage]['geometry']:
+                    if 'solid' in elem.geo:
                         geometric_data = elem.geo['solid']
                         if geometric_data is None:
                             continue
@@ -4433,12 +4448,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             self.plot_shape(geometry=geometric_data,
                                             color=self.app.defaults['global_sel_draw_color'],
                                             linewidth=2)
-
                         else:
                             self.plot_shape(geometry=geometric_data,
                                             color=self.app.defaults['global_draw_color'])
-                except KeyError:
-                    pass
 
             if self.utility:
                 for elem in self.utility:
