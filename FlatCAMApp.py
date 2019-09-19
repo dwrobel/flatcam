@@ -429,7 +429,6 @@ class App(QtCore.QObject):
         self.recent_projects = []
 
         self.clipboard = QtWidgets.QApplication.clipboard()
-        self.proc_container = FCVisibleProcessContainer(self.ui.activity_view)
 
         self.project_filename = None
         self.toggle_units_ignore = False
@@ -476,6 +475,7 @@ class App(QtCore.QObject):
 
             "global_proj_item_color": self.ui.general_defaults_form.general_gui_group.proj_color_entry,
             "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
+            "global_activity_icon": self.ui.general_defaults_form.general_gui_group.activity_combo,
 
             # General GUI Settings
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
@@ -861,6 +861,7 @@ class App(QtCore.QObject):
             "global_sel_draw_color": '#0000FF',
             "global_proj_item_color": '#000000',
             "global_proj_item_dis_color": '#b7b7cb',
+            "global_activity_icon": 'Ball green',
 
             "global_toolbar_view": 511,
 
@@ -1638,11 +1639,34 @@ class App(QtCore.QObject):
         self.log.debug("Finished creating Workers crew.")
 
         # ################################################
+        # ############### Activity Monitor ###############
+        # ################################################
+
+        if self.defaults["global_activity_icon"] == "Ball green":
+            icon = 'share/active_2_static.png'
+            movie = "share/active_2.gif"
+        elif self.defaults["global_activity_icon"] == "Ball black":
+            icon = 'share/active_static.png'
+            movie = "share/active.gif"
+        elif self.defaults["global_activity_icon"] == "Arrow green":
+            icon = 'share/active_3_static.png'
+            movie = "share/active_3.gif"
+        elif self.defaults["global_activity_icon"] == "Eclipse green":
+            icon = 'share/active_4_static.png'
+            movie = "share/active_4.gif"
+        else:
+            icon = 'share/active_static.png'
+            movie = "share/active.gif"
+
+        self.activity_view = FlatCAMActivityView(icon=icon, movie=movie)
+        self.ui.infobar.addWidget(self.activity_view)
+        self.proc_container = FCVisibleProcessContainer(self.activity_view)
+
+        # ################################################
         # ############### Signal handling ################
         # ################################################
 
         # ############# Custom signals  ##################
-
         # signal for displaying messages in status bar
         self.inform.connect(self.info)
         # signal to be called when the app is quiting

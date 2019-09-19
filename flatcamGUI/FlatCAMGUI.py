@@ -1916,9 +1916,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.progress_bar.setMaximum(100)
         # infobar.addWidget(self.progress_bar)
 
-        self.activity_view = FlatCAMActivityView()
-        self.infobar.addWidget(self.activity_view)
-
         # ###########################################################################
         # ####### Set the APP ICON and the WINDOW TITLE and GEOMETRY ################
         # ###########################################################################
@@ -1995,11 +1992,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
             if layout == 'standard':
-                self.exc_edit_toolbar.setVisible(False)
+                # self.exc_edit_toolbar.setVisible(False)
                 self.exc_edit_toolbar.setDisabled(True)
-                self.geo_edit_toolbar.setVisible(False)
+                # self.geo_edit_toolbar.setVisible(False)
                 self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setVisible(False)
+                # self.grb_edit_toolbar.setVisible(False)
                 self.grb_edit_toolbar.setDisabled(True)
 
                 self.corner_snap_btn.setVisible(False)
@@ -2015,17 +2012,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.corner_snap_btn.setDisabled(True)
             log.debug("FlatCAMGUI.__init__() --> UI layout restored from QSettings.")
         else:
-            self.exc_edit_toolbar.setVisible(False)
+            # self.exc_edit_toolbar.setVisible(False)
             self.exc_edit_toolbar.setDisabled(True)
-            self.geo_edit_toolbar.setVisible(False)
+            # self.geo_edit_toolbar.setVisible(False)
             self.geo_edit_toolbar.setDisabled(True)
-            self.grb_edit_toolbar.setVisible(False)
+            # self.grb_edit_toolbar.setVisible(False)
             self.grb_edit_toolbar.setDisabled(True)
 
             self.corner_snap_btn.setVisible(False)
             self.snap_magnet.setVisible(False)
-            settings.setValue('layout', "standard")
 
+            settings.setValue('layout', "standard")
             # This will write the setting to the platform specific storage.
             del settings
             log.debug("FlatCAMGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
@@ -3930,6 +3927,14 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_13.addWidget(self.proj_color_dis_button)
         self.form_box_child_13.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        # Activity monitor icon
+        self.activity_label = QtWidgets.QLabel('%s:' % _("Activity Icon"))
+        self.activity_label.setToolTip(
+            _("Select the GIF that show activity when FlatCAM is active.")
+        )
+        self.activity_combo = FCComboBox()
+        self.activity_combo.addItems(['Ball black', 'Ball green', 'Arrow green', 'Eclipse green' ])
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3957,6 +3962,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(QtWidgets.QLabel(""))
         self.form_box.addRow(self.proj_color_label, self.form_box_child_12)
         self.form_box.addRow(self.proj_color_dis_label, self.form_box_child_13)
+
+        self.form_box.addRow(self.activity_label, self.activity_combo)
 
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
@@ -8130,14 +8137,17 @@ class AutoCompletePrefGroupUI(OptionsGroupUI):
 
 class FlatCAMActivityView(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, movie="share/active.gif", icon='share/active_static.png', parent=None):
         super().__init__(parent=parent)
 
         self.setMinimumWidth(200)
+        self.movie_path = movie
+        self.icon_path = icon
 
         self.icon = QtWidgets.QLabel(self)
         self.icon.setGeometry(0, 0, 16, 12)
-        self.movie = QtGui.QMovie("share/active.gif")
+        self.movie = QtGui.QMovie(self.movie_path)
+
         self.icon.setMovie(self.movie)
         # self.movie.start()
 
@@ -8149,6 +8159,7 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         layout.addWidget(self.icon)
         self.text = QtWidgets.QLabel(self)
         self.text.setText(_("Idle."))
+        self.icon.setPixmap(QtGui.QPixmap(self.icon_path))
 
         layout.addWidget(self.text)
 
@@ -8158,6 +8169,7 @@ class FlatCAMActivityView(QtWidgets.QWidget):
 
     def set_busy(self, msg, no_movie=None):
         if no_movie is not True:
+            self.icon.setMovie(self.movie)
             self.movie.start()
         self.text.setText(msg)
 
