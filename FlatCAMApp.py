@@ -812,6 +812,10 @@ class App(QtCore.QObject):
         for name in sorted(self.languages.values()):
             self.ui.general_defaults_form.general_app_group.language_cb.addItem(name)
 
+        # #################################################################################
+        # #################### DEFAULTS - PREFERENCES STORAGE #############################
+        # #################################################################################
+
         self.defaults = LoudDict()
         self.defaults.set_change_callback(self.on_defaults_dict_change)  # When the dictionary changes.
         self.defaults.update({
@@ -1231,17 +1235,17 @@ class App(QtCore.QObject):
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
             self.defaults['global_serial'] = ''.join([random.choice(chars) for i in range(20)])
-            self.save_defaults(silent=True)
+            self.save_defaults(silent=True, first_time=True)
 
         self.propagate_defaults(silent=True)
         self.restore_main_win_geom()
 
-        def auto_save_defaults():
-            try:
-                self.save_defaults(silent=True)
-                self.propagate_defaults(silent=True)
-            finally:
-                QtCore.QTimer.singleShot(self.defaults["global_defaults_save_period_ms"], auto_save_defaults)
+        # def auto_save_defaults():
+        #     try:
+        #         self.save_defaults(silent=True)
+        #         self.propagate_defaults(silent=True)
+        #     finally:
+        #         QtCore.QTimer.singleShot(self.defaults["global_defaults_save_period_ms"], auto_save_defaults)
 
         # the following lines activates automatic defaults save
         # if user_defaults:
@@ -1494,6 +1498,7 @@ class App(QtCore.QObject):
         self.cnc_form = None
         self.tools_form = None
         self.fa_form = None
+
         self.on_options_combo_change(0)  # Will show the initial form
 
         # ################################
@@ -3460,6 +3465,7 @@ class App(QtCore.QObject):
         :return: None
         """
         tb = self.defaults["global_toolbar_view"]
+
         if tb & 1:
             self.ui.toolbarfile.setVisible(True)
         else:
@@ -4357,7 +4363,7 @@ class App(QtCore.QObject):
     #     log.debug("Application defaults saved ... Exit event.")
     #     QtWidgets.qApp.quit()
 
-    def save_defaults(self, silent=False, data_path=None):
+    def save_defaults(self, silent=False, data_path=None, first_time=False):
         """
         Saves application default options
         ``self.defaults`` to current_defaults.FlatConfig file.
@@ -4431,7 +4437,8 @@ class App(QtCore.QObject):
         if self.ui.toolbarshell.isVisible():
             tb_status += 256
 
-        self.defaults["global_toolbar_view"] = tb_status
+        if first_time is False:
+            self.defaults["global_toolbar_view"] = tb_status
 
         # Save update options
         try:
