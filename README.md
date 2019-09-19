@@ -20,7 +20,8 @@ CAD program, and create G-Code for Isolation routing.
 - FlatCAM can be run in HEADLESS mode now. This mode can be selected by using the --headless=1 command line argument or by changing the line headless=False to True in config/configuration.txt file. In this mod the Sys Tray Icon menu will hold only the Run Scrip menu entry and Exit entry.
 - added a new TclCommand named quit_flatcam which will ... quit FlatCAM from Tcl Shell or from a script
 - fixed the command line argument --shellvar to work when there are spaces in the argument value
-- fixed bug in Gerber editor that did not allow to display all shapes after it encouterd one shape without 'solid' geometry
+- fixed bug in Gerber editor that did not allow to display all shapes after it encountered one shape without 'solid' geometry
+- fixed bug in Gerber Editor -> selection area handler where if some of the selected shapes did not had the 'solid' geometry will silently abort selection of further shapes
 
 18.09.2019
 

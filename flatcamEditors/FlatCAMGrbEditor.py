@@ -4286,8 +4286,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.delete_selection_shape()
         for storage in self.storage_dict:
-            try:
-                for obj in self.storage_dict[storage]['geometry']:
+            for obj in self.storage_dict[storage]['geometry']:
+                if 'solid' in obj.geo:
                     geometric_data = obj.geo['solid']
                     if (sel_type is True and poly_selection.contains(geometric_data)) or \
                             (sel_type is False and poly_selection.intersects(geometric_data)):
@@ -4301,8 +4301,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         else:
                             self.selected.append(obj)
                             sel_aperture.add(storage)
-            except KeyError:
-                pass
+
         try:
             self.apertures_table.cellPressed.disconnect()
         except Exception as e:
