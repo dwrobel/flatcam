@@ -81,12 +81,16 @@ class App(QtCore.QObject):
     # Get Cmd Line Options
     cmd_line_shellfile = ''
     cmd_line_shellvar = ''
+    cmd_line_headless = None
 
-    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>\nFlatCam.py --shellvar=<1,'C:\\path',23>"
+    cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>\n" \
+                    "FlatCam.py --shellvar=<1,'C:\\path',23>\n" \
+                    "FlatCam.py --headless=1"
     try:
         # Multiprocessing pool will spawn additional processes with 'multiprocessing-fork' flag
         cmd_line_options, args = getopt.getopt(sys.argv[1:], "h:", ["shellfile=",
                                                                     "shellvar=",
+                                                                    "headless=",
                                                                     "multiprocessing-fork="])
     except getopt.GetoptError:
         print(cmd_line_help)
@@ -99,6 +103,11 @@ class App(QtCore.QObject):
             cmd_line_shellfile = arg
         elif opt == '--shellvar':
             cmd_line_shellvar = arg
+        elif opt == '--headless':
+            try:
+                cmd_line_headless = eval(arg)
+            except NameError:
+                pass
 
     # ## Logging ###
     log = logging.getLogger('base')
@@ -252,19 +261,32 @@ class App(QtCore.QObject):
             # #########################################################################
             config_file = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config\\configuration.txt'
             try:
+                with open(config_file, 'r'):
+                    pass
+            except FileNotFoundError:
+                config_file = os.path.dirname(os.path.realpath(__file__)) + '\\config\\configuration.txt'
+
+            try:
                 with open(config_file, 'r') as f:
                     try:
                         for line in f:
-                            param = str(line).rpartition('=')
+                            param = str(line).replace('\n', '').rpartition('=')
+
                             if param[0] == 'portable':
                                 try:
                                     portable = eval(param[2])
                                 except NameError:
                                     portable = False
+                            if param[0] == 'headless':
+                                if param[2].lower() == 'true':
+                                    self.cmd_line_headless = 1
+                                else:
+                                    self.cmd_line_headless = None
                     except Exception as e:
                         log.debug('App.__init__() -->%s' % str(e))
                         return
-            except FileNotFoundError:
+            except FileNotFoundError as e:
+                log.debug(str(e))
                 pass
 
             if portable is False:
@@ -365,7 +387,7 @@ class App(QtCore.QObject):
             del settings
             show_splash = 1
 
-        if show_splash:
+        if show_splash and self.cmd_line_headless != 1:
             splash_pix = QtGui.QPixmap('share/splash.png')
             self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
             # self.splash.setMask(splash_pix.mask())
@@ -380,6 +402,8 @@ class App(QtCore.QObject):
             self.splash.showMessage(_("FlatCAM is initializing ..."),
                                alignment=Qt.AlignBottom | Qt.AlignLeft,
                                color=QtGui.QColor("gray"))
+        else:
+            show_splash = 0
 
         # #############################################################################
         # ##################### Initialize GUI ########################################
@@ -392,6 +416,7 @@ class App(QtCore.QObject):
         self.FC_dark_blue = '#0000ffbf'
 
         QtCore.QObject.__init__(self)
+
         self.ui = FlatCAMGUI(self.version, self.beta, self)
 
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
@@ -1579,8 +1604,14 @@ class App(QtCore.QObject):
         # #################################################################
         if self.defaults["global_systray_icon"]:
             self.parent_w = QtWidgets.QWidget()
-            self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
-                                              parent=self.parent_w)
+
+            if self.cmd_line_headless == 1:
+                self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
+                                                  headless=True,
+                                                  parent=self.parent_w)
+            else:
+                self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
+                                                  parent=self.parent_w)
 
         # ##############################################
         # ######### SETUP OBJECT COLLECTION ############
@@ -2454,21 +2485,25 @@ class App(QtCore.QObject):
         # ########################## SHOW GUI #################################################
         # #####################################################################################
 
-        # finish the splash
-        self.splash.finish(self.ui)
+        # if the app is not started as headless, show it
+        if self.cmd_line_headless != 1:
+            # finish the splash
+            self.splash.finish(self.ui)
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("maximized_gui"):
-            maximized_ui = settings.value('maximized_gui', type=bool)
-            if maximized_ui is True:
-                self.ui.showMaximized()
+            settings = QSettings("Open Source", "FlatCAM")
+            if settings.contains("maximized_gui"):
+                maximized_ui = settings.value('maximized_gui', type=bool)
+                if maximized_ui is True:
+                    self.ui.showMaximized()
+                else:
+                    self.ui.show()
             else:
                 self.ui.show()
-        else:
-            self.ui.show()
 
-        if self.defaults["global_systray_icon"]:
-            self.trayIcon.show()
+            if self.defaults["global_systray_icon"]:
+                self.trayIcon.show()
+        else:
+            log.warning("*******************  RUNNING HEADLESS  *******************")
 
         # #####################################################################################
         # ########################## START-UP ARGUMENTS #######################################
@@ -8867,11 +8902,14 @@ class App(QtCore.QObject):
 
         if name:
             filename = name
-            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
-                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
-                                                       _("Executing FlatCAMScript file.")),
-                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
-                                    color=QtGui.QColor("gray"))
+            if self.cmd_line_headless != 1:
+                self.splash.showMessage('%s: %ssec\n%s' %
+                                        (_("Canvas initialization started.\n"
+                                           "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                         _("Executing FlatCAMScript file.")
+                                         ),
+                                        alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                        color=QtGui.QColor("gray"))
         else:
             _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
             try:
@@ -8890,12 +8928,18 @@ class App(QtCore.QObject):
                 self.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Run TCL script cancelled."))
         else:
-            if self.ui.shell_dock.isHidden():
-                self.ui.shell_dock.show()
+            if self.cmd_line_headless != 1:
+                if self.ui.shell_dock.isHidden():
+                    self.ui.shell_dock.show()
+
             try:
                 with open(filename, "r") as tcl_script:
                     cmd_line_shellfile_content = tcl_script.read()
-                    self.shell._sysShell.exec_command(cmd_line_shellfile_content)
+                    if self.cmd_line_headless != 1:
+                        self.shell._sysShell.exec_command(cmd_line_shellfile_content)
+                    else:
+                        self.shell._sysShell.exec_command(cmd_line_shellfile_content, no_echo=True)
+
                 if silent is False:
                     self.inform.emit('[success] %s' %
                                      _("TCL script file opened in Code Editor and executed."))

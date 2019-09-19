@@ -8212,7 +8212,7 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
 
 class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
-    def __init__(self, app, icon, parent=None):
+    def __init__(self, app, icon, headless=None, parent=None):
         # QtWidgets.QSystemTrayIcon.__init__(self, icon, parent)
         super().__init__(icon, parent=parent)
         self.app = app
@@ -8229,38 +8229,41 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
         menu.addSeparator()
 
-        menu_open = menu.addMenu(QtGui.QIcon('share/folder32_bis.png'), _('Open'))
+        if headless is None:
+            self.menu_open = menu.addMenu(QtGui.QIcon('share/folder32_bis.png'), _('Open'))
 
-        # Open Project ...
-        menu_openproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), _('Open Project ...'), self)
-        menu_open.addAction(menu_openproject)
-        menu_open.addSeparator()
+            # Open Project ...
+            menu_openproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), _('Open Project ...'), self)
+            self.menu_open.addAction(menu_openproject)
+            self.menu_open.addSeparator()
 
-        # Open Gerber ...
-        menu_opengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
-                                                    _('Open &Gerber ...\tCTRL+G'), self)
-        menu_open.addAction(menu_opengerber)
+            # Open Gerber ...
+            menu_opengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
+                                                        _('Open &Gerber ...\tCTRL+G'), self)
+            self.menu_open.addAction(menu_opengerber)
 
-        # Open Excellon ...
-        menu_openexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'),
-                                                      _('Open &Excellon ...\tCTRL+E'), self)
-        menu_open.addAction(menu_openexcellon)
+            # Open Excellon ...
+            menu_openexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'),
+                                                          _('Open &Excellon ...\tCTRL+E'), self)
+            self.menu_open.addAction(menu_openexcellon)
 
-        # Open G-Code ...
-        menu_opengcode = QtWidgets.QAction(QtGui.QIcon('share/code.png'), _('Open G-&Code ...'), self)
-        menu_open.addAction(menu_opengcode)
+            # Open G-Code ...
+            menu_opengcode = QtWidgets.QAction(QtGui.QIcon('share/code.png'), _('Open G-&Code ...'), self)
+            self.menu_open.addAction(menu_opengcode)
 
-        menu_open.addSeparator()
+            self.menu_open.addSeparator()
+
+            menu_openproject.triggered.connect(self.app.on_file_openproject)
+            menu_opengerber.triggered.connect(self.app.on_fileopengerber)
+            menu_openexcellon.triggered.connect(self.app.on_fileopenexcellon)
+            menu_opengcode.triggered.connect(self.app.on_fileopengcode)
 
         exitAction = menu.addAction(_("Exit"))
         exitAction.setIcon(QtGui.QIcon('share/power16.png'))
         self.setContextMenu(menu)
 
-        menu_runscript.triggered.connect(self.app.on_filerunscript)
-        menu_openproject.triggered.connect(self.app.on_file_openproject)
-        menu_opengerber.triggered.connect(self.app.on_fileopengerber)
-        menu_openexcellon.triggered.connect(self.app.on_fileopenexcellon)
-        menu_opengcode.triggered.connect(self.app.on_fileopengcode)
+        menu_runscript.triggered.connect(lambda: self.app.on_filerunscript(
+            silent=True if self.app.cmd_line_headless == 1 else False))
 
         exitAction.triggered.connect(self.app.final_save)
 

@@ -42,10 +42,11 @@ class TclCommandPlotObjects(TclCommand):
         :param unnamed_args:
         :return:
         """
-        names = [x.strip() for x in args['names'].split(",")]
-        objs = []
-        for name in names:
-            objs.append(self.app.collection.get_by_name(name))
+        if self.app.cmd_line_headless != 1:
+            names = [x.strip() for x in args['names'].split(",")]
+            objs = []
+            for name in names:
+                objs.append(self.app.collection.get_by_name(name))
 
-        for obj in objs:
-            obj.plot()
+            for obj in objs:
+                obj.plot()
