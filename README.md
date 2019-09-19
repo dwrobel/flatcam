@@ -1,4 +1,4 @@
-latCAM: 2D Computer-Aided PCB Manufacturing
+FlatCAM: 2D Computer-Aided PCB Manufacturing
 =================================================
 
 (c) 2014-2019 Juan Pablo Caram
