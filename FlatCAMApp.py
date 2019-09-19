@@ -2522,7 +2522,7 @@ class App(QtCore.QObject):
                         except:
                             command_tcl = i
 
-                    command_tcl_formatted = 'set shellvar_{nr} {cmd}'.format(cmd=str(command_tcl), nr=str(cnt))
+                    command_tcl_formatted = 'set shellvar_{nr} [list {cmd}]'.format(cmd=str(command_tcl), nr=str(cnt))
                     cnt += 1
 
                     # if there are Windows paths then replace the path separator with a Unix like one
