@@ -27,6 +27,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug with losing the visibility of toolbars if at first startup the user tries to change something in the Preferences before doing a first save of Preferences
 - changed a bit the splash PNG file
 - moved all the GUI Preferences classes into it's own file flatcamGUI.PreferencesUI.py
+- changed the default method for Paint Tool to 'all'
 
 18.09.2019
 

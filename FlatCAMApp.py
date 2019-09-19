@@ -1113,7 +1113,7 @@ class App(QtCore.QObject):
             "tools_paintoverlap": 0.015748,
             "tools_paintmargin": 0.0,
             "tools_paintmethod": "seed",
-            "tools_selectmethod": "single",
+            "tools_selectmethod": "all",
             "tools_pathconnect": True,
             "tools_paintcontour": True,
             "tools_paint_plotting": 'normal',
