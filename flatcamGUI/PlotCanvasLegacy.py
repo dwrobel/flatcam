@@ -648,8 +648,9 @@ class MplCursor(Cursor):
 
 class ShapeCollectionLegacy():
 
-    def __init__(self):
+    def __init__(self, obj):
         self._shapes = []
+        self.setup_axes(obj=obj)
 
     def add(self, shape):
         try:
@@ -666,3 +667,18 @@ class ShapeCollectionLegacy():
 
     def redraw(self):
         pass
+
+    def setup_axes(self, obj):
+                # Axes must exist and be attached to canvas.
+        if obj.axes is None or obj.axes not in obj.app.plotcanvas.figure.axes:
+            obj.axes = obj.app.plotcanvas.new_axes(obj.options['name'])
+
+        if not obj.options["plot"]:
+            obj.axes.cla()
+            obj.app.plotcanvas.auto_adjust_axes()
+            return False
+
+        # Clear axes or we will plot on top of them.
+        obj.axes.cla()  # TODO: Thread safe?
+        return True
+
