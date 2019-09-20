@@ -3131,22 +3131,42 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         visible = visible if visible else self.options['plot']
 
-        try:
-            # Plot Excellon (All polygons?)
+        if self.app.is_legacy is False:
+            try:
+                # Plot Excellon (All polygons?)
+                if self.options["solid"]:
+                    for geo in self.solid_geometry:
+                        self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
+                                       visible=visible,
+                                       layer=2)
+                else:
+                    for geo in self.solid_geometry:
+                        self.add_shape(shape=geo.exterior, color='red', visible=visible)
+                        for ints in geo.interiors:
+                            self.add_shape(shape=ints, color='orange', visible=visible)
+
+                self.shapes.redraw()
+            except (ObjectDeleted, AttributeError):
+                self.shapes.clear(update=True)
+        else:
+            # Plot excellon (All polygons?)
             if self.options["solid"]:
                 for geo in self.solid_geometry:
-                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
-                                   visible=visible,
-                                   layer=2)
+                    patch = PolygonPatch(geo,
+                                         facecolor="#C40000",
+                                         edgecolor="#750000",
+                                         alpha=0.75,
+                                         zorder=3)
+                    self.axes.add_patch(patch)
             else:
                 for geo in self.solid_geometry:
-                    self.add_shape(shape=geo.exterior, color='red', visible=visible)
+                    x, y = geo.exterior.coords.xy
+                    self.axes.plot(x, y, 'r-')
                     for ints in geo.interiors:
-                        self.add_shape(shape=ints, color='orange', visible=visible)
+                        x, y = ints.coords.xy
+                        self.axes.plot(x, y, 'g-')
 
-            self.shapes.redraw()
-        except (ObjectDeleted, AttributeError):
-            self.shapes.clear(update=True)
+            self.app.plotcanvas.auto_adjust_axes()
 
 
 class FlatCAMGeometry(FlatCAMObj, Geometry):

@@ -3517,14 +3517,21 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
-        self.canvas.graph_event_connect('mouse_press', self.on_canvas_click)
-        self.canvas.graph_event_connect('mouse_move', self.on_canvas_move)
-        self.canvas.graph_event_connect('mouse_release', self.on_grb_click_release)
+        self.mp = self.canvas.graph_event_connect('mouse_press', self.on_canvas_click)
+        self.mm = self.canvas.graph_event_connect('mouse_move', self.on_canvas_move)
+        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_grb_click_release)
 
-        self.canvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.canvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.canvas.graph_event_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+        if self.app.is_legacy is False:
+            self.canvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.canvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            self.canvas.graph_event_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+        else:
+            self.canvas.graph_event_disconnect(self.app.mp)
+            self.canvas.graph_event_disconnect(self.app.mm)
+            self.canvas.graph_event_disconnect(self.app.mr)
+            self.canvas.graph_event_disconnect(self.app.mdc)
+
         self.app.collection.view.clicked.disconnect()
 
         self.app.ui.popmenu_copy.triggered.disconnect()
@@ -3556,15 +3563,20 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # we restore the key and mouse control to FlatCAMApp method
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
-        self.canvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.canvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.canvas.graph_event_connect('mouse_double_click', self.app.on_double_click_over_plot)
+        self.app.mp = self.canvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+        self.app.mm = self.canvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
+        self.app.mr = self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        self.app.mdc = self.canvas.graph_event_connect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
-        self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
-        self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.graph_event_disconnect('mouse_release', self.on_grb_click_release)
+        if self.app.is_legacy is False:
+            self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
+            self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
+            self.canvas.graph_event_disconnect('mouse_release', self.on_grb_click_release)
+        else:
+            self.canvas.graph_event_disconnect(self.mp)
+            self.canvas.graph_event_disconnect(self.mm)
+            self.canvas.graph_event_disconnect(self.mr)
 
         try:
             self.app.ui.popmenu_copy.triggered.disconnect(self.on_copy_button)

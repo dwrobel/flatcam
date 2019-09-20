@@ -780,13 +780,21 @@ class CutOut(FlatCAMTool):
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve Geometry object"), name))
             return "Could not retrieve object: %s" % name
 
-        self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
-        self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
-        self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
-        self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.graph_event_disconnect('key_press', self.app.ui.keyPressEvent)
+            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+        else:
+            self.app.plotcanvas.graph_event_disconnect(self.app.kp)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mm)
+
+        self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
+        self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+        self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
+
 
     def on_manual_cutout(self, click_pos):
         name = self.man_object_combo.currentText()
@@ -943,13 +951,20 @@ class CutOut(FlatCAMTool):
 
         # if RMB then we exit
         elif event.button == 2 and self.mouse_is_dragging is False:
-            self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
-            self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
-            self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.app.plotcanvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.kp)
+                self.app.plotcanvas.graph_event_disconnect(self.mm)
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+
+            self.app.kp = self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
 
             # Remove any previous utility shape
             self.app.geo_editor.tool_shape.clear(update=True)
@@ -1064,13 +1079,20 @@ class CutOut(FlatCAMTool):
 
         # Escape = Deselect All
         if key == QtCore.Qt.Key_Escape or key == 'Escape':
-            self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
-            self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
-            self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.app.plotcanvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.kp)
+                self.app.plotcanvas.graph_event_disconnect(self.mm)
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+
+            self.app.kp = self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
 
             # Remove any previous utility shape
             self.app.geo_editor.tool_shape.clear(update=True)

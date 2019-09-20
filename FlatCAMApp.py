@@ -1605,7 +1605,10 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
         start_plot_time = time.time()   # debug
         self.plotcanvas = None
-        self.app_cursor = None
+
+        # this is a list just because when in legacy it is needed to add multiple cursors
+        # each gets deleted when the axes are deleted therefore there is a need of one for each
+        self.app_cursor = []
         self.hover_shapes = None
 
         self.on_plotcanvas_setup()
@@ -6679,9 +6682,16 @@ class App(QtCore.QObject):
         try:
             sel_obj = self.collection.get_active()
             name = sel_obj.options["name"]
+            isPlotted = sel_obj.options["plot"]
         except AttributeError:
             self.log.debug("Nothing selected for deletion")
             return
+
+        if self.is_legacy is True:
+            # Remove plot only if the object was plotted otherwise delaxes will fail
+            if isPlotted:
+                self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
+            self.plotcanvas.auto_adjust_axes()
 
         # Remove from dictionary
         self.collection.delete_active()
@@ -6710,12 +6720,15 @@ class App(QtCore.QObject):
                     for obj in self.collection.get_list():
                         obj.plot()
                     self.plotcanvas.fit_view()
-                self.plotcanvas.graph_event_disconnect('mouse_press', self.on_set_zero_click)
+                if self.is_legacy:
+                    self.plotcanvas.graph_event_disconnect(self.mp_zc)
+                else:
+                    self.plotcanvas.graph_event_disconnect('mouse_press', self.on_set_zero_click)
 
             self.worker_task.emit({'fcn': worker_task, 'params': []})
 
         self.inform.emit(_('Click to set the origin ...'))
-        self.plotcanvas.graph_event_connect('mouse_press', self.on_set_zero_click)
+        self.mp_zc = self.plotcanvas.graph_event_connect('mouse_press', self.on_set_zero_click)
 
         # first disconnect it as it may have been used by something else
         try:
@@ -7368,7 +7381,11 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.plotcanvas.update()           # TODO: Need update canvas?
+        if self.is_legacy is False:
+            self.plotcanvas.update()           # TODO: Need update canvas?
+        else:
+            self.plotcanvas.auto_adjust_axes()
+
         self.on_zoom_fit(None)
         self.collection.update_view()
         # self.inform.emit(_("Plots updated ..."))
@@ -10959,13 +10976,13 @@ class App(QtCore.QObject):
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
 
-        self.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
-        self.plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
-        self.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release_over_plot)
-        self.plotcanvas.graph_event_connect('mouse_double_click', self.on_double_click_over_plot)
+        self.mm = self.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
+        self.mp = self.plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
+        self.mr = self.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release_over_plot)
+        self.mdc = self.plotcanvas.graph_event_connect('mouse_double_click', self.on_double_click_over_plot)
 
         # Keys over plot enabled
-        self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
+        self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
 
         self.app_cursor = self.plotcanvas.new_cursor()
         if self.ui.grid_snap_btn.isChecked():
@@ -10988,8 +11005,17 @@ class App(QtCore.QObject):
         :param event: Ignored.
         :return: None
         """
-
-        self.plotcanvas.fit_view()
+        if self.is_legacy is False:
+            self.plotcanvas.fit_view()
+        else:
+            xmin, ymin, xmax, ymax = self.collection.get_bounds()
+            width = xmax - xmin
+            height = ymax - ymin
+            xmin -= 0.05 * width
+            xmax += 0.05 * width
+            ymin -= 0.05 * height
+            ymax += 0.05 * height
+            self.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
     def on_zoom_in(self):
         self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))

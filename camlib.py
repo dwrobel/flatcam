@@ -36,6 +36,10 @@ from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry import shape
 
+# needed for legacy mode
+# Used for solid polygons in Matplotlib
+from descartes.patch import PolygonPatch
+
 import collections
 from collections import Iterable
 

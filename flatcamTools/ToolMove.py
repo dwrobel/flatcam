@@ -66,10 +66,16 @@ class ToolMove(FlatCAMTool):
         if self.isVisible():
             self.setVisible(False)
 
-            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_move)
-            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.on_left_click)
-            self.app.plotcanvas.graph_event_disconnect('key_release', self.on_key_press)
-            self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_move)
+                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.on_left_click)
+                self.app.plotcanvas.graph_event_disconnect('key_release', self.on_key_press)
+                self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mm)
+                self.app.plotcanvas.graph_event_disconnect(self.mp)
+                self.app.plotcanvas.graph_event_disconnect(self.kr)
+                self.app.kr = self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
 
             self.clicked_move = 0
 
@@ -99,9 +105,14 @@ class ToolMove(FlatCAMTool):
         # this is necessary because right mouse click and middle mouse click
         # are used for panning on the canvas
 
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+        else:
+            event_pos = (event.xdata, event.ydata)
+
         if event.button == 1:
             if self.clicked_move == 0:
-                pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
+                pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
 
                 # if GRID is active we need to get the snapped positions
                 if self.app.grid_status() == True:
@@ -118,7 +129,7 @@ class ToolMove(FlatCAMTool):
 
             if self.clicked_move == 1:
                 try:
-                    pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
+                    pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
 
                     # delete the selection bounding box
                     self.delete_shape()
@@ -178,7 +189,8 @@ class ToolMove(FlatCAMTool):
                     self.toggle()
                     return
 
-                except TypeError:
+                except TypeError as e:
+                    log.debug("ToolMove.on_left_click() --> %s" % str(e))
                     self.app.inform.emit('[ERROR_NOTCL] %s' %
                                          _('ToolMove.on_left_click() --> Error when mouse left click.'))
                     return
@@ -195,7 +207,12 @@ class ToolMove(FlatCAMTool):
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_move(self, event):
-        pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
+
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+        else:
+            event_pos = (event.xdata, event.ydata)
+        pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
 
         # if GRID is active we need to get the snapped positions
         if self.app.grid_status() == True:
@@ -232,9 +249,9 @@ class ToolMove(FlatCAMTool):
             self.toggle()
         else:
             # if we have an object selected then we can safely activate the mouse events
-            self.app.plotcanvas.graph_event_connect('mouse_move', self.on_move)
-            self.app.plotcanvas.graph_event_connect('mouse_press', self.on_left_click)
-            self.app.plotcanvas.graph_event_connect('key_release', self.on_key_press)
+            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_move)
+            self.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.on_left_click)
+            self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_press)
             # first get a bounding box to fit all
             for obj in obj_list:
                 xmin, ymin, xmax, ymax = obj.bounds()

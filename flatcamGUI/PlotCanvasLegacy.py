@@ -147,8 +147,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.canvas.setFocus()
         self.native = self.canvas
 
-        # self.canvas.set_hexpand(1)
-        # self.canvas.set_vexpand(1)
+
         # self.canvas.set_can_focus(True)  # For key press
 
         # Attach to parent
@@ -170,17 +169,17 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.cache.new_screen.connect(self.on_new_screen)
 
         # Events
-        self.graph_event_connect('button_press_event', self.on_mouse_press)
-        self.graph_event_connect('button_release_event', self.on_mouse_release)
-        self.graph_event_connect('motion_notify_event', self.on_mouse_move)
+        self.mp = self.graph_event_connect('button_press_event', self.on_mouse_press)
+        self.mr = self.graph_event_connect('button_release_event', self.on_mouse_release)
+        self.mm = self.graph_event_connect('motion_notify_event', self.on_mouse_move)
         # self.canvas.connect('configure-event', self.auto_adjust_axes)
-        self.graph_event_connect('resize_event', self.auto_adjust_axes)
+        self.aaa = self.graph_event_connect('resize_event', self.auto_adjust_axes)
         # self.canvas.add_events(Gdk.EventMask.SMOOTH_SCROLL_MASK)
         # self.canvas.connect("scroll-event", self.on_scroll)
-        self.graph_event_connect('scroll_event', self.on_scroll)
+        self.osc = self.graph_event_connect('scroll_event', self.on_scroll)
         # self.graph_event_connect('key_press_event', self.on_key_down)
         # self.graph_event_connect('key_release_event', self.on_key_up)
-        self.graph_event_connect('draw_event', self.on_draw)
+        self.odr = self.graph_event_connect('draw_event', self.on_draw)
 
         self.mouse = [0, 0]
         self.key = None
@@ -225,18 +224,8 @@ class PlotCanvasLegacy(QtCore.QObject):
         :param cid: Callback id.
         :return: None
         """
-        if cid == 'mouse_move':
-            cid = 'motion_notify_event'
-        if cid == 'mouse_press':
-            cid = 'button_press_event'
-        if cid == 'mouse_release':
-            cid = 'button_release_event'
-        if cid == 'mouse_double_click':
-            self.double_click.disconnect(cid)
-            return
 
-        if cid == 'key_press':
-            cid = 'key_press_event'
+        # self.double_click.disconnect(cid)
 
         self.canvas.mpl_disconnect(cid)
 
@@ -244,8 +233,14 @@ class PlotCanvasLegacy(QtCore.QObject):
         pass
         # log.debug("Cache updated the screen!")
 
-    def new_cursor(self):
-        c = MplCursor(axes=self.axes, color='black', linewidth=1)
+    def new_cursor(self, axes=None):
+        # if axes is None:
+        #     c = MplCursor(axes=self.axes, color='black', linewidth=1)
+        # else:
+        #     c = MplCursor(axes=axes, color='black', linewidth=1)
+
+        c = FakeCursor()
+
         return c
 
     def on_key_down(self, event):
@@ -532,10 +527,21 @@ class PlotCanvasLegacy(QtCore.QObject):
         :param event: Contains information about the event.
         :return: None
         """
+
+        try:
+            x = float(event.xdata)
+            y = float(event.ydata)
+        except TypeError:
+            return
+
         self.mouse = [event.xdata, event.ydata]
+
+        self.canvas.restore_region(self.background)
 
         # Update pan view on mouse move
         if self.panning is True:
+            # x_pan, y_pan = self.app.geo_editor.snap(event.xdata, event.ydata)
+            # self.app.app_cursor.set_data(event, (x_pan, y_pan))
             for a in self.pan_axes:
                 a.drag_pan(1, event.key, event.x, event.y)
 
@@ -544,6 +550,15 @@ class PlotCanvasLegacy(QtCore.QObject):
 
             # #### Temporary place-holder for cached update #####
             self.update_screen_request.emit([0, 0, 0, 0, 0])
+
+        x, y = self.app.geo_editor.snap(x, y)
+        if self.app.app_cursor.enabled is True:
+            # Pointer (snapped)
+            elements = self.axes.plot(x, y, 'k+', ms=40, mew=2, animated=True)
+            for el in elements:
+                self.axes.draw_artist(el)
+
+        self.canvas.blit(self.axes.bbox)
 
     def translate_coords(self, position):
         """
@@ -588,6 +603,19 @@ class PlotCanvasLegacy(QtCore.QObject):
         height = ymax - ymin
 
         return width / xpx, height / ypx
+
+
+class FakeCursor():
+    def __init__(self):
+        self._enabled = True
+
+    @property
+    def enabled(self):
+        return True if self._enabled else False
+
+    @enabled.setter
+    def enabled(self, value):
+        self._enabled = value
 
 
 class MplCursor(Cursor):
@@ -651,12 +679,15 @@ class ShapeCollectionLegacy():
     def __init__(self):
         self._shapes = []
 
-    def add(self, shape):
+    def add(self, shape=None, color=None, face_color=None, alpha=None, visible=True,
+            update=False, layer=1, tolerance=0.01):
         try:
             for sh in shape:
                 self._shapes.append(sh)
         except TypeError:
             self._shapes.append(shape)
+
+        return len(self._shapes) - 1
 
     def clear(self, update=None):
         self._shapes[:] = []

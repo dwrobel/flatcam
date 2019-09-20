@@ -1017,12 +1017,18 @@ class ToolPaint(FlatCAMTool, Gerber):
                                     overlap=overlap,
                                     connect=connect,
                                     contour=contour)
-                    self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                    self.app.plotcanvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                    self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                          self.app.on_mouse_click_over_plot)
+                    self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                          self.app.on_mouse_click_release_over_plot)
 
-            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.app.plotcanvas.graph_event_connect('mouse_press', doit)
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+            self.mp = self.app.plotcanvas.graph_event_connect('mouse_press', doit)
 
         elif select_method == "area":
             self.app.inform.emit('[WARNING_NOTCL] %s' %
@@ -1091,12 +1097,19 @@ class ToolPaint(FlatCAMTool, Gerber):
                 elif event.button == 2 and self.mouse_is_dragging is False:
                     self.first_click = False
 
-                    self.app.plotcanvas.graph_event_disconnect('mouse_release', on_mouse_release)
-                    self.app.plotcanvas.graph_event_disconnect('mouse_move', on_mouse_move)
+                    if self.app.is_legacy is False:
+                        self.app.plotcanvas.graph_event_disconnect('mouse_release', on_mouse_release)
+                        self.app.plotcanvas.graph_event_disconnect('mouse_move', on_mouse_move)
+                    else:
+                        self.app.plotcanvas.graph_event_disconnect(self.mr)
+                        self.app.plotcanvas.graph_event_disconnect(self.mm)
 
-                    self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                    self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
-                    self.app.plotcanvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                    self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                          self.app.on_mouse_click_over_plot)
+                    self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                          self.app.on_mouse_move_over_plot)
+                    self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                          self.app.on_mouse_click_release_over_plot)
 
                     if len(self.sel_rect) == 0:
                         return
@@ -1134,12 +1147,17 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                          coords=(curr_pos[0], curr_pos[1]),
                                                          face_alpha=0.0)
 
-            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mm)
+                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
 
-            self.app.plotcanvas.graph_event_connect('mouse_release', on_mouse_release)
-            self.app.plotcanvas.graph_event_connect('mouse_move', on_mouse_move)
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', on_mouse_release)
+            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', on_mouse_move)
 
         elif select_method == 'ref':
             self.bound_obj_name = self.box_combo.currentText()
