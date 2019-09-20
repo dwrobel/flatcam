@@ -7640,7 +7640,7 @@ class App(QtCore.QObject):
                         self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                                  symbol='++', edge_color='black', size=20)
                     else:
-                        self.app_cursor.set_data((pos[0], pos[1]))
+                        self.app_cursor.set_data(event, (pos[0], pos[1]))
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])
 

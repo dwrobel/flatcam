@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - legacy graphic engine - made the mouse events work (click, release, doubleclick, dragging)
 - legacy graphic engine - made the key events work (simple or with modifiers)
 - legacy graphic engine - made the mouse cursor work (enabled/disabled, position report); snapping is not moving the cursor yet
+- made the mouse cursor snap to the grid when grid snapping is active
+- changed the axis color to the one used in the OpenGL graphic engine
 
 19.09.2019
 

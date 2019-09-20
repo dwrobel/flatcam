@@ -138,8 +138,8 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.axes = self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label="base", alpha=0.0)
         self.axes.set_aspect(1)
         self.axes.grid(True)
-        self.axes.axhline(color='Black')
-        self.axes.axvline(color='Black')
+        self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
+        self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
 
         # The canvas is the top level container (FigureCanvasQTAgg)
         self.canvas = FigureCanvas(self.figure)
@@ -590,15 +590,19 @@ class PlotCanvasLegacy(QtCore.QObject):
         return width / xpx, height / ypx
 
 
-class MplCursor():
+class MplCursor(Cursor):
 
     def __init__(self, axes, color='red', linewidth=1):
+
+        super().__init__(ax=axes, useblit=True, color=color, linewidth=linewidth)
         self._enabled = True
 
         self.axes = axes
         self.color = color
         self.linewidth = linewidth
-        self.cursor = Cursor(self.axes, useblit=True, color=self.color, linewidth=self.linewidth)
+
+        self.x = None
+        self.y = None
 
     @property
     def enabled(self):
@@ -607,12 +611,39 @@ class MplCursor():
     @enabled.setter
     def enabled(self, value):
         self._enabled = value
-        self.cursor.visible = self._enabled
-        self.cursor.canvas.draw()
+        self.visible = self._enabled
+        self.canvas.draw()
 
-    def set_data(self, pos):
-        self.cursor.linev.set_xdata((pos[0], pos[0]))
-        self.cursor.lineh.set_ydata(([pos[1]], pos[1]))
+    def onmove(self, event):
+        pass
+
+    def set_data(self, event, pos):
+        """Internal event handler to draw the cursor when the mouse moves."""
+        self.x = pos[0]
+        self.y = pos[1]
+
+        if self.ignore(event):
+            return
+        if not self.canvas.widgetlock.available(self):
+            return
+        if event.inaxes != self.ax:
+            self.linev.set_visible(False)
+            self.lineh.set_visible(False)
+
+            if self.needclear:
+                self.canvas.draw()
+                self.needclear = False
+            return
+        self.needclear = True
+        if not self.visible:
+            return
+        self.linev.set_xdata((self.x, self.x))
+
+        self.lineh.set_ydata((self.y, self.y))
+        self.linev.set_visible(self.visible and self.vertOn)
+        self.lineh.set_visible(self.visible and self.horizOn)
+
+        self._update()
 
 
 class ShapeCollectionLegacy():
