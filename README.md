@@ -12,6 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 20.09.2019
 
 - final fix for the --shellvar having spaces within the assigned value; now they are retained
+- legacy graphic engine - made the mouse events work (click, release, doubleclick, dragging)
+- legacy graphic engine - made the key events work (simple or with modifiers)
+- legacy graphic engine - made the mouse cursor work (enabled/disabled, position report); snapping is not moving the cursor yet
 
 19.09.2019
 

@@ -44,7 +44,11 @@ class ToolMove(FlatCAMTool):
         self.old_coords = []
 
         # VisPy visuals
-        self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+        if self.app.is_legacy is False:
+            self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.sel_shapes = ShapeCollectionLegacy()
 
         self.replot_signal[list].connect(self.replot)
 
@@ -62,10 +66,10 @@ class ToolMove(FlatCAMTool):
         if self.isVisible():
             self.setVisible(False)
 
-            self.app.plotcanvas.vis_disconnect('mouse_move', self.on_move)
-            self.app.plotcanvas.vis_disconnect('mouse_press', self.on_left_click)
-            self.app.plotcanvas.vis_disconnect('key_release', self.on_key_press)
-            self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
+            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_move)
+            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.on_left_click)
+            self.app.plotcanvas.graph_event_disconnect('key_release', self.on_key_press)
+            self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
 
             self.clicked_move = 0
 
@@ -228,9 +232,9 @@ class ToolMove(FlatCAMTool):
             self.toggle()
         else:
             # if we have an object selected then we can safely activate the mouse events
-            self.app.plotcanvas.vis_connect('mouse_move', self.on_move)
-            self.app.plotcanvas.vis_connect('mouse_press', self.on_left_click)
-            self.app.plotcanvas.vis_connect('key_release', self.on_key_press)
+            self.app.plotcanvas.graph_event_connect('mouse_move', self.on_move)
+            self.app.plotcanvas.graph_event_connect('mouse_press', self.on_left_click)
+            self.app.plotcanvas.graph_event_connect('key_release', self.on_key_press)
             # first get a bounding box to fit all
             for obj in obj_list:
                 xmin, ymin, xmax, ymax = obj.bounds()

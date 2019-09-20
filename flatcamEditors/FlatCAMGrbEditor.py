@@ -2821,9 +2821,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.gerber_obj_options = dict()
 
         # VisPy Visuals
-        self.shapes = self.canvas.new_shape_collection(layers=1)
-        self.tool_shape = self.canvas.new_shape_collection(layers=1)
-        self.ma_annotation = self.canvas.new_text_group()
+        if self.app.is_legacy is False:
+            self.shapes = self.canvas.new_shape_collection(layers=1)
+            self.tool_shape = self.canvas.new_shape_collection(layers=1)
+            self.ma_annotation = self.canvas.new_text_group()
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.shapes = ShapeCollectionLegacy()
+            self.tool_shape = ShapeCollectionLegacy()
+            self.ma_annotation = ShapeCollectionLegacy()
 
         self.app.pool_recreated.connect(self.pool_recreated)
 
@@ -3511,14 +3517,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
-        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_grb_click_release)
+        self.canvas.graph_event_connect('mouse_press', self.on_canvas_click)
+        self.canvas.graph_event_connect('mouse_move', self.on_canvas_move)
+        self.canvas.graph_event_connect('mouse_release', self.on_grb_click_release)
 
-        self.canvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.canvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.canvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.canvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+        self.canvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+        self.canvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+        self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        self.canvas.graph_event_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.disconnect()
 
         self.app.ui.popmenu_copy.triggered.disconnect()
@@ -3550,15 +3556,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # we restore the key and mouse control to FlatCAMApp method
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
-        self.canvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.canvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.canvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.canvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
+        self.canvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+        self.canvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
+        self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        self.canvas.graph_event_connect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
-        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_grb_click_release)
+        self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
+        self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
+        self.canvas.graph_event_disconnect('mouse_release', self.on_grb_click_release)
 
         try:
             self.app.ui.popmenu_copy.triggered.disconnect(self.on_copy_button)
@@ -4136,13 +4142,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         if self.app.grid_status() == True:
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-            self.app.app_cursor.enabled = True
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
                                          size=20)
         else:
             self.pos = (self.pos[0], self.pos[1])
-            self.app.app_cursor.enabled = False
 
         if event.button is 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
@@ -4354,11 +4358,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # # ## Snap coordinates
         if self.app.grid_status() == True:
             x, y = self.app.geo_editor.snap(x, y)
-            self.app.app_cursor.enabled = True
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
-        else:
-            self.app.app_cursor.enabled = False
 
         self.snap_x = x
         self.snap_y = y

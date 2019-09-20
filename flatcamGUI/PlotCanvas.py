@@ -152,10 +152,10 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         except Exception as e:
             pass
 
-    def vis_connect(self, event_name, callback):
+    def graph_event_connect(self, event_name, callback):
         return getattr(self.events, event_name).connect(callback)
 
-    def vis_disconnect(self, event_name, callback=None):
+    def graph_event_disconnect(self, event_name, callback=None):
         if callback is None:
             getattr(self.events, event_name).disconnect()
         else:

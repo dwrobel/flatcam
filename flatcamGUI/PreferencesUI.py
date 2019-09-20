@@ -846,6 +846,17 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.units_radio = RadioSet([{'label': _('IN'), 'value': 'IN'},
                                      {'label': _('MM'), 'value': 'MM'}])
 
+        # Graphic Engine for FlatCAM
+        self.ge_label = QtWidgets.QLabel('<b>%s:</b>' % _('Graphic Engine'))
+        self.ge_label.setToolTip(_("Choose what graphic engine to use in FlatCAM.\n"
+                                   "Legacy(2D) -> reduced functionality, slow performance but enhanced compatibility.\n"
+                                   "OpenGL(3D) -> full functionality, high performance\n"
+                                   "Some graphic cards are too old and do not work in OpenGL(3D) mode, like:\n"
+                                   "Intel HD3000 or older. In this case the plot area will be black therefore\n"
+                                   "use the Legacy(2D) mode."))
+        self.ge_radio = RadioSet([{'label': _('Legacy(2D)'), 'value': '2D'},
+                                  {'label': _('OpenGL(3D)'), 'value': '3D'}])
+
         # Application Level for FlatCAM
         self.app_level_label = QtWidgets.QLabel('<b>%s:</b>' % _('APP. LEVEL'))
         self.app_level_label.setToolTip(_("Choose the default level of usage for FlatCAM.\n"
@@ -963,6 +974,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         # Add (label - input field) pair to the QFormLayout
         self.form_box.addRow(self.unitslabel, self.units_radio)
+        self.form_box.addRow(self.ge_label, self.ge_radio)
         self.form_box.addRow(self.app_level_label, self.app_level_radio)
         self.form_box.addRow(self.portability_label, self.portability_cb)
         self.form_box.addRow(QtWidgets.QLabel(''))

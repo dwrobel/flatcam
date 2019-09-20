@@ -113,7 +113,11 @@ class Measurement(FlatCAMTool):
         self.original_call_source = 'app'
 
         # VisPy visuals
-        self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+        if self.app.is_legacy is False:
+            self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.sel_shapes = ShapeCollectionLegacy()
 
         self.measure_btn.clicked.connect(self.activate_measure_tool)
 
@@ -178,26 +182,26 @@ class Measurement(FlatCAMTool):
 
         # we can connect the app mouse events to the measurement tool
         # NEVER DISCONNECT THOSE before connecting some other handlers; it breaks something in VisPy
-        self.canvas.vis_connect('mouse_move', self.on_mouse_move_meas)
-        self.canvas.vis_connect('mouse_release', self.on_mouse_click_release)
+        self.canvas.graph_event_connect('mouse_move', self.on_mouse_move_meas)
+        self.canvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
 
         # we disconnect the mouse/key handlers from wherever the measurement tool was called
         if self.app.call_source == 'app':
-            self.canvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-            self.canvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.canvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            self.canvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.canvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.canvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         elif self.app.call_source == 'geo_editor':
-            self.canvas.vis_disconnect('mouse_move', self.app.geo_editor.on_canvas_move)
-            self.canvas.vis_disconnect('mouse_press', self.app.geo_editor.on_canvas_click)
-            self.canvas.vis_disconnect('mouse_release', self.app.geo_editor.on_geo_click_release)
+            self.canvas.graph_event_disconnect('mouse_move', self.app.geo_editor.on_canvas_move)
+            self.canvas.graph_event_disconnect('mouse_press', self.app.geo_editor.on_canvas_click)
+            self.canvas.graph_event_disconnect('mouse_release', self.app.geo_editor.on_geo_click_release)
         elif self.app.call_source == 'exc_editor':
-            self.canvas.vis_disconnect('mouse_move', self.app.exc_editor.on_canvas_move)
-            self.canvas.vis_disconnect('mouse_press', self.app.exc_editor.on_canvas_click)
-            self.canvas.vis_disconnect('mouse_release', self.app.exc_editor.on_exc_click_release)
+            self.canvas.graph_event_disconnect('mouse_move', self.app.exc_editor.on_canvas_move)
+            self.canvas.graph_event_disconnect('mouse_press', self.app.exc_editor.on_canvas_click)
+            self.canvas.graph_event_disconnect('mouse_release', self.app.exc_editor.on_exc_click_release)
         elif self.app.call_source == 'grb_editor':
-            self.canvas.vis_disconnect('mouse_move', self.app.grb_editor.on_canvas_move)
-            self.canvas.vis_disconnect('mouse_press', self.app.grb_editor.on_canvas_click)
-            self.canvas.vis_disconnect('mouse_release', self.app.grb_editor.on_grb_click_release)
+            self.canvas.graph_event_disconnect('mouse_move', self.app.grb_editor.on_canvas_move)
+            self.canvas.graph_event_disconnect('mouse_press', self.app.grb_editor.on_canvas_click)
+            self.canvas.graph_event_disconnect('mouse_release', self.app.grb_editor.on_grb_click_release)
 
         self.app.call_source = 'measurement'
 
@@ -210,25 +214,25 @@ class Measurement(FlatCAMTool):
 
         self.app.call_source = copy(self.original_call_source)
         if self.original_call_source == 'app':
-            self.canvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-            self.canvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.canvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            self.canvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.canvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         elif self.original_call_source == 'geo_editor':
-            self.canvas.vis_connect('mouse_move', self.app.geo_editor.on_canvas_move)
-            self.canvas.vis_connect('mouse_press', self.app.geo_editor.on_canvas_click)
-            self.canvas.vis_connect('mouse_release', self.app.geo_editor.on_geo_click_release)
+            self.canvas.graph_event_connect('mouse_move', self.app.geo_editor.on_canvas_move)
+            self.canvas.graph_event_connect('mouse_press', self.app.geo_editor.on_canvas_click)
+            self.canvas.graph_event_connect('mouse_release', self.app.geo_editor.on_geo_click_release)
         elif self.original_call_source == 'exc_editor':
-            self.canvas.vis_connect('mouse_move', self.app.exc_editor.on_canvas_move)
-            self.canvas.vis_connect('mouse_press', self.app.exc_editor.on_canvas_click)
-            self.canvas.vis_connect('mouse_release', self.app.exc_editor.on_exc_click_release)
+            self.canvas.graph_event_connect('mouse_move', self.app.exc_editor.on_canvas_move)
+            self.canvas.graph_event_connect('mouse_press', self.app.exc_editor.on_canvas_click)
+            self.canvas.graph_event_connect('mouse_release', self.app.exc_editor.on_exc_click_release)
         elif self.original_call_source == 'grb_editor':
-            self.canvas.vis_connect('mouse_move', self.app.grb_editor.on_canvas_move)
-            self.canvas.vis_connect('mouse_press', self.app.grb_editor.on_canvas_click)
-            self.canvas.vis_connect('mouse_release', self.app.grb_editor.on_grb_click_release)
+            self.canvas.graph_event_connect('mouse_move', self.app.grb_editor.on_canvas_move)
+            self.canvas.graph_event_connect('mouse_press', self.app.grb_editor.on_canvas_click)
+            self.canvas.graph_event_connect('mouse_release', self.app.grb_editor.on_grb_click_release)
 
         # disconnect the mouse/key events from functions of measurement tool
-        self.canvas.vis_disconnect('mouse_move', self.on_mouse_move_meas)
-        self.canvas.vis_disconnect('mouse_release', self.on_mouse_click_release)
+        self.canvas.graph_event_disconnect('mouse_move', self.on_mouse_move_meas)
+        self.canvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
 
         # self.app.ui.notebook.setTabText(2, _("Tools"))
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
@@ -289,13 +293,11 @@ class Measurement(FlatCAMTool):
             pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
             if self.app.grid_status() == True:
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                self.app.app_cursor.enabled = True
                 # Update cursor
                 self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                              symbol='++', edge_color='black', size=20)
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
-                self.app.app_cursor.enabled = False
 
             if self.rel_point1 is not None:
                 dx = pos[0] - self.rel_point1[0]

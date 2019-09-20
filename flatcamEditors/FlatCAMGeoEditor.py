@@ -3025,8 +3025,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # VisPy visuals
         self.fcgeometry = None
-        self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
-        self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
+        if self.app.is_legacy is False:
+            self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
+            self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.shapes = ShapeCollectionLegacy()
+            self.tool_shape = ShapeCollectionLegacy()
+
         self.app.pool_recreated.connect(self.pool_recreated)
 
         # Remove from scene
@@ -3271,7 +3277,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Disable visuals
         self.shapes.enabled = False
         self.tool_shape.enabled = False
-        self.app.app_cursor.enabled = False
 
         self.app.ui.geo_editor_menu.setDisabled(True)
         self.app.ui.geo_editor_menu.menuAction().setVisible(False)
@@ -3309,16 +3314,16 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
-        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_geo_click_release)
+        self.canvas.graph_event_connect('mouse_press', self.on_canvas_click)
+        self.canvas.graph_event_connect('mouse_move', self.on_canvas_move)
+        self.canvas.graph_event_connect('mouse_release', self.on_geo_click_release)
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
-        self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+        self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+        self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+        self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        self.app.plotcanvas.graph_event_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
 
         # self.app.collection.view.clicked.disconnect()
         self.app.ui.popmenu_copy.triggered.disconnect()
@@ -3354,15 +3359,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # we restore the key and mouse control to FlatCAMApp method
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
-        self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
+        self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+        self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
+        self.app.plotcanvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        self.app.plotcanvas.graph_event_connect('mouse_double_click', self.app.on_double_click_over_plot)
         # self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
-        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_geo_click_release)
+        self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
+        self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
+        self.canvas.graph_event_disconnect('mouse_release', self.on_geo_click_release)
 
         try:
             self.app.ui.popmenu_copy.triggered.disconnect(lambda: self.select_tool('copy'))
@@ -3625,18 +3630,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :param event: Event object dispatched by Matplotlib
         :return: None
         """
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+        else:
+            event_pos = (event.xdata, event.ydata)
 
-        self.pos = self.canvas.translate_coords(event.pos)
+        self.pos = self.canvas.translate_coords(event_pos)
 
         if self.app.grid_status() == True:
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-            self.app.app_cursor.enabled = True
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
                                          size=20)
         else:
             self.pos = (self.pos[0], self.pos[1])
-            self.app.app_cursor.enabled = False
 
         if event.button == 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
@@ -3678,7 +3685,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :param event: Event object dispatched by VisPy SceneCavas
         :return: None
         """
-        pos = self.canvas.translate_coords(event.pos)
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+
+        pos = self.canvas.translate_coords(event_pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
         self.x = event.xdata
@@ -3688,7 +3702,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
         if event.button == 2:
-            if event.is_dragging:
+            if event_is_dragging:
                 self.app.ui.popMenu.mouse_is_panning = True
                 # return
             else:
@@ -3706,11 +3720,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # ### Snap coordinates ###
         if self.app.grid_status() == True:
             x, y = self.snap(x, y)
-            self.app.app_cursor.enabled = True
-            # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
-        else:
-            self.app.app_cursor.enabled = False
+            if self.app.is_legacy is False:
+                # Update cursor
+                self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
 
         self.snap_x = x
         self.snap_y = y
@@ -3728,7 +3740,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        if event.button == 1 and event.is_dragging and isinstance(self.active_tool, FCEraser):
+        if event.button == 1 and event_is_dragging and isinstance(self.active_tool, FCEraser):
             pass
         else:
             # ### Utility geometry (animated) ###
@@ -3740,7 +3752,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # ### Selection area on canvas section ###
         dx = pos[0] - self.pos[0]
-        if event.is_dragging and event.button == 1:
+        if event_is_dragging and event.button == 1:
             self.app.delete_selection_shape()
             if dx < 0:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
@@ -3754,7 +3766,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.app.selection_type = None
 
     def on_geo_click_release(self, event):
-        pos_canvas = self.canvas.translate_coords(event.pos)
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+
+        pos_canvas = self.canvas.translate_coords(event_pos)
 
         if self.app.grid_status() == True:
             pos = self.snap(pos_canvas[0], pos_canvas[1])

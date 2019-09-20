@@ -117,7 +117,11 @@ class Geometry(object):
         self.old_disp_number = 0
         self.el_count = 0
 
-        self.temp_shapes = self.app.plotcanvas.new_shape_group()
+        if self.app.is_legacy is False:
+            self.temp_shapes = self.app.plotcanvas.new_shape_group()
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.temp_shapes = ShapeCollectionLegacy()
 
         # if geo_steps_per_circle is None:
         #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])

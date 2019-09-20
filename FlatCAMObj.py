@@ -74,6 +74,9 @@ class FlatCAMObj(QtCore.QObject):
         # store here the default data for Geometry Data
         self.default_data = {}
 
+        if self.app.is_legacy:
+            self.axes = None  # Matplotlib axes; usefull only in Legacy Mode
+
         self.kind = None  # Override with proper name
 
         # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene)
@@ -331,7 +334,22 @@ class FlatCAMObj(QtCore.QObject):
         if self.deleted:
             return False
 
-        self.clear()
+        if self.app.is_legacy:
+            # 2D mode
+            # Axes must exist and be attached to canvas.
+            if self.axes is None or self.axes not in self.app.plotcanvas.figure.axes:
+                self.axes = self.app.plotcanvas.new_axes(self.options['name'])
+
+            if not self.options["plot"]:
+                self.axes.cla()
+                self.app.plotcanvas.auto_adjust_axes()
+                return False
+
+            # Clear axes or we will plot on top of them.
+            self.axes.cla()
+        else:
+            # 3D mode
+            self.clear()
         return True
 
     def single_object_plot(self):

@@ -1197,21 +1197,21 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         #                   contour=contour,
                         #                   rest=rest)
                         #
-                        # self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
-                        # self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
+                        # self.app.plotcanvas.graph_event_disconnect('mouse_release', on_mouse_release)
+                        # self.app.plotcanvas.graph_event_disconnect('mouse_move', on_mouse_move)
                         #
-                        # self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                        # self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-                        # self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                        # self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                        # self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                        # self.app.plotcanvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
                 elif event.button == 2 and self.mouse_is_dragging == False:
                     self.first_click = False
 
-                    self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
-                    self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
+                    self.app.plotcanvas.graph_event_disconnect('mouse_release', on_mouse_release)
+                    self.app.plotcanvas.graph_event_disconnect('mouse_move', on_mouse_move)
 
-                    self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                    self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-                    self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                    self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                    self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                    self.app.plotcanvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
                     if len(self.sel_rect) == 0:
                         return
@@ -1231,7 +1231,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # called on mouse move
             def on_mouse_move(event):
                 curr_pos = self.app.plotcanvas.translate_coords(event.pos)
-                self.app.app_cursor.enabled = False
 
                 # detect mouse dragging motion
                 if event.is_dragging is True:
@@ -1241,7 +1240,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 # update the cursor position
                 if self.app.grid_status() == True:
-                    self.app.app_cursor.enabled = True
                     # Update cursor
                     curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
                     self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
@@ -1254,12 +1252,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                          coords=(curr_pos[0], curr_pos[1]),
                                                          face_alpha=0.0)
 
-            self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-            self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
-            self.app.plotcanvas.vis_connect('mouse_release', on_mouse_release)
-            self.app.plotcanvas.vis_connect('mouse_move', on_mouse_move)
+            self.app.plotcanvas.graph_event_connect('mouse_release', on_mouse_release)
+            self.app.plotcanvas.graph_event_connect('mouse_move', on_mouse_move)
         elif select_method == 'box':
             self.bound_obj_name = self.box_combo.currentText()
             # Get source object.

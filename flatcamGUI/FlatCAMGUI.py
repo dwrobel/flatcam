@@ -12,6 +12,7 @@
 # ##########################################################
 
 from flatcamGUI.PreferencesUI import *
+from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -2271,6 +2272,32 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # events from the GUI are of type QKeyEvent
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
+        elif isinstance(event, mpl_key_event):
+            key = event.key
+            # if modifiers == QtCore.Qt.NoModifier:
+            try:
+                key = ord(key.upper())
+            except TypeError:
+                key = key.upper()
+                if 'ctrl' in key.lower():
+                    modifiers = QtCore.Qt.ControlModifier
+                    try:
+                        key = ord(key.rpartition('+')[2].upper())
+                    except TypeError:
+                        pass
+                elif 'alt' in key.lower():
+                    modifiers = QtCore.Qt.AltModifier
+                    try:
+                        key = ord(key.rpartition('+')[2].upper())
+                    except TypeError:
+                        pass
+                elif 'shift' in key.lower():
+                    modifiers = QtCore.Qt.ShiftModifier
+                    try:
+                        key = ord(key.rpartition('+')[2].upper())
+                    except TypeError:
+                        pass
+
         # events from Vispy are of type KeyEvent
         else:
             key = event.key
@@ -2494,7 +2521,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                     # try to disconnect the slot from Set Origin
                     try:
-                        self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_set_zero_click)
+                        self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_set_zero_click)
                     except TypeError:
                         pass
                     self.app.inform.emit("")
