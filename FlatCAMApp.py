@@ -1595,6 +1595,9 @@ class App(QtCore.QObject):
         else:
             self.is_legacy = True
 
+        # Matplotlib axis
+        self.axes = None
+
         if show_splash:
             self.splash.showMessage(_("FlatCAM is initializing ...\n"
                                       "Canvas initialization started."),
@@ -1604,7 +1607,9 @@ class App(QtCore.QObject):
         self.plotcanvas = None
         self.app_cursor = None
         self.hover_shapes = None
+
         self.on_plotcanvas_setup()
+
         end_plot_time = time.time()
         self.used_time = end_plot_time - start_plot_time
         self.log.debug("Finished Canvas initialization in %s seconds." % str(self.used_time))
@@ -10971,6 +10976,7 @@ class App(QtCore.QObject):
         if self.is_legacy is False:
             self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
         else:
+            # will use the default Matplotlib axes
             self.hover_shapes = ShapeCollectionLegacy()
 
     def on_zoom_fit(self, event):

@@ -12,6 +12,7 @@ from datetime import datetime
 
 from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
+from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from camlib import *
 import itertools
 
@@ -74,13 +75,17 @@ class FlatCAMObj(QtCore.QObject):
         # store here the default data for Geometry Data
         self.default_data = {}
 
-        if self.app.is_legacy:
-            self.axes = None  # Matplotlib axes; usefull only in Legacy Mode
+        # 2D mode
+        # Axes must exist and be attached to canvas.
+        self.axes = None
 
         self.kind = None  # Override with proper name
 
         # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene)
-        self.shapes = self.app.plotcanvas.new_shape_group()
+        if self.app.is_legacy is False:
+            self.shapes = self.app.plotcanvas.new_shape_group()
+        else:
+            self.shapes = ShapeCollectionLegacy()
 
         # self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
         self.mark_shapes = {}
