@@ -23,7 +23,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed moving geometry in Tool Measurement in legacy graphic engine
 - fixed Geometry Editor to work in legacy graphic engine
 - fixed Excellon Editor to work in legacy graphic engine
-
+- fixed Gerber Editor to work in legacy graphic engine
+- fixed NCC tool to work in egacy graphic engine
 
 20.09.2019
 

@@ -4150,15 +4150,23 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :param event: Event object dispatched by VisPy
         :return: None
         """
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
 
-        self.pos = self.canvas.translate_coords(event.pos)
+        self.pos = self.canvas.translate_coords(event_pos)
 
         if self.app.grid_status() == True:
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
         else:
             self.pos = (self.pos[0], self.pos[1])
 
-        if event.button is 1:
+        if event.button == 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
@@ -4209,8 +4217,16 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_grb_click_release(self, event):
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
 
-        pos_canvas = self.canvas.translate_coords(event.pos)
+        pos_canvas = self.canvas.translate_coords(event_pos)
         if self.app.grid_status() == True:
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
@@ -4219,7 +4235,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
         try:
-            if event.button == 2:  # right click
+            if event.button == right_button:  # right click
                 if self.app.ui.popMenu.mouse_is_panning is False:
                     if self.in_action is False:
                         try:
@@ -4342,8 +4358,16 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :param event: Event object dispatched by VisPy SceneCavas
         :return: None
         """
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
 
-        pos_canvas = self.canvas.translate_coords(event.pos)
+        pos_canvas = self.canvas.translate_coords(event_pos)
         event.xdata, event.ydata = pos_canvas[0], pos_canvas[1]
 
         self.x = event.xdata
@@ -4352,7 +4376,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2 and event.is_dragging == 1:
+        if event.button == right_button and event_is_dragging == 1:
             self.app.ui.popMenu.mouse_is_panning = True
             return
 
@@ -4368,8 +4392,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # # ## Snap coordinates
         if self.app.grid_status() == True:
             x, y = self.app.geo_editor.snap(x, y)
-            # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
+            if self.app.is_legacy is False:
+                # Update cursor
+                self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
 
         self.snap_x = x
         self.snap_y = y
@@ -4396,7 +4421,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.draw_utility_geometry(geo=geo)
 
         # # ## Selection area on canvas section # ##
-        if event.is_dragging == 1 and event.button == 1:
+        if event_is_dragging == 1 and event.button == 1:
             # I make an exception for FCRegion and FCTrack because clicking and dragging while making regions can
             # create strange issues like missing a point in a track/region
             if isinstance(self.active_tool, FCRegion) or isinstance(self.active_tool, FCTrack):
@@ -4456,11 +4481,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                         if elem in self.selected:
                             self.plot_shape(geometry=geometric_data,
-                                            color=self.app.defaults['global_sel_draw_color'],
+                                            color=self.app.defaults['global_sel_draw_color'] + 'FF',
                                             linewidth=2)
                         else:
                             self.plot_shape(geometry=geometric_data,
-                                            color=self.app.defaults['global_draw_color'])
+                                            color=self.app.defaults['global_draw_color'] + 'FF')
 
             if self.utility:
                 for elem in self.utility:
@@ -4470,7 +4495,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             self.shapes.redraw()
 
-    def plot_shape(self, geometry=None, color='black', linewidth=1):
+    def plot_shape(self, geometry=None, color='#000000FF', linewidth=1):
         """
         Plots a geometric object or list of objects without rendering. Plotted objects
         are returned as a list. This allows for efficient/animated rendering.
@@ -4486,10 +4511,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         try:
             self.shapes.add(shape=geometry.geo, color=color, face_color=color, layer=0, tolerance=self.tolerance)
-        except AttributeError:
+        except AttributeError as e:
             if type(geometry) == Point:
                 return
-            self.shapes.add(shape=geometry, color=color, face_color=color+'AF', layer=0, tolerance=self.tolerance)
+            if len(color) == 9:
+                color = color[:7] + 'AF'
+            self.shapes.add(shape=geometry, color=color, face_color=color, layer=0, tolerance=self.tolerance)
 
     def start_delayed_plot(self, check_period):
         """
