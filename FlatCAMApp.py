@@ -3143,12 +3143,32 @@ class App(QtCore.QObject):
                             self.collection.set_active(old_name)
                             self.collection.delete_active()
 
+                        # restore GUI to the Selected TAB
+                        # Remove anything else in the GUI
+                        self.ui.selected_scroll_area.takeWidget()
+                        # Switch notebook to Selected page
+                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         obj_type = "Excellon"
                         if cleanup is None:
                             self.exc_editor.update_fcexcellon(edited_obj)
                             self.exc_editor.update_options(edited_obj)
+
                         self.exc_editor.deactivate()
+
+                        # delete the old object (the source object) if it was an empty one
+                        if len(edited_obj.drills) == 0 and len(edited_obj.slots) == 0:
+                            old_name = edited_obj.options['name']
+                            self.collection.set_active(old_name)
+                            self.collection.delete_active()
+
+                        # restore GUI to the Selected TAB
+                        # Remove anything else in the GUI
+                        self.ui.tool_scroll_area.takeWidget()
+                        # Switch notebook to Selected page
+                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry or Excellon Object to update."))

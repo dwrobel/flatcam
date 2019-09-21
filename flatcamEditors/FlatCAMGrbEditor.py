@@ -3677,6 +3677,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.deactivate_grb_editor()
         self.activate_grb_editor()
 
+        # reset the tool table
+        self.apertures_table.clear()
+
+        self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
+        self.last_aperture_selected = None
+
         # create a reference to the source object
         self.gerber_obj = orig_grb_obj
         self.gerber_obj_options = orig_grb_obj.options
@@ -3869,19 +3875,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             new_grb_name = self.edited_obj_name + "_edit"
 
         self.app.worker_task.emit({'fcn': self.new_edited_gerber,
-                                   'params': [new_grb_name]})
-
-        # reset the tool table
-        self.apertures_table.clear()
-
-        self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
-        self.last_aperture_selected = None
-
-        # restore GUI to the Selected TAB
-        # Remove anything else in the GUI
-        self.app.ui.selected_scroll_area.takeWidget()
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+                                   'params': [new_grb_name, self.storage_dict]})
 
     @staticmethod
     def update_options(obj):
@@ -3899,12 +3893,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
             obj.options = dict()
             return True
 
-    def new_edited_gerber(self, outname):
+    def new_edited_gerber(self, outname, aperture_storage):
         """
         Creates a new Gerber object for the edited Gerber. Thread-safe.
 
         :param outname: Name of the resulting object. None causes the name to be that of the file.
         :type outname: str
+        :param aperture_storage: a dictionary that holds all the objects geometry
         :return: None
         """
 
@@ -3912,13 +3907,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
                            self.gerber_obj.options['name'].upper())
 
         out_name = outname
+        storage_dict = aperture_storage
 
         local_storage_dict = dict()
-        for aperture in self.storage_dict:
-            if 'geometry' in self.storage_dict[aperture]:
+        for aperture in storage_dict:
+            if 'geometry' in storage_dict[aperture]:
                 # add aperture only if it has geometry
-                if len(self.storage_dict[aperture]['geometry']) > 0:
-                    local_storage_dict[aperture] = deepcopy(self.storage_dict[aperture])
+                if len(storage_dict[aperture]['geometry']) > 0:
+                    local_storage_dict[aperture] = deepcopy(storage_dict[aperture])
 
         # How the object should be initialized
         def obj_init(grb_obj, app_obj):
@@ -4007,7 +4003,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 self.app.new_object("gerber", outname, obj_init)
             except Exception as e:
-                log.error("Error on object creation: %s" % str(e))
+                log.error("Error on Edited object creation: %s" % str(e))
                 self.app.progress.emit(100)
                 return
 

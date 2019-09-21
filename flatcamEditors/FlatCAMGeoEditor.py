@@ -3672,8 +3672,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     self.app.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
                 return
 
+
             # Selection with left mouse button
-            if self.active_tool is not None and event.button is 1:
+            if self.active_tool is not None and event.button == 1:
 
                 # Dispatch event to active_tool
                 self.active_tool.click(self.snap(self.pos[0], self.pos[1]))
@@ -3704,9 +3705,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if self.app.is_legacy is False:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
+            right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
             event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
 
         pos = self.canvas.translate_coords(event_pos)
         event.xdata, event.ydata = pos[0], pos[1]
@@ -3717,7 +3720,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2:
+        if event.button == right_button:
             if event_is_dragging:
                 self.app.ui.popMenu.mouse_is_panning = True
                 # return
@@ -3785,9 +3788,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if self.app.is_legacy is False:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
+            right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
             event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
 
         pos_canvas = self.canvas.translate_coords(event_pos)
 
@@ -3811,7 +3816,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
                     # self.app.inform.emit(msg)
                     self.replot()
-            elif event.button == 2:  # right click
+            elif event.button == right_button:  # right click
                 if self.app.ui.popMenu.mouse_is_panning == False:
                     if self.in_action is False:
                         try:
@@ -3978,7 +3983,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # return [shape for shape in self.shape_buffer if shape["selected"]]
         return self.selected
 
-    def plot_shape(self, geometry=None, color='black', linewidth=1):
+    def plot_shape(self, geometry=None, color='#000000FF', linewidth=1):
         """
         Plots a geometric object or list of objects without rendering. Plotted objects
         are returned as a list. This allows for efficient/animated rendering.
@@ -3996,7 +4001,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         try:
             for geo in geometry:
                 plot_elements += self.plot_shape(geometry=geo, color=color, linewidth=linewidth)
-
         # Non-iterable
         except TypeError:
 
@@ -4034,10 +4038,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 continue
 
             if shape in self.selected:
-                self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'], linewidth=2)
+                self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'] + 'FF', linewidth=2)
                 continue
 
-            self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'])
+            self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'] + "FF")
 
         for shape in self.utility:
             self.plot_shape(geometry=shape.geo, linewidth=1)

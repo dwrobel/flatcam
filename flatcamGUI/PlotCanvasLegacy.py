@@ -774,6 +774,7 @@ class ShapeCollectionLegacy():
 
     def redraw(self):
         path_num = 0
+
         try:
             obj_type = self.obj.kind
         except AttributeError:
@@ -782,7 +783,7 @@ class ShapeCollectionLegacy():
             for element in self._shapes:
                 if obj_type == 'excellon':
                     # Plot excellon (All polygons?)
-                    if self.obj.options["solid"]:
+                    if self.obj.options["solid"] and isinstance(self._shapes[element]['shape'], Polygon):
                         patch = PolygonPatch(self._shapes[element]['shape'],
                                              facecolor="#C40000",
                                              edgecolor="#750000",
