@@ -48,7 +48,7 @@ class ToolMove(FlatCAMTool):
             self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-            self.sel_shapes = ShapeCollectionLegacy()
+            self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="move")
 
         self.replot_signal[list].connect(self.replot)
 

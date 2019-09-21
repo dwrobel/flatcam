@@ -85,7 +85,7 @@ class FlatCAMObj(QtCore.QObject):
         if self.app.is_legacy is False:
             self.shapes = self.app.plotcanvas.new_shape_group()
         else:
-            self.shapes = ShapeCollectionLegacy()
+            self.shapes = ShapeCollectionLegacy(obj=self, app=self.app)
 
         # self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
         self.mark_shapes = {}
@@ -339,22 +339,7 @@ class FlatCAMObj(QtCore.QObject):
         if self.deleted:
             return False
 
-        if self.app.is_legacy:
-            # 2D mode
-            # Axes must exist and be attached to canvas.
-            if self.axes is None or self.axes not in self.app.plotcanvas.figure.axes:
-                self.axes = self.app.plotcanvas.new_axes(self.options['name'])
-
-            if not self.options["plot"]:
-                self.axes.cla()
-                self.app.plotcanvas.auto_adjust_axes()
-                return False
-
-            # Clear axes or we will plot on top of them.
-            self.axes.cla()
-        else:
-            # 3D mode
-            self.clear()
+        self.clear()
         return True
 
     def single_object_plot(self):
@@ -414,11 +399,12 @@ class FlatCAMObj(QtCore.QObject):
         def worker_task(app_obj):
             self.shapes.visible = value
 
-            # Not all object types has annotations
-            try:
-                self.annotation.visible = value
-            except Exception as e:
-                pass
+            if self.app.is_legacy is False:
+                # Not all object types has annotations
+                try:
+                    self.annotation.visible = value
+                except Exception as e:
+                    pass
 
         if threaded is False:
             worker_task(app_obj=self.app)
@@ -655,7 +641,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
         else:
             for ap_code in self.apertures:
-                self.mark_shapes[ap_code] = ShapeCollectionLegacy()
+                self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
+                                                                  name=self.options['name'] + str(ap_code))
 
         # set initial state of the aperture table and associated widgets
         self.on_aperture_table_visibility_change()
@@ -1369,73 +1356,45 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except TypeError:
             geometry = [geometry]
 
-        if self.app.is_legacy is False:
-            def random_color():
-                color = np.random.rand(4)
-                color[3] = 1
-                return color
+        # if self.app.is_legacy is False:
+        def random_color():
+            color = np.random.rand(4)
+            color[3] = 1
+            return color
 
-            try:
-                if self.options["solid"]:
-                    for g in geometry:
-                        if type(g) == Polygon or type(g) == LineString:
+        try:
+            if self.options["solid"]:
+                for g in geometry:
+                    if type(g) == Polygon or type(g) == LineString:
+                        self.add_shape(shape=g, color=color,
+                                       face_color=random_color() if self.options['multicolored']
+                                       else face_color, visible=visible)
+                    elif type(g) == Point:
+                        pass
+                    else:
+                        try:
+                            for el in g:
+                                self.add_shape(shape=el, color=color,
+                                               face_color=random_color() if self.options['multicolored']
+                                               else face_color, visible=visible)
+                        except TypeError:
                             self.add_shape(shape=g, color=color,
                                            face_color=random_color() if self.options['multicolored']
                                            else face_color, visible=visible)
-                        elif type(g) == Point:
-                            pass
-                        else:
-                            try:
-                                for el in g:
-                                    self.add_shape(shape=el, color=color,
-                                                   face_color=random_color() if self.options['multicolored']
-                                                   else face_color, visible=visible)
-                            except TypeError:
-                                self.add_shape(shape=g, color=color,
-                                               face_color=random_color() if self.options['multicolored']
-                                               else face_color, visible=visible)
-                else:
-                    for g in geometry:
-                        if type(g) == Polygon or type(g) == LineString:
-                            self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
+            else:
+                for g in geometry:
+                    if type(g) == Polygon or type(g) == LineString:
+                        self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
+                                       visible=visible)
+                    elif type(g) == Point:
+                        pass
+                    else:
+                        for el in g:
+                            self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
                                            visible=visible)
-                        elif type(g) == Point:
-                            pass
-                        else:
-                            for el in g:
-                                self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
-                                               visible=visible)
-                self.shapes.redraw()
-            except (ObjectDeleted, AttributeError):
-                self.shapes.clear(update=True)
-        else:
-            if self.options["multicolored"]:
-                linespec = '-'
-            else:
-                linespec = 'k-'
-
-            if self.options["solid"]:
-                for poly in geometry:
-                    # TODO: Too many things hardcoded.
-                    try:
-                        patch = PolygonPatch(poly,
-                                             facecolor="#BBF268",
-                                             edgecolor="#006E20",
-                                             alpha=0.75,
-                                             zorder=2)
-                        self.axes.add_patch(patch)
-                    except AssertionError:
-                        FlatCAMApp.App.log.warning("A geometry component was not a polygon:")
-                        FlatCAMApp.App.log.warning(str(poly))
-            else:
-                for poly in geometry:
-                    x, y = poly.exterior.xy
-                    self.axes.plot(x, y, linespec)
-                    for ints in poly.interiors:
-                        x, y = ints.coords.xy
-                        self.axes.plot(x, y, linespec)
-
-            self.app.plotcanvas.auto_adjust_axes()
+            self.shapes.redraw()
+        except (ObjectDeleted, AttributeError):
+            self.shapes.clear(update=True)
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
     def plot_aperture(self, **kwargs):
@@ -3164,42 +3123,22 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         visible = visible if visible else self.options['plot']
 
-        if self.app.is_legacy is False:
-            try:
-                # Plot Excellon (All polygons?)
-                if self.options["solid"]:
-                    for geo in self.solid_geometry:
-                        self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
-                                       visible=visible,
-                                       layer=2)
-                else:
-                    for geo in self.solid_geometry:
-                        self.add_shape(shape=geo.exterior, color='red', visible=visible)
-                        for ints in geo.interiors:
-                            self.add_shape(shape=ints, color='orange', visible=visible)
-
-                self.shapes.redraw()
-            except (ObjectDeleted, AttributeError):
-                self.shapes.clear(update=True)
-        else:
-            # Plot excellon (All polygons?)
+        try:
+            # Plot Excellon (All polygons?)
             if self.options["solid"]:
                 for geo in self.solid_geometry:
-                    patch = PolygonPatch(geo,
-                                         facecolor="#C40000",
-                                         edgecolor="#750000",
-                                         alpha=0.75,
-                                         zorder=3)
-                    self.axes.add_patch(patch)
+                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
+                                   visible=visible,
+                                   layer=2)
             else:
                 for geo in self.solid_geometry:
-                    x, y = geo.exterior.coords.xy
-                    self.axes.plot(x, y, 'r-')
+                    self.add_shape(shape=geo.exterior, color='red', visible=visible)
                     for ints in geo.interiors:
-                        x, y = ints.coords.xy
-                        self.axes.plot(x, y, 'g-')
+                        self.add_shape(shape=ints, color='orange', visible=visible)
 
-            self.app.plotcanvas.auto_adjust_axes()
+            self.shapes.redraw()
+        except (ObjectDeleted, AttributeError):
+            self.shapes.clear(update=True)
 
 
 class FlatCAMGeometry(FlatCAMObj, Geometry):
@@ -5434,21 +5373,21 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.plot_element(sub_el)
 
         except TypeError:  # Element is not iterable...
-            if self.app.is_legacy is False:
-                self.add_shape(shape=element, color=color, visible=visible, layer=0)
-            else:
-                if type(element) == Polygon:
-                    x, y = element.exterior.coords.xy
-                    self.axes.plot(x, y, 'r-')
-                    for ints in element.interiors:
-                        x, y = ints.coords.xy
-                        self.axes.plot(x, y, 'r-')
-                    return
-
-                if type(element) == LineString or type(element) == LinearRing:
-                    x, y = element.coords.xy
-                    self.axes.plot(x, y, 'r-')
-                    return
+            # if self.app.is_legacy is False:
+            self.add_shape(shape=element, color=color, visible=visible, layer=0)
+            # else:
+            #     if type(element) == Polygon:
+            #         x, y = element.exterior.coords.xy
+            #         self.axes.plot(x, y, 'r-')
+            #         for ints in element.interiors:
+            #             x, y = ints.coords.xy
+            #             self.axes.plot(x, y, 'r-')
+            #         return
+            #
+            #     if type(element) == LineString or type(element) == LinearRing:
+            #         x, y = element.coords.xy
+            #         self.axes.plot(x, y, 'r-')
+            #         return
 
     def plot(self, visible=None, kind=None):
         """
@@ -5479,10 +5418,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self.plot_element(self.solid_geometry, visible=visible)
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
-            if self.app.is_legacy is False:
-                self.shapes.redraw()
-            else:
-                self.app.plotcanvas.auto_adjust_axes()
+
+            self.shapes.redraw()
+
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
 
@@ -5644,9 +5582,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
 
-        self.text_col = self.app.plotcanvas.new_text_collection()
-        self.text_col.enabled = True
-        self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
+        if self.app.is_legacy is False:
+            self.text_col = self.app.plotcanvas.new_text_collection()
+            self.text_col.enabled = True
+            self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
 
     def build_ui(self):
         self.ui_disconnect()
@@ -5821,8 +5760,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             pass
         self.ui.annotation_cb.stateChanged.connect(self.on_annotation_change)
 
-        # set if to display text annotations
-        self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
+        if self.app.is_legacy is False:
+            # set if to display text annotations
+            self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -6271,11 +6211,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         visible = visible if visible else self.options['plot']
 
-        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.text_col.enabled = True
-        else:
-            self.text_col.enabled = False
-        self.annotation.redraw()
+        if self.app.is_legacy is False:
+            if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+                self.text_col.enabled = True
+            else:
+                self.text_col.enabled = False
+            self.annotation.redraw()
 
         try:
             if self.multitool is False:  # single tool usage
@@ -6294,16 +6235,20 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
-            self.annotation.clear(update=True)
+            if self.app.is_legacy is False:
+                self.annotation.clear(update=True)
 
     def on_annotation_change(self):
-        if self.ui.annotation_cb.get_value():
-            self.text_col.enabled = True
+        if self.app.is_legacy is False:
+            if self.ui.annotation_cb.get_value():
+                self.text_col.enabled = True
+            else:
+                self.text_col.enabled = False
+            # kind = self.ui.cncplot_method_combo.get_value()
+            # self.plot(kind=kind)
+            self.annotation.redraw()
         else:
-            self.text_col.enabled = False
-        # kind = self.ui.cncplot_method_combo.get_value()
-        # self.plot(kind=kind)
-        self.annotation.redraw()
+            self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
 
     def convert_units(self, units):
         log.debug("FlatCAMObj.FlatCAMECNCjob.convert_units()")

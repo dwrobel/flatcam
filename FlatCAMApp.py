@@ -6690,7 +6690,12 @@ class App(QtCore.QObject):
         if self.is_legacy is True:
             # Remove plot only if the object was plotted otherwise delaxes will fail
             if isPlotted:
-                self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
+                try:
+                    # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
+                    self.plotcanvas.figure.delaxes(self.collection.get_active().shapes.axes)
+                except Exception as e:
+                    log.debug("App.delete_first_selected() --> %s" % str(e))
+
             self.plotcanvas.auto_adjust_axes()
 
         # Remove from dictionary
@@ -6740,7 +6745,12 @@ class App(QtCore.QObject):
     def on_set_zero_click(self, event):
         # this function will be available only for mouse left click
 
-        pos_canvas = self.plotcanvas.translate_coords(event.pos)
+        if self.is_legacy is False:
+            event_pos = event.pos
+        else:
+            event_pos = (event.xdata, event.ydata)
+
+        pos_canvas = self.plotcanvas.translate_coords(event_pos)
         if event.button == 1:
             if self.grid_status() == True:
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -11011,7 +11021,7 @@ class App(QtCore.QObject):
             self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
         else:
             # will use the default Matplotlib axes
-            self.hover_shapes = ShapeCollectionLegacy()
+            self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
 
     def on_zoom_fit(self, event):
         """

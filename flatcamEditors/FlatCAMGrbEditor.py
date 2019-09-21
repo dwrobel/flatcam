@@ -2827,9 +2827,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.ma_annotation = self.canvas.new_text_group()
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-            self.shapes = ShapeCollectionLegacy()
-            self.tool_shape = ShapeCollectionLegacy()
-            self.ma_annotation = ShapeCollectionLegacy()
+            self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='shapes_grb_editor')
+            self.tool_shape = ShapeCollectionLegacy(obj=self, app=self.app, name='tool_shapes_grb_editor')
+            self.ma_annotation = ShapeCollectionLegacy(obj=self, app=self.app, name='ma_anno_grb_editor')
 
         self.app.pool_recreated.connect(self.pool_recreated)
 

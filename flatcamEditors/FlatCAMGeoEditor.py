@@ -3030,8 +3030,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-            self.shapes = ShapeCollectionLegacy()
-            self.tool_shape = ShapeCollectionLegacy()
+            self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='shapes_geo_editor')
+            self.tool_shape = ShapeCollectionLegacy(obj=self, app=self.app, name='tool_shapes_geo_editor')
 
         self.app.pool_recreated.connect(self.pool_recreated)
 

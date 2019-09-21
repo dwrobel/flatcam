@@ -125,7 +125,7 @@ class Geometry(object):
             self.temp_shapes = self.app.plotcanvas.new_shape_group()
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-            self.temp_shapes = ShapeCollectionLegacy()
+            self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
 
         # if geo_steps_per_circle is None:
         #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])

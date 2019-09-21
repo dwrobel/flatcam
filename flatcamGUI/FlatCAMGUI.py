@@ -2272,31 +2272,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # events from the GUI are of type QKeyEvent
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
-        elif isinstance(event, mpl_key_event):
+        elif isinstance(event, mpl_key_event):  # MatPlotLib key events are tricky to interpret as the rest
             key = event.key
-            # if modifiers == QtCore.Qt.NoModifier:
-            try:
-                key = ord(key.upper())
-            except TypeError:
-                key = key.upper()
-                if 'ctrl' in key.lower():
+            key = QtGui.QKeySequence(key)
+
+            # check for modifiers
+            key_string = key.toString().lower()
+            if '+' in key_string:
+                mod, __, key_text = key_string.rpartition('+')
+                if mod.lower() == 'ctrl':
                     modifiers = QtCore.Qt.ControlModifier
-                    try:
-                        key = ord(key.rpartition('+')[2].upper())
-                    except TypeError:
-                        pass
-                elif 'alt' in key.lower():
+                elif mod.lower() == 'alt':
                     modifiers = QtCore.Qt.AltModifier
-                    try:
-                        key = ord(key.rpartition('+')[2].upper())
-                    except TypeError:
-                        pass
-                elif 'shift' in key.lower():
+                elif mod.lower() == 'shift':
                     modifiers = QtCore.Qt.ShiftModifier
-                    try:
-                        key = ord(key.rpartition('+')[2].upper())
-                    except TypeError:
-                        pass
+                else:
+                    modifiers = QtCore.Qt.NoModifier
+                key = QtGui.QKeySequence(key_text)
 
         # events from Vispy are of type KeyEvent
         else:

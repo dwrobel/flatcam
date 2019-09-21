@@ -16,7 +16,14 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.widgets import Cursor
 
+# needed for legacy mode
+# Used for solid polygons in Matplotlib
+from descartes.patch import PolygonPatch
+
+from shapely.geometry import Polygon, LineString, LinearRing, Point, MultiPolygon, MultiLineString
+
 import FlatCAMApp
+from copy import deepcopy
 import logging
 
 mpl_use("Qt5Agg")
@@ -679,26 +686,171 @@ class MplCursor(Cursor):
 
 class ShapeCollectionLegacy():
 
-    def __init__(self):
-        self._shapes = []
+    def __init__(self, obj, app, name=None):
+
+        self.obj = obj
+        self.app = app
+
+        self._shapes = dict()
+        self.shape_dict = dict()
+        self.shape_id = 0
+
+        self._color = None
+        self._face_color = None
+        self._visible = True
+        self._update = False
+
+        self._obj = None
+        self._gcode_parsed = None
+
+        if name is None:
+            axes_name = self.obj.options['name']
+        else:
+            axes_name = name
+
+        # Axes must exist and be attached to canvas.
+        if axes_name not in self.app.plotcanvas.figure.axes:
+            self.axes = self.app.plotcanvas.new_axes(axes_name)
 
     def add(self, shape=None, color=None, face_color=None, alpha=None, visible=True,
-            update=False, layer=1, tolerance=0.01):
+            update=False, layer=1, tolerance=0.01, obj=None, gcode_parsed=None, tool_tolerance=None, tooldia=None):
+
+        self._color = color[:-2] if color is not None else None
+        self._face_color = face_color[:-2] if face_color is not None else None
+        self._visible = visible
+        self._update = update
+
+        # CNCJob oject related arguments
+        self._obj = obj
+        self._gcode_parsed = gcode_parsed
+        self._tool_tolerance = tool_tolerance
+        self._tooldia = tooldia
+
         try:
             for sh in shape:
-                self._shapes.append(sh)
-        except TypeError:
-            self._shapes.append(shape)
+                self.shape_id += 1
+                self.shape_dict.update({
+                    'color': self._color,
+                    'face_color': self._face_color,
+                    'shape': sh
+                })
 
-        return len(self._shapes) - 1
+                self._shapes.update({
+                    self.shape_id: deepcopy(self.shape_dict)
+                })
+        except TypeError:
+            self.shape_id += 1
+            self.shape_dict.update({
+                'color': self._color,
+                'face_color': self._face_color,
+                'shape': shape
+            })
+
+            self._shapes.update({
+                self.shape_id: deepcopy(self.shape_dict)
+            })
+
+        return self.shape_id
 
     def clear(self, update=None):
-        self._shapes[:] = []
+        self._shapes.clear()
+        self.shape_id = 0
+
+        self.axes.cla()
+        self.app.plotcanvas.auto_adjust_axes()
 
         if update is True:
             self.redraw()
 
     def redraw(self):
-        pass
+        path_num = 0
+        if self._visible:
+            for element in self._shapes:
+                if self.obj.kind == 'excellon':
+                    # Plot excellon (All polygons?)
+                    if self.obj.options["solid"]:
+                        patch = PolygonPatch(self._shapes[element]['shape'],
+                                             facecolor="#C40000",
+                                             edgecolor="#750000",
+                                             alpha=0.75,
+                                             zorder=3)
+                        self.axes.add_patch(patch)
+                    else:
+                        x, y = self._shapes[element]['shape'].exterior.coords.xy
+                        self.axes.plot(x, y, 'r-')
+                        for ints in self._shapes[element]['shape'].interiors:
+                            x, y = ints.coords.xy
+                            self.axes.plot(x, y, 'o-')
+                elif self.obj.kind == 'geometry':
+                    if type(self._shapes[element]['shape']) == Polygon:
+                        x, y = self._shapes[element]['shape'].exterior.coords.xy
+                        self.axes.plot(x, y, self._shapes[element]['color'], linestyle='-')
+                        for ints in self._shapes[element]['shape'].interiors:
+                            x, y = ints.coords.xy
+                            self.axes.plot(x, y, self._shapes[element]['color'], linestyle='-')
+                    elif type(element) == LineString or type(element) == LinearRing:
+                        x, y = element.coords.xy
+                        self.axes.plot(x, y, self._shapes[element]['color'], marker='-')
+                        return
+                elif self.obj.kind == 'gerber':
+                    if self.obj.options["multicolored"]:
+                        linespec = '-'
+                    else:
+                        linespec = 'k-'
 
+                    if self.obj.options["solid"]:
+                        try:
+                            patch = PolygonPatch(self._shapes[element]['shape'],
+                                                 facecolor=self._shapes[element]['face_color'],
+                                                 edgecolor=self._shapes[element]['color'],
+                                                 alpha=0.75,
+                                                 zorder=2)
+                            self.axes.add_patch(patch)
+                        except AssertionError:
+                            FlatCAMApp.App.log.warning("A geometry component was not a polygon:")
+                            FlatCAMApp.App.log.warning(str(element))
+                    else:
+                        x, y = self._shapes[element]['shape'].exterior.xy
+                        self.axes.plot(x, y, linespec)
+                        for ints in self._shapes[element]['shape'].interiors:
+                            x, y = ints.coords.xy
+                            self.axes.plot(x, y, linespec)
+                elif self.obj.kind == 'cncjob':
 
+                    if self._shapes[element]['face_color'] is None:
+                        linespec = '--'
+                        linecolor = self._shapes[element]['color']
+                        # if geo['kind'][0] == 'C':
+                        #     linespec = 'k-'
+                        x, y = self._shapes[element]['shape'].coords.xy
+                        self.axes.plot(x, y, linespec, color=linecolor)
+                    else:
+                        path_num += 1
+                        if isinstance(self._shapes[element]['shape'], Polygon):
+                            self.axes.annotate(str(path_num), xy=self._shapes[element]['shape'].exterior.coords[0],
+                                               xycoords='data')
+                        else:
+                            self.axes.annotate(str(path_num), xy=self._shapes[element]['shape'].coords[0],
+                                               xycoords='data')
+
+                        patch = PolygonPatch(self._shapes[element]['shape'],
+                                             facecolor=self._shapes[element]['face_color'],
+                                             edgecolor=self._shapes[element]['color'],
+                                             alpha=0.75, zorder=2)
+                        self.axes.add_patch(patch)
+
+        self.app.plotcanvas.auto_adjust_axes()
+
+    @property
+    def visible(self):
+        return self._visible
+
+    @visible.setter
+    def visible(self, value):
+        if value is False:
+            self.axes.cla()
+            self.app.plotcanvas.auto_adjust_axes()
+        else:
+            if self._visible is False:
+                self.redraw()
+        self._visible = value

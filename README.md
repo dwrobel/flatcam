@@ -12,8 +12,12 @@ CAD program, and create G-Code for Isolation routing.
 21.09.2019
 
 - fixed Measuring Tool in legacy graphic engine
-- fixed Gerber plotting
-- fixed Geometry plotting
+- fixed Gerber plotting in legacy graphic engine
+- fixed Geometry plotting in legacy graphic engine
+- fixed CNCJob and Excellon plotting in legacy graphic engine
+- in legacy graphic engine fixed the travel vs cut lines in CNCJob objects
+- final fix for key shortcuts with modifier in legacy graphic engine
+- refactored some of the code in the legacy graphic engine
 
 20.09.2019
 
