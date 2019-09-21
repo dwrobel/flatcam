@@ -3169,6 +3169,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.transform_complete.connect(self.on_transform_complete)
 
+        # Event signals disconnect id holders
+        self.mp = None
+        self.mm = None
+        self.mr = None
+
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
         log.debug("Initialization of the FlatCAM Geometry Editor is finished ...")
@@ -3326,6 +3331,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
         else:
+
             self.app.plotcanvas.graph_event_disconnect(self.app.mp)
             self.app.plotcanvas.graph_event_disconnect(self.app.mm)
             self.app.plotcanvas.graph_event_disconnect(self.app.mr)
@@ -3652,9 +3658,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if self.app.grid_status() == True:
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-            # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
-                                         size=20)
         else:
             self.pos = (self.pos[0], self.pos[1])
 

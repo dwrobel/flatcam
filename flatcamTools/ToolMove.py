@@ -212,7 +212,14 @@ class ToolMove(FlatCAMTool):
             event_pos = event.pos
         else:
             event_pos = (event.xdata, event.ydata)
-        pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
+
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+
+        pos_canvas = self.app.plotcanvas.translate_coords((x, y))
 
         # if GRID is active we need to get the snapped positions
         if self.app.grid_status() == True:
@@ -270,8 +277,12 @@ class ToolMove(FlatCAMTool):
             p2 = (xmaximal, yminimal)
             p3 = (xmaximal, ymaximal)
             p4 = (xminimal, ymaximal)
+
             self.old_coords = [p1, p2, p3, p4]
-            self.draw_shape(self.old_coords)
+            self.draw_shape(Polygon(self.old_coords))
+
+            if self.app.is_legacy is True:
+                self.sel_shapes.redraw()
 
     def update_sel_bbox(self, pos):
         self.delete_shape()
@@ -280,24 +291,30 @@ class ToolMove(FlatCAMTool):
         pt2 = (self.old_coords[1][0] + pos[0], self.old_coords[1][1] + pos[1])
         pt3 = (self.old_coords[2][0] + pos[0], self.old_coords[2][1] + pos[1])
         pt4 = (self.old_coords[3][0] + pos[0], self.old_coords[3][1] + pos[1])
+        self.draw_shape(Polygon([pt1, pt2, pt3, pt4]))
 
-        self.draw_shape([pt1, pt2, pt3, pt4])
+        if self.app.is_legacy is True:
+            self.sel_shapes.redraw()
 
     def delete_shape(self):
         self.sel_shapes.clear()
         self.sel_shapes.redraw()
 
-    def draw_shape(self, coords):
-        self.sel_rect = Polygon(coords)
-        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
-            self.sel_rect = self.sel_rect.buffer(-0.1)
-            self.sel_rect = self.sel_rect.buffer(0.2)
-        else:
-            self.sel_rect = self.sel_rect.buffer(-0.00393)
-            self.sel_rect = self.sel_rect.buffer(0.00787)
+    def draw_shape(self, shape):
 
-        blue_t = Color('blue')
-        blue_t.alpha = 0.2
-        self.sel_shapes.add(self.sel_rect, color='blue', face_color=blue_t, update=True, layer=0, tolerance=None)
+        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+            proc_shape = shape.buffer(-0.1)
+            proc_shape = proc_shape.buffer(0.2)
+        else:
+            proc_shape = shape.buffer(-0.00393)
+            proc_shape = proc_shape.buffer(0.00787)
+
+        # face = Color('blue')
+        # face.alpha = 0.2
+
+        face = '#0000FFAF' + str(hex(int(0.2 * 255)))[2:]
+        outline = '#0000FFAF'
+
+        self.sel_shapes.add(proc_shape, color=outline, face_color=face, update=True, layer=0, tolerance=None)
 
 # end of file

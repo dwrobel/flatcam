@@ -2474,6 +2474,11 @@ class App(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
+        # Event signals disconnect id holders
+        self.mp = None
+        self.mm = None
+        self.mr = None
+
         # when True, the app has to return from any thread
         self.abort_flag = False
 
@@ -7688,16 +7693,14 @@ class App(QtCore.QObject):
                         # Update cursor
                         self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                                  symbol='++', edge_color='black', size=20)
-                    else:
-                        self.app_cursor.set_data(event, (pos[0], pos[1]))
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])
 
                 self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                                "<b>Y</b>: %.4f" % (pos[0], pos[1]))
 
-                dx = pos[0] - self.rel_point1[0]
-                dy = pos[1] - self.rel_point1[1]
+                dx = pos[0] - float(self.rel_point1[0])
+                dy = pos[1] - float(self.rel_point1[1])
                 self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
                 self.mouse = [pos[0], pos[1]]
@@ -7707,11 +7710,13 @@ class App(QtCore.QObject):
                     self.delete_selection_shape()
                     if dx < 0:
                         self.draw_moving_selection_shape(self.pos, pos, color=self.defaults['global_alt_sel_line'],
-                                                     face_color=self.defaults['global_alt_sel_fill'])
+                                                         face_color=self.defaults['global_alt_sel_fill'])
                         self.selection_type = False
-                    else:
+                    elif dx > 0:
                         self.draw_moving_selection_shape(self.pos, pos)
                         self.selection_type = True
+                    else:
+                        self.selection_type = None
 
                 # hover effect - enabled in Preferences -> General -> GUI Settings
                 if self.defaults['global_hover']:
@@ -7878,6 +7883,7 @@ class App(QtCore.QObject):
                         # add objects to the objects_under_the_click list only if the object is plotted
                         # (active and not disabled)
                         objects_under_the_click_list.append(obj.options['name'])
+
         try:
             # If there is no element in the overlapped objects list then make everyone inactive
             # because we selected "nothing"
@@ -8041,16 +8047,26 @@ class App(QtCore.QObject):
             hover_rect = hover_rect.buffer(-0.00393)
             hover_rect = hover_rect.buffer(0.00787)
 
+        # if color:
+        #     face = Color(color)
+        #     face.alpha = 0.2
+        #     outline = Color(color, alpha=0.8)
+        # else:
+        #     face = Color(self.defaults['global_sel_fill'])
+        #     face.alpha = 0.2
+        #     outline = self.defaults['global_sel_line']
+
         if color:
-            face = Color(color)
-            face.alpha = 0.2
-            outline = Color(color, alpha=0.8)
+            face = color[:-2] + str(hex(int(0.2 * 255)))[2:]
+            outline = color[:-2] + str(hex(int(0.8 * 255)))[2:]
         else:
-            face = Color(self.defaults['global_sel_fill'])
-            face.alpha = 0.2
+            face = self.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
             outline = self.defaults['global_sel_line']
 
         self.hover_shapes.add(hover_rect, color=outline, face_color=face, update=True, layer=0, tolerance=None)
+
+        if self.is_legacy is True:
+            self.hover_shapes.redraw()
 
     def delete_selection_shape(self):
         self.move_tool.sel_shapes.clear()
@@ -8076,12 +8092,19 @@ class App(QtCore.QObject):
             sel_rect = sel_rect.buffer(-0.00393)
             sel_rect = sel_rect.buffer(0.00787)
 
+        # if color:
+        #     face = Color(color, alpha=0.2)
+        #     outline = Color(color, alpha=0.8)
+        # else:
+        #     face = Color(self.defaults['global_sel_fill'], alpha=0.2)
+        #     outline = Color(self.defaults['global_sel_line'], alpha=0.8)
+
         if color:
-            face = Color(color, alpha=0.2)
-            outline = Color(color, alpha=0.8)
+            face = color[:-2] + str(hex(int(0.2 * 255)))[2:]
+            outline = color[:-2] + str(hex(int(0.8 * 255)))[2:]
         else:
-            face = Color(self.defaults['global_sel_fill'], alpha=0.2)
-            outline = Color(self.defaults['global_sel_line'], alpha=0.8)
+            face = self.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
+            outline = self.defaults['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
 
         self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect,
                                                                    color=outline,
@@ -8089,6 +8112,8 @@ class App(QtCore.QObject):
                                                                    update=True,
                                                                    layer=0,
                                                                    tolerance=None))
+        if self.is_legacy is True:
+            self.move_tool.sel_shapes.redraw()
 
     def draw_moving_selection_shape(self, old_coords, coords, **kwargs):
         """
@@ -8121,10 +8146,15 @@ class App(QtCore.QObject):
         pt4 = (x0, y1)
         sel_rect = Polygon([pt1, pt2, pt3, pt4])
 
-        color_t = Color(face_color)
-        color_t.alpha = face_alpha
+        # color_t = Color(face_color)
+        # color_t.alpha = face_alpha
+
+        color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
+
         self.move_tool.sel_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
                                       layer=0, tolerance=None)
+        if self.is_legacy is True:
+            self.move_tool.sel_shapes.redraw()
 
     def on_file_new_click(self):
         if self.collection.get_list() and self.should_we_save:

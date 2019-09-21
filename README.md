@@ -18,6 +18,9 @@ CAD program, and create G-Code for Isolation routing.
 - in legacy graphic engine fixed the travel vs cut lines in CNCJob objects
 - final fix for key shortcuts with modifier in legacy graphic engine
 - refactored some of the code in the legacy graphic engine
+- fixed drawing of selection box when dragging mouse on screen and the selection shape drawing on the selected objects
+- fixed the moving drawing shape in Tool Move in legacy graphic engine
+- fixed moving geometry in Tool Measurement in legacy graphic engine
 
 20.09.2019
 

@@ -715,8 +715,13 @@ class ShapeCollectionLegacy():
     def add(self, shape=None, color=None, face_color=None, alpha=None, visible=True,
             update=False, layer=1, tolerance=0.01, obj=None, gcode_parsed=None, tool_tolerance=None, tooldia=None):
 
+
         self._color = color[:-2] if color is not None else None
         self._face_color = face_color[:-2] if face_color is not None else None
+        self._alpha = int(face_color[-2:], 16) / 255 if face_color is not None else 0.75
+        if alpha is not None:
+            self._alpha = alpha
+
         self._visible = visible
         self._update = update
 
@@ -726,12 +731,16 @@ class ShapeCollectionLegacy():
         self._tool_tolerance = tool_tolerance
         self._tooldia = tooldia
 
+        # if self._update:
+        #     self.clear()
+
         try:
             for sh in shape:
                 self.shape_id += 1
                 self.shape_dict.update({
                     'color': self._color,
                     'face_color': self._face_color,
+                    'alpha': self._alpha,
                     'shape': sh
                 })
 
@@ -743,6 +752,7 @@ class ShapeCollectionLegacy():
             self.shape_dict.update({
                 'color': self._color,
                 'face_color': self._face_color,
+                'alpha': self._alpha,
                 'shape': shape
             })
 
@@ -764,15 +774,19 @@ class ShapeCollectionLegacy():
 
     def redraw(self):
         path_num = 0
+        try:
+            obj_type = self.obj.kind
+        except AttributeError:
+            obj_type = 'utility'
         if self._visible:
             for element in self._shapes:
-                if self.obj.kind == 'excellon':
+                if obj_type == 'excellon':
                     # Plot excellon (All polygons?)
                     if self.obj.options["solid"]:
                         patch = PolygonPatch(self._shapes[element]['shape'],
                                              facecolor="#C40000",
                                              edgecolor="#750000",
-                                             alpha=0.75,
+                                             alpha=self._shapes[element]['alpha'],
                                              zorder=3)
                         self.axes.add_patch(patch)
                     else:
@@ -781,7 +795,7 @@ class ShapeCollectionLegacy():
                         for ints in self._shapes[element]['shape'].interiors:
                             x, y = ints.coords.xy
                             self.axes.plot(x, y, 'o-')
-                elif self.obj.kind == 'geometry':
+                elif obj_type== 'geometry':
                     if type(self._shapes[element]['shape']) == Polygon:
                         x, y = self._shapes[element]['shape'].exterior.coords.xy
                         self.axes.plot(x, y, self._shapes[element]['color'], linestyle='-')
@@ -792,7 +806,7 @@ class ShapeCollectionLegacy():
                         x, y = element.coords.xy
                         self.axes.plot(x, y, self._shapes[element]['color'], marker='-')
                         return
-                elif self.obj.kind == 'gerber':
+                elif obj_type == 'gerber':
                     if self.obj.options["multicolored"]:
                         linespec = '-'
                     else:
@@ -803,7 +817,7 @@ class ShapeCollectionLegacy():
                             patch = PolygonPatch(self._shapes[element]['shape'],
                                                  facecolor=self._shapes[element]['face_color'],
                                                  edgecolor=self._shapes[element]['color'],
-                                                 alpha=0.75,
+                                                 alpha=self._shapes[element]['alpha'],
                                                  zorder=2)
                             self.axes.add_patch(patch)
                         except AssertionError:
@@ -815,7 +829,7 @@ class ShapeCollectionLegacy():
                         for ints in self._shapes[element]['shape'].interiors:
                             x, y = ints.coords.xy
                             self.axes.plot(x, y, linespec)
-                elif self.obj.kind == 'cncjob':
+                elif obj_type == 'cncjob':
 
                     if self._shapes[element]['face_color'] is None:
                         linespec = '--'
@@ -828,16 +842,39 @@ class ShapeCollectionLegacy():
                         path_num += 1
                         if isinstance(self._shapes[element]['shape'], Polygon):
                             self.axes.annotate(str(path_num), xy=self._shapes[element]['shape'].exterior.coords[0],
-                                               xycoords='data')
+                                               xycoords='data', fontsize=20)
                         else:
                             self.axes.annotate(str(path_num), xy=self._shapes[element]['shape'].coords[0],
-                                               xycoords='data')
+                                               xycoords='data', fontsize=20)
 
                         patch = PolygonPatch(self._shapes[element]['shape'],
                                              facecolor=self._shapes[element]['face_color'],
                                              edgecolor=self._shapes[element]['color'],
-                                             alpha=0.75, zorder=2)
+                                             alpha=self._shapes[element]['alpha'], zorder=2)
                         self.axes.add_patch(patch)
+                elif obj_type == 'utility':
+                    # not a FlatCAM object, must be utility
+                    if self._shapes[element]['face_color']:
+                        try:
+                            patch = PolygonPatch(self._shapes[element]['shape'],
+                                                 facecolor=self._shapes[element]['face_color'],
+                                                 edgecolor=self._shapes[element]['color'],
+                                                 alpha=self._shapes[element]['alpha'],
+                                                 zorder=2)
+                            self.axes.add_patch(patch)
+                        except AssertionError:
+                            FlatCAMApp.App.log.warning("A geometry component was not a polygon:")
+                            FlatCAMApp.App.log.warning(str(element))
+                    else:
+                        if isinstance(self._shapes[element]['shape'], Polygon):
+                            x, y = self._shapes[element]['shape'].exterior.xy
+                            self.axes.plot(x, y, self._shapes[element]['color'], linestyle='-')
+                            for ints in self._shapes[element]['shape'].interiors:
+                                x, y = ints.coords.xy
+                                self.axes.plot(x, y, self._shapes[element]['color'], linestyle='-')
+                        else:
+                            x, y = self._shapes[element]['shape'].coords.xy
+                            self.axes.plot(x, y, self._shapes[element]['color'], linestyle='-')
 
         self.app.plotcanvas.auto_adjust_axes()
 

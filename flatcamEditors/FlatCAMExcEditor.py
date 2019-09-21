@@ -2088,6 +2088,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         def entry2option(option, entry):
             self.options[option] = float(entry.text())
 
+        # Event signals disconnect id holders
+        self.mp = None
+        self.mm = None
+        self.mr = None
+
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
         log.debug("Initialization of the FlatCAM Excellon Editor is finished ...")
@@ -3307,9 +3312,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         if self.app.grid_status() == True:
             self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-            # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
-                                         size=20)
         else:
             self.pos = (self.pos[0], self.pos[1])
 

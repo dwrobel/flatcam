@@ -310,8 +310,7 @@ class Measurement(FlatCAMTool):
             if len(self.points) == 1:
                 self.start_entry.set_value("(%.4f, %.4f)" % pos)
                 self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
-
-            if len(self.points) == 2:
+            elif len(self.points) == 2:
                 dx = self.points[1][0] - self.points[0][0]
                 dy = self.points[1][1] - self.points[0][1]
                 d = sqrt(dx ** 2 + dy ** 2)
@@ -323,8 +322,8 @@ class Measurement(FlatCAMTool):
                 self.distance_x_entry.set_value('%.4f' % abs(dx))
                 self.distance_y_entry.set_value('%.4f' % abs(dy))
                 self.total_distance_entry.set_value('%.4f' % abs(d))
-                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                       "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (pos[0], pos[1]))
+                self.app.ui.rel_position_label.setText("<b>Dx</b>: {0:.4f}&nbsp;&nbsp;  <b>Dy</b>: "
+                                                       "{0:.4f}&nbsp;&nbsp;&nbsp;&nbsp;".format(pos[0], pos[1]))
                 self.deactivate_measure_tool()
 
     def on_mouse_move_meas(self, event):
@@ -334,39 +333,57 @@ class Measurement(FlatCAMTool):
             else:
                 event_pos = (event.xdata, event.ydata)
 
-            pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
+            try:
+                x = float(event_pos[0])
+                y = float(event_pos[1])
+            except TypeError:
+                return
+
+            pos_canvas = self.app.plotcanvas.translate_coords((x, y))
+
             if self.app.grid_status() == True:
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                # Update cursor
-                self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                             symbol='++', edge_color='black', size=20)
+                if self.app.is_legacy is False:
+                    # Update cursor
+                    self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                                 symbol='++', edge_color='black', size=20)
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
 
+            self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: {0:.4f}&nbsp;&nbsp;   "
+                                               "<b>Y</b>: {0:.4f}".format(pos[0], pos[1]))
+
             if self.rel_point1 is not None:
-                dx = pos[0] - self.rel_point1[0]
-                dy = pos[1] - self.rel_point1[1]
+                dx = pos[0] - float(self.rel_point1[0])
+                dy = pos[1] - float(self.rel_point1[1])
             else:
                 dx = pos[0]
                 dy = pos[1]
 
-            self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                               "<b>Y</b>: %.4f" % (pos[0], pos[1]))
-            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+            self.app.ui.rel_position_label.setText("<b>Dx</b>: {0:.4f}&nbsp;&nbsp;  <b>Dy</b>: "
+                                                   "{0:.4f}&nbsp;&nbsp;&nbsp;&nbsp;".format(dx, dy))
+
             # update utility geometry
+
             if len(self.points) == 1:
                 self.utility_geometry(pos=pos)
         except Exception as e:
+            log.debug("Measurement.on_mouse_move_meas() --> %s" % str(e))
             self.app.ui.position_label.setText("")
             self.app.ui.rel_position_label.setText("")
 
     def utility_geometry(self, pos):
         # first delete old shape
         self.delete_shape()
+
         # second draw the new shape of the utility geometry
-        self.meas_line = LineString([pos, self.points[0]])
-        self.sel_shapes.add(self.meas_line, color='black', update=True, layer=0, tolerance=None)
+        meas_line = LineString([pos, self.points[0]])
+
+        color = '#00000000'
+        self.sel_shapes.add(meas_line, color=color, update=True, layer=0, tolerance=None)
+
+        if self.app.is_legacy is True:
+            self.sel_shapes.redraw()
 
     def delete_shape(self):
         self.sel_shapes.clear()
