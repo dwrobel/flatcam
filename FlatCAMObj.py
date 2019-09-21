@@ -5364,7 +5364,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         return factor
 
-    def plot_element(self, element, color='red', visible=None):
+    def plot_element(self, element, color='#FF0000FF', visible=None):
 
         visible = visible if visible else self.options['plot']
 
@@ -5375,19 +5375,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except TypeError:  # Element is not iterable...
             # if self.app.is_legacy is False:
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
-            # else:
-            #     if type(element) == Polygon:
-            #         x, y = element.exterior.coords.xy
-            #         self.axes.plot(x, y, 'r-')
-            #         for ints in element.interiors:
-            #             x, y = ints.coords.xy
-            #             self.axes.plot(x, y, 'r-')
-            #         return
-            #
-            #     if type(element) == LineString or type(element) == LinearRing:
-            #         x, y = element.coords.xy
-            #         self.axes.plot(x, y, 'r-')
-            #         return
+
 
     def plot(self, visible=None, kind=None):
         """

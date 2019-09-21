@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.09.2019
+
+- fixed zoom directions legacy graphic engine (previous commit)
+- fixed display of MultiGeo geometries in legacy graphic engine
+- fixed Paint tool to work in legacy graphic engine
+
 21.09.2019
 
 - fixed Measuring Tool in legacy graphic engine
@@ -24,7 +30,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Geometry Editor to work in legacy graphic engine
 - fixed Excellon Editor to work in legacy graphic engine
 - fixed Gerber Editor to work in legacy graphic engine
-- fixed NCC tool to work in egacy graphic engine
+- fixed NCC tool to work in legacy graphic engine
 
 20.09.2019
 

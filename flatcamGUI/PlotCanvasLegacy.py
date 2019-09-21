@@ -154,7 +154,6 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.canvas.setFocus()
         self.native = self.canvas
 
-
         # self.canvas.set_can_focus(True)  # For key press
 
         # Attach to parent
@@ -686,7 +685,7 @@ class MplCursor(Cursor):
         self._update()
 
 
-class ShapeCollectionLegacy():
+class ShapeCollectionLegacy:
 
     def __init__(self, obj, app, name=None):
 
@@ -702,6 +701,8 @@ class ShapeCollectionLegacy():
         self._visible = True
         self._update = False
         self._alpha = None
+        self._tool_tolerance = None
+        self._tooldia = None
 
         self._obj = None
         self._gcode_parsed = None
@@ -783,6 +784,7 @@ class ShapeCollectionLegacy():
             obj_type = self.obj.kind
         except AttributeError:
             obj_type = 'utility'
+
         if self._visible:
             for element in local_shapes:
                 if obj_type == 'excellon':
@@ -800,17 +802,19 @@ class ShapeCollectionLegacy():
                         for ints in local_shapes[element]['shape'].interiors:
                             x, y = ints.coords.xy
                             self.axes.plot(x, y, 'o-')
-                elif obj_type== 'geometry':
+                elif obj_type == 'geometry':
                     if type(local_shapes[element]['shape']) == Polygon:
                         x, y = local_shapes[element]['shape'].exterior.coords.xy
                         self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
                         for ints in local_shapes[element]['shape'].interiors:
                             x, y = ints.coords.xy
                             self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
-                    elif type(element) == LineString or type(element) == LinearRing:
-                        x, y = element.coords.xy
-                        self.axes.plot(x, y, local_shapes[element]['color'], marker='-')
-                        return
+                    elif type(local_shapes[element]['shape']) == LineString or \
+                            type(local_shapes[element]['shape']) == LinearRing:
+
+                        x, y = local_shapes[element]['shape'].coords.xy
+                        self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+
                 elif obj_type == 'gerber':
                     if self.obj.options["multicolored"]:
                         linespec = '-'

@@ -364,6 +364,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.cursor_pos = None
         self.mouse_is_dragging = False
 
+        self.mm = None
+        self.mp = None
+
         self.sel_rect = []
 
         # store here the default data for Geometry Data
@@ -1005,7 +1008,10 @@ class ToolPaint(FlatCAMTool, Gerber):
                 # do paint single only for left mouse clicks
                 if event.button == 1:
                     self.app.inform.emit(_("Painting polygon..."))
-                    self.app.plotcanvas.graph_event_disconnect('mouse_press', doit)
+                    if self.app.is_legacy:
+                        self.app.plotcanvas.graph_event_disconnect('mouse_press', doit)
+                    else:
+                        self.app.plotcanvas.graph_event_disconnect(self.mp)
 
                     pos = self.app.plotcanvas.translate_coords(event.pos)
                     if self.app.grid_status() == True:
@@ -1039,6 +1045,23 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             # To be called after clicking on the plot.
             def on_mouse_release(event):
+                if self.app.is_legacy is False:
+                    event_pos = event.pos
+                    event_is_dragging = event.is_dragging
+                    right_button = 2
+                else:
+                    event_pos = (event.xdata, event.ydata)
+                    event_is_dragging = self.app.plotcanvas.is_dragging
+                    right_button = 3
+
+                try:
+                    x = float(event_pos[0])
+                    y = float(event_pos[1])
+                except TypeError:
+                    return
+
+                event_pos = (x, y)
+
                 # do paint single only for left mouse clicks
                 if event.button == 1:
                     if not self.first_click:
@@ -1046,14 +1069,14 @@ class ToolPaint(FlatCAMTool, Gerber):
                         self.app.inform.emit('[WARNING_NOTCL] %s' %
                                              _("Click the end point of the paint area."))
 
-                        self.cursor_pos = self.app.plotcanvas.translate_coords(event.pos)
+                        self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
                         if self.app.grid_status() == True:
                             self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
                     else:
                         self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
                         self.app.delete_selection_shape()
 
-                        curr_pos = self.app.plotcanvas.translate_coords(event.pos)
+                        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
                         if self.app.grid_status() == True:
                             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
@@ -1066,35 +1089,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                         self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
                         self.first_click = False
                         return
-                        # modifiers = QtWidgets.QApplication.keyboardModifiers()
-                        #
-                        # if modifiers == QtCore.Qt.ShiftModifier:
-                        #     mod_key = 'Shift'
-                        # elif modifiers == QtCore.Qt.ControlModifier:
-                        #     mod_key = 'Control'
-                        # else:
-                        #     mod_key = None
-                        #
-                        # if mod_key == self.app.defaults["global_mselect_key"]:
-                        #     self.first_click = False
-                        #     return
-                        #
-                        # self.sel_rect = cascaded_union(self.sel_rect)
-                        # self.paint_poly_area(obj=self.paint_obj,
-                        #                      tooldia=tooldia_list,
-                        #                      sel_obj= self.sel_rect,
-                        #                      outname=o_name,
-                        #                      overlap=overlap,
-                        #                      connect=connect,
-                        #                      contour=contour)
-                        #
-                        # self.app.plotcanvas.graph_event_disconnect('mouse_release', on_mouse_release)
-                        # self.app.plotcanvas.graph_event_disconnect('mouse_move', on_mouse_move)
-                        #
-                        # self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                        # self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
-                        # self.app.plotcanvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-                elif event.button == 2 and self.mouse_is_dragging is False:
+
+                elif event.button == right_button and self.mouse_is_dragging is False:
                     self.first_click = False
 
                     if self.app.is_legacy is False:
@@ -1125,10 +1121,25 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             # called on mouse move
             def on_mouse_move(event):
-                curr_pos = self.app.plotcanvas.translate_coords(event.pos)
+                if self.app.is_legacy is False:
+                    event_pos = event.pos
+                    event_is_dragging = event.is_dragging
+                    right_button = 2
+                else:
+                    event_pos = (event.xdata, event.ydata)
+                    event_is_dragging = self.app.plotcanvas.is_dragging
+                    right_button = 3
+
+                try:
+                    x = float(event_pos[0])
+                    y = float(event_pos[1])
+                except TypeError:
+                    return
+
+                curr_pos = self.app.plotcanvas.translate_coords((x, y))
 
                 # detect mouse dragging motion
-                if event.is_dragging is True:
+                if event_is_dragging == 1:
                     self.mouse_is_dragging = True
                 else:
                     self.mouse_is_dragging = False
@@ -1137,15 +1148,15 @@ class ToolPaint(FlatCAMTool, Gerber):
                 if self.app.grid_status() == True:
                     # Update cursor
                     curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
-                    self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
-                                                 symbol='++', edge_color='black', size=20)
+                    if self.app.is_legacy is False:
+                        self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
+                                                     symbol='++', edge_color='black', size=20)
 
                 # draw the utility geometry
                 if self.first_click:
                     self.app.delete_selection_shape()
                     self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
-                                                         coords=(curr_pos[0], curr_pos[1]),
-                                                         face_alpha=0.0)
+                                                         coords=(curr_pos[0], curr_pos[1]))
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
