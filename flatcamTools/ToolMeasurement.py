@@ -284,7 +284,13 @@ class Measurement(FlatCAMTool):
         log.debug("Measuring Tool --> mouse click release")
 
         if event.button == 1:
-            pos_canvas = self.canvas.translate_coords(event.pos)
+            if self.app.is_legacy is False:
+                event_pos = event.pos
+            else:
+                event_pos = (event.xdata, event.ydata)
+
+            pos_canvas = self.canvas.translate_coords(event_pos)
+
             # if GRID is active we need to get the snapped positions
             if self.app.grid_status() == True:
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -323,7 +329,12 @@ class Measurement(FlatCAMTool):
 
     def on_mouse_move_meas(self, event):
         try:  # May fail in case mouse not within axes
-            pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
+            if self.app.is_legacy is False:
+                event_pos = event.pos
+            else:
+                event_pos = (event.xdata, event.ydata)
+
+            pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
             if self.app.grid_status() == True:
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                 # Update cursor

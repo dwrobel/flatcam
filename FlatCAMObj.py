@@ -650,8 +650,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.create_buffer_button.hide()
 
         # add the shapes storage for marking apertures
-        for ap_code in self.apertures:
-            self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
+        if self.app.is_legacy is False:
+            for ap_code in self.apertures:
+                self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
+        else:
+            for ap_code in self.apertures:
+                self.mark_shapes[ap_code] = ShapeCollectionLegacy()
 
         # set initial state of the aperture table and associated widgets
         self.on_aperture_table_visibility_change()
@@ -1365,44 +1369,73 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except TypeError:
             geometry = [geometry]
 
-        def random_color():
-            color = np.random.rand(4)
-            color[3] = 1
-            return color
+        if self.app.is_legacy is False:
+            def random_color():
+                color = np.random.rand(4)
+                color[3] = 1
+                return color
 
-        try:
-            if self.options["solid"]:
-                for g in geometry:
-                    if type(g) == Polygon or type(g) == LineString:
-                        self.add_shape(shape=g, color=color,
-                                       face_color=random_color() if self.options['multicolored']
-                                       else face_color, visible=visible)
-                    elif type(g) == Point:
-                        pass
-                    else:
-                        try:
-                            for el in g:
-                                self.add_shape(shape=el, color=color,
-                                               face_color=random_color() if self.options['multicolored']
-                                               else face_color, visible=visible)
-                        except TypeError:
+            try:
+                if self.options["solid"]:
+                    for g in geometry:
+                        if type(g) == Polygon or type(g) == LineString:
                             self.add_shape(shape=g, color=color,
                                            face_color=random_color() if self.options['multicolored']
                                            else face_color, visible=visible)
-            else:
-                for g in geometry:
-                    if type(g) == Polygon or type(g) == LineString:
-                        self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
-                                       visible=visible)
-                    elif type(g) == Point:
-                        pass
-                    else:
-                        for el in g:
-                            self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
+                        elif type(g) == Point:
+                            pass
+                        else:
+                            try:
+                                for el in g:
+                                    self.add_shape(shape=el, color=color,
+                                                   face_color=random_color() if self.options['multicolored']
+                                                   else face_color, visible=visible)
+                            except TypeError:
+                                self.add_shape(shape=g, color=color,
+                                               face_color=random_color() if self.options['multicolored']
+                                               else face_color, visible=visible)
+                else:
+                    for g in geometry:
+                        if type(g) == Polygon or type(g) == LineString:
+                            self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
                                            visible=visible)
-            self.shapes.redraw()
-        except (ObjectDeleted, AttributeError):
-            self.shapes.clear(update=True)
+                        elif type(g) == Point:
+                            pass
+                        else:
+                            for el in g:
+                                self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
+                                               visible=visible)
+                self.shapes.redraw()
+            except (ObjectDeleted, AttributeError):
+                self.shapes.clear(update=True)
+        else:
+            if self.options["multicolored"]:
+                linespec = '-'
+            else:
+                linespec = 'k-'
+
+            if self.options["solid"]:
+                for poly in geometry:
+                    # TODO: Too many things hardcoded.
+                    try:
+                        patch = PolygonPatch(poly,
+                                             facecolor="#BBF268",
+                                             edgecolor="#006E20",
+                                             alpha=0.75,
+                                             zorder=2)
+                        self.axes.add_patch(patch)
+                    except AssertionError:
+                        FlatCAMApp.App.log.warning("A geometry component was not a polygon:")
+                        FlatCAMApp.App.log.warning(str(poly))
+            else:
+                for poly in geometry:
+                    x, y = poly.exterior.xy
+                    self.axes.plot(x, y, linespec)
+                    for ints in poly.interiors:
+                        x, y = ints.coords.xy
+                        self.axes.plot(x, y, linespec)
+
+            self.app.plotcanvas.auto_adjust_axes()
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
     def plot_aperture(self, **kwargs):
@@ -5401,7 +5434,21 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.plot_element(sub_el)
 
         except TypeError:  # Element is not iterable...
-            self.add_shape(shape=element, color=color, visible=visible, layer=0)
+            if self.app.is_legacy is False:
+                self.add_shape(shape=element, color=color, visible=visible, layer=0)
+            else:
+                if type(element) == Polygon:
+                    x, y = element.exterior.coords.xy
+                    self.axes.plot(x, y, 'r-')
+                    for ints in element.interiors:
+                        x, y = ints.coords.xy
+                        self.axes.plot(x, y, 'r-')
+                    return
+
+                if type(element) == LineString or type(element) == LinearRing:
+                    x, y = element.coords.xy
+                    self.axes.plot(x, y, 'r-')
+                    return
 
     def plot(self, visible=None, kind=None):
         """
@@ -5432,7 +5479,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self.plot_element(self.solid_geometry, visible=visible)
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
-            self.shapes.redraw()
+            if self.app.is_legacy is False:
+                self.shapes.redraw()
+            else:
+                self.app.plotcanvas.auto_adjust_axes()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
 

@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+21.09.2019
+
+- fixed Measuring Tool in legacy graphic engine
+- fixed Gerber plotting
+- fixed Geometry plotting
+
 20.09.2019
 
 - final fix for the --shellvar having spaces within the assigned value; now they are retained

@@ -366,6 +366,9 @@ class PlotCanvasLegacy(QtCore.QObject):
         ymin, ymax = self.axes.get_ylim()
         self.adjust_axes(xmin, ymin, xmax, ymax)
 
+    def fit_view(self):
+        self.auto_adjust_axes()
+
     def zoom(self, factor, center=None):
         """
         Zooms the plot by factor around a given
