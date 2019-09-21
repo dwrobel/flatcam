@@ -298,6 +298,11 @@ class CutOut(FlatCAMTool):
         # if mouse is dragging set the object True
         self.mouse_is_dragging = False
 
+        # event handlers references
+        self.kp = None
+        self.mm = None
+        self.mr = None
+
         # hold the mouse position here
         self.x_pos = None
         self.y_pos = None
@@ -931,26 +936,32 @@ class CutOut(FlatCAMTool):
     # To be called after clicking on the plot.
     def on_mouse_click_release(self, event):
 
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+        event_pos = (x, y)
+
         # do paint single only for left mouse clicks
         if event.button == 1:
             self.app.inform.emit(_("Making manual bridge gap..."))
-            pos = self.app.plotcanvas.translate_coords(event.pos)
+
+            pos = self.app.plotcanvas.translate_coords(event_pos)
+
             self.on_manual_cutout(click_pos=pos)
 
-            # self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
-            # self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-            # self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
-            # self.app.plotcanvas.graph_event_connect('key_press', self.app.ui.keyPressEvent)
-            # self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
-            # self.app.plotcanvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            # self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
-
-            # self.app.geo_editor.tool_shape.clear(update=True)
-            # self.app.geo_editor.tool_shape.enabled = False
-            # self.gapFinished.emit()
-
         # if RMB then we exit
-        elif event.button == 2 and self.mouse_is_dragging is False:
+        elif event.button == right_button and self.mouse_is_dragging is False:
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('key_press', self.on_key_press)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
@@ -974,10 +985,26 @@ class CutOut(FlatCAMTool):
 
         self.app.on_mouse_move_over_plot(event=event)
 
-        pos = self.canvas.translate_coords(event.pos)
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+        event_pos = (x, y)
+
+        pos = self.canvas.translate_coords(event_pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
-        if event.is_dragging is True:
+        if event_is_dragging is True:
             self.mouse_is_dragging = True
         else:
             self.mouse_is_dragging = False
@@ -1073,6 +1100,23 @@ class CutOut(FlatCAMTool):
         # events from the GUI are of type QKeyEvent
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
+        elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
+            key = event.key
+            key = QtGui.QKeySequence(key)
+
+            # check for modifiers
+            key_string = key.toString().lower()
+            if '+' in key_string:
+                mod, __, key_text = key_string.rpartition('+')
+                if mod.lower() == 'ctrl':
+                    modifiers = QtCore.Qt.ControlModifier
+                elif mod.lower() == 'alt':
+                    modifiers = QtCore.Qt.AltModifier
+                elif mod.lower() == 'shift':
+                    modifiers = QtCore.Qt.ShiftModifier
+                else:
+                    modifiers = QtCore.Qt.NoModifier
+                key = QtGui.QKeySequence(key_text)
         # events from Vispy are of type KeyEvent
         else:
             key = event.key

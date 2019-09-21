@@ -2272,7 +2272,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # events from the GUI are of type QKeyEvent
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
-        elif isinstance(event, mpl_key_event):  # MatPlotLib key events are tricky to interpret as the rest
+        elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
             key = event.key
             key = QtGui.QKeySequence(key)
 

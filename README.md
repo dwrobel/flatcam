@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed zoom directions legacy graphic engine (previous commit)
 - fixed display of MultiGeo geometries in legacy graphic engine
 - fixed Paint tool to work in legacy graphic engine
+- fixed CutOut Tool to work in legacy graphic engine
 
 21.09.2019
 
