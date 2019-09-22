@@ -16,6 +16,7 @@ from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import log
 import gettext
 
+
 # import builtins
 #
 # if '_' not in builtins.__dict__:
@@ -154,12 +155,13 @@ def apply_language(domain, lang=None):
         return name
 
 
-def restart_program(app):
+def restart_program(app, ask=None):
     """Restarts the current program.
     Note: this function does not return. Any cleanup action (like
     saving data) must be done before calling this function.
     """
-    if app.should_we_save and app.collection.get_list():
+
+    if app.should_we_save and app.collection.get_list() or ask is True:
         msgbox = QtWidgets.QMessageBox()
         msgbox.setText(_("There are files/objects modified in FlatCAM. "
                          "\n"

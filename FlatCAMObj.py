@@ -12,6 +12,7 @@ from datetime import datetime
 
 from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
+from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from camlib import *
 import itertools
 
@@ -74,10 +75,17 @@ class FlatCAMObj(QtCore.QObject):
         # store here the default data for Geometry Data
         self.default_data = {}
 
+        # 2D mode
+        # Axes must exist and be attached to canvas.
+        self.axes = None
+
         self.kind = None  # Override with proper name
 
         # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene)
-        self.shapes = self.app.plotcanvas.new_shape_group()
+        if self.app.is_legacy is False:
+            self.shapes = self.app.plotcanvas.new_shape_group()
+        else:
+            self.shapes = ShapeCollectionLegacy(obj=self, app=self.app)
 
         # self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
         self.mark_shapes = {}
@@ -391,11 +399,12 @@ class FlatCAMObj(QtCore.QObject):
         def worker_task(app_obj):
             self.shapes.visible = value
 
-            # Not all object types has annotations
-            try:
-                self.annotation.visible = value
-            except Exception as e:
-                pass
+            if self.app.is_legacy is False:
+                # Not all object types has annotations
+                try:
+                    self.annotation.visible = value
+                except Exception as e:
+                    pass
 
         if threaded is False:
             worker_task(app_obj=self.app)
@@ -627,8 +636,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.create_buffer_button.hide()
 
         # add the shapes storage for marking apertures
-        for ap_code in self.apertures:
-            self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
+        if self.app.is_legacy is False:
+            for ap_code in self.apertures:
+                self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
+        else:
+            for ap_code in self.apertures:
+                self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
+                                                                  name=self.options['name'] + str(ap_code))
 
         # set initial state of the aperture table and associated widgets
         self.on_aperture_table_visibility_change()
@@ -1342,10 +1356,26 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except TypeError:
             geometry = [geometry]
 
-        def random_color():
-            color = np.random.rand(4)
-            color[3] = 1
-            return color
+        if self.app.is_legacy is False:
+            def random_color():
+                color = np.random.rand(4)
+                color[3] = 1
+                return color
+        else:
+            def random_color():
+                while True:
+                    color = np.random.rand(4)
+                    color[3] = 1
+
+                    new_color = '#'
+                    for idx in range(len(color)):
+                        new_color += '%x' % int(color[idx] * 255)
+                    # do it until a valid color is generated
+                    # a valid color has the # symbol, another 6 chars for the color and the last 2 chars for alpha
+                    # for a total of 9 chars
+                    if len(new_color) == 9:
+                        break
+                return new_color
 
         try:
             if self.options["solid"]:
@@ -1380,11 +1410,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
+        except Exception as e:
+            log.debug("FlatCAMGerber.plot() --> %s" % str(e))
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
-    def plot_aperture(self, **kwargs):
+    def plot_aperture(self, run_thread=True, **kwargs):
         """
 
+        :param run_thread: if True run the aperture plot as a thread in a worker
         :param kwargs: color and face_color
         :return:
         """
@@ -1414,31 +1447,34 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         else:
             visibility = kwargs['visible']
 
-        with self.app.proc_container.new(_("Plotting Apertures")) as proc:
+        with self.app.proc_container.new(_("Plotting Apertures")):
             self.app.progress.emit(30)
 
             def job_thread(app_obj):
-                self.app.progress.emit(30)
                 try:
                     if aperture_to_plot_mark in self.apertures:
                         for elem in self.apertures[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
-                                geo = elem['solid']
-                                if type(geo) == Polygon or type(geo) == LineString:
-                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
-                                                        face_color=color, visible=visibility)
-                                else:
-                                    for el in geo:
-                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
+                                    geo = elem['solid']
+                                    if type(geo) == Polygon or type(geo) == LineString:
+                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
                                                             face_color=color, visible=visibility)
+                                    else:
+                                        for el in geo:
+                                            self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
+                                                                face_color=color, visible=visibility)
 
                     self.mark_shapes[aperture_to_plot_mark].redraw()
-                    self.app.progress.emit(100)
 
                 except (ObjectDeleted, AttributeError):
                     self.clear_plot_apertures()
+                except Exception as e:
+                    print(str(e))
 
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
+            if run_thread:
+                self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
+            else:
+                job_thread(self)
 
     def clear_plot_apertures(self, aperture='all'):
         """
@@ -1482,8 +1518,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.ui.apertures_table.cellWidget(cw_row, 5).isChecked():
             self.marked_rows.append(True)
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-            self.plot_aperture(color=self.app.defaults['global_sel_draw_color'], marked_aperture=aperture, visible=True)
-            self.mark_shapes[aperture].redraw()
+            self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                               marked_aperture=aperture, visible=True, run_thread=True)
+            # self.mark_shapes[aperture].redraw()
         else:
             self.marked_rows.append(False)
             self.clear_plot_apertures(aperture=aperture)
@@ -1519,7 +1556,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if mark_all:
             for aperture in self.apertures:
                 # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_aperture(color=self.app.defaults['global_sel_draw_color'],
+                self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'FF',
                                    marked_aperture=aperture, visible=True)
             # HACK: enable/disable the grid for a better look
             self.app.ui.grid_snap_btn.trigger()
@@ -5349,7 +5386,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         return factor
 
-    def plot_element(self, element, color='red', visible=None):
+    def plot_element(self, element, color='#FF0000FF', visible=None):
 
         visible = visible if visible else self.options['plot']
 
@@ -5358,7 +5395,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.plot_element(sub_el)
 
         except TypeError:  # Element is not iterable...
+            # if self.app.is_legacy is False:
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
+
 
     def plot(self, visible=None, kind=None):
         """
@@ -5389,7 +5428,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self.plot_element(self.solid_geometry, visible=visible)
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
+
             self.shapes.redraw()
+
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
 
@@ -5551,9 +5592,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
 
-        self.text_col = self.app.plotcanvas.new_text_collection()
-        self.text_col.enabled = True
-        self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
+        if self.app.is_legacy is False:
+            self.text_col = self.app.plotcanvas.new_text_collection()
+            self.text_col.enabled = True
+            self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
 
     def build_ui(self):
         self.ui_disconnect()
@@ -5728,8 +5770,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             pass
         self.ui.annotation_cb.stateChanged.connect(self.on_annotation_change)
 
-        # set if to display text annotations
-        self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
+        if self.app.is_legacy is False:
+            # set if to display text annotations
+            self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -6178,11 +6221,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         visible = visible if visible else self.options['plot']
 
-        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.text_col.enabled = True
-        else:
-            self.text_col.enabled = False
-        self.annotation.redraw()
+        if self.app.is_legacy is False:
+            if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+                self.text_col.enabled = True
+            else:
+                self.text_col.enabled = False
+            self.annotation.redraw()
 
         try:
             if self.multitool is False:  # single tool usage
@@ -6201,16 +6245,20 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
-            self.annotation.clear(update=True)
+            if self.app.is_legacy is False:
+                self.annotation.clear(update=True)
 
     def on_annotation_change(self):
-        if self.ui.annotation_cb.get_value():
-            self.text_col.enabled = True
+        if self.app.is_legacy is False:
+            if self.ui.annotation_cb.get_value():
+                self.text_col.enabled = True
+            else:
+                self.text_col.enabled = False
+            # kind = self.ui.cncplot_method_combo.get_value()
+            # self.plot(kind=kind)
+            self.annotation.redraw()
         else:
-            self.text_col.enabled = False
-        # kind = self.ui.cncplot_method_combo.get_value()
-        # self.plot(kind=kind)
-        self.annotation.redraw()
+            self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
 
     def convert_units(self, units):
         log.debug("FlatCAMObj.FlatCAMECNCjob.convert_units()")

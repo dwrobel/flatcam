@@ -9,6 +9,55 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.09.2019
+
+- fixed zoom directions legacy graphic engine (previous commit)
+- fixed display of MultiGeo geometries in legacy graphic engine
+- fixed Paint tool to work in legacy graphic engine
+- fixed CutOut Tool to work in legacy graphic engine
+- fixed display of distance labels and code optimizations in ToolPaint and NCC Tool
+- adjusted axis at startup for legacy graphic engine plotcanvas
+- when the graphic engine is changed in Edit -> Preferences -> General -> App Preferences, the application will restart
+- made hover shapes work in legacy graphic engine
+- fixed bug in display of the apertures marked in the Aperture table found in the Gerber Selected tab and through this made it to also work with the legacy graphic engine
+- fixed annotation in Mark Area Tool in Gerber Editor to work in legacy graphic engine
+- fixed the MultiColor plot option Gerber selected tab to work in legacy graphic engine
+- documented some methods in the ShapeCollectionLegacy class
+- updated the files: setup_ubuntu.sh and requirements.txt
+- some strings changed to be easier for translation
+- updated the .POT file and the translation files
+- updated and corrected the Romanian and Spanish translations
+- updated the .PO files for the rest of the translations, they need to be filled in.
+
+21.09.2019
+
+- fixed Measuring Tool in legacy graphic engine
+- fixed Gerber plotting in legacy graphic engine
+- fixed Geometry plotting in legacy graphic engine
+- fixed CNCJob and Excellon plotting in legacy graphic engine
+- in legacy graphic engine fixed the travel vs cut lines in CNCJob objects
+- final fix for key shortcuts with modifier in legacy graphic engine
+- refactored some of the code in the legacy graphic engine
+- fixed drawing of selection box when dragging mouse on screen and the selection shape drawing on the selected objects
+- fixed the moving drawing shape in Tool Move in legacy graphic engine
+- fixed moving geometry in Tool Measurement in legacy graphic engine
+- fixed Geometry Editor to work in legacy graphic engine
+- fixed Excellon Editor to work in legacy graphic engine
+- fixed Gerber Editor to work in legacy graphic engine
+- fixed NCC tool to work in legacy graphic engine
+
+20.09.2019
+
+- final fix for the --shellvar having spaces within the assigned value; now they are retained
+- legacy graphic engine - made the mouse events work (click, release, doubleclick, dragging)
+- legacy graphic engine - made the key events work (simple or with modifiers)
+- legacy graphic engine - made the mouse cursor work (enabled/disabled, position report); snapping is not moving the cursor yet
+- made the mouse cursor snap to the grid when grid snapping is active
+- changed the axis color to the one used in the OpenGL graphic engine
+- work on ShapeCollectionLegacy
+- fixed mouse cursor to work for all objects
+- fixed event signals to work in both graphic engines: 2D and 3D
+
 19.09.2019
 
 - made sure that if FlatCAM is registered with a file extension that it does not recognize it will exit
@@ -20,6 +69,14 @@ CAD program, and create G-Code for Isolation routing.
 - FlatCAM can be run in HEADLESS mode now. This mode can be selected by using the --headless=1 command line argument or by changing the line headless=False to True in config/configuration.txt file. In this mod the Sys Tray Icon menu will hold only the Run Scrip menu entry and Exit entry.
 - added a new TclCommand named quit_flatcam which will ... quit FlatCAM from Tcl Shell or from a script
 - fixed the command line argument --shellvar to work when there are spaces in the argument value
+- fixed bug in Gerber editor that did not allow to display all shapes after it encountered one shape without 'solid' geometry
+- fixed bug in Gerber Editor -> selection area handler where if some of the selected shapes did not had the 'solid' geometry will silently abort selection of further shapes
+- added new control in Edit -> Preferences -> General -> Gui Preferences -> Activity Icon. Will select a GIF from a selection, the one used to show that FlatCAM is working.
+- changed the script icon to a smaller one in the sys tray menu
+- fixed bug with losing the visibility of toolbars if at first startup the user tries to change something in the Preferences before doing a first save of Preferences
+- changed a bit the splash PNG file
+- moved all the GUI Preferences classes into it's own file flatcamGUI.PreferencesUI.py
+- changed the default method for Paint Tool to 'all'
 
 18.09.2019
 

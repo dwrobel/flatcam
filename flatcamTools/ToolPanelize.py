@@ -772,8 +772,8 @@ class Panelize(FlatCAMTool):
                         currenty += lenghty
 
                     if panel_type == 'gerber':
-                        self.app.inform.emit('%s %s' %
-                                             (_("Generating panel ..."), _("Adding the Gerber code.")))
+                        self.app.inform.emit('%s' %
+                                             _("Generating panel ... Adding the Gerber code."))
                         obj_fin.source_file = self.app.export_gerber(obj_name=self.outname, filename=None,
                                                                      local_use=obj_fin, use_thread=False)
 
@@ -784,8 +784,8 @@ class Panelize(FlatCAMTool):
                     # app_obj.log.debug("Finished creating a cascaded union for the panel.")
                     self.app.proc_container.update_view_text('')
 
-                self.app.inform.emit('%s %s: %d' %
-                                     (_("Generating panel ..."), _("Spawning copies"), (int(rows * columns))))
+                self.app.inform.emit('%s: %d' %
+                                     (_("Generating panel... Spawning copies"), (int(rows * columns))))
                 if isinstance(panel_obj, FlatCAMExcellon):
                     self.app.progress.emit(50)
                     self.app.new_object("excellon", self.outname, job_init_excellon, plot=True, autoselected=True)

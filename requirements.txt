@@ -1,7 +1,13 @@
 # This file contains python only requirements to be installed with pip
 # Python pacakges that cannot be installed with pip (e.g. PyQt5, GDAL) are not included.
 # Usage: pip install -r requirements.txt
-numpy>=1.8
+numpy>=1.11
+matplotlib>=3.1
+cycler>=0.10
+python-dateutil>=2.1
+kiwisolver>=1.0.1
+six
+setuptools
 dill
 rtree
 pyopengl

@@ -39,6 +39,8 @@ from array import array
 from ObjectCollection import *
 from FlatCAMObj import *
 from flatcamGUI.PlotCanvas import *
+from flatcamGUI.PlotCanvasLegacy import *
+
 from flatcamGUI.FlatCAMGUI import *
 from FlatCAMCommon import LoudDict
 from FlatCAMPostProc import load_postprocessors
@@ -122,8 +124,9 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.97
-    version_date = "2019/09/20"
+    version_date = "2019/09/22"
     beta = True
+    engine = '3D'
 
     # current date now
     date = str(datetime.today()).rpartition('.')[0]
@@ -429,7 +432,6 @@ class App(QtCore.QObject):
         self.recent_projects = []
 
         self.clipboard = QtWidgets.QApplication.clipboard()
-        self.proc_container = FCVisibleProcessContainer(self.ui.activity_view)
 
         self.project_filename = None
         self.toggle_units_ignore = False
@@ -441,6 +443,7 @@ class App(QtCore.QObject):
         self.defaults_form_fields = {
             # General App
             "units": self.ui.general_defaults_form.general_app_group.units_radio,
+            "global_graphic_engine": self.ui.general_defaults_form.general_app_group.ge_radio,
             "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
             "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
             "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
@@ -476,6 +479,7 @@ class App(QtCore.QObject):
 
             "global_proj_item_color": self.ui.general_defaults_form.general_gui_group.proj_color_entry,
             "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
+            "global_activity_icon": self.ui.general_defaults_form.general_gui_group.activity_combo,
 
             # General GUI Settings
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
@@ -812,6 +816,10 @@ class App(QtCore.QObject):
         for name in sorted(self.languages.values()):
             self.ui.general_defaults_form.general_app_group.language_cb.addItem(name)
 
+        # #################################################################################
+        # #################### DEFAULTS - PREFERENCES STORAGE #############################
+        # #################################################################################
+
         self.defaults = LoudDict()
         self.defaults.set_change_callback(self.on_defaults_dict_change)  # When the dictionary changes.
         self.defaults.update({
@@ -821,6 +829,7 @@ class App(QtCore.QObject):
             "global_serial": 0,
             "global_stats": {},
             "global_tabs_detachable": True,
+            "global_graphic_engine": '3D',
             "global_app_level": 'b',
             "global_portable": False,
             "global_language": 'English',
@@ -861,6 +870,7 @@ class App(QtCore.QObject):
             "global_sel_draw_color": '#0000FF',
             "global_proj_item_color": '#000000',
             "global_proj_item_dis_color": '#b7b7cb',
+            "global_activity_icon": 'Ball green',
 
             "global_toolbar_view": 511,
 
@@ -1108,7 +1118,7 @@ class App(QtCore.QObject):
             "tools_paintoverlap": 0.015748,
             "tools_paintmargin": 0.0,
             "tools_paintmethod": "seed",
-            "tools_selectmethod": "single",
+            "tools_selectmethod": "all",
             "tools_pathconnect": True,
             "tools_paintcontour": True,
             "tools_paint_plotting": 'normal',
@@ -1230,17 +1240,17 @@ class App(QtCore.QObject):
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
             self.defaults['global_serial'] = ''.join([random.choice(chars) for i in range(20)])
-            self.save_defaults(silent=True)
+            self.save_defaults(silent=True, first_time=True)
 
         self.propagate_defaults(silent=True)
         self.restore_main_win_geom()
 
-        def auto_save_defaults():
-            try:
-                self.save_defaults(silent=True)
-                self.propagate_defaults(silent=True)
-            finally:
-                QtCore.QTimer.singleShot(self.defaults["global_defaults_save_period_ms"], auto_save_defaults)
+        # def auto_save_defaults():
+        #     try:
+        #         self.save_defaults(silent=True)
+        #         self.propagate_defaults(silent=True)
+        #     finally:
+        #         QtCore.QTimer.singleShot(self.defaults["global_defaults_save_period_ms"], auto_save_defaults)
 
         # the following lines activates automatic defaults save
         # if user_defaults:
@@ -1493,6 +1503,7 @@ class App(QtCore.QObject):
         self.cnc_form = None
         self.tools_form = None
         self.fa_form = None
+
         self.on_options_combo_change(0)  # Will show the initial form
 
         # ################################
@@ -1578,6 +1589,16 @@ class App(QtCore.QObject):
         # ###############################################
         # ############# SETUP Plot Area #################
         # ###############################################
+
+        # determine if the Legacy Graphic Engine is to be used or the OpenGL one
+        if self.defaults["global_graphic_engine"] == '3D':
+            self.is_legacy = False
+        else:
+            self.is_legacy = True
+
+        # Matplotlib axis
+        self.axes = None
+
         if show_splash:
             self.splash.showMessage(_("FlatCAM is initializing ...\n"
                                       "Canvas initialization started."),
@@ -1585,9 +1606,14 @@ class App(QtCore.QObject):
                                     color=QtGui.QColor("gray"))
         start_plot_time = time.time()   # debug
         self.plotcanvas = None
-        self.app_cursor = None
+
+        # this is a list just because when in legacy it is needed to add multiple cursors
+        # each gets deleted when the axes are deleted therefore there is a need of one for each
+        self.app_cursor = []
         self.hover_shapes = None
+
         self.on_plotcanvas_setup()
+
         end_plot_time = time.time()
         self.used_time = end_plot_time - start_plot_time
         self.log.debug("Finished Canvas initialization in %s seconds." % str(self.used_time))
@@ -1638,11 +1664,34 @@ class App(QtCore.QObject):
         self.log.debug("Finished creating Workers crew.")
 
         # ################################################
+        # ############### Activity Monitor ###############
+        # ################################################
+
+        if self.defaults["global_activity_icon"] == "Ball green":
+            icon = 'share/active_2_static.png'
+            movie = "share/active_2.gif"
+        elif self.defaults["global_activity_icon"] == "Ball black":
+            icon = 'share/active_static.png'
+            movie = "share/active.gif"
+        elif self.defaults["global_activity_icon"] == "Arrow green":
+            icon = 'share/active_3_static.png'
+            movie = "share/active_3.gif"
+        elif self.defaults["global_activity_icon"] == "Eclipse green":
+            icon = 'share/active_4_static.png'
+            movie = "share/active_4.gif"
+        else:
+            icon = 'share/active_static.png'
+            movie = "share/active.gif"
+
+        self.activity_view = FlatCAMActivityView(icon=icon, movie=movie)
+        self.ui.infobar.addWidget(self.activity_view)
+        self.proc_container = FCVisibleProcessContainer(self.activity_view)
+
+        # ################################################
         # ############### Signal handling ################
         # ################################################
 
         # ############# Custom signals  ##################
-
         # signal for displaying messages in status bar
         self.inform.connect(self.info)
         # signal to be called when the app is quiting
@@ -1825,6 +1874,11 @@ class App(QtCore.QObject):
         # ##############################
         # ### GUI PREFERENCES SIGNALS ##
         # ##############################
+
+        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(
+            lambda: fcTranslate.restart_program(app=self)
+        )
+
         self.ui.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
         self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(
             lambda: fcTranslate.on_language_apply_click(self, restart=True)
@@ -2426,8 +2480,16 @@ class App(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
+        # Event signals disconnect id holders
+        self.mp = None
+        self.mm = None
+        self.mr = None
+
         # when True, the app has to return from any thread
         self.abort_flag = False
+
+        # set the value used in the Windows Title
+        self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
 
         # ###############################################################################
         # ############# Save defaults to factory_defaults.FlatConfig file ###############
@@ -2522,7 +2584,8 @@ class App(QtCore.QObject):
                         except:
                             command_tcl = i
 
-                    command_tcl_formatted = 'set shellvar_{nr} [list {cmd}]'.format(cmd=str(command_tcl), nr=str(cnt))
+                    command_tcl_formatted = 'set shellvar_{nr} "{cmd}"'.format(cmd=str(command_tcl), nr=str(cnt))
+
                     cnt += 1
 
                     # if there are Windows paths then replace the path separator with a Unix like one
@@ -2697,10 +2760,11 @@ class App(QtCore.QObject):
         :param name: String that store the project path and project name
         :return: None
         """
-        self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %
+        self.ui.setWindowTitle('FlatCAM %s %s - %s - [%s]    %s' %
                                (self.version,
                                 ('BETA' if self.beta else ''),
                                 platform.architecture()[0],
+                                self.engine,
                                 name)
                                )
 
@@ -3089,12 +3153,32 @@ class App(QtCore.QObject):
                             self.collection.set_active(old_name)
                             self.collection.delete_active()
 
+                        # restore GUI to the Selected TAB
+                        # Remove anything else in the GUI
+                        self.ui.selected_scroll_area.takeWidget()
+                        # Switch notebook to Selected page
+                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         obj_type = "Excellon"
                         if cleanup is None:
                             self.exc_editor.update_fcexcellon(edited_obj)
                             self.exc_editor.update_options(edited_obj)
+
                         self.exc_editor.deactivate()
+
+                        # delete the old object (the source object) if it was an empty one
+                        if len(edited_obj.drills) == 0 and len(edited_obj.slots) == 0:
+                            old_name = edited_obj.options['name']
+                            self.collection.set_active(old_name)
+                            self.collection.delete_active()
+
+                        # restore GUI to the Selected TAB
+                        # Remove anything else in the GUI
+                        self.ui.tool_scroll_area.takeWidget()
+                        # Switch notebook to Selected page
+                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry or Excellon Object to update."))
@@ -3436,6 +3520,7 @@ class App(QtCore.QObject):
         :return: None
         """
         tb = self.defaults["global_toolbar_view"]
+
         if tb & 1:
             self.ui.toolbarfile.setVisible(True)
         else:
@@ -4333,7 +4418,7 @@ class App(QtCore.QObject):
     #     log.debug("Application defaults saved ... Exit event.")
     #     QtWidgets.qApp.quit()
 
-    def save_defaults(self, silent=False, data_path=None):
+    def save_defaults(self, silent=False, data_path=None, first_time=False):
         """
         Saves application default options
         ``self.defaults`` to current_defaults.FlatConfig file.
@@ -4407,7 +4492,8 @@ class App(QtCore.QObject):
         if self.ui.toolbarshell.isVisible():
             tb_status += 256
 
-        self.defaults["global_toolbar_view"] = tb_status
+        if first_time is False:
+            self.defaults["global_toolbar_view"] = tb_status
 
         # Save update options
         try:
@@ -6631,9 +6717,21 @@ class App(QtCore.QObject):
         try:
             sel_obj = self.collection.get_active()
             name = sel_obj.options["name"]
+            isPlotted = sel_obj.options["plot"]
         except AttributeError:
             self.log.debug("Nothing selected for deletion")
             return
+
+        if self.is_legacy is True:
+            # Remove plot only if the object was plotted otherwise delaxes will fail
+            if isPlotted:
+                try:
+                    # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
+                    self.plotcanvas.figure.delaxes(self.collection.get_active().shapes.axes)
+                except Exception as e:
+                    log.debug("App.delete_first_selected() --> %s" % str(e))
+
+            self.plotcanvas.auto_adjust_axes()
 
         # Remove from dictionary
         self.collection.delete_active()
@@ -6662,12 +6760,15 @@ class App(QtCore.QObject):
                     for obj in self.collection.get_list():
                         obj.plot()
                     self.plotcanvas.fit_view()
-                self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
+                if self.is_legacy:
+                    self.plotcanvas.graph_event_disconnect(self.mp_zc)
+                else:
+                    self.plotcanvas.graph_event_disconnect('mouse_press', self.on_set_zero_click)
 
             self.worker_task.emit({'fcn': worker_task, 'params': []})
 
         self.inform.emit(_('Click to set the origin ...'))
-        self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
+        self.mp_zc = self.plotcanvas.graph_event_connect('mouse_press', self.on_set_zero_click)
 
         # first disconnect it as it may have been used by something else
         try:
@@ -6679,7 +6780,12 @@ class App(QtCore.QObject):
     def on_set_zero_click(self, event):
         # this function will be available only for mouse left click
 
-        pos_canvas = self.plotcanvas.translate_coords(event.pos)
+        if self.is_legacy is False:
+            event_pos = event.pos
+        else:
+            event_pos = (event.xdata, event.ydata)
+
+        pos_canvas = self.plotcanvas.translate_coords(event_pos)
         if event.button == 1:
             if self.grid_status() == True:
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -6716,6 +6822,10 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
+        if self.is_legacy is True:
+            self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
+            return
+
         if not custom_location:
             dia_box = Dialog_box(title=_("Jump to ..."),
                                  label=_("Enter the coordinates in format X,Y:"),
@@ -6735,14 +6845,27 @@ class App(QtCore.QObject):
             location = custom_location
 
         if fit_center:
-            self.plotcanvas.fit_center(loc=location)
+            if self.is_legacy is False:
+                self.plotcanvas.fit_center(loc=location)
+            else:
+                pass
+                # self.plotcanvas.fit_view()
 
         cursor = QtGui.QCursor()
 
-        canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
-        jump_loc = self.plotcanvas.translate_coords_2((location[0], location[1]))
+        if self.is_legacy is False:
+            canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            jump_loc = self.plotcanvas.translate_coords_2((location[0], location[1]))
+            cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
+        else:
+            # the origin finding works but not mapping the location to pixels
+            canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            x0, y0 = canvas_origin.x(), canvas_origin.y() + self.ui.right_layout.geometry().height()
+            x0, y0 = x0 + self.plotcanvas.axes.transData.transform((0, 0))[0], y0 - \
+                     self.plotcanvas.axes.transData.transform((0, 0))[1]
+            loc = self.plotcanvas.axes.transData.transform(location)
+            cursor.setPos(x0 + loc[0]/50, y0 - loc[1]/50)
 
-        cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
         self.inform.emit('[success] %s' %
                          _("Done."))
         return location
@@ -7320,7 +7443,11 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.plotcanvas.update()           # TODO: Need update canvas?
+        if self.is_legacy is False:
+            self.plotcanvas.update()           # TODO: Need update canvas?
+        else:
+            self.plotcanvas.auto_adjust_axes()
+
         self.on_zoom_fit(None)
         self.collection.update_view()
         # self.inform.emit(_("Plots updated ..."))
@@ -7493,19 +7620,31 @@ class App(QtCore.QObject):
         """
         self.pos = []
 
+        if self.is_legacy is False:
+            event_pos = event.pos
+            if self.defaults["global_pan_button"] == '2':
+                pan_button = 2
+            else:
+                pan_button = 3
+            # Set the mouse button for panning
+            self.plotcanvas.view.camera.pan_button_setting = pan_button
+        else:
+            event_pos = (event.xdata, event.ydata)
+            # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
+            if self.defaults["global_pan_button"] == '2':
+                pan_button = 3
+            else:
+                pan_button = 2
+
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
-        # Set the mouse button for panning
-        self.plotcanvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
 
-        self.pos_canvas = self.plotcanvas.translate_coords(event.pos)
+        self.pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
         if self.grid_status() == True:
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
-            self.app_cursor.enabled = True
         else:
             self.pos = (self.pos_canvas[0], self.pos_canvas[1])
-            self.app_cursor.enabled = False
 
         try:
             modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -7533,7 +7672,8 @@ class App(QtCore.QObject):
             App.log.debug("App.on_mouse_click_over_plot() --> Outside plot? --> %s" % str(e))
 
     def on_double_click_over_plot(self, event):
-        self.doubleclick = True
+        if event.button == 1:
+            self.doubleclick = True
 
     def on_mouse_move_over_plot(self, event, origin_click=None):
         """
@@ -7544,49 +7684,68 @@ class App(QtCore.QObject):
         :return: None
         """
 
+        if self.is_legacy is False:
+            event_pos = event.pos
+            if self.defaults["global_pan_button"] == '2':
+                pan_button = 2
+            else:
+                pan_button = 3
+            event_is_dragging = event.is_dragging
+        else:
+            event_pos = (event.xdata, event.ydata)
+            # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
+            if self.defaults["global_pan_button"] == '2':
+                pan_button = 3
+            else:
+                pan_button = 2
+            event_is_dragging = self.plotcanvas.is_dragging
+
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
-        self.pos_jump = event.pos
+        self.pos_jump = event_pos
 
         self.ui.popMenu.mouse_is_panning = False
 
         if not origin_click:
             # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-            if event.button == 2 and event.is_dragging == 1:
+            if event.button == pan_button and event_is_dragging == 1:
                 self.ui.popMenu.mouse_is_panning = True
                 return
 
         if self.rel_point1 is not None:
             try:  # May fail in case mouse not within axes
-                pos_canvas = self.plotcanvas.translate_coords(event.pos)
+                pos_canvas = self.plotcanvas.translate_coords(event_pos)
+
                 if self.grid_status() == True:
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                    self.app_cursor.enabled = True
+
                     # Update cursor
-                    self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]), symbol='++', edge_color='black', size=20)
+                    self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                             symbol='++', edge_color='black', size=20)
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])
-                    self.app_cursor.enabled = False
 
                 self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
                                                "<b>Y</b>: %.4f" % (pos[0], pos[1]))
 
-                dx = pos[0] - self.rel_point1[0]
-                dy = pos[1] - self.rel_point1[1]
+                dx = pos[0] - float(self.rel_point1[0])
+                dy = pos[1] - float(self.rel_point1[1])
                 self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
                 self.mouse = [pos[0], pos[1]]
 
                 # if the mouse is moved and the LMB is clicked then the action is a selection
-                if event.is_dragging == 1 and event.button == 1:
+                if event_is_dragging == 1 and event.button == 1:
                     self.delete_selection_shape()
                     if dx < 0:
                         self.draw_moving_selection_shape(self.pos, pos, color=self.defaults['global_alt_sel_line'],
-                                                     face_color=self.defaults['global_alt_sel_fill'])
+                                                         face_color=self.defaults['global_alt_sel_fill'])
                         self.selection_type = False
-                    else:
+                    elif dx > 0:
                         self.draw_moving_selection_shape(self.pos, pos)
                         self.selection_type = True
+                    else:
+                        self.selection_type = None
 
                 # hover effect - enabled in Preferences -> General -> GUI Settings
                 if self.defaults['global_hover']:
@@ -7606,7 +7765,7 @@ class App(QtCore.QObject):
                                             obj.isHovering = True
                                             obj.notHovering = True
                                             # create the selection box around the selected object
-                                            self.draw_hover_shape(obj, color='#d1e0e0')
+                                            self.draw_hover_shape(obj, color='#d1e0e0FF')
                                     else:
                                         if obj.notHovering is True:
                                             obj.notHovering = False
@@ -7632,7 +7791,16 @@ class App(QtCore.QObject):
         :return:
         """
         pos = 0, 0
-        pos_canvas = self.plotcanvas.translate_coords(event.pos)
+
+        if self.is_legacy is False:
+            event_pos = event.pos
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
+            right_button = 3
+
+        pos_canvas = self.plotcanvas.translate_coords(event_pos)
         if self.grid_status() == True:
             pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
@@ -7640,7 +7808,7 @@ class App(QtCore.QObject):
 
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
-        if event.button == 2:  # right click
+        if event.button == right_button:  # right click
             if self.ui.popMenu.mouse_is_panning is False:
                 self.cursor = QtGui.QCursor()
                 self.populate_cmenu_grids()
@@ -7744,6 +7912,7 @@ class App(QtCore.QObject):
                         # add objects to the objects_under_the_click list only if the object is plotted
                         # (active and not disabled)
                         objects_under_the_click_list.append(obj.options['name'])
+
         try:
             # If there is no element in the overlapped objects list then make everyone inactive
             # because we selected "nothing"
@@ -7907,16 +8076,26 @@ class App(QtCore.QObject):
             hover_rect = hover_rect.buffer(-0.00393)
             hover_rect = hover_rect.buffer(0.00787)
 
+        # if color:
+        #     face = Color(color)
+        #     face.alpha = 0.2
+        #     outline = Color(color, alpha=0.8)
+        # else:
+        #     face = Color(self.defaults['global_sel_fill'])
+        #     face.alpha = 0.2
+        #     outline = self.defaults['global_sel_line']
+
         if color:
-            face = Color(color)
-            face.alpha = 0.2
-            outline = Color(color, alpha=0.8)
+            face = color[:-2] + str(hex(int(0.2 * 255)))[2:]
+            outline = color[:-2] + str(hex(int(0.8 * 255)))[2:]
         else:
-            face = Color(self.defaults['global_sel_fill'])
-            face.alpha = 0.2
+            face = self.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
             outline = self.defaults['global_sel_line']
 
         self.hover_shapes.add(hover_rect, color=outline, face_color=face, update=True, layer=0, tolerance=None)
+
+        if self.is_legacy is True:
+            self.hover_shapes.redraw()
 
     def delete_selection_shape(self):
         self.move_tool.sel_shapes.clear()
@@ -7942,12 +8121,19 @@ class App(QtCore.QObject):
             sel_rect = sel_rect.buffer(-0.00393)
             sel_rect = sel_rect.buffer(0.00787)
 
+        # if color:
+        #     face = Color(color, alpha=0.2)
+        #     outline = Color(color, alpha=0.8)
+        # else:
+        #     face = Color(self.defaults['global_sel_fill'], alpha=0.2)
+        #     outline = Color(self.defaults['global_sel_line'], alpha=0.8)
+
         if color:
-            face = Color(color, alpha=0.2)
-            outline = Color(color, alpha=0.8)
+            face = color[:-2] + str(hex(int(0.2 * 255)))[2:]
+            outline = color[:-2] + str(hex(int(0.8 * 255)))[2:]
         else:
-            face = Color(self.defaults['global_sel_fill'], alpha=0.2)
-            outline = Color(self.defaults['global_sel_line'], alpha=0.8)
+            face = self.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
+            outline = self.defaults['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
 
         self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect,
                                                                    color=outline,
@@ -7955,6 +8141,8 @@ class App(QtCore.QObject):
                                                                    update=True,
                                                                    layer=0,
                                                                    tolerance=None))
+        if self.is_legacy is True:
+            self.move_tool.sel_shapes.redraw()
 
     def draw_moving_selection_shape(self, old_coords, coords, **kwargs):
         """
@@ -7981,16 +8169,22 @@ class App(QtCore.QObject):
 
         x0, y0 = old_coords
         x1, y1 = coords
+
         pt1 = (x0, y0)
         pt2 = (x1, y0)
         pt3 = (x1, y1)
         pt4 = (x0, y1)
         sel_rect = Polygon([pt1, pt2, pt3, pt4])
 
-        color_t = Color(face_color)
-        color_t.alpha = face_alpha
+        # color_t = Color(face_color)
+        # color_t.alpha = face_alpha
+
+        color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
+
         self.move_tool.sel_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
                                       layer=0, tolerance=None)
+        if self.is_legacy is True:
+            self.move_tool.sel_shapes.redraw()
 
     def on_file_new_click(self):
         if self.collection.get_list() and self.should_we_save:
@@ -10718,50 +10912,56 @@ class App(QtCore.QObject):
 #         ''').format(fsize=fsize, tsize=tsize))
 
         selected_text = '''
-        <p><span style="font-size:{tsize}px"><strong>%s</strong></span></p>
+        <p><span style="font-size:{tsize}px"><strong>{title}</strong></span></p>
 
-        <p><span style="font-size:{fsize}px"><strong>%s</strong>:<br />
-        %s:</span></p>
+        <p><span style="font-size:{fsize}px"><strong>{subtitle}</strong>:<br />
+        {s1}</span></p>
 
         <ol>
-            <li><span style="font-size:{fsize}px">%s menu&#39;s, %s.<br />
+            <li><span style="font-size:{fsize}px">{s2}<br />
             <br />
-            %s &amp; %s.</span><br />
+            {s3}</span><br />
             &nbsp;</li>
-            <li><span style="font-size:{fsize}px">%s <strong>%s</strong> (%s), <strong>%s</strong> %s it-s %s.<br />
+            <li><span style="font-size:{fsize}px">{s4}<br />
+            &nbsp;</li>
             <br />
-            %s <strong>%s</strong> %s <strong>%s</strong> %s.<br />
+            <li><span style="font-size:{fsize}px">{s5}<br />
+            &nbsp;</li>
             <br />
-            %s:<br />
+            <li><span style="font-size:{fsize}px">{s6}<br />
             <br />
-            <strong>%s</strong> -&gt; %s -&gt; %s -&gt;<strong> %s </strong> -&gt; %s -&gt; %s -&gt;<strong> %s
-            </strong>-&gt; %s <strong>%s)&nbsp;</strong>-&gt; %s</span></li>
+            {s7}</span></li>
         </ol>
 
-        <p><span style="font-size:{fsize}px">%s <strong>%s -&gt; %s</strong>&nbsp;%s it&#39;s %s:
-        <strong>F3</strong>.</span></p>
-        ''' % (
-            _("Selected Tab - Choose an Item from Project Tab"), _("Details"),
-            _("The normal flow when working in FlatCAM is the following"),
-            _("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the"),
-            _("toolbars, key shortcuts or even dragging and dropping the files on the GUI"),
-            _("You can also load a FlatCAM project by double clicking on the project file, drag"),
-            _("drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app"),
-            _("Once an object is available in the Project Tab, by selecting it and then focusing on"),
-            _("SELECTED TAB"), _("more simpler is to double click the object name in the Project Tab"),
-            _("SELECTED TAB"), _("will be updated with the object properties according to"),
-            _("kind: Gerber, Excellon, Geometry or CNCJob object"),
-            _("If the selection of the object is done on the canvas by single click instead, and the"),
-            _("SELECTED TAB"),
-            _("is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, "
-              "double clicking on the object on the canvas will bring the"),
-            _("SELECTED TAB"), _("and populate it even if it was out of focus"),
-            _("You can change the parameters in this screen and the flow direction is like this"),
-            _("Gerber/Excellon Object"), _("Change Parameter"), _("Generate Geometry"), _("Geometry Object"),
-            _("Add tools (change param in Selected Tab)"), _("Generate CNCJob"), _("CNCJob Object"),
-            _("Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in"), _("SELECTED TAB"),
-            _("Save GCode"), _("A list of key shortcuts is available through an menu entry in"), _("Help"),
-            _("Shortcuts List"), _("or through"), _("own key shortcut"),
+        <p><span style="font-size:{fsize}px">{s8}</span></p>
+        '''.format(
+            title=_("Selected Tab - Choose an Item from Project Tab"),
+            subtitle=_("Details"),
+
+            s1=_("The normal flow when working in FlatCAM is the following:"),
+            s2=_("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM "
+                 "using either the toolbars, key shortcuts or even dragging and dropping the "
+                 "files on the GUI."),
+            s3=_("You can also load a FlatCAM project by double clicking on the project file, "
+                 "drag and drop of the file into the FLATCAM GUI or through the menu (or toolbar) "
+                 "actions offered within the app."),
+            s4=_("Once an object is available in the Project Tab, by selecting it and then focusing "
+                 "on SELECTED TAB (more simpler is to double click the object name in the Project Tab, "
+                 "SELECTED TAB will be updated with the object properties according to its kind: "
+                 "Gerber, Excellon, Geometry or CNCJob object."),
+            s5=_("If the selection of the object is done on the canvas by single click instead, "
+                 "and the SELECTED TAB is in focus, again the object properties will be displayed into the "
+                 "Selected Tab. Alternatively, double clicking on the object on the canvas will bring "
+                 "the SELECTED TAB and populate it even if it was out of focus."),
+            s6=_("You can change the parameters in this screen and the flow direction is like this:"),
+            s7=_("Gerber/Excellon Object --> Change Parameter --> Generate Geometry --> Geometry Object --> "
+                 "Add tools (change param in Selected Tab) --> Generate CNCJob --> CNCJob Object --> "
+                 "Verify GCode (through Edit CNC Code) and/or append/prepend to GCode "
+                 "(again, done in SELECTED TAB) --> Save GCode."),
+            s8=_("A list of key shortcuts is available through an menu entry in Help --> Shortcuts List "
+                 "or through its own key shortcut: <b>F3</b>."),
+            tsize=tsize,
+            fsize=fsize
         )
 
         sel_title.setText(selected_text)
@@ -10861,22 +11061,33 @@ class App(QtCore.QObject):
         else:
             plot_container = self.ui.right_layout
 
-        self.plotcanvas = PlotCanvas(plot_container, self)
+        if self.is_legacy is False:
+            self.plotcanvas = PlotCanvas(plot_container, self)
+        else:
+            self.plotcanvas = PlotCanvasLegacy(plot_container, self)
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
 
-        self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
-        self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
-        self.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release_over_plot)
-        self.plotcanvas.vis_connect('mouse_double_click', self.on_double_click_over_plot)
+        self.mm = self.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
+        self.mp = self.plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
+        self.mr = self.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release_over_plot)
+        self.mdc = self.plotcanvas.graph_event_connect('mouse_double_click', self.on_double_click_over_plot)
 
         # Keys over plot enabled
-        self.plotcanvas.vis_connect('key_press', self.ui.keyPressEvent)
+        self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
 
         self.app_cursor = self.plotcanvas.new_cursor()
-        self.app_cursor.enabled = False
-        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+        if self.ui.grid_snap_btn.isChecked():
+            self.app_cursor.enabled = True
+        else:
+            self.app_cursor.enabled = False
+
+        if self.is_legacy is False:
+            self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+        else:
+            # will use the default Matplotlib axes
+            self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
 
     def on_zoom_fit(self, event):
         """
@@ -10887,8 +11098,17 @@ class App(QtCore.QObject):
         :param event: Ignored.
         :return: None
         """
-
-        self.plotcanvas.fit_view()
+        if self.is_legacy is False:
+            self.plotcanvas.fit_view()
+        else:
+            xmin, ymin, xmax, ymax = self.collection.get_bounds()
+            width = xmax - xmin
+            height = ymax - ymin
+            xmin -= 0.05 * width
+            xmax += 0.05 * width
+            ymin -= 0.05 * height
+            ymax += 0.05 * height
+            self.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
 
     def on_zoom_in(self):
         self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))

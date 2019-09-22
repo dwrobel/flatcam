@@ -14,6 +14,9 @@ apt-get install python3-tk
 apt-get install libspatialindex-dev
 apt-get install python3-gdal
 apt-get install python3-lxml
+pip3 install --upgrade cycler
+pip3 install --upgrade python-dateutil
+pip3 install --upgrade kiwisolver
 pip3 install --upgrade dill
 pip3 install --upgrade Shapely
 pip3 install --upgrade vispy
