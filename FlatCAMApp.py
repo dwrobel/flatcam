@@ -10912,50 +10912,56 @@ class App(QtCore.QObject):
 #         ''').format(fsize=fsize, tsize=tsize))
 
         selected_text = '''
-        <p><span style="font-size:{tsize}px"><strong>%s</strong></span></p>
+        <p><span style="font-size:{tsize}px"><strong>{title}</strong></span></p>
 
-        <p><span style="font-size:{fsize}px"><strong>%s</strong>:<br />
-        %s:</span></p>
+        <p><span style="font-size:{fsize}px"><strong>{subtitle}</strong>:<br />
+        {s1}</span></p>
 
         <ol>
-            <li><span style="font-size:{fsize}px">%s menu&#39;s, %s.<br />
+            <li><span style="font-size:{fsize}px">{s2}<br />
             <br />
-            %s &amp; %s.</span><br />
+            {s3}</span><br />
             &nbsp;</li>
-            <li><span style="font-size:{fsize}px">%s <strong>%s</strong> (%s), <strong>%s</strong> %s it-s %s.<br />
+            <li><span style="font-size:{fsize}px">{s4}<br />
+            &nbsp;</li>
             <br />
-            %s <strong>%s</strong> %s <strong>%s</strong> %s.<br />
+            <li><span style="font-size:{fsize}px">{s5}<br />
+            &nbsp;</li>
             <br />
-            %s:<br />
+            <li><span style="font-size:{fsize}px">{s6}<br />
             <br />
-            <strong>%s</strong> -&gt; %s -&gt; %s -&gt;<strong> %s </strong> -&gt; %s -&gt; %s -&gt;<strong> %s
-            </strong>-&gt; %s <strong>%s)&nbsp;</strong>-&gt; %s</span></li>
+            {s7}</span></li>
         </ol>
 
-        <p><span style="font-size:{fsize}px">%s <strong>%s -&gt; %s</strong>&nbsp;%s it&#39;s %s:
-        <strong>F3</strong>.</span></p>
-        ''' % (
-            _("Selected Tab - Choose an Item from Project Tab"), _("Details"),
-            _("The normal flow when working in FlatCAM is the following"),
-            _("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the"),
-            _("toolbars, key shortcuts or even dragging and dropping the files on the GUI"),
-            _("You can also load a FlatCAM project by double clicking on the project file, drag"),
-            _("drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app"),
-            _("Once an object is available in the Project Tab, by selecting it and then focusing on"),
-            _("SELECTED TAB"), _("more simpler is to double click the object name in the Project Tab"),
-            _("SELECTED TAB"), _("will be updated with the object properties according to"),
-            _("kind: Gerber, Excellon, Geometry or CNCJob object"),
-            _("If the selection of the object is done on the canvas by single click instead, and the"),
-            _("SELECTED TAB"),
-            _("is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, "
-              "double clicking on the object on the canvas will bring the"),
-            _("SELECTED TAB"), _("and populate it even if it was out of focus"),
-            _("You can change the parameters in this screen and the flow direction is like this"),
-            _("Gerber/Excellon Object"), _("Change Parameter"), _("Generate Geometry"), _("Geometry Object"),
-            _("Add tools (change param in Selected Tab)"), _("Generate CNCJob"), _("CNCJob Object"),
-            _("Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in"), _("SELECTED TAB"),
-            _("Save GCode"), _("A list of key shortcuts is available through an menu entry in"), _("Help"),
-            _("Shortcuts List"), _("or through"), _("own key shortcut"),
+        <p><span style="font-size:{fsize}px">{s8}</span></p>
+        '''.format(
+            title=_("Selected Tab - Choose an Item from Project Tab"),
+            subtitle=_("Details"),
+
+            s1=_("The normal flow when working in FlatCAM is the following:"),
+            s2=_("Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM "
+                 "using either the toolbars, key shortcuts or even dragging and dropping the "
+                 "files on the GUI."),
+            s3=_("You can also load a FlatCAM project by double clicking on the project file, "
+                 "drag and drop of the file into the FLATCAM GUI or through the menu (or toolbar) "
+                 "actions offered within the app."),
+            s4=_("Once an object is available in the Project Tab, by selecting it and then focusing "
+                 "on SELECTED TAB (more simpler is to double click the object name in the Project Tab, "
+                 "SELECTED TAB will be updated with the object properties according to its kind: "
+                 "Gerber, Excellon, Geometry or CNCJob object."),
+            s5=_("If the selection of the object is done on the canvas by single click instead, "
+                 "and the SELECTED TAB is in focus, again the object properties will be displayed into the "
+                 "Selected Tab. Alternatively, double clicking on the object on the canvas will bring "
+                 "the SELECTED TAB and populate it even if it was out of focus."),
+            s6=_("You can change the parameters in this screen and the flow direction is like this:"),
+            s7=_("Gerber/Excellon Object --> Change Parameter --> Generate Geometry --> Geometry Object --> "
+                 "Add tools (change param in Selected Tab) --> Generate CNCJob --> CNCJob Object --> "
+                 "Verify GCode (through Edit CNC Code) and/or append/prepend to GCode "
+                 "(again, done in SELECTED TAB) --> Save GCode."),
+            s8=_("A list of key shortcuts is available through an menu entry in Help --> Shortcuts List "
+                 "or through its own key shortcut: <b>F3</b>."),
+            tsize=tsize,
+            fsize=fsize
         )
 
         sel_title.setText(selected_text)

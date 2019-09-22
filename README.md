@@ -24,6 +24,10 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the MultiColor plot option Gerber selected tab to work in legacy graphic engine
 - documented some methods in the ShapeCollectionLegacy class
 - updated the files: setup_ubuntu.sh and requirements.txt
+- some strings changed to be easier for translation
+- updated the .POT file and the translation files
+- updated and corrected the Romanian and Spanish translations
+- updated the .PO files for the rest of the translations, they need to be filled in.
 
 21.09.2019
 

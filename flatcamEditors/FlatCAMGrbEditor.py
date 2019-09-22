@@ -3809,8 +3809,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # and then add it to the storage elements (each storage elements is a member of a list
         def job_thread(aperture_id):
-            with self.app.proc_container.new('%s: %s %s...' %
-                                             (_("Adding aperture"),  str(aperture_id), _("geo"))):
+            with self.app.proc_container.new('%s: %s ...' %
+                                             (_("Adding geometry for aperture"),  str(aperture_id))):
                 storage_elem = []
                 self.storage_dict[aperture_id] = {}
 

@@ -45,10 +45,10 @@ class Measurement(FlatCAMTool):
         self.units_value = QtWidgets.QLabel("%s" % str({'mm': _("METRIC (mm)"), 'in': _("INCH (in)")}[self.units]))
         self.units_value.setDisabled(True)
 
-        self.start_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_('Start'), _('Coords')))
+        self.start_label = QtWidgets.QLabel("%s:" % _('Start Coords'))
         self.start_label.setToolTip(_("This is measuring Start point coordinates."))
 
-        self.stop_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_('Stop'), _('Coords')))
+        self.stop_label = QtWidgets.QLabel("%s:" % _('Stop Coords'))
         self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
 
         self.distance_x_label = QtWidgets.QLabel('%s:' % _("Dx"))

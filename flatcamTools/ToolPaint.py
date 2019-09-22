@@ -1241,13 +1241,15 @@ class ToolPaint(FlatCAMTool, Gerber):
         # poly = find_polygon(self.solid_geometry, inside_pt)
         if isinstance(obj, FlatCAMGerber):
             if self.app.defaults["gerber_buffering"] == 'no':
-                self.app.inform.emit('%s %s' %
-                                     (_("Paint Tool. Normal painting polygon task started."),
+                self.app.inform.emit('%s %s %s' %
+                                     (_("Paint Tool."), _("Normal painting polygon task started."),
                                       _("Buffering geometry...")))
             else:
-                self.app.inform.emit(_("Paint Tool. Normal painting polygon task started."))
+                self.app.inform.emit('%s %s' %
+                                     (_("Paint Tool."), _("Normal painting polygon task started.")))
         else:
-            self.app.inform.emit(_("Paint Tool. Normal painting polygon task started."))
+            self.app.inform.emit('%s %s' %
+                                 (_("Paint Tool."), _("Normal painting polygon task started.")))
 
         if isinstance(obj, FlatCAMGerber):
             if self.app.defaults["tools_paint_plotting"] == 'progressive':
@@ -1285,7 +1287,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             return
 
         proc = self.app.proc_container.new(_("Painting polygon..."))
-        self.app.inform.emit('%s: %s' % (_("Paint Tool. Painting polygon at location"), str(inside_pt)))
+        self.app.inform.emit('%s %s: %s' %
+                             (_("Paint Tool."), _("Painting polygon at location"), str(inside_pt)))
 
         name = outname if outname is not None else self.obj_name + "_paint"
 
@@ -1811,13 +1814,15 @@ class ToolPaint(FlatCAMTool, Gerber):
             log.debug("Paint Tool. Rest machining painting all task started.")
             if isinstance(obj, FlatCAMGerber):
                 if app_obj.defaults["gerber_buffering"] == 'no':
-                    app_obj.inform.emit('%s %s' %
-                                        (_("Paint Tool. Rest machining painting all task started."),
+                    app_obj.inform.emit('%s %s %s' %
+                                        (_("Paint Tool."), _("Rest machining painting all task started."),
                                          _("Buffering geometry...")))
                 else:
-                    app_obj.inform.emit(_("Paint Tool. Rest machining painting all task started."))
+                    app_obj.inform.emit('%s %s' %
+                                        (_("Paint Tool."), _("Rest machining painting all task started.")))
             else:
-                app_obj.inform.emit(_("Paint Tool. Rest machining painting all task started."))
+                app_obj.inform.emit('%s %s' %
+                                    (_("Paint Tool."), _("Rest machining painting all task started.")))
 
             tool_dia = None
             sorted_tools.sort(reverse=True)
@@ -2098,13 +2103,16 @@ class ToolPaint(FlatCAMTool, Gerber):
             log.debug("Paint Tool. Normal painting area task started.")
             if isinstance(obj, FlatCAMGerber):
                 if app_obj.defaults["gerber_buffering"] == 'no':
-                    app_obj.inform.emit('%s %s' %
-                                        (_("Paint Tool. Normal painting area task started."),
+                    app_obj.inform.emit('%s %s %s' %
+                                        (_("Paint Tool."),
+                                         _("Normal painting area task started."),
                                          _("Buffering geometry...")))
                 else:
-                    app_obj.inform.emit(_("Paint Tool. Normal painting area task started."))
+                    app_obj.inform.emit('%s %s' %
+                                        (_("Paint Tool."), _("Normal painting area task started.")))
             else:
-                app_obj.inform.emit(_("Paint Tool. Normal painting area task started."))
+                app_obj.inform.emit('%s %s' %
+                                    (_("Paint Tool."), _("Normal painting area task started.")))
 
             tool_dia = None
             if order == 'fwd':
@@ -2277,13 +2285,15 @@ class ToolPaint(FlatCAMTool, Gerber):
             log.debug("Paint Tool. Rest machining painting area task started.")
             if isinstance(obj, FlatCAMGerber):
                 if app_obj.defaults["gerber_buffering"] == 'no':
-                    app_obj.inform.emit('%s %s' %
-                                        (_("Paint Tool. Rest machining painting area task started."),
+                    app_obj.inform.emit('%s %s %s' %
+                                        (_("Paint Tool."),
+                                         _("Rest machining painting area task started."),
                                          _("Buffering geometry...")))
                 else:
                     app_obj.inform.emit(_("Paint Tool. Rest machining painting area task started."))
             else:
-                app_obj.inform.emit(_("Paint Tool. Rest machining painting area task started."))
+                app_obj.inform.emit('%s %s' %
+                                    (_("Paint Tool."), _("Rest machining painting area task started.")))
 
             tool_dia = None
             sorted_tools.sort(reverse=True)

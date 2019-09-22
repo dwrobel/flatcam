@@ -3438,7 +3438,7 @@ class Gerber (Geometry):
                 return 'fail'
 
             log.warning("Joining %d polygons." % len(poly_buffer))
-            self.app.inform.emit('%s %d %s.' % (_("Gerber processing. Joining"), len(poly_buffer), _("polygons")))
+            self.app.inform.emit('%s: %d.' % (_("Gerber processing. Joining polygons"), len(poly_buffer)))
 
             if self.use_buffer_for_union:
                 log.debug("Union by buffer...")
