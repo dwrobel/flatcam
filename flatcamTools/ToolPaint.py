@@ -1183,9 +1183,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         if self.app.grid_status() == True:
             # Update cursor
             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
-            if self.app.is_legacy is False:
-                self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
-                                             symbol='++', edge_color='black', size=20)
+
+            self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
+                                         symbol='++', edge_color='black', size=20)
 
         # update the positions on status bar
         self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
