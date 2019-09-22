@@ -23,6 +23,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed annotation in Mark Area Tool in Gerber Editor to work in legacy graphic engine
 - fixed the MultiColor plot option Gerber selected tab to work in legacy graphic engine
 - documented some methods in the ShapeCollectionLegacy class
+- updated the files: setup_ubuntu.sh and requirements.txt
 
 21.09.2019
 
