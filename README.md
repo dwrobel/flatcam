@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed display of MultiGeo geometries in legacy graphic engine
 - fixed Paint tool to work in legacy graphic engine
 - fixed CutOut Tool to work in legacy graphic engine
+- fixed display of distance labels and code optimizations in ToolPaint and NCC Tool
 
 21.09.2019
 

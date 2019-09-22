@@ -8160,6 +8160,7 @@ class App(QtCore.QObject):
 
         x0, y0 = old_coords
         x1, y1 = coords
+
         pt1 = (x0, y0)
         pt2 = (x1, y0)
         pt3 = (x1, y1)

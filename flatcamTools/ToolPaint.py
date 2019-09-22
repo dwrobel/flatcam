@@ -357,6 +357,13 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.bound_obj_name = ""
         self.bound_obj = None
 
+        self.tooldia_list = []
+        self.sel_rect = None
+        self.o_name = None
+        self.overlap = None
+        self.connect = None
+        self.contour = None
+
         self.units = ''
         self.paint_tools = {}
         self.tooluid = 0
@@ -919,17 +926,17 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app.inform.emit(_("Paint Tool. Reading parameters."))
 
         try:
-            overlap = float(self.paintoverlap_entry.get_value())
+            self.overlap = float(self.paintoverlap_entry.get_value())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
+                self.overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Wrong value format entered, use a number."))
                 return
 
-        if overlap >= 1 or overlap < 0:
+        if self.overlap >= 1 or self.overlap < 0:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Overlap value must be between 0 (inclusive) and 1 (exclusive)"))
             return
@@ -937,9 +944,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app.inform.emit('[WARNING_NOTCL] %s' %
                              _("Click inside the desired polygon."))
 
-        connect = self.pathconnect_cb.get_value()
-        contour = self.paintcontour_cb.get_value()
-        select_method = self.selectmethod_combo.get_value()
+        self.connect = self.pathconnect_cb.get_value()
+        self.contour = self.paintcontour_cb.get_value()
+        self.select_method = self.selectmethod_combo.get_value()
 
         self.obj_name = self.obj_combo.currentText()
 
@@ -969,34 +976,34 @@ class ToolPaint(FlatCAMTool, Gerber):
         o_name = '%s_multitool_paint' % self.obj_name
 
         # use the selected tools in the tool table; get diameters
-        tooldia_list = list()
+        self.tooldia_list = list()
         if self.tools_table.selectedItems():
             for x in self.tools_table.selectedItems():
                 try:
-                    tooldia = float(self.tools_table.item(x.row(), 1).text())
+                    self.tooldia = float(self.tools_table.item(x.row(), 1).text())
                 except ValueError:
                     # try to convert comma to decimal point. if it's still not working error message and return
                     try:
-                        tooldia = float(self.tools_table.item(x.row(), 1).text().replace(',', '.'))
+                        self.tooldia = float(self.tools_table.item(x.row(), 1).text().replace(',', '.'))
                     except ValueError:
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
                                              _("Wrong value format entered, use a number."))
                         continue
-                tooldia_list.append(tooldia)
+                self.tooldia_list.append(self.tooldia)
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("No selected tools in Tool Table."))
             return
 
-        if select_method == "all":
+        if self.select_method == "all":
             self.paint_poly_all(self.paint_obj,
-                                tooldia=tooldia_list,
-                                outname=o_name,
-                                overlap=overlap,
-                                connect=connect,
-                                contour=contour)
+                                tooldia=self.tooldia_list,
+                                outname=self.o_name,
+                                overlap=self.overlap,
+                                connect=self.connect,
+                                contour=self.contour)
 
-        elif select_method == "single":
+        elif self.select_method == "single":
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Click inside the desired polygon."))
 
@@ -1019,10 +1026,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                     self.paint_poly(self.paint_obj,
                                     inside_pt=[pos[0], pos[1]],
-                                    tooldia=tooldia_list,
-                                    overlap=overlap,
-                                    connect=connect,
-                                    contour=contour)
+                                    tooldia=self.tooldia_list,
+                                    overlap=self.overlap,
+                                    connect=self.connect,
+                                    contour=self.contour)
                     self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                                           self.app.on_mouse_click_over_plot)
                     self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
@@ -1036,127 +1043,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                 self.app.plotcanvas.graph_event_disconnect(self.app.mp)
             self.mp = self.app.plotcanvas.graph_event_connect('mouse_press', doit)
 
-        elif select_method == "area":
+        elif self.select_method == "area":
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Click the start point of the paint area."))
-
-            # use the first tool in the tool table; get the diameter
-            # tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
-
-            # To be called after clicking on the plot.
-            def on_mouse_release(event):
-                if self.app.is_legacy is False:
-                    event_pos = event.pos
-                    event_is_dragging = event.is_dragging
-                    right_button = 2
-                else:
-                    event_pos = (event.xdata, event.ydata)
-                    event_is_dragging = self.app.plotcanvas.is_dragging
-                    right_button = 3
-
-                try:
-                    x = float(event_pos[0])
-                    y = float(event_pos[1])
-                except TypeError:
-                    return
-
-                event_pos = (x, y)
-
-                # do paint single only for left mouse clicks
-                if event.button == 1:
-                    if not self.first_click:
-                        self.first_click = True
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Click the end point of the paint area."))
-
-                        self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
-                        if self.app.grid_status() == True:
-                            self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
-                    else:
-                        self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
-                        self.app.delete_selection_shape()
-
-                        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
-                        if self.app.grid_status() == True:
-                            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
-
-                        x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
-                        x1, y1 = curr_pos[0], curr_pos[1]
-                        pt1 = (x0, y0)
-                        pt2 = (x1, y0)
-                        pt3 = (x1, y1)
-                        pt4 = (x0, y1)
-                        self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
-                        self.first_click = False
-                        return
-
-                elif event.button == right_button and self.mouse_is_dragging is False:
-                    self.first_click = False
-
-                    if self.app.is_legacy is False:
-                        self.app.plotcanvas.graph_event_disconnect('mouse_release', on_mouse_release)
-                        self.app.plotcanvas.graph_event_disconnect('mouse_move', on_mouse_move)
-                    else:
-                        self.app.plotcanvas.graph_event_disconnect(self.mr)
-                        self.app.plotcanvas.graph_event_disconnect(self.mm)
-
-                    self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                          self.app.on_mouse_click_over_plot)
-                    self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                          self.app.on_mouse_move_over_plot)
-                    self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                          self.app.on_mouse_click_release_over_plot)
-
-                    if len(self.sel_rect) == 0:
-                        return
-
-                    self.sel_rect = cascaded_union(self.sel_rect)
-                    self.paint_poly_area(obj=self.paint_obj,
-                                         tooldia=tooldia_list,
-                                         sel_obj=self.sel_rect,
-                                         outname=o_name,
-                                         overlap=overlap,
-                                         connect=connect,
-                                         contour=contour)
-
-            # called on mouse move
-            def on_mouse_move(event):
-                if self.app.is_legacy is False:
-                    event_pos = event.pos
-                    event_is_dragging = event.is_dragging
-                    right_button = 2
-                else:
-                    event_pos = (event.xdata, event.ydata)
-                    event_is_dragging = self.app.plotcanvas.is_dragging
-                    right_button = 3
-
-                try:
-                    x = float(event_pos[0])
-                    y = float(event_pos[1])
-                except TypeError:
-                    return
-
-                curr_pos = self.app.plotcanvas.translate_coords((x, y))
-
-                # detect mouse dragging motion
-                if event_is_dragging == 1:
-                    self.mouse_is_dragging = True
-                else:
-                    self.mouse_is_dragging = False
-
-                # update the cursor position
-                if self.app.grid_status() == True:
-                    # Update cursor
-                    curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
-                    if self.app.is_legacy is False:
-                        self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
-                                                     symbol='++', edge_color='black', size=20)
-
-                # draw the utility geometry
-                if self.first_click:
-                    self.app.delete_selection_shape()
-                    self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
-                                                         coords=(curr_pos[0], curr_pos[1]))
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -1167,10 +1056,10 @@ class ToolPaint(FlatCAMTool, Gerber):
                 self.app.plotcanvas.graph_event_disconnect(self.app.mm)
                 self.app.plotcanvas.graph_event_disconnect(self.app.mr)
 
-            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', on_mouse_release)
-            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', on_mouse_move)
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
 
-        elif select_method == 'ref':
+        elif self.select_method == 'ref':
             self.bound_obj_name = self.box_combo.currentText()
             # Get source object.
             try:
@@ -1183,11 +1072,137 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             self.paint_poly_ref(obj=self.paint_obj,
                                 sel_obj=self.bound_obj,
-                                tooldia=tooldia_list,
-                                overlap=overlap,
-                                outname=o_name,
-                                connect=connect,
-                                contour=contour)
+                                tooldia=self.tooldia_list,
+                                overlap=self.overlap,
+                                outname=self.o_name,
+                                connect=self.connect,
+                                contour=self.contour)
+
+    # To be called after clicking on the plot.
+    def on_mouse_release(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+
+        event_pos = (x, y)
+
+        # do paint single only for left mouse clicks
+        if event.button == 1:
+            if not self.first_click:
+                self.first_click = True
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Click the end point of the paint area."))
+
+                self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
+                if self.app.grid_status() == True:
+                    self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
+            else:
+                self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
+                self.app.delete_selection_shape()
+
+                curr_pos = self.app.plotcanvas.translate_coords(event_pos)
+                if self.app.grid_status() == True:
+                    curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+
+                x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
+                x1, y1 = curr_pos[0], curr_pos[1]
+                pt1 = (x0, y0)
+                pt2 = (x1, y0)
+                pt3 = (x1, y1)
+                pt4 = (x0, y1)
+                self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
+                self.first_click = False
+                return
+
+        elif event.button == right_button and self.mouse_is_dragging is False:
+            self.first_click = False
+
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.mm)
+
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                  self.app.on_mouse_move_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+
+            if len(self.sel_rect) == 0:
+                return
+
+            self.sel_rect = cascaded_union(self.sel_rect)
+            self.paint_poly_area(obj=self.paint_obj,
+                                 tooldia=self.tooldia_list,
+                                 sel_obj=self.sel_rect,
+                                 outname=self.o_name,
+                                 overlap=self.overlap,
+                                 connect=self.connect,
+                                 contour=self.contour)
+
+    # called on mouse move
+    def on_mouse_move(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+
+        curr_pos = self.app.plotcanvas.translate_coords((x, y))
+
+        # detect mouse dragging motion
+        if event_is_dragging == 1:
+            self.mouse_is_dragging = True
+        else:
+            self.mouse_is_dragging = False
+
+        # update the cursor position
+        if self.app.grid_status() == True:
+            # Update cursor
+            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+            if self.app.is_legacy is False:
+                self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
+                                             symbol='++', edge_color='black', size=20)
+
+        # update the positions on status bar
+        self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                           "<b>Y</b>: %.4f" % (curr_pos[0], curr_pos[1]))
+        if self.cursor_pos is None:
+            self.cursor_pos = (0, 0)
+
+        dx = curr_pos[0] - float(self.cursor_pos[0])
+        dy = curr_pos[1] - float(self.cursor_pos[1])
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+
+        # draw the utility geometry
+        if self.first_click:
+            self.app.delete_selection_shape()
+            self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
+                                                 coords=(curr_pos[0], curr_pos[1]))
 
     def paint_poly(self, obj,
                    inside_pt=None,

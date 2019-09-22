@@ -470,6 +470,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.bound_obj_name = ""
         self.bound_obj = None
 
+        self.ncc_dia_list = []
+        self.iso_dia_list = []
+        self.has_offset = None
+        self.o_name = None
+        self.overlap = None
+        self.connect = None
+        self.contour = None
+        self.rest = None
+
         self.first_click = False
         self.cursor_pos = None
         self.mouse_is_dragging = False
@@ -1059,27 +1068,27 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.app.report_usage(_("on_paint_button_click"))
 
         try:
-            overlap = float(self.ncc_overlap_entry.get_value())
+            self.overlap = float(self.ncc_overlap_entry.get_value())
         except ValueError:
             # try to convert comma to decimal point. if it's still not working error message and return
             try:
-                overlap = float(self.ncc_overlap_entry.get_value().replace(',', '.'))
+                self.overlap = float(self.ncc_overlap_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, "
                                                              "use a number."))
                 return
 
-        if overlap >= 1 or overlap < 0:
+        if self.overlap >= 1 or self.overlap < 0:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Overlap value must be between "
                                                         "0 (inclusive) and 1 (exclusive), "))
             return
 
-        connect = self.ncc_connect_cb.get_value()
-        contour = self.ncc_contour_cb.get_value()
+        self.connect = self.ncc_connect_cb.get_value()
+        self.contour = self.ncc_contour_cb.get_value()
 
-        has_offset = self.ncc_choice_offset_cb.isChecked()
+        self.has_offset = self.ncc_choice_offset_cb.isChecked()
 
-        rest = self.ncc_rest_cb.get_value()
+        self.rest = self.ncc_rest_cb.get_value()
 
         self.obj_name = self.object_combo.currentText()
         # Get source object.
@@ -1094,34 +1103,34 @@ class NonCopperClear(FlatCAMTool, Gerber):
             return
 
         # use the selected tools in the tool table; get diameters for non-copper clear
-        iso_dia_list = list()
+        self.iso_dia_list = list()
         # use the selected tools in the tool table; get diameters for non-copper clear
-        ncc_dia_list = list()
+        self.ncc_dia_list = list()
         if self.tools_table.selectedItems():
             for x in self.tools_table.selectedItems():
                 try:
-                    tooldia = float(self.tools_table.item(x.row(), 1).text())
+                    self.tooldia = float(self.tools_table.item(x.row(), 1).text())
                 except ValueError:
                     # try to convert comma to decimal point. if it's still not working error message and return
                     try:
-                        tooldia = float(self.tools_table.item(x.row(), 1).text().replace(',', '.'))
+                        self.tooldia = float(self.tools_table.item(x.row(), 1).text().replace(',', '.'))
                     except ValueError:
                         self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong Tool Dia value format entered, "
                                                                     "use a number."))
                         continue
 
                 if self.tools_table.cellWidget(x.row(), 4).currentText() == 'iso_op':
-                    iso_dia_list.append(tooldia)
+                    self.iso_dia_list.append(self.tooldia)
                 else:
-                    ncc_dia_list.append(tooldia)
+                    self.ncc_dia_list.append(self.tooldia)
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
             return
 
-        o_name = '%s_ncc' % self.obj_name
+        self.o_name = '%s_ncc' % self.obj_name
 
-        select_method = self.reference_radio.get_value()
-        if select_method == 'itself':
+        self.select_method = self.reference_radio.get_value()
+        if self.select_method == 'itself':
             self.bound_obj_name = self.object_combo.currentText()
             # Get source object.
             try:
@@ -1131,167 +1140,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 return "Could not retrieve object: %s" % self.obj_name
 
             self.clear_copper(ncc_obj=self.ncc_obj,
-                              ncctooldia=ncc_dia_list,
-                              isotooldia=iso_dia_list,
-                              has_offset=has_offset,
-                              outname=o_name,
-                              overlap=overlap,
-                              connect=connect,
-                              contour=contour,
-                              rest=rest)
-        elif select_method == 'area':
+                              ncctooldia=self.ncc_dia_list,
+                              isotooldia=self.iso_dia_list,
+                              has_offset=self.has_offset,
+                              outname=self.o_name,
+                              overlap=self.overlap,
+                              connect=self.connect,
+                              contour=self.contour,
+                              rest=self.rest)
+        elif self.select_method == 'area':
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
 
-            # use the first tool in the tool table; get the diameter
-            # tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
-
-            # To be called after clicking on the plot.
-            def on_mouse_release(event):
-                if self.app.is_legacy is False:
-                    event_pos = event.pos
-                    event_is_dragging = event.is_dragging
-                    right_button = 2
-                else:
-                    event_pos = (event.xdata, event.ydata)
-                    event_is_dragging = self.app.plotcanvas.is_dragging
-                    right_button = 3
-
-                try:
-                    x = float(event_pos[0])
-                    y = float(event_pos[1])
-                except TypeError:
-                    return
-                event_pos = self.app.plotcanvas.translate_coords((x, y))
-
-                # do clear area only for left mouse clicks
-                if event.button == 1:
-                    if self.first_click is False:
-                        self.first_click = True
-                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the paint area."))
-
-                        self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
-                        if self.app.grid_status() == True:
-                            self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
-                    else:
-                        self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
-                        self.app.delete_selection_shape()
-
-                        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
-                        if self.app.grid_status() == True:
-                            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
-
-                        x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
-                        x1, y1 = curr_pos[0], curr_pos[1]
-                        pt1 = (x0, y0)
-                        pt2 = (x1, y0)
-                        pt3 = (x1, y1)
-                        pt4 = (x0, y1)
-                        self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
-                        self.first_click = False
-                        return
-
-                        # modifiers = QtWidgets.QApplication.keyboardModifiers()
-                        #
-                        # if modifiers == QtCore.Qt.ShiftModifier:
-                        #     mod_key = 'Shift'
-                        # elif modifiers == QtCore.Qt.ControlModifier:
-                        #     mod_key = 'Control'
-                        # else:
-                        #     mod_key = None
-                        #
-                        # if mod_key == self.app.defaults["global_mselect_key"]:
-                        #     self.first_click = False
-                        #     return
-                        #
-                        # self.sel_rect = cascaded_union(self.sel_rect)
-                        # self.clear_copper(ncc_obj=self.ncc_obj,
-                        #                   sel_obj=self.bound_obj,
-                        #                   ncctooldia=ncc_dia_list,
-                        #                   isotooldia=iso_dia_list,
-                        #                   has_offset=has_offset,
-                        #                   outname=o_name,
-                        #                   overlap=overlap,
-                        #                   connect=connect,
-                        #                   contour=contour,
-                        #                   rest=rest)
-                        #
-                        # self.app.plotcanvas.graph_event_disconnect('mouse_release', on_mouse_release)
-                        # self.app.plotcanvas.graph_event_disconnect('mouse_move', on_mouse_move)
-                        #
-                        # self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                        # self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
-                        # self.app.plotcanvas.graph_event_connect('mouse_release',
-                        #                                         self.app.on_mouse_click_release_over_plot)
-                elif event.button == right_button and self.mouse_is_dragging == False:
-                    self.first_click = False
-
-                    if self.app.is_legacy is False:
-                        self.app.plotcanvas.graph_event_disconnect('mouse_release', on_mouse_release)
-                        self.app.plotcanvas.graph_event_disconnect('mouse_move', on_mouse_move)
-                    else:
-                        self.app.plotcanvas.graph_event_disconnect(self.mr)
-                        self.app.plotcanvas.graph_event_disconnect(self.mm)
-
-                    self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                          self.app.on_mouse_click_over_plot)
-                    self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                          self.app.on_mouse_move_over_plot)
-                    self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                          self.app.on_mouse_click_release_over_plot)
-
-                    if len(self.sel_rect) == 0:
-                        return
-
-                    self.sel_rect = cascaded_union(self.sel_rect)
-
-                    self.clear_copper(ncc_obj=self.ncc_obj,
-                                      sel_obj=self.bound_obj,
-                                      ncctooldia=ncc_dia_list,
-                                      isotooldia=iso_dia_list,
-                                      has_offset=has_offset,
-                                      outname=o_name,
-                                      overlap=overlap,
-                                      connect=connect,
-                                      contour=contour,
-                                      rest=rest)
-
-            # called on mouse move
-            def on_mouse_move(event):
-                if self.app.is_legacy is False:
-                    event_pos = event.pos
-                    event_is_dragging = event.is_dragging
-                    right_button = 2
-                else:
-                    event_pos = (event.xdata, event.ydata)
-                    event_is_dragging = self.app.plotcanvas.is_dragging
-                    right_button = 3
-
-                try:
-                    x = float(event_pos[0])
-                    y = float(event_pos[1])
-                except TypeError:
-                    return
-                curr_pos = self.app.plotcanvas.translate_coords((x, y))
-
-                # detect mouse dragging motion
-                if event_is_dragging is True:
-                    self.mouse_is_dragging = True
-                else:
-                    self.mouse_is_dragging = False
-
-                # update the cursor position
-                if self.app.grid_status() == True:
-                    # Update cursor
-                    curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
-                    if self.app.is_legacy is False:
-                        self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
-                                                     symbol='++', edge_color='black', size=20)
-
-                # draw the utility geometry
-                if self.first_click:
-                    self.app.delete_selection_shape()
-                    self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
-                                                         coords=(curr_pos[0], curr_pos[1]))
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
                 self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
@@ -1301,9 +1160,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.plotcanvas.graph_event_disconnect(self.app.mm)
                 self.app.plotcanvas.graph_event_disconnect(self.app.mr)
 
-            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', on_mouse_release)
-            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', on_mouse_move)
-        elif select_method == 'box':
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+        elif self.select_method == 'box':
             self.bound_obj_name = self.box_combo.currentText()
             # Get source object.
             try:
@@ -1314,14 +1173,133 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             self.clear_copper(ncc_obj=self.ncc_obj,
                               sel_obj=self.bound_obj,
-                              ncctooldia=ncc_dia_list,
-                              isotooldia=iso_dia_list,
-                              has_offset=has_offset,
-                              outname=o_name,
-                              overlap=overlap,
-                              connect=connect,
-                              contour=contour,
-                              rest=rest)
+                              ncctooldia=self.ncc_dia_list,
+                              isotooldia=self.iso_dia_list,
+                              has_offset=self.has_offset,
+                              outname=self.o_name,
+                              overlap=self.overlap,
+                              connect=self.connect,
+                              contour=self.contour,
+                              rest=self.rest)
+
+    # To be called after clicking on the plot.
+    def on_mouse_release(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        event_pos = self.app.plotcanvas.translate_coords(event_pos)
+
+        # do clear area only for left mouse clicks
+        if event.button == 1:
+            if self.first_click is False:
+                self.first_click = True
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the paint area."))
+
+                self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
+                if self.app.grid_status() == True:
+                    self.cursor_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
+            else:
+                self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
+                self.app.delete_selection_shape()
+
+                if self.app.grid_status() == True:
+                    curr_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
+                else:
+                    curr_pos = (event_pos[0], event_pos[1])
+
+                x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
+                x1, y1 = curr_pos[0], curr_pos[1]
+                pt1 = (x0, y0)
+                pt2 = (x1, y0)
+                pt3 = (x1, y1)
+                pt4 = (x0, y1)
+
+                self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
+                self.first_click = False
+                return
+
+        elif event.button == right_button and self.mouse_is_dragging == False:
+            self.first_click = False
+
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.mm)
+
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                  self.app.on_mouse_move_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+
+            if len(self.sel_rect) == 0:
+                return
+
+            self.sel_rect = cascaded_union(self.sel_rect)
+
+            self.clear_copper(ncc_obj=self.ncc_obj,
+                              sel_obj=self.bound_obj,
+                              ncctooldia=self.ncc_dia_list,
+                              isotooldia=self.iso_dia_list,
+                              has_offset=self.has_offset,
+                              outname=self.o_name,
+                              overlap=self.overlap,
+                              connect=self.connect,
+                              contour=self.contour,
+                              rest=self.rest)
+
+    # called on mouse move
+    def on_mouse_move(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
+
+        # detect mouse dragging motion
+        if event_is_dragging is True:
+            self.mouse_is_dragging = True
+        else:
+            self.mouse_is_dragging = False
+
+        # update the cursor position
+        if self.app.grid_status() == True:
+            # Update cursor
+            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+            if self.app.is_legacy is False:
+                self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
+                                             symbol='++', edge_color='black', size=20)
+
+        # update the positions on status bar
+        self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                           "<b>Y</b>: %.4f" % (curr_pos[0], curr_pos[1]))
+        if self.cursor_pos is None:
+            self.cursor_pos = (0, 0)
+
+        dx = curr_pos[0] - float(self.cursor_pos[0])
+        dy = curr_pos[1] - float(self.cursor_pos[1])
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+
+        # draw the utility geometry
+        if self.first_click:
+            self.app.delete_selection_shape()
+            self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
+                                                 coords=(curr_pos[0], curr_pos[1]))
 
     def clear_copper(self, ncc_obj,
                      sel_obj=None,
