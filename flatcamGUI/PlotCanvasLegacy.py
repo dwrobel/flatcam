@@ -753,7 +753,23 @@ class ShapeCollectionLegacy:
 
     def add(self, shape=None, color=None, face_color=None, alpha=None, visible=True,
             update=False, layer=1, tolerance=0.01, obj=None, gcode_parsed=None, tool_tolerance=None, tooldia=None):
+        """
+        This function will add shapes to the shape collection
 
+        :param shape: the Shapely shape to be added to the shape collection
+        :param color: edge color of the shape, hex value
+        :param face_color: the body color of the shape, hex value
+        :param alpha: level of transparency of the shape [0.0 ... 1.0]; Float
+        :param visible: if True will allow the shapes to be added
+        :param update: not used; just for compatibility with VIsPy canvas
+        :param layer: just for compatibility with VIsPy canvas
+        :param tolerance: just for compatibility with VIsPy canvas
+        :param obj: not used
+        :param gcode_parsed: not used; just for compatibility with VIsPy canvas
+        :param tool_tolerance: just for compatibility with VIsPy canvas
+        :param tooldia:
+        :return:
+        """
         self._color = color[:-2] if color is not None else None
         self._face_color = face_color[:-2] if face_color is not None else None
         self._alpha = int(face_color[-2:], 16) / 255 if face_color is not None else 0.75
@@ -802,6 +818,12 @@ class ShapeCollectionLegacy:
         return self.shape_id
 
     def clear(self, update=None):
+        """
+        Clear the canvas of the shapes.
+
+        :param update:
+        :return: None
+        """
         self._shapes.clear()
         self.shape_id = 0
 
@@ -812,6 +834,11 @@ class ShapeCollectionLegacy:
             self.redraw()
 
     def redraw(self):
+        """
+        This draw the shapes in the shapes collection, on canvas
+
+        :return: None
+        """
         path_num = 0
         local_shapes = deepcopy(self._shapes)
 
@@ -922,7 +949,16 @@ class ShapeCollectionLegacy:
         self.app.plotcanvas.auto_adjust_axes()
 
     def set(self, text, pos, visible=True, font_size=16, color=None):
+        """
+        This will set annotations on the canvas.
 
+        :param text: a list of text elements to be used as annotations
+        :param pos: a list of positions for showing the text elements above
+        :param visible: if True will display annotations, if False will clear them on canvas
+        :param font_size: the font size or the annotations
+        :param color: color of the annotations
+        :return: None
+        """
         if color is None:
             color = "#000000FF"
 

@@ -1356,11 +1356,26 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except TypeError:
             geometry = [geometry]
 
-        # if self.app.is_legacy is False:
-        def random_color():
-            color = np.random.rand(4)
-            color[3] = 1
-            return color
+        if self.app.is_legacy is False:
+            def random_color():
+                color = np.random.rand(4)
+                color[3] = 1
+                return color
+        else:
+            def random_color():
+                while True:
+                    color = np.random.rand(4)
+                    color[3] = 1
+
+                    new_color = '#'
+                    for idx in range(len(color)):
+                        new_color += '%x' % int(color[idx] * 255)
+                    # do it until a valid color is generated
+                    # a valid color has the # symbol, another 6 chars for the color and the last 2 chars for alpha
+                    # for a total of 9 chars
+                    if len(new_color) == 9:
+                        break
+                return new_color
 
         try:
             if self.options["solid"]:
@@ -1395,6 +1410,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
+        except Exception as e:
+            log.debug("FlatCAMGerber.plot() --> %s" % str(e))
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
     def plot_aperture(self, run_thread=True, **kwargs):

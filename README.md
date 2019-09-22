@@ -21,6 +21,8 @@ CAD program, and create G-Code for Isolation routing.
 - made hover shapes work in legacy graphic engine
 - fixed bug in display of the apertures marked in the Aperture table found in the Gerber Selected tab and through this made it to also work with the legacy graphic engine
 - fixed annotation in Mark Area Tool in Gerber Editor to work in legacy graphic engine
+- fixed the MultiColor plot option Gerber selected tab to work in legacy graphic engine
+- documented some methods in the ShapeCollectionLegacy class
 
 21.09.2019
 

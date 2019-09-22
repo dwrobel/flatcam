@@ -124,7 +124,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.97
-    version_date = "2019/09/20"
+    version_date = "2019/09/22"
     beta = True
     engine = '3D'
 
@@ -2760,7 +2760,7 @@ class App(QtCore.QObject):
         :param name: String that store the project path and project name
         :return: None
         """
-        self.ui.setWindowTitle('FlatCAM %s %s - %s - (%s)    %s' %
+        self.ui.setWindowTitle('FlatCAM %s %s - %s - [%s]    %s' %
                                (self.version,
                                 ('BETA' if self.beta else ''),
                                 platform.architecture()[0],
