@@ -11,7 +11,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 # Prevent conflict with Qt5 and above.
 from matplotlib import use as mpl_use
-
+mpl_use("Qt5Agg")
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -35,7 +35,7 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
-mpl_use("Qt5Agg")
+
 log = logging.getLogger('base')
 
 
