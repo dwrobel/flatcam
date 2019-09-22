@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.09.2019
+
+- in legacy graphic engine, fixed bug that made the old object disappear when a new object was loaded
+- in legacy graphic engine, fixed bug that crashed the app when creating a new project
+
 22.09.2019
 
 - fixed zoom directions legacy graphic engine (previous commit)

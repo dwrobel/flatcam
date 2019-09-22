@@ -306,9 +306,20 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.figure.add_axes(self.axes)
         self.axes.set_aspect(1)
         self.axes.grid(True)
+        self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
+        self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
+
+        self.adjust_axes(-10, -10, 100, 100)
 
         # Re-draw
         self.canvas.draw_idle()
+
+    def redraw(self):
+        """
+        Created only to serve for compatibility with the VisPy plotcanvas (the other graphic engine, 3D)
+        :return:
+        """
+        self.clear()
 
     def adjust_axes(self, xmin, ymin, xmax, ymax):
         """
