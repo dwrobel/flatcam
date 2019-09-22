@@ -5019,7 +5019,7 @@ msgstr "&Перерисовать объект"
 
 #: flatcamGUI/FlatCAMGUI.py:657 flatcamGUI/FlatCAMGUI.py:2088
 msgid "&Clear plot"
-msgstr "&Очистить участок"
+msgstr "&Отключить все участки"
 
 #: flatcamGUI/FlatCAMGUI.py:658 flatcamGUI/FlatCAMGUI.py:1324
 #: flatcamGUI/FlatCAMGUI.py:2089
@@ -5814,7 +5814,7 @@ msgstr "Вид"
 
 #: flatcamGUI/FlatCAMGUI.py:1729
 msgid "Clear Plot"
-msgstr "Очистить участок"
+msgstr "Отключить все участки"
 
 #: flatcamGUI/FlatCAMGUI.py:1730
 msgid "Replot"
@@ -7343,7 +7343,7 @@ msgstr "Объект программы для ЧПУ"
 
 #: flatcamGUI/ObjectUI.py:1401 flatcamGUI/PreferencesUI.py:2983
 msgid "Plot kind"
-msgstr "Рисовать участка"
+msgstr "Отрисовка участка"
 
 #: flatcamGUI/ObjectUI.py:1404 flatcamGUI/PreferencesUI.py:2985
 msgid ""
@@ -7363,7 +7363,7 @@ msgstr "Траектория"
 
 #: flatcamGUI/ObjectUI.py:1417 flatcamGUI/PreferencesUI.py:3002
 msgid "Display Annotation"
-msgstr "Показать аннотацию"
+msgstr "Показывать примечания"
 
 #: flatcamGUI/ObjectUI.py:1419 flatcamGUI/PreferencesUI.py:3004
 msgid ""
@@ -7371,10 +7371,10 @@ msgid ""
 "When checked it will display numbers in order for each end\n"
 "of a travel line."
 msgstr ""
-"Это выбирает, если отображать текстовую аннотацию на графике.\n"
-"Когда установлен этот флажок, он будет отображать числа в порядке для "
-"каждого конца\n"
-"линии путешествия."
+"Выбор отображения примечаний на графике.\n"
+"Если флажок установлен, то для каждой точки будут отображаться числа в "
+"порядке\n"
+"траектории движения."
 
 #: flatcamGUI/ObjectUI.py:1434
 msgid "Travelled dist."
@@ -9244,19 +9244,19 @@ msgstr "z_move = высота Z для перемещения"
 
 #: flatcamGUI/PreferencesUI.py:3235
 msgid "Annotation Size"
-msgstr "Размер аннотации"
+msgstr "Размер примечаний"
 
 #: flatcamGUI/PreferencesUI.py:3237
 msgid "The font size of the annotation text. In pixels."
-msgstr "Размер шрифта текста аннотации. В пикселях."
+msgstr "Размер шрифта текста примечаний. В пикселях."
 
 #: flatcamGUI/PreferencesUI.py:3245
 msgid "Annotation Color"
-msgstr "Цвет аннотации"
+msgstr "Цвет примечаний"
 
 #: flatcamGUI/PreferencesUI.py:3247
 msgid "Set the font color for the annotation texts."
-msgstr "Установите цвет шрифта для текста аннотации."
+msgstr "Устанавливает цвет шрифта для текста примечаний."
 
 #: flatcamGUI/PreferencesUI.py:3273
 msgid "NCC Tool Options"
