@@ -1356,11 +1356,26 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except TypeError:
             geometry = [geometry]
 
-        # if self.app.is_legacy is False:
-        def random_color():
-            color = np.random.rand(4)
-            color[3] = 1
-            return color
+        if self.app.is_legacy is False:
+            def random_color():
+                color = np.random.rand(4)
+                color[3] = 1
+                return color
+        else:
+            def random_color():
+                while True:
+                    color = np.random.rand(4)
+                    color[3] = 1
+
+                    new_color = '#'
+                    for idx in range(len(color)):
+                        new_color += '%x' % int(color[idx] * 255)
+                    # do it until a valid color is generated
+                    # a valid color has the # symbol, another 6 chars for the color and the last 2 chars for alpha
+                    # for a total of 9 chars
+                    if len(new_color) == 9:
+                        break
+                return new_color
 
         try:
             if self.options["solid"]:
@@ -1395,11 +1410,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
+        except Exception as e:
+            log.debug("FlatCAMGerber.plot() --> %s" % str(e))
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
-    def plot_aperture(self, **kwargs):
+    def plot_aperture(self, run_thread=True, **kwargs):
         """
 
+        :param run_thread: if True run the aperture plot as a thread in a worker
         :param kwargs: color and face_color
         :return:
         """
@@ -1429,31 +1447,34 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         else:
             visibility = kwargs['visible']
 
-        with self.app.proc_container.new(_("Plotting Apertures")) as proc:
+        with self.app.proc_container.new(_("Plotting Apertures")):
             self.app.progress.emit(30)
 
             def job_thread(app_obj):
-                self.app.progress.emit(30)
                 try:
                     if aperture_to_plot_mark in self.apertures:
                         for elem in self.apertures[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
-                                geo = elem['solid']
-                                if type(geo) == Polygon or type(geo) == LineString:
-                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
-                                                        face_color=color, visible=visibility)
-                                else:
-                                    for el in geo:
-                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
+                                    geo = elem['solid']
+                                    if type(geo) == Polygon or type(geo) == LineString:
+                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
                                                             face_color=color, visible=visibility)
+                                    else:
+                                        for el in geo:
+                                            self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
+                                                                face_color=color, visible=visibility)
 
                     self.mark_shapes[aperture_to_plot_mark].redraw()
-                    self.app.progress.emit(100)
 
                 except (ObjectDeleted, AttributeError):
                     self.clear_plot_apertures()
+                except Exception as e:
+                    print(str(e))
 
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
+            if run_thread:
+                self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
+            else:
+                job_thread(self)
 
     def clear_plot_apertures(self, aperture='all'):
         """
@@ -1497,8 +1518,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.ui.apertures_table.cellWidget(cw_row, 5).isChecked():
             self.marked_rows.append(True)
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-            self.plot_aperture(color=self.app.defaults['global_sel_draw_color'], marked_aperture=aperture, visible=True)
-            self.mark_shapes[aperture].redraw()
+            self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                               marked_aperture=aperture, visible=True, run_thread=True)
+            # self.mark_shapes[aperture].redraw()
         else:
             self.marked_rows.append(False)
             self.clear_plot_apertures(aperture=aperture)
@@ -1534,7 +1556,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if mark_all:
             for aperture in self.apertures:
                 # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_aperture(color=self.app.defaults['global_sel_draw_color'],
+                self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'FF',
                                    marked_aperture=aperture, visible=True)
             # HACK: enable/disable the grid for a better look
             self.app.ui.grid_snap_btn.trigger()

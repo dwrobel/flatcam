@@ -3739,9 +3739,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # ### Snap coordinates ###
         if self.app.grid_status() == True:
             x, y = self.snap(x, y)
-            if self.app.is_legacy is False:
-                # Update cursor
-                self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
+
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
 
         self.snap_x = x
         self.snap_y = y

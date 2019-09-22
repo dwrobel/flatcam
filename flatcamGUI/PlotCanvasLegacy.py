@@ -4,6 +4,7 @@
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
+# Modified by Marius Stanciu 09/21/2019                    #
 ############################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
@@ -25,6 +26,14 @@ from shapely.geometry import Polygon, LineString, LinearRing, Point, MultiPolygo
 import FlatCAMApp
 from copy import deepcopy
 import logging
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 mpl_use("Qt5Agg")
 log = logging.getLogger('base')
@@ -617,7 +626,12 @@ class PlotCanvasLegacy(QtCore.QObject):
         return width / xpx, height / ypx
 
 
-class FakeCursor():
+class FakeCursor:
+    """
+    This is a fake cursor to ensure compatibility with the OpenGL engine (VisPy).
+    This way I don't have to chane (disable) things related to the cursor all over when
+    using the low performance Matplotlib 2D graphic engine.
+    """
     def __init__(self):
         self._enabled = True
 
@@ -629,9 +643,17 @@ class FakeCursor():
     def enabled(self, value):
         self._enabled = value
 
+    def set_data(self, pos, **kwargs):
+        """Internal event handler to draw the cursor when the mouse moves."""
+        pass
+
 
 class MplCursor(Cursor):
-
+    """
+    Unfortunately this gets attached to the current axes and if a new axes is added
+    it will not be showed until that axes is deleted.
+    Not the kind of behavior needed here so I don't use it anymore.
+    """
     def __init__(self, axes, color='red', linewidth=1):
 
         super().__init__(ax=axes, useblit=True, color=color, linewidth=linewidth)
@@ -687,11 +709,23 @@ class MplCursor(Cursor):
 
 
 class ShapeCollectionLegacy:
+    """
+    This will create the axes for each collection of shapes and will also
+    hold the collection of shapes into a dict self._shapes.
+    This handles the shapes redraw on canvas.
+    """
+    def __init__(self, obj, app, name=None, annotation_job=None):
+        """
 
-    def __init__(self, obj, app, name=None):
-
+        :param obj: this is the object to which the shapes collection is attached and for
+        which it will have to draw shapes
+        :param app: this is the FLatCAM.App usually, needed because we have to access attributes there
+        :param name: this is the name given to the Matplotlib axes; it needs to be unique due of Matplotlib requurements
+        :param annotation_job: make this True if the job needed is just for annotation
+        """
         self.obj = obj
         self.app = app
+        self.annotation_job = annotation_job
 
         self._shapes = dict()
         self.shape_dict = dict()
@@ -719,7 +753,23 @@ class ShapeCollectionLegacy:
 
     def add(self, shape=None, color=None, face_color=None, alpha=None, visible=True,
             update=False, layer=1, tolerance=0.01, obj=None, gcode_parsed=None, tool_tolerance=None, tooldia=None):
+        """
+        This function will add shapes to the shape collection
 
+        :param shape: the Shapely shape to be added to the shape collection
+        :param color: edge color of the shape, hex value
+        :param face_color: the body color of the shape, hex value
+        :param alpha: level of transparency of the shape [0.0 ... 1.0]; Float
+        :param visible: if True will allow the shapes to be added
+        :param update: not used; just for compatibility with VIsPy canvas
+        :param layer: just for compatibility with VIsPy canvas
+        :param tolerance: just for compatibility with VIsPy canvas
+        :param obj: not used
+        :param gcode_parsed: not used; just for compatibility with VIsPy canvas
+        :param tool_tolerance: just for compatibility with VIsPy canvas
+        :param tooldia:
+        :return:
+        """
         self._color = color[:-2] if color is not None else None
         self._face_color = face_color[:-2] if face_color is not None else None
         self._alpha = int(face_color[-2:], 16) / 255 if face_color is not None else 0.75
@@ -730,7 +780,7 @@ class ShapeCollectionLegacy:
         self._visible = visible
         self._update = update
 
-        # CNCJob oject related arguments
+        # CNCJob object related arguments
         self._obj = obj
         self._gcode_parsed = gcode_parsed
         self._tool_tolerance = tool_tolerance
@@ -768,6 +818,12 @@ class ShapeCollectionLegacy:
         return self.shape_id
 
     def clear(self, update=None):
+        """
+        Clear the canvas of the shapes.
+
+        :param update:
+        :return: None
+        """
         self._shapes.clear()
         self.shape_id = 0
 
@@ -778,6 +834,11 @@ class ShapeCollectionLegacy:
             self.redraw()
 
     def redraw(self):
+        """
+        This draw the shapes in the shapes collection, on canvas
+
+        :return: None
+        """
         path_num = 0
         local_shapes = deepcopy(self._shapes)
 
@@ -887,12 +948,57 @@ class ShapeCollectionLegacy:
 
         self.app.plotcanvas.auto_adjust_axes()
 
+    def set(self, text, pos, visible=True, font_size=16, color=None):
+        """
+        This will set annotations on the canvas.
+
+        :param text: a list of text elements to be used as annotations
+        :param pos: a list of positions for showing the text elements above
+        :param visible: if True will display annotations, if False will clear them on canvas
+        :param font_size: the font size or the annotations
+        :param color: color of the annotations
+        :return: None
+        """
+        if color is None:
+            color = "#000000FF"
+
+        if visible is not True:
+            self.clear()
+            return
+
+        if len(text) != len(pos):
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not annotate due of a difference between the number "
+                                                        "of text elements and the number of text positions."))
+            return
+
+        for idx in range(len(text)):
+            try:
+                self.axes.annotate(text[idx], xy=pos[idx], xycoords='data', fontsize=font_size, color=color)
+            except Exception as e:
+                log.debug("ShapeCollectionLegacy.set() --> %s" % str(e))
+
+        self.app.plotcanvas.auto_adjust_axes()
+
     @property
     def visible(self):
         return self._visible
 
     @visible.setter
     def visible(self, value):
+        if value is False:
+            self.axes.cla()
+            self.app.plotcanvas.auto_adjust_axes()
+        else:
+            if self._visible is False:
+                self.redraw()
+        self._visible = value
+
+    @property
+    def enabled(self):
+        return self._visible
+
+    @enabled.setter
+    def enabled(self, value):
         if value is False:
             self.axes.cla()
             self.app.plotcanvas.auto_adjust_axes()

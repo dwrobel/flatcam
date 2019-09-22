@@ -343,10 +343,10 @@ class Measurement(FlatCAMTool):
 
             if self.app.grid_status() == True:
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                if self.app.is_legacy is False:
-                    # Update cursor
-                    self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                                 symbol='++', edge_color='black', size=20)
+
+                # Update cursor
+                self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                             symbol='++', edge_color='black', size=20)
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
 

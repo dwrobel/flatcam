@@ -18,6 +18,11 @@ CAD program, and create G-Code for Isolation routing.
 - fixed display of distance labels and code optimizations in ToolPaint and NCC Tool
 - adjusted axis at startup for legacy graphic engine plotcanvas
 - when the graphic engine is changed in Edit -> Preferences -> General -> App Preferences, the application will restart
+- made hover shapes work in legacy graphic engine
+- fixed bug in display of the apertures marked in the Aperture table found in the Gerber Selected tab and through this made it to also work with the legacy graphic engine
+- fixed annotation in Mark Area Tool in Gerber Editor to work in legacy graphic engine
+- fixed the MultiColor plot option Gerber selected tab to work in legacy graphic engine
+- documented some methods in the ShapeCollectionLegacy class
 
 21.09.2019
 

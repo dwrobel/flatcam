@@ -2607,8 +2607,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.ma_lower_threshold_entry = FCEntry()
         self.ma_lower_threshold_entry.setValidator(QtGui.QDoubleValidator(0.0000, 9999.9999, 4))
 
-        ma_form_layout.addRow(self.ma_upper_threshold_lbl, self.ma_upper_threshold_entry)
         ma_form_layout.addRow(self.ma_lower_threshold_lbl, self.ma_lower_threshold_entry)
+        ma_form_layout.addRow(self.ma_upper_threshold_lbl, self.ma_upper_threshold_entry)
 
         # Buttons
         hlay_ma = QtWidgets.QHBoxLayout()
@@ -2829,7 +2829,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='shapes_grb_editor')
             self.tool_shape = ShapeCollectionLegacy(obj=self, app=self.app, name='tool_shapes_grb_editor')
-            self.ma_annotation = ShapeCollectionLegacy(obj=self, app=self.app, name='ma_anno_grb_editor')
+            self.ma_annotation = ShapeCollectionLegacy(
+                obj=self,
+                app=self.app,
+                name='ma_anno_grb_editor',
+                annotation_job=True)
 
         self.app.pool_recreated.connect(self.pool_recreated)
 
@@ -2983,8 +2987,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.buffer_distance_entry.set_value(self.app.defaults["gerber_editor_buff_f"])
         self.scale_factor_entry.set_value(self.app.defaults["gerber_editor_scale_f"])
-        self.ma_upper_threshold_entry.set_value(self.app.defaults["gerber_editor_ma_low"])
-        self.ma_lower_threshold_entry.set_value(self.app.defaults["gerber_editor_ma_high"])
+        self.ma_upper_threshold_entry.set_value(self.app.defaults["gerber_editor_ma_high"])
+        self.ma_lower_threshold_entry.set_value(self.app.defaults["gerber_editor_ma_low"])
 
         self.apsize_entry.set_value(self.app.defaults["gerber_editor_newsize"])
         self.aptype_cb.set_value(self.app.defaults["gerber_editor_newtype"])
@@ -4392,9 +4396,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # # ## Snap coordinates
         if self.app.grid_status() == True:
             x, y = self.app.geo_editor.snap(x, y)
-            if self.app.is_legacy is False:
-                # Update cursor
-                self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
+
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
 
         self.snap_x = x
         self.snap_y = y
@@ -4835,7 +4839,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         except Exception as e:
                             lower_threshold_val = 0.0
 
-                        if area < float(upper_threshold_val) and area > float(lower_threshold_val):
+                        if float(upper_threshold_val) > area > float(lower_threshold_val):
                             current_pos = geo_el['solid'].exterior.coords[-1]
                             text_elem = '%.4f' % area
                             text.append(text_elem)
@@ -4844,7 +4848,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if text:
             self.ma_annotation.set(text=text, pos=position, visible=True,
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
-                                   color=self.app.defaults["global_sel_draw_color"])
+                                   color='#000000FF')
             self.app.inform.emit('[success] %s' %
                                  _("Polygon areas marked."))
         else:

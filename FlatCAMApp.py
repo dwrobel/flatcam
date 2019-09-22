@@ -124,7 +124,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.97
-    version_date = "2019/09/20"
+    version_date = "2019/09/22"
     beta = True
     engine = '3D'
 
@@ -2760,7 +2760,7 @@ class App(QtCore.QObject):
         :param name: String that store the project path and project name
         :return: None
         """
-        self.ui.setWindowTitle('FlatCAM %s %s - %s - (%s)    %s' %
+        self.ui.setWindowTitle('FlatCAM %s %s - %s - [%s]    %s' %
                                (self.version,
                                 ('BETA' if self.beta else ''),
                                 platform.architecture()[0],
@@ -7719,10 +7719,9 @@ class App(QtCore.QObject):
                 if self.grid_status() == True:
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
 
-                    if self.is_legacy is False:
-                        # Update cursor
-                        self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                                 symbol='++', edge_color='black', size=20)
+                    # Update cursor
+                    self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                             symbol='++', edge_color='black', size=20)
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])
 
@@ -7766,7 +7765,7 @@ class App(QtCore.QObject):
                                             obj.isHovering = True
                                             obj.notHovering = True
                                             # create the selection box around the selected object
-                                            self.draw_hover_shape(obj, color='#d1e0e0')
+                                            self.draw_hover_shape(obj, color='#d1e0e0FF')
                                     else:
                                         if obj.notHovering is True:
                                             obj.notHovering = False
