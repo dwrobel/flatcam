@@ -36,6 +36,10 @@ from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry import shape
 
+# needed for legacy mode
+# Used for solid polygons in Matplotlib
+from descartes.patch import PolygonPatch
+
 import collections
 from collections import Iterable
 
@@ -117,7 +121,11 @@ class Geometry(object):
         self.old_disp_number = 0
         self.el_count = 0
 
-        self.temp_shapes = self.app.plotcanvas.new_shape_group()
+        if self.app.is_legacy is False:
+            self.temp_shapes = self.app.plotcanvas.new_shape_group()
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
 
         # if geo_steps_per_circle is None:
         #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])

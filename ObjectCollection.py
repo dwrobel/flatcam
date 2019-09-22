@@ -588,8 +588,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.app.all_objects_list = self.get_list()
 
         self.endRemoveRows()
-
-        self.app.plotcanvas.redraw()
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.redraw()
 
         if select_project:
             # always go to the Project Tab after object deletion as it may be done with a shortcut key

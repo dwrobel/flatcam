@@ -9,9 +9,44 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.09.2019
+
+- fixed zoom directions legacy graphic engine (previous commit)
+- fixed display of MultiGeo geometries in legacy graphic engine
+- fixed Paint tool to work in legacy graphic engine
+- fixed CutOut Tool to work in legacy graphic engine
+- fixed display of distance labels and code optimizations in ToolPaint and NCC Tool
+- adjusted axis at startup for legacy graphic engine plotcanvas
+- when the graphic engine is changed in Edit -> Preferences -> General -> App Preferences, the application will restart
+
+21.09.2019
+
+- fixed Measuring Tool in legacy graphic engine
+- fixed Gerber plotting in legacy graphic engine
+- fixed Geometry plotting in legacy graphic engine
+- fixed CNCJob and Excellon plotting in legacy graphic engine
+- in legacy graphic engine fixed the travel vs cut lines in CNCJob objects
+- final fix for key shortcuts with modifier in legacy graphic engine
+- refactored some of the code in the legacy graphic engine
+- fixed drawing of selection box when dragging mouse on screen and the selection shape drawing on the selected objects
+- fixed the moving drawing shape in Tool Move in legacy graphic engine
+- fixed moving geometry in Tool Measurement in legacy graphic engine
+- fixed Geometry Editor to work in legacy graphic engine
+- fixed Excellon Editor to work in legacy graphic engine
+- fixed Gerber Editor to work in legacy graphic engine
+- fixed NCC tool to work in legacy graphic engine
+
 20.09.2019
 
 - final fix for the --shellvar having spaces within the assigned value; now they are retained
+- legacy graphic engine - made the mouse events work (click, release, doubleclick, dragging)
+- legacy graphic engine - made the key events work (simple or with modifiers)
+- legacy graphic engine - made the mouse cursor work (enabled/disabled, position report); snapping is not moving the cursor yet
+- made the mouse cursor snap to the grid when grid snapping is active
+- changed the axis color to the one used in the OpenGL graphic engine
+- work on ShapeCollectionLegacy
+- fixed mouse cursor to work for all objects
+- fixed event signals to work in both graphic engines: 2D and 3D
 
 19.09.2019
 

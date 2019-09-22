@@ -2012,8 +2012,14 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.exc_obj = None
 
         # VisPy Visuals
-        self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
-        self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
+        if self.app.is_legacy is False:
+            self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
+            self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='shapes_exc_editor')
+            self.tool_shape = ShapeCollectionLegacy(obj=self, app=self.app, name='tool_shapes_exc_editor')
+
         self.app.pool_recreated.connect(self.pool_recreated)
 
         # Remove from scene
@@ -2081,6 +2087,11 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         def entry2option(option, entry):
             self.options[option] = float(entry.text())
+
+        # Event signals disconnect id holders
+        self.mp = None
+        self.mm = None
+        self.mr = None
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
@@ -2445,8 +2456,10 @@ class FlatCAMExcEditor(QtCore.QObject):
                 row_to_be_selected = int(key) - 1
                 self.last_tool_selected = int(key)
                 break
-
-        self.tools_table_exc.selectRow(row_to_be_selected)
+        try:
+            self.tools_table_exc.selectRow(row_to_be_selected)
+        except TypeError as e:
+            log.debug("FlatCAMExcEditor.on_tool_add() --> %s" % str(e))
 
     def on_tool_delete(self, dia=None):
         self.is_modified = True
@@ -2791,16 +2804,23 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
-        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_exc_click_release)
+        self.mp = self.canvas.graph_event_connect('mouse_press', self.on_canvas_click)
+        self.mm = self.canvas.graph_event_connect('mouse_move', self.on_canvas_move)
+        self.mr = self.canvas.graph_event_connect('mouse_release', self.on_exc_click_release)
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
-        self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+        else:
+            self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mm)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mdc)
+
         self.app.collection.view.clicked.disconnect()
 
         self.app.ui.popmenu_copy.triggered.disconnect()
@@ -2819,15 +2839,22 @@ class FlatCAMExcEditor(QtCore.QObject):
         # we restore the key and mouse control to FlatCAMApp method
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
-        self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
+        self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.app.on_mouse_click_over_plot)
+        self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.app.on_mouse_move_over_plot)
+        self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                              self.app.on_mouse_click_release_over_plot)
+        self.app.mdc = self.app.plotcanvas.graph_event_connect('mouse_double_click',
+                                                               self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
-        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_exc_click_release)
+        if self.app.is_legacy is False:
+            self.canvas.graph_event_disconnect('mouse_press', self.on_canvas_click)
+            self.canvas.graph_event_disconnect('mouse_move', self.on_canvas_move)
+            self.canvas.graph_event_disconnect('mouse_release', self.on_exc_click_release)
+        else:
+            self.canvas.graph_event_disconnect(self.mp)
+            self.canvas.graph_event_disconnect(self.mm)
+            self.canvas.graph_event_disconnect(self.mr)
 
         try:
             self.app.ui.popmenu_copy.triggered.disconnect(self.exc_copy_drills)
@@ -2902,6 +2929,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         # DrawToolShape.tolerance = fc_excellon.drawing_tolerance * 10
 
         self.select_tool("drill_select")
+
+        # reset the tool table
+        self.tools_table_exc.clear()
+        self.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
+        self.last_tool_selected = None
 
         self.set_ui()
 
@@ -3053,6 +3085,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # element[1] of the tuple is a list of coordinates (a tuple themselves)
         ordered_edited_points = sorted(zip(edited_points.keys(), edited_points.values()))
 
+
         current_tool = 0
         for tool_dia in ordered_edited_points:
             current_tool += 1
@@ -3121,26 +3154,13 @@ class FlatCAMExcEditor(QtCore.QObject):
                     self.edited_obj_name += "_1"
             else:
                 self.edited_obj_name += "_edit"
-
-        self.app.worker_task.emit({'fcn': self.new_edited_excellon,
-                                   'params': [self.edited_obj_name]})
-
         self.new_tool_offset = self.exc_obj.tool_offset
 
-        # reset the tool table
-        self.tools_table_exc.clear()
-        self.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
-        self.last_tool_selected = None
-
-        # delete the edited Excellon object which will be replaced by a new one having the edited content of the first
-        # self.app.collection.set_active(self.exc_obj.options['name'])
-        # self.app.collection.delete_active()
-
-        # restore GUI to the Selected TAB
-        # Remove anything else in the GUI
-        self.app.ui.tool_scroll_area.takeWidget()
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+        self.app.worker_task.emit({'fcn': self.new_edited_excellon,
+                                   'params': [self.edited_obj_name,
+                                              self.new_drills,
+                                              self.new_slots,
+                                              self.new_tools]})
 
     def update_options(self, obj):
         try:
@@ -3157,7 +3177,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             obj.options = {}
             return True
 
-    def new_edited_excellon(self, outname):
+    def new_edited_excellon(self, outname, n_drills, n_slots, n_tools):
         """
         Creates a new Excellon object for the edited Excellon. Thread-safe.
 
@@ -3170,12 +3190,17 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.log.debug("Update the Excellon object with edited content. Source is %s" %
                            self.exc_obj.options['name'])
 
+        new_drills = n_drills
+        new_slots = n_slots
+        new_tools = n_tools
+
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
+
             # self.progress.emit(20)
-            excellon_obj.drills = self.new_drills
-            excellon_obj.tools = self.new_tools
-            excellon_obj.slots = self.new_slots
+            excellon_obj.drills = deepcopy(new_drills)
+            excellon_obj.tools = deepcopy(new_tools)
+            excellon_obj.slots = deepcopy(new_slots)
             excellon_obj.tool_offset = self.new_tool_offset
             excellon_obj.options['name'] = outname
 
@@ -3192,15 +3217,17 @@ class FlatCAMExcEditor(QtCore.QObject):
                 app_obj.inform.emit(msg)
                 raise
                 # raise
-            excellon_obj.source_file = self.app.export_excellon(obj_name=outname, filename=None,
-                                                                local_use=excellon_obj, use_thread=False)
 
         with self.app.proc_container.new(_("Creating Excellon.")):
 
             try:
-                self.app.new_object("excellon", outname, obj_init)
+                edited_obj = self.app.new_object("excellon", outname, obj_init)
+                edited_obj.source_file = self.app.export_excellon(obj_name=edited_obj.options['name'],
+                                                                  local_use=edited_obj,
+                                                                  filename=None,
+                                                                  use_thread=False)
             except Exception as e:
-                log.error("Error on object creation: %s" % str(e))
+                log.error("Error on Edited object creation: %s" % str(e))
                 self.app.progress.emit(100)
                 return
 
@@ -3282,25 +3309,28 @@ class FlatCAMExcEditor(QtCore.QObject):
         :param event: Event object dispatched by VisPy
         :return: None
         """
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
 
-        self.pos = self.canvas.translate_coords(event.pos)
+        self.pos = self.canvas.translate_coords(event_pos)
 
         if self.app.grid_status() == True:
             self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-            self.app.app_cursor.enabled = True
-            # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
-                                         size=20)
         else:
             self.pos = (self.pos[0], self.pos[1])
-            self.app.app_cursor.enabled = False
 
-        if event.button is 1:
+        if event.button == 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
             # Selection with left mouse button
-            if self.active_tool is not None and event.button is 1:
+            if self.active_tool is not None and event.button == 1:
                 # Dispatch event to active_tool
                 # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
                 self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
@@ -3318,6 +3348,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                         modifier_to_use = Qt.ControlModifier
                     else:
                         modifier_to_use = Qt.ShiftModifier
+
                     # if modifier key is pressed then we add to the selected list the current shape but if it's already
                     # in the selected list, we removed it. Therefore first click selects, second deselects.
                     if key_modifier == modifier_to_use:
@@ -3422,7 +3453,17 @@ class FlatCAMExcEditor(QtCore.QObject):
         :param event: Event object dispatched by VisPy SceneCavas
         :return: None
         """
-        pos_canvas = self.canvas.translate_coords(event.pos)
+
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        pos_canvas = self.canvas.translate_coords(event_pos)
 
         if self.app.grid_status() == True:
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -3432,7 +3473,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
         try:
-            if event.button == 2:  # right click
+            if event.button == right_button:  # right click
                 if self.app.ui.popMenu.mouse_is_panning is False:
                     try:
                         QtGui.QGuiApplication.restoreOverrideCursor()
@@ -3580,7 +3621,16 @@ class FlatCAMExcEditor(QtCore.QObject):
         :return: None
         """
 
-        pos = self.canvas.translate_coords(event.pos)
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        pos = self.canvas.translate_coords(event_pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
         self.x = event.xdata
@@ -3589,7 +3639,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2 and event.is_dragging == 1:
+        if event.button == right_button and event_is_dragging == 1:
             self.app.ui.popMenu.mouse_is_panning = True
             return
 
@@ -3605,11 +3655,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         # ## Snap coordinates
         if self.app.grid_status() == True:
             x, y = self.app.geo_editor.snap(x, y)
-            self.app.app_cursor.enabled = True
-            # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
-        else:
-            self.app.app_cursor.enabled = False
+            if self.app.is_legacy is False:
+                # Update cursor
+                self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
 
         self.snap_x = x
         self.snap_y = y
@@ -3636,7 +3684,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.draw_utility_geometry(geo=geo)
 
         # ## Selection area on canvas section # ##
-        if event.is_dragging == 1 and event.button == 1:
+        if event_is_dragging == 1 and event.button == 1:
             # I make an exception for FCDrillAdd and FCDrillArray because clicking and dragging while making regions
             # can create strange issues. Also for FCSlot and FCSlotArray
             if isinstance(self.active_tool, FCDrillAdd) or isinstance(self.active_tool, FCDrillArray) or \
@@ -3656,8 +3704,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         else:
             self.app.selection_type = None
 
-        # Update cursor
-        self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
+        if self.app.is_legacy is False:
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
 
     def on_canvas_key_release(self, event):
         self.key = None
@@ -3718,10 +3767,10 @@ class FlatCAMExcEditor(QtCore.QObject):
                     continue
 
                 if shape_plus in self.selected:
-                    self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_sel_draw_color'],
+                    self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_sel_draw_color'] + 'FF',
                                     linewidth=2)
                     continue
-                self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_draw_color'])
+                self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_draw_color'] + 'FF')
 
         # for shape in self.storage.get_objects():
         #     if shape.geo is None:  # TODO: This shouldn't have happened
@@ -3739,7 +3788,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.shapes.redraw()
 
-    def plot_shape(self, geometry=None, color='black', linewidth=1):
+    def plot_shape(self, geometry=None, color='0x000000FF', linewidth=1):
         """
         Plots a geometric object or list of objects without rendering. Plotted objects
         are returned as a list. This allows for efficient/animated rendering.

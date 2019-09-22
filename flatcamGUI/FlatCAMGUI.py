@@ -12,6 +12,7 @@
 # ##########################################################
 
 from flatcamGUI.PreferencesUI import *
+from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -2271,6 +2272,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # events from the GUI are of type QKeyEvent
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
+        elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
+            key = event.key
+            key = QtGui.QKeySequence(key)
+
+            # check for modifiers
+            key_string = key.toString().lower()
+            if '+' in key_string:
+                mod, __, key_text = key_string.rpartition('+')
+                if mod.lower() == 'ctrl':
+                    modifiers = QtCore.Qt.ControlModifier
+                elif mod.lower() == 'alt':
+                    modifiers = QtCore.Qt.AltModifier
+                elif mod.lower() == 'shift':
+                    modifiers = QtCore.Qt.ShiftModifier
+                else:
+                    modifiers = QtCore.Qt.NoModifier
+                key = QtGui.QKeySequence(key_text)
+
         # events from Vispy are of type KeyEvent
         else:
             key = event.key
@@ -2494,7 +2513,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                     # try to disconnect the slot from Set Origin
                     try:
-                        self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_set_zero_click)
+                        self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_set_zero_click)
                     except TypeError:
                         pass
                     self.app.inform.emit("")

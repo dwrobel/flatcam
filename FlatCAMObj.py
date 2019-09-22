@@ -12,6 +12,7 @@ from datetime import datetime
 
 from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
+from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from camlib import *
 import itertools
 
@@ -74,10 +75,17 @@ class FlatCAMObj(QtCore.QObject):
         # store here the default data for Geometry Data
         self.default_data = {}
 
+        # 2D mode
+        # Axes must exist and be attached to canvas.
+        self.axes = None
+
         self.kind = None  # Override with proper name
 
         # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene)
-        self.shapes = self.app.plotcanvas.new_shape_group()
+        if self.app.is_legacy is False:
+            self.shapes = self.app.plotcanvas.new_shape_group()
+        else:
+            self.shapes = ShapeCollectionLegacy(obj=self, app=self.app)
 
         # self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
         self.mark_shapes = {}
@@ -391,11 +399,12 @@ class FlatCAMObj(QtCore.QObject):
         def worker_task(app_obj):
             self.shapes.visible = value
 
-            # Not all object types has annotations
-            try:
-                self.annotation.visible = value
-            except Exception as e:
-                pass
+            if self.app.is_legacy is False:
+                # Not all object types has annotations
+                try:
+                    self.annotation.visible = value
+                except Exception as e:
+                    pass
 
         if threaded is False:
             worker_task(app_obj=self.app)
@@ -627,8 +636,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.create_buffer_button.hide()
 
         # add the shapes storage for marking apertures
-        for ap_code in self.apertures:
-            self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
+        if self.app.is_legacy is False:
+            for ap_code in self.apertures:
+                self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
+        else:
+            for ap_code in self.apertures:
+                self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
+                                                                  name=self.options['name'] + str(ap_code))
 
         # set initial state of the aperture table and associated widgets
         self.on_aperture_table_visibility_change()
@@ -1342,6 +1356,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except TypeError:
             geometry = [geometry]
 
+        # if self.app.is_legacy is False:
         def random_color():
             color = np.random.rand(4)
             color[3] = 1
@@ -5349,7 +5364,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         return factor
 
-    def plot_element(self, element, color='red', visible=None):
+    def plot_element(self, element, color='#FF0000FF', visible=None):
 
         visible = visible if visible else self.options['plot']
 
@@ -5358,7 +5373,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.plot_element(sub_el)
 
         except TypeError:  # Element is not iterable...
+            # if self.app.is_legacy is False:
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
+
 
     def plot(self, visible=None, kind=None):
         """
@@ -5389,7 +5406,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self.plot_element(self.solid_geometry, visible=visible)
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
+
             self.shapes.redraw()
+
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
 
@@ -5551,9 +5570,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
 
-        self.text_col = self.app.plotcanvas.new_text_collection()
-        self.text_col.enabled = True
-        self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
+        if self.app.is_legacy is False:
+            self.text_col = self.app.plotcanvas.new_text_collection()
+            self.text_col.enabled = True
+            self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
 
     def build_ui(self):
         self.ui_disconnect()
@@ -5728,8 +5748,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             pass
         self.ui.annotation_cb.stateChanged.connect(self.on_annotation_change)
 
-        # set if to display text annotations
-        self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
+        if self.app.is_legacy is False:
+            # set if to display text annotations
+            self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -6178,11 +6199,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         visible = visible if visible else self.options['plot']
 
-        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.text_col.enabled = True
-        else:
-            self.text_col.enabled = False
-        self.annotation.redraw()
+        if self.app.is_legacy is False:
+            if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+                self.text_col.enabled = True
+            else:
+                self.text_col.enabled = False
+            self.annotation.redraw()
 
         try:
             if self.multitool is False:  # single tool usage
@@ -6201,16 +6223,20 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
-            self.annotation.clear(update=True)
+            if self.app.is_legacy is False:
+                self.annotation.clear(update=True)
 
     def on_annotation_change(self):
-        if self.ui.annotation_cb.get_value():
-            self.text_col.enabled = True
+        if self.app.is_legacy is False:
+            if self.ui.annotation_cb.get_value():
+                self.text_col.enabled = True
+            else:
+                self.text_col.enabled = False
+            # kind = self.ui.cncplot_method_combo.get_value()
+            # self.plot(kind=kind)
+            self.annotation.redraw()
         else:
-            self.text_col.enabled = False
-        # kind = self.ui.cncplot_method_combo.get_value()
-        # self.plot(kind=kind)
-        self.annotation.redraw()
+            self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
 
     def convert_units(self, units):
         log.debug("FlatCAMObj.FlatCAMECNCjob.convert_units()")
