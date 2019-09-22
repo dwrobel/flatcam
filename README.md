@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Paint tool to work in legacy graphic engine
 - fixed CutOut Tool to work in legacy graphic engine
 - fixed display of distance labels and code optimizations in ToolPaint and NCC Tool
+- adjusted axis at startup for legacy graphic engine plotcanvas
+- when the graphic engine is changed in Edit -> Preferences -> General -> App Preferences, the application will restart
 
 21.09.2019
 

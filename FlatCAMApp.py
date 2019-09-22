@@ -126,6 +126,7 @@ class App(QtCore.QObject):
     version = 8.97
     version_date = "2019/09/20"
     beta = True
+    engine = '3D'
 
     # current date now
     date = str(datetime.today()).rpartition('.')[0]
@@ -1873,6 +1874,11 @@ class App(QtCore.QObject):
         # ##############################
         # ### GUI PREFERENCES SIGNALS ##
         # ##############################
+
+        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(
+            lambda: fcTranslate.restart_program(app=self)
+        )
+
         self.ui.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
         self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(
             lambda: fcTranslate.on_language_apply_click(self, restart=True)
@@ -2482,6 +2488,9 @@ class App(QtCore.QObject):
         # when True, the app has to return from any thread
         self.abort_flag = False
 
+        # set the value used in the Windows Title
+        self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
+
         # ###############################################################################
         # ############# Save defaults to factory_defaults.FlatConfig file ###############
         # ############# It's done only once after install                 ###############
@@ -2751,10 +2760,11 @@ class App(QtCore.QObject):
         :param name: String that store the project path and project name
         :return: None
         """
-        self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %
+        self.ui.setWindowTitle('FlatCAM %s %s - %s - (%s)    %s' %
                                (self.version,
                                 ('BETA' if self.beta else ''),
                                 platform.architecture()[0],
+                                self.engine,
                                 name)
                                )
 

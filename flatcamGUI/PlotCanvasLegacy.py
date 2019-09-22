@@ -154,6 +154,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.canvas.setFocus()
         self.native = self.canvas
 
+        self.adjust_axes(-10, -10, 100, 100)
         # self.canvas.set_can_focus(True)  # For key press
 
         # Attach to parent

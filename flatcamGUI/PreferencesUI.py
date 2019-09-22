@@ -975,6 +975,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Add (label - input field) pair to the QFormLayout
         self.form_box.addRow(self.unitslabel, self.units_radio)
         self.form_box.addRow(self.ge_label, self.ge_radio)
+        self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.app_level_label, self.app_level_radio)
         self.form_box.addRow(self.portability_label, self.portability_cb)
         self.form_box.addRow(QtWidgets.QLabel(''))
