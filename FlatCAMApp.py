@@ -1586,6 +1586,19 @@ class App(QtCore.QObject):
 
         # ### End of Data ####
 
+        # ##############################################
+        # ######### SETUP OBJECT COLLECTION ############
+        # ##############################################
+
+        self.collection = ObjectCollection(self)
+        self.ui.project_tab_layout.addWidget(self.collection.view)
+
+        # ### Adjust tabs width ## ##
+        # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
+        #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
+        self.collection.view.setMinimumWidth(290)
+        self.log.debug("Finished creating Object Collection.")
+
         # ###############################################
         # ############# SETUP Plot Area #################
         # ###############################################
@@ -1607,9 +1620,7 @@ class App(QtCore.QObject):
         start_plot_time = time.time()   # debug
         self.plotcanvas = None
 
-        # this is a list just because when in legacy it is needed to add multiple cursors
-        # each gets deleted when the axes are deleted therefore there is a need of one for each
-        self.app_cursor = []
+        self.app_cursor = None
         self.hover_shapes = None
 
         self.on_plotcanvas_setup()
@@ -1638,19 +1649,6 @@ class App(QtCore.QObject):
             else:
                 self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
                                                   parent=self.parent_w)
-
-        # ##############################################
-        # ######### SETUP OBJECT COLLECTION ############
-        # ##############################################
-
-        self.collection = ObjectCollection(self)
-        self.ui.project_tab_layout.addWidget(self.collection.view)
-
-        # ### Adjust tabs width ## ##
-        # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
-        #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
-        self.collection.view.setMinimumWidth(290)
-        self.log.debug("Finished creating Object Collection.")
 
         # ###############################################
         # ############# Worker SETUP ####################

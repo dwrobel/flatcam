@@ -329,6 +329,12 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # FlatCAMApp.App.log.debug("PC.adjust_axes()")
 
+        if not self.app.collection.get_list():
+            xmin = -10
+            ymin = -10
+            xmax = 100
+            ymax = 100
+
         width = xmax - xmin
         height = ymax - ymin
         try:
@@ -588,7 +594,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         :param position: Mouse event position
         :return: Tuple with mouse position
         """
-        return (position[0], position[1])
+        return position[0], position[1]
 
     def on_draw(self, renderer):
 
