@@ -2,20 +2,20 @@ from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
 
 
-class TclCommandPlotObjects(TclCommand):
+class TclCommandQuit(TclCommand):
     """
-    Tcl shell command to update the plot on the user interface.
+    Tcl shell command to quit FlatCAM from Tcl shell.
 
     example:
-        plot
+
     """
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['plot_objects']
+    aliases = ['quit_flatcam']
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
-        ('names', str)
+
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
@@ -28,11 +28,11 @@ class TclCommandPlotObjects(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Plot a list of objects.",
+        'main': "Tcl shell command to quit FlatCAM from Tcl shell.",
         'args': collections.OrderedDict([
-            ('names', "UA list of object names to be plotted.")
+
         ]),
-        'examples': ["plot_objects"]
+        'examples': ['quit_flatcam']
     }
 
     def execute(self, args, unnamed_args):
@@ -42,11 +42,6 @@ class TclCommandPlotObjects(TclCommand):
         :param unnamed_args:
         :return:
         """
-        if self.app.cmd_line_headless != 1:
-            names = [x.strip() for x in args['names'].split(",")]
-            objs = []
-            for name in names:
-                objs.append(self.app.collection.get_by_name(name))
 
-            for obj in objs:
-                obj.plot()
+        self.app.quit_application()
+
