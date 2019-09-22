@@ -2092,6 +2092,12 @@ class App(QtCore.QObject):
         self.setup_recent_items()
         self.setup_component_editor()
 
+        # this does not work in Legacy Mode
+        if self.is_legacy is True:
+            self.ui.general_defaults_form.general_gui_group.workspace_cb.setDisabled(True)
+            self.ui.general_defaults_form.general_gui_group.workspace_type_lbl.setDisabled(True)
+            self.ui.general_defaults_form.general_gui_group.wk_cb.setDisabled(True)
+
         # #####################################################################################
         # ######################### Auto-complete KEYWORDS ####################################
         # #####################################################################################

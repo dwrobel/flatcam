@@ -28,6 +28,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the .POT file and the translation files
 - updated and corrected the Romanian and Spanish translations
 - updated the .PO files for the rest of the translations, they need to be filled in.
+- fixed crash when trying to set a workspace in FlatCAM in the Legacy engine 2D mode by disabling this function for the case of 2D mode
 
 21.09.2019
 
