@@ -5562,7 +5562,7 @@ class App(QtCore.QObject):
 
         if self.toggle_fscreen is False:
             # self.ui.showFullScreen()
-            self.ui.setWindowFlags(self.ui.windowFlags() | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+            self.ui.setWindowFlags(self.ui.windowFlags() | Qt.FramelessWindowHint)
             a = self.ui.geometry()
             self.x_pos = a.x()
             self.y_pos = a.y()
@@ -5574,7 +5574,7 @@ class App(QtCore.QObject):
             self.ui.splitter_left.setVisible(False)
             self.toggle_fscreen = True
         else:
-            self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.WindowStaysOnTopHint & ~Qt.FramelessWindowHint)
+            self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.FramelessWindowHint)
             self.ui.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
             self.ui.showNormal()
             self.restore_toolbar_view()
