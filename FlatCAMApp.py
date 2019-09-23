@@ -1198,8 +1198,8 @@ class App(QtCore.QObject):
             # Keyword list
             "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, Marius, My Documents, Paste_1, '
                                           'Repetier, Roland_MDX_20, Toolchange_Custom, Toolchange_Probe_MACH3, '
-                                          'Toolchange_manual, Users, all, angle_x, angle_y, axis, axisoffset, box, '
-                                          'center_x, center_y, columns, combine, connect, contour, default, '
+                                          'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
+                                          'box, center_x, center_y, columns, combine, connect, contour, default, '
                                           'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwell, dwelltime, '
                                           'feedrate_z, grbl_11, grbl_laser, gridoffsety, gridx, gridy, has_offset, '
                                           'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
@@ -2117,7 +2117,7 @@ class App(QtCore.QObject):
 
         self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'Marius', 'My Documents', 'Paste_1',
                                  'Repetier', 'Roland_MDX_20', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
-                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'axis', 'axisoffset',
+                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis', 'axisoffset',
                                  'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dwell',
                                  'dwelltime', 'feedrate_z', 'grbl_11', 'grbl_laser', 'gridoffsety', 'gridx', 'gridy',
