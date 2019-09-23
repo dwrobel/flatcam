@@ -2484,6 +2484,12 @@ class App(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
+        # Window geometry
+        self.x_pos = None
+        self.y_pos = None
+        self.width = None
+        self.height = None
+
         # Event signals disconnect id holders
         self.mp = None
         self.mm = None
@@ -3772,6 +3778,16 @@ class App(QtCore.QObject):
         self.defaults["global_def_win_h"] = height
         self.defaults["global_def_notebook_width"] = notebook_width
         self.save_defaults()
+
+    def restore_main_win_geom(self):
+        try:
+            self.ui.setGeometry(self.defaults["global_def_win_x"],
+                                self.defaults["global_def_win_y"],
+                                self.defaults["global_def_win_w"],
+                                self.defaults["global_def_win_h"])
+            self.ui.splitter.setSizes([self.defaults["global_def_notebook_width"], 0])
+        except KeyError as e:
+            log.debug("App.restore_main_win_geom() --> %s" % str(e))
 
     def message_dialog(self, title, message, kind="info"):
         """
@@ -5545,15 +5561,33 @@ class App(QtCore.QObject):
         self.report_usage("on_fullscreen()")
 
         if self.toggle_fscreen is False:
-            if sys.platform == 'win32':
-                self.ui.showFullScreen()
+            # self.ui.showFullScreen()
+            self.ui.setWindowFlags(self.ui.windowFlags() | Qt.FramelessWindowHint)
+            a = self.ui.geometry()
+            self.x_pos = a.x()
+            self.y_pos = a.y()
+            self.width = a.width()
+            self.height = a.height()
+
+            # set new geometry to full desktop rect
+            # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
+            # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
+            # everything else will not work without this hack. This happen in Windows.
+            # https://bugreports.qt.io/browse/QTBUG-41309
+            rec = QtWidgets.QApplication.desktop().screenGeometry()
+            h = rec.height() + 2
+            w = rec.width() + 2
+            self.ui.setGeometry(-1, -1, w, h)
+            self.ui.show()
+
             for tb in self.ui.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
             self.ui.splitter_left.setVisible(False)
             self.toggle_fscreen = True
         else:
-            if sys.platform == 'win32':
-                self.ui.showNormal()
+            self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.FramelessWindowHint)
+            self.ui.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
+            self.ui.showNormal()
             self.restore_toolbar_view()
             self.ui.splitter_left.setVisible(True)
             self.toggle_fscreen = False
@@ -10507,16 +10541,6 @@ class App(QtCore.QObject):
                         routes[param].defaults[p] = self.defaults[param]
                         if silent is False:
                             self.log.debug("  " + param + " OK!")
-
-    def restore_main_win_geom(self):
-        try:
-            self.ui.setGeometry(self.defaults["global_def_win_x"],
-                                self.defaults["global_def_win_y"],
-                                self.defaults["global_def_win_w"],
-                                self.defaults["global_def_win_h"])
-            self.ui.splitter.setSizes([self.defaults["global_def_notebook_width"], 0])
-        except KeyError as e:
-            log.debug("App.restore_main_win_geom() --> %s" % str(e))
 
     def plot_all(self, zoom=True):
         """
