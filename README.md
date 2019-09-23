@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a new TclCommand named "bounds" which will return a list of bounds values from a supplied list of objects names. For use in Tcl Scripts
 - updated strings in the translations and the .POT file
 - added the new keywords to the default keywords list
+- fixed the FullScreen option not working for the 3D graphic engine (due bug of Qt5 when OpenGL window is fullscreen) by creating a sort of fullscreen
 
 22.09.2019
 
