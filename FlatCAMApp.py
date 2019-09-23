@@ -2107,11 +2107,11 @@ class App(QtCore.QObject):
                                   'join_geometry', 'list_sys', 'listsys', 'milld', 'mills', 'milldrills', 'millslots',
                                   'mirror', 'ncc',
                                   'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
-                                  'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'paint',
-                                  'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'quit_flatcam',
+                                  'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'origin',
+                                  'paint', 'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'quit_flatcam',
                                   'save', 'save_project',
-                                  'save_sys', 'scale',
-                                  'set_active', 'set_sys', 'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
+                                  'save_sys', 'scale', 'set_active', 'set_origin', 'set_sys',
+                                  'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
                                   'version', 'write_gcode'
                                   ]
 
@@ -2488,6 +2488,7 @@ class App(QtCore.QObject):
         self.mp = None
         self.mm = None
         self.mr = None
+        self.mp_zc = None
 
         # when True, the app has to return from any thread
         self.abort_flag = False
@@ -6781,16 +6782,56 @@ class App(QtCore.QObject):
             pass
         self.replot_signal[list].connect(origin_replot)
 
-    def on_set_zero_click(self, event):
-        # this function will be available only for mouse left click
+    def on_set_zero_click(self, event, location=None, noplot=False, use_thread=True):
+        """
 
-        if self.is_legacy is False:
-            event_pos = event.pos
-        else:
-            event_pos = (event.xdata, event.ydata)
+        :param event:
+        :param location:
+        :param noplot:
+        :param use_thread:
+        :return:
+        """
+        noplot_sig = noplot
 
-        pos_canvas = self.plotcanvas.translate_coords(event_pos)
+        def worker_task():
+            with self.proc_container.new(_("Setting Origin...")):
+                for obj in self.collection.get_list():
+                    obj.offset((x, y))
+                    self.object_changed.emit(obj)
+
+                    # Update the object bounding box options
+                    a, b, c, d = obj.bounds()
+                    obj.options['xmin'] = a
+                    obj.options['ymin'] = b
+                    obj.options['xmax'] = c
+                    obj.options['ymax'] = d
+                self.inform.emit('[success] %s...' %
+                                 _('Origin set'))
+                if noplot_sig is False:
+                    self.replot_signal.emit([])
+
+        if location is not None:
+            if len(location) != 2:
+                self.inform.emit('[ERROR_NOTCL] %s...' %
+                                 _("Origin coordinates specified but incomplete."))
+                return 'fail'
+
+            x, y = location
+
+            if use_thread is True:
+                self.worker_task.emit({'fcn': worker_task, 'params': []})
+            else:
+                worker_task()
+            self.should_we_save = True
+            return
+
         if event.button == 1:
+            if self.is_legacy is False:
+                event_pos = event.pos
+            else:
+                event_pos = (event.xdata, event.ydata)
+            pos_canvas = self.plotcanvas.translate_coords(event_pos)
+
             if self.grid_status() == True:
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
             else:
@@ -6799,23 +6840,10 @@ class App(QtCore.QObject):
             x = 0 - pos[0]
             y = 0 - pos[1]
 
-            def worker_task():
-                with self.proc_container.new(_("Setting Origin...")):
-                    for obj in self.collection.get_list():
-                        obj.offset((x, y))
-                        self.object_changed.emit(obj)
-
-                        # Update the object bounding box options
-                        a, b, c, d = obj.bounds()
-                        obj.options['xmin'] = a
-                        obj.options['ymin'] = b
-                        obj.options['xmax'] = c
-                        obj.options['ymax'] = d
-                    self.inform.emit('[success]%s...' %
-                                     _('Origin set'))
-                    self.replot_signal.emit([])
-
-            self.worker_task.emit({'fcn': worker_task, 'params': []})
+            if use_thread is True:
+                self.worker_task.emit({'fcn': worker_task, 'params': []})
+            else:
+                worker_task()
             self.should_we_save = True
 
     def on_jump_to(self, custom_location=None, fit_center=True):

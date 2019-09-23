@@ -53,6 +53,7 @@ import tclCommands.TclCommandSaveProject
 import tclCommands.TclCommandSaveSys
 import tclCommands.TclCommandScale
 import tclCommands.TclCommandSetActive
+import tclCommands.TclCommandSetOrigin
 import tclCommands.TclCommandSetSys
 import tclCommands.TclCommandSkew
 import tclCommands.TclCommandSubtractPoly

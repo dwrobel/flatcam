@@ -85,8 +85,7 @@ class FlatCAMObj(QtCore.QObject):
         if self.app.is_legacy is False:
             self.shapes = self.app.plotcanvas.new_shape_group()
         else:
-            # dont't give an axis name to this one or it will delete the old object when loading a new one
-            self.shapes = ShapeCollectionLegacy(obj=self, app=self.app)
+            self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
 
         # self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
         self.mark_shapes = {}
