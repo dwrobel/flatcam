@@ -20,6 +20,9 @@ CAD program, and create G-Code for Isolation routing.
 - added the new keywords to the default keywords list
 - fixed the FullScreen option not working for the 3D graphic engine (due bug of Qt5 when OpenGL window is fullscreen) by creating a sort of fullscreen
 - added a final fix that allow full coverage of the screen in FullScreen in Windows and still the menus are working
+- optimized the Gerber mark shapes display
+- fixed a color format bug in Tool Move for 3D engine
+- made sure that when the Tool Move is used on a Gerber file with mark shapes active, those mark shapes are deleted before the actual move
 
 22.09.2019
 

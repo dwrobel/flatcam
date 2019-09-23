@@ -418,6 +418,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         xmin, xmax = self.axes.get_xlim()
         ymin, ymax = self.axes.get_ylim()
+
         width = xmax - xmin
         height = ymax - ymin
 
