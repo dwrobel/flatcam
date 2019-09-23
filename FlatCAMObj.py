@@ -608,9 +608,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
-            ))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
             self.ui.milling_type_label.hide()
@@ -621,9 +620,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.except_cb.setChecked(False)
             self.ui.except_cb.hide()
         else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
-            ))
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
         if self.app.defaults["gerber_buffering"] == 'no':
             self.ui.create_buffer_button.show()
@@ -2358,9 +2355,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
-            ))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
 
             self.ui.tools_table.setColumnHidden(4, True)
             self.ui.estartz_label.hide()
@@ -2372,9 +2367,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.feedrate_probe_label.hide()
             self.ui.feedrate_probe_entry.hide()
         else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
-            ))
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
@@ -3636,9 +3629,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
-            ))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
 
             self.ui.geo_tools_table.setColumnHidden(2, True)
             self.ui.geo_tools_table.setColumnHidden(3, True)
@@ -3658,9 +3649,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.feedrate_probe_label.hide()
             self.ui.feedrate_probe_entry.hide()
         else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
-            ))
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
@@ -4598,7 +4587,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             log.debug("FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s\n" % str(e))
 
             msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
-            msg += '%s %s' % (_('FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->'), str(e))
+            msg += '%s %s' % ('FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->', str(e))
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
             return
@@ -5901,7 +5890,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         except Exception as e:
             log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s %s' %
-                                 (_('FlatCAMCNNJob.on_edit_code_click() -->'), str(e)))
+                                 ('FlatCAMCNNJob.on_edit_code_click() -->', str(e)))
             return
 
         self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)

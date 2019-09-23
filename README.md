@@ -24,6 +24,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a color format bug in Tool Move for 3D engine
 - made sure that when the Tool Move is used on a Gerber file with mark shapes active, those mark shapes are deleted before the actual move
 - in legacy graphic engine, fixed issue with Delete shortcut key trying to delete twice
+- 26% in Google-translated French translation and updated some strings too
 
 22.09.2019
 
