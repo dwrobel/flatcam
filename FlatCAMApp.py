@@ -5568,7 +5568,18 @@ class App(QtCore.QObject):
             self.y_pos = a.y()
             self.width = a.width()
             self.height = a.height()
-            self.ui.showMaximized()
+
+            # set new geometry to full desktop rect
+            # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
+            # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
+            # everything else will not work without this hack. This happen in Windows.
+            # https://bugreports.qt.io/browse/QTBUG-41309
+            rec = QtWidgets.QApplication.desktop().screenGeometry()
+            h = rec.height() + 2
+            w = rec.width() + 2
+            self.ui.setGeometry(-1, -1, w, h)
+            self.ui.show()
+
             for tb in self.ui.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
             self.ui.splitter_left.setVisible(False)
