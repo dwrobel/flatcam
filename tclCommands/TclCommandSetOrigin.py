@@ -14,7 +14,7 @@ if '_' not in builtins.__dict__:
 
 class TclCommandSetOrigin(TclCommand):
     """
-    Tcl shell command to clear the text in the Tcl Shell browser.
+    Tcl shell command to set the origin to zero or to a specified location for all loaded objects in FlatCAM.
 
     example:
 
@@ -55,7 +55,6 @@ class TclCommandSetOrigin(TclCommand):
         :return:
         """
 
-        print(args)
         loc = list()
         if 'auto' in args:
             if args['auto'] == 1:

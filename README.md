@@ -14,7 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - in legacy graphic engine, fixed bug that made the old object disappear when a new object was loaded
 - in legacy graphic engine, fixed bug that crashed the app when creating a new project
 - in legacy graphic engine, fixed a bug that when deleting an object all objects where deleted
-- added a new TclCommand named set_origin which will set the origin for all loaded objects to zero if the -auto True argument is used and to a certain x,y location if the format is: set_origin 5,7
+- added a new TclCommand named "set_origin" which will set the origin for all loaded objects to zero if the -auto True argument is used and to a certain x,y location if the format is: set_origin 5,7
+- added a new TclCommand named "bounds" which will return a list of bounds values from a supplied list of objects names. For use in Tcl Scripts
 
 22.09.2019
 
