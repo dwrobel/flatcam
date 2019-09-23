@@ -1173,7 +1173,7 @@ msgstr "Импортирование SVG"
 #: FlatCAMApp.py:10215 FlatCAMApp.py:10282 FlatCAMApp.py:10349
 #: flatcamTools/ToolPDF.py:220
 msgid "Opened"
-msgstr "Открытый"
+msgstr "Открыт"
 
 #: FlatCAMApp.py:10077
 msgid "Importing DXF"
@@ -2479,7 +2479,7 @@ msgstr "Линейный"
 #: flatcamEditors/FlatCAMGrbEditor.py:2648 flatcamGUI/PreferencesUI.py:3303
 #: flatcamTools/ToolNonCopperClear.py:203
 msgid "Circular"
-msgstr "Круговой"
+msgstr "Круглый"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1628 flatcamGUI/PreferencesUI.py:2367
 msgid "Nr of drills"
