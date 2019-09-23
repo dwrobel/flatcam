@@ -5041,7 +5041,7 @@ class Excellon(Geometry):
     def bounds(self):
         """
         Returns coordinates of rectangular bounds
-        of Gerber geometry: (xmin, ymin, xmax, ymax).
+        of Excellon geometry: (xmin, ymin, xmax, ymax).
         """
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects

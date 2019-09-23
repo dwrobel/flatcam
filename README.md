@@ -9,6 +9,18 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.09.2019
+
+- in legacy graphic engine, fixed bug that made the old object disappear when a new object was loaded
+- in legacy graphic engine, fixed bug that crashed the app when creating a new project
+- in legacy graphic engine, fixed a bug that when deleting an object all objects where deleted
+- added a new TclCommand named "set_origin" which will set the origin for all loaded objects to zero if the -auto True argument is used and to a certain x,y location if the format is: set_origin 5,7
+- added a new TclCommand named "bounds" which will return a list of bounds values from a supplied list of objects names. For use in Tcl Scripts
+- updated strings in the translations and the .POT file
+- added the new keywords to the default keywords list
+- fixed the FullScreen option not working for the 3D graphic engine (due bug of Qt5 when OpenGL window is fullscreen) by creating a sort of fullscreen
+- added a final fix that allow full coverage of the screen in FullScreen in Windows and still the menus are working
+
 22.09.2019
 
 - fixed zoom directions legacy graphic engine (previous commit)
@@ -29,6 +41,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated and corrected the Romanian and Spanish translations
 - updated the .PO files for the rest of the translations, they need to be filled in.
 - fixed crash when trying to set a workspace in FlatCAM in the Legacy engine 2D mode by disabling this function for the case of 2D mode
+- fixed exception when trying to Fit View (shortcut key 'V') with no object loaded, in legacy graphic engine
 
 21.09.2019
 

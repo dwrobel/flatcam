@@ -136,6 +136,7 @@ class TclCommandCopperClear(TclCommand):
             tools = [float(eval(dia)) for dia in tooldia.split(",") if dia != '']
         except AttributeError:
             tools = [float(tooldia)]
+
         # store here the default data for Geometry Data
         default_data = {}
         default_data.update({

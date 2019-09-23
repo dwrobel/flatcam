@@ -1198,8 +1198,8 @@ class App(QtCore.QObject):
             # Keyword list
             "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, Marius, My Documents, Paste_1, '
                                           'Repetier, Roland_MDX_20, Toolchange_Custom, Toolchange_Probe_MACH3, '
-                                          'Toolchange_manual, Users, all, angle_x, angle_y, axis, axisoffset, box, '
-                                          'center_x, center_y, columns, combine, connect, contour, default, '
+                                          'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
+                                          'box, center_x, center_y, columns, combine, connect, contour, default, '
                                           'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwell, dwelltime, '
                                           'feedrate_z, grbl_11, grbl_laser, gridoffsety, gridx, gridy, has_offset, '
                                           'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
@@ -1586,6 +1586,19 @@ class App(QtCore.QObject):
 
         # ### End of Data ####
 
+        # ##############################################
+        # ######### SETUP OBJECT COLLECTION ############
+        # ##############################################
+
+        self.collection = ObjectCollection(self)
+        self.ui.project_tab_layout.addWidget(self.collection.view)
+
+        # ### Adjust tabs width ## ##
+        # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
+        #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
+        self.collection.view.setMinimumWidth(290)
+        self.log.debug("Finished creating Object Collection.")
+
         # ###############################################
         # ############# SETUP Plot Area #################
         # ###############################################
@@ -1607,9 +1620,7 @@ class App(QtCore.QObject):
         start_plot_time = time.time()   # debug
         self.plotcanvas = None
 
-        # this is a list just because when in legacy it is needed to add multiple cursors
-        # each gets deleted when the axes are deleted therefore there is a need of one for each
-        self.app_cursor = []
+        self.app_cursor = None
         self.hover_shapes = None
 
         self.on_plotcanvas_setup()
@@ -1638,19 +1649,6 @@ class App(QtCore.QObject):
             else:
                 self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
                                                   parent=self.parent_w)
-
-        # ##############################################
-        # ######### SETUP OBJECT COLLECTION ############
-        # ##############################################
-
-        self.collection = ObjectCollection(self)
-        self.ui.project_tab_layout.addWidget(self.collection.view)
-
-        # ### Adjust tabs width ## ##
-        # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
-        #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
-        self.collection.view.setMinimumWidth(290)
-        self.log.debug("Finished creating Object Collection.")
 
         # ###############################################
         # ############# Worker SETUP ####################
@@ -2109,17 +2107,17 @@ class App(QtCore.QObject):
                                   'join_geometry', 'list_sys', 'listsys', 'milld', 'mills', 'milldrills', 'millslots',
                                   'mirror', 'ncc',
                                   'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
-                                  'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'paint',
-                                  'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'quit_flatcam',
+                                  'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'origin',
+                                  'paint', 'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'quit_flatcam',
                                   'save', 'save_project',
-                                  'save_sys', 'scale',
-                                  'set_active', 'set_sys', 'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
+                                  'save_sys', 'scale', 'set_active', 'set_origin', 'set_sys',
+                                  'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
                                   'version', 'write_gcode'
                                   ]
 
         self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'Marius', 'My Documents', 'Paste_1',
                                  'Repetier', 'Roland_MDX_20', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
-                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'axis', 'axisoffset',
+                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis', 'axisoffset',
                                  'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dwell',
                                  'dwelltime', 'feedrate_z', 'grbl_11', 'grbl_laser', 'gridoffsety', 'gridx', 'gridy',
@@ -2486,10 +2484,17 @@ class App(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
+        # Window geometry
+        self.x_pos = None
+        self.y_pos = None
+        self.width = None
+        self.height = None
+
         # Event signals disconnect id holders
         self.mp = None
         self.mm = None
         self.mr = None
+        self.mp_zc = None
 
         # when True, the app has to return from any thread
         self.abort_flag = False
@@ -3773,6 +3778,16 @@ class App(QtCore.QObject):
         self.defaults["global_def_win_h"] = height
         self.defaults["global_def_notebook_width"] = notebook_width
         self.save_defaults()
+
+    def restore_main_win_geom(self):
+        try:
+            self.ui.setGeometry(self.defaults["global_def_win_x"],
+                                self.defaults["global_def_win_y"],
+                                self.defaults["global_def_win_w"],
+                                self.defaults["global_def_win_h"])
+            self.ui.splitter.setSizes([self.defaults["global_def_notebook_width"], 0])
+        except KeyError as e:
+            log.debug("App.restore_main_win_geom() --> %s" % str(e))
 
     def message_dialog(self, title, message, kind="info"):
         """
@@ -5546,15 +5561,33 @@ class App(QtCore.QObject):
         self.report_usage("on_fullscreen()")
 
         if self.toggle_fscreen is False:
-            if sys.platform == 'win32':
-                self.ui.showFullScreen()
+            # self.ui.showFullScreen()
+            self.ui.setWindowFlags(self.ui.windowFlags() | Qt.FramelessWindowHint)
+            a = self.ui.geometry()
+            self.x_pos = a.x()
+            self.y_pos = a.y()
+            self.width = a.width()
+            self.height = a.height()
+
+            # set new geometry to full desktop rect
+            # Subtracting and adding the pixels below it's hack to bypass a bug in Qt5 and OpenGL that made that a
+            # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
+            # everything else will not work without this hack. This happen in Windows.
+            # https://bugreports.qt.io/browse/QTBUG-41309
+            rec = QtWidgets.QApplication.desktop().screenGeometry()
+            h = rec.height() + 2
+            w = rec.width() + 2
+            self.ui.setGeometry(-1, -1, w, h)
+            self.ui.show()
+
             for tb in self.ui.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
             self.ui.splitter_left.setVisible(False)
             self.toggle_fscreen = True
         else:
-            if sys.platform == 'win32':
-                self.ui.showNormal()
+            self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.FramelessWindowHint)
+            self.ui.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
+            self.ui.showNormal()
             self.restore_toolbar_view()
             self.ui.splitter_left.setVisible(True)
             self.toggle_fscreen = False
@@ -6783,16 +6816,56 @@ class App(QtCore.QObject):
             pass
         self.replot_signal[list].connect(origin_replot)
 
-    def on_set_zero_click(self, event):
-        # this function will be available only for mouse left click
+    def on_set_zero_click(self, event, location=None, noplot=False, use_thread=True):
+        """
 
-        if self.is_legacy is False:
-            event_pos = event.pos
-        else:
-            event_pos = (event.xdata, event.ydata)
+        :param event:
+        :param location:
+        :param noplot:
+        :param use_thread:
+        :return:
+        """
+        noplot_sig = noplot
 
-        pos_canvas = self.plotcanvas.translate_coords(event_pos)
+        def worker_task():
+            with self.proc_container.new(_("Setting Origin...")):
+                for obj in self.collection.get_list():
+                    obj.offset((x, y))
+                    self.object_changed.emit(obj)
+
+                    # Update the object bounding box options
+                    a, b, c, d = obj.bounds()
+                    obj.options['xmin'] = a
+                    obj.options['ymin'] = b
+                    obj.options['xmax'] = c
+                    obj.options['ymax'] = d
+                self.inform.emit('[success] %s...' %
+                                 _('Origin set'))
+                if noplot_sig is False:
+                    self.replot_signal.emit([])
+
+        if location is not None:
+            if len(location) != 2:
+                self.inform.emit('[ERROR_NOTCL] %s...' %
+                                 _("Origin coordinates specified but incomplete."))
+                return 'fail'
+
+            x, y = location
+
+            if use_thread is True:
+                self.worker_task.emit({'fcn': worker_task, 'params': []})
+            else:
+                worker_task()
+            self.should_we_save = True
+            return
+
         if event.button == 1:
+            if self.is_legacy is False:
+                event_pos = event.pos
+            else:
+                event_pos = (event.xdata, event.ydata)
+            pos_canvas = self.plotcanvas.translate_coords(event_pos)
+
             if self.grid_status() == True:
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
             else:
@@ -6801,23 +6874,10 @@ class App(QtCore.QObject):
             x = 0 - pos[0]
             y = 0 - pos[1]
 
-            def worker_task():
-                with self.proc_container.new(_("Setting Origin...")):
-                    for obj in self.collection.get_list():
-                        obj.offset((x, y))
-                        self.object_changed.emit(obj)
-
-                        # Update the object bounding box options
-                        a, b, c, d = obj.bounds()
-                        obj.options['xmin'] = a
-                        obj.options['ymin'] = b
-                        obj.options['xmax'] = c
-                        obj.options['ymax'] = d
-                    self.inform.emit('[success]%s...' %
-                                     _('Origin set'))
-                    self.replot_signal.emit([])
-
-            self.worker_task.emit({'fcn': worker_task, 'params': []})
+            if use_thread is True:
+                self.worker_task.emit({'fcn': worker_task, 'params': []})
+            else:
+                worker_task()
             self.should_we_save = True
 
     def on_jump_to(self, custom_location=None, fit_center=True):
@@ -10481,16 +10541,6 @@ class App(QtCore.QObject):
                         routes[param].defaults[p] = self.defaults[param]
                         if silent is False:
                             self.log.debug("  " + param + " OK!")
-
-    def restore_main_win_geom(self):
-        try:
-            self.ui.setGeometry(self.defaults["global_def_win_x"],
-                                self.defaults["global_def_win_y"],
-                                self.defaults["global_def_win_w"],
-                                self.defaults["global_def_win_h"])
-            self.ui.splitter.setSizes([self.defaults["global_def_notebook_width"], 0])
-        except KeyError as e:
-            log.debug("App.restore_main_win_geom() --> %s" % str(e))
 
     def plot_all(self, zoom=True):
         """
