@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-09-23 06:21+0300\n"
+"POT-Creation-Date: 2019-09-23 22:08+0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -8563,13 +8563,17 @@ msgstr "Масштаб"
 msgid "Factor to scale the Gerber element."
 msgstr "Коэффициент масштабирования для элемента Gerber."
 
-#: flatcamGUI/PreferencesUI.py:1607 flatcamGUI/PreferencesUI.py:1617
+#: flatcamGUI/PreferencesUI.py:1607
 msgid "Threshold low"
 msgstr "Низкий порог"
 
 #: flatcamGUI/PreferencesUI.py:1609
 msgid "Threshold value under which the apertures are not marked."
-msgstr "Пороговое значение, при котором апертуры не отмечены."
+msgstr "Пороговое значение, ниже которого отверстия не отмечены."
+
+#: flatcamGUI/PreferencesUI.py:1617
+msgid "Threshold high"
+msgstr "Высокий порог"
 
 #: flatcamGUI/PreferencesUI.py:1619
 msgid "Threshold value over which the apertures are not marked."

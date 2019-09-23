@@ -1614,7 +1614,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_ma_low_entry, 18, 1)
 
         # Mark area Tool high threshold
-        self.grb_ma_high_label = QtWidgets.QLabel('%s:' % _('Threshold low'))
+        self.grb_ma_high_label = QtWidgets.QLabel('%s:' % _('Threshold high'))
         self.grb_ma_high_label.setToolTip(
             _("Threshold value over which the apertures are not marked.")
         )
