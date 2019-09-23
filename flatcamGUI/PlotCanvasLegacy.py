@@ -476,6 +476,18 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         return self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label=name)
 
+    def remove_current_axes(self):
+        """
+
+        :return: The name of the deleted axes
+        """
+
+        axes_to_remove = self.figure.axes.gca()
+        current_axes_name = deepcopy(axes_to_remove._label)
+        self.figure.axes.remove(axes_to_remove)
+
+        return current_axes_name
+
     def on_scroll(self, event):
         """
         Scroll event handler.

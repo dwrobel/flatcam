@@ -1474,7 +1474,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         try:
             if aperture == 'all':
                 for apid in list(self.apertures.keys()):
-                    self.mark_shapes[apid].clear(update=True)
+                    if self.app.is_legacy is True:
+                        self.mark_shapes[apid].clear(update=False)
+                    else:
+                        self.mark_shapes[apid].clear(update=True)
+
             else:
                 self.mark_shapes[aperture].clear(update=True)
         except Exception as e:
