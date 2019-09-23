@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-09-23 04:11+0300\n"
-"PO-Revision-Date: 2019-09-23 04:11+0300\n"
+"POT-Creation-Date: 2019-09-22 23:10-0300\n"
+"PO-Revision-Date: 2019-09-22 23:11-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -587,11 +587,11 @@ msgstr "Origem definida"
 
 #: FlatCAMApp.py:6816
 msgid "Origin coordinates specified but incomplete."
-msgstr ""
+msgstr "Coordenadas de origem especificadas, mas incompletas."
 
 #: FlatCAMApp.py:6858 FlatCAMObj.py:6261
 msgid "Not available with the current Graphic Engine Legacy(2D)."
-msgstr ""
+msgstr "Não disponível com o Graphic Engine Legacy (2D) atual."
 
 #: FlatCAMApp.py:6862
 msgid "Jump to ..."
@@ -1026,7 +1026,7 @@ msgstr "Editor de Códigos"
 
 #: FlatCAMApp.py:9038
 msgid "New TCL script file created in Code Editor."
-msgstr ""
+msgstr "Novo arquivo de script TCL criado no Editor de Códigos."
 
 #: FlatCAMApp.py:9041
 msgid "Script Editor"
@@ -1089,10 +1089,8 @@ msgid "App.on_fileopenscript() -->"
 msgstr "App.on_fileopenscript() -->"
 
 #: FlatCAMApp.py:9118
-#, fuzzy
-#| msgid "Loaded Machine Code into Code Editor"
 msgid "TCL script file opened in Code Editor."
-msgstr "G-Code aberto no Editor de Códigos"
+msgstr "Arquivo de script TCL aberto no Editor de Códigos."
 
 #: FlatCAMApp.py:9142
 msgid "Executing FlatCAMScript file."
@@ -1108,7 +1106,7 @@ msgstr "Executar script TCL cancelado."
 
 #: FlatCAMApp.py:9178
 msgid "TCL script file opened in Code Editor and executed."
-msgstr ""
+msgstr "Arquivo de script TCL aberto no Editor de Código e executado."
 
 #: FlatCAMApp.py:9229 FlatCAMApp.py:9233
 msgid "Save Project As ..."
@@ -1357,36 +1355,28 @@ msgid "Details"
 msgstr "Detalhes"
 
 #: FlatCAMApp.py:10973
-#, fuzzy
-#| msgid "The normal flow when working in FlatCAM is the following"
 msgid "The normal flow when working in FlatCAM is the following:"
-msgstr "O fluxo normal ao trabalhar no FlatCAM é o seguinte"
+msgstr "O fluxo normal ao trabalhar no FlatCAM é o seguinte:"
 
 #: FlatCAMApp.py:10974
-#, fuzzy
-#| msgid ""
-#| "Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
-#| "FlatCAM using either the"
 msgid ""
 "Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
 "FlatCAM using either the toolbars, key shortcuts or even dragging and "
 "dropping the files on the GUI."
 msgstr ""
-"Carregue / importe um arquivo Gerber, Excellon, Gcode, DXF, Raster Image ou "
-"SVG para o FlatCAM usando o"
+"Abrir/Importar um arquivo Gerber, Excellon, Gcode, DXF, Raster Image ou SVG "
+"para o FlatCAM usando a barra de ferramentas, tecla de atalho ou arrastando "
+"e soltando um arquivo na GUI."
 
 #: FlatCAMApp.py:10977
-#, fuzzy
-#| msgid ""
-#| "drop of the file into the FLATCAM GUI or through the menu/toolbar links "
-#| "offered within the app"
 msgid ""
 "You can also load a FlatCAM project by double clicking on the project file, "
 "drag and drop of the file into the FLATCAM GUI or through the menu (or "
 "toolbar) actions offered within the app."
 msgstr ""
-"solte o arquivo na GUI do FLATCAM ou nos links do menu / barra de "
-"ferramentas oferecidos no aplicativo"
+"Você pode abrir um projeto FlatCAM clicando duas vezes sobre o arquivo, "
+"usando o menu ou a barra de ferramentas, tecla de atalho ou arrastando e "
+"soltando um arquivo na GUI."
 
 #: FlatCAMApp.py:10980
 msgid ""
@@ -1395,13 +1385,12 @@ msgid ""
 "the Project Tab, SELECTED TAB will be updated with the object properties "
 "according to its kind: Gerber, Excellon, Geometry or CNCJob object."
 msgstr ""
+"Quando um objeto estiver disponível na Aba Projeto, selecionando na ABA "
+"SELECIONADO (mais simples é clicar duas vezes no nome do objeto na Aba "
+"Projeto, a ABA SELECIONADO será atualizada com as propriedades do objeto de "
+"acordo com seu tipo: Gerber, Excellon, Geometria ou Trabalho CNC."
 
 #: FlatCAMApp.py:10984
-#, fuzzy
-#| msgid ""
-#| "is in focus, again the object properties will be displayed into the "
-#| "Selected Tab. Alternatively, double clicking on the object on the canvas "
-#| "will bring the"
 msgid ""
 "If the selection of the object is done on the canvas by single click "
 "instead, and the SELECTED TAB is in focus, again the object properties will "
@@ -1409,19 +1398,18 @@ msgid ""
 "object on the canvas will bring the SELECTED TAB and populate it even if it "
 "was out of focus."
 msgstr ""
-"estiver em foco, novamente as propriedades do objeto serão exibidas na guia "
-"Selecionado. Como alternativa, clicar duas vezes no objeto na tela exibirá o"
+"Se a seleção do objeto for feita na tela com um único clique, e a ABA "
+"SELECIONADO estiver em foco, novamente as propriedades do objeto serão "
+"exibidas na Aba Selecionado. Como alternativa, clicar duas vezes no objeto "
+"na tela exibirá a ABA SELECIONADO e a preencherá mesmo que ela esteja fora "
+"de foco."
 
 #: FlatCAMApp.py:10988
-#, fuzzy
-#| msgid ""
-#| "You can change the parameters in this screen and the flow direction is "
-#| "like this"
 msgid ""
 "You can change the parameters in this screen and the flow direction is like "
 "this:"
 msgstr ""
-"Você pode alterar os parâmetros nesta tela e a direção do fluxo é assim"
+"Você pode alterar os parâmetros nesta tela e a direção do fluxo é assim:"
 
 #: FlatCAMApp.py:10989
 msgid ""
@@ -1430,16 +1418,20 @@ msgid ""
 "CNCJob --> CNCJob Object --> Verify GCode (through Edit CNC Code) and/or "
 "append/prepend to GCode (again, done in SELECTED TAB) --> Save GCode."
 msgstr ""
+"Objeto Gerber/Excellon --> Alterar Parâmetro --> Gerar Geometria --> Objeto "
+"Geometria --> Adicionar Ferramenta (alterar parâmetros na Aba Selecionado) --"
+"> Gerar Trabalho CNC --> Objeto Trabalho CNC --> Verificar G-Code (em Editar "
+"Código CNC) e/ou adicionar código no início ou no final do G-Code (na Aba "
+"Selecionado) --> Salvar G-Code."
 
 #: FlatCAMApp.py:10993
-#, fuzzy
-#| msgid "A list of key shortcuts is available through an menu entry in"
 msgid ""
 "A list of key shortcuts is available through an menu entry in Help --> "
 "Shortcuts List or through its own key shortcut: <b>F3</b>."
 msgstr ""
 "Uma lista de atalhos de teclas está disponível através de uma entrada de "
-"menu em"
+"menu em Ajuda --> Lista de Atalhos ou através da sua própria tecla de "
+"atalho: <b>F3</b>."
 
 #: FlatCAMApp.py:11054
 msgid "Failed checking for latest version. Could not connect."
@@ -2015,10 +2007,8 @@ msgstr ""
 "erros na análise. Número da linha"
 
 #: camlib.py:3441
-#, fuzzy
-#| msgid "Gerber processing. Joining"
 msgid "Gerber processing. Joining polygons"
-msgstr "Processando Gerber. Unindo"
+msgstr "Processando Gerber. Unindo polígonos"
 
 #: camlib.py:3458
 msgid "Gerber processing. Applying Gerber polarity."
@@ -4271,10 +4261,8 @@ msgid "Deleted aperture with code"
 msgstr "Abertura excluída com código"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3813
-#, fuzzy
-#| msgid "Adding aperture"
 msgid "Adding geometry for aperture"
-msgstr "Adicionando abertura"
+msgstr "Adicionando geometria na abertura"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3996
 msgid ""
@@ -5348,7 +5336,7 @@ msgstr "Ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:956
 msgid "UTILITIES"
-msgstr ""
+msgstr "Utilitários"
 
 #: flatcamGUI/FlatCAMGUI.py:973
 msgid "Import Preferences"
@@ -6117,14 +6105,12 @@ msgid "Hello!"
 msgstr "Olá!"
 
 #: flatcamGUI/FlatCAMGUI.py:3569
-#, fuzzy
-#| msgid "Open &Project ..."
 msgid "Open Project ..."
-msgstr "Abrir &Projeto ..."
+msgstr "Abrir Projeto ..."
 
 #: flatcamGUI/FlatCAMGUI.py:3594
 msgid "Exit"
-msgstr ""
+msgstr "Sair"
 
 #: flatcamGUI/ObjectUI.py:33
 msgid "FlatCAM Object"
@@ -7624,6 +7610,8 @@ msgid ""
 "Could not annotate due of a difference between the number of text elements "
 "and the number of text positions."
 msgstr ""
+"Não foi possível anotar devido a uma diferença entre o número de elementos "
+"de texto e o número de posições de texto."
 
 #: flatcamGUI/PreferencesUI.py:257
 msgid "GUI Preferences"
@@ -7804,11 +7792,11 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:507
 msgid "Activity Icon"
-msgstr ""
+msgstr "Ícone de Atividade"
 
 #: flatcamGUI/PreferencesUI.py:509
 msgid "Select the GIF that show activity when FlatCAM is active."
-msgstr ""
+msgstr "Selecione o GIF que mostra a atividade quando o FlatCAM está ativo."
 
 #: flatcamGUI/PreferencesUI.py:555
 msgid "GUI Settings"
@@ -7920,16 +7908,16 @@ msgid "This sets the font size for canvas axis."
 msgstr "Define o tamanho da fonte para o eixo da tela."
 
 #: flatcamGUI/PreferencesUI.py:669
-#, fuzzy
-#| msgid "Axis Font Size"
 msgid "Textbox Font Size"
-msgstr "Tamanho da fonte do eixo"
+msgstr "Tamanho da Fonte"
 
 #: flatcamGUI/PreferencesUI.py:671
 msgid ""
 "This sets the font size for the Textbox GUI\n"
 "elements that are used in FlatCAM."
 msgstr ""
+"Define o tamanho da fonte da caixa de texto\n"
+"de elementos da GUI usados no FlatCAM."
 
 #: flatcamGUI/PreferencesUI.py:689
 msgid "Splash Screen"
@@ -7941,11 +7929,11 @@ msgstr "Habilita a Tela de Abertura na inicialização do aplicativo."
 
 #: flatcamGUI/PreferencesUI.py:701
 msgid "Sys Tray Icon"
-msgstr ""
+msgstr "Ícone da Bandeja do Sistema"
 
 #: flatcamGUI/PreferencesUI.py:703
 msgid "Enable display of FlatCAM icon in Sys Tray."
-msgstr ""
+msgstr "Ativa a exibição do ícone do FlatCAM na bandeja do sistema."
 
 #: flatcamGUI/PreferencesUI.py:708
 msgid "Shell at StartUp"
@@ -8047,7 +8035,7 @@ msgstr "mm"
 
 #: flatcamGUI/PreferencesUI.py:850
 msgid "Graphic Engine"
-msgstr ""
+msgstr "Mecanismo Gráfico"
 
 #: flatcamGUI/PreferencesUI.py:851
 msgid ""
@@ -8059,14 +8047,23 @@ msgid ""
 "Intel HD3000 or older. In this case the plot area will be black therefore\n"
 "use the Legacy(2D) mode."
 msgstr ""
+"Escolha qual mecanismo gráfico usar no FlatCAM.\n"
+"Legado (2D) -> funcionalidade reduzida, desempenho lento, mas "
+"compatibilidade aprimorada.\n"
+"OpenGL (3D) -> funcionalidade completa, alto desempenho\n"
+"Algumas placas gráficas são muito antigas e não funcionam no modo OpenGL "
+"(3D), como:\n"
+"Intel HD3000 ou mais antigo. Nesse caso, a área de plotagem será preta. "
+"Nesse caso,\n"
+"use o modo Legado (2D)."
 
 #: flatcamGUI/PreferencesUI.py:857
 msgid "Legacy(2D)"
-msgstr ""
+msgstr "Legado(2D)"
 
 #: flatcamGUI/PreferencesUI.py:858
 msgid "OpenGL(3D)"
-msgstr ""
+msgstr "OpenGL(3D)"
 
 #: flatcamGUI/PreferencesUI.py:861
 msgid "APP. LEVEL"
@@ -10270,26 +10267,22 @@ msgstr "Associação de Arquivos Excellon"
 #: flatcamGUI/PreferencesUI.py:4461 flatcamGUI/PreferencesUI.py:4533
 #: flatcamGUI/PreferencesUI.py:4602 flatcamGUI/PreferencesUI.py:4671
 msgid "Restore"
-msgstr ""
+msgstr "Restaurar"
 
 #: flatcamGUI/PreferencesUI.py:4462 flatcamGUI/PreferencesUI.py:4534
 #: flatcamGUI/PreferencesUI.py:4603
 msgid "Restore the extension list to the default state."
-msgstr ""
+msgstr "Restaure a lista de extensões para o estado padrão."
 
 #: flatcamGUI/PreferencesUI.py:4463 flatcamGUI/PreferencesUI.py:4535
 #: flatcamGUI/PreferencesUI.py:4604 flatcamGUI/PreferencesUI.py:4673
-#, fuzzy
-#| msgid "Delete Drill"
 msgid "Delete All"
-msgstr "Excluir Furo"
+msgstr "Excluir Tudo"
 
 #: flatcamGUI/PreferencesUI.py:4464 flatcamGUI/PreferencesUI.py:4536
 #: flatcamGUI/PreferencesUI.py:4605
-#, fuzzy
-#| msgid "Delete a aperture in the aperture list"
 msgid "Delete all extensions from the list."
-msgstr "Exclui uma abertura da lista de aberturas"
+msgstr "Excluir todas as extensões da lista."
 
 #: flatcamGUI/PreferencesUI.py:4472 flatcamGUI/PreferencesUI.py:4544
 #: flatcamGUI/PreferencesUI.py:4613
@@ -10305,55 +10298,38 @@ msgstr "Lista de extensões de arquivos que serão associadas ao FlatCAM."
 
 #: flatcamGUI/PreferencesUI.py:4494 flatcamGUI/PreferencesUI.py:4566
 #: flatcamGUI/PreferencesUI.py:4634 flatcamGUI/PreferencesUI.py:4705
-#, fuzzy
-#| msgid "Extensions list"
 msgid "Extension"
-msgstr "Lista de extensões"
+msgstr "Extensão"
 
 #: flatcamGUI/PreferencesUI.py:4495 flatcamGUI/PreferencesUI.py:4567
 #: flatcamGUI/PreferencesUI.py:4635
-#, fuzzy
-#| msgid ""
-#| "List of file extensions to be\n"
-#| "associated with FlatCAM."
 msgid "A file extension to be added or deleted to the list."
-msgstr "Lista de extensões de arquivos que serão associadas ao FlatCAM."
+msgstr "Uma extensão de arquivo a ser adicionada ou excluída da lista."
 
 #: flatcamGUI/PreferencesUI.py:4503 flatcamGUI/PreferencesUI.py:4575
 #: flatcamGUI/PreferencesUI.py:4643
-#, fuzzy
-#| msgid "Add Region"
 msgid "Add Extension"
-msgstr "Adicionar Região"
+msgstr "Adicionar Extensão"
 
 #: flatcamGUI/PreferencesUI.py:4504 flatcamGUI/PreferencesUI.py:4576
 #: flatcamGUI/PreferencesUI.py:4644
-#, fuzzy
-#| msgid "Add a new aperture to the aperture list."
 msgid "Add a file extension to the list"
-msgstr "Adiciona uma nova abertura à lista de aberturas."
+msgstr "Adiciona uma nova extensão à lista"
 
 #: flatcamGUI/PreferencesUI.py:4505 flatcamGUI/PreferencesUI.py:4577
 #: flatcamGUI/PreferencesUI.py:4645
-#, fuzzy
-#| msgid "Get Exteriors"
 msgid "Delete Extension"
-msgstr "Obter Exterior"
+msgstr "Excluir Extensão"
 
 #: flatcamGUI/PreferencesUI.py:4506 flatcamGUI/PreferencesUI.py:4578
 #: flatcamGUI/PreferencesUI.py:4646
-#, fuzzy
-#| msgid "Selected GCode file extensions registered with FlatCAM."
 msgid "Delete a file extension from the list"
-msgstr ""
-"As extensões de arquivo G-Code selecionadas foram registradas para o FlatCAM."
+msgstr "Exclui uma extensão da lista"
 
 #: flatcamGUI/PreferencesUI.py:4513 flatcamGUI/PreferencesUI.py:4585
 #: flatcamGUI/PreferencesUI.py:4653
-#, fuzzy
-#| msgid "Display Annotation"
 msgid "Apply Association"
-msgstr "Exibir Anotação"
+msgstr "Aplicar Associação"
 
 #: flatcamGUI/PreferencesUI.py:4514 flatcamGUI/PreferencesUI.py:4586
 #: flatcamGUI/PreferencesUI.py:4654
@@ -10378,19 +10354,21 @@ msgstr "Associação de arquivos Gerber"
 
 #: flatcamGUI/PreferencesUI.py:4669
 msgid "Autocompleter Keywords"
-msgstr ""
+msgstr "Palavras-chave do preenchimento automático"
 
 #: flatcamGUI/PreferencesUI.py:4672
 msgid "Restore the autocompleter keywords list to the default state."
 msgstr ""
+"Restaurar a lista de palavras-chave do preenchimento automático para o "
+"estado padrão."
 
 #: flatcamGUI/PreferencesUI.py:4674
 msgid "Delete all autocompleter keywords from the list."
-msgstr ""
+msgstr "Excluir todas as palavras-chave do preenchimento automático da lista."
 
 #: flatcamGUI/PreferencesUI.py:4682
 msgid "Keywords list"
-msgstr ""
+msgstr "Lista de palavras-chave"
 
 #: flatcamGUI/PreferencesUI.py:4684
 msgid ""
@@ -10399,32 +10377,30 @@ msgid ""
 "The autocompleter is installed\n"
 "in the Code Editor and for the Tcl Shell."
 msgstr ""
+"Lista de palavras-chave usadas no\n"
+"preenchimento automático no FlatCAM.\n"
+"O preenchimento automático está instalado\n"
+"no Editor de Código e na Linha de Comandos Tcl."
 
 #: flatcamGUI/PreferencesUI.py:4706
 msgid "A keyword to be added or deleted to the list."
-msgstr ""
+msgstr "Uma palavra-chave a ser adicionada ou excluída da lista."
 
 #: flatcamGUI/PreferencesUI.py:4714
 msgid "Add keyword"
-msgstr ""
+msgstr "Adicionar palavra-chave"
 
 #: flatcamGUI/PreferencesUI.py:4715
-#, fuzzy
-#| msgid "Add a new aperture to the aperture list."
 msgid "Add a keyword to the list"
-msgstr "Adiciona uma nova abertura à lista de aberturas."
+msgstr "Adiciona uma palavra-chave à lista"
 
 #: flatcamGUI/PreferencesUI.py:4716
-#, fuzzy
-#| msgid "Delete Tool"
 msgid "Delete keyword"
-msgstr "Excluir Ferramenta"
+msgstr "Excluir palavra-chave"
 
 #: flatcamGUI/PreferencesUI.py:4717
-#, fuzzy
-#| msgid "Delete a aperture in the aperture list"
 msgid "Delete a keyword from the list"
-msgstr "Exclui uma abertura da lista de aberturas"
+msgstr "Exclui uma palavra-chave da lista"
 
 #: flatcamParsers/ParseFont.py:305
 msgid "Font not supported, try another one."
@@ -11298,20 +11274,16 @@ msgid "INCH (in)"
 msgstr "Inglês (in)"
 
 #: flatcamTools/ToolMeasurement.py:48
-#, fuzzy
-#| msgid "Coords"
 msgid "Start Coords"
-msgstr "Coords"
+msgstr "Coords Iniciais"
 
 #: flatcamTools/ToolMeasurement.py:49 flatcamTools/ToolMeasurement.py:65
 msgid "This is measuring Start point coordinates."
 msgstr "Coordenadas do ponto inicial da medição."
 
 #: flatcamTools/ToolMeasurement.py:51
-#, fuzzy
-#| msgid "Coords"
 msgid "Stop Coords"
-msgstr "Coords"
+msgstr "Coords Finais"
 
 #: flatcamTools/ToolMeasurement.py:52 flatcamTools/ToolMeasurement.py:69
 msgid "This is the measuring Stop point coordinates."
@@ -11919,17 +11891,13 @@ msgstr "Clique no ponto inicial da área de pintura."
 #: flatcamTools/ToolPaint.py:1825 flatcamTools/ToolPaint.py:2107
 #: flatcamTools/ToolPaint.py:2112 flatcamTools/ToolPaint.py:2115
 #: flatcamTools/ToolPaint.py:2289 flatcamTools/ToolPaint.py:2296
-#, fuzzy
-#| msgid "Paint Tool"
 msgid "Paint Tool."
-msgstr "Ferramenta de Pintura"
+msgstr "Ferramenta de Pintura."
 
 #: flatcamTools/ToolPaint.py:1245 flatcamTools/ToolPaint.py:1249
 #: flatcamTools/ToolPaint.py:1252
-#, fuzzy
-#| msgid "Paint Tool. Normal painting polygon task started."
 msgid "Normal painting polygon task started."
-msgstr "Ferramenta de Pintura. Iniciada a pintura de polígono."
+msgstr "Tarefa normal de pintura de polígono iniciada."
 
 #: flatcamTools/ToolPaint.py:1246 flatcamTools/ToolPaint.py:1644
 #: flatcamTools/ToolPaint.py:1819 flatcamTools/ToolPaint.py:2109
@@ -11942,8 +11910,6 @@ msgid "No polygon found."
 msgstr "Nenhum polígono encontrado."
 
 #: flatcamTools/ToolPaint.py:1291
-#, fuzzy
-#| msgid "Paint Tool. Painting polygon at location"
 msgid "Painting polygon at location"
 msgstr "Pintando o polígono na posição"
 
@@ -12006,11 +11972,8 @@ msgstr "Pintura concluída."
 
 #: flatcamTools/ToolPaint.py:1818 flatcamTools/ToolPaint.py:1822
 #: flatcamTools/ToolPaint.py:1825
-#, fuzzy
-#| msgid "Paint Tool. Rest machining painting all task started."
 msgid "Rest machining painting all task started."
-msgstr ""
-"Ferramenta de Pintura. Iniciada a pintura total com usinagem de descanso."
+msgstr "Iniciada a pintura total com usinagem de descanso."
 
 #: flatcamTools/ToolPaint.py:1957 flatcamTools/ToolPaint.py:2432
 msgid "Paint All with Rest-Machining done."
@@ -12018,21 +11981,16 @@ msgstr "Pintura total com usinagem de descanso concluída."
 
 #: flatcamTools/ToolPaint.py:2108 flatcamTools/ToolPaint.py:2112
 #: flatcamTools/ToolPaint.py:2115
-#, fuzzy
-#| msgid "Paint Tool. Normal painting area task started."
 msgid "Normal painting area task started."
-msgstr "Ferramenta de Pintura. Iniciada a pintura de área."
+msgstr "Iniciada a pintura de área."
 
 #: flatcamTools/ToolPaint.py:2278
 msgid "Paint Area Done."
 msgstr "Pintura de Área concluída."
 
 #: flatcamTools/ToolPaint.py:2290 flatcamTools/ToolPaint.py:2296
-#, fuzzy
-#| msgid "Paint Tool. Rest machining painting area task started."
 msgid "Rest machining painting area task started."
-msgstr ""
-"Ferramenta de Pintura. Iniciada a pintura de área com usinagem de descanso."
+msgstr "Iniciada a pintura de área com usinagem de descanso."
 
 #: flatcamTools/ToolPaint.py:2293
 msgid "Paint Tool. Rest machining painting area task started."
@@ -12172,16 +12130,12 @@ msgid "Generating panel ... "
 msgstr "Gerando painel ..."
 
 #: flatcamTools/ToolPanelize.py:776
-#, fuzzy
-#| msgid "Adding the Gerber code."
 msgid "Generating panel ... Adding the Gerber code."
-msgstr "Adicionando o código Gerber."
+msgstr "Gerando painel ... Adicionando o código Gerber."
 
 #: flatcamTools/ToolPanelize.py:788
-#, fuzzy
-#| msgid "Generating panel ... "
 msgid "Generating panel... Spawning copies"
-msgstr "Gerando painel ..."
+msgstr "Gerando painel ... Cópias geradas"
 
 #: flatcamTools/ToolPanelize.py:798
 msgid "Panel done..."
@@ -12809,10 +12763,8 @@ msgid "No Substractor object loaded."
 msgstr "Nenhum objeto Subtrator carregado."
 
 #: flatcamTools/ToolSub.py:314
-#, fuzzy
-#| msgid "Parsing aperture"
 msgid "Parsing geometry for aperture"
-msgstr "Analisando a abertura"
+msgstr "Analisando geometria para abertura"
 
 #: flatcamTools/ToolSub.py:416 flatcamTools/ToolSub.py:619
 msgid "Generating new object ..."
@@ -12836,10 +12788,8 @@ msgid "Parsing solid_geometry ..."
 msgstr "Analisando solid_geometry ..."
 
 #: flatcamTools/ToolSub.py:523
-#, fuzzy
-#| msgid "Parsing solid_geometry ..."
 msgid "Parsing solid_geometry for tool"
-msgstr "Analisando solid_geometry ..."
+msgstr "Analisando solid_geometry para ferramenta"
 
 #: flatcamTools/ToolTransform.py:23
 msgid "Object Transform"
@@ -12979,10 +12929,11 @@ msgstr "Esperando FlatCAMGerber ou FlatCAMGeometry, recebido"
 #: tclCommands/TclCommandBounds.py:64 tclCommands/TclCommandBounds.py:68
 msgid "Expected a list of objects names separated by comma. Got"
 msgstr ""
+"Esperando uma lista de nomes de objetos separados por vírgula. Recebido"
 
 #: tclCommands/TclCommandBounds.py:79
 msgid "TclCommand Bounds done."
-msgstr ""
+msgstr "Limites de TclCommand concluídos."
 
 #: tclCommands/TclCommandCopperClear.py:237 tclCommands/TclCommandPaint.py:235
 msgid "Expected -box <value>."
@@ -13025,11 +12976,11 @@ msgstr "Esperando -x <value> -y <value>."
 
 #: tclCommands/TclCommandSetOrigin.py:80
 msgid "Expected a pair of (x, y) coordinates. Got"
-msgstr ""
+msgstr "Esperando um par de coordenadas (x, y). Recebeu"
 
 #: tclCommands/TclCommandSetOrigin.py:87
 msgid "Origin set by offsetting all loaded objects with "
-msgstr ""
+msgstr "Origem definida deslocando todos os objetos carregados com "
 
 #: tclCommands/TclCommandSubtractRectangle.py:49
 msgid "No Geometry name in args. Provide a name and try again."
