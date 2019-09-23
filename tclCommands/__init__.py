@@ -10,6 +10,7 @@ import tclCommands.TclCommandAddRectangle
 import tclCommands.TclCommandAlignDrill
 import tclCommands.TclCommandAlignDrillGrid
 import tclCommands.TclCommandBbox
+import tclCommands.TclCommandBounds
 import tclCommands.TclCommandClearShell
 import tclCommands.TclCommandCncjob
 import tclCommands.TclCommandCopperClear
@@ -53,6 +54,7 @@ import tclCommands.TclCommandSaveProject
 import tclCommands.TclCommandSaveSys
 import tclCommands.TclCommandScale
 import tclCommands.TclCommandSetActive
+import tclCommands.TclCommandSetOrigin
 import tclCommands.TclCommandSetSys
 import tclCommands.TclCommandSkew
 import tclCommands.TclCommandSubtractPoly

@@ -1198,8 +1198,8 @@ class App(QtCore.QObject):
             # Keyword list
             "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, Marius, My Documents, Paste_1, '
                                           'Repetier, Roland_MDX_20, Toolchange_Custom, Toolchange_Probe_MACH3, '
-                                          'Toolchange_manual, Users, all, angle_x, angle_y, axis, axisoffset, box, '
-                                          'center_x, center_y, columns, combine, connect, contour, default, '
+                                          'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
+                                          'box, center_x, center_y, columns, combine, connect, contour, default, '
                                           'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwell, dwelltime, '
                                           'feedrate_z, grbl_11, grbl_laser, gridoffsety, gridx, gridy, has_offset, '
                                           'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
@@ -1586,6 +1586,19 @@ class App(QtCore.QObject):
 
         # ### End of Data ####
 
+        # ##############################################
+        # ######### SETUP OBJECT COLLECTION ############
+        # ##############################################
+
+        self.collection = ObjectCollection(self)
+        self.ui.project_tab_layout.addWidget(self.collection.view)
+
+        # ### Adjust tabs width ## ##
+        # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
+        #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
+        self.collection.view.setMinimumWidth(290)
+        self.log.debug("Finished creating Object Collection.")
+
         # ###############################################
         # ############# SETUP Plot Area #################
         # ###############################################
@@ -1607,9 +1620,7 @@ class App(QtCore.QObject):
         start_plot_time = time.time()   # debug
         self.plotcanvas = None
 
-        # this is a list just because when in legacy it is needed to add multiple cursors
-        # each gets deleted when the axes are deleted therefore there is a need of one for each
-        self.app_cursor = []
+        self.app_cursor = None
         self.hover_shapes = None
 
         self.on_plotcanvas_setup()
@@ -1638,19 +1649,6 @@ class App(QtCore.QObject):
             else:
                 self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
                                                   parent=self.parent_w)
-
-        # ##############################################
-        # ######### SETUP OBJECT COLLECTION ############
-        # ##############################################
-
-        self.collection = ObjectCollection(self)
-        self.ui.project_tab_layout.addWidget(self.collection.view)
-
-        # ### Adjust tabs width ## ##
-        # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
-        #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
-        self.collection.view.setMinimumWidth(290)
-        self.log.debug("Finished creating Object Collection.")
 
         # ###############################################
         # ############# Worker SETUP ####################
@@ -2109,17 +2107,17 @@ class App(QtCore.QObject):
                                   'join_geometry', 'list_sys', 'listsys', 'milld', 'mills', 'milldrills', 'millslots',
                                   'mirror', 'ncc',
                                   'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
-                                  'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'paint',
-                                  'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'quit_flatcam',
+                                  'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'origin',
+                                  'paint', 'pan', 'panel', 'panelize', 'plot_all', 'plot_objects', 'quit_flatcam',
                                   'save', 'save_project',
-                                  'save_sys', 'scale',
-                                  'set_active', 'set_sys', 'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
+                                  'save_sys', 'scale', 'set_active', 'set_origin', 'set_sys',
+                                  'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
                                   'version', 'write_gcode'
                                   ]
 
         self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'Marius', 'My Documents', 'Paste_1',
                                  'Repetier', 'Roland_MDX_20', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
-                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'axis', 'axisoffset',
+                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis', 'axisoffset',
                                  'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dwell',
                                  'dwelltime', 'feedrate_z', 'grbl_11', 'grbl_laser', 'gridoffsety', 'gridx', 'gridy',
@@ -2490,6 +2488,7 @@ class App(QtCore.QObject):
         self.mp = None
         self.mm = None
         self.mr = None
+        self.mp_zc = None
 
         # when True, the app has to return from any thread
         self.abort_flag = False
@@ -6783,16 +6782,56 @@ class App(QtCore.QObject):
             pass
         self.replot_signal[list].connect(origin_replot)
 
-    def on_set_zero_click(self, event):
-        # this function will be available only for mouse left click
+    def on_set_zero_click(self, event, location=None, noplot=False, use_thread=True):
+        """
 
-        if self.is_legacy is False:
-            event_pos = event.pos
-        else:
-            event_pos = (event.xdata, event.ydata)
+        :param event:
+        :param location:
+        :param noplot:
+        :param use_thread:
+        :return:
+        """
+        noplot_sig = noplot
 
-        pos_canvas = self.plotcanvas.translate_coords(event_pos)
+        def worker_task():
+            with self.proc_container.new(_("Setting Origin...")):
+                for obj in self.collection.get_list():
+                    obj.offset((x, y))
+                    self.object_changed.emit(obj)
+
+                    # Update the object bounding box options
+                    a, b, c, d = obj.bounds()
+                    obj.options['xmin'] = a
+                    obj.options['ymin'] = b
+                    obj.options['xmax'] = c
+                    obj.options['ymax'] = d
+                self.inform.emit('[success] %s...' %
+                                 _('Origin set'))
+                if noplot_sig is False:
+                    self.replot_signal.emit([])
+
+        if location is not None:
+            if len(location) != 2:
+                self.inform.emit('[ERROR_NOTCL] %s...' %
+                                 _("Origin coordinates specified but incomplete."))
+                return 'fail'
+
+            x, y = location
+
+            if use_thread is True:
+                self.worker_task.emit({'fcn': worker_task, 'params': []})
+            else:
+                worker_task()
+            self.should_we_save = True
+            return
+
         if event.button == 1:
+            if self.is_legacy is False:
+                event_pos = event.pos
+            else:
+                event_pos = (event.xdata, event.ydata)
+            pos_canvas = self.plotcanvas.translate_coords(event_pos)
+
             if self.grid_status() == True:
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
             else:
@@ -6801,23 +6840,10 @@ class App(QtCore.QObject):
             x = 0 - pos[0]
             y = 0 - pos[1]
 
-            def worker_task():
-                with self.proc_container.new(_("Setting Origin...")):
-                    for obj in self.collection.get_list():
-                        obj.offset((x, y))
-                        self.object_changed.emit(obj)
-
-                        # Update the object bounding box options
-                        a, b, c, d = obj.bounds()
-                        obj.options['xmin'] = a
-                        obj.options['ymin'] = b
-                        obj.options['xmax'] = c
-                        obj.options['ymax'] = d
-                    self.inform.emit('[success]%s...' %
-                                     _('Origin set'))
-                    self.replot_signal.emit([])
-
-            self.worker_task.emit({'fcn': worker_task, 'params': []})
+            if use_thread is True:
+                self.worker_task.emit({'fcn': worker_task, 'params': []})
+            else:
+                worker_task()
             self.should_we_save = True
 
     def on_jump_to(self, custom_location=None, fit_center=True):
