@@ -608,9 +608,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
-            ))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
             self.ui.milling_type_label.hide()
@@ -621,9 +620,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.except_cb.setChecked(False)
             self.ui.except_cb.hide()
         else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
-            ))
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
         if self.app.defaults["gerber_buffering"] == 'no':
             self.ui.create_buffer_button.show()
@@ -634,15 +631,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.create_buffer_button.clicked.connect(self.on_generate_buffer)
         else:
             self.ui.create_buffer_button.hide()
-
-        # add the shapes storage for marking apertures
-        if self.app.is_legacy is False:
-            for ap_code in self.apertures:
-                self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
-        else:
-            for ap_code in self.apertures:
-                self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
-                                                                  name=self.options['name'] + str(ap_code))
 
         # set initial state of the aperture table and associated widgets
         self.on_aperture_table_visibility_change()
@@ -737,29 +725,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             self.apertures_row += 1
 
-        # for ap_code in sorted_macros:
-        #     ap_code = str(ap_code)
-        #
-        #     ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-        #     ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-        #     self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
-        #
-        #     ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
-        #
-        #     ap_type_item = QtWidgets.QTableWidgetItem('AM')
-        #     ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
-        #
-        #     mark_item = FCCheckBox()
-        #     mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
-        #     # if self.ui.aperture_table_visibility_cb.isChecked():
-        #     #     mark_item.setChecked(True)
-        #
-        #     self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
-        #     self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
-        #     self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
-        #
-        #     self.apertures_row += 1
-
         self.ui.apertures_table.selectColumn(0)
         self.ui.apertures_table.resizeColumnsToContents()
         self.ui.apertures_table.resizeRowsToContents()
@@ -799,8 +764,16 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def ui_connect(self):
         for row in range(self.ui.apertures_table.rowCount()):
+            try:
+                self.ui.apertures_table.cellWidget(row, 5).clicked.disconnect(self.on_mark_cb_click_table)
+            except (TypeError, AttributeError):
+                pass
             self.ui.apertures_table.cellWidget(row, 5).clicked.connect(self.on_mark_cb_click_table)
 
+        try:
+            self.ui.mark_all_cb.clicked.disconnect(self.on_mark_all_click)
+        except (TypeError, AttributeError):
+            pass
         self.ui.mark_all_cb.clicked.connect(self.on_mark_all_click)
 
     def ui_disconnect(self):
@@ -1280,6 +1253,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def on_aperture_table_visibility_change(self):
         if self.ui.aperture_table_visibility_cb.isChecked():
+            # add the shapes storage for marking apertures
+            if self.app.is_legacy is False:
+                for ap_code in self.apertures:
+                    self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
+            else:
+                for ap_code in self.apertures:
+                    self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
+                                                                      name=self.options['name'] + str(ap_code))
+
             self.ui.apertures_table.setVisible(True)
             for ap in self.mark_shapes:
                 self.mark_shapes[ap].enabled = True
@@ -1292,12 +1274,16 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.mark_all_cb.setVisible(False)
 
             # on hide disable all mark plots
-            for row in range(self.ui.apertures_table.rowCount()):
-                self.ui.apertures_table.cellWidget(row, 5).set_value(False)
-            self.clear_plot_apertures()
+            try:
+                for row in range(self.ui.apertures_table.rowCount()):
+                    self.ui.apertures_table.cellWidget(row, 5).set_value(False)
+                self.clear_plot_apertures()
 
-            for ap in self.mark_shapes:
-                self.mark_shapes[ap].enabled = False
+                for ap in list(self.mark_shapes.keys()):
+                    # self.mark_shapes[ap].enabled = False
+                    del self.mark_shapes[ap]
+            except Exception as e:
+                log.debug(" FlatCAMGerber.on_aperture_visibility_changed() --> %s" % str(e))
 
     def convert_units(self, units):
         """
@@ -1426,8 +1412,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
-        if not FlatCAMObj.plot(self):
-            return
+        # if not FlatCAMObj.plot(self):
+        #     return
 
         # for marking apertures, line color and fill color are the same
         if 'color' in kwargs:
@@ -1469,7 +1455,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 except (ObjectDeleted, AttributeError):
                     self.clear_plot_apertures()
                 except Exception as e:
-                    print(str(e))
+                    log.debug("FlatCAMGerber.plot_aperture() --> %s" % str(e))
 
             if run_thread:
                 self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
@@ -1482,11 +1468,18 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param aperture: string; aperture for which to clear the mark shapes
         :return:
         """
-        if aperture == 'all':
-            for apid in self.apertures:
-                self.mark_shapes[apid].clear(update=True)
-        else:
-            self.mark_shapes[aperture].clear(update=True)
+        try:
+            if aperture == 'all':
+                for apid in list(self.apertures.keys()):
+                    if self.app.is_legacy is True:
+                        self.mark_shapes[apid].clear(update=False)
+                    else:
+                        self.mark_shapes[apid].clear(update=True)
+
+            else:
+                self.mark_shapes[aperture].clear(update=True)
+        except Exception as e:
+            log.debug("FlatCAMGerber.clear_plot_apertures() --> %s" % str(e))
 
     def clear_mark_all(self):
         self.ui.mark_all_cb.set_value(False)
@@ -1563,6 +1556,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.app.ui.grid_snap_btn.trigger()
         else:
             self.clear_plot_apertures()
+            self.marked_rows[:] = []
 
         self.ui_connect()
 
@@ -2361,9 +2355,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
-            ))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
 
             self.ui.tools_table.setColumnHidden(4, True)
             self.ui.estartz_label.hide()
@@ -2375,9 +2367,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.feedrate_probe_label.hide()
             self.ui.feedrate_probe_entry.hide()
         else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
-            ))
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
@@ -3639,9 +3629,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
-            self.ui.level.setText(_(
-                '<span style="color:green;"><b>%s</b></span>' % _('Basic')
-            ))
+            self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
 
             self.ui.geo_tools_table.setColumnHidden(2, True)
             self.ui.geo_tools_table.setColumnHidden(3, True)
@@ -3661,9 +3649,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.feedrate_probe_label.hide()
             self.ui.feedrate_probe_entry.hide()
         else:
-            self.ui.level.setText(_(
-                '<span style="color:red;"><b>%s</b></span>' % _('Advanced')
-            ))
+            self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
@@ -4601,7 +4587,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             log.debug("FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s\n" % str(e))
 
             msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
-            msg += '%s %s' % (_('FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->'), str(e))
+            msg += '%s %s' % ('FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() -->', str(e))
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
             return
@@ -5904,7 +5890,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         except Exception as e:
             log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s %s' %
-                                 (_('FlatCAMCNNJob.on_edit_code_click() -->'), str(e)))
+                                 ('FlatCAMCNNJob.on_edit_code_click() -->', str(e)))
             return
 
         self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)

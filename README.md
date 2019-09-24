@@ -9,6 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+24.09.2019
+
+- fixed the fullscreen method to show the application window in fullscreen wherever the mouse pointer it is therefore on the screen we are working on; before it was showing always on the primary screen
+- fixed setup_ubuntu.sh to include the matplotlib package required by the Legacy (2D) graphic engine
+- in legacy graphic engine, fixed issue where immediately after changing the mouse cursor snapping the mouse cursor shape was not updated
+- in legacy graphic engine, fixed issue where while zooming the mouse cursor shape was not updated
+- in legacy graphic engine, fixed issue where immediately after panning finished the mouse cursor shape was not updated
+
 23.09.2019
 
 - in legacy graphic engine, fixed bug that made the old object disappear when a new object was loaded
@@ -20,6 +28,11 @@ CAD program, and create G-Code for Isolation routing.
 - added the new keywords to the default keywords list
 - fixed the FullScreen option not working for the 3D graphic engine (due bug of Qt5 when OpenGL window is fullscreen) by creating a sort of fullscreen
 - added a final fix that allow full coverage of the screen in FullScreen in Windows and still the menus are working
+- optimized the Gerber mark shapes display
+- fixed a color format bug in Tool Move for 3D engine
+- made sure that when the Tool Move is used on a Gerber file with mark shapes active, those mark shapes are deleted before the actual move
+- in legacy graphic engine, fixed issue with Delete shortcut key trying to delete twice
+- 26% in Google-translated French translation and updated some strings too
 
 22.09.2019
 

@@ -4377,18 +4377,21 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Brasilian - Portuguese"), 1, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Carlos Stein"), 1, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "),  1, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 2, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "French"), 2, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 2, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 3, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 3, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 3, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 3, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Russian"), 4, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 4, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 4, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Spanish"), 5, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 5, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 5, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 4, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Russian"), 5, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 5, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 5, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Spanish"), 6, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 6, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 6, 2)
                 self.translator_grid_lay.setColumnStretch(0, 0)
                 self.translators_tab_layout.addStretch()
 
@@ -5574,10 +5577,15 @@ class App(QtCore.QObject):
             # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
             # everything else will not work without this hack. This happen in Windows.
             # https://bugreports.qt.io/browse/QTBUG-41309
-            rec = QtWidgets.QApplication.desktop().screenGeometry()
+            desktop = QtWidgets.QApplication.desktop()
+            screen = desktop.screenNumber(QtGui.QCursor.pos())
+
+            rec = desktop.screenGeometry(screen)
+            x = rec.x() - 1
+            y = rec.y() - 1
             h = rec.height() + 2
             w = rec.width() + 2
-            self.ui.setGeometry(-1, -1, w, h)
+            self.ui.setGeometry(x, y, w, h)
             self.ui.show()
 
             for tb in self.ui.findChildren(QtWidgets.QToolBar):
@@ -9141,7 +9149,7 @@ class App(QtCore.QObject):
                         log.debug('App.on_fileopenscript() -->%s' % str(e))
                         if silent is False:
                             self.inform.emit('[ERROR] %s %s' %
-                                             (_('App.on_fileopenscript() -->'), str(e)))
+                                             ('App.on_fileopenscript() -->', str(e)))
                         return
 
                     self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)

@@ -30,3 +30,4 @@ pip3 install --upgrade fontTools
 pip3 install --upgrade rasterio
 pip3 install --upgrade lxml
 pip3 install --upgrade ezdxf
+pip3 install --upgrade matplotlib
