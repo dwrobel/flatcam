@@ -153,6 +153,9 @@ class ToolMove(FlatCAMTool):
                                     return "fail"
 
                                 for sel_obj in obj_list:
+                                    # if the Gerber mark shapes are enabled they need to be disabled before move
+                                    if isinstance(sel_obj, FlatCAMGerber):
+                                        sel_obj.ui.aperture_table_visibility_cb.setChecked(False)
 
                                     # offset solid_geometry
                                     sel_obj.offset((dx, dy))
@@ -312,7 +315,7 @@ class ToolMove(FlatCAMTool):
         # face = Color('blue')
         # face.alpha = 0.2
 
-        face = '#0000FFAF' + str(hex(int(0.2 * 255)))[2:]
+        face = '#0000FF' + str(hex(int(0.2 * 255)))[2:]
         outline = '#0000FFAF'
 
         self.sel_shapes.add(proc_shape, color=outline, face_color=face, update=True, layer=0, tolerance=None)

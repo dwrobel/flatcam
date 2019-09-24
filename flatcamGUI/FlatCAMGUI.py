@@ -2266,6 +2266,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         active = self.app.collection.get_active()
         selected = self.app.collection.get_selected()
 
+        matplotlib_key_flag = False
+
         # events out of the self.app.collection view (it's about Project Tab) are of type int
         if type(event) is int:
             key = event
@@ -2273,6 +2275,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         elif type(event) == QtGui.QKeyEvent:
             key = event.key()
         elif isinstance(event, mpl_key_event):  # MatPlotLib key events are trickier to interpret than the rest
+            matplotlib_key_flag = True
+
             key = event.key
             key = QtGui.QKeySequence(key)
 
@@ -2491,7 +2495,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Delete from PyQt
                 # It's meant to make a difference between delete objects and delete tools in
                 # Geometry Selected tool table
-                if key == QtCore.Qt.Key_Delete:
+                if key == QtCore.Qt.Key_Delete and matplotlib_key_flag is False:
                     self.app.on_delete_keypress()
 
                 # Delete from canvas
