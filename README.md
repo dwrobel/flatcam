@@ -12,6 +12,10 @@ CAD program, and create G-Code for Isolation routing.
 24.09.2019
 
 - fixed the fullscreen method to show the application window in fullscreen wherever the mouse pointer it is therefore on the screen we are working on; before it was showing always on the primary screen
+- fixed setup_ubuntu.sh to include the matplotlib package required by the Legacy (2D) graphic engine
+- in legacy graphic engine, fixed issue where immediately after changing the mouse cursor snapping the mouse cursor shape was not updated
+- in legacy graphic engine, fixed issue where while zooming the mouse cursor shape was not updated
+- in legacy graphic engine, fixed issue where immediately after panning finished the mouse cursor shape was not updated
 
 23.09.2019
 

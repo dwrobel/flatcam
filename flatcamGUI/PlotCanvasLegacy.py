@@ -8,12 +8,13 @@
 ############################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.QtCore import pyqtSignal
 
 # Prevent conflict with Qt5 and above.
 from matplotlib import use as mpl_use
 mpl_use("Qt5Agg")
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.widgets import Cursor
 
@@ -26,6 +27,7 @@ from shapely.geometry import Polygon, LineString, LinearRing, Point, MultiPolygo
 import FlatCAMApp
 from copy import deepcopy
 import logging
+import traceback
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -111,6 +113,33 @@ class CanvasCache(QtCore.QObject):
     # def on_new_object_available(self):
     #
     #     log.debug("A new object is available. Should plot it!")
+
+
+class FigureCanvas(FigureCanvasQTAgg):
+    """
+    Reimplemented this so I can emit a signal when the idle drawing is finished and display the mouse shape
+    """
+
+    idle_drawing_finished = pyqtSignal()
+
+    def __init__(self, figure):
+        super().__init__(figure=figure)
+
+    def _draw_idle(self):
+        if self.height() < 0 or self.width() < 0:
+            self._draw_pending = False
+        if not self._draw_pending:
+            return
+        try:
+            self.draw()
+        except Exception:
+            # Uncaught exceptions are fatal for PyQt5, so catch them instead.
+            traceback.print_exc()
+        finally:
+            self._draw_pending = False
+
+            # I reimplemented this class only to launch this signal
+            self.idle_drawing_finished.emit()
 
 
 class PlotCanvasLegacy(QtCore.QObject):
@@ -209,6 +238,9 @@ class PlotCanvasLegacy(QtCore.QObject):
         # signal if there is a doubleclick
         self.is_dblclk = False
 
+        # pay attention, this signal should be connected only after the self.canvas and self.mouse is declared
+        self.canvas.idle_drawing_finished.connect(lambda: self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1]))
+
     def graph_event_connect(self, event_name, callback):
         """
         Attach an event handler to the canvas through the Matplotlib interface.
@@ -256,8 +288,19 @@ class PlotCanvasLegacy(QtCore.QObject):
         #     c = MplCursor(axes=axes, color='black', linewidth=1)
 
         c = FakeCursor()
-
+        try:
+            c.mouse_state_updated.connect(self.clear_cursor)
+        except Exception as e:
+            print(str(e))
         return c
+
+    def clear_cursor(self, state):
+
+        if state is True:
+            self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
+        else:
+            self.canvas.restore_region(self.background)
+            self.canvas.blit(self.axes.bbox)
 
     def on_key_down(self, event):
         """
@@ -571,9 +614,12 @@ class PlotCanvasLegacy(QtCore.QObject):
             # Clear pan flag
             self.panning = False
 
+            # And update the cursor
+            self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
+
     def on_mouse_move(self, event):
         """
-        Mouse movement event hadler. Stores the coordinates. Updates view on pan.
+        Mouse movement event handler. Stores the coordinates. Updates view on pan.
 
         :param event: Contains information about the event.
         :return: None
@@ -591,10 +637,11 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # Update pan view on mouse move
         if self.panning is True:
-            # x_pan, y_pan = self.app.geo_editor.snap(event.xdata, event.ydata)
-            # self.app.app_cursor.set_data(event, (x_pan, y_pan))
             for a in self.pan_axes:
                 a.drag_pan(1, event.key, event.x, event.y)
+
+            # x_pan, y_pan = self.app.geo_editor.snap(event.xdata, event.ydata)
+            # self.draw_cursor(x_pos=x_pan, y_pos=y_pan)
 
             # Async re-draw (redraws only on thread idle state, uses timer on backend)
             self.canvas.draw_idle()
@@ -602,12 +649,32 @@ class PlotCanvasLegacy(QtCore.QObject):
             # #### Temporary place-holder for cached update #####
             self.update_screen_request.emit([0, 0, 0, 0, 0])
 
-        x, y = self.app.geo_editor.snap(x, y)
-        if self.app.app_cursor.enabled is True:
-            # Pointer (snapped)
-            elements = self.axes.plot(x, y, 'k+', ms=40, mew=2, animated=True)
-            for el in elements:
-                self.axes.draw_artist(el)
+        self.draw_cursor(x_pos=x, y_pos=y)
+
+        # self.canvas.blit(self.axes.bbox)
+
+    def draw_cursor(self, x_pos, y_pos):
+        """
+        Draw a cursor at the mouse grid snapped position
+
+        :param x_pos: mouse x position
+        :param y_pos: mouse y position
+        :return:
+        """
+        # there is no point in drawing mouse cursor when panning as it jumps in a confusing way
+        if self.app.app_cursor.enabled is True and self.panning is False:
+            try:
+                x, y = self.app.geo_editor.snap(x_pos, y_pos)
+
+                # Pointer (snapped)
+                elements = self.axes.plot(x, y, 'k+', ms=40, mew=2, animated=True)
+                for el in elements:
+                    self.axes.draw_artist(el)
+            except Exception as e:
+                # this happen at app initialization since self.app.geo_editor does not exist yet
+                # I could reshuffle the object instantiating order but what's the point? I could crash something else
+                # and that's pythonic, too
+                pass
 
         self.canvas.blit(self.axes.bbox)
 
@@ -656,13 +723,17 @@ class PlotCanvasLegacy(QtCore.QObject):
         return width / xpx, height / ypx
 
 
-class FakeCursor:
+class FakeCursor(QtCore.QObject):
     """
     This is a fake cursor to ensure compatibility with the OpenGL engine (VisPy).
     This way I don't have to chane (disable) things related to the cursor all over when
     using the low performance Matplotlib 2D graphic engine.
     """
+
+    mouse_state_updated = pyqtSignal(bool)
+
     def __init__(self):
+        super().__init__()
         self._enabled = True
 
     @property
@@ -672,6 +743,7 @@ class FakeCursor:
     @enabled.setter
     def enabled(self, value):
         self._enabled = value
+        self.mouse_state_updated.emit(value)
 
     def set_data(self, pos, **kwargs):
         """Internal event handler to draw the cursor when the mouse moves."""
