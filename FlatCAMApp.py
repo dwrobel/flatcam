@@ -5577,10 +5577,15 @@ class App(QtCore.QObject):
             # window drawn with OpenGL in fullscreen will not show any other windows on top which means that menus and
             # everything else will not work without this hack. This happen in Windows.
             # https://bugreports.qt.io/browse/QTBUG-41309
-            rec = QtWidgets.QApplication.desktop().screenGeometry()
+            desktop = QtWidgets.QApplication.desktop()
+            screen = desktop.screenNumber(QtGui.QCursor.pos())
+
+            rec = desktop.screenGeometry(screen)
+            x = rec.x() - 1
+            y = rec.y() - 1
             h = rec.height() + 2
             w = rec.width() + 2
-            self.ui.setGeometry(-1, -1, w, h)
+            self.ui.setGeometry(x, y, w, h)
             self.ui.show()
 
             for tb in self.ui.findChildren(QtWidgets.QToolBar):

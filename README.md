@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+24.09.2019
+
+- fixed the fullscreen method to show the application window in fullscreen wherever the mouse pointer it is therefore on the screen we are working on; before it was showing always on the primary screen
+
 23.09.2019
 
 - in legacy graphic engine, fixed bug that made the old object disappear when a new object was loaded
