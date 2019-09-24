@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-09-23 06:22+0300\n"
-"PO-Revision-Date: 2019-09-23 06:22+0300\n"
+"POT-Creation-Date: 2019-09-24 09:40-0300\n"
+"PO-Revision-Date: 2019-09-24 09:41-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -8555,13 +8555,17 @@ msgstr "Ferra. de Escala"
 msgid "Factor to scale the Gerber element."
 msgstr "Fator para redimensionar o elemento Gerber."
 
-#: flatcamGUI/PreferencesUI.py:1607 flatcamGUI/PreferencesUI.py:1617
+#: flatcamGUI/PreferencesUI.py:1607
 msgid "Threshold low"
 msgstr "Limiar baixo"
 
 #: flatcamGUI/PreferencesUI.py:1609
 msgid "Threshold value under which the apertures are not marked."
 msgstr "Valor limiar sob o qual as aberturas não são marcadas."
+
+#: flatcamGUI/PreferencesUI.py:1617
+msgid "Threshold high"
+msgstr "Limiar alto"
 
 #: flatcamGUI/PreferencesUI.py:1619
 msgid "Threshold value over which the apertures are not marked."
