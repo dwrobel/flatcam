@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-09-23 06:22+0300\n"
+"POT-Creation-Date: 2019-09-23 22:08+0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -1173,7 +1173,7 @@ msgstr "Импортирование SVG"
 #: FlatCAMApp.py:10215 FlatCAMApp.py:10282 FlatCAMApp.py:10349
 #: flatcamTools/ToolPDF.py:220
 msgid "Opened"
-msgstr "Открытый"
+msgstr "Открыт"
 
 #: FlatCAMApp.py:10077
 msgid "Importing DXF"
@@ -1576,7 +1576,7 @@ msgstr "Создана геометрия изоляции"
 
 #: FlatCAMObj.py:1177 FlatCAMObj.py:1252
 msgid "Subtracting Geo"
-msgstr "Вычитание Geo"
+msgstr "Вычитание геометрии"
 
 #: FlatCAMObj.py:1450
 msgid "Plotting Apertures"
@@ -2479,7 +2479,7 @@ msgstr "Линейный"
 #: flatcamEditors/FlatCAMGrbEditor.py:2648 flatcamGUI/PreferencesUI.py:3303
 #: flatcamTools/ToolNonCopperClear.py:203
 msgid "Circular"
-msgstr "Круговой"
+msgstr "Круглый"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1628 flatcamGUI/PreferencesUI.py:2367
 msgid "Nr of drills"
@@ -6520,7 +6520,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:493 flatcamGUI/ObjectUI.py:525
 #: flatcamGUI/PreferencesUI.py:1185 flatcamGUI/PreferencesUI.py:1210
 msgid "Boundary Margin"
-msgstr "Отступ от дорожек"
+msgstr "Отступ от границы"
 
 #: flatcamGUI/ObjectUI.py:495 flatcamGUI/PreferencesUI.py:1187
 msgid ""
@@ -6529,9 +6529,9 @@ msgid ""
 "objects with this minimum\n"
 "distance."
 msgstr ""
-"Обозначает край печатной платы \n"
-"рисованием прямоугольника вокруг всех \n"
-"объектов с этим минимальным \n"
+"Обозначает край печатной платы\n"
+"рисованием прямоугольника вокруг всех\n"
+"объектов с этим минимальным\n"
 "расстоянием."
 
 #: flatcamGUI/ObjectUI.py:506 flatcamGUI/ObjectUI.py:535
@@ -6559,7 +6559,7 @@ msgid ""
 "Create a geometry surrounding the Gerber object.\n"
 "Square shape."
 msgstr ""
-"Создайте геометрию, окружающую объект Gerber.\n"
+"Создаст геометрию, окружающую объект Gerber.\n"
 "Квадратная форма."
 
 #: flatcamGUI/ObjectUI.py:527 flatcamGUI/PreferencesUI.py:1212
@@ -6577,7 +6577,7 @@ msgid ""
 "their radius is equal to\n"
 "the margin."
 msgstr ""
-"Если ограничительная рамка \n"
+"Если ограничительная рамка\n"
 "имеет закругленные углы\n"
 "их радиус будет равен\n"
 "отступу."
@@ -6592,7 +6592,7 @@ msgstr "Объект  Excellon"
 
 #: flatcamGUI/ObjectUI.py:569
 msgid "Solid circles."
-msgstr "Закрашенные круги."
+msgstr "Сплошные круги."
 
 #: flatcamGUI/ObjectUI.py:617
 msgid "Drills"
@@ -6831,13 +6831,13 @@ msgid ""
 "The postprocessor JSON file that dictates\n"
 "Gcode output."
 msgstr ""
-"Файл JSON постпроцессора, который диктует\n"
-"Вывод Gcode."
+"JSON-файл постпроцессора, который влияет\n"
+"на Gcode."
 
 #: flatcamGUI/ObjectUI.py:781 flatcamGUI/ObjectUI.py:1313
 #: flatcamGUI/PreferencesUI.py:2114 flatcamGUI/PreferencesUI.py:2857
 msgid "Probe Z depth"
-msgstr "Глубина зонда Z"
+msgstr "Глубина зондирования Z"
 
 #: flatcamGUI/ObjectUI.py:783 flatcamGUI/ObjectUI.py:1315
 #: flatcamGUI/PreferencesUI.py:2116 flatcamGUI/PreferencesUI.py:2859
@@ -6845,8 +6845,8 @@ msgid ""
 "The maximum depth that the probe is allowed\n"
 "to probe. Negative value, in current units."
 msgstr ""
-"Максимальная глубина, допустимая для зонда\n"
-"зондировать. Отрицательное значение в текущих единицах."
+"Максимальная глубина, допустимая для зонда.\n"
+"Отрицательное значение в текущих единицах."
 
 #: flatcamGUI/ObjectUI.py:793 flatcamGUI/ObjectUI.py:1325
 #: flatcamGUI/PreferencesUI.py:2124 flatcamGUI/PreferencesUI.py:2867
@@ -6921,7 +6921,7 @@ msgstr "Диаметр режущего инструмента."
 
 #: flatcamGUI/ObjectUI.py:858
 msgid "Mill Drills Geo"
-msgstr "Создать Geo"
+msgstr "Создать геометрию"
 
 #: flatcamGUI/ObjectUI.py:860
 msgid ""
@@ -6945,7 +6945,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:875
 msgid "Mill Slots Geo"
-msgstr "Создать Geo"
+msgstr "Создать геометрию"
 
 #: flatcamGUI/ObjectUI.py:877
 msgid ""
@@ -6953,7 +6953,7 @@ msgid ""
 "for milling SLOTS toolpaths."
 msgstr ""
 "Создание объекта геометрии\n"
-"для фрезерования пазов траекторий движения инструмента."
+"траекторий для инструмента фрезерования пазов."
 
 #: flatcamGUI/ObjectUI.py:895
 msgid "Geometry Object"
@@ -6995,7 +6995,7 @@ msgstr "Рисовать объекты"
 
 #: flatcamGUI/ObjectUI.py:957 flatcamGUI/ObjectUI.py:1522
 msgid "Dia"
-msgstr "Диам"
+msgstr "Диаметр"
 
 #: flatcamGUI/ObjectUI.py:957 flatcamGUI/ObjectUI.py:1522
 #: flatcamTools/ToolNonCopperClear.py:107 flatcamTools/ToolPaint.py:106
@@ -7401,8 +7401,8 @@ msgid ""
 "This is the estimated time to do the routing/drilling,\n"
 "without the time spent in ToolChange events."
 msgstr ""
-"Это расчетное время для выполнения маршрутизации / бурения,\n"
-"без времени, проведенного в событиях смены инструмента."
+"Это расчетное время для выполнения маршрутизации/бурения,\n"
+"без времени, затраченного на события смены инструмента."
 
 #: flatcamGUI/ObjectUI.py:1488
 msgid "CNC Tools Table"
@@ -7542,7 +7542,7 @@ msgstr "Параметры"
 
 #: flatcamGUI/ObjectUI.py:1618 flatcamGUI/PreferencesUI.py:3204
 msgid "FlatCAM CNC parameters"
-msgstr "Параметры CNC FlatCAM"
+msgstr "Параметры FlatCAM CNC"
 
 #: flatcamGUI/ObjectUI.py:1619 flatcamGUI/PreferencesUI.py:3205
 msgid "tool = tool number"
@@ -7642,7 +7642,7 @@ msgstr "Это значение привязки сетки по оси Y."
 
 #: flatcamGUI/PreferencesUI.py:277
 msgid "Snap Max"
-msgstr "Оснастка Макс"
+msgstr "Максимальный захват"
 
 #: flatcamGUI/PreferencesUI.py:282
 msgid "Workspace"
@@ -7653,7 +7653,7 @@ msgid ""
 "Draw a delimiting rectangle on canvas.\n"
 "The purpose is to illustrate the limits for our work."
 msgstr ""
-"Нарисуйте прямоугольник с разделителями на холсте.\n"
+"Нарисует прямоугольник с разделителями на холсте.\n"
 "Цель состоит в том, чтобы проиллюстрировать пределы нашей работы."
 
 #: flatcamGUI/PreferencesUI.py:287
@@ -7665,7 +7665,7 @@ msgid ""
 "Select the type of rectangle to be used on canvas,\n"
 "as valid workspace."
 msgstr ""
-"Выберите тип прямоугольника, который будет использоваться на холсте,\n"
+"Выбор типа прямоугольника, который будет использоваться на холсте,\n"
 "как допустимое рабочее пространство."
 
 #: flatcamGUI/PreferencesUI.py:302
@@ -7678,7 +7678,7 @@ msgid ""
 "First 6 digits are the color and the last 2\n"
 "digits are for alpha (transparency) level."
 msgstr ""
-"Установите цвет заливки для построенных объектов.\n"
+"Установит цвет заливки для построенных объектов.\n"
 "Первые 6 цифр-это цвет, а последние 2\n"
 "цифры для альфа-уровня (прозрачности)."
 
@@ -7689,7 +7689,7 @@ msgstr "Уровень прозрачности"
 
 #: flatcamGUI/PreferencesUI.py:320
 msgid "Set the fill transparency for plotted objects."
-msgstr "Установите прозрачность заливки для построенных объектов."
+msgstr "Установит прозрачность заливки для построенных объектов."
 
 #: flatcamGUI/PreferencesUI.py:337
 msgid "Plot Line"
@@ -7697,7 +7697,7 @@ msgstr "Линия участка"
 
 #: flatcamGUI/PreferencesUI.py:339
 msgid "Set the line color for plotted objects."
-msgstr "Установите цвет линии для построенных объектов."
+msgstr "Установит цвет линии для построенных объектов."
 
 #: flatcamGUI/PreferencesUI.py:351
 msgid "Sel. Fill"
@@ -7717,7 +7717,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:370
 msgid "Set the fill transparency for the 'left to right' selection box."
-msgstr "Установите прозрачность заливки для поля выбора \"слева направо\"."
+msgstr "Установит прозрачность заливки для поля выбора \"слева направо\"."
 
 #: flatcamGUI/PreferencesUI.py:387
 msgid "Sel. Line"
@@ -7725,7 +7725,7 @@ msgstr "Выбранная строка"
 
 #: flatcamGUI/PreferencesUI.py:389
 msgid "Set the line color for the 'left to right' selection box."
-msgstr "Установите цвет линии для поля выбора \"слева направо\"."
+msgstr "Установит цвет линии для поля выбора \"слева направо\"."
 
 #: flatcamGUI/PreferencesUI.py:401
 msgid "Sel2. Fill"
@@ -7745,7 +7745,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:420
 msgid "Set the fill transparency for selection 'right to left' box."
-msgstr "Установите прозрачность заливки для выбора \"справа налево\"."
+msgstr "Установит прозрачность заливки для выбора \"справа налево\"."
 
 #: flatcamGUI/PreferencesUI.py:437
 msgid "Sel2. Line"
@@ -7761,7 +7761,7 @@ msgstr "Редактор Draw"
 
 #: flatcamGUI/PreferencesUI.py:453
 msgid "Set the color for the shape."
-msgstr "Установите цвет для фигуры."
+msgstr "Установит цвет для фигуры."
 
 #: flatcamGUI/PreferencesUI.py:465
 msgid "Editor Draw Sel."
@@ -7769,7 +7769,7 @@ msgstr "Цвет выделения в редакторе"
 
 #: flatcamGUI/PreferencesUI.py:467
 msgid "Set the color of the shape when selected."
-msgstr "Установите цвет фигуры при выборе."
+msgstr "Установит цвет фигуры при выборе."
 
 #: flatcamGUI/PreferencesUI.py:479
 msgid "Project Items"
@@ -7777,7 +7777,7 @@ msgstr "Элемент проекта"
 
 #: flatcamGUI/PreferencesUI.py:481
 msgid "Set the color of the items in Project Tab Tree."
-msgstr "Установите цвет элементов в дереве вкладок проекта."
+msgstr "Установит цвет элементов в дереве вкладок проекта."
 
 #: flatcamGUI/PreferencesUI.py:492
 msgid "Proj. Dis. Items"
@@ -7933,7 +7933,7 @@ msgstr "Иконка в системном трее"
 
 #: flatcamGUI/PreferencesUI.py:703
 msgid "Enable display of FlatCAM icon in Sys Tray."
-msgstr "Включает отображение значка FlatCAM в системном трее."
+msgstr "Включает отображение иконки FlatCAM в системном трее."
 
 #: flatcamGUI/PreferencesUI.py:708
 msgid "Shell at StartUp"
@@ -7956,9 +7956,8 @@ msgid ""
 "Check this box if you want the project/selected/tool tab area to\n"
 "to be shown automatically at startup."
 msgstr ""
-"Установите этот флажок, если требуется, чтобы область вкладки проект / "
-"выбранный / инструмент\n"
-"автоматически показывается при запуске."
+"Установите этот флажок, если требуется, чтобы боковая панель\n"
+"автоматически отображалась при запуске."
 
 #: flatcamGUI/PreferencesUI.py:732
 msgid "Project AutoHide"
@@ -8022,9 +8021,9 @@ msgid ""
 "Whatever is selected here is set every time\n"
 "FLatCAM is started."
 msgstr ""
-"Значение по умолчанию для модулей FlatCAM.\n"
+"Значение по умолчанию для единиц измерения FlatCAM.\n"
 "Все, что выбрано здесь, устанавливается каждый раз\n"
-"FlatCAM запущен."
+"при запуске FLatCAM."
 
 #: flatcamGUI/PreferencesUI.py:846
 msgid "IN"
@@ -8211,7 +8210,7 @@ msgid ""
 "Default value is 2.\n"
 "After change, it will be applied at next App start."
 msgstr ""
-"Количество QThreads, доступных приложению.\n"
+"Количество потоков доступных приложению.\n"
 "Большее число может закончить работу быстрее, но\n"
 "в зависимости от скорости вашего компьютера, может сделать приложение\n"
 "неотзывчивый. Может иметь значение от 2 до 16.\n"
@@ -8240,7 +8239,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1002
 msgid "\"Open\" behavior"
-msgstr "\"Открытое\" поведение"
+msgstr "Поведение функции \"Открыть\""
 
 #: flatcamGUI/PreferencesUI.py:1004
 msgid ""
@@ -8250,12 +8249,13 @@ msgid ""
 "When unchecked the path for opening files is the one used last: either the\n"
 "path for saving files or the path for opening files."
 msgstr ""
-"При проверке путь к последнему сохраненному файлу используется при "
-"сохранении файлов,\n"
+"Если флажок установлен, то путь к последнему сохраненному файлу используется "
+"при сохранении файлов,\n"
 "и путь к последнему открытому файлу используется при открытии файлов.\n"
 "\n"
-"Когда флажок снят, путь для открытия файлов используется последним: либо\n"
-"путь для сохранения файлов или путь для открытия файлов."
+"Если флажок не установлен, путь для открытия файлов будет последним из "
+"используемых: либо\n"
+"путь для сохранения файлов либо путь для открытия файлов."
 
 #: flatcamGUI/PreferencesUI.py:1013
 msgid "Save Compressed Project"
@@ -8266,8 +8266,8 @@ msgid ""
 "Whether to save a compressed or uncompressed project.\n"
 "When checked it will save a compressed FlatCAM project."
 msgstr ""
-"Сохранение сжатого или несжатого проекта.\n"
-"При проверке он сохранит сжатый FlatCAM проект."
+"Сохранять ли проект сжатым или несжатым.\n"
+"Если этот флажок установлен, он сохранит сжатый проект FlatCAM."
 
 #: flatcamGUI/PreferencesUI.py:1026
 msgid "Compression Level"
@@ -8279,8 +8279,8 @@ msgid ""
 "a FlatCAM project. Higher value means better compression\n"
 "but require more RAM usage and more processing time."
 msgstr ""
-"Уровень сжатия при сохранении FlatCAM проект. \n"
-"Более высокое значение означает более высокую степень сжатия\n"
+"Уровень сжатия при сохранении FlatCAM проекта.\n"
+"Более высокое значение означает более высокую степень сжатия,\n"
 "но требуют больше памяти и больше времени на обработку."
 
 #: flatcamGUI/PreferencesUI.py:1055
@@ -8290,15 +8290,15 @@ msgstr "Gerber основные"
 #: flatcamGUI/PreferencesUI.py:1086 flatcamGUI/PreferencesUI.py:2600
 #: flatcamGUI/PreferencesUI.py:3018
 msgid "Circle Steps"
-msgstr "Круговые шаги"
+msgstr "Шаг круга"
 
 #: flatcamGUI/PreferencesUI.py:1088
 msgid ""
 "The number of circle steps for Gerber \n"
 "circular aperture linear approximation."
 msgstr ""
-"Число шагов круга для Gerber \n"
-"линейная аппроксимация круглой апертуры."
+"Количество шагов круга для Gerber \n"
+"линейное приближение круговой апертуры."
 
 #: flatcamGUI/PreferencesUI.py:1103
 msgid "Gerber Options"
@@ -8563,13 +8563,17 @@ msgstr "Масштаб"
 msgid "Factor to scale the Gerber element."
 msgstr "Коэффициент масштабирования для элемента Gerber."
 
-#: flatcamGUI/PreferencesUI.py:1607 flatcamGUI/PreferencesUI.py:1617
+#: flatcamGUI/PreferencesUI.py:1607
 msgid "Threshold low"
 msgstr "Низкий порог"
 
 #: flatcamGUI/PreferencesUI.py:1609
 msgid "Threshold value under which the apertures are not marked."
-msgstr "Пороговое значение, при котором апертуры не отмечены."
+msgstr "Пороговое значение, ниже которого отверстия не отмечены."
+
+#: flatcamGUI/PreferencesUI.py:1617
+msgid "Threshold high"
+msgstr "Высокий порог"
 
 #: flatcamGUI/PreferencesUI.py:1619
 msgid "Threshold value over which the apertures are not marked."
@@ -9548,9 +9552,9 @@ msgid ""
 "will make the cutout of the PCB further from\n"
 "the actual PCB border"
 msgstr ""
-"Маржа над границами. Положительное значение здесь\n"
-"сделает отрезок из ПКБ дальше от\n"
-"фактическая граница печатной платы"
+"Отступ за границами. Положительное значение\n"
+"сделает вырез печатной платы дальше от\n"
+"фактической границы печатной платы"
 
 #: flatcamGUI/PreferencesUI.py:3580
 msgid "Gap size"
@@ -12992,15 +12996,15 @@ msgstr "Смещение на"
 
 #: tclCommands/TclCommandBbox.py:70 tclCommands/TclCommandNregions.py:68
 msgid "Expected FlatCAMGerber or FlatCAMGeometry, got"
-msgstr "Ожидается FlatCAMGerber или FlatCAMGeometry, получено"
+msgstr "Ожидался FlatCAMGerber или FlatCAMGeometry, получено"
 
 #: tclCommands/TclCommandBounds.py:64 tclCommands/TclCommandBounds.py:68
 msgid "Expected a list of objects names separated by comma. Got"
-msgstr "Ожидается список имен объектов, разделенных запятой. Получил"
+msgstr "Ожидался список имен объектов, разделенных запятой. Получено"
 
 #: tclCommands/TclCommandBounds.py:79
 msgid "TclCommand Bounds done."
-msgstr "TclCommand Границы сделаны."
+msgstr "Tcl-команда \"Границы\" выполнена."
 
 #: tclCommands/TclCommandCopperClear.py:237 tclCommands/TclCommandPaint.py:235
 msgid "Expected -box <value>."
