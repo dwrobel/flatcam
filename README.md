@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - French translation at 33%
 - fixed the 'Jump To' function to work in legacy graphic engine
 - in legacy graphic engine fixed the mouse cursor shape when grid snapping is ON, such that it fits with the shape from the OpenGL graphic engine
+- in legacy graphic engine fixed the axis toggle
+- French Google-translation at 48%
 
 24.09.2019
 
@@ -24,7 +26,7 @@ CAD program, and create G-Code for Isolation routing.
 - in legacy graphic engine, fixed issue where immediately after panning finished the mouse cursor shape was not updated
 - unfortunately the fix for issue where while zooming the mouse cursor shape was not updated braked something in way that Matplotlib work with PyQt5, therefore I removed it
 - fixed a bug in legacy graphic engine: when doing the self.app.collection.delete_all() in new_project an app crash occurred
-- implemented the Annotation change in CNCJob Selected Tab
+- implemented the Annotation change in CNCJob Selected Tab for the legacy graphic engine
 
 23.09.2019
 

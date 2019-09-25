@@ -5628,15 +5628,24 @@ class App(QtCore.QObject):
         self.report_usage("on_toggle_axis()")
 
         if self.toggle_axis is False:
-            self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-            self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-            self.plotcanvas.redraw()
+            if self.is_legacy is False:
+                self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                self.plotcanvas.redraw()
+            else:
+                self.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
+                self.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
+                self.plotcanvas.canvas.draw()
+                pass
             self.toggle_axis = True
         else:
-            self.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-
-            self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-            self.plotcanvas.redraw()
+            if self.is_legacy is False:
+                self.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                self.plotcanvas.redraw()
+            else:
+                self.plotcanvas.axes.lines[:] = []
+                self.plotcanvas.canvas.draw()
             self.toggle_axis = False
 
     def on_toggle_grid(self):
