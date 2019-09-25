@@ -6896,9 +6896,9 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        if self.is_legacy is True:
-            self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
-            return
+        # if self.is_legacy is True:
+        #     self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
+        #     return
 
         if not custom_location:
             dia_box = Dialog_box(title=_("Jump to ..."),
@@ -6919,11 +6919,7 @@ class App(QtCore.QObject):
             location = custom_location
 
         if fit_center:
-            if self.is_legacy is False:
-                self.plotcanvas.fit_center(loc=location)
-            else:
-                pass
-                # self.plotcanvas.fit_view()
+            self.plotcanvas.fit_center(loc=location)
 
         cursor = QtGui.QCursor()
 
@@ -6932,13 +6928,17 @@ class App(QtCore.QObject):
             jump_loc = self.plotcanvas.translate_coords_2((location[0], location[1]))
             cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
         else:
-            # the origin finding works but not mapping the location to pixels
+            # find the canvas origin which is in the top left corner
             canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            # determine the coordinates for the lowest left point of the canvas
             x0, y0 = canvas_origin.x(), canvas_origin.y() + self.ui.right_layout.geometry().height()
-            x0, y0 = x0 + self.plotcanvas.axes.transData.transform((0, 0))[0], y0 - \
-                     self.plotcanvas.axes.transData.transform((0, 0))[1]
-            loc = self.plotcanvas.axes.transData.transform(location)
-            cursor.setPos(x0 + loc[0]/50, y0 - loc[1]/50)
+
+            # transform the given location from data coordinates to display coordinates. THe display coordinates are
+            # in pixels where the origin 0,0 is in the lowest left point of the display window (in our case is the
+            # canvas) and the point (width, height) is in the top-right location
+            loc = self.plotcanvas.axes.transData.transform_point(location)
+
+            cursor.setPos(x0 + loc[0], y0 - loc[1])
 
         self.inform.emit('[success] %s' %
                          _("Done."))

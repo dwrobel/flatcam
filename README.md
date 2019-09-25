@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 25.09.2019
 
 - French translation at 33%
+- fixed the 'Jump To' function to work in legacy graphic engine
+- in legacy graphic engine fixed the mouse cursor shape when grid snapping is ON, such that it fits with the shape from the OpenGL graphic engine
 
 24.09.2019
 
