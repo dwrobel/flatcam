@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.09.2019
+
+- French translation at 33%
+
 24.09.2019
 
 - fixed the fullscreen method to show the application window in fullscreen wherever the mouse pointer it is therefore on the screen we are working on; before it was showing always on the primary screen
