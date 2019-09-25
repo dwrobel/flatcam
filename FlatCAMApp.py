@@ -124,7 +124,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.97
-    version_date = "2019/09/22"
+    version_date = "2019/09/27"
     beta = True
     engine = '3D'
 
