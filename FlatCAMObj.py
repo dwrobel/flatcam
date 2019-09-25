@@ -5756,9 +5756,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             pass
         self.ui.annotation_cb.stateChanged.connect(self.on_annotation_change)
 
-        if self.app.is_legacy is False:
-            # set if to display text annotations
-            self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
+        # set if to display text annotations
+        self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -6244,7 +6243,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             # self.plot(kind=kind)
             self.annotation.redraw()
         else:
-            self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
+            kind = self.ui.cncplot_method_combo.get_value()
+            self.plot(kind=kind)
 
     def convert_units(self, units):
         log.debug("FlatCAMObj.FlatCAMECNCjob.convert_units()")

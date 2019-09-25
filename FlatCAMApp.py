@@ -124,7 +124,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.97
-    version_date = "2019/09/22"
+    version_date = "2019/09/27"
     beta = True
     engine = '3D'
 
@@ -11142,6 +11142,7 @@ class App(QtCore.QObject):
         self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
 
         self.app_cursor = self.plotcanvas.new_cursor()
+
         if self.ui.grid_snap_btn.isChecked():
             self.app_cursor.enabled = True
         else:
