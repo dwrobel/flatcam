@@ -11142,6 +11142,7 @@ class App(QtCore.QObject):
         self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
 
         self.app_cursor = self.plotcanvas.new_cursor()
+
         if self.ui.grid_snap_btn.isChecked():
             self.app_cursor.enabled = True
         else:

@@ -605,30 +605,33 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
+        try:
+            self.app.all_objects_list.clear()
 
-        self.app.plotcanvas.redraw()
+            self.app.geo_editor.clear()
 
-        self.app.all_objects_list.clear()
+            self.app.exc_editor.clear()
 
-        self.app.geo_editor.clear()
+            self.app.dblsidedtool.reset_fields()
 
-        self.app.exc_editor.clear()
+            self.app.panelize_tool.reset_fields()
 
-        self.app.dblsidedtool.reset_fields()
+            self.app.cutout_tool.reset_fields()
 
-        self.app.panelize_tool.reset_fields()
+            self.app.film_tool.reset_fields()
 
-        self.app.cutout_tool.reset_fields()
+            self.beginResetModel()
 
-        self.app.film_tool.reset_fields()
+            self.checked_indexes = []
 
-        self.beginResetModel()
+            for group in self.root_item.child_items:
+                group.remove_children()
 
-        self.checked_indexes = []
-        for group in self.root_item.child_items:
-            group.remove_children()
+            self.endResetModel()
 
-        self.endResetModel()
+            self.app.plotcanvas.redraw()
+        except Exception as e:
+            log.debug("ObjectCollection.delete_all() --> %s" % str(e))
 
     def get_active(self):
         """

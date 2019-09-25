@@ -16,6 +16,9 @@ CAD program, and create G-Code for Isolation routing.
 - in legacy graphic engine, fixed issue where immediately after changing the mouse cursor snapping the mouse cursor shape was not updated
 - in legacy graphic engine, fixed issue where while zooming the mouse cursor shape was not updated
 - in legacy graphic engine, fixed issue where immediately after panning finished the mouse cursor shape was not updated
+- unfortunately the fix for issue where while zooming the mouse cursor shape was not updated braked something in way that Matplotlib work with PyQt5, therefore I removed it
+- fixed a bug in legacy graphic engine: when doing the self.app.collection.delete_all() in new_project an app crash occurred
+- implemented the Annotation change in CNCJob Selected Tab
 
 23.09.2019
 
