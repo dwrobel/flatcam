@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - French Google-translation at 100%
 - German Google-translation update to 100%
 - updated the other languages and the .POT file
+- changed some strings (that should not have been included for translation) and updated language files and the .POT file
 
 25.09.2019
 
