@@ -17,10 +17,11 @@ from camlib import *
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.ObjectUI import LengthEntry, RadioSet
 
-from shapely.geometry import LineString, LinearRing, MultiLineString
+from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon
 # from shapely.geometry import mapping
 from shapely.ops import cascaded_union, unary_union
 import shapely.affinity as affinity
+from shapely.geometry.polygon import orient
 
 from numpy import arctan2, Inf, array, sqrt, sign, dot
 from numpy.linalg import norm as numpy_norm
@@ -3562,19 +3563,33 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.select_tool("select")
 
+        if self.app.defaults['geometry_spindledir'] == 'CW':
+            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+                milling_type = 1    # CCW motion = climb milling (spindle is rotating CW)
+            else:
+                milling_type = -1   # CW motion = conventional milling (spindle is rotating CW)
+        else:
+            if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+                milling_type = -1    # CCW motion = climb milling (spindle is rotating CCW)
+            else:
+                milling_type = 1   # CW motion = conventional milling (spindle is rotating CCW)
+
         # Link shapes into editor.
         if multigeo_tool:
             self.multigeo_tool = multigeo_tool
-            geo_to_edit = fcgeometry.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'])
-            self.app.inform.emit('[WARNING_NOTCL] %s: %s %s: %s' %
-                                 (_("Editing MultiGeo Geometry, tool"),
-                                 str(self.multigeo_tool),
-                                 _("with diameter"),
-                                 str(fcgeometry.tools[self.multigeo_tool]['tooldia'])
-                                 )
-                                 )
+            geo_to_edit = self.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'],
+                                       orient_val=milling_type)
+            self.app.inform.emit(
+                '[WARNING_NOTCL] %s: %s %s: %s' % (
+                    _("Editing MultiGeo Geometry, tool"),
+                    str(self.multigeo_tool),
+                    _("with diameter"),
+                    str(fcgeometry.tools[self.multigeo_tool]['tooldia'])
+                )
+            )
         else:
-            geo_to_edit = fcgeometry.flatten()
+            geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry,
+                                       orient_val=milling_type)
 
         for shape in geo_to_edit:
             if shape is not None:  # TODO: Make flatten never create a None
@@ -3671,7 +3686,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 self.app.clipboard.setText(
                     self.app.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
                 return
-
 
             # Selection with left mouse button
             if self.active_tool is not None and event.button == 1:
@@ -4055,8 +4069,37 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def on_shape_complete(self):
         self.app.log.debug("on_shape_complete()")
 
+        geom = self.active_tool.geometry.geo
+
+        if self.app.defaults['geometry_editor_milling_type'] == 'cl':
+            # reverse the geometry coordinates direction to allow creation of Gcode for  climb milling
+            try:
+                pl = []
+                for p in geom:
+                    if p is not None:
+                        if isinstance(p, Polygon):
+                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                        elif isinstance(p, LinearRing):
+                            pl.append(Polygon(p.coords[::-1]))
+                        # elif isinstance(p, LineString):
+                        #     pl.append(LineString(p.coords[::-1]))
+                geom = MultiPolygon(pl)
+            except TypeError:
+                if isinstance(geom, Polygon) and geom is not None:
+                    geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                elif isinstance(geom, LinearRing) and geom is not None:
+                    geom = Polygon(geom.coords[::-1])
+                elif isinstance(geom, LineString) and geom is not None:
+                    geom = LineString(geom.coords[::-1])
+                else:
+                    log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> Unexpected Geometry %s" %
+                              type(geom))
+            except Exception as e:
+                log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> %s" % str(e))
+                return 'fail'
+
         # Add shape
-        self.add_shape(self.active_tool.geometry)
+        self.add_shape(DrawToolShape(geom))
 
         # Remove any utility shapes
         self.delete_utility_geometry()
@@ -4640,6 +4683,47 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.inform.emit(
             '[success] %s' % _("Paint done."))
         self.replot()
+
+    def flatten(self, geometry, orient_val=1, reset=True, pathonly=False):
+        """
+        Creates a list of non-iterable linear geometry objects.
+        Polygons are expanded into its exterior and interiors if specified.
+
+        Results are placed in self.flat_geometry
+
+        :param geometry: Shapely type or list or list of list of such.
+        :param orient_val: will orient the exterior coordinates CW if 1 and CCW for else (whatever else means ...)
+        https://shapely.readthedocs.io/en/stable/manual.html#polygons
+        :param reset: Clears the contents of self.flat_geometry.
+        :param pathonly: Expands polygons into linear elements.
+        """
+
+        if reset:
+            self.flat_geo = []
+
+        # ## If iterable, expand recursively.
+        try:
+            for geo in geometry:
+                if geo is not None:
+                    self.flatten(geometry=geo,
+                                 orient_val=orient_val,
+                                 reset=False,
+                                 pathonly=pathonly)
+
+        # ## Not iterable, do the actual indexing and add.
+        except TypeError:
+            if type(geometry) == Polygon:
+                geometry = orient(geometry, orient_val)
+
+            if pathonly and type(geometry) == Polygon:
+                self.flat_geo.append(geometry.exterior)
+                self.flatten(geometry=geometry.interiors,
+                             reset=False,
+                             pathonly=True)
+            else:
+                self.flat_geo.append(geometry)
+
+        return self.flat_geo
 
 
 def distance(pt1, pt2):

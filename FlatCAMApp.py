@@ -657,6 +657,7 @@ class App(QtCore.QObject):
 
             # Geometry Editor
             "geometry_editor_sel_limit": self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
+            "geometry_editor_milling_type": self.ui.geometry_defaults_form.geometry_editor_group.milling_type_radio,
 
             # CNCJob General
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
@@ -1064,6 +1065,7 @@ class App(QtCore.QObject):
 
             # Geometry Editor
             "geometry_editor_sel_limit": 30,
+            "geometry_editor_milling_type": "cl",
 
             # CNC Job General
             "cncjob_plot": True,
@@ -1976,6 +1978,7 @@ class App(QtCore.QObject):
         self.ui.buttonPreview.clicked.connect(self.handlePreview)
         self.ui.buttonFind.clicked.connect(self.handleFindGCode)
         self.ui.buttonReplace.clicked.connect(self.handleReplaceGCode)
+        self.ui.button_copy_all.clicked.connect(self.handleCopyAll)
 
         # portability changed signal
         self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
@@ -6547,6 +6550,11 @@ class App(QtCore.QObject):
                 qc.insertText(new)
             # Mark end of undo block
             cursor.endEditBlock()
+
+    def handleCopyAll(self):
+        text = self.ui.code_editor.toPlainText()
+        self.clipboard.setText(text)
+        self.inform.emit(_("Code Editor content copied to clipboard ..."))
 
     def handleRunCode(self):
         # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell

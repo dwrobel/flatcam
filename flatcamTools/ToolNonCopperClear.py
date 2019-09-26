@@ -1065,7 +1065,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # init values for the next usage
         self.reset_usage()
 
-        self.app.report_usage(_("on_paint_button_click"))
+        self.app.report_usage("on_paint_button_click")
 
         try:
             self.overlap = float(self.ncc_overlap_entry.get_value())

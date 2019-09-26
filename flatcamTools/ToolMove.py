@@ -177,7 +177,7 @@ class ToolMove(FlatCAMTool):
                                 self.replot_signal.emit(obj_list)
                             except Exception as e:
                                 proc.done()
-                                self.app.inform.emit('[ERROR_NOTCL] %s --> %s' % (_('ToolMove.on_left_click()'), str(e)))
+                                self.app.inform.emit('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(e)))
                                 return "fail"
 
                         proc.done()
@@ -194,8 +194,8 @@ class ToolMove(FlatCAMTool):
 
                 except TypeError as e:
                     log.debug("ToolMove.on_left_click() --> %s" % str(e))
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('ToolMove.on_left_click() --> Error when mouse left click.'))
+                    self.app.inform.emit('[ERROR_NOTCL] ToolMove.on_left_click() --> %s' %
+                                         _('Error when mouse left click.'))
                     return
 
             self.clicked_move = 1

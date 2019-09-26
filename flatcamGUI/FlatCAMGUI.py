@@ -1844,12 +1844,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.buttonReplace.setToolTip(_("Will replace the string from the Find box with the one in the Replace box."))
 
         self.buttonReplace.setMinimumWidth(100)
+
         self.entryReplace = FCEntry()
         self.entryReplace.setToolTip(_("String to replace the one in the Find box throughout the text."))
 
         self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
         self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
                                      "with the text in the 'Replace' box.."))
+
+        self.button_copy_all = QtWidgets.QPushButton(_('Copy All'))
+        self.button_copy_all.setToolTip(_("Will copy all the text in the Code Editor to the clipboard."))
+
+        self.button_copy_all.setMinimumWidth(100)
 
         self.buttonOpen = QtWidgets.QPushButton(_('Open Code'))
         self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
@@ -1870,6 +1876,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         cnc_tab_lay_1.addWidget(self.buttonReplace)
         cnc_tab_lay_1.addWidget(self.entryReplace)
         cnc_tab_lay_1.addWidget(self.sel_all_cb)
+        cnc_tab_lay_1.addWidget(self.button_copy_all)
         self.cncjob_tab_layout.addLayout(cnc_tab_lay_1, 1, 0, 1, 5)
 
         cnc_tab_lay_3 = QtWidgets.QHBoxLayout()

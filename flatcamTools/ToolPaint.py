@@ -917,7 +917,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # init values for the next usage
         self.reset_usage()
 
-        self.app.report_usage(_("on_paint_button_click"))
+        self.app.report_usage("on_paint_button_click")
         # self.app.call_source = 'paint'
 
         # #####################################################
@@ -1490,7 +1490,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             except Exception as e:
                 proc.done()
                 self.app.inform.emit('[ERROR_NOTCL] %s --> %s' %
-                                     (_('PaintTool.paint_poly()'),
+                                     ('PaintTool.paint_poly()',
                                       str(e)))
                 return
             proc.done()

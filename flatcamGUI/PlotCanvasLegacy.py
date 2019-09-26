@@ -982,14 +982,18 @@ class ShapeCollectionLegacy:
                             log.debug("ShapeCollectionLegacy.redraw() --> %s" % str(e))
                     else:
                         if isinstance(local_shapes[element]['shape'], Polygon):
-                            x, y = local_shapes[element]['shape'].exterior.xy
-                            self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
-                            for ints in local_shapes[element]['shape'].interiors:
-                                x, y = ints.coords.xy
+                            ext_shape = local_shapes[element]['shape'].exterior
+                            if ext_shape is not None:
+                                x, y = ext_shape.xy
                                 self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                            for ints in local_shapes[element]['shape'].interiors:
+                                if ints is not None:
+                                    x, y = ints.coords.xy
+                                    self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
                         else:
-                            x, y = local_shapes[element]['shape'].coords.xy
-                            self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                            if local_shapes[element]['shape'] is not None:
+                                x, y = local_shapes[element]['shape'].coords.xy
+                                self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
 
         self.app.plotcanvas.auto_adjust_axes()
 

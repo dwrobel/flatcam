@@ -11,6 +11,16 @@ CAD program, and create G-Code for Isolation routing.
 
 25.09.2019
 
+- added a Copy All button in the Code Editor, clicking this button will copy all text in the editor to the clipboard
+- added a 'Milling Type' radio button in Geometry Editor Preferences to contorl the type of geometry will be generated in the Geo Editor (for conventional milling or for the climb milling)
+- added the functionality to allow climb/conventional milling selection for the geometry created in the Geometry Editor
+- now any Geometry that is edited in Geometry editor will have coordinates ordered such that the resulting Gcode will allow the selected milling type in the 'Milling Type' radio button in Geometry Editor Preferences (which depends also of the spindle direction)
+- some strings update
+- French Google-translation at 100%
+- German Google-translation update to 100%
+
+25.09.2019
+
 - French translation at 33%
 - fixed the 'Jump To' function to work in legacy graphic engine
 - in legacy graphic engine fixed the mouse cursor shape when grid snapping is ON, such that it fits with the shape from the OpenGL graphic engine

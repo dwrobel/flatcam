@@ -2954,6 +2954,18 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.sel_limit_label, 0, 0)
         grid0.addWidget(self.sel_limit_entry, 0, 1)
 
+        # Milling Type
+        milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        milling_type_label.setToolTip(
+            _("Milling type:\n"
+              "- climb / best for precision milling and to reduce tool usage\n"
+              "- conventional / useful when there is no backlash compensation")
+        )
+        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
+                                            {'label': _('Conv.'), 'value': 'cv'}])
+        grid0.addWidget(milling_type_label, 1, 0)
+        grid0.addWidget(self.milling_type_radio, 1, 1)
+
         self.layout.addStretch()
 
 
