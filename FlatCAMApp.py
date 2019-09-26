@@ -97,6 +97,7 @@ class App(QtCore.QObject):
     except getopt.GetoptError:
         print(cmd_line_help)
         sys.exit(2)
+
     for opt, arg in cmd_line_options:
         if opt == '-h':
             print(cmd_line_help)
@@ -2629,8 +2630,8 @@ class App(QtCore.QObject):
                 print("ERROR: ", ext)
                 sys.exit(2)
 
-            # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
-            # the path/file_name must be enclosed in quotes if it contain spaces
+        # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
+        # the path/file_name must be enclosed in quotes if it contain spaces
         if App.args:
             self.args_at_startup.emit(App.args)
 
@@ -2764,8 +2765,10 @@ class App(QtCore.QObject):
                             return
 
                 # if it reached here without already returning then the app was registered with a file that it does not
-                # recognize therefore we must quit
-                sys.exit(2)
+                # recognize therefore we must quit but take into consideration the app reboot from within, in that case
+                # the args_to_process will contain the path to the FlatCAM.exe (cx_freezed executable)
+                if 'FlatCAM' not in args_to_process:
+                    sys.exit(2)
 
     def set_ui_title(self, name):
         """
