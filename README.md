@@ -11,6 +11,11 @@ CAD program, and create G-Code for Isolation routing.
 
 27.09.2019
 
+- optimized the toggle grid command
+
+
+27.09.2019
+
 - RELEASE FlatCAM 8.97
 
 26.09.2019

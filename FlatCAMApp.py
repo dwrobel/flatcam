@@ -1200,7 +1200,7 @@ class App(QtCore.QObject):
                          'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
             # Keyword list
             "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, Marius, My Documents, Paste_1, '
-                                          'Repetier, Roland_MDX_20, Toolchange_Custom, Toolchange_Probe_MACH3, '
+                                          'Repetier, Roland_MDX_20, Users, Toolchange_Custom, Toolchange_Probe_MACH3, '
                                           'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
                                           'box, center_x, center_y, columns, combine, connect, contour, default, '
                                           'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwell, dwelltime, '
@@ -2120,7 +2120,7 @@ class App(QtCore.QObject):
                                   ]
 
         self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'Marius', 'My Documents', 'Paste_1',
-                                 'Repetier', 'Roland_MDX_20', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
+                                 'Repetier', 'Roland_MDX_20', 'Users', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
                                  'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis', 'axisoffset',
                                  'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dwell',
@@ -5639,9 +5639,14 @@ class App(QtCore.QObject):
 
         if self.toggle_axis is False:
             if self.is_legacy is False:
-                self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-                self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-                self.plotcanvas.redraw()
+                # self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                # self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                self.plotcanvas.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
+                                                      parent=self.plotcanvas.view.scene)
+
+                self.plotcanvas.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=False,
+                                                      parent=self.plotcanvas.view.scene)
+                # self.plotcanvas.redraw()
             else:
                 self.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
                 self.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
@@ -5650,9 +5655,11 @@ class App(QtCore.QObject):
             self.toggle_axis = True
         else:
             if self.is_legacy is False:
-                self.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-                self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-                self.plotcanvas.redraw()
+                # self.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                # self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                # self.plotcanvas.redraw()
+                self.plotcanvas.v_line.parent = None
+                self.plotcanvas.h_line.parent = None
             else:
                 self.plotcanvas.axes.lines[:] = []
                 self.plotcanvas.canvas.draw()
