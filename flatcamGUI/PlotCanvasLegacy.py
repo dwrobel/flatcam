@@ -281,7 +281,7 @@ class PlotCanvasLegacy(QtCore.QObject):
                 x, y = self.app.geo_editor.snap(x_pos, y_pos)
 
                 # Pointer (snapped)
-                elements = self.axes.plot(x, y, 'k+', ms=40, mew=2, animated=True)
+                elements = self.axes.plot(x, y, 'k+', ms=33, mew=1, animated=True)
                 for el in elements:
                     self.axes.draw_artist(el)
             except Exception as e:
@@ -443,6 +443,26 @@ class PlotCanvasLegacy(QtCore.QObject):
     def fit_view(self):
         self.auto_adjust_axes()
 
+    def fit_center(self, loc, rect=None):
+        x = loc[0]
+        y = loc[1]
+
+        xmin, xmax = self.axes.get_xlim()
+        ymin, ymax = self.axes.get_ylim()
+        half_width = (xmax - xmin) / 2
+        half_height = (ymax - ymin) / 2
+
+        # Adjust axes
+        for ax in self.figure.get_axes():
+            ax.set_xlim((x - half_width , x + half_width))
+            ax.set_ylim((y - half_height, y + half_height))
+
+        # Re-draw
+        self.canvas.draw()
+
+        # #### Temporary place-holder for cached update #####
+        self.update_screen_request.emit([0, 0, 0, 0, 0])
+
     def zoom(self, factor, center=None):
         """
         Zooms the plot by factor around a given
@@ -482,14 +502,13 @@ class PlotCanvasLegacy(QtCore.QObject):
         for ax in self.figure.get_axes():
             ax.set_xlim((xmin, xmax))
             ax.set_ylim((ymin, ymax))
-
         # Async re-draw
         self.canvas.draw_idle()
 
         # #### Temporary place-holder for cached update #####
         self.update_screen_request.emit([0, 0, 0, 0, 0])
 
-    def pan(self, x, y):
+    def pan(self, x, y, idle=True):
         xmin, xmax = self.axes.get_xlim()
         ymin, ymax = self.axes.get_ylim()
         width = xmax - xmin
@@ -501,7 +520,10 @@ class PlotCanvasLegacy(QtCore.QObject):
             ax.set_ylim((ymin + y * height, ymax + y * height))
 
         # Re-draw
-        self.canvas.draw_idle()
+        if idle:
+            self.canvas.draw_idle()
+        else:
+            self.canvas.draw()
 
         # #### Temporary place-holder for cached update #####
         self.update_screen_request.emit([0, 0, 0, 0, 0])
@@ -514,8 +536,8 @@ class PlotCanvasLegacy(QtCore.QObject):
         :return: Axes attached to the figure.
         :rtype: Axes
         """
-
-        return self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label=name)
+        new_ax = self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label=name)
+        return new_ax
 
     def remove_current_axes(self):
         """
@@ -960,14 +982,18 @@ class ShapeCollectionLegacy:
                             log.debug("ShapeCollectionLegacy.redraw() --> %s" % str(e))
                     else:
                         if isinstance(local_shapes[element]['shape'], Polygon):
-                            x, y = local_shapes[element]['shape'].exterior.xy
-                            self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
-                            for ints in local_shapes[element]['shape'].interiors:
-                                x, y = ints.coords.xy
+                            ext_shape = local_shapes[element]['shape'].exterior
+                            if ext_shape is not None:
+                                x, y = ext_shape.xy
                                 self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                            for ints in local_shapes[element]['shape'].interiors:
+                                if ints is not None:
+                                    x, y = ints.coords.xy
+                                    self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
                         else:
-                            x, y = local_shapes[element]['shape'].coords.xy
-                            self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                            if local_shapes[element]['shape'] is not None:
+                                x, y = local_shapes[element]['shape'].coords.xy
+                                self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
 
         self.app.plotcanvas.auto_adjust_axes()
 

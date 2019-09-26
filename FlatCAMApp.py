@@ -657,6 +657,7 @@ class App(QtCore.QObject):
 
             # Geometry Editor
             "geometry_editor_sel_limit": self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
+            "geometry_editor_milling_type": self.ui.geometry_defaults_form.geometry_editor_group.milling_type_radio,
 
             # CNCJob General
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
@@ -1064,6 +1065,7 @@ class App(QtCore.QObject):
 
             # Geometry Editor
             "geometry_editor_sel_limit": 30,
+            "geometry_editor_milling_type": "cl",
 
             # CNC Job General
             "cncjob_plot": True,
@@ -1976,6 +1978,7 @@ class App(QtCore.QObject):
         self.ui.buttonPreview.clicked.connect(self.handlePreview)
         self.ui.buttonFind.clicked.connect(self.handleFindGCode)
         self.ui.buttonReplace.clicked.connect(self.handleReplaceGCode)
+        self.ui.button_copy_all.clicked.connect(self.handleCopyAll)
 
         # portability changed signal
         self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
@@ -5628,15 +5631,24 @@ class App(QtCore.QObject):
         self.report_usage("on_toggle_axis()")
 
         if self.toggle_axis is False:
-            self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-            self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-            self.plotcanvas.redraw()
+            if self.is_legacy is False:
+                self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                self.plotcanvas.redraw()
+            else:
+                self.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
+                self.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
+                self.plotcanvas.canvas.draw()
+                pass
             self.toggle_axis = True
         else:
-            self.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-
-            self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-            self.plotcanvas.redraw()
+            if self.is_legacy is False:
+                self.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                self.plotcanvas.redraw()
+            else:
+                self.plotcanvas.axes.lines[:] = []
+                self.plotcanvas.canvas.draw()
             self.toggle_axis = False
 
     def on_toggle_grid(self):
@@ -6539,6 +6551,11 @@ class App(QtCore.QObject):
             # Mark end of undo block
             cursor.endEditBlock()
 
+    def handleCopyAll(self):
+        text = self.ui.code_editor.toPlainText()
+        self.clipboard.setText(text)
+        self.inform.emit(_("Code Editor content copied to clipboard ..."))
+
     def handleRunCode(self):
         # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
         # tries to print on a hidden widget, therefore show the dock if hidden
@@ -6896,9 +6913,9 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        if self.is_legacy is True:
-            self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
-            return
+        # if self.is_legacy is True:
+        #     self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
+        #     return
 
         if not custom_location:
             dia_box = Dialog_box(title=_("Jump to ..."),
@@ -6919,11 +6936,7 @@ class App(QtCore.QObject):
             location = custom_location
 
         if fit_center:
-            if self.is_legacy is False:
-                self.plotcanvas.fit_center(loc=location)
-            else:
-                pass
-                # self.plotcanvas.fit_view()
+            self.plotcanvas.fit_center(loc=location)
 
         cursor = QtGui.QCursor()
 
@@ -6932,13 +6945,17 @@ class App(QtCore.QObject):
             jump_loc = self.plotcanvas.translate_coords_2((location[0], location[1]))
             cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
         else:
-            # the origin finding works but not mapping the location to pixels
+            # find the canvas origin which is in the top left corner
             canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            # determine the coordinates for the lowest left point of the canvas
             x0, y0 = canvas_origin.x(), canvas_origin.y() + self.ui.right_layout.geometry().height()
-            x0, y0 = x0 + self.plotcanvas.axes.transData.transform((0, 0))[0], y0 - \
-                     self.plotcanvas.axes.transData.transform((0, 0))[1]
-            loc = self.plotcanvas.axes.transData.transform(location)
-            cursor.setPos(x0 + loc[0]/50, y0 - loc[1]/50)
+
+            # transform the given location from data coordinates to display coordinates. THe display coordinates are
+            # in pixels where the origin 0,0 is in the lowest left point of the display window (in our case is the
+            # canvas) and the point (width, height) is in the top-right location
+            loc = self.plotcanvas.axes.transData.transform_point(location)
+
+            cursor.setPos(x0 + loc[0], y0 - loc[1])
 
         self.inform.emit('[success] %s' %
                          _("Done."))
