@@ -9,6 +9,25 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.09.2019
+
+- added a Copy All button in the Code Editor, clicking this button will copy all text in the editor to the clipboard
+- added a 'Milling Type' radio button in Geometry Editor Preferences to contorl the type of geometry will be generated in the Geo Editor (for conventional milling or for the climb milling)
+- added the functionality to allow climb/conventional milling selection for the geometry created in the Geometry Editor
+- now any Geometry that is edited in Geometry editor will have coordinates ordered such that the resulting Gcode will allow the selected milling type in the 'Milling Type' radio button in Geometry Editor Preferences (which depends also of the spindle direction)
+- some strings update
+- French Google-translation at 100%
+- German Google-translation update to 100%
+- updated the other languages and the .POT file
+
+25.09.2019
+
+- French translation at 33%
+- fixed the 'Jump To' function to work in legacy graphic engine
+- in legacy graphic engine fixed the mouse cursor shape when grid snapping is ON, such that it fits with the shape from the OpenGL graphic engine
+- in legacy graphic engine fixed the axis toggle
+- French Google-translation at 48%
+
 24.09.2019
 
 - fixed the fullscreen method to show the application window in fullscreen wherever the mouse pointer it is therefore on the screen we are working on; before it was showing always on the primary screen
@@ -16,6 +35,9 @@ CAD program, and create G-Code for Isolation routing.
 - in legacy graphic engine, fixed issue where immediately after changing the mouse cursor snapping the mouse cursor shape was not updated
 - in legacy graphic engine, fixed issue where while zooming the mouse cursor shape was not updated
 - in legacy graphic engine, fixed issue where immediately after panning finished the mouse cursor shape was not updated
+- unfortunately the fix for issue where while zooming the mouse cursor shape was not updated braked something in way that Matplotlib work with PyQt5, therefore I removed it
+- fixed a bug in legacy graphic engine: when doing the self.app.collection.delete_all() in new_project an app crash occurred
+- implemented the Annotation change in CNCJob Selected Tab for the legacy graphic engine
 
 23.09.2019
 

@@ -88,7 +88,7 @@ def apply_patches():
     def _get_tick_frac_labels(self):
         """Get the major ticks, minor ticks, and major labels"""
         minor_num = 4  # number of minor ticks per major division
-        if (self.axis.scale_type == 'linear'):
+        if self.axis.scale_type == 'linear':
             domain = self.axis.domain
             if domain[1] < domain[0]:
                 flip = True

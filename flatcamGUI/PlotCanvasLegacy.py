@@ -10,14 +10,6 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
-# Prevent conflict with Qt5 and above.
-from matplotlib import use as mpl_use
-mpl_use("Qt5Agg")
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-from matplotlib.widgets import Cursor
-
 # needed for legacy mode
 # Used for solid polygons in Matplotlib
 from descartes.patch import PolygonPatch
@@ -25,13 +17,20 @@ from descartes.patch import PolygonPatch
 from shapely.geometry import Polygon, LineString, LinearRing, Point, MultiPolygon, MultiLineString
 
 import FlatCAMApp
+
 from copy import deepcopy
 import logging
-import traceback
 
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+
+# Prevent conflict with Qt5 and above.
+from matplotlib import use as mpl_use
+mpl_use("Qt5Agg")
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+# from matplotlib.widgets import Cursor
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
@@ -78,7 +77,7 @@ class CanvasCache(QtCore.QObject):
         self.axes.set_xticks([])
         self.axes.set_yticks([])
 
-        self.canvas = FigureCanvasAgg(self.figure)
+        self.canvas = FigureCanvas(self.figure)
 
         self.cache = None
 
@@ -115,33 +114,6 @@ class CanvasCache(QtCore.QObject):
     #     log.debug("A new object is available. Should plot it!")
 
 
-class FigureCanvas(FigureCanvasQTAgg):
-    """
-    Reimplemented this so I can emit a signal when the idle drawing is finished and display the mouse shape
-    """
-
-    idle_drawing_finished = pyqtSignal()
-
-    def __init__(self, figure):
-        super().__init__(figure=figure)
-
-    def _draw_idle(self):
-        if self.height() < 0 or self.width() < 0:
-            self._draw_pending = False
-        if not self._draw_pending:
-            return
-        try:
-            self.draw()
-        except Exception:
-            # Uncaught exceptions are fatal for PyQt5, so catch them instead.
-            traceback.print_exc()
-        finally:
-            self._draw_pending = False
-
-            # I reimplemented this class only to launch this signal
-            self.idle_drawing_finished.emit()
-
-
 class PlotCanvasLegacy(QtCore.QObject):
     """
     Class handling the plotting area in the application.
@@ -151,6 +123,7 @@ class PlotCanvasLegacy(QtCore.QObject):
     # Request for new bitmap to display. The parameter
     # is a list with [xmin, xmax, ymin, ymax, zoom(optional)]
     update_screen_request = QtCore.pyqtSignal(list)
+
     double_click = QtCore.pyqtSignal(object)
 
     def __init__(self, container, app):
@@ -188,6 +161,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # The canvas is the top level container (FigureCanvasQTAgg)
         self.canvas = FigureCanvas(self.figure)
+
         self.canvas.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.canvas.setFocus()
         self.native = self.canvas
@@ -203,15 +177,17 @@ class PlotCanvasLegacy(QtCore.QObject):
         # Update every time the canvas is re-drawn.
         self.background = self.canvas.copy_from_bbox(self.axes.bbox)
 
+        # ################### NOT IMPLEMENTED YET - EXPERIMENTAL #######################
         # ## Bitmap Cache
-        self.cache = CanvasCache(self, self.app)
-        self.cache_thread = QtCore.QThread()
-        self.cache.moveToThread(self.cache_thread)
-        # super(PlotCanvas, self).connect(self.cache_thread, QtCore.SIGNAL("started()"), self.cache.run)
-        self.cache_thread.started.connect(self.cache.run)
-
-        self.cache_thread.start()
-        self.cache.new_screen.connect(self.on_new_screen)
+        # self.cache = CanvasCache(self, self.app)
+        # self.cache_thread = QtCore.QThread()
+        # self.cache.moveToThread(self.cache_thread)
+        # # super(PlotCanvas, self).connect(self.cache_thread, QtCore.SIGNAL("started()"), self.cache.run)
+        # self.cache_thread.started.connect(self.cache.run)
+        #
+        # self.cache_thread.start()
+        # self.cache.new_screen.connect(self.on_new_screen)
+        # ##############################################################################
 
         # Events
         self.mp = self.graph_event_connect('button_press_event', self.on_mouse_press)
@@ -226,20 +202,17 @@ class PlotCanvasLegacy(QtCore.QObject):
         # self.graph_event_connect('key_release_event', self.on_key_up)
         self.odr = self.graph_event_connect('draw_event', self.on_draw)
 
-        self.mouse = [0, 0]
         self.key = None
 
         self.pan_axes = []
         self.panning = False
+        self.mouse = [0, 0]
 
         # signal is the mouse is dragging
         self.is_dragging = False
 
         # signal if there is a doubleclick
         self.is_dblclk = False
-
-        # pay attention, this signal should be connected only after the self.canvas and self.mouse is declared
-        self.canvas.idle_drawing_finished.connect(lambda: self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1]))
 
     def graph_event_connect(self, event_name, callback):
         """
@@ -293,6 +266,31 @@ class PlotCanvasLegacy(QtCore.QObject):
         except Exception as e:
             print(str(e))
         return c
+
+    def draw_cursor(self, x_pos, y_pos):
+        """
+        Draw a cursor at the mouse grid snapped position
+
+        :param x_pos: mouse x position
+        :param y_pos: mouse y position
+        :return:
+        """
+        # there is no point in drawing mouse cursor when panning as it jumps in a confusing way
+        if self.app.app_cursor.enabled is True and self.panning is False:
+            try:
+                x, y = self.app.geo_editor.snap(x_pos, y_pos)
+
+                # Pointer (snapped)
+                elements = self.axes.plot(x, y, 'k+', ms=33, mew=1, animated=True)
+                for el in elements:
+                    self.axes.draw_artist(el)
+            except Exception as e:
+                # this happen at app initialization since self.app.geo_editor does not exist yet
+                # I could reshuffle the object instantiating order but what's the point? I could crash something else
+                # and that's pythonic, too
+                pass
+
+        self.canvas.blit(self.axes.bbox)
 
     def clear_cursor(self, state):
 
@@ -445,6 +443,26 @@ class PlotCanvasLegacy(QtCore.QObject):
     def fit_view(self):
         self.auto_adjust_axes()
 
+    def fit_center(self, loc, rect=None):
+        x = loc[0]
+        y = loc[1]
+
+        xmin, xmax = self.axes.get_xlim()
+        ymin, ymax = self.axes.get_ylim()
+        half_width = (xmax - xmin) / 2
+        half_height = (ymax - ymin) / 2
+
+        # Adjust axes
+        for ax in self.figure.get_axes():
+            ax.set_xlim((x - half_width , x + half_width))
+            ax.set_ylim((y - half_height, y + half_height))
+
+        # Re-draw
+        self.canvas.draw()
+
+        # #### Temporary place-holder for cached update #####
+        self.update_screen_request.emit([0, 0, 0, 0, 0])
+
     def zoom(self, factor, center=None):
         """
         Zooms the plot by factor around a given
@@ -484,14 +502,13 @@ class PlotCanvasLegacy(QtCore.QObject):
         for ax in self.figure.get_axes():
             ax.set_xlim((xmin, xmax))
             ax.set_ylim((ymin, ymax))
-
         # Async re-draw
         self.canvas.draw_idle()
 
         # #### Temporary place-holder for cached update #####
         self.update_screen_request.emit([0, 0, 0, 0, 0])
 
-    def pan(self, x, y):
+    def pan(self, x, y, idle=True):
         xmin, xmax = self.axes.get_xlim()
         ymin, ymax = self.axes.get_ylim()
         width = xmax - xmin
@@ -503,7 +520,10 @@ class PlotCanvasLegacy(QtCore.QObject):
             ax.set_ylim((ymin + y * height, ymax + y * height))
 
         # Re-draw
-        self.canvas.draw_idle()
+        if idle:
+            self.canvas.draw_idle()
+        else:
+            self.canvas.draw()
 
         # #### Temporary place-holder for cached update #####
         self.update_screen_request.emit([0, 0, 0, 0, 0])
@@ -516,8 +536,8 @@ class PlotCanvasLegacy(QtCore.QObject):
         :return: Axes attached to the figure.
         :rtype: Axes
         """
-
-        return self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label=name)
+        new_ax = self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label=name)
+        return new_ax
 
     def remove_current_axes(self):
         """
@@ -653,31 +673,6 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # self.canvas.blit(self.axes.bbox)
 
-    def draw_cursor(self, x_pos, y_pos):
-        """
-        Draw a cursor at the mouse grid snapped position
-
-        :param x_pos: mouse x position
-        :param y_pos: mouse y position
-        :return:
-        """
-        # there is no point in drawing mouse cursor when panning as it jumps in a confusing way
-        if self.app.app_cursor.enabled is True and self.panning is False:
-            try:
-                x, y = self.app.geo_editor.snap(x_pos, y_pos)
-
-                # Pointer (snapped)
-                elements = self.axes.plot(x, y, 'k+', ms=40, mew=2, animated=True)
-                for el in elements:
-                    self.axes.draw_artist(el)
-            except Exception as e:
-                # this happen at app initialization since self.app.geo_editor does not exist yet
-                # I could reshuffle the object instantiating order but what's the point? I could crash something else
-                # and that's pythonic, too
-                pass
-
-        self.canvas.blit(self.axes.bbox)
-
     def translate_coords(self, position):
         """
         This does not do much. It's just for code compatibility
@@ -748,66 +743,6 @@ class FakeCursor(QtCore.QObject):
     def set_data(self, pos, **kwargs):
         """Internal event handler to draw the cursor when the mouse moves."""
         pass
-
-
-class MplCursor(Cursor):
-    """
-    Unfortunately this gets attached to the current axes and if a new axes is added
-    it will not be showed until that axes is deleted.
-    Not the kind of behavior needed here so I don't use it anymore.
-    """
-    def __init__(self, axes, color='red', linewidth=1):
-
-        super().__init__(ax=axes, useblit=True, color=color, linewidth=linewidth)
-        self._enabled = True
-
-        self.axes = axes
-        self.color = color
-        self.linewidth = linewidth
-
-        self.x = None
-        self.y = None
-
-    @property
-    def enabled(self):
-        return True if self._enabled else False
-
-    @enabled.setter
-    def enabled(self, value):
-        self._enabled = value
-        self.visible = self._enabled
-        self.canvas.draw()
-
-    def onmove(self, event):
-        pass
-
-    def set_data(self, event, pos):
-        """Internal event handler to draw the cursor when the mouse moves."""
-        self.x = pos[0]
-        self.y = pos[1]
-
-        if self.ignore(event):
-            return
-        if not self.canvas.widgetlock.available(self):
-            return
-        if event.inaxes != self.ax:
-            self.linev.set_visible(False)
-            self.lineh.set_visible(False)
-
-            if self.needclear:
-                self.canvas.draw()
-                self.needclear = False
-            return
-        self.needclear = True
-        if not self.visible:
-            return
-        self.linev.set_xdata((self.x, self.x))
-
-        self.lineh.set_ydata((self.y, self.y))
-        self.linev.set_visible(self.visible and self.vertOn)
-        self.lineh.set_visible(self.visible and self.horizOn)
-
-        self._update()
 
 
 class ShapeCollectionLegacy:
@@ -930,7 +865,10 @@ class ShapeCollectionLegacy:
         self.shape_id = 0
 
         self.axes.cla()
-        self.app.plotcanvas.auto_adjust_axes()
+        try:
+            self.app.plotcanvas.auto_adjust_axes()
+        except Exception as e:
+            log.debug("ShapeCollectionLegacy.clear() --> %s" % str(e))
 
         if update is True:
             self.redraw()
@@ -1013,12 +951,17 @@ class ShapeCollectionLegacy:
                         self.axes.plot(x, y, linespec, color=linecolor)
                     else:
                         path_num += 1
-                        if isinstance(local_shapes[element]['shape'], Polygon):
-                            self.axes.annotate(str(path_num), xy=local_shapes[element]['shape'].exterior.coords[0],
-                                               xycoords='data', fontsize=20)
-                        else:
-                            self.axes.annotate(str(path_num), xy=local_shapes[element]['shape'].coords[0],
-                                               xycoords='data', fontsize=20)
+                        if self.obj.ui.annotation_cb.get_value():
+                            if isinstance(local_shapes[element]['shape'], Polygon):
+                                self.axes.annotate(
+                                    str(path_num),
+                                    xy=local_shapes[element]['shape'].exterior.coords[0],
+                                    xycoords='data', fontsize=20)
+                            else:
+                                self.axes.annotate(
+                                    str(path_num),
+                                    xy=local_shapes[element]['shape'].coords[0],
+                                    xycoords='data', fontsize=20)
 
                         patch = PolygonPatch(local_shapes[element]['shape'],
                                              facecolor=local_shapes[element]['face_color'],
@@ -1039,14 +982,18 @@ class ShapeCollectionLegacy:
                             log.debug("ShapeCollectionLegacy.redraw() --> %s" % str(e))
                     else:
                         if isinstance(local_shapes[element]['shape'], Polygon):
-                            x, y = local_shapes[element]['shape'].exterior.xy
-                            self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
-                            for ints in local_shapes[element]['shape'].interiors:
-                                x, y = ints.coords.xy
+                            ext_shape = local_shapes[element]['shape'].exterior
+                            if ext_shape is not None:
+                                x, y = ext_shape.xy
                                 self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                            for ints in local_shapes[element]['shape'].interiors:
+                                if ints is not None:
+                                    x, y = ints.coords.xy
+                                    self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
                         else:
-                            x, y = local_shapes[element]['shape'].coords.xy
-                            self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                            if local_shapes[element]['shape'] is not None:
+                                x, y = local_shapes[element]['shape'].coords.xy
+                                self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
 
         self.app.plotcanvas.auto_adjust_axes()
 
@@ -1108,3 +1055,62 @@ class ShapeCollectionLegacy:
             if self._visible is False:
                 self.redraw()
         self._visible = value
+
+# class MplCursor(Cursor):
+#     """
+#     Unfortunately this gets attached to the current axes and if a new axes is added
+#     it will not be showed until that axes is deleted.
+#     Not the kind of behavior needed here so I don't use it anymore.
+#     """
+#     def __init__(self, axes, color='red', linewidth=1):
+#
+#         super().__init__(ax=axes, useblit=True, color=color, linewidth=linewidth)
+#         self._enabled = True
+#
+#         self.axes = axes
+#         self.color = color
+#         self.linewidth = linewidth
+#
+#         self.x = None
+#         self.y = None
+#
+#     @property
+#     def enabled(self):
+#         return True if self._enabled else False
+#
+#     @enabled.setter
+#     def enabled(self, value):
+#         self._enabled = value
+#         self.visible = self._enabled
+#         self.canvas.draw()
+#
+#     def onmove(self, event):
+#         pass
+#
+#     def set_data(self, event, pos):
+#         """Internal event handler to draw the cursor when the mouse moves."""
+#         self.x = pos[0]
+#         self.y = pos[1]
+#
+#         if self.ignore(event):
+#             return
+#         if not self.canvas.widgetlock.available(self):
+#             return
+#         if event.inaxes != self.ax:
+#             self.linev.set_visible(False)
+#             self.lineh.set_visible(False)
+#
+#             if self.needclear:
+#                 self.canvas.draw()
+#                 self.needclear = False
+#             return
+#         self.needclear = True
+#         if not self.visible:
+#             return
+#         self.linev.set_xdata((self.x, self.x))
+#
+#         self.lineh.set_ydata((self.y, self.y))
+#         self.linev.set_visible(self.visible and self.vertOn)
+#         self.lineh.set_visible(self.visible and self.horizOn)
+#
+#         self._update()

@@ -1355,7 +1355,7 @@ class SolderPaste(FlatCAMTool):
         except Exception as e:
             log.debug('ToolSolderPaste.on_view_gcode() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s --> %s' %
-                                 (_('ToolSolderPaste.on_view_gcode()'), str(e)))
+                                 ('ToolSolderPaste.on_view_gcode()', str(e)))
             return
 
         self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
