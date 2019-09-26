@@ -2767,8 +2767,12 @@ class App(QtCore.QObject):
                 # if it reached here without already returning then the app was registered with a file that it does not
                 # recognize therefore we must quit but take into consideration the app reboot from within, in that case
                 # the args_to_process will contain the path to the FlatCAM.exe (cx_freezed executable)
-                if 'FlatCAM' not in args_to_process:
-                    sys.exit(2)
+
+                for arg in args_to_process:
+                    if 'FlatCAM.exe' in arg:
+                        continue
+                    else:
+                        sys.exit(2)
 
     def set_ui_title(self, name):
         """
