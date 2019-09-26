@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+27.09.2019
+
+- RELEASE FlatCAM 8.97
+
 26.09.2019
 
 - added a Copy All button in the Code Editor, clicking this button will copy all text in the editor to the clipboard
