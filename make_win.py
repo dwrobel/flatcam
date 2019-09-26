@@ -45,6 +45,7 @@ include_files.append((os.path.join(site_dir, "svg/path"), "svg"))
 include_files.append((os.path.join(site_dir, "vispy"), "vispy"))
 include_files.append((os.path.join(site_dir, "vispy/app"), "vispy/app"))
 include_files.append((os.path.join(site_dir, "vispy/app/backends"), "vispy/app/backends"))
+# include_files.append((os.path.join(site_dir, "matplotlib"), "matplotlib"))
 include_files.append((os.path.join(site_dir, "rtree"), "rtree"))
 
 if platform.architecture()[0] == '64bit':

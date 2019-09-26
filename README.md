@@ -9,7 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
-25.09.2019
+27.09.2019
+
+- RELEASE FlatCAM 8.97
+
+26.09.2019
 
 - added a Copy All button in the Code Editor, clicking this button will copy all text in the editor to the clipboard
 - added a 'Milling Type' radio button in Geometry Editor Preferences to contorl the type of geometry will be generated in the Geo Editor (for conventional milling or for the climb milling)
@@ -19,6 +23,9 @@ CAD program, and create G-Code for Isolation routing.
 - French Google-translation at 100%
 - German Google-translation update to 100%
 - updated the other languages and the .POT file
+- changed some strings (that should not have been included for translation) and updated language files and the .POT file
+- fixed issue when rebooting from within in cx_freezed state (it issued a startup arg with the path to FlatCAM.exe but that triggered the last sys.exit(2) that I had in the App.args_at_startup())
+- modified the make_win script for the presence of MatPlotLib
 
 25.09.2019
 

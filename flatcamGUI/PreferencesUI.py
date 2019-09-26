@@ -3214,16 +3214,20 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
                      'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
         self.tc_variable_combo.addItems(variables)
         self.tc_variable_combo.setItemData(0, _("FlatCAM CNC parameters"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(1, _("tool = tool number"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(2, _("tooldia = tool diameter"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(3, _("t_drills = for Excellon, total number of drills"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(4, _("x_toolchange = X coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(5, _("y_toolchange = Y coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(6, _("z_toolchange = Z coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(7, _("z_cut = Z depth for the cut"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(8, _("z_move = Z height for travel"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(9, _("z_depthpercut = the step value for multidepth cut"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(10, _("spindlesspeed = the value for the spindle speed"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(1, 'tool = %s' % _("tool number"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(2, 'tooldia = %s' % _("tool diameter"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(3, 't_drills = %s' % _("for Excellon, total number of drills"),
+                                           Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(4, 'x_toolchange = %s' % _("X coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(5, 'y_toolchange = %s' % _("y_toolchange = Y coord for Toolchange"),
+                                           Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(6, 'z_toolchange = %s' % _("Z coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(7, 'z_cut = %s' % _("Z depth for the cut"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(8, 'z_move = %s' % _("Z height for travel"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(9, 'z_depthpercut = %s' % _("the step value for multidepth cut"),
+                                           Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(10, 'spindlesspeed = %s' % _("the value for the spindle speed"),
+                                           Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(11,
                                            _("dwelltime = time to dwell to allow the spindle to reach it's set RPM"),
                                            Qt.ToolTipRole)
