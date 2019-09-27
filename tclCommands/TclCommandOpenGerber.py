@@ -62,7 +62,7 @@ class TclCommandOpenGerber(TclCommandSignaled):
                 return
 
         filename = args['filename']
-        filename = filename.replace(' ', '')
+        # filename = filename.replace(' ', '')
 
         if 'outname' in args:
             outname = args['outname']

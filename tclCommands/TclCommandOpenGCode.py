@@ -47,6 +47,6 @@ class TclCommandOpenGCode(TclCommandSignaled):
         """
         args['plot'] = False
         filename = args["filename"]
-        filename = filename.replace(' ', '')
+        # filename = filename.replace(' ', '')
 
         self.app.open_gcode(filename, **args)

@@ -46,7 +46,7 @@ class TclCommandOpenExcellon(TclCommandSignaled):
         """
 
         filename = args.pop('filename')
-        filename = filename.replace(' ', '')
+        # filename = filename.replace(' ', '')
 
         args['plot'] = False
         self.app.open_excellon(filename, **args)
