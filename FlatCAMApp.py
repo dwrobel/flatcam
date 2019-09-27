@@ -124,8 +124,8 @@ class App(QtCore.QObject):
     # ##########################################################################
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
-    version = 8.97
-    version_date = "2019/09/27"
+    version = 8.98
+    version_date = "2019/10/7"
     beta = True
     engine = '3D'
 
@@ -492,6 +492,8 @@ class App(QtCore.QObject):
             "global_project_autohide": self.ui.general_defaults_form.general_gui_set_group.project_autohide_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_gui_set_group.toggle_tooltips_cb,
             "global_delete_confirmation": self.ui.general_defaults_form.general_gui_set_group.delete_conf_cb,
+            "global_cursor_type": self.ui.general_defaults_form.general_gui_set_group.cursor_radio,
+            "global_cursor_size": self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry,
 
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
@@ -911,6 +913,8 @@ class App(QtCore.QObject):
             "global_hover": False,
             "global_selection_shape": True,
             "global_layout": "compact",
+            "global_cursor_type": "small",
+            "global_cursor_size": 20,
 
             # Gerber General
             "gerber_plot": True,
@@ -1956,6 +1960,12 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
         self.ui.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
+
+        # #################################################
+        # ############ GUI SETTINGS SIGNALS ###############
+        # #################################################
+
+        self.ui.general_defaults_form.general_gui_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
 
         # ########## CNC Job related signals #############
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.tc_variable_combo.currentIndexChanged[str].connect(
@@ -6265,6 +6275,13 @@ class App(QtCore.QObject):
         self.on_workspace()
 
     def on_layout(self, index=None, lay=None):
+        """
+        Set the toolbars layout (location)
+
+        :param index:
+        :param lay: type of layout to be set on the toolbard
+        :return: None
+        """
         self.report_usage("on_layout()")
         if lay:
             current_layout = lay
@@ -6396,6 +6413,20 @@ class App(QtCore.QObject):
         self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
         self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
         self.ui.grid_gap_link_cb.setChecked(True)
+
+    def on_cursor_type(self, val):
+        """
+
+        :param val: type of mouse cursor, set in Preferences ('small' or 'big')
+        :return: None
+        """
+
+        if val == 'small':
+            self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry.setDisabled(False)
+            self.ui.general_defaults_form.general_gui_set_group.cursor_size_lbl.setDisabled(False)
+        else:
+            self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry.setDisabled(True)
+            self.ui.general_defaults_form.general_gui_set_group.cursor_size_lbl.setDisabled(True)
 
     def on_cnc_custom_parameters(self, signal_text):
         if signal_text == 'Parameters':
@@ -7826,7 +7857,7 @@ class App(QtCore.QObject):
 
                     # Update cursor
                     self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                             symbol='++', edge_color='black', size=20)
+                                             symbol='++', edge_color='black', size=self.defaults["global_cursor_size"])
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])
 
@@ -11172,7 +11203,10 @@ class App(QtCore.QObject):
         # Keys over plot enabled
         self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
 
-        self.app_cursor = self.plotcanvas.new_cursor()
+        if self.defaults['global_cursor_type'] == 'small':
+            self.app_cursor = self.plotcanvas.new_cursor()
+        else:
+            self.app_cursor = self.plotcanvas.new_cursor(big=True)
 
         if self.ui.grid_snap_btn.isChecked():
             self.app_cursor.enabled = True

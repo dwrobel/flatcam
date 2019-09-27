@@ -754,6 +754,29 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "when hovering with mouse over items throughout the App.")
         )
 
+        # Mouse Cursor Shape
+        self.cursor_lbl = QtWidgets.QLabel('%s:' % _('Mouse Cursor'))
+        self.cursor_lbl.setToolTip(
+           _("Choose a mouse cursor shape.\n"
+             "- Small -> with a customizable size.\n"
+             "- Big -> Infinite lines")
+        )
+
+        self.cursor_radio = RadioSet([
+            {"label": _("Small"), "value": "small"},
+            {"label": _("Big"), "value": "big"}
+        ], orientation='horizontal', stretch=False)
+
+        self.cursor_size_lbl = QtWidgets.QLabel('%s:' % _('Mouse Cursor Size'))
+        self.cursor_size_lbl.setToolTip(
+           _("Set the size of the mouse cursor, in pixels.")
+        )
+
+        self.cursor_size_entry = FCSpinner()
+        self.cursor_size_entry.set_range(10, 70)
+        self.cursor_size_entry.setWrapping(True)
+
+
         # Add (label - input field) pair to the QFormLayout
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
@@ -775,6 +798,8 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.project_autohide_label, self.project_autohide_cb)
         self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.toggle_tooltips_label, self.toggle_tooltips_cb)
+        self.form_box.addRow(self.cursor_lbl, self.cursor_radio)
+        self.form_box.addRow(self.cursor_size_lbl, self.cursor_size_entry)
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB

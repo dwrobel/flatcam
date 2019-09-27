@@ -159,6 +159,9 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
         self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
 
+        self.ch_line = None
+        self.cv_line = None
+
         # The canvas is the top level container (FigureCanvasQTAgg)
         self.canvas = FigureCanvas(self.figure)
 
@@ -207,6 +210,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.pan_axes = []
         self.panning = False
         self.mouse = [0, 0]
+        self.big_cursor = False
 
         # signal is the mouse is dragging
         self.is_dragging = False
@@ -254,17 +258,19 @@ class PlotCanvasLegacy(QtCore.QObject):
         pass
         # log.debug("Cache updated the screen!")
 
-    def new_cursor(self, axes=None):
+    def new_cursor(self, axes=None, big=None):
         # if axes is None:
         #     c = MplCursor(axes=self.axes, color='black', linewidth=1)
         # else:
         #     c = MplCursor(axes=axes, color='black', linewidth=1)
 
+        if big is True:
+            self.big_cursor = True
+            self.ch_line = self.axes.axhline(color=(0.0, 0.0, 0.0), linewidth=1)
+            self.cv_line = self.axes.axvline(color=(0.0, 0.0, 0.0), linewidth=1)
         c = FakeCursor()
-        try:
-            c.mouse_state_updated.connect(self.clear_cursor)
-        except Exception as e:
-            print(str(e))
+        c.mouse_state_updated.connect(self.clear_cursor)
+
         return c
 
     def draw_cursor(self, x_pos, y_pos):
@@ -277,18 +283,26 @@ class PlotCanvasLegacy(QtCore.QObject):
         """
         # there is no point in drawing mouse cursor when panning as it jumps in a confusing way
         if self.app.app_cursor.enabled is True and self.panning is False:
-            try:
-                x, y = self.app.geo_editor.snap(x_pos, y_pos)
+            if self.big_cursor is False:
+                try:
+                    x, y = self.app.geo_editor.snap(x_pos, y_pos)
 
-                # Pointer (snapped)
-                elements = self.axes.plot(x, y, 'k+', ms=33, mew=1, animated=True)
-                for el in elements:
-                    self.axes.draw_artist(el)
-            except Exception as e:
-                # this happen at app initialization since self.app.geo_editor does not exist yet
-                # I could reshuffle the object instantiating order but what's the point? I could crash something else
-                # and that's pythonic, too
-                pass
+                    # Pointer (snapped)
+                    # The size of the cursor is multiplied by 1.65 because that value made the cursor similar with the
+                    # one in the OpenGL(3D) graphic engine
+                    pointer_size = int(float(self.app.defaults["global_cursor_size"] ) * 1.65)
+                    elements = self.axes.plot(x, y, 'k+', ms=pointer_size, mew=1, animated=True)
+                    for el in elements:
+                        self.axes.draw_artist(el)
+                except Exception as e:
+                    # this happen at app initialization since self.app.geo_editor does not exist yet
+                    # I could reshuffle the object instantiating order but what's the point? I could crash something else
+                    # and that's pythonic, too
+                    pass
+            else:
+                self.ch_line.set_ydata(y_pos)
+                self.cv_line.set_xdata(x_pos)
+                self.canvas.draw_idle()
 
         self.canvas.blit(self.axes.bbox)
 
@@ -742,7 +756,6 @@ class FakeCursor(QtCore.QObject):
 
     def set_data(self, pos, **kwargs):
         """Internal event handler to draw the cursor when the mouse moves."""
-        pass
 
 
 class ShapeCollectionLegacy:

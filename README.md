@@ -11,8 +11,9 @@ CAD program, and create G-Code for Isolation routing.
 
 27.09.2019
 
-- optimized the toggle grid command
-
+- optimized the toggle axis command
+- added posibility of using a big mouse cursor or a small mouse cursor. The big mouse cursor is made from 2 infinite lines. This was implemented for both graphic engines
+- added ability to change the cursor size when the small mouse cursor is selected in Preferences -> General
 
 27.09.2019
 

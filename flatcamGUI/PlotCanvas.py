@@ -67,6 +67,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.draw_workspace()
 
+        self.line_parent = None
+        self.line_color = (0.3, 0.0, 0.0, 1.0)
+        self.cursor_v_line = InfiniteLine(pos=None, color=self.line_color, vertical=True,
+                                          parent=self.line_parent)
+
+        self.cursor_h_line = InfiniteLine(pos=None, color=self.line_color, vertical=False,
+                                          parent=self.line_parent)
+
         # if self.app.defaults['global_workspace'] is True:
         #     if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
         #         self.wkspace_t = Line(pos=)
@@ -79,6 +87,8 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         # TODO: Should be setting to show/hide CNC job annotations (global or per object)
         self.text_collection.enabled = True
+
+        self.c = None
 
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
@@ -185,10 +195,30 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # return sc
         return ShapeCollection(parent=self.view.scene, pool=self.fcapp.pool, **kwargs)
 
-    def new_cursor(self):
-        c = Cursor(pos=np.empty((0, 2)), parent=self.view.scene)
-        c.antialias = 0
-        return c
+    def new_cursor(self, big=None):
+        if big is True:
+            self.c = CursorBig()
+            self.c.mouse_state_updated.connect(self.on_mouse_state)
+            self.c.mouse_position_updated.connect(self.on_mouse_position)
+        else:
+            self.c = Cursor(pos=np.empty((0, 2)), parent=self.view.scene)
+            self.c.antialias = 0
+        return self.c
+
+    def on_mouse_state(self, state):
+        if state:
+            self.cursor_h_line.parent = self.view.scene
+            self.cursor_v_line.parent = self.view.scene
+        else:
+            self.cursor_h_line.parent = None
+            self.cursor_v_line.parent = None
+
+    def on_mouse_position(self, pos):
+        # self.line_color = color
+
+        self.cursor_h_line.set_data(pos=pos[1], color=self.line_color)
+        self.cursor_v_line.set_data(pos=pos[0], color=self.line_color)
+        self.view.scene.update()
 
     def new_text_group(self, collection=None):
         if collection:
@@ -247,3 +277,38 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
     def on_pool_recreated(self, pool):
         self.shape_collection.pool = pool
+
+
+class CursorBig(QtCore.QObject):
+    """
+    This is a fake cursor to ensure compatibility with the OpenGL engine (VisPy).
+    This way I don't have to chane (disable) things related to the cursor all over when
+    using the low performance Matplotlib 2D graphic engine.
+    """
+
+    mouse_state_updated = QtCore.pyqtSignal(bool)
+    mouse_position_updated = QtCore.pyqtSignal(list)
+
+    def __init__(self):
+        super().__init__()
+
+        self._enabled = None
+
+    @property
+    def enabled(self):
+        return True if self._enabled else False
+
+    @enabled.setter
+    def enabled(self, value):
+        self._enabled = value
+        self.mouse_state_updated.emit(value)
+
+    def set_data(self, pos, **kwargs):
+        """Internal event handler to draw the cursor when the mouse moves."""
+        if 'edge_color' in kwargs:
+            color = kwargs['edge_color']
+        else:
+            color = (0.0, 0.0, 0.0, 1.0)
+
+        position = [pos[0][0], pos[0][1]]
+        self.mouse_position_updated.emit(position)
