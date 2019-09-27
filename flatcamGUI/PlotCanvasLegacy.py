@@ -264,10 +264,13 @@ class PlotCanvasLegacy(QtCore.QObject):
         # else:
         #     c = MplCursor(axes=axes, color='black', linewidth=1)
 
-        if big is True:
+        if  big is True:
             self.big_cursor = True
             self.ch_line = self.axes.axhline(color=(0.0, 0.0, 0.0), linewidth=1)
             self.cv_line = self.axes.axvline(color=(0.0, 0.0, 0.0), linewidth=1)
+        else:
+            self.big_cursor = False
+
         c = FakeCursor()
         c.mouse_state_updated.connect(self.clear_cursor)
 
@@ -311,6 +314,11 @@ class PlotCanvasLegacy(QtCore.QObject):
         if state is True:
             self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
         else:
+            if self.big_cursor is True:
+                self.ch_line.remove()
+                self.cv_line.remove()
+                self.canvas.draw_idle()
+
             self.canvas.restore_region(self.background)
             self.canvas.blit(self.axes.bbox)
 

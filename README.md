@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - removed the line that remove the spaces from the path parameter in the Tcl commands that open something (Gerber, Gcode, Excellon)
 - fixed issue with the old SysTray icon not hidden when the application is restarted programmatically
 - if an object is edited but the result is not saved, the app will reload the edited object UI and set the Selected tab as active
+- made the mouse cursor (big, small) change in real time for both graphic engines
 
 27.09.2019
 

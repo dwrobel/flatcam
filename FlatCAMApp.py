@@ -6428,13 +6428,21 @@ class App(QtCore.QObject):
         :param val: type of mouse cursor, set in Preferences ('small' or 'big')
         :return: None
         """
+        self.app_cursor.enabled = False
 
         if val == 'small':
             self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry.setDisabled(False)
             self.ui.general_defaults_form.general_gui_set_group.cursor_size_lbl.setDisabled(False)
+            self.app_cursor = self.plotcanvas.new_cursor()
         else:
             self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry.setDisabled(True)
             self.ui.general_defaults_form.general_gui_set_group.cursor_size_lbl.setDisabled(True)
+            self.app_cursor = self.plotcanvas.new_cursor(big=True)
+
+        if self.ui.grid_snap_btn.isChecked():
+            self.app_cursor.enabled = True
+        else:
+            self.app_cursor.enabled = False
 
     def on_cnc_custom_parameters(self, signal_text):
         if signal_text == 'Parameters':

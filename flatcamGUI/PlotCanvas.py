@@ -104,7 +104,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         a3l_in = np.array([(0, 0), (16.5, 0), (16.5, 11.7), (0, 11.7)])
 
         a4p_mm = np.array([(0, 0), (210, 0), (210, 297), (0, 297)])
-        a4l_mm = np.array([(0, 0), (297, 0), (297,210), (0, 210)])
+        a4l_mm = np.array([(0, 0), (297, 0), (297, 210), (0, 210)])
         a3p_mm = np.array([(0, 0), (297, 0), (297, 420), (0, 420)])
         a3l_mm = np.array([(0, 0), (420, 0), (420, 297), (0, 297)])
 
@@ -130,14 +130,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.delete_workspace()
 
         self.b_line = Line(pos=a[0:2], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias= True, method='agg', parent=self.view.scene)
+                           antialias=True, method='agg', parent=self.view.scene)
         self.r_line = Line(pos=a[1:3], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias= True, method='agg', parent=self.view.scene)
+                           antialias=True, method='agg', parent=self.view.scene)
 
         self.t_line = Line(pos=a[2:4], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias= True, method='agg', parent=self.view.scene)
+                           antialias=True, method='agg', parent=self.view.scene)
         self.l_line = Line(pos=np.array((a[0], a[3])), color=(0.70, 0.3, 0.3, 1.0),
-                           antialias= True, method='agg', parent=self.view.scene)
+                           antialias=True, method='agg', parent=self.view.scene)
 
         if self.fcapp.defaults['global_workspace'] is False:
             self.delete_workspace()
@@ -196,13 +196,31 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         return ShapeCollection(parent=self.view.scene, pool=self.fcapp.pool, **kwargs)
 
     def new_cursor(self, big=None):
+        """
+        Will create a mouse cursor pointer on canvas
+
+        :param big: if True will create a mouse cursor made out of infinite lines
+        :return: the mouse cursor object
+        """
         if big is True:
             self.c = CursorBig()
+
+            # in case there are multiple new_cursor calls, best to disconnect first the signals
+            try:
+                self.c.mouse_state_updated.disconnect(self.on_mouse_state)
+            except (TypeError, AttributeError):
+                pass
+            try:
+                self.c.mouse_position_updated.disconnect(self.on_mouse_position)
+            except (TypeError, AttributeError):
+                pass
+
             self.c.mouse_state_updated.connect(self.on_mouse_state)
             self.c.mouse_position_updated.connect(self.on_mouse_position)
         else:
             self.c = Cursor(pos=np.empty((0, 2)), parent=self.view.scene)
             self.c.antialias = 0
+
         return self.c
 
     def on_mouse_state(self, state):
