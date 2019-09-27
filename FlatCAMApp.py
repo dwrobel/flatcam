@@ -124,8 +124,8 @@ class App(QtCore.QObject):
     # ##########################################################################
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
-    version = 8.97
-    version_date = "2019/09/27"
+    version = 8.98
+    version_date = "2019/10/7"
     beta = True
     engine = '3D'
 
@@ -492,6 +492,8 @@ class App(QtCore.QObject):
             "global_project_autohide": self.ui.general_defaults_form.general_gui_set_group.project_autohide_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_gui_set_group.toggle_tooltips_cb,
             "global_delete_confirmation": self.ui.general_defaults_form.general_gui_set_group.delete_conf_cb,
+            "global_cursor_type": self.ui.general_defaults_form.general_gui_set_group.cursor_radio,
+            "global_cursor_size": self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry,
 
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
@@ -911,6 +913,8 @@ class App(QtCore.QObject):
             "global_hover": False,
             "global_selection_shape": True,
             "global_layout": "compact",
+            "global_cursor_type": "small",
+            "global_cursor_size": 20,
 
             # Gerber General
             "gerber_plot": True,
@@ -1200,7 +1204,7 @@ class App(QtCore.QObject):
                          'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
             # Keyword list
             "util_autocomplete_keywords": 'Desktop, Documents, FlatConfig, FlatPrj, Marius, My Documents, Paste_1, '
-                                          'Repetier, Roland_MDX_20, Toolchange_Custom, Toolchange_Probe_MACH3, '
+                                          'Repetier, Roland_MDX_20, Users, Toolchange_Custom, Toolchange_Probe_MACH3, '
                                           'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
                                           'box, center_x, center_y, columns, combine, connect, contour, default, '
                                           'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwell, dwelltime, '
@@ -1957,6 +1961,12 @@ class App(QtCore.QObject):
 
         self.ui.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
 
+        # #################################################
+        # ############ GUI SETTINGS SIGNALS ###############
+        # #################################################
+
+        self.ui.general_defaults_form.general_gui_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
+
         # ########## CNC Job related signals #############
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.tc_variable_combo.currentIndexChanged[str].connect(
             self.on_cnc_custom_parameters)
@@ -2120,7 +2130,7 @@ class App(QtCore.QObject):
                                   ]
 
         self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'Marius', 'My Documents', 'Paste_1',
-                                 'Repetier', 'Roland_MDX_20', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
+                                 'Repetier', 'Roland_MDX_20', 'Users', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
                                  'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis', 'axisoffset',
                                  'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dwell',
@@ -5639,9 +5649,14 @@ class App(QtCore.QObject):
 
         if self.toggle_axis is False:
             if self.is_legacy is False:
-                self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-                self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-                self.plotcanvas.redraw()
+                # self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                # self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                self.plotcanvas.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
+                                                      parent=self.plotcanvas.view.scene)
+
+                self.plotcanvas.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=False,
+                                                      parent=self.plotcanvas.view.scene)
+                # self.plotcanvas.redraw()
             else:
                 self.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
                 self.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
@@ -5650,9 +5665,11 @@ class App(QtCore.QObject):
             self.toggle_axis = True
         else:
             if self.is_legacy is False:
-                self.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-                self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-                self.plotcanvas.redraw()
+                # self.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                # self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                # self.plotcanvas.redraw()
+                self.plotcanvas.v_line.parent = None
+                self.plotcanvas.h_line.parent = None
             else:
                 self.plotcanvas.axes.lines[:] = []
                 self.plotcanvas.canvas.draw()
@@ -6258,6 +6275,13 @@ class App(QtCore.QObject):
         self.on_workspace()
 
     def on_layout(self, index=None, lay=None):
+        """
+        Set the toolbars layout (location)
+
+        :param index:
+        :param lay: type of layout to be set on the toolbard
+        :return: None
+        """
         self.report_usage("on_layout()")
         if lay:
             current_layout = lay
@@ -6389,6 +6413,20 @@ class App(QtCore.QObject):
         self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
         self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
         self.ui.grid_gap_link_cb.setChecked(True)
+
+    def on_cursor_type(self, val):
+        """
+
+        :param val: type of mouse cursor, set in Preferences ('small' or 'big')
+        :return: None
+        """
+
+        if val == 'small':
+            self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry.setDisabled(False)
+            self.ui.general_defaults_form.general_gui_set_group.cursor_size_lbl.setDisabled(False)
+        else:
+            self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry.setDisabled(True)
+            self.ui.general_defaults_form.general_gui_set_group.cursor_size_lbl.setDisabled(True)
 
     def on_cnc_custom_parameters(self, signal_text):
         if signal_text == 'Parameters':
@@ -7819,7 +7857,7 @@ class App(QtCore.QObject):
 
                     # Update cursor
                     self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                             symbol='++', edge_color='black', size=20)
+                                             symbol='++', edge_color='black', size=self.defaults["global_cursor_size"])
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])
 
@@ -11165,7 +11203,10 @@ class App(QtCore.QObject):
         # Keys over plot enabled
         self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
 
-        self.app_cursor = self.plotcanvas.new_cursor()
+        if self.defaults['global_cursor_type'] == 'small':
+            self.app_cursor = self.plotcanvas.new_cursor()
+        else:
+            self.app_cursor = self.plotcanvas.new_cursor(big=True)
 
         if self.ui.grid_snap_btn.isChecked():
             self.app_cursor.enabled = True

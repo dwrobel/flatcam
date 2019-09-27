@@ -1282,7 +1282,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
             self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
-                                         symbol='++', edge_color='black', size=20)
+                                         symbol='++', edge_color='black', size=self.app.defaults["global_cursor_size"])
 
         # update the positions on status bar
         self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "

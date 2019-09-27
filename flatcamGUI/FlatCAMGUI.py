@@ -2353,26 +2353,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Toggle axis
                 if key == QtCore.Qt.Key_G:
-                    if self.app.toggle_axis is False:
-                        if self.app.is_legacy is False:
-                            self.app.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-                            self.app.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-                            self.app.plotcanvas.redraw()
-                        else:
-                            self.app.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
-                            self.app.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
-                            self.app.plotcanvas.canvas.draw()
-
-                        self.app.toggle_axis = True
-                    else:
-                        if self.app.is_legacy is False:
-                            self.app.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-                            self.app.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-                            self.app.plotcanvas.redraw()
-                        else:
-                            self.app.plotcanvas.axes.lines[:] = []
-                            self.app.plotcanvas.canvas.draw()
-                        self.app.toggle_axis = False
+                    self.app.on_toggle_axis()
 
                 # Open Preferences Window
                 if key == QtCore.Qt.Key_P:
