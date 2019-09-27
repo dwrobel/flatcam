@@ -12,10 +12,11 @@ CAD program, and create G-Code for Isolation routing.
 27.09.2019
 
 - optimized the toggle axis command
-- added posibility of using a big mouse cursor or a small mouse cursor. The big mouse cursor is made from 2 infinite lines. This was implemented for both graphic engines
+- added possibility of using a big mouse cursor or a small mouse cursor. The big mouse cursor is made from 2 infinite lines. This was implemented for both graphic engines
 - added ability to change the cursor size when the small mouse cursor is selected in Preferences -> General
 - removed the line that remove the spaces from the path parameter in the Tcl commands that open something (Gerber, Gcode, Excellon)
 - fixed issue with the old SysTray icon not hidden when the application is restarted programmatically
+- if an object is edited but the result is not saved, the app will reload the edited object UI and set the Selected tab as active
 
 27.09.2019
 

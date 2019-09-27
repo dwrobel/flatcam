@@ -2675,7 +2675,6 @@ class App(QtCore.QObject):
             args_to_process = App.args
 
         log.debug("Application was started with arguments: %s. Processing ..." % str(args_to_process))
-
         for argument in args_to_process:
             if '.FlatPrj'.lower() in argument.lower():
                 try:
@@ -2750,7 +2749,6 @@ class App(QtCore.QObject):
                     proc_ext = ext.replace(' ', '')
                     proc_ext = '.%s' % proc_ext
                     if proc_ext.lower() in proc_arg and proc_ext != '.':
-                        print(proc_ext, proc_arg)
                         file_name = str(argument)
                         if file_name == "":
                             if silent is False:
@@ -3239,11 +3237,12 @@ class App(QtCore.QObject):
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         self.exc_editor.deactivate()
                         # set focus on the project tab
-                        self.ui.notebook.setCurrentWidget(self.ui.project_tab)
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry or Excellon Object to update."))
                         return
+                    edited_obj.set_ui(edited_obj.ui_type())
+                    self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
                 elif response == bt_cancel:
                     return
             else:
