@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - added posibility of using a big mouse cursor or a small mouse cursor. The big mouse cursor is made from 2 infinite lines. This was implemented for both graphic engines
 - added ability to change the cursor size when the small mouse cursor is selected in Preferences -> General
 - removed the line that remove the spaces from the path parameter in the Tcl commands that open something (Gerber, Gcode, Excellon)
+- fixed issue with the old SysTray icon not hidden when the application is restarted programmatically
 
 27.09.2019
 

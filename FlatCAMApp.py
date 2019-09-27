@@ -1880,9 +1880,7 @@ class App(QtCore.QObject):
         # ### GUI PREFERENCES SIGNALS ##
         # ##############################
 
-        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(
-            lambda: fcTranslate.restart_program(app=self)
-        )
+        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(self.on_app_restart)
 
         self.ui.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
         self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(
@@ -2798,6 +2796,17 @@ class App(QtCore.QObject):
                                 self.engine,
                                 name)
                                )
+
+    def on_app_restart(self):
+
+        # make sure that the Sys Tray icon is hidden before restart otherwise it will
+        # be left in the SySTray
+        try:
+            self.trayIcon.hide()
+        except Exception as e:
+            log.debug("App.on_app_restart() --> %s" % str(e))
+
+        fcTranslate.restart_program(app=self)
 
     def defaults_read_form(self):
         """
