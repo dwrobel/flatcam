@@ -1,22 +1,30 @@
 import sys
 
-from flatcamTools.ToolMeasurement import Measurement
-from flatcamTools.ToolPanelize import Panelize
-from flatcamTools.ToolFilm import Film
-from flatcamTools.ToolMove import ToolMove
+
+from flatcamTools.ToolCalculators import ToolCalculator
+from flatcamTools.ToolCutOut import CutOut
+
 from flatcamTools.ToolDblSided import DblSidedTool
 
-from flatcamTools.ToolCutOut import CutOut
-from flatcamTools.ToolCalculators import ToolCalculator
-from flatcamTools.ToolProperties import Properties
+from flatcamTools.ToolFilm import Film
+
 from flatcamTools.ToolImage import ToolImage
-from flatcamTools.ToolPaint import ToolPaint
+
+from flatcamTools.ToolMeasurement import Measurement
+from flatcamTools.ToolMove import ToolMove
+
 from flatcamTools.ToolNonCopperClear import NonCopperClear
-from flatcamTools.ToolTransform import ToolTransform
-from flatcamTools.ToolSolderPaste import SolderPaste
+
+from flatcamTools.ToolPaint import ToolPaint
+from flatcamTools.ToolPanelize import Panelize
 from flatcamTools.ToolPcbWizard import PcbWizard
 from flatcamTools.ToolPDF import ToolPDF
-from flatcamTools.ToolSub import ToolSub
+from flatcamTools.ToolProperties import Properties
 
+from flatcamTools.ToolRulesCheck import RulesCheck
 
 from flatcamTools.ToolShell import FCShell
+from flatcamTools.ToolSolderPaste import SolderPaste
+from flatcamTools.ToolSub import ToolSub
+
+from flatcamTools.ToolTransform import ToolTransform
