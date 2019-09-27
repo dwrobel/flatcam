@@ -2372,6 +2372,7 @@ class App(QtCore.QObject):
         self.film_tool = None
         self.paste_tool = None
         self.calculator_tool = None
+        self.rules_tool = None
         self.sub_tool = None
         self.move_tool = None
         self.cutout_tool = None
@@ -2909,6 +2910,9 @@ class App(QtCore.QObject):
         self.sub_tool = ToolSub(self)
         self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menutool, separator=True)
 
+        self.rules_tool = RulesCheck(self)
+        self.rules_tool.install(icon=QtGui.QIcon('share/rules32.png'), pos=self.ui.menutool, separator=True)
+
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
                                before=self.ui.menueditorigin)
@@ -3036,6 +3040,7 @@ class App(QtCore.QObject):
         self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
         self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
         self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
+        self.ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
 
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
         self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
@@ -6979,9 +6984,22 @@ class App(QtCore.QObject):
         #     return
 
         if not custom_location:
+            dia_box_location = None
+
+            try:
+                dia_box_location = eval(self.clipboard.text())
+            except Exception as e:
+                pass
+
+            if type(dia_box_location) == tuple:
+                dia_box_location = str(dia_box_location)
+            else:
+                dia_box_location = None
+
             dia_box = Dialog_box(title=_("Jump to ..."),
                                  label=_("Enter the coordinates in format X,Y:"),
-                                 icon=QtGui.QIcon('share/jump_to16.png'))
+                                 icon=QtGui.QIcon('share/jump_to16.png'),
+                                 initial_text=dia_box_location)
 
             if dia_box.ok is True:
                 try:
@@ -7004,7 +7022,8 @@ class App(QtCore.QObject):
         if self.is_legacy is False:
             canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
             jump_loc = self.plotcanvas.translate_coords_2((location[0], location[1]))
-            cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
+            j_pos = (canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
+            cursor.setPos(j_pos[0], j_pos[1])
         else:
             # find the canvas origin which is in the top left corner
             canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
@@ -7015,8 +7034,22 @@ class App(QtCore.QObject):
             # in pixels where the origin 0,0 is in the lowest left point of the display window (in our case is the
             # canvas) and the point (width, height) is in the top-right location
             loc = self.plotcanvas.axes.transData.transform_point(location)
+            j_pos = (x0 + loc[0], y0 - loc[1])
+            cursor.setPos(j_pos[0], j_pos[1])
 
-            cursor.setPos(x0 + loc[0], y0 - loc[1])
+        if self.grid_status() == True:
+            # Update cursor
+            self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
+                                     symbol='++', edge_color='black', size=self.defaults["global_cursor_size"])
+
+        # Set the position label
+        self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                       "<b>Y</b>: %.4f" % (location[0], location[1]))
+        # Set the relative position label
+        dx = location[0] - float(self.rel_point1[0])
+        dy = location[1] - float(self.rel_point1[1])
+        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
         self.inform.emit('[success] %s' %
                          _("Done."))
@@ -7799,8 +7832,6 @@ class App(QtCore.QObject):
             self.pos = (self.pos_canvas[0], self.pos_canvas[1])
 
         try:
-            modifiers = QtWidgets.QApplication.keyboardModifiers()
-
             if event.button == 1:
                 # Reset here the relative coordinates so there is a new reference on the click position
                 if self.rel_point1 is None:
@@ -7808,16 +7839,6 @@ class App(QtCore.QObject):
                 else:
                     self.rel_point2 = copy(self.rel_point1)
                     self.rel_point1 = self.pos
-
-                # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
-                if modifiers == QtCore.Qt.ShiftModifier:
-                    # do not auto open the Project Tab
-                    self.click_noproject = True
-
-                    self.clipboard.setText(self.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
-                    self.inform.emit('[success] %s' %
-                                     _("Coordinates copied to clipboard."))
-                    return
 
             self.on_mouse_move_over_plot(event, origin_click=True)
         except Exception as e:
@@ -7970,6 +7991,17 @@ class App(QtCore.QObject):
         # selection and then select a type of selection ("enclosing" or "touching")
         try:
             if event.button == 1:  # left click
+                modifiers = QtWidgets.QApplication.keyboardModifiers()
+                # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
+                if modifiers == QtCore.Qt.ShiftModifier:
+                    # do not auto open the Project Tab
+                    self.click_noproject = True
+
+                    self.clipboard.setText(self.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
+                    self.inform.emit('[success] %s' %
+                                     _("Coordinates copied to clipboard."))
+                    return
+
                 if self.doubleclick is True:
                     self.doubleclick = False
                     if self.collection.get_selected():

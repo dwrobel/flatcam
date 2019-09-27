@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.09.2019
+
+- changed the icon for Open Script and reused it for the Check Rules Tool
+
 27.09.2019
 
 - optimized the toggle axis command
@@ -19,6 +23,11 @@ CAD program, and create G-Code for Isolation routing.
 - if an object is edited but the result is not saved, the app will reload the edited object UI and set the Selected tab as active
 - made the mouse cursor (big, small) change in real time for both graphic engines
 - started to work on a new FlatCAM tool: Rules Check
+- created the GUI for the Rule Check Tool
+- if there are (x, y) coordinates in the clipboard, when launching the "Jump to" function, those coordinates will be preloaded in the Dialog box.
+- when the combo SHIFT + LMB is executed there is no longer a deselection of objects
+- when the "Jump to" function is called, the mouse cursor (if active) will be moved to the new position and the screen position labels will be updated accordingly
+
 
 27.09.2019
 

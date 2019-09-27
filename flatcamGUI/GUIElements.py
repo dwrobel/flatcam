@@ -1734,21 +1734,26 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
 
 class Dialog_box(QtWidgets.QWidget):
-    def __init__(self, title=None, label=None, icon=None):
+    def __init__(self, title=None, label=None, icon=None, initial_text=None):
         """
 
         :param title: string with the window title
         :param label: string with the message inside the dialog box
         """
         super(Dialog_box, self).__init__()
-        self.location = (0, 0)
+        if initial_text is None:
+            self.location = str((0, 0))
+        else:
+            self.location = initial_text
+
         self.ok = False
 
-        dialog_box = QtWidgets.QInputDialog()
-        dialog_box.setMinimumWidth(290)
+        self.dialog_box = QtWidgets.QInputDialog()
+        self.dialog_box.setMinimumWidth(290)
         self.setWindowIcon(icon)
 
-        self.location, self.ok = dialog_box.getText(self, title, label, text="0, 0")
+        self.location, self.ok = self.dialog_box.getText(self, title, label,
+                                                         text=str(self.location).replace('(', '').replace(')', ''))
         self.readyToEdit = True
 
     def mousePressEvent(self, e, parent=None):

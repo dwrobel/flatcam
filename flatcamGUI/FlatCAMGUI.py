@@ -112,7 +112,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile_scripting.setToolTipsVisible(True)
 
         self.menufilenewscript = QtWidgets.QAction(QtGui.QIcon('share/script_new16.png'), _('New Script ...'), self)
-        self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon('share/script_open16.png'), _('Open Script ...'), self)
+        self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon('share/open_script32.png'), _('Open Script ...'), self)
         self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'),
                                                    '%s\tSHIFT+S' % _('Run Script ...'), self)
         self.menufilerunscript.setToolTip(
@@ -664,7 +664,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ## Shell Toolbar ##
         self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), _("&Command Line"))
         self.new_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_new24.png'), _('New Script ...'))
-        self.open_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_open18.png'), _('Open Script ...'))
+        self.open_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/open_script32.png'), _('Open Script ...'))
         self.run_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script16.png'), _('Run Script ...'))
 
         # ## Tools Toolbar ##
@@ -678,6 +678,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
         self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
+        self.rules_btn = self.toolbartools.addAction(QtGui.QIcon('share/rules32.png'), _("Rules Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -1220,6 +1221,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>ALT+E</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>ALT+K</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1326,9 +1331,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Open Project"), _("Save Project As"), _("Toggle Plot Area"), _("Copy Obj_Name"),
                 _("Toggle Code Editor"), _("Toggle the axis"), _("Open Preferences Window"),
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
-                _("Skew on Y axis"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Solder Paste Dispensing Tool"),
+                _("Skew on Y axis"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
+                _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Non-Copper Clearing Tool"),
-                _("Paint Area Tool"), _("PDF Import Tool"), _("Transformations Tool"), _("View File Source"),
+                _("Paint Area Tool"), _("PDF Import Tool"), _("Rules Check Tool"),
+                _("View File Source"),
                 _("Cutout PCB Tool"), _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
                 _("Toggle Full Screen"), _("Abort current task (gracefully)"), _("Open Online Manual"),
                 _("Open Online Tutorials"), _("Refresh Plots"), _("Delete Object"), _("Alternate: Delete Tool"),
@@ -2102,7 +2109,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ## Shell Toolbar # ##
         self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), _("&Command Line"))
         self.new_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_new24.png'), _('New Script ...'))
-        self.open_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_open18.png'), _('Open Script ...'))
+        self.open_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/open_script32.png'), _('Open Script ...'))
         self.run_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script16.png'), _('Run Script ...'))
 
         # ## Tools Toolbar # ##
@@ -2406,6 +2413,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.dblsidedtool.run(toggle=True)
                     return
 
+                # Transformation Tool
+                if key == QtCore.Qt.Key_E:
+                    self.app.transform_tool.run(toggle=True)
+                    return
+
                 # Solder Paste Dispensing Tool
                 if key == QtCore.Qt.Key_K:
                     self.app.paste_tool.run(toggle=True)
@@ -2431,9 +2443,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.pdf_tool.run()
                     return
 
-                # Transformation Tool
+                # Rules Tool
                 if key == QtCore.Qt.Key_R:
-                    self.app.transform_tool.run(toggle=True)
+                    self.app.rules_tool.run(toggle=True)
                     return
 
                 # View Source Object Content
