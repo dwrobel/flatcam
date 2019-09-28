@@ -5311,17 +5311,19 @@ class App(QtCore.QObject):
             return
 
         # Options to scale
-        dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
+        dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin', "gerber_isooverlap",
+                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f"
 
                       'excellon_drillz',  'excellon_travelz', "excellon_toolchangexy",
                       'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
                       'excellon_tooldia', 'excellon_slot_tooldia', 'excellon_endz', "excellon_feedrate_probe",
-                      "excellon_z_pdepth",
+                      "excellon_z_pdepth", "excellon_editor_newdia", "excellon_editor_lin_pitch",
+                      "excellon_editor_slot_lin_pitch",
 
                       'geometry_cutz',  "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
                       'geometry_feedrate_rapid', "geometry_toolchangez", "geometry_feedrate_z",
                       "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', "geometry_z_pdepth",
-                      "geometry_feedrate_probe",
+                      "geometry_feedrate_probe", "geometry_startz",
 
                       'cncjob_tooldia',
 

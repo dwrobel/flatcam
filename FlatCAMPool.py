@@ -1,5 +1,5 @@
 from PyQt5 import QtCore
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 import dill
 
 
@@ -23,7 +23,7 @@ class WorkerPool(QtCore.QObject):
 
     def __init__(self):
         super(WorkerPool, self).__init__()
-        self.pool = Pool(2)
+        self.pool = Pool(cpu_count())
 
     def add_task(self, task):
         print("adding task", task)

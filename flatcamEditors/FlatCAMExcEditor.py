@@ -2014,7 +2014,10 @@ class FlatCAMExcEditor(QtCore.QObject):
         # VisPy Visuals
         if self.app.is_legacy is False:
             self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
-            self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
+            if self.app.plotcanvas.big_cursor is True:
+                self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1, line_width=2)
+            else:
+                self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='shapes_exc_editor')
@@ -2977,7 +2980,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # add a first tool in the Tool Table but only if the Excellon Object is empty
         if not self.tool2tooldia:
-            self.on_tool_add(tooldia=float(self.app.defaults['excellon_editor_newdia']))
+            self.on_tool_add(tooldia=float('%.2f' % float(self.app.defaults['excellon_editor_newdia'])))
 
     def update_fcexcellon(self, exc_obj):
         """

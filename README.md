@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - changed the icon for Open Script and reused it for the Check Rules Tool
 - added a new tool named "Optimal Tool" which will determine the minimum distance between the copper features for a Gerber object, in fact determining the maximum diameter for a isolation tool that can be used for a complete isolation
 - fixed the ToolMeasurement geometry not being displayed
+- fixed a bug in Excellon Editor that crashed the app when editing the first tool added automatically into a new black Excellon file
+- made sure that if the big mouse cursor is selected, the utility geometry in Excellon Editor has a thicker line width (2 pixels now) so it is visible over the geometry of the mouse cursor
 
 27.09.2019
 

@@ -89,7 +89,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.text_collection.enabled = True
 
         self.c = None
-
+        self.big_cursor = None
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
 
@@ -203,6 +203,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         :return: the mouse cursor object
         """
         if big is True:
+            self.big_cursor = True
             self.c = CursorBig()
 
             # in case there are multiple new_cursor calls, best to disconnect first the signals
@@ -218,6 +219,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.c.mouse_state_updated.connect(self.on_mouse_state)
             self.c.mouse_position_updated.connect(self.on_mouse_position)
         else:
+            self.big_cursor = False
             self.c = Cursor(pos=np.empty((0, 2)), parent=self.view.scene)
             self.c.antialias = 0
 

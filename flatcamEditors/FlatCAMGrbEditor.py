@@ -4096,7 +4096,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if specific_shape:
             geo = specific_shape
         else:
-            geo = self.active_tool.geometry
+            geo = deepcopy(self.active_tool.geometry)
             if geo is None:
                 return
 
