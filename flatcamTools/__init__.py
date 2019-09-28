@@ -15,6 +15,8 @@ from flatcamTools.ToolMove import ToolMove
 
 from flatcamTools.ToolNonCopperClear import NonCopperClear
 
+from flatcamTools.ToolOptimal import ToolOptimal
+
 from flatcamTools.ToolPaint import ToolPaint
 from flatcamTools.ToolPanelize import Panelize
 from flatcamTools.ToolPcbWizard import PcbWizard

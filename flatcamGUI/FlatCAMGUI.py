@@ -679,6 +679,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
         self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
         self.rules_btn = self.toolbartools.addAction(QtGui.QIcon('share/rules32.png'), _("Rules Tool"))
+        self.optimal_btn = self.toolbartools.addAction(QtGui.QIcon('share/open_excellon32.png'), _("Optimal Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -1237,6 +1238,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>ALT+O</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>ALT+P</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1333,7 +1338,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
                 _("Skew on Y axis"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
                 _("Solder Paste Dispensing Tool"),
-                _("Film PCB Tool"), _("Non-Copper Clearing Tool"),
+                _("Film PCB Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                 _("Paint Area Tool"), _("PDF Import Tool"), _("Rules Check Tool"),
                 _("View File Source"),
                 _("Cutout PCB Tool"), _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
@@ -2431,6 +2436,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Non-Copper Clear Tool
                 if key == QtCore.Qt.Key_N:
                     self.app.ncclear_tool.run(toggle=True)
+                    return
+
+                # Optimal Tool
+                if key == QtCore.Qt.Key_O:
+                    self.app.optimal_tool.run(toggle=True)
                     return
 
                 # Paint Tool

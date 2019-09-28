@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 28.09.2019
 
 - changed the icon for Open Script and reused it for the Check Rules Tool
+- added a new tool named "Optimal Tool" which will determine the minimum distance between the copper features for a Gerber object, in fact determining the maximum diameter for a isolation tool that can be used for a complete isolation
 
 27.09.2019
 

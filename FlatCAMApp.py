@@ -2377,6 +2377,7 @@ class App(QtCore.QObject):
         self.move_tool = None
         self.cutout_tool = None
         self.ncclear_tool = None
+        self.optimal_tool=None
         self.paint_tool = None
         self.transform_tool = None
         self.properties_tool = None
@@ -2911,7 +2912,10 @@ class App(QtCore.QObject):
         self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menutool, separator=True)
 
         self.rules_tool = RulesCheck(self)
-        self.rules_tool.install(icon=QtGui.QIcon('share/rules32.png'), pos=self.ui.menutool, separator=True)
+        self.rules_tool.install(icon=QtGui.QIcon('share/rules32.png'), pos=self.ui.menutool, separator=False)
+
+        self.optimal_tool = ToolOptimal(self)
+        self.optimal_tool.install(icon=QtGui.QIcon('share/open_excellon32.png'), pos=self.ui.menutool, separator=True)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
@@ -3041,6 +3045,7 @@ class App(QtCore.QObject):
         self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
         self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
         self.ui.rules_btn.triggered.connect(lambda: self.rules_tool.run(toggle=True))
+        self.ui.optimal_btn.triggered.connect(lambda: self.optimal_tool.run(toggle=True))
 
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
         self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
