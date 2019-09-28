@@ -402,6 +402,9 @@ class SolderPaste(FlatCAMTool):
         self.units = ''
         self.name = ""
 
+        # Number of decimals to be used for tools/nozzles in this FlatCAM Tool
+        self.decimals = 4
+
         # this will be used in the combobox context menu, for delete entry
         self.obj_to_be_deleted_name = ''
 
@@ -499,7 +502,7 @@ class SolderPaste(FlatCAMTool):
             self.tooluid += 1
             self.tooltable_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'data': deepcopy(self.options),
                     'solid_geometry': []
                 }
@@ -509,6 +512,11 @@ class SolderPaste(FlatCAMTool):
         self.obj = None
 
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
 
         for name in list(self.app.postprocessors.keys()):
             # populate only with postprocessor files that start with 'Paste_'
@@ -530,7 +538,7 @@ class SolderPaste(FlatCAMTool):
 
         sorted_tools = []
         for k, v in self.tooltable_tools.items():
-            sorted_tools.append(float('%.4f' % float(v['tooldia'])))
+            sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
         sorted_tools.sort(reverse=True)
 
         n = len(sorted_tools)
@@ -539,7 +547,7 @@ class SolderPaste(FlatCAMTool):
 
         for tool_sorted in sorted_tools:
             for tooluid_key, tooluid_value in self.tooltable_tools.items():
-                if float('%.4f' % tooluid_value['tooldia']) == tool_sorted:
+                if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
                     id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
                     id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -547,12 +555,9 @@ class SolderPaste(FlatCAMTool):
                     self.tools_table.setItem(row_no, 0, id)  # Tool name/id
 
                     # Make sure that the drill diameter when in MM is with no more than 2 decimals
-                    # There are no drill bits in MM with more than 3 decimals diameter
-                    # For INCH the decimals should be no more than 3. There are no drills under 10mils
-                    if self.units == 'MM':
-                        dia = QtWidgets.QTableWidgetItem('%.2f' % tooluid_value['tooldia'])
-                    else:
-                        dia = QtWidgets.QTableWidgetItem('%.4f' % tooluid_value['tooldia'])
+                    # There are no drill bits in MM with more than 2 decimals diameter
+                    # For INCH the decimals should be no more than 4. There are no drills under 10mils
+                    dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -791,9 +796,9 @@ class SolderPaste(FlatCAMTool):
         for k, v in self.tooltable_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
-        if float('%.4f' % tool_dia) in tool_dias:
+        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Adding Nozzle tool cancelled. Tool already in Tool Table."))
@@ -805,7 +810,7 @@ class SolderPaste(FlatCAMTool):
                                      _("New Nozzle tool added to Tool Table."))
             self.tooltable_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'data': deepcopy(self.options),
                     'solid_geometry': []
                 }
@@ -824,7 +829,7 @@ class SolderPaste(FlatCAMTool):
         for k, v in self.tooltable_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
         for row in range(self.tools_table.rowCount()):
 
@@ -991,7 +996,7 @@ class SolderPaste(FlatCAMTool):
         for k, v in self.tooltable_tools.items():
             # make sure that the tools diameter is more than zero and not zero
             if float(v['tooldia']) > 0:
-                sorted_tools.append(float('%.4f' % float(v['tooldia'])))
+                sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
         sorted_tools.sort(reverse=True)
 
         if not sorted_tools:
@@ -1049,7 +1054,7 @@ class SolderPaste(FlatCAMTool):
             for tool in sorted_tools:
                 offset = tool / 2
                 for uid, vl in self.tooltable_tools.items():
-                    if float('%.4f' % float(vl['tooldia'])) == tool:
+                    if float('%.*f' % (self.decimals, float(vl['tooldia']))) == tool:
                         tooluid = int(uid)
                         break
 

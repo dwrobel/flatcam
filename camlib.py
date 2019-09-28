@@ -4129,10 +4129,10 @@ class Excellon(Geometry):
         self.index_per_tool = {}  # Dictionary to store the indexed points for each tool
 
         # ## IN|MM -> Units are inherited from Geometry
-        #self.units = units
+        # self.units = units
 
         # Trailing "T" or leading "L" (default)
-        #self.zeros = "T"
+        # self.zeros = "T"
         self.zeros = zeros or self.defaults["zeros"]
         self.zeros_found = self.zeros
         self.units_found = self.units
@@ -4409,7 +4409,7 @@ class Excellon(Geometry):
                 # object's units.
                 match = self.meas_re.match(eline)
                 if match:
-                    #self.units = {"1": "MM", "2": "IN"}[match.group(1)]
+                    # self.units = {"1": "MM", "2": "IN"}[match.group(1)]
 
                     # Modified for issue #80
                     self.convert_units({"1": "MM", "2": "IN"}[match.group(1)])

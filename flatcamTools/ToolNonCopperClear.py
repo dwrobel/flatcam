@@ -488,6 +488,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # store here solid_geometry when there are tool with isolation job
         self.solid_geometry = []
 
+        # the number of decimals for the tools used in this FlatCAM Tool
+        self.decimals = 4
+
+        self.select_method = None
+
         self.tool_type_item_options = []
 
         self.addtool_btn.clicked.connect(self.on_tool_add)
@@ -546,6 +551,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.app.ui.notebook.setTabText(2, _("NCC Tool"))
 
     def set_tool_ui(self):
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
         self.tools_frame.show()
 
         self.ncc_order_radio.set_value(self.app.defaults["tools_nccorder"])
@@ -619,7 +631,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.tooluid += 1
             self.ncc_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
@@ -651,7 +663,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         sorted_tools = []
         for k, v in self.ncc_tools.items():
-            sorted_tools.append(float('%.4f' % float(v['tooldia'])))
+            if self.units == "IN":
+                sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
+            else:
+                sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
         order = self.ncc_order_radio.get_value()
         if order == 'fwd':
@@ -667,7 +682,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         for tool_sorted in sorted_tools:
             for tooluid_key, tooluid_value in self.ncc_tools.items():
-                if float('%.4f' % tooluid_value['tooldia']) == tool_sorted:
+                if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
                     id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
                     id_.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -675,12 +690,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     self.tools_table.setItem(row_no, 0, id_)  # Tool name/id
 
                     # Make sure that the drill diameter when in MM is with no more than 2 decimals
-                    # There are no drill bits in MM with more than 3 decimals diameter
-                    # For INCH the decimals should be no more than 3. There are no drills under 10mils
-                    if self.units == 'MM':
-                        dia = QtWidgets.QTableWidgetItem('%.2f' % tooluid_value['tooldia'])
-                    else:
-                        dia = QtWidgets.QTableWidgetItem('%.4f' % tooluid_value['tooldia'])
+                    # There are no drill bits in MM with more than 2 decimals diameter
+                    # For INCH the decimals should be no more than 4. There are no drills under 10mils
+                    dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -921,10 +933,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter to add, in Float format."))
                 return
 
-        if self.units == 'MM':
-            tool_dia = float('%.2f' % tool_dia)
-        else:
-            tool_dia = float('%.4f' % tool_dia)
+
+        tool_dia = float('%.*f' % (self.decimals, tool_dia))
 
         if tool_dia == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
@@ -948,9 +958,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         for k, v in self.ncc_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % self.decimals, (v[tool_v])))
 
-        if float('%.4f' % tool_dia) in tool_dias:
+        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
@@ -960,7 +970,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
             self.ncc_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
@@ -981,7 +991,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         for k, v in self.ncc_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
         for row in range(self.tools_table.rowCount()):
 
@@ -1641,7 +1651,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 break
 
                         for k, v in tools_storage.items():
-                            if float('%.4f' % v['tooldia']) == float('%.4f' % tool_iso):
+                            if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                tool_iso)):
                                 current_uid = int(k)
                                 # add the solid_geometry to the current too in self.paint_tools dictionary
                                 # and then reset the temporary list that stored that solid_geometry
@@ -1799,7 +1810,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             # find the tooluid associated with the current tool_dia so we know where to add the tool
                             # solid_geometry
                             for k, v in tools_storage.items():
-                                if float('%.4f' % v['tooldia']) == float('%.4f' % tool):
+                                if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                    tool)):
                                     current_uid = int(k)
 
                                     # add the solid_geometry to the current too in self.paint_tools dictionary
@@ -1972,7 +1984,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 break
 
                         for k, v in tools_storage.items():
-                            if float('%.4f' % v['tooldia']) == float('%.4f' % tool_iso):
+                            if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                tool_iso)):
                                 current_uid = int(k)
                                 # add the solid_geometry to the current too in self.paint_tools dictionary
                                 # and then reset the temporary list that stored that solid_geometry
@@ -2172,7 +2185,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             # find the tooluid associated with the current tool_dia so we know
                             # where to add the tool solid_geometry
                             for k, v in tools_storage.items():
-                                if float('%.4f' % v['tooldia']) == float('%.4f' % tool):
+                                if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                    tool)):
                                     current_uid = int(k)
 
                                     # add the solid_geometry to the current too in self.paint_tools dictionary

@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the ToolMeasurement geometry not being displayed
 - fixed a bug in Excellon Editor that crashed the app when editing the first tool added automatically into a new black Excellon file
 - made sure that if the big mouse cursor is selected, the utility geometry in Excellon Editor has a thicker line width (2 pixels now) so it is visible over the geometry of the mouse cursor
+- fixed issue #319 where generating a CNCJob from a geometry made with NCC Tool made the app crash
+- replaced in FlatCAM Tools and in FLatCAMObj.py  and in Editors all references to hardcoded decimals in string formats for tools with a variable declared in the __init__()
 
 27.09.2019
 

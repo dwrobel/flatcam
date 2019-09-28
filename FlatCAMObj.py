@@ -548,6 +548,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # list of rows with apertures plotted
         self.marked_rows = []
 
+        # Number of decimals to be used by tools in this class
+        self.decimals = 4
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -564,6 +567,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         """
         FlatCAMObj.set_ui(self, ui)
         FlatCAMApp.App.log.debug("FlatCAMGerber.set_ui()")
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == 'MM':
+            self.decimals = 2
+        else:
+            self.decimals = 4
 
         self.replotApertures.connect(self.on_mark_cb_click_table)
 
@@ -682,15 +692,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             if str(self.apertures[ap_code]['type']) == 'R' or str(self.apertures[ap_code]['type']) == 'O':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.apertures[ap_code]['width'] * self.file_units_factor,
-                                    self.apertures[ap_code]['height'] * self.file_units_factor
+                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['width'] * self.file_units_factor,
+                                    self.decimals, self.apertures[ap_code]['height'] * self.file_units_factor
                                     )
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             elif str(self.apertures[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.apertures[ap_code]['diam'] * self.file_units_factor,
-                                    self.apertures[ap_code]['nVertices'] * self.file_units_factor)
+                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['diam'] * self.file_units_factor,
+                                    self.decimals, self.apertures[ap_code]['nVertices'] * self.file_units_factor)
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             else:
@@ -699,9 +709,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             try:
                 if self.apertures[ap_code]['size'] is not None:
-                    ap_size_item = QtWidgets.QTableWidgetItem('%.4f' %
-                                                              float(self.apertures[ap_code]['size'] *
-                                                                    self.file_units_factor))
+                    ap_size_item = QtWidgets.QTableWidgetItem(
+                        '%.*f' % (self.decimals, float(self.apertures[ap_code]['size'] * self.file_units_factor)))
                 else:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:
@@ -1897,6 +1906,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.multigeo = False
 
+        # Number fo decimals to be used for tools in this class
+        self.decimals = 4
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -1944,7 +1956,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         exc.app.log.warning("Failed to copy option.", option)
 
             for drill in exc.drills:
-                exc_tool_dia = float('%.4f' % exc.tools[drill['tool']]['C'])
+                exc_tool_dia = float('%.*f' % (self.decimals, exc.tools[drill['tool']]['C']))
 
                 if exc_tool_dia not in custom_dict_drills:
                     custom_dict_drills[exc_tool_dia] = [drill['point']]
@@ -1952,7 +1964,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     custom_dict_drills[exc_tool_dia].append(drill['point'])
 
             for slot in exc.slots:
-                exc_tool_dia = float('%.4f' % exc.tools[slot['tool']]['C'])
+                exc_tool_dia = float('%.*f' % (self.decimals, exc.tools[slot['tool']]['C']))
 
                 if exc_tool_dia not in custom_dict_slots:
                     custom_dict_slots[exc_tool_dia] = [[slot['start'], slot['stop']]]
@@ -2045,7 +2057,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 temp_tools[tool_name_temp] = spec_temp
 
                 for drill in exc_final.drills:
-                    exc_tool_dia = float('%.4f' % exc_final.tools[drill['tool']]['C'])
+                    exc_tool_dia = float('%.*f' % (self.decimals, exc_final.tools[drill['tool']]['C']))
                     if exc_tool_dia == ordered_dia:
                         temp_drills.append(
                             {
@@ -2055,7 +2067,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         )
 
                 for slot in exc_final.slots:
-                    slot_tool_dia = float('%.4f' % exc_final.tools[slot['tool']]['C'])
+                    slot_tool_dia = float('%.*f' % (self.decimals, exc_final.tools[slot['tool']]['C']))
                     if slot_tool_dia == ordered_dia:
                         temp_slots.append(
                             {
@@ -2130,10 +2142,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # Make sure that the drill diameter when in MM is with no more than 2 decimals
             # There are no drill bits in MM with more than 3 decimals diameter
             # For INCH the decimals should be no more than 3. There are no drills under 10mils
-            if self.units == 'MM':
-                dia = QtWidgets.QTableWidgetItem('%.2f' % (self.tools[tool_no]['C']))
-            else:
-                dia = QtWidgets.QTableWidgetItem('%.4f' % (self.tools[tool_no]['C']))
+
+            dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.tools[tool_no]['C']))
 
             dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -2148,10 +2158,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
             try:
-                if self.units == 'MM':
-                    t_offset = self.tool_offset[float('%.2f' % float(self.tools[tool_no]['C']))]
-                else:
-                    t_offset = self.tool_offset[float('%.4f' % float(self.tools[tool_no]['C']))]
+                t_offset = self.tool_offset[float('%.*f' % (self.decimals, float(self.tools[tool_no]['C'])))]
             except KeyError:
                 t_offset = self.app.defaults['excellon_offset']
 
@@ -2307,6 +2314,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
+        if self.units == 'MM':
+            self.decimals = 2
+        else:
+            self.decimals = 4
+
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "solid": self.ui.solid_cb,
@@ -2347,10 +2359,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         t_default_offset = self.app.defaults["excellon_offset"]
         if not self.tool_offset:
             for value in self.tools.values():
-                if self.units == 'MM':
-                    dia = float('%.2f' % float(value['C']))
-                else:
-                    dia = float('%.4f' % float(value['C']))
+                dia = float('%.*f' % (self.decimals, float(value['C'])))
                 self.tool_offset[dia] = t_default_offset
 
         # Show/Hide Advanced Options
@@ -2407,10 +2416,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.is_modified = True
 
         row_of_item_changed = self.ui.tools_table.currentRow()
-        if self.units == 'MM':
-            dia = float('%.2f' % float(self.ui.tools_table.item(row_of_item_changed, 1).text()))
-        else:
-            dia = float('%.4f' % float(self.ui.tools_table.item(row_of_item_changed, 1).text()))
+        dia = float('%.*f' % (self.decimals, float(self.ui.tools_table.item(row_of_item_changed, 1).text())))
 
         current_table_offset_edited = None
         if self.ui.tools_table.currentItem() is not None:
@@ -2455,8 +2461,21 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         for x in self.ui.tools_table.selectedItems():
             # from the columnCount we subtract a value of 1 which represent the last column (plot column)
             # which does not have text
-            table_tools_items.append([self.ui.tools_table.item(x.row(), column).text()
-                                      for column in range(0, self.ui.tools_table.columnCount() - 1)])
+            txt = ''
+            elem = list()
+
+            for column in range(0, self.ui.tools_table.columnCount() - 1):
+                try:
+                    txt = self.ui.tools_table.item(x.row(), column).text()
+                except AttributeError:
+                    try:
+                        txt = self.ui.tools_table.cellWidget(x.row(), column).currentText()
+                    except AttributeError:
+                        pass
+                elem.append(txt)
+            table_tools_items.append(deepcopy(elem))
+            # table_tools_items.append([self.ui.tools_table.item(x.row(), column).text()
+            #                           for column in range(0, self.ui.tools_table.columnCount() - 1)])
         for item in table_tools_items:
             item[0] = str(item[0])
         return table_tools_items
@@ -2762,8 +2781,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         for tool in tools:
             # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
-            adj_toolstable_tooldia = float('%.4f' % float(tooldia))
-            adj_file_tooldia = float('%.4f' % float(self.tools[tool]["C"]))
+            adj_toolstable_tooldia = float('%.*f' % (self.decimals, float(tooldia)))
+            adj_file_tooldia = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
             if adj_toolstable_tooldia > adj_file_tooldia + 0.0001:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Milling tool for SLOTS is larger than hole size. Cancelled."))
@@ -2792,8 +2811,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
             for slot in self.slots:
                 if slot['tool'] in tools:
-                    toolstable_tool = float('%.4f' % float(tooldia))
-                    file_tool = float('%.4f' % float(self.tools[tool]["C"]))
+                    toolstable_tool = float('%.*f' % (self.decimals, float(tooldia)))
+                    file_tool = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
 
                     # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
                     # for the file_tool (tooldia actually)
@@ -3337,6 +3356,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.old_pp_state = self.app.defaults["geometry_multidepth"]
         self.old_toolchangeg_state = self.app.defaults["geometry_toolchange"]
 
+        # Number of decimals to be used for tools in this class
+        self.decimals = 4
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -3365,10 +3387,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
             # There are no tool bits in MM with more than 3 decimals diameter.
             # For INCH the decimals should be no more than 3. There are no tools under 10mils.
-            if self.units == 'MM':
-                dia_item = QtWidgets.QTableWidgetItem('%.2f' % float(tooluid_value['tooldia']))
-            else:
-                dia_item = QtWidgets.QTableWidgetItem('%.4f' % float(tooluid_value['tooldia']))
+
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
 
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -3495,6 +3515,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         assert isinstance(self.ui, GeometryObjectUI), \
             "Expected a GeometryObjectUI, got %s" % type(self.ui)
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == 'MM':
+            self.decimals = 2
+        else:
+            self.decimals = 4
+
         # populate postprocessor names in the combobox
         for name in list(self.app.postprocessors.keys()):
             self.ui.pp_geometry_name_cb.addItem(name)
@@ -3584,7 +3611,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             for toold in tools_list:
                 self.tools.update({
                     self.tooluid: {
-                        'tooldia': float(toold),
+                        'tooldia': float('%.*f' % (self.decimals, float(toold))),
                         'offset': 'Path',
                         'offset_value': 0.0,
                         'type': _('Rough'),
@@ -3846,10 +3873,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             max_uid = max(tool_uid_list)
         self.tooluid = max_uid + 1
 
-        if self.units == 'IN':
-            tooldia = float('%.4f' % tooldia)
-        else:
-            tooldia = float('%.2f' % tooldia)
+        tooldia = float('%.*f' % (self.decimals, tooldia))
 
         # here we actually add the new tool; if there is no tool in the tool table we add a tool with default data
         # otherwise we add a tool with data copied from last tool
@@ -3996,7 +4020,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                      _("Wrong value format entered, use a number."))
                 return
 
-        tool_dia = float('%.4f' % d)
+        tool_dia = float('%.*f' % (self.decimals, d))
         tooluid = int(self.ui.geo_tools_table.item(current_row, 5).text())
 
         self.tools[tooluid]['tooldia'] = tool_dia
@@ -4203,7 +4227,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         tooldia = float(self.ui.geo_tools_table.item(row, 1).text())
         new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
-        new_cutz = float('%.4f' % -new_cutz) # this value has to be negative
+        new_cutz = float('%.*f' % (self.decimals, -new_cutz)) # this value has to be negative
         self.ui.cutz_entry.set_value(new_cutz)
 
         # store the new CutZ value into storage (self.tools)
@@ -4426,8 +4450,21 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         table_tools_items = []
         if self.multigeo:
             for x in self.ui.geo_tools_table.selectedItems():
-                table_tools_items.append([self.ui.geo_tools_table.item(x.row(), column).text()
-                                          for column in range(0, self.ui.geo_tools_table.columnCount())])
+                elem = list()
+                txt = ''
+
+                for column in range(0, self.ui.geo_tools_table.columnCount()):
+                    try:
+                        txt = self.ui.geo_tools_table.item(x.row(), column).text()
+                    except AttributeError:
+                        try:
+                            txt = self.ui.geo_tools_table.cellWidget(x.row(), column).currentText()
+                        except AttributeError:
+                            pass
+                    elem.append(txt)
+                table_tools_items.append(deepcopy(elem))
+                # table_tools_items.append([self.ui.geo_tools_table.item(x.row(), column).text()
+                #                           for column in range(0, self.ui.geo_tools_table.columnCount())])
         else:
             for x in self.ui.geo_tools_table.selectedItems():
                 r = []
@@ -4441,9 +4478,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     try:
                         txt = self.ui.geo_tools_table.item(x.row(), column).text()
                     except AttributeError:
-                        txt = self.ui.geo_tools_table.cellWidget(x.row(), column).currentText()
-                    except Exception as e:
-                        pass
+                        try:
+                            txt = self.ui.geo_tools_table.cellWidget(x.row(), column).currentText()
+                        except AttributeError:
+                            pass
                     r.append(txt)
                 table_tools_items.append(r)
 
@@ -4625,7 +4663,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 tool_cnt += 1
 
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
-                tooldia_val = float('%.4f' % float(tools_dict[tooluid_key]['tooldia']))
+                tooldia_val = float('%.*f' % (self.decimals, float(tools_dict[tooluid_key]['tooldia'])))
                 dia_cnc_dict.update({
                     'tooldia': tooldia_val
                 })
@@ -4779,7 +4817,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             for tooluid_key in list(tools_dict.keys()):
                 tool_cnt += 1
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
-                tooldia_val = float('%.4f' % float(tools_dict[tooluid_key]['tooldia']))
+                tooldia_val = float('%.*f' % (self.decimals, float(tools_dict[tooluid_key]['tooldia'])))
 
                 dia_cnc_dict.update({
                     'tooldia': tooldia_val
@@ -4789,7 +4827,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # search in the self.tools for the sel_tool_dia and when found see what tooluid has
                 # on the found tooluid in self.tools we also have the solid_geometry that interest us
                 for k, v in self.tools.items():
-                    if float('%.4f' % float(v['tooldia'])) == tooldia_val:
+                    if float('%.*f' % (self.decimals, float(v['tooldia']))) == tooldia_val:
                         current_uid = int(k)
                         break
 
@@ -5307,7 +5345,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 for dia_key, dia_value in tooluid_value.items():
                     if dia_key == 'tooldia':
                         dia_value *= factor
-                        dia_value = float('%.4f' % dia_value)
+                        dia_value = float('%.*f' % (self.decimals, dia_value))
                         tool_dia_copy[dia_key] = dia_value
                     if dia_key == 'offset':
                         tool_dia_copy[dia_key] = dia_value
@@ -5578,6 +5616,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
 
+        self.decimals = 4
+
         if self.app.is_legacy is False:
             self.text_col = self.app.plotcanvas.new_text_collection()
             self.text_col.enabled = True
@@ -5614,10 +5654,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
             # There are no tool bits in MM with more than 2 decimals diameter.
             # For INCH the decimals should be no more than 4. There are no tools under 10mils.
-            if self.units == 'MM':
-                dia_item = QtWidgets.QTableWidgetItem('%.2f' % float(dia_value['tooldia']))
-            else:
-                dia_item = QtWidgets.QTableWidgetItem('%.4f' % float(dia_value['tooldia']))
+
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['tooldia'])))
 
             offset_txt = list(str(dia_value['offset']))
             offset_txt[0] = offset_txt[0].upper()
@@ -5706,6 +5744,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         assert isinstance(self.ui, CNCObjectUI), \
             "Expected a CNCObjectUI, got %s" % type(self.ui)
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
         # this signal has to be connected to it's slot before the defaults are populated
         # the decision done in the slot has to override the default value set bellow
         self.ui.toolchange_cb.toggled.connect(self.on_toolchange_custom_clicked)
@@ -5728,7 +5773,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.ui.t_distance_label.show()
                 self.ui.t_distance_entry.setVisible(True)
                 self.ui.t_distance_entry.setDisabled(True)
-                self.ui.t_distance_entry.set_value('%.4f' % float(self.travel_distance))
+                self.ui.t_distance_entry.set_value('%.*f' % (self.decimals, float(self.travel_distance)))
                 self.ui.units_label.setText(str(self.units).lower())
                 self.ui.units_label.setDisabled(True)
 
@@ -5737,11 +5782,11 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.ui.t_time_entry.setDisabled(True)
                 # if time is more than 1 then we have minutes, else we have seconds
                 if self.routing_time > 1:
-                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(self.routing_time)))
+                    self.ui.t_time_entry.set_value('%.*f' % (self.decimals, math.ceil(float(self.routing_time))))
                     self.ui.units_time_label.setText('min')
                 else:
                     time_r = self.routing_time * 60
-                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(time_r)))
+                    self.ui.t_time_entry.set_value('%.*f' % (self.decimals, math.ceil(float(time_r))))
                     self.ui.units_time_label.setText('sec')
                 self.ui.units_time_label.setDisabled(True)
         except AttributeError:
@@ -6174,7 +6219,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.shapes.clear(update=True)
 
         for tooluid_key in self.cnc_tools:
-            tooldia = float('%.4f' % float(self.cnc_tools[tooluid_key]['tooldia']))
+            tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
             gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
             # tool_uid = int(self.ui.cnc_tools_table.item(cw_row, 3).text())
 
@@ -6227,7 +6272,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             else:
                 # multiple tools usage
                 for tooluid_key in self.cnc_tools:
-                    tooldia = float('%.4f' % float(self.cnc_tools[tooluid_key]['tooldia']))
+                    tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
                     gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
                     self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
             self.shapes.redraw()
@@ -6266,7 +6311,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             for dia_key, dia_value in tooluid_value.items():
                 if dia_key == 'tooldia':
                     dia_value *= factor
-                    dia_value = float('%.4f' % dia_value)
+                    dia_value = float('%.*f' % (self.decimals, dia_value))
                     tool_dia_copy[dia_key] = dia_value
                 if dia_key == 'offset':
                     tool_dia_copy[dia_key] = dia_value

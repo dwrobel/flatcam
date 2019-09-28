@@ -2046,6 +2046,9 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.complete = False
 
+        # Number of decimals used by tools in this class
+        self.decimals = 4
+
         def make_callback(thetool):
             def f():
                 self.on_tool_select(thetool)
@@ -2116,16 +2119,18 @@ class FlatCAMExcEditor(QtCore.QObject):
         # updated units
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
 
         # build the self.points_edit dict {dimaters: [point_list]}
         for drill in self.exc_obj.drills:
             if drill['tool'] in self.exc_obj.tools:
-                if self.units == 'IN':
-                    tool_dia = float('%.4f' % self.exc_obj.tools[drill['tool']]['C'])
-                else:
-                    tool_dia = float('%.2f' % self.exc_obj.tools[drill['tool']]['C'])
+                tool_dia = float('%.*f' % (self.decimals, self.exc_obj.tools[drill['tool']]['C']))
 
                 try:
                     self.points_edit[tool_dia].append(drill['point'])
@@ -2135,10 +2140,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # build the self.slot_points_edit dict {dimaters: {"start": Point, "stop": Point}}
         for slot in self.exc_obj.slots:
             if slot['tool'] in self.exc_obj.tools:
-                if self.units == 'IN':
-                    tool_dia = float('%.4f' % self.exc_obj.tools[slot['tool']]['C'])
-                else:
-                    tool_dia = float('%.2f' % self.exc_obj.tools[slot['tool']]['C'])
+                tool_dia = float('%.*f' % (self.decimals, self.exc_obj.tools[slot['tool']]['C']))
 
                 try:
                     self.slot_points_edit[tool_dia].append({
@@ -2174,10 +2176,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             # Excellon file has no tool diameter information. In this case do not order the diameter in the table
             # but use the real order found in the exc_obj.tools
             for k, v in self.exc_obj.tools.items():
-                if self.units == 'IN':
-                    tool_dia = float('%.4f' % v['C'])
-                else:
-                    tool_dia = float('%.2f' % v['C'])
+                tool_dia = float('%.*f' % (self.decimals, v['C']))
                 self.tool2tooldia[int(k)] = tool_dia
 
         # Init GUI
@@ -2274,12 +2273,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.tools_table_exc.setItem(self.tool_row, 0, idd)  # Tool name/id
 
             # Make sure that the drill diameter when in MM is with no more than 2 decimals
-            # There are no drill bits in MM with more than 3 decimals diameter
-            # For INCH the decimals should be no more than 3. There are no drills under 10mils
-            if self.units == 'MM':
-                dia = QtWidgets.QTableWidgetItem('%.2f' % self.olddia_newdia[tool_no])
-            else:
-                dia = QtWidgets.QTableWidgetItem('%.4f' % self.olddia_newdia[tool_no])
+            # There are no drill bits in MM with more than 2 decimals diameter
+            # For INCH the decimals should be no more than 4. There are no drills under 10mils
+            dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.olddia_newdia[tool_no]))
 
             dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -2477,9 +2473,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             else:
                 if isinstance(dia, list):
                     for dd in dia:
-                        deleted_tool_dia_list.append(float('%.4f' % dd))
+                        deleted_tool_dia_list.append(float('%.*f' % (self.decimals, dd)))
                 else:
-                    deleted_tool_dia_list.append(float('%.4f' % dia))
+                    deleted_tool_dia_list.append(float('%.*f' % (self.decimals, dia)))
         except Exception as e:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Select a tool in Tool Table"))

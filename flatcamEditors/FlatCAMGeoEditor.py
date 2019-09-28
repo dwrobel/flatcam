@@ -3104,6 +3104,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.rtree_index = rtindex.Index()
 
+        # Number of decimals used by tools in this class
+        self.decimals = 4
+
         def entry2option(option, entry):
             try:
                 self.options[option] = float(entry.text())
@@ -3601,6 +3604,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     self.add_shape(DrawToolShape(shape))
 
         self.replot()
+
+        # updated units
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
 
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:

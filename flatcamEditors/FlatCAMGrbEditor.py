@@ -2955,6 +2955,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.conversion_factor = 1
 
+        # number of decimals for the tool diameters to be used in this editor
+        self.decimals = 4
+
         self.set_ui()
         log.debug("Initialization of the FlatCAM Gerber Editor is finished ...")
 
@@ -2965,6 +2968,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def set_ui(self):
         # updated units
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
 
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
@@ -3056,15 +3064,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             if str(self.storage_dict[ap_code]['type']) == 'R' or str(self.storage_dict[ap_code]['type']) == 'O':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.storage_dict[ap_code]['width'],
-                                    self.storage_dict[ap_code]['height']
+                    '%.*f, %.*f' % (self.decimals, self.storage_dict[ap_code]['width'],
+                                    self.decimals, self.storage_dict[ap_code]['height']
                                     )
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             elif str(self.storage_dict[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.storage_dict[ap_code]['diam'],
-                                    self.storage_dict[ap_code]['nVertices'])
+                    '%.*f, %.*f' % (self.decimals, self.storage_dict[ap_code]['diam'],
+                                    self.decimals, self.storage_dict[ap_code]['nVertices'])
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             else:
@@ -3073,8 +3081,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             try:
                 if self.storage_dict[ap_code]['size'] is not None:
-                    ap_size_item = QtWidgets.QTableWidgetItem('%.4f' % float(
-                        self.storage_dict[ap_code]['size']))
+                    ap_size_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals,
+                                                                        float(self.storage_dict[ap_code]['size'])))
                 else:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:

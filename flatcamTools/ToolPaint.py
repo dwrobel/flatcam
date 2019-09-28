@@ -376,6 +376,9 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.sel_rect = []
 
+        # Number of decimals for tools used in this Tool
+        self.decimals = 4
+
         # store here the default data for Geometry Data
         self.default_data = {}
         self.default_data.update({
@@ -540,8 +543,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         if self.units == "IN":
+            self.decimals = 4
             self.addtool_entry.set_value(0.039)
         else:
+            self.decimals = 2
             self.addtool_entry.set_value(1)
 
         self.tools_table.setupContextMenu()
@@ -608,7 +613,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         sorted_tools = []
         for k, v in self.paint_tools.items():
-            sorted_tools.append(float('%.4f' % float(v['tooldia'])))
+            sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
         order = self.order_radio.get_value()
         if order == 'fwd':
@@ -624,7 +629,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         for tool_sorted in sorted_tools:
             for tooluid_key, tooluid_value in self.paint_tools.items():
-                if float('%.4f' % tooluid_value['tooldia']) == tool_sorted:
+                if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
                     id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
                     id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -632,12 +637,10 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.tools_table.setItem(row_no, 0, id)  # Tool name/id
 
                     # Make sure that the drill diameter when in MM is with no more than 2 decimals
-                    # There are no drill bits in MM with more than 3 decimals diameter
-                    # For INCH the decimals should be no more than 3. There are no drills under 10mils
-                    if self.units == 'MM':
-                        dia = QtWidgets.QTableWidgetItem('%.2f' % tooluid_value['tooldia'])
-                    else:
-                        dia = QtWidgets.QTableWidgetItem('%.4f' % tooluid_value['tooldia'])
+                    # There are no drill bits in MM with more than 2 decimals diameter
+                    # For INCH the decimals should be no more than 4. There are no drills under 10mils
+
+                    dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -736,9 +739,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         for k, v in self.paint_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
-        if float('%.4f' % tool_dia) in tool_dias:
+        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Adding tool cancelled. Tool already in Tool Table."))
@@ -750,7 +753,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                      _("New tool added to Tool Table."))
             self.paint_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
@@ -774,7 +777,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         for k, v in self.paint_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
         for row in range(self.tools_table.rowCount()):
             try:
@@ -1392,7 +1395,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             for tool_dia in sorted_tools:
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 
@@ -1688,7 +1691,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 
@@ -1916,7 +1919,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 
@@ -2162,7 +2165,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 
@@ -2391,7 +2394,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 
