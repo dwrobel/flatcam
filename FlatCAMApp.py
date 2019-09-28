@@ -2575,8 +2575,9 @@ class App(QtCore.QObject):
 
         # if the app is not started as headless, show it
         if self.cmd_line_headless != 1:
-            # finish the splash
-            self.splash.finish(self.ui)
+            if show_splash:
+                # finish the splash
+                self.splash.finish(self.ui)
 
             settings = QSettings("Open Source", "FlatCAM")
             if settings.contains("maximized_gui"):
