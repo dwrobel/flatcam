@@ -60,40 +60,70 @@ class RulesCheck(FlatCAMTool):
             _("Gerber files for which to check rules.")
         )
 
-        # Copper object
-        self.copper_object = QtWidgets.QComboBox()
-        self.copper_object.setModel(self.app.collection)
-        self.copper_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.copper_object.setCurrentIndex(1)
+        # Copper Top object
+        self.copper_t_object = QtWidgets.QComboBox()
+        self.copper_t_object.setModel(self.app.collection)
+        self.copper_t_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.copper_t_object.setCurrentIndex(1)
 
-        self.copper_object_lbl = QtWidgets.QLabel('%s:' % _("Copper"))
-        self.copper_object_lbl.setToolTip(
-            _("Object to be panelized. This means that it will\n"
-              "be duplicated in an array of rows and columns.")
+        self.copper_t_object_lbl = QtWidgets.QLabel('%s:' % _("Top"))
+        self.copper_t_object_lbl.setToolTip(
+            _("The Gerber Copper Top file for which rules are checked.")
         )
 
-        # SolderMask object
-        self.sm_object = QtWidgets.QComboBox()
-        self.sm_object.setModel(self.app.collection)
-        self.sm_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object.setCurrentIndex(1)
+        # Copper Bottom object
+        self.copper_b_object = QtWidgets.QComboBox()
+        self.copper_b_object.setModel(self.app.collection)
+        self.copper_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.copper_b_object.setCurrentIndex(1)
 
-        self.sm_object_lbl = QtWidgets.QLabel('%s:' % _("SolderMask"))
-        self.sm_object_lbl.setToolTip(
-            _("Object to be panelized. This means that it will\n"
-              "be duplicated in an array of rows and columns.")
+        self.copper_b_object_lbl = QtWidgets.QLabel('%s:' % _("Bottom"))
+        self.copper_b_object_lbl.setToolTip(
+            _("The Gerber Copper Bottom file for which rules are checked.")
         )
 
-        # SilkScreen object
-        self.ss_object = QtWidgets.QComboBox()
-        self.ss_object.setModel(self.app.collection)
-        self.ss_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.ss_object.setCurrentIndex(1)
+        # SolderMask Top object
+        self.sm_t_object = QtWidgets.QComboBox()
+        self.sm_t_object.setModel(self.app.collection)
+        self.sm_t_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sm_t_object.setCurrentIndex(1)
 
-        self.ss_object_lbl = QtWidgets.QLabel('%s:' % _("Silkscreen"))
-        self.ss_object_lbl.setToolTip(
-            _("Object to be panelized. This means that it will\n"
-              "be duplicated in an array of rows and columns.")
+        self.sm_t_object_lbl = QtWidgets.QLabel('%s:' % _("SM Top"))
+        self.sm_t_object_lbl.setToolTip(
+            _("The Gerber Solder Mask Top file for which rules are checked.")
+        )
+
+        # SolderMask Bottom object
+        self.sm_b_object = QtWidgets.QComboBox()
+        self.sm_b_object.setModel(self.app.collection)
+        self.sm_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sm_b_object.setCurrentIndex(1)
+
+        self.sm_b_object_lbl = QtWidgets.QLabel('%s:' % _("SM Bottom"))
+        self.sm_b_object_lbl.setToolTip(
+            _("The Gerber Solder Mask Top file for which rules are checked.")
+        )
+
+        # SilkScreen Top object
+        self.ss_t_object = QtWidgets.QComboBox()
+        self.ss_t_object.setModel(self.app.collection)
+        self.ss_t_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ss_t_object.setCurrentIndex(1)
+
+        self.ss_t_object_lbl = QtWidgets.QLabel('%s:' % _("Silk Top"))
+        self.ss_t_object_lbl.setToolTip(
+            _("The Gerber Silkscreen Top file for which rules are checked.")
+        )
+
+        # SilkScreen Bottom object
+        self.ss_b_object = QtWidgets.QComboBox()
+        self.ss_b_object.setModel(self.app.collection)
+        self.ss_b_object.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.ss_b_object.setCurrentIndex(1)
+
+        self.ss_b_object_lbl = QtWidgets.QLabel('%s:' % _("Silk Bottom"))
+        self.ss_b_object_lbl.setToolTip(
+            _("The Gerber Silkscreen Bottom file for which rules are checked.")
         )
 
         # Outline object
@@ -104,13 +134,18 @@ class RulesCheck(FlatCAMTool):
 
         self.outline_object_lbl = QtWidgets.QLabel('%s:' % _("Outline"))
         self.outline_object_lbl.setToolTip(
-            _("Object to be panelized. This means that it will\n"
-              "be duplicated in an array of rows and columns.")
+            _("The Gerber Outline (Cutout) file for which rules are checked.")
         )
         form_layout.addRow(self.gerber_title_lbl)
-        form_layout.addRow(self.copper_object_lbl, self.copper_object)
-        form_layout.addRow(self.sm_object_lbl, self.sm_object)
-        form_layout.addRow(self.ss_object_lbl, self.ss_object)
+        form_layout.addRow(self.copper_t_object_lbl, self.copper_t_object)
+        form_layout.addRow(self.copper_b_object_lbl, self.copper_b_object)
+
+        form_layout.addRow(self.sm_t_object_lbl, self.sm_t_object)
+        form_layout.addRow(self.sm_b_object_lbl, self.sm_b_object)
+
+        form_layout.addRow(self.ss_t_object_lbl, self.ss_t_object)
+        form_layout.addRow(self.ss_b_object_lbl, self.ss_b_object)
+
         form_layout.addRow(self.outline_object_lbl, self.outline_object)
         form_layout.addRow(QtWidgets.QLabel(""))
 
@@ -148,9 +183,23 @@ class RulesCheck(FlatCAMTool):
         form_layout.addRow(self.e2_object_lbl, self.e2_object)
         form_layout.addRow(QtWidgets.QLabel(""))
 
+        # Control All
+        self.all_cb = FCCheckBox('%s' % _("All Rules"))
+        self.all_cb.setToolTip(
+            _("This check/uncheck all the rules below.")
+        )
+        self.all_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: green}
+            """
+        )
+        self.layout.addWidget(self.all_cb)
+
         # Form Layout
-        form_layout_1 = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout_1)
+        self.form_layout_1 = QtWidgets.QFormLayout()
+        self.layout.addLayout(self.form_layout_1)
+
+        self.form_layout_1.addRow(QtWidgets.QLabel(""))
 
         # Copper2copper clearance
         self.clearance_copper2copper_cb = FCCheckBox('%s:' % _("Copper to copper clearance"))
@@ -158,7 +207,7 @@ class RulesCheck(FlatCAMTool):
             _("This checks if the minimum clearance between copper\n"
               "features is met.")
         )
-        form_layout_1.addRow(self.clearance_copper2copper_cb)
+        self.form_layout_1.addRow(self.clearance_copper2copper_cb)
 
         # Copper2copper clearance value
         self.clearance_copper2copper_entry = FCEntry()
@@ -166,7 +215,7 @@ class RulesCheck(FlatCAMTool):
         self.clearance_copper2copper_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        form_layout_1.addRow(self.clearance_copper2copper_lbl, self.clearance_copper2copper_entry)
+        self.form_layout_1.addRow(self.clearance_copper2copper_lbl, self.clearance_copper2copper_entry)
 
         self.c2c = OptionalInputSection(
             self.clearance_copper2copper_cb, [self.clearance_copper2copper_lbl, self.clearance_copper2copper_entry])
@@ -177,7 +226,7 @@ class RulesCheck(FlatCAMTool):
             _("This checks if the minimum clearance between copper\n"
               "features and soldermask features is met.")
         )
-        form_layout_1.addRow(self.clearance_copper2sm_cb)
+        self.form_layout_1.addRow(self.clearance_copper2sm_cb)
 
         # Copper2soldermask clearance value
         self.clearance_copper2sm_entry = FCEntry()
@@ -185,7 +234,7 @@ class RulesCheck(FlatCAMTool):
         self.clearance_copper2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        form_layout_1.addRow(self.clearance_copper2sm_lbl, self.clearance_copper2sm_entry)
+        self.form_layout_1.addRow(self.clearance_copper2sm_lbl, self.clearance_copper2sm_entry)
 
         self.c2sm = OptionalInputSection(
             self.clearance_copper2sm_cb, [self.clearance_copper2sm_lbl, self.clearance_copper2sm_entry])
@@ -196,7 +245,7 @@ class RulesCheck(FlatCAMTool):
             _("This checks if the minimum clearance between copper\n"
               "features and silkscreen features is met.")
         )
-        form_layout_1.addRow(self.clearance_copper2sk_cb)
+        self.form_layout_1.addRow(self.clearance_copper2sk_cb)
 
         # Copper2silkscreen clearance value
         self.clearance_copper2sk_entry = FCEntry()
@@ -204,7 +253,7 @@ class RulesCheck(FlatCAMTool):
         self.clearance_copper2sk_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        form_layout_1.addRow(self.clearance_copper2sk_lbl, self.clearance_copper2sk_entry)
+        self.form_layout_1.addRow(self.clearance_copper2sk_lbl, self.clearance_copper2sk_entry)
 
         self.c2sk = OptionalInputSection(
             self.clearance_copper2sk_cb, [self.clearance_copper2sk_lbl, self.clearance_copper2sk_entry])
@@ -215,7 +264,7 @@ class RulesCheck(FlatCAMTool):
             _("This checks if the minimum clearance between copper\n"
               "features and the outline is met.")
         )
-        form_layout_1.addRow(self.clearance_copper2ol_cb)
+        self.form_layout_1.addRow(self.clearance_copper2ol_cb)
 
         # Copper2outline clearance value
         self.clearance_copper2ol_entry = FCEntry()
@@ -223,18 +272,18 @@ class RulesCheck(FlatCAMTool):
         self.clearance_copper2ol_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        form_layout_1.addRow(self.clearance_copper2ol_lbl, self.clearance_copper2ol_entry)
+        self.form_layout_1.addRow(self.clearance_copper2ol_lbl, self.clearance_copper2ol_entry)
 
         self.c2ol = OptionalInputSection(
             self.clearance_copper2ol_cb, [self.clearance_copper2ol_lbl, self.clearance_copper2ol_entry])
 
         # Silkscreen2silkscreen clearance
-        self.clearance_silk2silk_cb = FCCheckBox('%s:' % _("Silkscreen to silkscreen clearance"))
+        self.clearance_silk2silk_cb = FCCheckBox('%s:' % _("Silk to Silk Clearance"))
         self.clearance_silk2silk_cb.setToolTip(
             _("This checks if the minimum clearance between silkscreen\n"
               "features and silkscreen features is met.")
         )
-        form_layout_1.addRow(self.clearance_silk2silk_cb)
+        self.form_layout_1.addRow(self.clearance_silk2silk_cb)
 
         # Copper2silkscreen clearance value
         self.clearance_silk2silk_entry = FCEntry()
@@ -242,18 +291,18 @@ class RulesCheck(FlatCAMTool):
         self.clearance_silk2silk_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        form_layout_1.addRow(self.clearance_silk2silk_lbl, self.clearance_silk2silk_entry)
+        self.form_layout_1.addRow(self.clearance_silk2silk_lbl, self.clearance_silk2silk_entry)
 
         self.s2s = OptionalInputSection(
             self.clearance_silk2silk_cb, [self.clearance_silk2silk_lbl, self.clearance_silk2silk_entry])
 
         # Silkscreen2soldermask clearance
-        self.clearance_silk2sm_cb = FCCheckBox('%s:' % _("Silkscreen to soldermask clearance"))
+        self.clearance_silk2sm_cb = FCCheckBox('%s:' % _("Silk to Solder Mask Clearance"))
         self.clearance_silk2sm_cb.setToolTip(
             _("This checks if the minimum clearance between silkscreen\n"
               "features and soldermask features is met.")
         )
-        form_layout_1.addRow(self.clearance_silk2sm_cb)
+        self.form_layout_1.addRow(self.clearance_silk2sm_cb)
 
         # Silkscreen2soldermask clearance value
         self.clearance_silk2sm_entry = FCEntry()
@@ -261,18 +310,37 @@ class RulesCheck(FlatCAMTool):
         self.clearance_silk2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        form_layout_1.addRow(self.clearance_silk2sm_lbl, self.clearance_silk2sm_entry)
+        self.form_layout_1.addRow(self.clearance_silk2sm_lbl, self.clearance_silk2sm_entry)
 
         self.s2sm = OptionalInputSection(
             self.clearance_silk2sm_cb, [self.clearance_silk2sm_lbl, self.clearance_silk2sm_entry])
 
+        # Silk2outline clearance
+        self.clearance_silk2ol_cb = FCCheckBox('%s:' % _("Silk to Outline Clearance"))
+        self.clearance_silk2ol_cb.setToolTip(
+            _("This checks if the minimum clearance between silk\n"
+              "features and the outline is met.")
+        )
+        self.form_layout_1.addRow(self.clearance_silk2ol_cb)
+
+        # Silk2outline clearance value
+        self.clearance_silk2ol_entry = FCEntry()
+        self.clearance_silk2ol_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_silk2ol_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.clearance_silk2ol_lbl, self.clearance_silk2ol_entry)
+
+        self.s2ol = OptionalInputSection(
+            self.clearance_silk2ol_cb, [self.clearance_silk2ol_lbl, self.clearance_silk2ol_entry])
+
         # Soldermask2soldermask clearance
-        self.clearance_sm2sm_cb = FCCheckBox('%s:' % _("Soldermask to soldermask clearance"))
+        self.clearance_sm2sm_cb = FCCheckBox('%s:' % _("Minimum Solder Mask Sliver"))
         self.clearance_sm2sm_cb.setToolTip(
             _("This checks if the minimum clearance between soldermask\n"
               "features and soldermask features is met.")
         )
-        form_layout_1.addRow(self.clearance_sm2sm_cb)
+        self.form_layout_1.addRow(self.clearance_sm2sm_cb)
 
         # Soldermask2soldermask clearance value
         self.clearance_sm2sm_entry = FCEntry()
@@ -280,39 +348,18 @@ class RulesCheck(FlatCAMTool):
         self.clearance_sm2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
         )
-        form_layout_1.addRow(self.clearance_sm2sm_lbl, self.clearance_sm2sm_entry)
+        self.form_layout_1.addRow(self.clearance_sm2sm_lbl, self.clearance_sm2sm_entry)
 
         self.sm2sm = OptionalInputSection(
             self.clearance_sm2sm_cb, [self.clearance_sm2sm_lbl, self.clearance_sm2sm_entry])
 
-        form_layout_1.addRow(QtWidgets.QLabel(""))
-
-        # Drill2Drill clearance
-        self.clearance_d2d_cb = FCCheckBox('%s:' % _("Drill hole to drill hole clearance"))
-        self.clearance_d2d_cb.setToolTip(
-            _("This checks if the minimum clearance between a drill hole\n"
-              "and another drill hole is met.")
-        )
-        form_layout_1.addRow(self.clearance_d2d_cb)
-
-        # Drill2Drill clearance value
-        self.clearance_d2d_entry = FCEntry()
-        self.clearance_d2d_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
-        self.clearance_d2d_lbl.setToolTip(
-            _("Minimum acceptable clearance value.")
-        )
-        form_layout_1.addRow(self.clearance_d2d_lbl, self.clearance_d2d_entry)
-
-        self.d2d = OptionalInputSection(
-            self.clearance_d2d_cb, [self.clearance_d2d_lbl, self.clearance_d2d_entry])
-
         # Ring integrity check
-        self.ring_integrity_cb = FCCheckBox('%s:' % _("Ring integrity check"))
+        self.ring_integrity_cb = FCCheckBox('%s:' % _("Minimum Annular Ring"))
         self.ring_integrity_cb.setToolTip(
             _("This checks if the minimum copper ring left by drilling\n"
               "a hole into a pad is met.")
         )
-        form_layout_1.addRow(self.ring_integrity_cb)
+        self.form_layout_1.addRow(self.ring_integrity_cb)
 
         # Ring integrity value
         self.ring_integrity_entry = FCEntry()
@@ -320,18 +367,50 @@ class RulesCheck(FlatCAMTool):
         self.ring_integrity_lbl.setToolTip(
             _("Minimum acceptable ring value.")
         )
-        form_layout_1.addRow(self.ring_integrity_lbl, self.ring_integrity_entry)
+        self.form_layout_1.addRow(self.ring_integrity_lbl, self.ring_integrity_entry)
 
         self.d2d = OptionalInputSection(
             self.ring_integrity_cb, [self.ring_integrity_lbl, self.ring_integrity_entry])
 
-        # Drill holes overlap check
-        self.drill_overlap_cb = FCCheckBox('%s:' % _("Drill hole overlap check"))
-        self.drill_overlap_cb.setToolTip(
-            _("This checks if drill holes are overlapping\n"
-              "one over another.")
+        self.form_layout_1.addRow(QtWidgets.QLabel(""))
+
+        # Drill2Drill clearance
+        self.clearance_d2d_cb = FCCheckBox('%s:' % _("Hole to Hole Clearance"))
+        self.clearance_d2d_cb.setToolTip(
+            _("This checks if the minimum clearance between a drill hole\n"
+              "and another drill hole is met.")
         )
-        form_layout_1.addRow(self.drill_overlap_cb)
+        self.form_layout_1.addRow(self.clearance_d2d_cb)
+
+        # Drill2Drill clearance value
+        self.clearance_d2d_entry = FCEntry()
+        self.clearance_d2d_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_d2d_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.clearance_d2d_lbl, self.clearance_d2d_entry)
+
+        self.d2d = OptionalInputSection(
+            self.clearance_d2d_cb, [self.clearance_d2d_lbl, self.clearance_d2d_entry])
+
+        # Drill holes size check
+        self.drill_size_cb = FCCheckBox('%s:' % _("Hole Size"))
+        self.drill_size_cb.setToolTip(
+            _("This checks if the drill holes\n"
+              "sizes are above the threshold.")
+        )
+        self.form_layout_1.addRow(self.drill_size_cb)
+
+        # Drile holes value
+        self.drill_size_entry = FCEntry()
+        self.drill_size_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.drill_size_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.drill_size_lbl, self.drill_size_entry)
+
+        self.ds = OptionalInputSection(
+            self.drill_size_cb, [self.drill_size_lbl, self.drill_size_entry])
 
         # Buttons
         hlay_2 = QtWidgets.QHBoxLayout()
@@ -351,6 +430,7 @@ class RulesCheck(FlatCAMTool):
         # #######################################################
         # ################ SIGNALS ##############################
         # #######################################################
+        self.all_cb.stateChanged.connect(self.on_all_cb_changed)
         self.run_button.clicked.connect(self.execute)
         # self.app.collection.rowsInserted.connect(self.on_object_loaded)
 
@@ -365,6 +445,16 @@ class RulesCheck(FlatCAMTool):
 
     # def on_object_loaded(self, index, row):
     #     print(index.internalPointer().child_items[row].obj.options['name'], index.data())
+
+    def on_all_cb_changed(self, state):
+        cb_items = [self.form_layout_1.itemAt(i).widget() for i in range(self.form_layout_1.count())
+                    if isinstance(self.form_layout_1.itemAt(i).widget(), FCCheckBox)]
+
+        for cb in cb_items:
+            if state:
+                cb.setChecked(True)
+            else:
+                cb.setChecked(False)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolRulesCheck()")

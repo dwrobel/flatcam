@@ -10,6 +10,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+29.09.2019
+
+- work done for the GUI layout of the Rule Check Tool
+
 28.09.2019
 
 - changed the icon for Open Script and reused it for the Check Rules Tool
