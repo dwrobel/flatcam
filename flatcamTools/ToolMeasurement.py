@@ -380,7 +380,7 @@ class Measurement(FlatCAMTool):
         # second draw the new shape of the utility geometry
         meas_line = LineString([pos, self.points[0]])
 
-        color = '#00000000'
+        color = '#000000FF'
         self.sel_shapes.add(meas_line, color=color, update=True, layer=0, tolerance=None)
 
         if self.app.is_legacy is True:

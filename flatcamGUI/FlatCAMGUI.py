@@ -237,7 +237,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addAction(self.menufile_exit)
 
         # ## Edit # ##
-        self.menuedit = self.menu.addMenu(_('&Edit'))
+        self.menuedit = self.menu.addMenu(_('Edit'))
         # Separator
         self.menuedit.addSeparator()
         self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), _('Edit Object\tE'))
@@ -315,7 +315,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menueditpreferences = self.menuedit.addAction(QtGui.QIcon('share/pref.png'), _('&Preferences\tSHIFT+P'))
 
         # ## Options # ##
-        self.menuoptions = self.menu.addMenu(_('&Options'))
+        self.menuoptions = self.menu.addMenu(_('Options'))
         # self.menuoptions_transfer = self.menuoptions.addMenu(QtGui.QIcon('share/transfer.png'), 'Transfer options')
         # self.menuoptions_transfer_a2p = self.menuoptions_transfer.addAction("Application to Project")
         # self.menuoptions_transfer_p2a = self.menuoptions_transfer.addAction("Project to Application")
@@ -2397,6 +2397,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_skewy()
                     return
             elif modifiers == QtCore.Qt.AltModifier:
+
                 # Eanble all plots
                 if key == Qt.Key_1:
                     self.app.enable_all_plots()
