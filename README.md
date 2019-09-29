@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 29.09.2019
 
 - work done for the GUI layout of the Rule Check Tool
+- setup signals in the Rules Check Tool GUI
 
 28.09.2019
 

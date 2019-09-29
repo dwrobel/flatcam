@@ -52,13 +52,15 @@ class RulesCheck(FlatCAMTool):
         self.layout.addWidget(title_label)
 
         # Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout)
+        self.grid_layout = QtWidgets.QGridLayout()
+        self.layout.addLayout(self.grid_layout)
 
         self.gerber_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Gerber Files"))
         self.gerber_title_lbl.setToolTip(
             _("Gerber files for which to check rules.")
         )
+
+        self.all_obj_cb = FCCheckBox()
 
         # Copper Top object
         self.copper_t_object = QtWidgets.QComboBox()
@@ -71,6 +73,8 @@ class RulesCheck(FlatCAMTool):
             _("The Gerber Copper Top file for which rules are checked.")
         )
 
+        self.copper_t_cb = FCCheckBox()
+
         # Copper Bottom object
         self.copper_b_object = QtWidgets.QComboBox()
         self.copper_b_object.setModel(self.app.collection)
@@ -81,6 +85,8 @@ class RulesCheck(FlatCAMTool):
         self.copper_b_object_lbl.setToolTip(
             _("The Gerber Copper Bottom file for which rules are checked.")
         )
+
+        self.copper_b_cb = FCCheckBox()
 
         # SolderMask Top object
         self.sm_t_object = QtWidgets.QComboBox()
@@ -93,6 +99,8 @@ class RulesCheck(FlatCAMTool):
             _("The Gerber Solder Mask Top file for which rules are checked.")
         )
 
+        self.sm_t_cb = FCCheckBox()
+
         # SolderMask Bottom object
         self.sm_b_object = QtWidgets.QComboBox()
         self.sm_b_object.setModel(self.app.collection)
@@ -103,6 +111,8 @@ class RulesCheck(FlatCAMTool):
         self.sm_b_object_lbl.setToolTip(
             _("The Gerber Solder Mask Top file for which rules are checked.")
         )
+
+        self.sm_b_cb = FCCheckBox()
 
         # SilkScreen Top object
         self.ss_t_object = QtWidgets.QComboBox()
@@ -115,6 +125,8 @@ class RulesCheck(FlatCAMTool):
             _("The Gerber Silkscreen Top file for which rules are checked.")
         )
 
+        self.ss_t_cb = FCCheckBox()
+
         # SilkScreen Bottom object
         self.ss_b_object = QtWidgets.QComboBox()
         self.ss_b_object.setModel(self.app.collection)
@@ -126,6 +138,8 @@ class RulesCheck(FlatCAMTool):
             _("The Gerber Silkscreen Bottom file for which rules are checked.")
         )
 
+        self.ss_b_cb = FCCheckBox()
+
         # Outline object
         self.outline_object = QtWidgets.QComboBox()
         self.outline_object.setModel(self.app.collection)
@@ -136,18 +150,41 @@ class RulesCheck(FlatCAMTool):
         self.outline_object_lbl.setToolTip(
             _("The Gerber Outline (Cutout) file for which rules are checked.")
         )
-        form_layout.addRow(self.gerber_title_lbl)
-        form_layout.addRow(self.copper_t_object_lbl, self.copper_t_object)
-        form_layout.addRow(self.copper_b_object_lbl, self.copper_b_object)
 
-        form_layout.addRow(self.sm_t_object_lbl, self.sm_t_object)
-        form_layout.addRow(self.sm_b_object_lbl, self.sm_b_object)
+        self.out_cb = FCCheckBox()
 
-        form_layout.addRow(self.ss_t_object_lbl, self.ss_t_object)
-        form_layout.addRow(self.ss_b_object_lbl, self.ss_b_object)
+        self.grid_layout.addWidget(self.gerber_title_lbl, 0, 0, 1, 2)
+        self.grid_layout.addWidget(self.all_obj_cb, 0, 2)
 
-        form_layout.addRow(self.outline_object_lbl, self.outline_object)
-        form_layout.addRow(QtWidgets.QLabel(""))
+        self.grid_layout.addWidget(self.copper_t_object_lbl, 1, 0)
+        self.grid_layout.addWidget(self.copper_t_object, 1, 1)
+        self.grid_layout.addWidget(self.copper_t_cb, 1, 2)
+
+        self.grid_layout.addWidget(self.copper_b_object_lbl, 2, 0)
+        self.grid_layout.addWidget(self.copper_b_object, 2, 1)
+        self.grid_layout.addWidget(self.copper_b_cb, 2, 2)
+
+        self.grid_layout.addWidget(self.sm_t_object_lbl, 3, 0)
+        self.grid_layout.addWidget(self.sm_t_object, 3, 1)
+        self.grid_layout.addWidget(self.sm_t_cb, 3, 2)
+
+        self.grid_layout.addWidget(self.sm_b_object_lbl, 4, 0)
+        self.grid_layout.addWidget(self.sm_b_object, 4, 1)
+        self.grid_layout.addWidget(self.sm_b_cb, 4, 2)
+
+        self.grid_layout.addWidget(self.ss_t_object_lbl, 5, 0)
+        self.grid_layout.addWidget(self.ss_t_object, 5, 1)
+        self.grid_layout.addWidget(self.ss_t_cb, 5, 2)
+
+        self.grid_layout.addWidget(self.ss_b_object_lbl, 6, 0)
+        self.grid_layout.addWidget(self.ss_b_object, 6, 1)
+        self.grid_layout.addWidget(self.ss_b_cb, 6, 2)
+
+        self.grid_layout.addWidget(self.outline_object_lbl, 7, 0)
+        self.grid_layout.addWidget(self.outline_object, 7, 1)
+        self.grid_layout.addWidget(self.out_cb, 7, 2)
+
+        self.grid_layout.addWidget(QtWidgets.QLabel(""), 8, 0, 1, 3)
 
         self.excellon_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Excellon Files"))
         self.excellon_title_lbl.setToolTip(
@@ -166,6 +203,8 @@ class RulesCheck(FlatCAMTool):
               "be duplicated in an array of rows and columns.")
         )
 
+        self.e1_cb = FCCheckBox()
+
         # Excellon 2 object
         self.e2_object = QtWidgets.QComboBox()
         self.e2_object.setModel(self.app.collection)
@@ -178,10 +217,23 @@ class RulesCheck(FlatCAMTool):
               "be duplicated in an array of rows and columns.")
         )
 
-        form_layout.addRow(self.excellon_title_lbl)
-        form_layout.addRow(self.e1_object_lbl, self.e1_object)
-        form_layout.addRow(self.e2_object_lbl, self.e2_object)
-        form_layout.addRow(QtWidgets.QLabel(""))
+        self.e2_cb = FCCheckBox()
+
+        self.grid_layout.addWidget(self.excellon_title_lbl, 9, 0, 1, 3)
+
+        self.grid_layout.addWidget(self.e1_object_lbl, 10, 0)
+        self.grid_layout.addWidget(self.e1_object, 10, 1)
+        self.grid_layout.addWidget(self.e1_cb, 10, 2)
+
+        self.grid_layout.addWidget(self.e2_object_lbl, 11, 0)
+        self.grid_layout.addWidget(self.e2_object, 11, 1)
+        self.grid_layout.addWidget(self.e2_cb, 11, 2)
+
+        self.grid_layout.addWidget(QtWidgets.QLabel(""), 12, 0, 1, 3)
+
+        self.grid_layout.setColumnStretch(0, 0)
+        self.grid_layout.setColumnStretch(1, 3)
+        self.grid_layout.setColumnStretch(2, 0)
 
         # Control All
         self.all_cb = FCCheckBox('%s' % _("All Rules"))
@@ -430,6 +482,21 @@ class RulesCheck(FlatCAMTool):
         # #######################################################
         # ################ SIGNALS ##############################
         # #######################################################
+        self.copper_t_cb.stateChanged.connect(lambda st: self.copper_t_object.setDisabled(not st))
+        self.copper_b_cb.stateChanged.connect(lambda st: self.copper_b_object.setDisabled(not st))
+
+        self.sm_t_cb.stateChanged.connect(lambda st: self.sm_t_object.setDisabled(not st))
+        self.sm_b_cb.stateChanged.connect(lambda st: self.sm_b_object.setDisabled(not st))
+
+        self.ss_t_cb.stateChanged.connect(lambda st: self.ss_t_object.setDisabled(not st))
+        self.ss_b_cb.stateChanged.connect(lambda st: self.ss_b_object.setDisabled(not st))
+
+        self.out_cb.stateChanged.connect(lambda st: self.outline_object.setDisabled(not st))
+
+        self.e1_cb.stateChanged.connect(lambda st: self.e1_object.setDisabled(not st))
+        self.e2_cb.stateChanged.connect(lambda st: self.e2_object.setDisabled(not st))
+
+        self.all_obj_cb.stateChanged.connect(self.on_all_objects_cb_changed)
         self.all_cb.stateChanged.connect(self.on_all_cb_changed)
         self.run_button.clicked.connect(self.execute)
         # self.app.collection.rowsInserted.connect(self.on_object_loaded)
@@ -449,6 +516,16 @@ class RulesCheck(FlatCAMTool):
     def on_all_cb_changed(self, state):
         cb_items = [self.form_layout_1.itemAt(i).widget() for i in range(self.form_layout_1.count())
                     if isinstance(self.form_layout_1.itemAt(i).widget(), FCCheckBox)]
+
+        for cb in cb_items:
+            if state:
+                cb.setChecked(True)
+            else:
+                cb.setChecked(False)
+
+    def on_all_objects_cb_changed(self, state):
+        cb_items = [self.grid_layout.itemAt(i).widget() for i in range(self.grid_layout.count())
+                    if isinstance(self.grid_layout.itemAt(i).widget(), FCCheckBox)]
 
         for cb in cb_items:
             if state:
@@ -487,6 +564,21 @@ class RulesCheck(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
 
     def set_tool_ui(self):
+
+        # all object combobox default as disabled
+        self.copper_t_object.setDisabled(True)
+        self.copper_b_object.setDisabled(True)
+
+        self.sm_t_object.setDisabled(True)
+        self.sm_b_object.setDisabled(True)
+
+        self.ss_t_object.setDisabled(True)
+        self.ss_b_object.setDisabled(True)
+
+        self.outline_object.setDisabled(True)
+
+        self.e1_object.setDisabled(True)
+        self.e2_object.setDisabled(True)
         self.reset_fields()
 
     def foo(self, bar, baz):
