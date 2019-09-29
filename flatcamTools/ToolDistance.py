@@ -21,9 +21,9 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class Measurement(FlatCAMTool):
+class Distance(FlatCAMTool):
 
-    toolName = _("Measurement")
+    toolName = _("Distance Tool")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -57,6 +57,9 @@ class Measurement(FlatCAMTool):
         self.distance_y_label = QtWidgets.QLabel('%s:' % _("Dy"))
         self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
 
+        self.angle_label = QtWidgets.QLabel('%s:' % _("Angle"))
+        self.angle_label.setToolTip(_("This is orientation angle of the measuring line."))
+
         self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))
         self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
 
@@ -76,6 +79,10 @@ class Measurement(FlatCAMTool):
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
 
+        self.angle_entry = FCEntry()
+        self.angle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
+
         self.total_distance_entry = FCEntry()
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
@@ -89,14 +96,16 @@ class Measurement(FlatCAMTool):
         form_layout.addRow(self.stop_label, self.stop_entry)
         form_layout.addRow(self.distance_x_label, self.distance_x_entry)
         form_layout.addRow(self.distance_y_label, self.distance_y_entry)
+        form_layout.addRow(self.angle_label, self.angle_entry)
         form_layout.addRow(self.total_distance_label, self.total_distance_entry)
 
         # initial view of the layout
         self.start_entry.set_value('(0, 0)')
         self.stop_entry.set_value('(0, 0)')
-        self.distance_x_entry.set_value('0')
-        self.distance_y_entry.set_value('0')
-        self.total_distance_entry.set_value('0')
+        self.distance_x_entry.set_value('0.0')
+        self.distance_y_entry.set_value('0.0')
+        self.angle_entry.set_value('0.0')
+        self.total_distance_entry.set_value('0.0')
 
         self.layout.addStretch()
 
@@ -122,7 +131,7 @@ class Measurement(FlatCAMTool):
         self.measure_btn.clicked.connect(self.activate_measure_tool)
 
     def run(self, toggle=False):
-        self.app.report_usage("ToolMeasurement()")
+        self.app.report_usage("ToolDistance()")
 
         self.points[:] = []
 
@@ -132,7 +141,7 @@ class Measurement(FlatCAMTool):
         if self.app.tool_tab_locked is True:
             return
 
-        self.app.ui.notebook.setTabText(2, _("Meas. Tool"))
+        self.app.ui.notebook.setTabText(2, _("Distance Tool"))
 
         # if the splitter is hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:
@@ -159,16 +168,17 @@ class Measurement(FlatCAMTool):
         self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
-        self.app.command_active = "Measurement"
+        self.app.command_active = "Distance"
 
         # initial view of the layout
         self.start_entry.set_value('(0, 0)')
         self.stop_entry.set_value('(0, 0)')
 
-        self.distance_x_entry.set_value('0')
-        self.distance_y_entry.set_value('0')
-        self.total_distance_entry.set_value('0')
-        log.debug("Measurement Tool --> tool initialized")
+        self.distance_x_entry.set_value('0.0')
+        self.distance_y_entry.set_value('0.0')
+        self.angle_entry.set_value('0.0')
+        self.total_distance_entry.set_value('0.0')
+        log.debug("Distance Tool --> tool initialized")
 
     def activate_measure_tool(self):
         # ENABLE the Measuring TOOL
@@ -275,13 +285,13 @@ class Measurement(FlatCAMTool):
         # delete the measuring line
         self.delete_shape()
 
-        log.debug("Measurement Tool --> exit tool")
+        log.debug("Distance Tool --> exit tool")
 
     def on_mouse_click_release(self, event):
         # mouse click releases will be accepted only if the left button is clicked
         # this is necessary because right mouse click or middle mouse click
         # are used for panning on the canvas
-        log.debug("Measuring Tool --> mouse click release")
+        log.debug("Distance Tool --> mouse click release")
 
         if event.button == 1:
             if self.app.is_legacy is False:
@@ -321,6 +331,13 @@ class Measurement(FlatCAMTool):
 
                 self.distance_x_entry.set_value('%.4f' % abs(dx))
                 self.distance_y_entry.set_value('%.4f' % abs(dy))
+
+                try:
+                    angle = math.degrees(math.atan(dy / dx))
+                    self.angle_entry.set_value('%.4f' % angle)
+                except Exception as e:
+                    pass
+
                 self.total_distance_entry.set_value('%.4f' % abs(d))
                 self.app.ui.rel_position_label.setText("<b>Dx</b>: {0:.4f}&nbsp;&nbsp;  <b>Dy</b>: "
                                                        "{0:.4f}&nbsp;&nbsp;&nbsp;&nbsp;".format(pos[0], pos[1]))
@@ -365,11 +382,17 @@ class Measurement(FlatCAMTool):
                                                    "{0:.4f}&nbsp;&nbsp;&nbsp;&nbsp;".format(dx, dy))
 
             # update utility geometry
-
             if len(self.points) == 1:
                 self.utility_geometry(pos=pos)
+                # and display the temporary angle
+                try:
+                    angle = math.degrees(math.atan(dy / dx))
+                    self.angle_entry.set_value('%.4f' % angle)
+                except Exception as e:
+                    pass
+
         except Exception as e:
-            log.debug("Measurement.on_mouse_move_meas() --> %s" % str(e))
+            log.debug("Distance.on_mouse_move_meas() --> %s" % str(e))
             self.app.ui.position_label.setText("")
             self.app.ui.rel_position_label.setText("")
 

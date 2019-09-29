@@ -1332,7 +1332,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Open Properties Tool"), _("Rotate by 90 degree CW"), _("Shell Toggle"),
                 _("Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"), _("Zoom Fit"),
                 _("Flip on X_axis"), _("Flip on Y_axis"), _("Zoom Out"), _("Zoom In"), _("Select All"), _("Copy Obj"),
-                _("Open Excellon File"), _("Open Gerber File"), _("New Project"), _("Measurement Tool"),
+                _("Open Excellon File"), _("Open Gerber File"), _("New Project"), _("Distance Tool"),
                 _("Open Project"), _("Save Project As"), _("Toggle Plot Area"), _("Copy Obj_Name"),
                 _("Toggle Code Editor"), _("Toggle the axis"), _("Open Preferences Window"),
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
@@ -1516,7 +1516,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             _("Draw a Path"), _("Draw Rectangle"), _("Polygon Subtraction Tool"), _("Add Text Tool"),
             _("Polygon Union Tool"), _("Flip shape on X axis"), _("Flip shape on Y axis"), _("Skew shape on X axis"),
             _("Skew shape on Y axis"), _("Editor Transformation Tool"), _("Offset shape on X axis"),
-            _("Offset shape on Y axis"), _("Measurement Tool"), _("Save Object and Exit Editor"), _("Polygon Cut Tool"),
+            _("Offset shape on Y axis"), _("Distance Tool"), _("Save Object and Exit Editor"), _("Polygon Cut Tool"),
             _("Rotate Geometry"), _("Finish drawing for certain tools"), _("Abort and return to Select"),
             _("Delete Shape")
         )
@@ -3366,7 +3366,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # abort the measurement action
                     self.app.measurement_tool.deactivate_measure_tool()
-                    self.app.inform.emit(_("Measurement Tool exit..."))
+                    self.app.inform.emit(_("Distance Tool exit..."))
                     return
 
                 if key == QtCore.Qt.Key_G or key == 'G':

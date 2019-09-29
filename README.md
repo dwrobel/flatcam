@@ -25,6 +25,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue #319 where generating a CNCJob from a geometry made with NCC Tool made the app crash
 - replaced in FlatCAM Tools and in FLatCAMObj.py  and in Editors all references to hardcoded decimals in string formats for tools with a variable declared in the __init__()
 - fixed a small bug that made app crash when the splash screen is disabled: it was trying to close it without being open
+- changed the name of the Measurement Tool to Distance Tool. Moved it's location to the Edit Menu
+- added Angle parameter which is continuously updated to the Distance Tool
 
 27.09.2019
 

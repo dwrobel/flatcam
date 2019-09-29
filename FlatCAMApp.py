@@ -2084,7 +2084,7 @@ class App(QtCore.QObject):
         # ########################## Other setups #############################################
         # #####################################################################################
 
-        # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
+        # to use for tools like Distance tool who depends on the event sources who are changed inside the Editors
         # depending on from where those tools are called different actions can be done
         self.call_source = 'app'
 
@@ -2894,8 +2894,10 @@ class App(QtCore.QObject):
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
-        self.measurement_tool = Measurement(self)
-        self.measurement_tool.install(icon=QtGui.QIcon('share/measure16.png'), separator=True)
+        self.measurement_tool = Distance(self)
+        self.measurement_tool.install(icon=QtGui.QIcon('share/measure16.png'), pos=self.ui.menuedit,
+                                      before=self.ui.menueditorigin,
+                                      separator=True)
 
         self.panelize_tool = Panelize(self)
         self.panelize_tool.install(icon=QtGui.QIcon('share/panel16.png'))
@@ -2920,7 +2922,7 @@ class App(QtCore.QObject):
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
-                               before=self.ui.menueditorigin)
+                               before=self.ui.menueditorigin, separator=True)
 
         self.cutout_tool = CutOut(self)
         self.cutout_tool.install(icon=QtGui.QIcon('share/cut16_bis.png'), pos=self.ui.menutool,
