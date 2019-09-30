@@ -1146,14 +1146,26 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         return 'fail'
                     geo_obj.solid_geometry.append(geom)
 
+                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                    if self.ui.tool_type_radio.get_value() == 'circular':
+                        new_cutz = self.app.defaults['geometry_cutz']
+                        new_vtipdia = self.app.defaults['geometry_vtipdia']
+                        new_vtipangle = self.app.defaults['geometry_vtipangle']
+                        tool_type = 'C1'
+                    else:
+                        new_cutz = self.ui.cutz_spinner.get_value()
+                        new_vtipdia = self.ui.tipdia_spinner.get_value()
+                        new_vtipangle = self.ui.tipangle_spinner.get_value()
+                        tool_type = 'V'
+
                     # store here the default data for Geometry Data
                     default_data = {}
                     default_data.update({
                         "name": iso_name,
                         "plot": self.app.defaults['geometry_plot'],
-                        "cutz": self.app.defaults['geometry_cutz'],
-                        "vtipdia": self.app.defaults['geometry_vtipdia'],
-                        "vtipangle": self.app.defaults['geometry_vtipangle'],
+                        "cutz": new_cutz,
+                        "vtipdia": new_vtipdia,
+                        "vtipangle": new_vtipangle,
                         "travelz": self.app.defaults['geometry_travelz'],
                         "feedrate": self.app.defaults['geometry_feedrate'],
                         "feedrate_z": self.app.defaults['geometry_feedrate_z'],
@@ -1180,7 +1192,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                             'offset': 'Path',
                             'offset_value': 0.0,
                             'type': _('Rough'),
-                            'tool_type': 'C1',
+                            'tool_type': tool_type,
                             'data': default_data,
                             'solid_geometry': geo_obj.solid_geometry
                         }
