@@ -134,7 +134,7 @@ class DistanceMin(FlatCAMTool):
         self.jump_hp_btn.clicked.connect(self.on_jump_to_half_point)
 
     def run(self, toggle=False):
-        self.app.report_usage("ToolDistance()")
+        self.app.report_usage("ToolDistanceMin()")
 
         if self.app.tool_tab_locked is True:
             return
@@ -179,7 +179,7 @@ class DistanceMin(FlatCAMTool):
 
         self.jump_hp_btn.setDisabled(True)
 
-        log.debug("Distance Tool --> tool initialized")
+        log.debug("Minimum Distance Tool --> tool initialized")
 
     def activate_measure_tool(self):
         # ENABLE the Measuring TOOL
@@ -197,39 +197,63 @@ class DistanceMin(FlatCAMTool):
             else:
                 first_pos, last_pos = nearest_points(selected_objs[0].solid_geometry, selected_objs[1].solid_geometry)
 
-                self.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, first_pos.x, self.decimals, first_pos.y))
-                self.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, last_pos.x, self.decimals, last_pos.y))
-
-                dx = first_pos.x - last_pos.x
-                dy = first_pos.y - last_pos.y
-
-                self.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
-                self.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
-
-                try:
-                    angle = math.degrees(math.atan(dy / dx))
-                    self.angle_entry.set_value('%.*f' % (self.decimals, angle))
-                except Exception as e:
-                    pass
-
-                d = sqrt(dx ** 2 + dy ** 2)
-                self.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
-
-                self.h_point = (first_pos.x + (abs(dx) / 2), first_pos.y + (abs(dy) / 2))
-                if d != 0:
-                    self.half_point_entry.set_value(
-                        "(%.*f, %.*f)" % (self.decimals, self.h_point[0], self.decimals, self.h_point[1])
-                    )
-                else:
-                    self.half_point_entry.set_value(
-                        "(%.*f, %.*f)" % (self.decimals, 0.0, self.decimals, 0.0)
-                    )
         elif self.app.call_source == 'geo_editor':
-            pass
+            selected_objs = self.app.geo_editor.selected
+            if len(selected_objs) != 2:
+                self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                     (_("Select two objects and no more. Currently the selection has objects: "),
+                                     str(len(selected_objs))))
+                return
+            else:
+                first_pos, last_pos = nearest_points(selected_objs[0].geo, selected_objs[1].geo)
         elif self.app.call_source == 'exc_editor':
-            pass
+            selected_objs = self.app.exc_editor.selected
+            if len(selected_objs) != 2:
+                self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                     (_("Select two objects and no more. Currently the selection has objects: "),
+                                      str(len(selected_objs))))
+                return
+            else:
+                first_pos, last_pos = nearest_points(selected_objs[0].geo, selected_objs[1].geo)
         elif self.app.call_source == 'grb_editor':
+            selected_objs = self.app.grb_editor.selected
+            if len(selected_objs) != 2:
+                self.app.inform.emit('[WARNING_NOTCL] %s %s' %
+                                     (_("Select two objects and no more. Currently the selection has objects: "),
+                                      str(len(selected_objs))))
+                return
+            else:
+                first_pos, last_pos = nearest_points(selected_objs[0].geo['solid'], selected_objs[1].geo['solid'])
+        else:
+            first_pos, last_pos = 0, 0
+
+        self.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, first_pos.x, self.decimals, first_pos.y))
+        self.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, last_pos.x, self.decimals, last_pos.y))
+
+        dx = first_pos.x - last_pos.x
+        dy = first_pos.y - last_pos.y
+
+        self.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
+        self.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
+
+        try:
+            angle = math.degrees(math.atan(dy / dx))
+            self.angle_entry.set_value('%.*f' % (self.decimals, angle))
+        except Exception as e:
             pass
+
+        d = sqrt(dx ** 2 + dy ** 2)
+        self.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
+
+        self.h_point = (min(first_pos.x, last_pos.x) + (abs(dx) / 2), min(first_pos.y, last_pos.y) + (abs(dy) / 2))
+        if d != 0:
+            self.half_point_entry.set_value(
+                "(%.*f, %.*f)" % (self.decimals, self.h_point[0], self.decimals, self.h_point[1])
+            )
+        else:
+            self.half_point_entry.set_value(
+                "(%.*f, %.*f)" % (self.decimals, 0.0, self.decimals, 0.0)
+            )
 
         if d != 0:
             self.app.inform.emit(_("MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}").format(
