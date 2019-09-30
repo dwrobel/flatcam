@@ -392,7 +392,7 @@ class RulesCheck(FlatCAMTool):
         )
         self.form_layout_1.addRow(self.ring_integrity_lbl, self.ring_integrity_entry)
 
-        self.d2d = OptionalInputSection(
+        self.anr = OptionalInputSection(
             self.ring_integrity_cb, [self.ring_integrity_lbl, self.ring_integrity_entry])
 
         self.form_layout_1.addRow(QtWidgets.QLabel(""))
@@ -825,15 +825,35 @@ class RulesCheck(FlatCAMTool):
         })
 
         # added it so I won't have errors of using before declaring
+        gerber_obj = dict()
         gerber_extra_obj = dict()
+        exc_obj = dict()
+        exc_extra_obj = dict()
 
         if len(obj_list) == 2:
             gerber_obj = obj_list[0]
             exc_obj = obj_list[1]
+            if 'apertures' in gerber_obj and 'tools' in exc_obj:
+                pass
+            else:
+                return 'Fail. At least one Gerber and one Excellon object is required to check Minimum Annular Ring'
         elif len(obj_list) == 3:
+            o1 = obj_list[0]
+            o2 = obj_list[1]
+            o3 = obj_list[2]
+            if 'apertures' in o1 and 'apertures' in o2:
+                gerber_obj = o1
+                gerber_extra_obj = o2
+                exc_obj = o3
+            elif 'tools' in o2 and 'tools' in o3:
+                gerber_obj = o1
+                exc_obj = o2
+                exc_extra_obj = o3
+        elif len(obj_list) == 4:
             gerber_obj = obj_list[0]
             gerber_extra_obj = obj_list[1]
             exc_obj = obj_list[2]
+            exc_extra_obj = obj_list[3]
         else:
             return 'Fail. Not enough objects to check Minimum Annular Ring'
 
@@ -845,7 +865,7 @@ class RulesCheck(FlatCAMTool):
                     if 'solid' in geo_el and geo_el['solid'] is not None:
                         total_geo_grb.append(geo_el['solid'])
 
-        if len(obj_list) == 3:
+        if len(obj_list) == 3 and gerber_extra_obj:
             # add the second Gerber geometry to the first one if it exists
             for apid in gerber_extra_obj['apertures']:
                 if 'geometry' in gerber_extra_obj['apertures'][apid]:
@@ -854,12 +874,23 @@ class RulesCheck(FlatCAMTool):
                         if 'solid' in geo_el and geo_el['solid'] is not None:
                             total_geo_grb.append(geo_el['solid'])
 
+        total_geo_grb = MultiPolygon(total_geo_grb)
+        total_geo_grb = total_geo_grb.buffer(0)
+
         total_geo_exc = list()
         for tool in exc_obj['tools']:
             if 'solid_geometry' in exc_obj['tools'][tool]:
                 geometry = exc_obj['tools'][tool]['solid_geometry']
                 for geo in geometry:
                     total_geo_exc.append(geo)
+
+        if len(obj_list) == 3 and exc_extra_obj:
+            # add the second Excellon geometry to the first one if it exists
+            for tool in exc_extra_obj['tools']:
+                if 'solid_geometry' in exc_extra_obj['tools'][tool]:
+                    geometry = exc_extra_obj['tools'][tool]['solid_geometry']
+                    for geo in geometry:
+                        total_geo_exc.append(geo)
 
         iterations = len(total_geo_grb) * len(total_geo_exc)
         log.debug("RulesCheck.check_gerber_annular_ring(). Iterations: %s" % str(iterations))
@@ -868,9 +899,9 @@ class RulesCheck(FlatCAMTool):
         for geo in total_geo_grb:
             for s_geo in total_geo_exc:
                 # minimize the number of distances by not taking into considerations those that are too small
-                dist = geo.distance(s_geo)
+                dist = geo.exterior.distance(s_geo)
                 if float(dist) < float(size):
-                    loc_1, loc_2 = nearest_points(geo, s_geo)
+                    loc_1, loc_2 = nearest_points(geo.exterior, s_geo)
 
                     dx = loc_1.x - loc_2.x
                     dy = loc_1.y - loc_2.y
@@ -1224,7 +1255,8 @@ class RulesCheck(FlatCAMTool):
             if self.ring_integrity_cb.get_value():
                 top_dict = dict()
                 bottom_dict = dict()
-                exc_dict = dict()
+                exc_1_dict = dict()
+                exc_2_dict = dict()
 
                 copper_top = self.copper_t_object.currentText()
                 if copper_top is not '' and self.copper_t_cb.get_value():
@@ -1236,11 +1268,17 @@ class RulesCheck(FlatCAMTool):
                     bottom_dict['name'] = deepcopy(copper_bottom)
                     bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_bottom).apertures)
 
-                excellon = self.outline_object.currentText()
-                if excellon is not '' and self.out_cb.get_value():
-                    exc_dict['name'] = deepcopy(excellon)
-                    exc_dict['apertures'] = deepcopy(
-                        self.app.collection.get_by_name(excellon).tools)
+                excellon_1 = self.e1_object.currentText()
+                if excellon_1 is not '' and self.e1_cb.get_value():
+                    exc_1_dict['name'] = deepcopy(excellon_1)
+                    exc_1_dict['tools'] = deepcopy(
+                        self.app.collection.get_by_name(excellon_1).tools)
+
+                excellon_2 = self.e2_object.currentText()
+                if excellon_2 is not '' and self.e2_cb.get_value():
+                    exc_2_dict['name'] = deepcopy(excellon_2)
+                    exc_2_dict['tools'] = deepcopy(
+                        self.app.collection.get_by_name(excellon_2).tools)
 
                 try:
                     ring_val = float(self.ring_integrity_entry.get_value())
@@ -1251,24 +1289,26 @@ class RulesCheck(FlatCAMTool):
                         _("Value is not valid.")))
                     return
 
-                if not top_dict and not bottom_dict or not exc_dict:
+                if (not top_dict and not bottom_dict) or (not exc_1_dict and not exc_2_dict):
                     self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Minimum Annular Ring"),
-                        _("One of the Copper Gerber objects or the Excellon object is not valid.")))
+                        _("One of the Copper Gerber objects or the Excellon objects is not valid.")))
                     return
 
                 objs = []
                 if top_dict:
                     objs.append(top_dict)
-                if bottom_dict:
+                elif bottom_dict:
                     objs.append(bottom_dict)
 
-                if exc_dict:
-                    objs.append(exc_dict)
+                if exc_1_dict:
+                    objs.append(exc_1_dict)
+                elif exc_2_dict:
+                    objs.append(exc_2_dict)
                 else:
                     self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Minimum Annular Ring"),
-                        _("Excellon object presence is mandatory for this rule but it is not selected.")))
+                        _("Excellon object presence is mandatory for this rule but none is selected.")))
                     return
 
                 self.results.append(self.pool.apply_async(self.check_gerber_annular_ring,
