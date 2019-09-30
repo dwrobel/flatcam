@@ -12,7 +12,8 @@ from ObjectCollection import *
 import time
 from FlatCAMPool import *
 from os import getpid
-import copyreg, types, sys
+from shapely.ops import nearest_points
+from shapely.geometry.base import BaseGeometry
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -21,15 +22,6 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
-
-
-def _pickle_method(m):
-    class_self = m.im_class if m.im_self is None else m.im_self
-    print(getattr, (class_self, m.im_func.func_name))
-    return getattr, (class_self, m.im_func.func_name)
-
-
-copyreg.pickle(types.MethodType, _pickle_method)
 
 
 class RulesCheck(FlatCAMTool):
@@ -443,7 +435,7 @@ class RulesCheck(FlatCAMTool):
 
         self.form_layout_1.addRow(QtWidgets.QLabel(""))
 
-        # Drill2Drill clearance
+        # Hole2Hole clearance
         self.clearance_d2d_cb = FCCheckBox('%s:' % _("Hole to Hole Clearance"))
         self.clearance_d2d_cb.setToolTip(
             _("This checks if the minimum clearance between a drill hole\n"
@@ -451,7 +443,7 @@ class RulesCheck(FlatCAMTool):
         )
         self.form_layout_1.addRow(self.clearance_d2d_cb)
 
-        # Drill2Drill clearance value
+        # Hole2Hole clearance value
         self.clearance_d2d_entry = FCEntry()
         self.clearance_d2d_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.clearance_d2d_lbl.setToolTip(
@@ -527,6 +519,10 @@ class RulesCheck(FlatCAMTool):
         # flag to signal the constrain was activated
         self.constrain_flag = False
 
+        # Multiprocessing Process Pool
+        self.pool = Pool(processes=cpu_count())
+        self.results = None
+
     # def on_object_loaded(self, index, row):
     #     print(index.internalPointer().child_items[row].obj.options['name'], index.data())
 
@@ -598,34 +594,194 @@ class RulesCheck(FlatCAMTool):
         self.e2_object.setDisabled(True)
         self.reset_fields()
 
-    def foo(self, bar, baz):
-        print("start", getpid())
-        bar = bar ** 2
-        print(bar, getpid())
-        print("end", getpid())
-        return bar, baz
+    @staticmethod
+    def check_holes_size(elements, size):
+        rule = _("Hole Size")
+
+        violations = list()
+        obj_violations = dict()
+        obj_violations.update({
+            'name': '',
+            'dia': list()
+        })
+
+        for elem in elements:
+            dia_list = []
+
+            name = elem['name']
+            for tool in elem['tools']:
+                tool_dia = float(elem['tools'][tool]['C'])
+                if tool_dia < float(size):
+                    dia_list.append(tool_dia)
+            obj_violations['name'] = name
+            obj_violations['dia'] = dia_list
+            violations.append(deepcopy(obj_violations))
+
+        return rule, violations
+
+    @staticmethod
+    def check_holes_clearance(elements, size):
+        rule = _("Hole to Hole Clearance")
+
+        violations = list()
+        obj_violations = dict()
+        obj_violations.update({
+            'name': '',
+            'points': list()
+        })
+
+        total_geo = list()
+        for elem in elements:
+            for tool in elem['tools']:
+                if 'solid_geometry' in elem['tools'][tool]:
+                    geometry = elem['tools'][tool]['solid_geometry']
+                    for geo in geometry:
+                        total_geo.append(geo)
+
+        min_dict = dict()
+        idx = 1
+        for geo in total_geo:
+            for s_geo in total_geo[idx:]:
+
+                # minimize the number of distances by not taking into considerations those that are too small
+                dist = geo.distance(s_geo)
+                loc_1, loc_2 = nearest_points(geo, s_geo)
+
+                dx = loc_1.x - loc_2.x
+                dy = loc_1.y - loc_2.y
+                loc = min(loc_1.x, loc_2.x) + (abs(dx) / 2), min(loc_1.y, loc_2.y) + (abs(dy) / 2)
+
+                if dist in min_dict:
+                    min_dict[dist].append(loc)
+                else:
+                    min_dict[dist] = [loc]
+            idx += 1
+
+        points_list = list()
+        for dist in min_dict.keys():
+            if float(dist) < size:
+                for location in min_dict[dist]:
+                    points_list.append(location)
+
+        name_list = list()
+        for elem in elements:
+            name_list.append(elem['name'])
+
+        obj_violations['name'] = name_list
+        obj_violations['points'] = points_list
+        violations.append(deepcopy(obj_violations))
+
+        return rule, violations
+
+    @staticmethod
+    def check_traces_size(elements, size):
+        rule = _("Trace Size")
+
+        violations = list()
+        obj_violations = dict()
+        obj_violations.update({
+            'name': '',
+            'size': list(),
+            'points': list()
+        })
+
+        for elem in elements:
+            dia_list = []
+            points_list = []
+            name = elem['name']
+            for apid in elem['apertures']:
+                tool_dia = float(elem['apertures'][apid]['size'])
+                if tool_dia < float(size):
+                    dia_list.append(tool_dia)
+                    for geo_el in elem['apertures'][apid]['geometry']:
+                        if 'solid' in geo_el.keys():
+                            geo = geo_el['solid']
+                            pt = geo.representative_point()
+                            points_list.append((pt.x, pt.y))
+
+            obj_violations['name'] = name
+            obj_violations['size'] = dia_list
+            obj_violations['points'] = points_list
+            violations.append(deepcopy(obj_violations))
+
+        return rule, violations
 
     def execute(self):
-        log.debug("started")
-        self.pool = Pool()
-        log.debug("executing")
         self.results = list()
-        i = 50
-        while i < 100:
-            j = i + 1
-            while j < 150:
-                self.results.append(self.pool.apply_async(self.foo, args=(i, j)))
-                j = j + 1
-            i = i + 1
 
-        output = [p.get() for p in self.results]
-        print(output)
-        log.debug("finished")
+        log.debug("RuleCheck() executing")
 
-    def __getstate__(self):
-        self_dict = self.__dict__.copy()
-        del self_dict['pool']
-        return self_dict
+        def worker_job(app_obj):
+            proc = self.app.proc_container.new(_("Working..."))
+
+            # RULE: Check Trace Size
+            if self.trace_size_cb.get_value():
+                copper_list = list()
+                copper_name_1 = self.copper_t_object.currentText()
+                if copper_name_1 is not '' and self.copper_t_cb.get_value():
+                    elem_dict = dict()
+                    elem_dict['name'] = deepcopy(copper_name_1)
+                    elem_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_name_1).apertures)
+                    copper_list.append(elem_dict)
+
+                copper_name_2 = self.copper_b_object.currentText()
+                if copper_name_2 is not '' and self.copper_b_cb.get_value():
+                    elem_dict = dict()
+                    elem_dict['name'] = deepcopy(copper_name_2)
+                    elem_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_name_2).apertures)
+                    copper_list.append(elem_dict)
+
+                trace_size = float(self.trace_size_entry.get_value())
+                self.results.append(self.pool.apply_async(self.check_traces_size, args=(copper_list, trace_size)))
+
+            # RULE: Check Hole to Hole Clearance
+            if self.clearance_d2d_cb.get_value():
+                exc_list = list()
+                exc_name_1 = self.e1_object.currentText()
+                if exc_name_1 is not '' and self.e1_cb.get_value():
+                    elem_dict = dict()
+                    elem_dict['name'] = deepcopy(exc_name_1)
+                    elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_1).tools)
+                    exc_list.append(elem_dict)
+
+                exc_name_2 = self.e2_object.currentText()
+                if exc_name_2 is not '' and self.e2_cb.get_value():
+                    elem_dict = dict()
+                    elem_dict['name'] = deepcopy(exc_name_2)
+                    elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_2).tools)
+                    exc_list.append(elem_dict)
+
+                hole_clearance = float(self.clearance_d2d_entry.get_value())
+                self.results.append(self.pool.apply_async(self.check_holes_clearance, args=(exc_list, hole_clearance)))
+
+            # RULE: Check Holes Size
+            if self.drill_size_cb.get_value():
+                exc_list = list()
+                exc_name_1 = self.e1_object.currentText()
+                if exc_name_1 is not '' and self.e1_cb.get_value():
+                    elem_dict = dict()
+                    elem_dict['name'] = deepcopy(exc_name_1)
+                    elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_1).tools)
+                    exc_list.append(elem_dict)
+
+                exc_name_2 = self.e2_object.currentText()
+                if exc_name_2 is not '' and self.e2_cb.get_value():
+                    elem_dict = dict()
+                    elem_dict['name'] = deepcopy(exc_name_2)
+                    elem_dict['tools'] = deepcopy(self.app.collection.get_by_name(exc_name_2).tools)
+                    exc_list.append(elem_dict)
+
+                drill_size = float(self.drill_size_entry.get_value())
+                self.results.append(self.pool.apply_async(self.check_holes_size, args=(exc_list, drill_size)))
+
+            output = list()
+            for p in self.results:
+                output.append(p.get())
+
+            print(output)
+            log.debug("RuleCheck() finished")
+
+        self.app.worker_task.emit({'fcn': worker_job, 'params': [self.app]})
 
     def reset_fields(self):
         # self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

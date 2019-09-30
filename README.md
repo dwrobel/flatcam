@@ -22,6 +22,8 @@ CAD program, and create G-Code for Isolation routing.
 - in Optimal Tool added display of how frequent that minimum distance is found
 - in Tool Distance and Tool Minimal Distance made the entry fields read-only
 - in Optimal Tool added the display of the locations where the minimum distance was detected
+- added support to use Multi Processing (multi core usage, not simple threading) in Rules Check Tool
+- in Rules Check Tool added the functionality for the following rules: Hole Size, Trace Size, Hole to Hole Clerance
 
 29.09.2019
 
