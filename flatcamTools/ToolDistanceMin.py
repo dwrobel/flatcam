@@ -71,32 +71,39 @@ class DistanceMin(FlatCAMTool):
         self.half_point_label.setToolTip(_("This is the middle point of the point to point Euclidean distance."))
 
         self.start_entry = FCEntry()
+        self.start_entry.setReadOnly(True)
         self.start_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.start_entry.setToolTip(_("This is first object point coordinates.\n"
                                       "This is the start point for measuring distance."))
 
         self.stop_entry = FCEntry()
+        self.stop_entry.setReadOnly(True)
         self.stop_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.stop_entry.setToolTip(_("This is second object point coordinates.\n"
                                       "This is the end point for measuring distance."))
 
         self.distance_x_entry = FCEntry()
+        self.distance_x_entry.setReadOnly(True)
         self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
 
         self.distance_y_entry = FCEntry()
+        self.distance_y_entry.setReadOnly(True)
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
 
         self.angle_entry = FCEntry()
+        self.angle_entry.setReadOnly(True)
         self.angle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
 
         self.total_distance_entry = FCEntry()
+        self.total_distance_entry.setReadOnly(True)
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.total_distance_entry.setToolTip(_("This is the point to point Euclidean distance."))
 
         self.half_point_entry = FCEntry()
+        self.half_point_entry.setReadOnly(True)
         self.half_point_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.half_point_entry.setToolTip(_("This is the middle point of the point to point Euclidean distance."))
 

@@ -64,26 +64,32 @@ class Distance(FlatCAMTool):
         self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
 
         self.start_entry = FCEntry()
+        self.start_entry.setReadOnly(True)
         self.start_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.start_entry.setToolTip(_("This is measuring Start point coordinates."))
 
         self.stop_entry = FCEntry()
+        self.stop_entry.setReadOnly(True)
         self.stop_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.stop_entry.setToolTip(_("This is the measuring Stop point coordinates."))
 
         self.distance_x_entry = FCEntry()
+        self.distance_x_entry.setReadOnly(True)
         self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
 
         self.distance_y_entry = FCEntry()
+        self.distance_y_entry.setReadOnly(True)
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
 
         self.angle_entry = FCEntry()
+        self.angle_entry.setReadOnly(True)
         self.angle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.angle_entry.setToolTip(_("This is orientation angle of the measuring line."))
 
         self.total_distance_entry = FCEntry()
+        self.total_distance_entry.setReadOnly(True)
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
 
