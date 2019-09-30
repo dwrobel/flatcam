@@ -10,6 +10,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.09.2019
+
+- modified the Distance Tool such that the numbe of decimals all over the tool is set in one place by the self.decimals
+- added a new tool named Minimum Distance Tool who will calculate the minimum distance between two objects; key shortcut: SHIFT + M
+- finished the Minimum Distance Tool in case of using it at the object level (not in Editors)
+
 29.09.2019
 
 - work done for the GUI layout of the Rule Check Tool

@@ -1186,6 +1186,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>SHIFT+M</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>SHIFT+P</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1334,7 +1338,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Flip on X_axis"), _("Flip on Y_axis"), _("Zoom Out"), _("Zoom In"), _("Select All"), _("Copy Obj"),
                 _("Open Excellon File"), _("Open Gerber File"), _("New Project"), _("Distance Tool"),
                 _("Open Project"), _("Save Project As"), _("Toggle Plot Area"), _("Copy Obj_Name"),
-                _("Toggle Code Editor"), _("Toggle the axis"), _("Open Preferences Window"),
+                _("Toggle Code Editor"), _("Toggle the axis"), _("Distance Minimum Tool"), _("Open Preferences Window"),
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
                 _("Skew on Y axis"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
                 _("Solder Paste Dispensing Tool"),
@@ -1446,6 +1450,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>SHIFT+M</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>SHIFT+X</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1514,9 +1522,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             _("Geo Paint Tool"), _("Jump to Location (x, y)"), _("Toggle Corner Snap"), _("Move Geo Item"),
             _("Within Add Arc will cycle through the ARC modes"), _("Draw a Polygon"), _("Draw a Circle"),
             _("Draw a Path"), _("Draw Rectangle"), _("Polygon Subtraction Tool"), _("Add Text Tool"),
-            _("Polygon Union Tool"), _("Flip shape on X axis"), _("Flip shape on Y axis"), _("Skew shape on X axis"),
-            _("Skew shape on Y axis"), _("Editor Transformation Tool"), _("Offset shape on X axis"),
-            _("Offset shape on Y axis"), _("Distance Tool"), _("Save Object and Exit Editor"), _("Polygon Cut Tool"),
+            _("Polygon Union Tool"), _("Flip shape on X axis"), _("Flip shape on Y axis"), _("Distance Minimum Tool"),
+            _("Skew shape on X axis"), _("Skew shape on Y axis"), _("Editor Transformation Tool"),
+            _("Offset shape on X axis"), _("Offset shape on Y axis"), _("Distance Tool"),
+            _("Save Object and Exit Editor"), _("Polygon Cut Tool"),
             _("Rotate Geometry"), _("Finish drawing for certain tools"), _("Abort and return to Select"),
             _("Delete Shape")
         )
@@ -1567,6 +1576,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;</td>
                 </tr>
                 <tr height="20">
+                    <td height="20"><strong>SHIFT+M</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr height="20">
                     <td height="20"><strong>Del</strong></td>
                     <td>&nbsp;%s</td>
                 </tr>
@@ -1592,7 +1609,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         """ % (
             _("EXCELLON EDITOR"), _("Add Drill Array"), _("Copy Drill(s)"), _("Add Drill"),
             _("Jump to Location (x, y)"), _("Move Drill(s)"), _("Add Slot Array"), _("Resize Drill(s)"),
-            _("Add a new Tool"), _("Add Slot"), _("Delete Drill(s)"), _("Alternate: Delete Tool(s)"),
+            _("Add a new Tool"), _("Add Slot"), _("Distance Minimum Tool"),
+            _("Delete Drill(s)"), _("Alternate: Delete Tool(s)"),
             _("Abort and return to Select"), _("Save Object and Exit Editor")
         )
 
@@ -1666,12 +1684,20 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <td>&nbsp;%s</td>
                 </tr>
                 <tr height="20">
+                    <td height="20"><strong>ESC</strong></td>
+                    <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
                     <td height="20">&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr>
                 <tr height="20">
-                    <td height="20"><strong>ESC</strong></td>
+                    <td height="20"><strong>SHIFT+M</strong></td>
                     <td>&nbsp;%s</td>
+                </tr>
+                <tr height="20">
+                    <td height="20">&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr>
                 <tr height="20">
                     <td height="20"><strong>CTRL+E</strong></td>
@@ -1705,7 +1731,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             _("Jump to Location (x, y)"), _("Move"), _("Add Region"), _("Add Pad"),
             _("Within Track & Region Tools will cycle in REVERSE the bend modes"), _("Scale"), _("Add Track"),
             _("Within Track & Region Tools will cycle FORWARD the bend modes"), _("Delete"),
-            _("Alternate: Delete Apertures"), _("Abort and return to Select"), _("Eraser Tool"),
+            _("Alternate: Delete Apertures"), _("Abort and return to Select"), _("Distance Minimum Tool"),
+            _("Eraser Tool"),
             _("Save Object and Exit Editor"), _("Mark Area Tool"), _("Poligonize Tool"), _("Transformation Tool")
         )
 
@@ -2340,7 +2367,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_file_new_click()
 
                 if key == QtCore.Qt.Key_M:
-                    self.app.measurement_tool.run()
+                    self.app.distance_tool.run()
 
                 if key == QtCore.Qt.Key_O:
                     self.app.on_file_openproject()
@@ -2366,6 +2393,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Toggle axis
                 if key == QtCore.Qt.Key_G:
                     self.app.on_toggle_axis()
+
+                # Run Distance Minimum Tool
+                if key == QtCore.Qt.Key_M:
+                    self.app.distance_min_tool.run()
+                    return
 
                 # Open Preferences Window
                 if key == QtCore.Qt.Key_P:
@@ -2642,7 +2674,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # toggle the measurement tool
                 if key == QtCore.Qt.Key_M or key == 'M':
-                    self.app.measurement_tool.run()
+                    self.app.distance_tool.run()
                     return
 
                 # Cut Action Tool
@@ -2665,6 +2697,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     return
 
             elif modifiers == QtCore.Qt.ShiftModifier:
+                # Run Distance Minimum Tool
+                if key == QtCore.Qt.Key_M or key == 'M':
+                    self.app.distance_min_tool.run()
+                    return
+
                 # Skew on X axis
                 if key == QtCore.Qt.Key_X or key == 'X':
                     self.app.geo_editor.transform_tool.on_skewx_key()
@@ -2910,11 +2947,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # toggle the measurement tool
                 if key == QtCore.Qt.Key_M or key == 'M':
-                    self.app.measurement_tool.run()
+                    self.app.distance_tool.run()
                     return
 
             elif modifiers == QtCore.Qt.ShiftModifier:
-                pass
+                # Run Distance Minimum Tool
+                if key == QtCore.Qt.Key_M or key == 'M':
+                    self.app.distance_min_tool.run()
+                    return
             elif modifiers == QtCore.Qt.AltModifier:
                 # Mark Area Tool
                 if key == QtCore.Qt.Key_A or key == 'A':
@@ -3135,11 +3175,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # toggle the measurement tool
                 if key == QtCore.Qt.Key_M or key == 'M':
-                    self.app.measurement_tool.run()
+                    self.app.distance_tool.run()
                     return
 
             elif modifiers == QtCore.Qt.ShiftModifier:
-                pass
+                # Run Distance Minimum Tool
+                if key == QtCore.Qt.Key_M or key == 'M':
+                    self.app.distance_min_tool.run()
+                    return
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
             elif modifiers == QtCore.Qt.NoModifier:
@@ -3365,13 +3408,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.NoModifier:
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # abort the measurement action
-                    self.app.measurement_tool.deactivate_measure_tool()
+                    self.app.distance_tool.deactivate_measure_tool()
                     self.app.inform.emit(_("Distance Tool exit..."))
                     return
 
                 if key == QtCore.Qt.Key_G or key == 'G':
                     self.app.ui.grid_snap_btn.trigger()
                     return
+
+                # Jump to coords
+                if key == QtCore.Qt.Key_J or key == 'J':
+                    self.app.on_jump_to()
 
     def createPopupMenu(self):
         menu = super().createPopupMenu()

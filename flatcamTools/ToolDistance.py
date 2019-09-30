@@ -121,6 +121,12 @@ class Distance(FlatCAMTool):
 
         self.original_call_source = 'app'
 
+        # store here the event connection ID's
+        self.mm = None
+        self.mr = None
+
+        self.decimals = 4
+
         # VisPy visuals
         if self.app.is_legacy is False:
             self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
@@ -310,37 +316,44 @@ class Distance(FlatCAMTool):
 
             # Reset here the relative coordinates so there is a new reference on the click position
             if self.rel_point1 is None:
-                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                       "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0.0, 0.0))
+                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.*f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                       "%.*f&nbsp;&nbsp;&nbsp;&nbsp;" %
+                                                       (self.decimals, 0.0, self.decimals, 0.0))
                 self.rel_point1 = pos
             else:
                 self.rel_point2 = copy(self.rel_point1)
                 self.rel_point1 = pos
 
             if len(self.points) == 1:
-                self.start_entry.set_value("(%.4f, %.4f)" % pos)
+                self.start_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
                 self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
             elif len(self.points) == 2:
                 dx = self.points[1][0] - self.points[0][0]
                 dy = self.points[1][1] - self.points[0][1]
                 d = sqrt(dx ** 2 + dy ** 2)
-                self.stop_entry.set_value("(%.4f, %.4f)" % pos)
+                self.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
 
                 self.app.inform.emit(_("MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}").format(
-                    d_x='%4f' % abs(dx), d_y='%4f' % abs(dy), d_z='%4f' % abs(d)))
+                    d_x='%*f' % (self.decimals, abs(dx)),
+                    d_y='%*f' % (self.decimals, abs(dy)),
+                    d_z='%*f' % (self.decimals, abs(d)))
+                )
 
-                self.distance_x_entry.set_value('%.4f' % abs(dx))
-                self.distance_y_entry.set_value('%.4f' % abs(dy))
+                self.distance_x_entry.set_value('%.*f' % (self.decimals, abs(dx)))
+                self.distance_y_entry.set_value('%.*f' % (self.decimals, abs(dy)))
 
                 try:
                     angle = math.degrees(math.atan(dy / dx))
-                    self.angle_entry.set_value('%.4f' % angle)
+                    self.angle_entry.set_value('%.*f' % (self.decimals, angle))
                 except Exception as e:
                     pass
 
-                self.total_distance_entry.set_value('%.4f' % abs(d))
-                self.app.ui.rel_position_label.setText("<b>Dx</b>: {0:.4f}&nbsp;&nbsp;  <b>Dy</b>: "
-                                                       "{0:.4f}&nbsp;&nbsp;&nbsp;&nbsp;".format(pos[0], pos[1]))
+                self.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
+                self.app.ui.rel_position_label.setText(
+                    "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
+                        '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
+                    )
+                )
                 self.deactivate_measure_tool()
 
     def on_mouse_move_meas(self, event):
@@ -368,8 +381,11 @@ class Distance(FlatCAMTool):
             else:
                 pos = (pos_canvas[0], pos_canvas[1])
 
-            self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: {0:.4f}&nbsp;&nbsp;   "
-                                               "<b>Y</b>: {0:.4f}".format(pos[0], pos[1]))
+            self.app.ui.position_label.setText(
+                "&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: {}&nbsp;&nbsp;   <b>Y</b>: {}".format(
+                    '%.*f' % (self.decimals, pos[0]), '%.*f' % (self.decimals, pos[1])
+                )
+            )
 
             if self.rel_point1 is not None:
                 dx = pos[0] - float(self.rel_point1[0])
@@ -378,8 +394,11 @@ class Distance(FlatCAMTool):
                 dx = pos[0]
                 dy = pos[1]
 
-            self.app.ui.rel_position_label.setText("<b>Dx</b>: {0:.4f}&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "{0:.4f}&nbsp;&nbsp;&nbsp;&nbsp;".format(dx, dy))
+            self.app.ui.rel_position_label.setText(
+                "<b>Dx</b>: {}&nbsp;&nbsp;  <b>Dy</b>: {}&nbsp;&nbsp;&nbsp;&nbsp;".format(
+                    '%.*f' % (self.decimals, dx), '%.*f' % (self.decimals, dy)
+                )
+            )
 
             # update utility geometry
             if len(self.points) == 1:
@@ -387,7 +406,7 @@ class Distance(FlatCAMTool):
                 # and display the temporary angle
                 try:
                     angle = math.degrees(math.atan(dy / dx))
-                    self.angle_entry.set_value('%.4f' % angle)
+                    self.angle_entry.set_value('%.*f' % (self.decimals, angle))
                 except Exception as e:
                     pass
 

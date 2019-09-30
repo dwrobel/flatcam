@@ -2367,7 +2367,8 @@ class App(QtCore.QObject):
         # ##################################################################################
 
         self.dblsidedtool = None
-        self.measurement_tool = None
+        self.distance_tool = None
+        self.distance_min_tool = None
         self.panelize_tool = None
         self.film_tool = None
         self.paste_tool = None
@@ -2773,15 +2774,15 @@ class App(QtCore.QObject):
                             self.on_fileopengerber(name=file_name)
                             return
 
-                # if it reached here without already returning then the app was registered with a file that it does not
-                # recognize therefore we must quit but take into consideration the app reboot from within, in that case
-                # the args_to_process will contain the path to the FlatCAM.exe (cx_freezed executable)
+        # if it reached here without already returning then the app was registered with a file that it does not
+        # recognize therefore we must quit but take into consideration the app reboot from within, in that case
+        # the args_to_process will contain the path to the FlatCAM.exe (cx_freezed executable)
 
-                for arg in args_to_process:
-                    if 'FlatCAM.exe' in arg:
-                        continue
-                    else:
-                        sys.exit(2)
+        for arg in args_to_process:
+            if 'FlatCAM.exe' in arg:
+                continue
+            else:
+                sys.exit(2)
 
     def set_ui_title(self, name):
         """
@@ -2894,10 +2895,15 @@ class App(QtCore.QObject):
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
-        self.measurement_tool = Distance(self)
-        self.measurement_tool.install(icon=QtGui.QIcon('share/measure16.png'), pos=self.ui.menuedit,
-                                      before=self.ui.menueditorigin,
-                                      separator=True)
+        self.distance_tool = Distance(self)
+        self.distance_tool.install(icon=QtGui.QIcon('share/measure16.png'), pos=self.ui.menuedit,
+                                   before=self.ui.menueditorigin,
+                                   separator=False)
+
+        self.distance_min_tool = DistanceMin(self)
+        self.distance_min_tool.install(icon=QtGui.QIcon('share/measure16.png'), pos=self.ui.menuedit,
+                                       before=self.ui.menueditorigin,
+                                       separator=True)
 
         self.panelize_tool = Panelize(self)
         self.panelize_tool.install(icon=QtGui.QIcon('share/panel16.png'))
@@ -2926,15 +2932,15 @@ class App(QtCore.QObject):
 
         self.cutout_tool = CutOut(self)
         self.cutout_tool.install(icon=QtGui.QIcon('share/cut16_bis.png'), pos=self.ui.menutool,
-                                 before=self.measurement_tool.menuAction)
+                                 before=self.sub_tool.menuAction)
 
         self.ncclear_tool = NonCopperClear(self)
         self.ncclear_tool.install(icon=QtGui.QIcon('share/ncc16.png'), pos=self.ui.menutool,
-                                  before=self.measurement_tool.menuAction, separator=True)
+                                  before=self.sub_tool.menuAction, separator=True)
 
         self.paint_tool = ToolPaint(self)
         self.paint_tool.install(icon=QtGui.QIcon('share/paint16.png'), pos=self.ui.menutool,
-                                before=self.measurement_tool.menuAction, separator=True)
+                                before=self.sub_tool.menuAction, separator=True)
 
         self.transform_tool = ToolTransform(self)
         self.transform_tool.install(icon=QtGui.QIcon('share/transform.png'), pos=self.ui.menuoptions, separator=True)

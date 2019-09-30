@@ -11,6 +11,8 @@ from flatcamTools.ToolFilm import Film
 from flatcamTools.ToolImage import ToolImage
 
 from flatcamTools.ToolDistance import Distance
+from flatcamTools.ToolDistanceMin import DistanceMin
+
 from flatcamTools.ToolMove import ToolMove
 
 from flatcamTools.ToolNonCopperClear import NonCopperClear
