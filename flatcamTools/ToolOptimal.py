@@ -10,9 +10,8 @@ from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
 from shapely.geometry import Point
 from shapely import affinity
+from shapely.ops import nearest_points
 from PyQt5 import QtCore
-
-import collections
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -26,6 +25,8 @@ if '_' not in builtins.__dict__:
 class ToolOptimal(FlatCAMTool):
 
     toolName = _("Optimal Tool")
+
+    update_text = pyqtSignal(list)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -64,7 +65,7 @@ class ToolOptimal(FlatCAMTool):
 
         self.units_lbl = QtWidgets.QLabel(self.units)
 
-        self.freq_label = QtWidgets.QLabel('%s:' % _("Frequency"))
+        self.freq_label = QtWidgets.QLabel('%s:' % _("Occurring"))
         self.freq_label.setToolTip(_("How many times this minimum is found."))
         self.freq_res = QtWidgets.QLabel('%s' % '')
 
@@ -74,6 +75,20 @@ class ToolOptimal(FlatCAMTool):
         self.precision_spinner = FCSpinner()
         self.precision_spinner.set_range(2, 10)
         self.precision_spinner.setWrapping(True)
+
+        self.locations_cb = FCCheckBox(_("Locations"))
+        self.locations_cb.setToolTip(_("Locations where minimum distance was found."))
+
+        self.locations_textb = FCTextArea(parent=self)
+        self.locations_textb.setReadOnly(True)
+        self.locations_textb.setToolTip(_("Locations where minimum distance was found."))
+        stylesheet = """
+                        QTextEdit { selection-background-color:yellow;
+                                    selection-color:black;
+                        }
+                     """
+
+        self.locations_textb.setStyleSheet(stylesheet)
 
         hlay = QtWidgets.QHBoxLayout()
 
@@ -89,6 +104,8 @@ class ToolOptimal(FlatCAMTool):
         form_lay.addRow(self.title_res_label)
         form_lay.addRow(self.result_label, hlay)
         form_lay.addRow(self.freq_label, self.freq_res)
+        form_lay.addRow(self.locations_cb)
+        form_lay.addRow(self.locations_textb)
 
         self.calculate_button = QtWidgets.QPushButton(_("Find Distance"))
         self.calculate_button.setToolTip(
@@ -99,7 +116,18 @@ class ToolOptimal(FlatCAMTool):
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
 
+        self.locate_button = QtWidgets.QPushButton(_("Locate position"))
+        self.locate_button.setToolTip(
+            _("Select a position in the Locations text box and then\n"
+              "click this button.")
+        )
+        self.locate_button.setMinimumWidth(60)
+        self.layout.addWidget(self.locate_button)
+        self.locate_button.setDisabled(True)
+
         self.decimals = 4
+
+        self.selected_text = ''
         # self.dt_label = QtWidgets.QLabel("<b>%s:</b>" % _('Alignment Drill Diameter'))
         # self.dt_label.setToolTip(
         #     _("Diameter of the drill for the "
@@ -120,6 +148,10 @@ class ToolOptimal(FlatCAMTool):
         # hlay.addWidget(self.drill_dia)
 
         self.calculate_button.clicked.connect(self.find_minimum_distance)
+        self.locate_button.clicked.connect(self.on_locate_position)
+        self.update_text.connect(self.on_update_text)
+        self.locations_textb.cursorPositionChanged.connect(self.on_textbox_clicked)
+        self.locations_cb.stateChanged.connect(self.on_location_cb)
         self.layout.addStretch()
 
         # ## Signals
@@ -157,6 +189,21 @@ class ToolOptimal(FlatCAMTool):
 
     def set_tool_ui(self):
         self.precision_spinner.set_value(int(self.decimals))
+        self.locations_textb.clear()
+        # new cursor - select all document
+        cursor = self.locations_textb.textCursor()
+        cursor.select(QtGui.QTextCursor.Document)
+
+        # clear previous selection highlight
+        tmp = cursor.blockFormat()
+        tmp.clearBackground()
+        cursor.setBlockFormat(tmp)
+
+        self.locations_textb.setVisible(False)
+        self.locate_button.setVisible(False)
+
+        self.show_res.setText('')
+        self.freq_res.setText('')
         self.reset_fields()
 
     def find_minimum_distance(self):
@@ -212,7 +259,7 @@ class ToolOptimal(FlatCAMTool):
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
                                 str(geo_len)))
 
-                min_list = list()
+                min_dict = dict()
                 idx = 1
                 for geo in total_geo:
                     for s_geo in total_geo[idx:]:
@@ -223,7 +270,17 @@ class ToolOptimal(FlatCAMTool):
                         # minimize the number of distances by not taking into considerations those that are too small
                         dist = geo.distance(s_geo)
                         dist = float('%.*f' % (self.decimals, dist))
-                        min_list.append(dist)
+                        loc_1, loc_2 = nearest_points(geo, s_geo)
+
+                        dx = loc_1.x - loc_2.x
+                        dy = loc_1.y - loc_2.y
+                        loc = (float('%.*f' % (self.decimals, (min(loc_1.x, loc_2.x) + (abs(dx) / 2)))),
+                               float('%.*f' % (self.decimals, (min(loc_1.y, loc_2.y) + (abs(dy) / 2)))))
+
+                        if dist in min_dict:
+                            min_dict[dist].append(loc)
+                        else:
+                            min_dict[dist] = [loc]
 
                         pol_nr += 1
                         disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
@@ -235,15 +292,17 @@ class ToolOptimal(FlatCAMTool):
 
                 app_obj.inform.emit(
                     _("Optimal Tool. Finding the minimum distance."))
-                counter = collections.Counter(min_list)
 
+                min_list = list(min_dict.keys())
                 min_dist = min(min_list)
-                min_dist_string = '%.*f' % (self.decimals, min_dist)
+                min_dist_string = '%.*f' % (self.decimals, float(min_dist))
                 self.show_res.setText(min_dist_string)
 
-                freq = counter[min_dist]
-                freq = '%d' % freq
+                freq = len(min_dict[min_dist])
+                freq = '%d' % int(freq)
                 self.freq_res.setText(freq)
+
+                self.update_text.emit(min_dict[min_dist])
 
                 app_obj.inform.emit('[success] %s' % _("Optimal Tool. Finished successfully."))
             except Exception as ee:
@@ -253,6 +312,51 @@ class ToolOptimal(FlatCAMTool):
             proc.done()
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    def on_locate_position(self):
+        # cursor = self.locations_textb.textCursor()
+        # self.selected_text = cursor.selectedText()
+        try:
+            loc = eval(self.selected_text)
+            self.app.on_jump_to(custom_location=loc)
+        except Exception as e:
+            self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format (x, y).")
+
+    def on_update_text(self, data):
+        txt = ''
+        for loc in data:
+            txt += '%s\n' % str(loc)
+        self.locations_textb.setPlainText(txt)
+        self.locate_button.setDisabled(False)
+
+    def on_textbox_clicked(self):
+        # new cursor - select all document
+        cursor = self.locations_textb.textCursor()
+        cursor.select(QtGui.QTextCursor.Document)
+
+        # clear previous selection highlight
+        tmp = cursor.blockFormat()
+        tmp.clearBackground()
+        cursor.setBlockFormat(tmp)
+
+        # new cursor - select the current line
+        cursor = self.locations_textb.textCursor()
+        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+
+        # highlight the current selected line
+        tmp = cursor.blockFormat()
+        tmp.setBackground(QtGui.QBrush(QtCore.Qt.yellow))
+        cursor.setBlockFormat(tmp)
+
+        self.selected_text = cursor.selectedText()
+
+    def on_location_cb(self, state):
+        if state:
+            self.locations_textb.setVisible(True)
+            self.locate_button.setVisible(True)
+        else:
+            self.locations_textb.setVisible(False)
+            self.locate_button.setVisible(False)
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

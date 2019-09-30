@@ -21,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - changed a tooltip in Optimal Tool
 - in Optimal Tool added display of how frequent that minimum distance is found
 - in Tool Distance and Tool Minimal Distance made the entry fields read-only
+- in Optimal Tool added the display of the locations where the minimum distance was detected
 
 29.09.2019
 
