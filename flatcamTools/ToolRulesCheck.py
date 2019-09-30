@@ -595,6 +595,66 @@ class RulesCheck(FlatCAMTool):
         self.reset_fields()
 
     @staticmethod
+    def check_gerber_clearance(gerber_1, gerber_2, size, rule):
+        rule_title = rule
+
+        violations = list()
+        obj_violations = dict()
+        obj_violations.update({
+            'name': '',
+            'points': list()
+        })
+
+        total_geo_grb_1 = list()
+        for apid in gerber_1['apertures']:
+            if 'geometry' in gerber_1['apertures'][apid]:
+                geometry = gerber_1['apertures'][apid]['geometry']
+                for geo_el in geometry:
+                    if 'solid' in geo_el and geo_el['solid'] is not None:
+                        total_geo_grb_1.append(geo_el['solid'])
+
+        total_geo_grb_2= list()
+        for apid in gerber_2['apertures']:
+            if 'geometry' in gerber_2['apertures'][apid]:
+                geometry = gerber_2['apertures'][apid]['geometry']
+                for geo_el in geometry:
+                    if 'solid' in geo_el and geo_el['solid'] is not None:
+                        total_geo_grb_2.append(geo_el['solid'])
+
+        iterations = len(total_geo_grb_1) * len(total_geo_grb_2)
+        log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
+
+        min_dict = dict()
+        for geo in total_geo_grb_1:
+            for s_geo in total_geo_grb_2:
+                # minimize the number of distances by not taking into considerations those that are too small
+                dist = geo.distance(s_geo)
+                if float(dist) < float(size):
+                    loc_1, loc_2 = nearest_points(geo, s_geo)
+
+                    dx = loc_1.x - loc_2.x
+                    dy = loc_1.y - loc_2.y
+                    loc = min(loc_1.x, loc_2.x) + (abs(dx) / 2), min(loc_1.y, loc_2.y) + (abs(dy) / 2)
+
+                    if dist in min_dict:
+                        min_dict[dist].append(loc)
+                    else:
+                        min_dict[dist] = [loc]
+
+        points_list = list()
+        for dist in min_dict.keys():
+            for location in min_dict[dist]:
+                points_list.append(location)
+
+        name_list = [gerber_1['name'], gerber_2['name']]
+
+        obj_violations['name'] = name_list
+        obj_violations['points'] = points_list
+        violations.append(deepcopy(obj_violations))
+
+        return rule_title, violations
+
+    @staticmethod
     def check_holes_size(elements, size):
         rule = _("Hole Size")
 
@@ -733,6 +793,38 @@ class RulesCheck(FlatCAMTool):
 
                 trace_size = float(self.trace_size_entry.get_value())
                 self.results.append(self.pool.apply_async(self.check_traces_size, args=(copper_list, trace_size)))
+
+            # RULE: Check Copper to Copper Clearance
+            if self.clearance_copper2copper_cb.get_value():
+                top_dict = dict()
+                bottom_dict = dict()
+
+                copper_top = self.copper_t_object.currentText()
+                if copper_top is not '' and self.copper_t_cb.get_value():
+                    top_dict['name'] = deepcopy(copper_top)
+                    top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_top).apertures)
+
+                copper_bottom = self.copper_b_object.currentText()
+                if copper_bottom is not '' and self.copper_b_cb.get_value():
+                    bottom_dict['name'] = deepcopy(copper_bottom)
+                    bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_bottom).apertures)
+
+                try:
+                    copper_clearance = float(self.clearance_copper2copper_entry.get_value())
+                except Exception as e:
+                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    self.app.inform.emit('%s. %s' % (_("Copper to Copper clearance"), _("Value is not valid.")))
+                    return
+
+                if not top_dict or not bottom_dict:
+                    self.app.inform.emit('%s. %s' % (_("Copper to Copper clearance"),
+                                                     _("One or both copper Gerber objects is not valid.")))
+                    return
+                self.results.append(self.pool.apply_async(self.check_gerber_clearance,
+                                                          args=(top_dict,
+                                                                bottom_dict,
+                                                                copper_clearance,
+                                                                _("Copper to copper clearance"))))
 
             # RULE: Check Hole to Hole Clearance
             if self.clearance_d2d_cb.get_value():
