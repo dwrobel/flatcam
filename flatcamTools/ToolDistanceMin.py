@@ -214,7 +214,19 @@ class DistanceMin(FlatCAMTool):
                                       str(len(selected_objs))))
                 return
             else:
-                first_pos, last_pos = nearest_points(selected_objs[0].geo, selected_objs[1].geo)
+                # the objects are really MultiLinesStrings made out of 2 lines in cross shape
+                xmin, ymin, xmax, ymax = selected_objs[0].geo.bounds
+                first_geo_radius = (xmax - xmin) / 2
+                first_geo_center = Point(xmin + first_geo_radius, ymin + first_geo_radius)
+                first_geo = first_geo_center.buffer(first_geo_radius)
+
+                # the objects are really MultiLinesStrings made out of 2 lines in cross shape
+                xmin, ymin, xmax, ymax = selected_objs[1].geo.bounds
+                last_geo_radius = (xmax - xmin) / 2
+                last_geo_center = Point(xmin + last_geo_radius, ymin + last_geo_radius)
+                last_geo = last_geo_center.buffer(last_geo_radius)
+
+                first_pos, last_pos = nearest_points(first_geo, last_geo)
         elif self.app.call_source == 'grb_editor':
             selected_objs = self.app.grb_editor.selected
             if len(selected_objs) != 2:

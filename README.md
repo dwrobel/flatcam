@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a new tool named Minimum Distance Tool who will calculate the minimum distance between two objects; key shortcut: SHIFT + M
 - finished the Minimum Distance Tool in case of using it at the object level (not in Editors)
 - completed the Minimum Distance Tool by adding the usage in Editors
+- made the Minimum Distance Tool more precise for the Excellon Editor since in the Excellon Editor the holes shape are represented as a cross line but in reality they should be evaluated as circles
 
 29.09.2019
 
