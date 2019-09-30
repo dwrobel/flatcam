@@ -51,7 +51,7 @@ class ToolOptimal(FlatCAMTool):
 
         self.gerber_object_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.gerber_object_label.setToolTip(
-            "Gerber  to be mirrored."
+            "Gerber object for which to find the minimum distance between copper features."
         )
 
         self.title_res_label = QtWidgets.QLabel('<b>%s</b>' % _("Minimum distance between copper features"))
