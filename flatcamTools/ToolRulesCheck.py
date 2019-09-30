@@ -28,6 +28,8 @@ class RulesCheck(FlatCAMTool):
 
     toolName = _("Check Rules")
 
+    tool_finished = pyqtSignal(list)
+
     def __init__(self, app):
         super(RulesCheck, self).__init__(self)
         self.app = app
@@ -472,6 +474,8 @@ class RulesCheck(FlatCAMTool):
         self.run_button.clicked.connect(self.execute)
         # self.app.collection.rowsInserted.connect(self.on_object_loaded)
 
+        self.tool_finished.connect(self.on_tool_finished)
+
         # list to hold the temporary objects
         self.objs = []
 
@@ -567,9 +571,6 @@ class RulesCheck(FlatCAMTool):
             'points': list()
         })
 
-        # added it so I won't have errors of using before declaring
-        gerber_2 = dict()
-
         if not gerber_obj:
             return 'Fail. Not enough Gerber objects to check Gerber 2 Gerber clearance'
 
@@ -630,11 +631,11 @@ class RulesCheck(FlatCAMTool):
             'points': list()
         })
 
-        # added it so I won't have errors of using before declaring
-        gerber_2 = dict()
-
         if len(gerber_list) == 2:
             gerber_1 = gerber_list[0]
+            # added it so I won't have errors of using before declaring
+            gerber_2 = dict()
+
             gerber_3 = gerber_list[1]
         elif len(gerber_list) == 3:
             gerber_1 = gerber_list[0]
@@ -660,7 +661,7 @@ class RulesCheck(FlatCAMTool):
                         if 'solid' in geo_el and geo_el['solid'] is not None:
                             total_geo_grb_1.append(geo_el['solid'])
 
-        total_geo_grb_3= list()
+        total_geo_grb_3 = list()
         for apid in gerber_3['apertures']:
             if 'geometry' in gerber_3['apertures'][apid]:
                 geometry = gerber_3['apertures'][apid]['geometry']
@@ -693,7 +694,13 @@ class RulesCheck(FlatCAMTool):
             for location in min_dict[dist]:
                 points_list.append(location)
 
-        name_list = [gerber_1['name'], gerber_2['name']]
+        name_list = list()
+        if gerber_1:
+            name_list.append(gerber_1['name'])
+        if gerber_2:
+            name_list.append(gerber_2['name'])
+        if gerber_3:
+            name_list.append(gerber_3['name'])
 
         obj_violations['name'] = name_list
         obj_violations['points'] = points_list
@@ -917,7 +924,15 @@ class RulesCheck(FlatCAMTool):
             for location in min_dict[dist]:
                 points_list.append(location)
 
-        name_list = [gerber_obj['name'], exc_obj['name']]
+        name_list = list()
+        if gerber_obj:
+            name_list.append(gerber_obj['name'])
+        if gerber_extra_obj:
+            name_list.append(gerber_obj['name'])
+        if exc_obj:
+            name_list.append(gerber_obj['name'])
+        if exc_extra_obj:
+            name_list.append(gerber_obj['name'])
 
         obj_violations['name'] = name_list
         obj_violations['points'] = points_list
@@ -1132,7 +1147,7 @@ class RulesCheck(FlatCAMTool):
                         _("Value is not valid.")))
                     return
 
-                if not top_dict and not bottom_dict or not outline_dict:
+                if (not silk_t_dict and not silk_b_dict) or (not sm_t_dict and not sm_b_dict):
                     self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Silk to Solder Mask Clearance"),
                         _("One or more of the Gerber objects is not valid.")))
@@ -1360,10 +1375,14 @@ class RulesCheck(FlatCAMTool):
             for p in self.results:
                 output.append(p.get())
 
-            print(output)
+            self.tool_finished.emit(output)
+
             log.debug("RuleCheck() finished")
 
         self.app.worker_task.emit({'fcn': worker_job, 'params': [self.app]})
+
+    def on_tool_finished(self, res):
+        print(res)
 
     def reset_fields(self):
         # self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

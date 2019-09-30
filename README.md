@@ -27,6 +27,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Rules Check Tool added the functionality for Copper to Copper Clearance
 - in Rules Check Tool added the functionality for Copper to Outline Clearance, Silk to Silk Clearance, Silk to Solder Mask Clearance, Silk to Outline Clearance, Minimum Solder Mask Sliver, Minimum Annular Ring
 - fixes to cover all possible situations for the Minimum Annular Ring Rule in Rules Check Tool
+- some fixes in Rules Check Tool and added a QSignal that is fired at the end of the job
 
 29.09.2019
 
