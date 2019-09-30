@@ -253,6 +253,23 @@ class RulesCheck(FlatCAMTool):
 
         self.form_layout_1.addRow(QtWidgets.QLabel(""))
 
+        # Trace size
+        self.trace_size_cb = FCCheckBox('%s:' % _("Trace Size"))
+        self.trace_size_cb.setToolTip(
+            _("This checks if the minimum size for traces is met.")
+        )
+        self.form_layout_1.addRow(self.trace_size_cb)
+
+        # Copper2copper clearance value
+        self.trace_size_entry = FCEntry()
+        self.trace_size_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.trace_size_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.trace_size_lbl, self.trace_size_entry)
+
+        self.ts = OptionalInputSection(self.trace_size_cb, [self.trace_size_lbl, self.trace_size_entry])
+
         # Copper2copper clearance
         self.clearance_copper2copper_cb = FCCheckBox('%s:' % _("Copper to copper clearance"))
         self.clearance_copper2copper_cb.setToolTip(

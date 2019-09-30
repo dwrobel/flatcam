@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished the Minimum Distance Tool in case of using it at the object level (not in Editors)
 - completed the Minimum Distance Tool by adding the usage in Editors
 - made the Minimum Distance Tool more precise for the Excellon Editor since in the Excellon Editor the holes shape are represented as a cross line but in reality they should be evaluated as circles
+- small change in the UI layout for Check Rules Tool by adding a new rule (Check trace size)
 
 29.09.2019
 
