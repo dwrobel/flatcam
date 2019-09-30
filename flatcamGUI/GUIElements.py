@@ -507,6 +507,109 @@ class EvalEntry2(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
+class FCSpinner(QtWidgets.QSpinBox):
+    def __init__(self, parent=None):
+        super(FCSpinner, self).__init__(parent)
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+        self.lineEdit().installEventFilter(self)
+
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if self.readyToEdit:
+                self.lineEdit().selectAll()
+                self.readyToEdit = False
+            else:
+                self.lineEdit().deselect()
+            return True
+        return False
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    # def mousePressEvent(self, e, parent=None):
+    #     super(FCSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
+    #     if self.readyToEdit:
+    #         self.lineEdit().selectAll()
+    #         self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.lineEdit().deselect()
+            self.readyToEdit = True
+
+    def get_value(self):
+        return str(self.value())
+
+    def set_value(self, val):
+        try:
+            k = int(val)
+        except Exception as e:
+            log.debug(str(e))
+            return
+        self.setValue(k)
+
+    def set_range(self, min_val, max_val):
+        self.setRange(min_val, max_val)
+
+    # def sizeHint(self):
+    #     default_hint_size = super(FCSpinner, self).sizeHint()
+    #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+
+class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
+    def __init__(self, parent=None):
+        super(FCDoubleSpinner, self).__init__(parent)
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+        self.lineEdit().installEventFilter(self)
+
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if self.readyToEdit:
+                self.lineEdit().selectAll()
+                self.readyToEdit = False
+            else:
+                self.lineEdit().deselect()
+            return True
+        return False
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    # def mousePressEvent(self, e, parent=None):
+    #     super(FCDoubleSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
+    #     if self.readyToEdit:
+    #         self.lineEdit().selectAll()
+    #         self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.lineEdit().deselect()
+            self.readyToEdit = True
+
+    def get_value(self):
+        return str(self.value())
+
+    def set_value(self, val):
+        try:
+            k = float(val)
+        except Exception as e:
+            log.debug(str(e))
+            return
+        self.setValue(k)
+
+    def set_precision(self, val):
+        self.setDecimals(val)
+
+    def set_range(self, min_val, max_val):
+        self.setRange(min_val, max_val)
+
+
 class FCCheckBox(QtWidgets.QCheckBox):
     def __init__(self, label='', parent=None):
         super(FCCheckBox, self).__init__(str(label), parent)
@@ -1650,87 +1753,6 @@ class SpinBoxDelegate(QtWidgets.QItemDelegate):
 
     def setDecimals(self, spinbox, digits):
         spinbox.setDecimals(digits)
-
-
-class FCSpinner(QtWidgets.QSpinBox):
-    def __init__(self, parent=None):
-        super(FCSpinner, self).__init__(parent)
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-
-    def on_edit_finished(self):
-        self.clearFocus()
-
-    def mousePressEvent(self, e, parent=None):
-        super(FCSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
-            self.lineEdit().selectAll()
-            self.readyToEdit = False
-
-    def focusOutEvent(self, e):
-        # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
-            super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.lineEdit().deselect()
-            self.readyToEdit = True
-
-    def get_value(self):
-        return str(self.value())
-
-    def set_value(self, val):
-        try:
-            k = int(val)
-        except Exception as e:
-            log.debug(str(e))
-            return
-        self.setValue(k)
-
-    def set_range(self, min_val, max_val):
-        self.setRange(min_val, max_val)
-
-    # def sizeHint(self):
-    #     default_hint_size = super(FCSpinner, self).sizeHint()
-    #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
-
-
-class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
-    def __init__(self, parent=None):
-        super(FCDoubleSpinner, self).__init__(parent)
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-
-    def on_edit_finished(self):
-        self.clearFocus()
-
-    def mousePressEvent(self, e, parent=None):
-        super(FCDoubleSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
-            self.lineEdit().selectAll()
-            self.readyToEdit = False
-
-    def focusOutEvent(self, e):
-        # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
-            super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.lineEdit().deselect()
-            self.readyToEdit = True
-
-    def get_value(self):
-        return str(self.value())
-
-    def set_value(self, val):
-        try:
-            k = float(val)
-        except Exception as e:
-            log.debug(str(e))
-            return
-        self.setValue(k)
-
-    def set_precision(self, val):
-        self.setDecimals(val)
-
-    def set_range(self, min_val, max_val):
-        self.setRange(min_val, max_val)
 
 
 class Dialog_box(QtWidgets.QWidget):

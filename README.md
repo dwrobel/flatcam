@@ -10,6 +10,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+1.10.2019
+
+- fixed the FCSpinner and FCDoubleSpinner GUI elements to select all on first click and deselect on second click in the Spinbox LineEdit
+- for Gerber object in Selected Tab added ability to chose a V-Shape tool and therefore control the isolation better by adjusting the cut width of the isolation in function of the cut depth, tip width of the tool and the tip angle of the tool
+
 30.09.2019
 
 - modified the Distance Tool such that the number of decimals all over the tool is set in one place by the self.decimals

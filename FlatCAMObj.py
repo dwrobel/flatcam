@@ -616,9 +616,22 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.ui.obj_combo.setCurrentIndex(1)
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+
+        self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type_change)
+        self.ui.tool_type_radio.set_value('circular')
+
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+
+            self.ui.tool_type_label.hide()
+            self.ui.tool_type_radio.hide()
+            self.ui.tipdialabel.hide()
+            self.ui.tipdia_spinner.hide()
+            self.ui.tipanglelabel.hide()
+            self.ui.tipangle_spinner.hide()
+            self.ui.cutzlabel.hide()
+            self.ui.cutz_spinner.hide()
 
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
@@ -631,6 +644,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.except_cb.hide()
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+            self.ui.tipdia_spinner.valueChanged.connect(self.on_calculate_tooldia)
+            self.ui.tipangle_spinner.valueChanged.connect(self.on_calculate_tooldia)
+            self.ui.cutz_spinner.valueChanged.connect(self.on_calculate_tooldia)
 
         if self.app.defaults["gerber_buffering"] == 'no':
             self.ui.create_buffer_button.show()
@@ -647,10 +663,51 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.build_ui()
 
+    def on_calculate_tooldia(self):
+        try:
+            tdia = float(self.ui.tipdia_spinner.get_value())
+        except Exception as e:
+            return
+        try:
+            dang = float(self.ui.tipangle_spinner.get_value())
+        except Exception as e:
+            return
+        try:
+            cutz = float(self.ui.cutz_spinner.get_value())
+        except Exception as e:
+            return
+
+        cutz *= -1
+        if cutz < 0:
+            cutz *= -1
+
+        half_tip_angle = dang / 2
+
+        tool_diameter = tdia + (2 * cutz * math.tan(math.radians(half_tip_angle)))
+        self.ui.iso_tool_dia_entry.set_value(tool_diameter)
+
     def on_type_obj_index_changed(self, index):
         obj_type = self.ui.type_obj_combo.currentIndex()
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.obj_combo.setCurrentIndex(0)
+
+    def on_tool_type_change(self, state):
+        if state == 'circular':
+            self.ui.tipdialabel.hide()
+            self.ui.tipdia_spinner.hide()
+            self.ui.tipanglelabel.hide()
+            self.ui.tipangle_spinner.hide()
+            self.ui.cutzlabel.hide()
+            self.ui.cutz_spinner.hide()
+            self.ui.iso_tool_dia_entry.setDisabled(False)
+        else:
+            self.ui.tipdialabel.show()
+            self.ui.tipdia_spinner.show()
+            self.ui.tipanglelabel.show()
+            self.ui.tipangle_spinner.show()
+            self.ui.cutzlabel.show()
+            self.ui.cutz_spinner.show()
+            self.ui.iso_tool_dia_entry.setDisabled(True)
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)
