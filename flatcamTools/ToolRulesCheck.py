@@ -263,7 +263,7 @@ class RulesCheck(FlatCAMTool):
         self.ts = OptionalInputSection(self.trace_size_cb, [self.trace_size_lbl, self.trace_size_entry])
 
         # Copper2copper clearance
-        self.clearance_copper2copper_cb = FCCheckBox('%s:' % _("Copper to copper clearance"))
+        self.clearance_copper2copper_cb = FCCheckBox('%s:' % _("Copper to Copper clearance"))
         self.clearance_copper2copper_cb.setToolTip(
             _("This checks if the minimum clearance between copper\n"
               "features is met.")
@@ -281,46 +281,8 @@ class RulesCheck(FlatCAMTool):
         self.c2c = OptionalInputSection(
             self.clearance_copper2copper_cb, [self.clearance_copper2copper_lbl, self.clearance_copper2copper_entry])
 
-        # Copper2soldermask clearance
-        self.clearance_copper2sm_cb = FCCheckBox('%s:' % _("Copper to soldermask clearance"))
-        self.clearance_copper2sm_cb.setToolTip(
-            _("This checks if the minimum clearance between copper\n"
-              "features and soldermask features is met.")
-        )
-        self.form_layout_1.addRow(self.clearance_copper2sm_cb)
-
-        # Copper2soldermask clearance value
-        self.clearance_copper2sm_entry = FCEntry()
-        self.clearance_copper2sm_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
-        self.clearance_copper2sm_lbl.setToolTip(
-            _("Minimum acceptable clearance value.")
-        )
-        self.form_layout_1.addRow(self.clearance_copper2sm_lbl, self.clearance_copper2sm_entry)
-
-        self.c2sm = OptionalInputSection(
-            self.clearance_copper2sm_cb, [self.clearance_copper2sm_lbl, self.clearance_copper2sm_entry])
-
-        # Copper2silkscreen clearance
-        self.clearance_copper2sk_cb = FCCheckBox('%s:' % _("Copper to silkscreen clearance"))
-        self.clearance_copper2sk_cb.setToolTip(
-            _("This checks if the minimum clearance between copper\n"
-              "features and silkscreen features is met.")
-        )
-        self.form_layout_1.addRow(self.clearance_copper2sk_cb)
-
-        # Copper2silkscreen clearance value
-        self.clearance_copper2sk_entry = FCEntry()
-        self.clearance_copper2sk_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
-        self.clearance_copper2sk_lbl.setToolTip(
-            _("Minimum acceptable clearance value.")
-        )
-        self.form_layout_1.addRow(self.clearance_copper2sk_lbl, self.clearance_copper2sk_entry)
-
-        self.c2sk = OptionalInputSection(
-            self.clearance_copper2sk_cb, [self.clearance_copper2sk_lbl, self.clearance_copper2sk_entry])
-
         # Copper2outline clearance
-        self.clearance_copper2ol_cb = FCCheckBox('%s:' % _("Copper to outline clearance"))
+        self.clearance_copper2ol_cb = FCCheckBox('%s:' % _("Copper to Outline clearance"))
         self.clearance_copper2ol_cb.setToolTip(
             _("This checks if the minimum clearance between copper\n"
               "features and the outline is met.")
@@ -595,7 +557,7 @@ class RulesCheck(FlatCAMTool):
         self.reset_fields()
 
     @staticmethod
-    def check_gerber_clearance(gerber_1, gerber_2, size, rule):
+    def check_inside_gerber_clearance(gerber_obj, size, rule):
         rule_title = rule
 
         violations = list()
@@ -605,6 +567,82 @@ class RulesCheck(FlatCAMTool):
             'points': list()
         })
 
+        # added it so I won't have errors of using before declaring
+        gerber_2 = dict()
+
+        if not gerber_obj:
+            return 'Fail. Not enough Gerber objects to check Gerber 2 Gerber clearance'
+
+        total_geo = list()
+        for apid in gerber_obj['apertures']:
+            if 'geometry' in gerber_obj['apertures'][apid]:
+                geometry = gerber_obj['apertures'][apid]['geometry']
+                for geo_el in geometry:
+                    if 'solid' in geo_el and geo_el['solid'] is not None:
+                        total_geo.append(geo_el['solid'])
+
+        total_geo = MultiPolygon(total_geo)
+        total_geo = total_geo.buffer(0)
+
+        iterations = len(total_geo)
+        iterations = (iterations * (iterations - 1)) / 2
+
+        log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
+
+        min_dict = dict()
+        idx = 1
+        for geo in total_geo:
+            for s_geo in total_geo[idx:]:
+                # minimize the number of distances by not taking into considerations those that are too small
+                dist = geo.distance(s_geo)
+                if float(dist) < float(size):
+                    loc_1, loc_2 = nearest_points(geo, s_geo)
+
+                    dx = loc_1.x - loc_2.x
+                    dy = loc_1.y - loc_2.y
+                    loc = min(loc_1.x, loc_2.x) + (abs(dx) / 2), min(loc_1.y, loc_2.y) + (abs(dy) / 2)
+
+                    if dist in min_dict:
+                        min_dict[dist].append(loc)
+                    else:
+                        min_dict[dist] = [loc]
+            idx += 1
+
+        points_list = list()
+        for dist in min_dict.keys():
+            for location in min_dict[dist]:
+                points_list.append(location)
+
+        obj_violations['name'] = gerber_obj['name']
+        obj_violations['points'] = points_list
+        violations.append(deepcopy(obj_violations))
+
+        return rule_title, violations
+
+    @staticmethod
+    def check_gerber_clearance(gerber_list, size, rule):
+        rule_title = rule
+
+        violations = list()
+        obj_violations = dict()
+        obj_violations.update({
+            'name': '',
+            'points': list()
+        })
+
+        # added it so I won't have errors of using before declaring
+        gerber_2 = dict()
+
+        if len(gerber_list) == 2:
+            gerber_1 = gerber_list[0]
+            gerber_3 = gerber_list[1]
+        elif len(gerber_list) == 3:
+            gerber_1 = gerber_list[0]
+            gerber_2 = gerber_list[1]
+            gerber_3 = gerber_list[2]
+        else:
+            return 'Fail. Not enough Gerber objects to check Gerber 2 Gerber clearance'
+
         total_geo_grb_1 = list()
         for apid in gerber_1['apertures']:
             if 'geometry' in gerber_1['apertures'][apid]:
@@ -613,20 +651,29 @@ class RulesCheck(FlatCAMTool):
                     if 'solid' in geo_el and geo_el['solid'] is not None:
                         total_geo_grb_1.append(geo_el['solid'])
 
-        total_geo_grb_2= list()
-        for apid in gerber_2['apertures']:
-            if 'geometry' in gerber_2['apertures'][apid]:
-                geometry = gerber_2['apertures'][apid]['geometry']
+        if len(gerber_list) == 3:
+            # add the second Gerber geometry to the first one if it exists
+            for apid in gerber_2['apertures']:
+                if 'geometry' in gerber_2['apertures'][apid]:
+                    geometry = gerber_2['apertures'][apid]['geometry']
+                    for geo_el in geometry:
+                        if 'solid' in geo_el and geo_el['solid'] is not None:
+                            total_geo_grb_1.append(geo_el['solid'])
+
+        total_geo_grb_3= list()
+        for apid in gerber_3['apertures']:
+            if 'geometry' in gerber_3['apertures'][apid]:
+                geometry = gerber_3['apertures'][apid]['geometry']
                 for geo_el in geometry:
                     if 'solid' in geo_el and geo_el['solid'] is not None:
-                        total_geo_grb_2.append(geo_el['solid'])
+                        total_geo_grb_3.append(geo_el['solid'])
 
-        iterations = len(total_geo_grb_1) * len(total_geo_grb_2)
+        iterations = len(total_geo_grb_1) * len(total_geo_grb_3)
         log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
 
         min_dict = dict()
         for geo in total_geo_grb_1:
-            for s_geo in total_geo_grb_2:
+            for s_geo in total_geo_grb_3:
                 # minimize the number of distances by not taking into considerations those that are too small
                 dist = geo.distance(s_geo)
                 if float(dist) < float(size):
@@ -766,6 +813,87 @@ class RulesCheck(FlatCAMTool):
 
         return rule, violations
 
+    @staticmethod
+    def check_gerber_annular_ring(obj_list, size, rule):
+        rule_title = rule
+
+        violations = list()
+        obj_violations = dict()
+        obj_violations.update({
+            'name': '',
+            'points': list()
+        })
+
+        # added it so I won't have errors of using before declaring
+        gerber_extra_obj = dict()
+
+        if len(obj_list) == 2:
+            gerber_obj = obj_list[0]
+            exc_obj = obj_list[1]
+        elif len(obj_list) == 3:
+            gerber_obj = obj_list[0]
+            gerber_extra_obj = obj_list[1]
+            exc_obj = obj_list[2]
+        else:
+            return 'Fail. Not enough objects to check Minimum Annular Ring'
+
+        total_geo_grb = list()
+        for apid in gerber_obj['apertures']:
+            if 'geometry' in gerber_obj['apertures'][apid]:
+                geometry = gerber_obj['apertures'][apid]['geometry']
+                for geo_el in geometry:
+                    if 'solid' in geo_el and geo_el['solid'] is not None:
+                        total_geo_grb.append(geo_el['solid'])
+
+        if len(obj_list) == 3:
+            # add the second Gerber geometry to the first one if it exists
+            for apid in gerber_extra_obj['apertures']:
+                if 'geometry' in gerber_extra_obj['apertures'][apid]:
+                    geometry = gerber_extra_obj['apertures'][apid]['geometry']
+                    for geo_el in geometry:
+                        if 'solid' in geo_el and geo_el['solid'] is not None:
+                            total_geo_grb.append(geo_el['solid'])
+
+        total_geo_exc = list()
+        for tool in exc_obj['tools']:
+            if 'solid_geometry' in exc_obj['tools'][tool]:
+                geometry = exc_obj['tools'][tool]['solid_geometry']
+                for geo in geometry:
+                    total_geo_exc.append(geo)
+
+        iterations = len(total_geo_grb) * len(total_geo_exc)
+        log.debug("RulesCheck.check_gerber_annular_ring(). Iterations: %s" % str(iterations))
+
+        min_dict = dict()
+        for geo in total_geo_grb:
+            for s_geo in total_geo_exc:
+                # minimize the number of distances by not taking into considerations those that are too small
+                dist = geo.distance(s_geo)
+                if float(dist) < float(size):
+                    loc_1, loc_2 = nearest_points(geo, s_geo)
+
+                    dx = loc_1.x - loc_2.x
+                    dy = loc_1.y - loc_2.y
+                    loc = min(loc_1.x, loc_2.x) + (abs(dx) / 2), min(loc_1.y, loc_2.y) + (abs(dy) / 2)
+
+                    if dist in min_dict:
+                        min_dict[dist].append(loc)
+                    else:
+                        min_dict[dist] = [loc]
+
+        points_list = list()
+        for dist in min_dict.keys():
+            for location in min_dict[dist]:
+                points_list.append(location)
+
+        name_list = [gerber_obj['name'], exc_obj['name']]
+
+        obj_violations['name'] = name_list
+        obj_violations['points'] = points_list
+        violations.append(deepcopy(obj_violations))
+
+        return rule_title, violations
+
     def execute(self):
         self.results = list()
 
@@ -796,8 +924,49 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Copper to Copper Clearance
             if self.clearance_copper2copper_cb.get_value():
+                copper_dict = dict()
+
+                try:
+                    copper_copper_clearance = float(self.clearance_copper2copper_entry.get_value())
+                except Exception as e:
+                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Copper to Copper clearance"),
+                        _("Value is not valid.")))
+                    return
+
+                if self.copper_t_cb.get_value():
+                    copper_obj = self.copper_t_object.currentText()
+                    if copper_obj is not '':
+                        copper_dict['name'] = deepcopy(copper_obj)
+                        copper_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_obj).apertures)
+
+                        self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
+                                                                  args=(copper_dict,
+                                                                        copper_copper_clearance,
+                                                                        _("TOP: Copper to Copper clearance"))))
+                if self.copper_b_cb.get_value():
+                    copper_obj = self.copper_b_object.currentText()
+                    if copper_obj is not '':
+                        copper_dict['name'] = deepcopy(copper_obj)
+                        copper_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_obj).apertures)
+
+                        self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
+                                                                  args=(copper_dict,
+                                                                        copper_copper_clearance,
+                                                                        _("BOTTOM: Copper to Copper clearance"))))
+
+                if self.copper_t_cb.get_value() is False and self.copper_b_cb.get_value() is False:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Copper to Copper clearance"),
+                        _("At least one Gerber object has to be selected for this rule but none is selected.")))
+                    return
+
+            # RULE: Check Copper to Outline Clearance
+            if self.clearance_copper2ol_cb.get_value():
                 top_dict = dict()
                 bottom_dict = dict()
+                outline_dict = dict()
 
                 copper_top = self.copper_t_object.currentText()
                 if copper_top is not '' and self.copper_t_cb.get_value():
@@ -809,22 +978,303 @@ class RulesCheck(FlatCAMTool):
                     bottom_dict['name'] = deepcopy(copper_bottom)
                     bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_bottom).apertures)
 
+                copper_outline = self.outline_object.currentText()
+                if copper_outline is not '' and self.out_cb.get_value():
+                    outline_dict['name'] = deepcopy(copper_outline)
+                    outline_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_outline).apertures)
+
                 try:
-                    copper_clearance = float(self.clearance_copper2copper_entry.get_value())
+                    copper_outline_clearance = float(self.clearance_copper2ol_entry.get_value())
                 except Exception as e:
                     log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
-                    self.app.inform.emit('%s. %s' % (_("Copper to Copper clearance"), _("Value is not valid.")))
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Copper to Outline clearance"),
+                        _("Value is not valid.")))
                     return
 
-                if not top_dict or not bottom_dict:
-                    self.app.inform.emit('%s. %s' % (_("Copper to Copper clearance"),
-                                                     _("One or both copper Gerber objects is not valid.")))
+                if not top_dict and not bottom_dict or not outline_dict:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Copper to Outline clearance"),
+                        _("One of the copper Gerber objects or the Outline Gerber object is not valid.")))
                     return
+                objs = []
+                if top_dict:
+                    objs.append(top_dict)
+                if bottom_dict:
+                    objs.append(bottom_dict)
+
+                if outline_dict:
+                    objs.append(outline_dict)
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Copper to Outline clearance"),
+                        _("Outline Gerber object presence is mandatory for this rule but it is not selected.")))
+                    return
+
                 self.results.append(self.pool.apply_async(self.check_gerber_clearance,
-                                                          args=(top_dict,
-                                                                bottom_dict,
-                                                                copper_clearance,
-                                                                _("Copper to copper clearance"))))
+                                                          args=(objs,
+                                                                copper_outline_clearance,
+                                                                _("Copper to Outline clearance"))))
+
+            # RULE: Check Silk to Silk Clearance
+            if self.clearance_silk2silk_cb.get_value():
+                silk_dict = dict()
+
+                try:
+                    silk_silk_clearance = float(self.clearance_silk2silk_entry.get_value())
+                except Exception as e:
+                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Silk to Silk clearance"),
+                        _("Value is not valid.")))
+                    return
+
+                if self.ss_t_cb.get_value():
+                    silk_obj = self.ss_t_object.currentText()
+                    if silk_obj is not '':
+                        silk_dict['name'] = deepcopy(silk_obj)
+                        silk_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_obj).apertures)
+
+                        self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
+                                                                  args=(silk_dict,
+                                                                        silk_silk_clearance,
+                                                                        _("TOP: Silk to Silk clearance"))))
+                if self.ss_b_cb.get_value():
+                    silk_obj = self.ss_b_object.currentText()
+                    if silk_obj is not '':
+                        silk_dict['name'] = deepcopy(silk_obj)
+                        silk_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_obj).apertures)
+
+                        self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
+                                                                  args=(silk_dict,
+                                                                        silk_silk_clearance,
+                                                                        _("BOTTOM: Silk to Silk clearance"))))
+
+                if self.ss_t_cb.get_value() is False and self.ss_b_cb.get_value() is False:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Silk to Silk clearance"),
+                        _("At least one Gerber object has to be selected for this rule but none is selected.")))
+                    return
+
+            # RULE: Check Silk to Solder Mask Clearance
+            if self.clearance_silk2sm_cb.get_value():
+                silk_t_dict = dict()
+                sm_t_dict = dict()
+                silk_b_dict = dict()
+                sm_b_dict = dict()
+
+                top_ss = False
+                bottom_ss = False
+                top_sm = False
+                bottom_sm = False
+
+                silk_top = self.ss_t_object.currentText()
+                if silk_top is not '' and self.ss_t_cb.get_value():
+                    silk_t_dict['name'] = deepcopy(silk_top)
+                    silk_t_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_top).apertures)
+                    top_ss = True
+
+                silk_bottom = self.ss_b_object.currentText()
+                if silk_bottom is not '' and self.ss_b_cb.get_value():
+                    silk_b_dict['name'] = deepcopy(silk_bottom)
+                    silk_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_bottom).apertures)
+                    bottom_ss = True
+
+                sm_top = self.sm_t_object.currentText()
+                if sm_top is not '' and self.sm_t_cb.get_value():
+                    sm_t_dict['name'] = deepcopy(sm_top)
+                    sm_t_dict['apertures'] = deepcopy(self.app.collection.get_by_name(sm_top).apertures)
+                    top_sm = True
+
+                sm_bottom = self.sm_b_object.currentText()
+                if sm_bottom is not '' and self.sm_b_cb.get_value():
+                    sm_b_dict['name'] = deepcopy(sm_bottom)
+                    sm_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(sm_bottom).apertures)
+                    bottom_sm = True
+
+                try:
+                    silk_sm_clearance = float(self.clearance_silk2sm_entry.get_value())
+                except Exception as e:
+                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Silk to Solder Mask Clearance"),
+                        _("Value is not valid.")))
+                    return
+
+                if not top_dict and not bottom_dict or not outline_dict:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Silk to Solder Mask Clearance"),
+                        _("One or more of the Gerber objects is not valid.")))
+                    return
+
+                if top_ss is True and top_sm is True:
+                    objs = [silk_t_dict, sm_t_dict]
+                    self.results.append(self.pool.apply_async(self.check_gerber_clearance,
+                                                              args=(objs,
+                                                                    silk_sm_clearance,
+                                                                    _("TOP: Silk to Solder Mask Clearance"))))
+                elif bottom_ss is True and bottom_sm is True:
+                    objs = [silk_b_dict, sm_b_dict]
+                    self.results.append(self.pool.apply_async(self.check_gerber_clearance,
+                                                              args=(objs,
+                                                                    silk_sm_clearance,
+                                                                    _("BOTTOM: Silk to Solder Mask Clearance"))))
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Silk to Solder Mask Clearance"),
+                        _("Both Silk and Solder Mask Gerber objects has to be either both Top or both Bottom.")))
+                    return
+
+            # RULE: Check Silk to Outline Clearance
+            if self.clearance_silk2ol_cb.get_value():
+                top_dict = dict()
+                bottom_dict = dict()
+                outline_dict = dict()
+
+                silk_top = self.ss_t_object.currentText()
+                if silk_top is not '' and self.ss_t_cb.get_value():
+                    top_dict['name'] = deepcopy(silk_top)
+                    top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_top).apertures)
+
+                silk_bottom = self.ss_b_object.currentText()
+                if silk_bottom is not '' and self.ss_b_cb.get_value():
+                    bottom_dict['name'] = deepcopy(silk_bottom)
+                    bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(silk_bottom).apertures)
+
+                copper_outline = self.outline_object.currentText()
+                if copper_outline is not '' and self.out_cb.get_value():
+                    outline_dict['name'] = deepcopy(copper_outline)
+                    outline_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_outline).apertures)
+
+                try:
+                    copper_outline_clearance = float(self.clearance_copper2ol_entry.get_value())
+                except Exception as e:
+                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Silk to Outline Clearance"),
+                        _("Value is not valid.")))
+                    return
+
+                if not top_dict and not bottom_dict or not outline_dict:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Silk to Outline Clearance"),
+                        _("One of the Silk Gerber objects or the Outline Gerber object is not valid.")))
+                    return
+
+                objs = []
+                if top_dict:
+                    objs.append(top_dict)
+                if bottom_dict:
+                    objs.append(bottom_dict)
+
+                if outline_dict:
+                    objs.append(outline_dict)
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Silk to Outline Clearance"),
+                        _("Outline Gerber object presence is mandatory for this rule but it is not selected.")))
+                    return
+
+                self.results.append(self.pool.apply_async(self.check_gerber_clearance,
+                                                          args=(objs,
+                                                                copper_outline_clearance,
+                                                                _("Silk to Outline Clearance"))))
+
+            # RULE: Check Minimum Solder Mask Sliver
+            if self.clearance_silk2silk_cb.get_value():
+                sm_dict = dict()
+
+                try:
+                    sm_sm_clearance = float(self.clearance_sm2sm_entry.get_value())
+                except Exception as e:
+                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Minimum Solder Mask Sliver"),
+                        _("Value is not valid.")))
+                    return
+
+                if self.sm_t_cb.get_value():
+                    solder_obj = self.sm_t_object.currentText()
+                    if solder_obj is not '':
+                        sm_dict['name'] = deepcopy(solder_obj)
+                        sm_dict['apertures'] = deepcopy(self.app.collection.get_by_name(solder_obj).apertures)
+
+                        self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
+                                                                  args=(sm_dict,
+                                                                        sm_sm_clearance,
+                                                                        _("TOP: Minimum Solder Mask Sliver"))))
+                if self.sm_b_cb.get_value():
+                    solder_obj = self.sm_b_object.currentText()
+                    if solder_obj is not '':
+                        sm_dict['name'] = deepcopy(solder_obj)
+                        sm_dict['apertures'] = deepcopy(self.app.collection.get_by_name(solder_obj).apertures)
+
+                        self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
+                                                                  args=(sm_dict,
+                                                                        sm_sm_clearance,
+                                                                        _("BOTTOM: Minimum Solder Mask Sliver"))))
+
+                if self.sm_t_cb.get_value() is False and self.sm_b_cb.get_value() is False:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Minimum Solder Mask Sliver"),
+                        _("At least one Gerber object has to be selected for this rule but none is selected.")))
+                    return
+
+            # RULE: Check Minimum Annular Ring
+            if self.ring_integrity_cb.get_value():
+                top_dict = dict()
+                bottom_dict = dict()
+                exc_dict = dict()
+
+                copper_top = self.copper_t_object.currentText()
+                if copper_top is not '' and self.copper_t_cb.get_value():
+                    top_dict['name'] = deepcopy(copper_top)
+                    top_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_top).apertures)
+
+                copper_bottom = self.copper_b_object.currentText()
+                if copper_bottom is not '' and self.copper_b_cb.get_value():
+                    bottom_dict['name'] = deepcopy(copper_bottom)
+                    bottom_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_bottom).apertures)
+
+                excellon = self.outline_object.currentText()
+                if excellon is not '' and self.out_cb.get_value():
+                    exc_dict['name'] = deepcopy(excellon)
+                    exc_dict['apertures'] = deepcopy(
+                        self.app.collection.get_by_name(excellon).tools)
+
+                try:
+                    ring_val = float(self.ring_integrity_entry.get_value())
+                except Exception as e:
+                    log.debug("RulesCheck.execute.worker_job() --> %s" % str(e))
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Minimum Annular Ring"),
+                        _("Value is not valid.")))
+                    return
+
+                if not top_dict and not bottom_dict or not exc_dict:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Minimum Annular Ring"),
+                        _("One of the Copper Gerber objects or the Excellon object is not valid.")))
+                    return
+
+                objs = []
+                if top_dict:
+                    objs.append(top_dict)
+                if bottom_dict:
+                    objs.append(bottom_dict)
+
+                if exc_dict:
+                    objs.append(exc_dict)
+                else:
+                    self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
+                        _("Minimum Annular Ring"),
+                        _("Excellon object presence is mandatory for this rule but it is not selected.")))
+                    return
+
+                self.results.append(self.pool.apply_async(self.check_gerber_annular_ring,
+                                                          args=(objs,
+                                                                ring_val,
+                                                                _("Minimum Annular Ring"))))
 
             # RULE: Check Hole to Hole Clearance
             if self.clearance_d2d_cb.get_value():

@@ -25,6 +25,7 @@ CAD program, and create G-Code for Isolation routing.
 - added support to use Multi Processing (multi core usage, not simple threading) in Rules Check Tool
 - in Rules Check Tool added the functionality for the following rules: Hole Size, Trace Size, Hole to Hole Clearance
 - in Rules Check Tool added the functionality for Copper to Copper Clearance
+- in Rules Check Tool added the functionality for Copper to Outline Clearance, Silk to Silk Clearance, Silk to Solder Mask Clearance, Silk to Outline Clearance, Minimum Solder Mask Sliver, Minimum Annular Ring
 
 29.09.2019
 
