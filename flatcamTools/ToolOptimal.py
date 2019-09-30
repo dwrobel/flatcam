@@ -12,6 +12,8 @@ from shapely.geometry import Point
 from shapely import affinity
 from PyQt5 import QtCore
 
+import collections
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -27,6 +29,8 @@ class ToolOptimal(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -55,12 +59,21 @@ class ToolOptimal(FlatCAMTool):
         )
 
         self.title_res_label = QtWidgets.QLabel('<b>%s</b>' % _("Minimum distance between copper features"))
-        self.result_label = QtWidgets.QLabel('%s:' % _("Found"))
+        self.result_label = QtWidgets.QLabel('%s:' % _("Determined"))
         self.show_res = QtWidgets.QLabel('%s' % '')
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
-
         self.units_lbl = QtWidgets.QLabel(self.units)
+
+        self.freq_label = QtWidgets.QLabel('%s:' % _("Frequency"))
+        self.freq_label.setToolTip(_("How many times this minimum is found."))
+        self.freq_res = QtWidgets.QLabel('%s' % '')
+
+        self.precision_label = QtWidgets.QLabel('%s:' % _("Precision"))
+        self.precision_label.setToolTip(_("Number of decimals kept for found distances."))
+
+        self.precision_spinner = FCSpinner()
+        self.precision_spinner.set_range(2, 10)
+        self.precision_spinner.setWrapping(True)
 
         hlay = QtWidgets.QHBoxLayout()
 
@@ -70,9 +83,12 @@ class ToolOptimal(FlatCAMTool):
 
         form_lay.addRow(QtWidgets.QLabel(""))
         form_lay.addRow(self.gerber_object_label, self.gerber_object_combo)
+        form_lay.addRow(self.precision_label, self.precision_spinner)
+
         form_lay.addRow(QtWidgets.QLabel(""))
         form_lay.addRow(self.title_res_label)
         form_lay.addRow(self.result_label, hlay)
+        form_lay.addRow(self.freq_label, self.freq_res)
 
         self.calculate_button = QtWidgets.QPushButton(_("Find Distance"))
         self.calculate_button.setToolTip(
@@ -83,6 +99,7 @@ class ToolOptimal(FlatCAMTool):
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
 
+        self.decimals = 4
         # self.dt_label = QtWidgets.QLabel("<b>%s:</b>" % _('Alignment Drill Diameter'))
         # self.dt_label.setToolTip(
         #     _("Diameter of the drill for the "
@@ -139,10 +156,12 @@ class ToolOptimal(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Optimal Tool"))
 
     def set_tool_ui(self):
+        self.precision_spinner.set_value(int(self.decimals))
         self.reset_fields()
 
     def find_minimum_distance(self):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.decimals = int(self.precision_spinner.get_value())
 
         selection_index = self.gerber_object_combo.currentIndex()
 
@@ -193,7 +212,7 @@ class ToolOptimal(FlatCAMTool):
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
                                 str(geo_len)))
 
-                min_set = set()
+                min_list = list()
                 idx = 1
                 for geo in total_geo:
                     for s_geo in total_geo[idx:]:
@@ -203,7 +222,8 @@ class ToolOptimal(FlatCAMTool):
 
                         # minimize the number of distances by not taking into considerations those that are too small
                         dist = geo.distance(s_geo)
-                        min_set.add(dist)
+                        dist = float('%.*f' % (self.decimals, dist))
+                        min_list.append(dist)
 
                         pol_nr += 1
                         disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
@@ -215,9 +235,15 @@ class ToolOptimal(FlatCAMTool):
 
                 app_obj.inform.emit(
                     _("Optimal Tool. Finding the minimum distance."))
-                min_dist = min(min_set)
-                min_dist = '%.4f' % min_dist
-                self.show_res.setText(min_dist)
+                counter = collections.Counter(min_list)
+
+                min_dist = min(min_list)
+                min_dist_string = '%.*f' % (self.decimals, min_dist)
+                self.show_res.setText(min_dist_string)
+
+                freq = counter[min_dist]
+                freq = '%d' % freq
+                self.freq_res.setText(freq)
 
                 app_obj.inform.emit('[success] %s' % _("Optimal Tool. Finished successfully."))
             except Exception as ee:
@@ -227,7 +253,6 @@ class ToolOptimal(FlatCAMTool):
             proc.done()
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
-
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
