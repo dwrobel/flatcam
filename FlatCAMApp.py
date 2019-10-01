@@ -1510,7 +1510,12 @@ class App(QtCore.QObject):
             "tools_panelize_rows": 1,
             "tools_panelize_constrain": False,
             "tools_panelize_constrainx": 0.0,
-            "tools_panelize_constrainy": 0.0
+            "tools_panelize_constrainy": 0.0,
+
+            "script_text": "",
+            "script_plot": True,
+            "notes_text": "",
+            "notes_plot": True,
 
         })
 
@@ -3958,7 +3963,9 @@ class App(QtCore.QObject):
             "gerber": FlatCAMGerber,
             "excellon": FlatCAMExcellon,
             "cncjob": FlatCAMCNCjob,
-            "geometry": FlatCAMGeometry
+            "geometry": FlatCAMGeometry,
+            "script": FlatCAMScript,
+            "notes": FlatCAMNotes
         }
 
         App.log.debug("Calling object constructor...")
@@ -4022,15 +4029,17 @@ class App(QtCore.QObject):
             self.log.debug("%f seconds converting units." % (t3 - t2))
 
         # Create the bounding box for the object and then add the results to the obj.options
-        try:
-            xmin, ymin, xmax, ymax = obj.bounds()
-            obj.options['xmin'] = xmin
-            obj.options['ymin'] = ymin
-            obj.options['xmax'] = xmax
-            obj.options['ymax'] = ymax
-        except Exception as e:
-            log.warning("The object has no bounds properties. %s" % str(e))
-            return "fail"
+        # But not for Scripts or for Notes
+        if kind != 'notes' and kind != 'script':
+            try:
+                xmin, ymin, xmax, ymax = obj.bounds()
+                obj.options['xmin'] = xmin
+                obj.options['ymin'] = ymin
+                obj.options['xmax'] = xmax
+                obj.options['ymax'] = ymax
+            except Exception as e:
+                log.warning("The object has no bounds properties. %s" % str(e))
+                return "fail"
 
         FlatCAMApp.App.log.debug("Moving new object back to main thread.")
 
@@ -4090,6 +4099,34 @@ class App(QtCore.QObject):
 
         self.new_object('gerber', 'new_grb', initialize, plot=False)
 
+
+    def new_script_object(self):
+        """
+        Creates a new, blank TCL Script object.
+
+        :return: None
+        """
+        self.report_usage("new_script_object()")
+
+        def initialize(obj, self):
+            obj.source_file = ""
+
+        self.new_object('script', 'new_script', initialize, plot=False)
+
+
+    def new_notes_object(self):
+        """
+        Creates a new, blank Notes object.
+
+        :return: None
+        """
+        self.report_usage("new_notes_object()")
+
+        def initialize(obj, self):
+            obj.source_file = ""
+
+        self.new_object('notes', 'new_notes', initialize, plot=False)
+
     def on_object_created(self, obj, plot, autoselect):
         """
         Event callback for object creation.
@@ -4123,6 +4160,12 @@ class App(QtCore.QObject):
         elif obj.kind == 'geometry':
             self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='red', name=str(obj.options['name'])))
+        elif obj.kind == 'script':
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
+                kind=obj.kind.capitalize(), color='orange', name=str(obj.options['name'])))
+        elif obj.kind == 'notes':
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
+                kind=obj.kind.capitalize(), color='violet', name=str(obj.options['name'])))
 
         # update the SHELL auto-completer model with the name of the new object
         self.myKeywords.append(obj.options['name'])
@@ -9247,6 +9290,8 @@ class App(QtCore.QObject):
 
         self.handleTextChanged()
         self.ui.code_editor.show()
+
+        self.new_script_object()
 
     def on_fileopenscript(self, name=None, silent=False):
         """

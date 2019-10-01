@@ -186,21 +186,27 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         ("gerber", "Gerber"),
         ("excellon", "Excellon"),
         ("geometry", "Geometry"),
-        ("cncjob", "CNC Job")
+        ("cncjob", "CNC Job"),
+        ("script", "Scripts"),
+        ("notes", "Notes"),
     ]
 
     classdict = {
         "gerber": FlatCAMGerber,
         "excellon": FlatCAMExcellon,
         "cncjob": FlatCAMCNCjob,
-        "geometry": FlatCAMGeometry
+        "geometry": FlatCAMGeometry,
+        "script": FlatCAMScript,
+        "notes": FlatCAMNotes
     }
 
     icon_files = {
         "gerber": "share/flatcam_icon16.png",
         "excellon": "share/drill16.png",
         "cncjob": "share/cnc16.png",
-        "geometry": "share/geometry16.png"
+        "geometry": "share/geometry16.png",
+        "script": "share/script_new16.png",
+        "notes": "share/notes16_1.png"
     }
 
     root_item = None

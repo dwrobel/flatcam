@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - added new settings for the Gerber newly introduced feature to isolate with the V-Shape tools (tip dia, tip angle, tool_type and cut Z) in Edit -> Preferences -> Gerber Advanced
 - made those settings just added for Gerber, to be updated on object creation
 - added the Geo Tolerance parameter to those that are converted from MM to INCH
+- added two new FlatCAM objects: FlatCAMScript and FlatCAMNotes
 
 30.09.2019
 

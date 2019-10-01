@@ -1714,4 +1714,585 @@ class CNCObjectUI(ObjectUI):
         h_lay.addWidget(self.export_gcode_button)
         # self.custom_box.addWidget(self.export_gcode_button)
 
+
+class ScriptObjectUI(ObjectUI):
+    """
+    User interface for Script  objects.
+    """
+
+    def __init__(self, parent=None):
+        """
+        Creates the user interface for Script objects. GUI elements should
+        be placed in ``self.custom_box`` to preserve the layout.
+        """
+
+        ObjectUI.__init__(self, title=_('Script Object'), icon_file='share/cnc32.png', parent=parent)
+
+        # Scale and offset ans skew are not available for CNCJob objects.
+        # Hiding from the GUI.
+        for i in range(0, self.scale_grid.count()):
+            self.scale_grid.itemAt(i).widget().hide()
+        self.scale_label.hide()
+        self.scale_button.hide()
+
+        for i in range(0, self.offset_grid.count()):
+            self.offset_grid.itemAt(i).widget().hide()
+        self.offset_label.hide()
+        self.offset_button.hide()
+
+        # ## Plot options
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
+        self.custom_box.addWidget(self.plot_options_label)
+
+        self.cncplot_method_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot kind"))
+        self.cncplot_method_label.setToolTip(
+            _(
+                "This selects the kind of geometries on the canvas to plot.\n"
+                "Those can be either of type 'Travel' which means the moves\n"
+                "above the work piece or it can be of type 'Cut',\n"
+                "which means the moves that cut into the material."
+            )
+        )
+
+        self.cncplot_method_combo = RadioSet([
+            {"label": _("All"), "value": "all"},
+            {"label": _("Travel"), "value": "travel"},
+            {"label": _("Cut"), "value": "cut"}
+        ], stretch=False)
+
+        self.annotation_label = QtWidgets.QLabel("<b>%s:</b>" % _("Display Annotation"))
+        self.annotation_label.setToolTip(
+            _("This selects if to display text annotation on the plot.\n"
+              "When checked it will display numbers in order for each end\n"
+              "of a travel line.")
+        )
+        self.annotation_cb = FCCheckBox()
+
+        # ## Object name
+        self.name_hlay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(self.name_hlay)
+        name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
+        self.name_entry = FCEntry()
+        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_hlay.addWidget(name_label)
+        self.name_hlay.addWidget(self.name_entry)
+
+        self.t_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _("Travelled dist."))
+        self.t_distance_label.setToolTip(
+            _("This is the total travelled distance on X-Y plane.\n"
+              "In current units.")
+        )
+        self.t_distance_entry = FCEntry()
+        self.t_distance_entry.setToolTip(
+            _("This is the total travelled distance on X-Y plane.\n"
+              "In current units.")
+        )
+        self.units_label = QtWidgets.QLabel()
+
+        self.t_time_label = QtWidgets.QLabel("<b>%s:</b>" % _("Estimated time"))
+        self.t_time_label.setToolTip(
+            _("This is the estimated time to do the routing/drilling,\n"
+              "without the time spent in ToolChange events.")
+        )
+        self.t_time_entry = FCEntry()
+        self.t_time_entry.setToolTip(
+            _("This is the estimated time to do the routing/drilling,\n"
+              "without the time spent in ToolChange events.")
+        )
+        self.units_time_label = QtWidgets.QLabel()
+
+        f_lay = QtWidgets.QGridLayout()
+        f_lay.setColumnStretch(1, 1)
+        f_lay.setColumnStretch(2, 1)
+
+        self.custom_box.addLayout(f_lay)
+        f_lay.addWidget(self.cncplot_method_label, 0, 0)
+        f_lay.addWidget(self.cncplot_method_combo, 0, 1)
+        f_lay.addWidget(QtWidgets.QLabel(''), 0, 2)
+        f_lay.addWidget(self.annotation_label, 1, 0)
+        f_lay.addWidget(self.annotation_cb, 1, 1)
+        f_lay.addWidget(QtWidgets.QLabel(''), 1, 2)
+        f_lay.addWidget(self.t_distance_label, 2, 0)
+        f_lay.addWidget(self.t_distance_entry, 2, 1)
+        f_lay.addWidget(self.units_label, 2, 2)
+        f_lay.addWidget(self.t_time_label, 3, 0)
+        f_lay.addWidget(self.t_time_entry, 3, 1)
+        f_lay.addWidget(self.units_time_label, 3, 2)
+
+        self.t_distance_label.hide()
+        self.t_distance_entry.setVisible(False)
+        self.t_time_label.hide()
+        self.t_time_entry.setVisible(False)
+
+        e1_lbl = QtWidgets.QLabel('')
+        self.custom_box.addWidget(e1_lbl)
+
+        hlay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(hlay)
+
+        # CNC Tools Table for plot
+        self.cnc_tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('CNC Tools Table'))
+        self.cnc_tools_table_label.setToolTip(
+            _(
+                "Tools in this CNCJob object used for cutting.\n"
+                "The tool diameter is used for plotting on canvas.\n"
+                "The 'Offset' entry will set an offset for the cut.\n"
+                "'Offset' can be inside, outside, on path (none) and custom.\n"
+                "'Type' entry is only informative and it allow to know the \n"
+                "intent of using the current tool. \n"
+                "It can be Rough(ing), Finish(ing) or Iso(lation).\n"
+                "The 'Tool type'(TT) can be circular with 1 to 4 teeths(C1..C4),\n"
+                "ball(B), or V-Shaped(V)."
+            )
+        )
+        hlay.addWidget(self.cnc_tools_table_label)
+
+        # Plot CB
+        # self.plot_cb = QtWidgets.QCheckBox('Plot')
+        self.plot_cb = FCCheckBox(_('Plot Object'))
+        self.plot_cb.setToolTip(
+            _("Plot (show) this object.")
+        )
+        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        hlay.addStretch()
+        hlay.addWidget(self.plot_cb)
+
+        self.cnc_tools_table = FCTable()
+        self.custom_box.addWidget(self.cnc_tools_table)
+
+        # self.cnc_tools_table.setColumnCount(4)
+        # self.cnc_tools_table.setHorizontalHeaderLabels(['#', 'Dia', 'Plot', ''])
+        # self.cnc_tools_table.setColumnHidden(3, True)
+        self.cnc_tools_table.setColumnCount(7)
+        self.cnc_tools_table.setColumnWidth(0, 20)
+        self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Offset'), _('Type'), _('TT'), '',
+                                                        _('P')])
+        self.cnc_tools_table.setColumnHidden(5, True)
+        # stylesheet = "::section{Background-color:rgb(239,239,245)}"
+        # self.cnc_tools_table.horizontalHeader().setStyleSheet(stylesheet)
+
+        # Update plot button
+        self.updateplot_button = QtWidgets.QPushButton(_('Update Plot'))
+        self.updateplot_button.setToolTip(
+            _("Update the plot.")
+        )
+        self.custom_box.addWidget(self.updateplot_button)
+
+        # ####################
+        # ## Export G-Code ##
+        # ####################
+        self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export CNC Code"))
+        self.export_gcode_label.setToolTip(
+            _("Export and save G-Code to\n"
+              "make this object to a file.")
+        )
+        self.custom_box.addWidget(self.export_gcode_label)
+
+        # Prepend text to GCode
+        prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to CNC Code'))
+        prependlabel.setToolTip(
+            _("Type here any G-Code commands you would\n"
+              "like to add at the beginning of the G-Code file.")
+        )
+        self.custom_box.addWidget(prependlabel)
+
+        self.prepend_text = FCTextArea()
+        self.custom_box.addWidget(self.prepend_text)
+
+        # Append text to GCode
+        appendlabel = QtWidgets.QLabel('%s:' % _('Append to CNC Code'))
+        appendlabel.setToolTip(
+            _("Type here any G-Code commands you would\n"
+              "like to append to the generated file.\n"
+              "I.e.: M2 (End of program)")
+        )
+        self.custom_box.addWidget(appendlabel)
+
+        self.append_text = FCTextArea()
+        self.custom_box.addWidget(self.append_text)
+
+        self.cnc_frame = QtWidgets.QFrame()
+        self.cnc_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.cnc_frame)
+        self.cnc_box = QtWidgets.QVBoxLayout()
+        self.cnc_box.setContentsMargins(0, 0, 0, 0)
+        self.cnc_frame.setLayout(self.cnc_box)
+
+        # Toolchange Custom G-Code
+        self.toolchangelabel = QtWidgets.QLabel('%s:' % _('Toolchange G-Code'))
+        self.toolchangelabel.setToolTip(
+            _(
+                "Type here any G-Code commands you would\n"
+                "like to be executed when Toolchange event is encountered.\n"
+                "This will constitute a Custom Toolchange GCode,\n"
+                "or a Toolchange Macro.\n"
+                "The FlatCAM variables are surrounded by '%' symbol.\n\n"
+                "WARNING: it can be used only with a postprocessor file\n"
+                "that has 'toolchange_custom' in it's name and this is built\n"
+                "having as template the 'Toolchange Custom' posprocessor file."
+            )
+        )
+        self.cnc_box.addWidget(self.toolchangelabel)
+
+        self.toolchange_text = FCTextArea()
+        self.cnc_box.addWidget(self.toolchange_text)
+
+        cnclay = QtWidgets.QHBoxLayout()
+        self.cnc_box.addLayout(cnclay)
+
+        # Toolchange Replacement Enable
+        self.toolchange_cb = FCCheckBox(label='%s' % _('Use Toolchange Macro'))
+        self.toolchange_cb.setToolTip(
+            _("Check this box if you want to use\n"
+              "a Custom Toolchange GCode (macro).")
+        )
+
+        # Variable list
+        self.tc_variable_combo = FCComboBox()
+        self.tc_variable_combo.setToolTip(
+            _(
+                "A list of the FlatCAM variables that can be used\n"
+                "in the Toolchange event.\n"
+                "They have to be surrounded by the '%' symbol"
+            )
+        )
+
+        # Populate the Combo Box
+        variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
+                     'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
+        self.tc_variable_combo.addItems(variables)
+        self.tc_variable_combo.setItemData(0, _("FlatCAM CNC parameters"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(1, _("tool = tool number"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(2, _("tooldia = tool diameter"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(3, _("t_drills = for Excellon, total number of drills"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(4, _("x_toolchange = X coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(5, _("y_toolchange = Y coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(6, _("z_toolchange = Z coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(7, _("z_cut = depth where to cut"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(8, _("z_move = height where to travel"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(9, _("z_depthpercut = the step value for multidepth cut"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(10, _("spindlesspeed = the value for the spindle speed"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(11, _("dwelltime = time to dwell to allow the "
+                                                 "spindle to reach it's set RPM"),
+                                           Qt.ToolTipRole)
+
+        cnclay.addWidget(self.toolchange_cb)
+        cnclay.addStretch()
+        cnclay.addWidget(self.tc_variable_combo)
+
+        self.toolch_ois = OptionalInputSection(self.toolchange_cb,
+                                               [self.toolchangelabel, self.toolchange_text, self.tc_variable_combo])
+
+        h_lay = QtWidgets.QHBoxLayout()
+        h_lay.setAlignment(QtCore.Qt.AlignVCenter)
+        self.custom_box.addLayout(h_lay)
+
+        # Edit GCode Button
+        self.modify_gcode_button = QtWidgets.QPushButton(_('View CNC Code'))
+        self.modify_gcode_button.setToolTip(
+            _("Opens TAB to view/modify/print G-Code\n"
+              "file.")
+        )
+
+        # GO Button
+        self.export_gcode_button = QtWidgets.QPushButton(_('Save CNC Code'))
+        self.export_gcode_button.setToolTip(
+            _("Opens dialog to save G-Code\n"
+              "file.")
+        )
+
+        h_lay.addWidget(self.modify_gcode_button)
+        h_lay.addWidget(self.export_gcode_button)
+        # self.custom_box.addWidget(self.export_gcode_button)
+
+class NotesObjectUI(ObjectUI):
+    """
+    User interface for Notes objects.
+    """
+
+    def __init__(self, parent=None):
+        """
+        Creates the user interface for Notes objects. GUI elements should
+        be placed in ``self.custom_box`` to preserve the layout.
+        """
+
+        ObjectUI.__init__(self, title=_('Notes Object'), icon_file='share/cnc32.png', parent=parent)
+
+        # Scale and offset ans skew are not available for CNCJob objects.
+        # Hiding from the GUI.
+        for i in range(0, self.scale_grid.count()):
+            self.scale_grid.itemAt(i).widget().hide()
+        self.scale_label.hide()
+        self.scale_button.hide()
+
+        for i in range(0, self.offset_grid.count()):
+            self.offset_grid.itemAt(i).widget().hide()
+        self.offset_label.hide()
+        self.offset_button.hide()
+
+        # ## Plot options
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
+        self.custom_box.addWidget(self.plot_options_label)
+
+        self.cncplot_method_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot kind"))
+        self.cncplot_method_label.setToolTip(
+            _(
+                "This selects the kind of geometries on the canvas to plot.\n"
+                "Those can be either of type 'Travel' which means the moves\n"
+                "above the work piece or it can be of type 'Cut',\n"
+                "which means the moves that cut into the material."
+            )
+        )
+
+        self.cncplot_method_combo = RadioSet([
+            {"label": _("All"), "value": "all"},
+            {"label": _("Travel"), "value": "travel"},
+            {"label": _("Cut"), "value": "cut"}
+        ], stretch=False)
+
+        self.annotation_label = QtWidgets.QLabel("<b>%s:</b>" % _("Display Annotation"))
+        self.annotation_label.setToolTip(
+            _("This selects if to display text annotation on the plot.\n"
+              "When checked it will display numbers in order for each end\n"
+              "of a travel line.")
+        )
+        self.annotation_cb = FCCheckBox()
+
+        # ## Object name
+        self.name_hlay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(self.name_hlay)
+        name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
+        self.name_entry = FCEntry()
+        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_hlay.addWidget(name_label)
+        self.name_hlay.addWidget(self.name_entry)
+
+        self.t_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _("Travelled dist."))
+        self.t_distance_label.setToolTip(
+            _("This is the total travelled distance on X-Y plane.\n"
+              "In current units.")
+        )
+        self.t_distance_entry = FCEntry()
+        self.t_distance_entry.setToolTip(
+            _("This is the total travelled distance on X-Y plane.\n"
+              "In current units.")
+        )
+        self.units_label = QtWidgets.QLabel()
+
+        self.t_time_label = QtWidgets.QLabel("<b>%s:</b>" % _("Estimated time"))
+        self.t_time_label.setToolTip(
+            _("This is the estimated time to do the routing/drilling,\n"
+              "without the time spent in ToolChange events.")
+        )
+        self.t_time_entry = FCEntry()
+        self.t_time_entry.setToolTip(
+            _("This is the estimated time to do the routing/drilling,\n"
+              "without the time spent in ToolChange events.")
+        )
+        self.units_time_label = QtWidgets.QLabel()
+
+        f_lay = QtWidgets.QGridLayout()
+        f_lay.setColumnStretch(1, 1)
+        f_lay.setColumnStretch(2, 1)
+
+        self.custom_box.addLayout(f_lay)
+        f_lay.addWidget(self.cncplot_method_label, 0, 0)
+        f_lay.addWidget(self.cncplot_method_combo, 0, 1)
+        f_lay.addWidget(QtWidgets.QLabel(''), 0, 2)
+        f_lay.addWidget(self.annotation_label, 1, 0)
+        f_lay.addWidget(self.annotation_cb, 1, 1)
+        f_lay.addWidget(QtWidgets.QLabel(''), 1, 2)
+        f_lay.addWidget(self.t_distance_label, 2, 0)
+        f_lay.addWidget(self.t_distance_entry, 2, 1)
+        f_lay.addWidget(self.units_label, 2, 2)
+        f_lay.addWidget(self.t_time_label, 3, 0)
+        f_lay.addWidget(self.t_time_entry, 3, 1)
+        f_lay.addWidget(self.units_time_label, 3, 2)
+
+        self.t_distance_label.hide()
+        self.t_distance_entry.setVisible(False)
+        self.t_time_label.hide()
+        self.t_time_entry.setVisible(False)
+
+        e1_lbl = QtWidgets.QLabel('')
+        self.custom_box.addWidget(e1_lbl)
+
+        hlay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(hlay)
+
+        # CNC Tools Table for plot
+        self.cnc_tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('CNC Tools Table'))
+        self.cnc_tools_table_label.setToolTip(
+            _(
+                "Tools in this CNCJob object used for cutting.\n"
+                "The tool diameter is used for plotting on canvas.\n"
+                "The 'Offset' entry will set an offset for the cut.\n"
+                "'Offset' can be inside, outside, on path (none) and custom.\n"
+                "'Type' entry is only informative and it allow to know the \n"
+                "intent of using the current tool. \n"
+                "It can be Rough(ing), Finish(ing) or Iso(lation).\n"
+                "The 'Tool type'(TT) can be circular with 1 to 4 teeths(C1..C4),\n"
+                "ball(B), or V-Shaped(V)."
+            )
+        )
+        hlay.addWidget(self.cnc_tools_table_label)
+
+        # Plot CB
+        # self.plot_cb = QtWidgets.QCheckBox('Plot')
+        self.plot_cb = FCCheckBox(_('Plot Object'))
+        self.plot_cb.setToolTip(
+            _("Plot (show) this object.")
+        )
+        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        hlay.addStretch()
+        hlay.addWidget(self.plot_cb)
+
+        self.cnc_tools_table = FCTable()
+        self.custom_box.addWidget(self.cnc_tools_table)
+
+        # self.cnc_tools_table.setColumnCount(4)
+        # self.cnc_tools_table.setHorizontalHeaderLabels(['#', 'Dia', 'Plot', ''])
+        # self.cnc_tools_table.setColumnHidden(3, True)
+        self.cnc_tools_table.setColumnCount(7)
+        self.cnc_tools_table.setColumnWidth(0, 20)
+        self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Offset'), _('Type'), _('TT'), '',
+                                                        _('P')])
+        self.cnc_tools_table.setColumnHidden(5, True)
+        # stylesheet = "::section{Background-color:rgb(239,239,245)}"
+        # self.cnc_tools_table.horizontalHeader().setStyleSheet(stylesheet)
+
+        # Update plot button
+        self.updateplot_button = QtWidgets.QPushButton(_('Update Plot'))
+        self.updateplot_button.setToolTip(
+            _("Update the plot.")
+        )
+        self.custom_box.addWidget(self.updateplot_button)
+
+        # ####################
+        # ## Export G-Code ##
+        # ####################
+        self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export CNC Code"))
+        self.export_gcode_label.setToolTip(
+            _("Export and save G-Code to\n"
+              "make this object to a file.")
+        )
+        self.custom_box.addWidget(self.export_gcode_label)
+
+        # Prepend text to GCode
+        prependlabel = QtWidgets.QLabel('%s:' % _('Prepend to CNC Code'))
+        prependlabel.setToolTip(
+            _("Type here any G-Code commands you would\n"
+              "like to add at the beginning of the G-Code file.")
+        )
+        self.custom_box.addWidget(prependlabel)
+
+        self.prepend_text = FCTextArea()
+        self.custom_box.addWidget(self.prepend_text)
+
+        # Append text to GCode
+        appendlabel = QtWidgets.QLabel('%s:' % _('Append to CNC Code'))
+        appendlabel.setToolTip(
+            _("Type here any G-Code commands you would\n"
+              "like to append to the generated file.\n"
+              "I.e.: M2 (End of program)")
+        )
+        self.custom_box.addWidget(appendlabel)
+
+        self.append_text = FCTextArea()
+        self.custom_box.addWidget(self.append_text)
+
+        self.cnc_frame = QtWidgets.QFrame()
+        self.cnc_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.cnc_frame)
+        self.cnc_box = QtWidgets.QVBoxLayout()
+        self.cnc_box.setContentsMargins(0, 0, 0, 0)
+        self.cnc_frame.setLayout(self.cnc_box)
+
+        # Toolchange Custom G-Code
+        self.toolchangelabel = QtWidgets.QLabel('%s:' % _('Toolchange G-Code'))
+        self.toolchangelabel.setToolTip(
+            _(
+                "Type here any G-Code commands you would\n"
+                "like to be executed when Toolchange event is encountered.\n"
+                "This will constitute a Custom Toolchange GCode,\n"
+                "or a Toolchange Macro.\n"
+                "The FlatCAM variables are surrounded by '%' symbol.\n\n"
+                "WARNING: it can be used only with a postprocessor file\n"
+                "that has 'toolchange_custom' in it's name and this is built\n"
+                "having as template the 'Toolchange Custom' posprocessor file."
+            )
+        )
+        self.cnc_box.addWidget(self.toolchangelabel)
+
+        self.toolchange_text = FCTextArea()
+        self.cnc_box.addWidget(self.toolchange_text)
+
+        cnclay = QtWidgets.QHBoxLayout()
+        self.cnc_box.addLayout(cnclay)
+
+        # Toolchange Replacement Enable
+        self.toolchange_cb = FCCheckBox(label='%s' % _('Use Toolchange Macro'))
+        self.toolchange_cb.setToolTip(
+            _("Check this box if you want to use\n"
+              "a Custom Toolchange GCode (macro).")
+        )
+
+        # Variable list
+        self.tc_variable_combo = FCComboBox()
+        self.tc_variable_combo.setToolTip(
+            _(
+                "A list of the FlatCAM variables that can be used\n"
+                "in the Toolchange event.\n"
+                "They have to be surrounded by the '%' symbol"
+            )
+        )
+
+        # Populate the Combo Box
+        variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
+                     'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
+        self.tc_variable_combo.addItems(variables)
+        self.tc_variable_combo.setItemData(0, _("FlatCAM CNC parameters"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(1, _("tool = tool number"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(2, _("tooldia = tool diameter"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(3, _("t_drills = for Excellon, total number of drills"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(4, _("x_toolchange = X coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(5, _("y_toolchange = Y coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(6, _("z_toolchange = Z coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(7, _("z_cut = depth where to cut"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(8, _("z_move = height where to travel"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(9, _("z_depthpercut = the step value for multidepth cut"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(10, _("spindlesspeed = the value for the spindle speed"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(11, _("dwelltime = time to dwell to allow the "
+                                                 "spindle to reach it's set RPM"),
+                                           Qt.ToolTipRole)
+
+        cnclay.addWidget(self.toolchange_cb)
+        cnclay.addStretch()
+        cnclay.addWidget(self.tc_variable_combo)
+
+        self.toolch_ois = OptionalInputSection(self.toolchange_cb,
+                                               [self.toolchangelabel, self.toolchange_text, self.tc_variable_combo])
+
+        h_lay = QtWidgets.QHBoxLayout()
+        h_lay.setAlignment(QtCore.Qt.AlignVCenter)
+        self.custom_box.addLayout(h_lay)
+
+        # Edit GCode Button
+        self.modify_gcode_button = QtWidgets.QPushButton(_('View CNC Code'))
+        self.modify_gcode_button.setToolTip(
+            _("Opens TAB to view/modify/print G-Code\n"
+              "file.")
+        )
+
+        # GO Button
+        self.export_gcode_button = QtWidgets.QPushButton(_('Save CNC Code'))
+        self.export_gcode_button.setToolTip(
+            _("Opens dialog to save G-Code\n"
+              "file.")
+        )
+
+        h_lay.addWidget(self.modify_gcode_button)
+        h_lay.addWidget(self.export_gcode_button)
+        # self.custom_box.addWidget(self.export_gcode_button)
+
 # end of file

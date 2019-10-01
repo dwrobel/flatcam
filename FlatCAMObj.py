@@ -6439,4 +6439,60 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.cnc_tools.clear()
         self.cnc_tools = deepcopy(temp_tools_dict)
 
+
+class FlatCAMScript(FlatCAMObj):
+    """
+    Represents a TCL script object.
+    """
+    optionChanged = QtCore.pyqtSignal(str)
+    ui_type = ScriptObjectUI
+
+    def __init__(self, name):
+        FlatCAMApp.App.log.debug("Creating a FlatCAMScript object...")
+        FlatCAMObj.__init__(self, name)
+
+        self.kind = "script"
+
+    def set_ui(self, ui):
+        FlatCAMObj.set_ui(self, ui)
+        FlatCAMApp.App.log.debug("FlatCAMScript.set_ui()")
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
+    def build_ui(self):
+        pass
+
+
+class FlatCAMNotes(FlatCAMObj):
+    """
+    Represents a Notes object.
+    """
+    optionChanged = QtCore.pyqtSignal(str)
+    ui_type = NotesObjectUI
+
+    def __init__(self, name):
+        FlatCAMApp.App.log.debug("Creating a Notes object...")
+        FlatCAMObj.__init__(self, name)
+
+        self.kind = "notes"
+
+    def set_ui(self, ui):
+        FlatCAMObj.set_ui(self, ui)
+        FlatCAMApp.App.log.debug("FlatCAMNotes.set_ui()")
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
+    def build_ui(self):
+        pass
+
 # end of file
