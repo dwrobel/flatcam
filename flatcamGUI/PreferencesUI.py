@@ -1115,7 +1115,57 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         )
         self.circle_steps_entry = IntEntry()
         grid0.addWidget(self.circle_steps_label, 1, 0)
-        grid0.addWidget(self.circle_steps_entry, 1, 1)
+        grid0.addWidget(self.circle_steps_entry, 1, 1, 1, 2)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 2, 0, 1, 3)
+
+        # Default format for Gerber
+        self.gerber_default_label = QtWidgets.QLabel('<b>%s:</b>' % _('Default Values'))
+        self.gerber_default_label.setToolTip(
+            _("Those values will be used as fallback values\n"
+              "in case that they are not found in the Gerber file.")
+        )
+
+        grid0.addWidget(self.gerber_default_label, 3, 0, 1, 3)
+
+        # Gerber Units
+        self.gerber_units_label = QtWidgets.QLabel('%s:' % _('Units'))
+        self.gerber_units_label.setToolTip(
+            _("The units used in the Gerber file.")
+        )
+
+        self.gerber_units_radio = RadioSet([{'label': _('INCH'), 'value': 'IN'},
+                                            {'label': _('MM'), 'value': 'MM'}])
+        self.gerber_units_radio.setToolTip(
+            _("The units used in the Gerber file.")
+        )
+
+        grid0.addWidget(self.gerber_units_label, 4, 0)
+        grid0.addWidget(self.gerber_units_radio, 4, 1, 1, 2)
+
+        # Gerber Zeros
+        self.gerber_zeros_label = QtWidgets.QLabel('%s:' % _('Zeros'))
+        self.gerber_zeros_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.gerber_zeros_label.setToolTip(
+            _("This sets the type of Gerber zeros.\n"
+              "If LZ then Leading Zeros are removed and\n"
+              "Trailing Zeros are kept.\n"
+              "If TZ is checked then Trailing Zeros are removed\n"
+              "and Leading Zeros are kept.")
+        )
+
+        self.gerber_zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'L'},
+                                            {'label': _('TZ'), 'value': 'T'}])
+        self.gerber_zeros_radio.setToolTip(
+            _("This sets the type of Gerber zeros.\n"
+              "If LZ then Leading Zeros are removed and\n"
+              "Trailing Zeros are kept.\n"
+              "If TZ is checked then Trailing Zeros are removed\n"
+              "and Leading Zeros are kept.")
+        )
+
+        grid0.addWidget(self.gerber_zeros_label, 5, 0)
+        grid0.addWidget(self.gerber_zeros_radio, 5, 1, 1, 2)
 
         self.layout.addStretch()
 

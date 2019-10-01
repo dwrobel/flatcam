@@ -2142,7 +2142,7 @@ class Gerber (Geometry):
         self.frac_digits = 4
         """Number of fraction digits in Gerber numbers. Used during parsing."""
 
-        self.gerber_zeros = 'L'
+        self.gerber_zeros = self.app.defaults['gerber_def_zeros']
         """Zeros in Gerber numbers. If 'L' then remove leading zeros, if 'T' remove trailing zeros. Used during parsing.
         """
 
@@ -2166,7 +2166,7 @@ class Gerber (Geometry):
         '''
 
         # store the file units here:
-        self.gerber_units = 'IN'
+        self.gerber_units = self.app.defaults['gerber_def_units']
 
         # aperture storage
         self.apertures = {}
@@ -2197,9 +2197,9 @@ class Gerber (Geometry):
         # The format of X and Y must be the same!
         # L-omit leading zeros, T-omit trailing zeros, D-no zero supression
         # A-absolute notation, I-incremental notation
-        self.fmt_re = re.compile(r'%?FS([LTD])([AI])X(\d)(\d)Y\d\d\*%?$')
-        self.fmt_re_alt = re.compile(r'%FS([LT])([AI])X(\d)(\d)Y\d\d\*MO(IN|MM)\*%$')
-        self.fmt_re_orcad = re.compile(r'(G\d+)*\**%FS([LT])([AI]).*X(\d)(\d)Y\d\d\*%$')
+        self.fmt_re = re.compile(r'%?FS([LTD])?([AI])X(\d)(\d)Y\d\d\*%?$')
+        self.fmt_re_alt = re.compile(r'%FS([LTD])?([AI])X(\d)(\d)Y\d\d\*MO(IN|MM)\*%$')
+        self.fmt_re_orcad = re.compile(r'(G\d+)*\**%FS([LTD])?([AI]).*X(\d)(\d)Y\d\d\*%$')
 
         # Mode (IN/MM)
         self.mode_re = re.compile(r'^%?MO(IN|MM)\*%?$')
@@ -2408,9 +2408,6 @@ class Gerber (Geometry):
         # Coordinates of the current path, each is [x, y]
         path = []
 
-        # store the file units here:
-        self.gerber_units = 'IN'
-
         # this is for temporary storage of solid geometry until it is added to poly_buffer
         geo_s = None
 
@@ -2555,7 +2552,8 @@ class Gerber (Geometry):
                 match = self.fmt_re.search(gline)
                 if match:
                     absolute = {'A': 'Absolute', 'I': 'Relative'}[match.group(2)]
-                    self.gerber_zeros = match.group(1)
+                    if match.group(1) is not None:
+                        self.gerber_zeros = match.group(1)
                     self.int_digits = int(match.group(3))
                     self.frac_digits = int(match.group(4))
                     log.debug("Gerber format found. (%s) " % str(gline))
@@ -2582,7 +2580,8 @@ class Gerber (Geometry):
                 match = self.fmt_re_alt.search(gline)
                 if match:
                     absolute = {'A': 'Absolute', 'I': 'Relative'}[match.group(2)]
-                    self.gerber_zeros = match.group(1)
+                    if match.group(1) is not None:
+                        self.gerber_zeros = match.group(1)
                     self.int_digits = int(match.group(3))
                     self.frac_digits = int(match.group(4))
                     log.debug("Gerber format found. (%s) " % str(gline))
@@ -2608,7 +2607,9 @@ class Gerber (Geometry):
                         elif match.group(1) == 'G75':
                             quadrant_mode = 'MULTI'
                         absolute = {'A': 'Absolute', 'I': 'Relative'}[match.group(3)]
-                        self.gerber_zeros = match.group(2)
+                        if match.group(2) is not None:
+                            self.gerber_zeros = match.group(2)
+
                         self.int_digits = int(match.group(4))
                         self.frac_digits = int(match.group(5))
                         log.debug("Gerber format found. (%s) " % str(gline))

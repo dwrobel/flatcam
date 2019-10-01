@@ -500,6 +500,8 @@ class App(QtCore.QObject):
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
             "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
             "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
+            "gerber_def_units": self.ui.gerber_defaults_form.gerber_gen_group.gerber_units_radio,
+            "gerber_def_zeros": self.ui.gerber_defaults_form.gerber_gen_group.gerber_zeros_radio,
 
             # Gerber Options
             "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
@@ -922,6 +924,8 @@ class App(QtCore.QObject):
             "gerber_multicolored": False,
             "gerber_circle_steps": 128,
             "gerber_use_buffer_for_union": True,
+            "gerber_def_units": 'IN',
+            "gerber_def_zeros": 'L',
 
             # Gerber Options
             "gerber_isotooldia": 0.00787402,

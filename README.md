@@ -14,7 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed the FCSpinner and FCDoubleSpinner GUI elements to select all on first click and deselect on second click in the Spinbox LineEdit
 - for Gerber object in Selected Tab added ability to chose a V-Shape tool and therefore control the isolation better by adjusting the cut width of the isolation in function of the cut depth, tip width of the tool and the tip angle of the tool
-- when in Gerber UI is selectd the V-Shape tool, all those parameters (tip dia, dip angle, tool_type = 'V' and cut Z) are transferred to the generated Geometry and prefilled in the Geoemtry UI
+- when in Gerber UI is selected the V-Shape tool, all those parameters (tip dia, dip angle, tool_type = 'V' and cut Z) are transferred to the generated Geometry and prefilled in the Geoemtry UI
+- added a fix in the Gerber parser to work even when there is no information about zero suppression in the Gerber file
+- added new settings in Edit -> Preferences -> Gerber for Gerber Units and Gerber Zeros to be used as defaults in case that those informations are missing from the Gerber file
 
 30.09.2019
 
