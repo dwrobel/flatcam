@@ -313,6 +313,7 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(self.cutzlabel, 3, 0)
         grid1.addWidget(self.cutz_spinner, 3, 1, 1, 2)
 
+        # Tool diameter
         tdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
         tdlabel.setToolTip(
             _("Diameter of the cutting tool.\n"
@@ -326,6 +327,7 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(tdlabel, 4, 0)
         grid1.addWidget(self.iso_tool_dia_entry, 4, 1, 1, 2)
 
+        # Number of Passes
         passlabel = QtWidgets.QLabel('%s:' % _('# Passes'))
         passlabel.setToolTip(
             _("Width of the isolation gap in\n"
@@ -337,6 +339,7 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(passlabel, 5, 0)
         grid1.addWidget(self.iso_width_entry, 5, 1, 1, 2)
 
+        # Pass overlap
         overlabel = QtWidgets.QLabel('%s:' % _('Pass overlap'))
         overlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"

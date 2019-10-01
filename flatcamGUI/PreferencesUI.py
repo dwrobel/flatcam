@@ -1340,6 +1340,58 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.aperture_table_visibility_cb, 1, 0, 1, 2)
 
+        # Tool Type
+        self.tool_type_label = QtWidgets.QLabel('<b>%s</b>' % _('Tool Type'))
+        self.tool_type_label.setToolTip(
+            _("Choose what tool to use for Gerber isolation:\n"
+              "'Circular' or 'V-shape'.\n"
+              "When the 'V-shape' is selected then the tool\n"
+              "diameter will depend on the chosen cut depth.")
+        )
+        self.tool_type_radio = RadioSet([{'label': 'Circular', 'value': 'circular'},
+                                         {'label': 'V-Shape', 'value': 'v'}])
+
+        grid0.addWidget(self.tool_type_label, 2, 0)
+        grid0.addWidget(self.tool_type_radio, 2, 1, 1, 2)
+
+        # Tip Dia
+        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel.setToolTip(
+            _("The tip diameter for V-Shape Tool")
+        )
+        self.tipdia_spinner = FCDoubleSpinner()
+        self.tipdia_spinner.set_range(-99.9999, 99.9999)
+        self.tipdia_spinner.setSingleStep(0.1)
+        self.tipdia_spinner.setWrapping(True)
+        grid0.addWidget(self.tipdialabel, 3, 0)
+        grid0.addWidget(self.tipdia_spinner, 3, 1, 1, 2)
+
+        # Tip Angle
+        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel.setToolTip(
+            _("The tip angle for V-Shape Tool.\n"
+              "In degree.")
+        )
+        self.tipangle_spinner = FCSpinner()
+        self.tipangle_spinner.set_range(0, 180)
+        self.tipangle_spinner.setSingleStep(5)
+        self.tipangle_spinner.setWrapping(True)
+        grid0.addWidget(self.tipanglelabel, 4, 0)
+        grid0.addWidget(self.tipangle_spinner, 4, 1, 1, 2)
+
+        # Cut Z
+        self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        self.cutzlabel.setToolTip(
+            _("Cutting depth (negative)\n"
+              "below the copper surface.")
+        )
+        self.cutz_spinner = FCDoubleSpinner()
+        self.cutz_spinner.set_range(-99.9999, -0.0001)
+        self.cutz_spinner.setSingleStep(0.1)
+        self.cutz_spinner.setWrapping(True)
+        grid0.addWidget(self.cutzlabel, 5, 0)
+        grid0.addWidget(self.cutz_spinner, 5, 1, 1, 2)
+
         # Buffering Type
         buffering_label = QtWidgets.QLabel('%s:' % _('Buffering'))
         buffering_label.setToolTip(
@@ -1350,18 +1402,21 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.buffering_radio = RadioSet([{'label': _('None'), 'value': 'no'},
                                          {'label': _('Full'), 'value': 'full'}])
-        grid0.addWidget(buffering_label, 2, 0)
-        grid0.addWidget(self.buffering_radio, 2, 1)
+        grid0.addWidget(buffering_label, 6, 0)
+        grid0.addWidget(self.buffering_radio, 6, 1)
 
         # Simplification
         self.simplify_cb = FCCheckBox(label=_('Simplify'))
-        self.simplify_cb.setToolTip(_("When checked all the Gerber polygons will be\n"
-                                      "loaded with simplification having a set tolerance."))
-        grid0.addWidget(self.simplify_cb, 3, 0, 1, 2)
+        self.simplify_cb.setToolTip(
+            _("When checked all the Gerber polygons will be\n"
+              "loaded with simplification having a set tolerance.\n"
+              "<<WARNING>>: Don't change this unless you know what you are doing !!!")
+                                    )
+        grid0.addWidget(self.simplify_cb, 7, 0, 1, 2)
 
         # Simplification tolerance
         self.simplification_tol_label = QtWidgets.QLabel(_('Tolerance'))
-        self.simplification_tol_label.setToolTip(_("Tolerance for poligon simplification."))
+        self.simplification_tol_label.setToolTip(_("Tolerance for polygon simplification."))
 
         self.simplification_tol_spinner = FCDoubleSpinner()
         self.simplification_tol_spinner.set_precision(5)
@@ -1369,35 +1424,11 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.simplification_tol_spinner.setRange(0.00000, 0.01000)
         self.simplification_tol_spinner.setSingleStep(0.0001)
 
-        grid0.addWidget(self.simplification_tol_label, 4, 0)
-        grid0.addWidget(self.simplification_tol_spinner, 4, 1)
+        grid0.addWidget(self.simplification_tol_label, 8, 0)
+        grid0.addWidget(self.simplification_tol_spinner, 8, 1)
         self.ois_simplif = OptionalInputSection(self.simplify_cb,
                                                 [self.simplification_tol_label, self.simplification_tol_spinner],
                                                 logic=True)
-
-        # Scale Aperture Factor
-        # self.scale_aperture_label = QtWidgets.QLabel(_('Ap. Scale Factor:'))
-        # self.scale_aperture_label.setToolTip(
-        #     _("Change the size of the selected apertures.\n"
-        #     "Factor by which to multiply\n"
-        #     "geometric features of this object.")
-        # )
-        # grid0.addWidget(self.scale_aperture_label, 2, 0)
-        #
-        # self.scale_aperture_entry = FloatEntry2()
-        # grid0.addWidget(self.scale_aperture_entry, 2, 1)
-
-        # Buffer Aperture Factor
-        # self.buffer_aperture_label = QtWidgets.QLabel(_('Ap. Buffer Factor:'))
-        # self.buffer_aperture_label.setToolTip(
-        #     _("Change the size of the selected apertures.\n"
-        #     "Factor by which to expand/shrink\n"
-        #     "geometric features of this object.")
-        # )
-        # grid0.addWidget(self.buffer_aperture_label, 3, 0)
-        #
-        # self.buffer_aperture_entry = FloatEntry2()
-        # grid0.addWidget(self.buffer_aperture_entry, 3, 1)
 
         self.layout.addStretch()
 
