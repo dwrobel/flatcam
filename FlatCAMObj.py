@@ -626,11 +626,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
 
         self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type_change)
-        self.ui.tool_type_radio.set_value('circular')
+        # establish visibility for the GUI elements found in the slot function
+        self.ui.tool_type_radio.activated_custom.emit(self.options['tool_type'])
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+            self.options['tool_type'] = 'circular'
 
             self.ui.tool_type_label.hide()
             self.ui.tool_type_radio.hide()
@@ -4678,6 +4680,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         :param segx: number of segments on the X axis, for auto-levelling
         :param segy: number of segments on the Y axis, for auto-levelling
+        :param plot: if True the generated object will be plotted; if False will not be plotted
         :param use_thread: if True use threading
         :return: None
         """

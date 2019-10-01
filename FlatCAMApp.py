@@ -5363,7 +5363,7 @@ class App(QtCore.QObject):
                       "tools_solderpaste_z_toolchange", "tools_solderpaste_xy_toolchange", "tools_solderpaste_frxy",
                       "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
 
-                      'global_gridx', 'global_gridy', 'global_snap_max']
+                      'global_gridx', 'global_gridy', 'global_snap_max', "global_tolerance"]
 
         def scale_options(sfactor):
             for dim in dimensions:

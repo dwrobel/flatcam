@@ -883,7 +883,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                   {'label': _('OpenGL(3D)'), 'value': '3D'}])
 
         # Application Level for FlatCAM
-        self.app_level_label = QtWidgets.QLabel('<b>%s:</b>' % _('APP. LEVEL'))
+        self.app_level_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('APP. LEVEL'))
         self.app_level_label.setToolTip(_("Choose the default level of usage for FlatCAM.\n"
                                           "BASIC level -> reduced functionality, best for beginner's.\n"
                                           "ADVANCED level -> full functionality.\n\n"

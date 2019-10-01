@@ -18,6 +18,8 @@ CAD program, and create G-Code for Isolation routing.
 - added a fix in the Gerber parser to work even when there is no information about zero suppression in the Gerber file
 - added new settings in Edit -> Preferences -> Gerber for Gerber Units and Gerber Zeros to be used as defaults in case that those informations are missing from the Gerber file
 - added new settings for the Gerber newly introduced feature to isolate with the V-Shape tools (tip dia, tip angle, tool_type and cut Z) in Edit -> Preferences -> Gerber Advanced
+- made those settings just added for Gerber, to be updated on object creation
+- added the Geo Tolerance parameter to those that are converted from MM to INCH
 
 30.09.2019
 
