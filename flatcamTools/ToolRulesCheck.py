@@ -486,7 +486,7 @@ class RulesCheck(FlatCAMTool):
         self.constrain_flag = False
 
         # Multiprocessing Process Pool
-        self.pool = Pool(processes=cpu_count())
+        self.pool = self.app.pool
         self.results = None
 
     # def on_object_loaded(self, index, row):

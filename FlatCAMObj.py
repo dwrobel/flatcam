@@ -16,7 +16,10 @@ from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
 from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from camlib import *
+
 import itertools
+import tkinter as tk
+import sys
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -164,11 +167,23 @@ class FlatCAMObj(QtCore.QObject):
 
         assert isinstance(self.ui, ObjectUI)
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
-        self.ui.offset_button.clicked.connect(self.on_offset_button_click)
-        self.ui.scale_button.clicked.connect(self.on_scale_button_click)
-
-        self.ui.offsetvector_entry.returnPressed.connect(self.on_offset_button_click)
-        self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+        try:
+            # it will raise an exception for those FlatCAM objects that do not build UI with the common elements
+            self.ui.offset_button.clicked.connect(self.on_offset_button_click)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.scale_button.clicked.connect(self.on_scale_button_click)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.offsetvector_entry.returnPressed.connect(self.on_offset_button_click)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+        except (TypeError, AttributeError):
+            pass
         # self.ui.skew_button.clicked.connect(self.on_skew_button_click)
 
     def build_ui(self):
@@ -6481,6 +6496,9 @@ class FlatCAMScript(FlatCAMObj):
         FlatCAMObj.set_ui(self, ui)
         FlatCAMApp.App.log.debug("FlatCAMScript.set_ui()")
 
+        assert isinstance(self.ui, ScriptObjectUI), \
+            "Expected a ScriptObjectUI, got %s" % type(self.ui)
+
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         if self.units == "IN":
@@ -6488,26 +6506,137 @@ class FlatCAMScript(FlatCAMObj):
         else:
             self.decimals = 2
 
+        # Fill form fields only on object create
+        self.to_form()
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText(_(
+                '<span style="color:green;"><b>Basic</b></span>'
+            ))
+        else:
+            self.ui.level.setText(_(
+                '<span style="color:red;"><b>Advanced</b></span>'
+            ))
+
+        self.script_editor_tab = TextEditor(app=self.app)
+
+        # first clear previous text in text editor (if any)
+        self.script_editor_tab.code_editor.clear()
+        self.script_editor_tab.code_editor.setReadOnly(False)
+
+        self.script_editor_tab.buttonRun.show()
+
+        self.ui.autocomplete_cb.set_value(self.app.defaults['script_autocompleter'])
+        self.on_autocomplete_changed(state= self.app.defaults['script_autocompleter'])
+
+        flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
+        self.script_editor_tab.buttonOpen.clicked.disconnect()
+        self.script_editor_tab.buttonOpen.clicked.connect(lambda: self.script_editor_tab.handleOpen(filt=flt))
+        self.script_editor_tab.buttonSave.clicked.disconnect()
+        self.script_editor_tab.buttonSave.clicked.connect(lambda: self.script_editor_tab.handleSaveGCode(filt=flt))
+
+        self.script_editor_tab.buttonRun.clicked.connect(self.handle_run_code)
+
+        self.script_editor_tab.handleTextChanged()
+
+        self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
+
+        # add the source file to the Code Editor
+        for line in self.source_file.splitlines():
+            self.script_editor_tab.code_editor.append(line)
+
+        self.build_ui()
+
     def build_ui(self):
-        pass
+        FlatCAMObj.build_ui(self)
+        tab_here = False
+
+        # try to not add too many times a tab that it is already installed
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == self.options['name']:
+                tab_here = True
+                break
+
+        # add the tab if it is not already added
+        if tab_here is False:
+            self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
+            self.script_editor_tab.setObjectName(self.options['name'])
+
+        # Switch plot_area to CNCJob tab
+        self.app.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
+
+    def handle_run_code(self):
+        # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
+        # tries to print on a hidden widget, therefore show the dock if hidden
+        if self.app.ui.shell_dock.isHidden():
+            self.app.ui.shell_dock.show()
+
+        self.script_code = deepcopy(self.script_editor_tab.code_editor.toPlainText())
+
+        old_line = ''
+        for tcl_command_line in self.script_code.splitlines():
+            # do not process lines starting with '#' = comment and empty lines
+            if not tcl_command_line.startswith('#') and tcl_command_line != '':
+                # id FlatCAM is run in Windows then replace all the slashes with
+                # the UNIX style slash that TCL understands
+                if sys.platform == 'win32':
+                    if "open" in tcl_command_line:
+                        tcl_command_line = tcl_command_line.replace('\\', '/')
+
+                if old_line != '':
+                    new_command = old_line + tcl_command_line + '\n'
+                else:
+                    new_command = tcl_command_line
+
+                # execute the actual Tcl command
+                try:
+                    self.app.shell.open_proccessing()  # Disables input box.
+
+                    result = self.app.tcl.eval(str(new_command))
+                    if result != 'None':
+                        self.app.shell.append_output(result + '\n')
+
+                    old_line = ''
+                except tk.TclError:
+                    old_line = old_line + tcl_command_line + '\n'
+                except Exception as e:
+                    log.debug("App.handleRunCode() --> %s" % str(e))
+
+        if old_line != '':
+            # it means that the script finished with an error
+            result = self.app.tcl.eval("set errorInfo")
+            log.error("Exec command Exception: %s" % (result + '\n'))
+            self.app.shell.append_error('ERROR: ' + result + '\n')
+
+        self.app.shell.close_proccessing()
+
+    def on_autocomplete_changed(self, state):
+        if state:
+            self.script_editor_tab.code_editor.completer_enable = True
+        else:
+            self.script_editor_tab.code_editor.completer_enable = False
 
 
-class FlatCAMNotes(FlatCAMObj):
+class FlatCAMDocument(FlatCAMObj):
     """
-    Represents a Notes object.
+    Represents a Document object.
     """
     optionChanged = QtCore.pyqtSignal(str)
-    ui_type = NotesObjectUI
+    ui_type = DocumentObjectUI
 
     def __init__(self, name):
-        FlatCAMApp.App.log.debug("Creating a Notes object...")
+        FlatCAMApp.App.log.debug("Creating a Document object...")
         FlatCAMObj.__init__(self, name)
 
-        self.kind = "notes"
+        self.kind = "document"
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
-        FlatCAMApp.App.log.debug("FlatCAMNotes.set_ui()")
+        FlatCAMApp.App.log.debug("FlatCAMDocument.set_ui()")
+
+        assert isinstance(self.ui, DocumentObjectUI), \
+            "Expected a DocumentObjectUI, got %s" % type(self.ui)
 
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
@@ -6516,7 +6645,22 @@ class FlatCAMNotes(FlatCAMObj):
         else:
             self.decimals = 2
 
+        # Fill form fields only on object create
+        self.to_form()
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText(_(
+                '<span style="color:green;"><b>Basic</b></span>'
+            ))
+        else:
+            self.ui.level.setText(_(
+                '<span style="color:red;"><b>Advanced</b></span>'
+            ))
+
+        self.build_ui()
+
     def build_ui(self):
-        pass
+        FlatCAMObj.build_ui(self)
 
 # end of file

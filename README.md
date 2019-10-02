@@ -15,6 +15,12 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in Geometry Editor that did not allow the copy of geometric elements
 - created a new class that holds all the Code Editor functionality and integrated as a Editor in FlatCAM, the location is in flatcamEditors folder
 - remade all the functions for view_source, scripts and view_code to use the new TextEditor class; now all the Code Editor tabs are being kept alive, before only one could be in an open state
+- changed the name of the new object FlatCAMNotes to a more general one FlatCAMDocument
+- changed the way a new FlatCAMScript object is made, the method that is processing the Tcl commands when the Run button is clicked is moved to the FlatCAMObj.FlatCAMScript() class
+- reused the Multiprocessing Pool declared in the App for the ToolRulesCheck() class
+- adapted the Project context menu for the new types of FLatCAM objects
+- modified the setup_recent_files to accommodate the new FlatCAM objects
+- made sure that when an FlatCAM script object is deleted, it's associated Tab is closed
 
 1.10.2019
 

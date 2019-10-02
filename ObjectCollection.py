@@ -188,7 +188,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         ("geometry", "Geometry"),
         ("cncjob", "CNC Job"),
         ("script", "Scripts"),
-        ("notes", "Notes"),
+        ("document", "Document"),
     ]
 
     classdict = {
@@ -197,7 +197,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         "cncjob": FlatCAMCNCjob,
         "geometry": FlatCAMGeometry,
         "script": FlatCAMScript,
-        "notes": FlatCAMNotes
+        "document": FlatCAMDocument
     }
 
     icon_files = {
@@ -206,7 +206,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         "cncjob": "share/cnc16.png",
         "geometry": "share/geometry16.png",
         "script": "share/script_new16.png",
-        "notes": "share/notes16_1.png"
+        "document": "share/notes16_1.png"
     }
 
     root_item = None
@@ -328,6 +328,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     self.app.ui.menuprojectedit.setVisible(False)
                 if type(obj) != FlatCAMGerber and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMCNCjob:
                     self.app.ui.menuprojectviewsource.setVisible(False)
+                if type(obj) != FlatCAMGerber and type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and \
+                        type(obj) != FlatCAMCNCjob:
+                    # meaning for Scripts and for Document type of FlatCAM object
+                    self.app.ui.menuprojectenable.setVisible(False)
+                    self.app.ui.menuprojectdisable.setVisible(False)
+                    self.app.ui.menuprojectedit.setVisible(False)
+                    self.app.ui.menuprojectproperties.setVisible(False)
+                    self.app.ui.menuprojectgeneratecnc.setVisible(False)
         else:
             self.app.ui.menuprojectgeneratecnc.setVisible(False)
 
@@ -576,12 +584,19 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # send signal with the object that is deleted
         # self.app.object_status_changed.emit(active.obj, 'delete')
 
+        # some objects add a Tab on creation, close it here
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == active.obj.options['name']:
+                self.app.ui.plot_tab_area.removeTab(idx)
+                break
+
         # update the SHELL auto-completer model data
         name = active.obj.options['name']
         try:
             self.app.myKeywords.remove(name)
             self.app.shell._edit.set_model_data(self.app.myKeywords)
-            self.app.ui.code_editor.set_model_data(self.app.myKeywords)
+            # this is not needed any more because now the code editor is created on demand
+            # self.app.ui.code_editor.set_model_data(self.app.myKeywords)
         except Exception as e:
             log.debug(
                 "delete_active() --> Could not remove the old object name from auto-completer model list. %s" % str(e))
@@ -742,7 +757,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             elif obj.kind == 'geometry':
                 self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
                     color='red', name=str(obj.options['name'])))
-
+            elif obj.kind == 'script':
+                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='orange', name=str(obj.options['name'])))
+            elif obj.kind == 'document':
+                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='violet', name=str(obj.options['name'])))
         except IndexError:
             # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')

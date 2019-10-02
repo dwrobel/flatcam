@@ -47,7 +47,7 @@ class TclCommandCncjob(TclCommandSignaled):
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['name']
+    required = []
 
     # structured help for current command, args needs to be ordered
     help = {
@@ -88,15 +88,23 @@ class TclCommandCncjob(TclCommandSignaled):
         :return: None or exception
         """
 
-        name = args['name']
-
-        if 'outname' not in args:
-            args['outname'] = str(name) + "_cnc"
+        name = ''
 
         if 'muted' in args:
             muted = args['muted']
         else:
             muted = 0
+
+        try:
+            name = args['name']
+        except KeyError:
+            if muted == 0:
+                self.raise_tcl_error("Object name is missing")
+            else:
+                return "fail"
+
+        if 'outname' not in args:
+            args['outname'] = str(name) + "_cnc"
 
         obj = self.app.collection.get_by_name(str(name), isCaseSensitive=False)
 

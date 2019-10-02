@@ -1,11 +1,6 @@
 from flatcamGUI.GUIElements import *
 from PyQt5 import QtPrintSupport
 
-import tkinter as tk
-from copy import deepcopy
-
-import sys
-
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -39,10 +34,10 @@ class TextEditor(QtWidgets.QWidget):
 
         self.code_editor = FCTextAreaExtended()
         stylesheet = """
-                                QTextEdit { selection-background-color:yellow;
-                                            selection-color:black;
-                                }
-                             """
+                        QTextEdit { selection-background-color:yellow;
+                                    selection-color:black;
+                        }
+                     """
 
         self.code_editor.setStyleSheet(stylesheet)
 
@@ -129,7 +124,6 @@ class TextEditor(QtWidgets.QWidget):
         self.code_editor.set_model_data(self.app.myKeywords)
 
         self.gcode_edited = ''
-        self.script_code = ''
 
     def handlePrint(self):
         self.app.report_usage("handlePrint()")
@@ -269,79 +263,38 @@ class TextEditor(QtWidgets.QWidget):
         self.app.clipboard.setText(text)
         self.app.inform.emit(_("Code Editor content copied to clipboard ..."))
 
-    def handleRunCode(self):
-        # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
-        # tries to print on a hidden widget, therefore show the dock if hidden
-        if self.app.ui.shell_dock.isHidden():
-            self.app.ui.shell_dock.show()
-
-        self.script_code = deepcopy(self.code_editor.toPlainText())
-
-        old_line = ''
-        for tcl_command_line in self.app.script_code.splitlines():
-            # do not process lines starting with '#' = comment and empty lines
-            if not tcl_command_line.startswith('#') and tcl_command_line != '':
-                # id FlatCAM is run in Windows then replace all the slashes with
-                # the UNIX style slash that TCL understands
-                if sys.platform == 'win32':
-                    if "open" in tcl_command_line:
-                        tcl_command_line = tcl_command_line.replace('\\', '/')
-
-                if old_line != '':
-                    new_command = old_line + tcl_command_line + '\n'
-                else:
-                    new_command = tcl_command_line
-
-                # execute the actual Tcl command
-                try:
-                    self.app.shell.open_proccessing()  # Disables input box.
-
-                    result = self.app.tcl.eval(str(new_command))
-                    if result != 'None':
-                        self.app.shell.append_output(result + '\n')
-
-                    old_line = ''
-                except tk.TclError:
-                    old_line = old_line + tcl_command_line + '\n'
-                except Exception as e:
-                    log.debug("App.handleRunCode() --> %s" % str(e))
-
-        if old_line != '':
-            # it means that the script finished with an error
-            result = self.app.tcl.eval("set errorInfo")
-            log.error("Exec command Exception: %s" % (result + '\n'))
-            self.app.shell.append_error('ERROR: ' + result + '\n')
-
-        self.app.shell.close_proccessing()
-
-    def closeEvent(self, QCloseEvent):
-        try:
-            self.code_editor.textChanged.disconnect()
-        except TypeError:
-            pass
-        try:
-            self.buttonOpen.clicked.disconnect()
-        except TypeError:
-            pass
-        try:
-            self.buttonPrint.clicked.disconnect()
-        except TypeError:
-            pass
-        try:
-            self.buttonPreview.clicked.disconnect()
-        except TypeError:
-            pass
-        try:
-            self.buttonFind.clicked.disconnect()
-        except TypeError:
-            pass
-        try:
-            self.buttonReplace.clicked.disconnect()
-        except TypeError:
-            pass
-        try:
-            self.button_copy_all.clicked.disconnect()
-        except TypeError:
-            pass
-
-        super().closeEvent(QCloseEvent)
+    # def closeEvent(self, QCloseEvent):
+    #     try:
+    #         self.code_editor.textChanged.disconnect()
+    #     except TypeError:
+    #         pass
+    #     try:
+    #         self.buttonOpen.clicked.disconnect()
+    #     except TypeError:
+    #         pass
+    #     try:
+    #         self.buttonPrint.clicked.disconnect()
+    #     except TypeError:
+    #         pass
+    #     try:
+    #         self.buttonPreview.clicked.disconnect()
+    #     except TypeError:
+    #         pass
+    #     try:
+    #         self.buttonFind.clicked.disconnect()
+    #     except TypeError:
+    #         pass
+    #     try:
+    #         self.buttonReplace.clicked.disconnect()
+    #     except TypeError:
+    #         pass
+    #     try:
+    #         self.button_copy_all.clicked.disconnect()
+    #     except TypeError:
+    #         pass
+    #     try:
+    #         self.buttonRun.clicked.disconnect()
+    #     except TypeError:
+    #         pass
+    #
+    #     super().closeEvent(QCloseEvent)

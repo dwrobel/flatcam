@@ -29,7 +29,7 @@ import gc
 from xml.dom.minidom import parseString as parse_xml_string
 
 from multiprocessing.connection import Listener, Client
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 import socket
 from array import array
 
@@ -376,7 +376,7 @@ class App(QtCore.QObject):
         # #############################################################################
         # ##################### CREATE MULTIPROCESSING POOL ###########################
         # #############################################################################
-        self.pool = Pool()
+        self.pool = Pool(processes=cpu_count())
 
         # ##########################################################################
         # ################## Setting the Splash Screen #############################
@@ -1227,9 +1227,14 @@ class App(QtCore.QObject):
                                           'minoffset, multidepth, name, offset, opt_type, order, outname, overlap, '
                                           'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
                                           'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '
-                                          'toolchange_xy, use_threads, value, x, x0, x1, y, y0, y1, z_cut, z_move'
-,
-
+                                          'toolchange_xy, use_threads, value, x, x0, x1, y, y0, y1, z_cut, z_move',
+            "script_autocompleter": True,
+            "script_text": "",
+            "script_plot": True,
+            "script_source_file": "",
+            "document_text": "",
+            "document_plot": True,
+            "document_source_file": "",
         })
 
         # ############################################################
@@ -1514,9 +1519,11 @@ class App(QtCore.QObject):
             "tools_panelize_constrainy": 0.0,
 
             "script_text": "",
-            "script_plot": True,
-            "notes_text": "",
-            "notes_plot": True,
+            "script_plot": False,
+            "script_source_file": "",
+            "document_text": "",
+            "document_plot": False,
+            "document_source_file": "",
 
         })
 
@@ -3955,7 +3962,7 @@ class App(QtCore.QObject):
             "cncjob": FlatCAMCNCjob,
             "geometry": FlatCAMGeometry,
             "script": FlatCAMScript,
-            "notes": FlatCAMNotes
+            "document": FlatCAMDocument
         }
 
         App.log.debug("Calling object constructor...")
@@ -4019,8 +4026,8 @@ class App(QtCore.QObject):
             self.log.debug("%f seconds converting units." % (t3 - t2))
 
         # Create the bounding box for the object and then add the results to the obj.options
-        # But not for Scripts or for Notes
-        if kind != 'notes' and kind != 'script':
+        # But not for Scripts or for Documents
+        if kind != 'document' and kind != 'script':
             try:
                 xmin, ymin, xmax, ymax = obj.bounds()
                 obj.options['xmin'] = xmin
@@ -4030,6 +4037,9 @@ class App(QtCore.QObject):
             except Exception as e:
                 log.warning("The object has no bounds properties. %s" % str(e))
                 return "fail"
+
+        # update the KeyWords list with the name of the file
+        self.myKeywords.append(obj.options['name'])
 
         FlatCAMApp.App.log.debug("Moving new object back to main thread.")
 
@@ -4089,7 +4099,7 @@ class App(QtCore.QObject):
 
         self.new_object('gerber', 'new_grb', initialize, plot=False)
 
-    def new_script_object(self, name=None):
+    def new_script_object(self, name=None, text=None):
         """
         Creates a new, blank TCL Script object.
         :param name: a name for the new object
@@ -4097,21 +4107,30 @@ class App(QtCore.QObject):
         """
         self.report_usage("new_script_object()")
 
-        def initialize(obj, self):
-            obj.source_file = _(
-            "#\n"
-            "# CREATE A NEW FLATCAM TCL SCRIPT\n"
-            "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
-            "#\n\n"
-            "# FlatCAM commands list:\n"
-            "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, ClearCopper,\n"
-            "# Cncjob, Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, GetNames,\n"
-            "# GetSys, ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillDrills,\n"
-            "# MillSlots, Mirror, New, NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n"
-            "# Options, Paint, Panelize, Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, SubtractPoly,\n"
-            "# SubtractRectangle, Version, WriteGCode\n"
-            "#\n\n"
+        if text is not None:
+            new_source_file = text
+        else:
+            new_source_file = _(
+                "#\n"
+                "# CREATE A NEW FLATCAM TCL SCRIPT\n"
+                "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
+                "#\n\n"
+                "# FlatCAM commands list:\n"
+                "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, "
+                "ClearCopper,\n"
+                "# Cncjob, Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, "
+                "GetNames,\n"
+                "# GetSys, ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillDrills,\n"
+                "# MillSlots, Mirror, New, NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n"
+                "# Options, Paint, Panelize, Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, "
+                "SubtractPoly,\n"
+                "# SubtractRectangle, Version, WriteGCode\n"
+                "#\n\n"
         )
+
+        def initialize(obj, self):
+            obj.source_file = deepcopy(new_source_file)
+
         if name is None:
             outname = 'new_script'
         else:
@@ -4119,19 +4138,18 @@ class App(QtCore.QObject):
 
         self.new_object('script', outname, initialize, plot=False)
 
-
-    def new_notes_object(self):
+    def new_document_object(self):
         """
-        Creates a new, blank Notes object.
+        Creates a new, blank Document object.
 
         :return: None
         """
-        self.report_usage("new_notes_object()")
+        self.report_usage("new_document_object()")
 
         def initialize(obj, self):
             obj.source_file = ""
 
-        self.new_object('notes', 'new_notes', initialize, plot=False)
+        self.new_object('document', 'new_document', initialize, plot=False)
 
     def on_object_created(self, obj, plot, autoselect):
         """
@@ -4169,12 +4187,11 @@ class App(QtCore.QObject):
         elif obj.kind == 'script':
             self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='orange', name=str(obj.options['name'])))
-        elif obj.kind == 'notes':
+        elif obj.kind == 'document':
             self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='violet', name=str(obj.options['name'])))
 
         # update the SHELL auto-completer model with the name of the new object
-        self.myKeywords.append(obj.options['name'])
         self.shell._edit.set_model_data(self.myKeywords)
 
         if autoselect:
@@ -6971,6 +6988,12 @@ class App(QtCore.QObject):
             obj_init.slots = deepcopy(obj.slots)
             obj_init.create_geometry()
 
+        def initialize_script(obj_init, app_obj):
+            obj_init.source_file = deepcopy(obj.source_file)
+
+        def initialize_document(obj_init, app_obj):
+            obj_init.source_file = deepcopy(obj.source_file)
+
         for obj in self.collection.get_selected():
             obj_name = obj.options["name"]
 
@@ -6981,6 +7004,10 @@ class App(QtCore.QObject):
                     self.new_object("gerber", str(obj_name) + "_copy", initialize)
                 elif isinstance(obj, FlatCAMGeometry):
                     self.new_object("geometry", str(obj_name) + "_copy", initialize)
+                elif isinstance(obj, FlatCAMScript):
+                    self.new_object("script", str(obj_name) + "_copy", initialize_script)
+                elif isinstance(obj, FlatCAMDocument):
+                    self.new_object("document", str(obj_name) + "_copy", initialize_document)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
 
@@ -8376,6 +8403,10 @@ class App(QtCore.QObject):
             obj.on_exportgcode_button_click()
         elif type(obj) == FlatCAMGerber:
             self.on_file_savegerber()
+        elif type(obj) == FlatCAMScript:
+            self.on_file_savescript()
+        elif type(obj) == FlatCAMDocument:
+            self.on_file_savedocument()
 
     def obj_move(self):
         self.report_usage("obj_move()")
@@ -8693,6 +8724,94 @@ class App(QtCore.QObject):
             if self.defaults["global_open_style"] is False:
                 self.file_opened.emit("Gerber", filename)
             self.file_saved.emit("Gerber", filename)
+
+    def on_file_savescript(self):
+        """
+        Callback for menu item in Project context menu.
+
+        :return: None
+        """
+        self.report_usage("on_file_savescript")
+        App.log.debug("on_file_savescript()")
+
+        obj = self.collection.get_active()
+        if obj is None:
+            self.inform.emit('[WARNING_NOTCL] %s' %
+                             _("No object selected. Please select an Script object to export."))
+            return
+
+        # Check for more compatible types and add as required
+        if not isinstance(obj, FlatCAMScript):
+            self.inform.emit('[ERROR_NOTCL] %s' %
+                             _("Failed. Only Script objects can be saved as TCL Script files..."))
+            return
+
+        name = self.collection.get_active().options["name"]
+
+        _filter = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Save Script source file",
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=_filter)
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Script source file"), filter=_filter)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit('[WARNING_NOTCL] %s' %
+                             _("Save Script source file cancelled."))
+            return
+        else:
+            self.save_source_file(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Script", filename)
+            self.file_saved.emit("Script", filename)
+
+    def on_file_savedocument(self):
+        """
+        Callback for menu item in Project context menu.
+
+        :return: None
+        """
+        self.report_usage("on_file_savedocument")
+        App.log.debug("on_file_savedocument()")
+
+        obj = self.collection.get_active()
+        if obj is None:
+            self.inform.emit('[WARNING_NOTCL] %s' %
+                             _("No object selected. Please select an Document object to export."))
+            return
+
+        # Check for more compatible types and add as required
+        if not isinstance(obj, FlatCAMScript):
+            self.inform.emit('[ERROR_NOTCL] %s' %
+                             _("Failed. Only Document objects can be saved as Document files..."))
+            return
+
+        name = self.collection.get_active().options["name"]
+
+        _filter = "FlatCAM Documents (*.FlatDoc);;All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Save Document source file",
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=_filter)
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Document source file"), filter=_filter)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit('[WARNING_NOTCL] %s' %
+                             _("Save Document source file cancelled."))
+            return
+        else:
+            self.save_source_file(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Document", filename)
+            self.file_saved.emit("Document", filename)
 
     def on_file_saveexcellon(self):
         """
@@ -9090,65 +9209,22 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s' %
                              _("New TCL script file created in Code Editor."))
 
-        flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
-
-        self.proc_container.view.set_busy(_("Loading..."))
-
-        self.script_editor_tab = TextEditor(app=self)
-
-        # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
-        self.script_editor_tab.setObjectName('script_editor_tab')
-
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
         self.ui.rel_position_label.setText("")
 
-        # first clear previous text in text editor (if any)
-        self.script_editor_tab.code_editor.clear()
-        self.script_editor_tab.code_editor.setReadOnly(False)
-
-        self.script_editor_tab.code_editor.completer_enable = True
-        self.script_editor_tab.buttonRun.show()
-
-        # Switch plot_area to CNCJob tab
-        self.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
-
-        self.script_editor_tab.buttonOpen.clicked.disconnect()
-        self.script_editor_tab.buttonOpen.clicked.connect(lambda: self.script_editor_tab.handleOpen(filt=flt))
-        self.script_editor_tab.buttonSave.clicked.disconnect()
-        self.script_editor_tab.buttonSave.clicked.connect(lambda: self.script_editor_tab.handleSaveGCode(filt=flt))
-
-        try:
-            self.script_editor_tab.buttonRun.clicked.disconnect()
-        except TypeError:
-            pass
-        self.script_editor_tab.buttonRun.clicked.connect(self.script_editor_tab.handleRunCode)
-
-        self.script_editor_tab.handleTextChanged()
-
         if name is not None:
-            self.new_script_object(name=name)
-            script_obj = self.collection.get_by_name(name)
+            self.new_script_object(name=name, text=text)
         else:
-            self.new_script_object()
-            script_obj = self.collection.get_by_name('new_script')
+            self.new_script_object(text=text)
 
-        script_text = script_obj.source_file
-
-        self.script_editor_tab.t_frame.hide()
-        if text is not None:
-            try:
-                for line in text:
-                    self.script_editor_tab.code_editor.append(line)
-            except TypeError:
-                self.script_editor_tab.code_editor.append(text)
-
-        else:
-            self.script_editor_tab.code_editor.append(script_text)
-        self.script_editor_tab.t_frame.show()
-
-        self.proc_container.view.set_idle()
+        # script_text = script_obj.source_file
+        #
+        # self.proc_container.view.set_busy(_("Loading..."))
+        # script_obj.script_editor_tab.t_frame.hide()
+        #
+        # script_obj.script_editor_tab.t_frame.show()
+        # self.proc_container.view.set_idle()
 
     def on_fileopenscript(self, name=None, silent=False):
         """
@@ -9158,53 +9234,29 @@ class App(QtCore.QObject):
         :param name: name of a Tcl script file to open
         :return:
         """
-        script_content = []
+
+        self.report_usage("on_fileopenscript")
+        App.log.debug("on_fileopenscript()")
+
+        _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
 
         if name:
-            filename = name
+            filenames = [name]
         else:
-            _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
             try:
-                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"),
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open TCL script"),
                                                                      directory=self.get_last_folder(), filter=_filter_)
             except TypeError:
-                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"), filter=_filter_)
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open TCL script"), filter=_filter_)
 
-        # The Qt methods above will return a QString which can cause problems later.
-        # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
 
-        if filename == "":
+        if len(filenames) == 0:
             if silent is False:
                 self.inform.emit('[WARNING_NOTCL] %s' % _("Open TCL script cancelled."))
         else:
-            self.proc_container.view.set_busy(_("Loading..."))
-
-            try:
-                with open(filename, "r") as opened_script:
-                    try:
-                        for line in opened_script:
-                            QtWidgets.QApplication.processEvents()
-                            proc_line = str(line).strip('\n')
-                            script_content.append(proc_line)
-                    except Exception as e:
-                        log.debug('App.on_fileopenscript() -->%s' % str(e))
-                        if silent is False:
-                            self.inform.emit('[ERROR] %s %s' %
-                                             ('App.on_fileopenscript() -->', str(e)))
-                        return
-
-                    if silent is False:
-                        self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor."))
-
-            except Exception as e:
-                log.debug("App.on_fileopenscript() -> %s" % str(e))
-
-            self.proc_container.view.set_idle()
-
-            script_name = filename.split('/')[-1].split('\\')[-1]
-            self.on_filenewscript(name=script_name, text=script_content)
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_script, 'params': [filename]})
 
     def on_filerunscript(self, name=None, silent=False):
         """
@@ -10353,8 +10405,6 @@ class App(QtCore.QObject):
             assert isinstance(app_obj_, App), \
                 "Initializer expected App, got %s" % type(app_obj_)
 
-            self.progress.emit(10)
-
             try:
                 f = open(filename)
                 gcode = f.read()
@@ -10362,12 +10412,9 @@ class App(QtCore.QObject):
             except IOError:
                 app_obj_.inform.emit('[ERROR_NOTCL] %s: %s' %
                                      (_("Failed to open"), filename))
-                self.progress.emit(0)
                 return "fail"
 
             job_obj.gcode = gcode
-
-            self.progress.emit(20)
 
             ret = job_obj.gcode_parse()
             if ret == "fail":
@@ -10375,7 +10422,6 @@ class App(QtCore.QObject):
                                  _("This is not GCODE"))
                 return "fail"
 
-            self.progress.emit(60)
             job_obj.create_geometry()
 
         with self.proc_container.new(_("Opening G-Code.")):
@@ -10398,7 +10444,44 @@ class App(QtCore.QObject):
             # GUI feedback
             self.inform.emit('[success] %s: %s' %
                              (_("Opened"), filename))
-            self.progress.emit(100)
+
+    def open_script(self, filename, outname=None, silent=False):
+        """
+        Opens a Script file, parses it and creates a new object for
+        it in the program. Thread-safe.
+
+        :param outname: Name of the resulting object. None causes the name to be that of the file.
+        :param filename: Script file filename
+        :type filename: str
+        :return: None
+        """
+        App.log.debug("open_script()")
+
+        with self.proc_container.new(_("Opening TCL Script...")):
+
+            try:
+                with open(filename, "r") as opened_script:
+                    script_content = opened_script.readlines()
+                    script_content = ''.join(script_content)
+
+                    if silent is False:
+                        self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor."))
+            except Exception as e:
+                log.debug("App.open_script() -> %s" % str(e))
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to open TCL Script."))
+                return
+
+            # Object name
+            script_name = outname or filename.split('/')[-1].split('\\')[-1]
+
+            # New object creation and file processing
+            self.on_filenewscript(name=script_name, text=script_content)
+
+            # Register recent file
+            self.file_opened.emit("script", filename)
+
+            # GUI feedback
+            self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
     def open_config_file(self, filename, run_from_arg=None):
         """
@@ -10816,6 +10899,8 @@ class App(QtCore.QObject):
             "excellon": "share/drill16.png",
             'geometry': "share/geometry16.png",
             "cncjob": "share/cnc16.png",
+            "script": "share/script_new24.png",
+            "document": "share/notes16_1.png",
             "project": "share/project16.png",
             "svg": "share/geometry16.png",
             "dxf": "share/dxf16.png",
@@ -10829,6 +10914,8 @@ class App(QtCore.QObject):
             'excellon': lambda fname: self.worker_task.emit({'fcn': self.open_excellon, 'params': [fname]}),
             'geometry': lambda fname: self.worker_task.emit({'fcn': self.import_dxf, 'params': [fname]}),
             'cncjob': lambda fname: self.worker_task.emit({'fcn': self.open_gcode, 'params': [fname]}),
+            "script": lambda fname: self.worker_task.emit({'fcn': self.open_script, 'params': [fname]}),
+            "document": None,
             'project': self.open_project,
             'svg': self.import_svg,
             'dxf': self.import_dxf,
