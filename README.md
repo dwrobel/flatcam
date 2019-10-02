@@ -20,7 +20,8 @@ CAD program, and create G-Code for Isolation routing.
 - reused the Multiprocessing Pool declared in the App for the ToolRulesCheck() class
 - adapted the Project context menu for the new types of FLatCAM objects
 - modified the setup_recent_files to accommodate the new FlatCAM objects
-- made sure that when an FlatCAM script object is deleted, it's associated Tab is closed
+- made sure that when an FlatCAMscript object is deleted, it's associated Tab is closed
+- fixed the FlatCMAScript object saving when project is saved (loading a project with this script object is not working yet)
 
 1.10.2019
 

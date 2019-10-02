@@ -6546,6 +6546,8 @@ class FlatCAMScript(FlatCAMObj):
         for line in self.source_file.splitlines():
             self.script_editor_tab.code_editor.append(line)
 
+        self.ser_attrs = ['options', 'kind', 'source_file']
+
         self.build_ui()
 
     def build_ui(self):
@@ -6616,6 +6618,35 @@ class FlatCAMScript(FlatCAMObj):
             self.script_editor_tab.code_editor.completer_enable = True
         else:
             self.script_editor_tab.code_editor.completer_enable = False
+
+    def to_dict(self):
+        """
+        Returns a representation of the object as a dictionary.
+        Attributes to include are listed in ``self.ser_attrs``.
+
+        :return: A dictionary-encoded copy of the object.
+        :rtype: dict
+        """
+        d = {}
+        for attr in self.ser_attrs:
+            d[attr] = getattr(self, attr)
+        return d
+
+    def from_dict(self, d):
+        """
+        Sets object's attributes from a dictionary.
+        Attributes to include are listed in ``self.ser_attrs``.
+        This method will look only for only and all the
+        attributes in ``self.ser_attrs``. They must all
+        be present. Use only for deserializing saved
+        objects.
+
+        :param d: Dictionary of attributes to set in the object.
+        :type d: dict
+        :return: None
+        """
+        for attr in self.ser_attrs:
+            setattr(self, attr, d[attr])
 
 
 class FlatCAMDocument(FlatCAMObj):
