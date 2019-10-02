@@ -10,6 +10,8 @@ import copy
 import inspect  # TODO: For debugging only.
 from datetime import datetime
 
+from flatcamEditors.FlatCAMTextEditor import TextEditor
+
 from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
 from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
@@ -5992,6 +5994,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                              (_("Machine Code file saved to"), filename))
 
     def on_edit_code_click(self, *args):
+        self.app.proc_container.view.set_busy(_("Loading..."))
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
@@ -6002,25 +6005,46 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             self.app.gcode_edited = gco
 
-        self.app.init_code_editor(name=_("Code Editor"))
-        self.app.ui.buttonOpen.clicked.connect(self.app.handleOpen)
-        self.app.ui.buttonSave.clicked.connect(self.app.handleSaveGCode)
+        self.gcode_editor_tab = TextEditor(app=self.app)
 
+        # add the tab if it was closed
+        self.app.ui.plot_tab_area.addTab(self.gcode_editor_tab, '%s' % _("Code Editor"))
+        self.gcode_editor_tab.setObjectName('code_editor_tab')
+
+        # delete the absolute and relative position and messages in the infobar
+        self.app.ui.position_label.setText("")
+        self.app.ui.rel_position_label.setText("")
+
+        # first clear previous text in text editor (if any)
+        self.gcode_editor_tab.code_editor.clear()
+        self.gcode_editor_tab.code_editor.setReadOnly(False)
+
+        self.gcode_editor_tab.code_editor.completer_enable = False
+        self.gcode_editor_tab.buttonRun.hide()
+
+        # Switch plot_area to CNCJob tab
+        self.app.ui.plot_tab_area.setCurrentWidget(self.gcode_editor_tab)
+
+        self.gcode_editor_tab.t_frame.hide()
         # then append the text from GCode to the text editor
         try:
             for line in self.app.gcode_edited:
+                QtWidgets.QApplication.processEvents()
+
                 proc_line = str(line).strip('\n')
-                self.app.ui.code_editor.append(proc_line)
+                self.gcode_editor_tab.code_editor.append(proc_line)
         except Exception as e:
             log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s %s' %
                                  ('FlatCAMCNNJob.on_edit_code_click() -->', str(e)))
             return
 
-        self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+        self.gcode_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
-        self.app.handleTextChanged()
-        self.app.ui.show()
+        self.gcode_editor_tab.handleTextChanged()
+        self.gcode_editor_tab.t_frame.show()
+        self.app.proc_container.view.set_idle()
+
         self.app.inform.emit('[success] %s...' %
                              _('Loaded Machine Code into Code Editor'))
 

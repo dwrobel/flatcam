@@ -934,12 +934,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_scroll_area = QtWidgets.QScrollArea()
         self.geometry_tab_lay.addWidget(self.geometry_scroll_area)
 
-        self.cncjob_tab = QtWidgets.QWidget()
-        self.cncjob_tab.setObjectName("cncjob_tab")
-        self.pref_tab_area.addTab(self.cncjob_tab, _("CNC-JOB"))
+        self.text_editor_tab = QtWidgets.QWidget()
+        self.text_editor_tab.setObjectName("text_editor_tab")
+        self.pref_tab_area.addTab(self.text_editor_tab, _("CNC-JOB"))
         self.cncjob_tab_lay = QtWidgets.QVBoxLayout()
         self.cncjob_tab_lay.setContentsMargins(2, 2, 2, 2)
-        self.cncjob_tab.setLayout(self.cncjob_tab_lay)
+        self.text_editor_tab.setLayout(self.cncjob_tab_lay)
 
         self.cncjob_scroll_area = QtWidgets.QScrollArea()
         self.cncjob_tab_lay.addWidget(self.cncjob_scroll_area)
@@ -1843,94 +1843,94 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # self.cncjob_tab_layout.setContentsMargins(2, 2, 2, 2)
         # self.cncjob_tab.setLayout(self.cncjob_tab_layout)
 
-        self.cncjob_tab = QtWidgets.QWidget()
-
-        self.c_temp_layout = QtWidgets.QVBoxLayout(self.cncjob_tab)
-        self.c_temp_layout.setContentsMargins(0, 0, 0, 0)
-
-        self.cncjob_frame = QtWidgets.QFrame()
-        self.cncjob_frame.setContentsMargins(0, 0, 0, 0)
-        self.c_temp_layout.addWidget(self.cncjob_frame)
-
-        self.cncjob_tab_layout = QtWidgets.QGridLayout(self.cncjob_frame)
-        self.cncjob_tab_layout.setContentsMargins(2, 2, 2, 2)
-        self.cncjob_frame.setLayout(self.cncjob_tab_layout)
-
-        self.code_editor = FCTextAreaExtended()
-        stylesheet = """
-                        QTextEdit { selection-background-color:yellow;
-                                    selection-color:black;
-                        }
-                     """
-
-        self.code_editor.setStyleSheet(stylesheet)
-
-        self.buttonPreview = QtWidgets.QPushButton(_('Print Preview'))
-        self.buttonPreview.setToolTip(_("Open a OS standard Preview Print window."))
-        self.buttonPrint = QtWidgets.QPushButton(_('Print Code'))
-        self.buttonPrint.setToolTip(_("Open a OS standard Print window."))
-
-        self.buttonFind = QtWidgets.QPushButton(_('Find in Code'))
-        self.buttonFind.setToolTip(_("Will search and highlight in yellow the string in the Find box."))
-        self.buttonFind.setMinimumWidth(100)
-
-        self.buttonPreview.setMinimumWidth(100)
-
-        self.entryFind = FCEntry()
-        self.entryFind.setToolTip(_("Find box. Enter here the strings to be searched in the text."))
-
-        self.buttonReplace = QtWidgets.QPushButton(_('Replace With'))
-        self.buttonReplace.setToolTip(_("Will replace the string from the Find box with the one in the Replace box."))
-
-        self.buttonReplace.setMinimumWidth(100)
-
-        self.entryReplace = FCEntry()
-        self.entryReplace.setToolTip(_("String to replace the one in the Find box throughout the text."))
-
-        self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
-        self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
-                                     "with the text in the 'Replace' box.."))
-
-        self.button_copy_all = QtWidgets.QPushButton(_('Copy All'))
-        self.button_copy_all.setToolTip(_("Will copy all the text in the Code Editor to the clipboard."))
-
-        self.button_copy_all.setMinimumWidth(100)
-
-        self.buttonOpen = QtWidgets.QPushButton(_('Open Code'))
-        self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
-
-        self.buttonSave = QtWidgets.QPushButton(_('Save Code'))
-        self.buttonSave.setToolTip(_("Will save the text in the editor into a file."))
-
-        self.buttonRun = QtWidgets.QPushButton(_('Run Code'))
-        self.buttonRun.setToolTip(_("Will run the TCL commands found in the text file, one by one."))
-
-        self.buttonRun.hide()
-        self.cncjob_tab_layout.addWidget(self.code_editor, 0, 0, 1, 5)
-
-        cnc_tab_lay_1 = QtWidgets.QHBoxLayout()
-        # cnc_tab_lay_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        cnc_tab_lay_1.addWidget(self.buttonFind)
-        cnc_tab_lay_1.addWidget(self.entryFind)
-        cnc_tab_lay_1.addWidget(self.buttonReplace)
-        cnc_tab_lay_1.addWidget(self.entryReplace)
-        cnc_tab_lay_1.addWidget(self.sel_all_cb)
-        cnc_tab_lay_1.addWidget(self.button_copy_all)
-        self.cncjob_tab_layout.addLayout(cnc_tab_lay_1, 1, 0, 1, 5)
-
-        cnc_tab_lay_3 = QtWidgets.QHBoxLayout()
-        cnc_tab_lay_3.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        cnc_tab_lay_3.addWidget(self.buttonPreview)
-        cnc_tab_lay_3.addWidget(self.buttonPrint)
-        self.cncjob_tab_layout.addLayout(cnc_tab_lay_3, 2, 0, 1, 1, QtCore.Qt.AlignLeft)
-
-        cnc_tab_lay_4 = QtWidgets.QHBoxLayout()
-        cnc_tab_lay_4.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        cnc_tab_lay_4.addWidget(self.buttonOpen)
-        cnc_tab_lay_4.addWidget(self.buttonSave)
-        cnc_tab_lay_4.addWidget(self.buttonRun)
-
-        self.cncjob_tab_layout.addLayout(cnc_tab_lay_4, 2, 4, 1, 1)
+        # self.cncjob_tab = QtWidgets.QWidget()
+        #
+        # self.c_temp_layout = QtWidgets.QVBoxLayout(self.cncjob_tab)
+        # self.c_temp_layout.setContentsMargins(0, 0, 0, 0)
+        #
+        # self.cncjob_frame = QtWidgets.QFrame()
+        # self.cncjob_frame.setContentsMargins(0, 0, 0, 0)
+        # self.c_temp_layout.addWidget(self.cncjob_frame)
+        #
+        # self.cncjob_tab_layout = QtWidgets.QGridLayout(self.cncjob_frame)
+        # self.cncjob_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.cncjob_frame.setLayout(self.cncjob_tab_layout)
+        #
+        # self.code_editor = FCTextAreaExtended()
+        # stylesheet = """
+        #                 QTextEdit { selection-background-color:yellow;
+        #                             selection-color:black;
+        #                 }
+        #              """
+        #
+        # self.code_editor.setStyleSheet(stylesheet)
+        #
+        # self.buttonPreview = QtWidgets.QPushButton(_('Print Preview'))
+        # self.buttonPreview.setToolTip(_("Open a OS standard Preview Print window."))
+        # self.buttonPrint = QtWidgets.QPushButton(_('Print Code'))
+        # self.buttonPrint.setToolTip(_("Open a OS standard Print window."))
+        #
+        # self.buttonFind = QtWidgets.QPushButton(_('Find in Code'))
+        # self.buttonFind.setToolTip(_("Will search and highlight in yellow the string in the Find box."))
+        # self.buttonFind.setMinimumWidth(100)
+        #
+        # self.buttonPreview.setMinimumWidth(100)
+        #
+        # self.entryFind = FCEntry()
+        # self.entryFind.setToolTip(_("Find box. Enter here the strings to be searched in the text."))
+        #
+        # self.buttonReplace = QtWidgets.QPushButton(_('Replace With'))
+        # self.buttonReplace.setToolTip(_("Will replace the string from the Find box with the one in the Replace box."))
+        #
+        # self.buttonReplace.setMinimumWidth(100)
+        #
+        # self.entryReplace = FCEntry()
+        # self.entryReplace.setToolTip(_("String to replace the one in the Find box throughout the text."))
+        #
+        # self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
+        # self.sel_all_cb.setToolTip(_("When checked it will replace all instances in the 'Find' box\n"
+        #                              "with the text in the 'Replace' box.."))
+        #
+        # self.button_copy_all = QtWidgets.QPushButton(_('Copy All'))
+        # self.button_copy_all.setToolTip(_("Will copy all the text in the Code Editor to the clipboard."))
+        #
+        # self.button_copy_all.setMinimumWidth(100)
+        #
+        # self.buttonOpen = QtWidgets.QPushButton(_('Open Code'))
+        # self.buttonOpen.setToolTip(_("Will open a text file in the editor."))
+        #
+        # self.buttonSave = QtWidgets.QPushButton(_('Save Code'))
+        # self.buttonSave.setToolTip(_("Will save the text in the editor into a file."))
+        #
+        # self.buttonRun = QtWidgets.QPushButton(_('Run Code'))
+        # self.buttonRun.setToolTip(_("Will run the TCL commands found in the text file, one by one."))
+        #
+        # self.buttonRun.hide()
+        # self.cncjob_tab_layout.addWidget(self.code_editor, 0, 0, 1, 5)
+        #
+        # cnc_tab_lay_1 = QtWidgets.QHBoxLayout()
+        # # cnc_tab_lay_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        # cnc_tab_lay_1.addWidget(self.buttonFind)
+        # cnc_tab_lay_1.addWidget(self.entryFind)
+        # cnc_tab_lay_1.addWidget(self.buttonReplace)
+        # cnc_tab_lay_1.addWidget(self.entryReplace)
+        # cnc_tab_lay_1.addWidget(self.sel_all_cb)
+        # cnc_tab_lay_1.addWidget(self.button_copy_all)
+        # self.cncjob_tab_layout.addLayout(cnc_tab_lay_1, 1, 0, 1, 5)
+        #
+        # cnc_tab_lay_3 = QtWidgets.QHBoxLayout()
+        # cnc_tab_lay_3.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        # cnc_tab_lay_3.addWidget(self.buttonPreview)
+        # cnc_tab_lay_3.addWidget(self.buttonPrint)
+        # self.cncjob_tab_layout.addLayout(cnc_tab_lay_3, 2, 0, 1, 1, QtCore.Qt.AlignLeft)
+        #
+        # cnc_tab_lay_4 = QtWidgets.QHBoxLayout()
+        # cnc_tab_lay_4.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # cnc_tab_lay_4.addWidget(self.buttonOpen)
+        # cnc_tab_lay_4.addWidget(self.buttonSave)
+        # cnc_tab_lay_4.addWidget(self.buttonRun)
+        #
+        # self.cncjob_tab_layout.addLayout(cnc_tab_lay_4, 2, 4, 1, 1)
 
         # #################################
         # ## Build InfoBar is done here ###

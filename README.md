@@ -10,6 +10,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+2.10.2019
+
+- fixed bug in Geometry Editor that did not allow the copy of geometric elements
+- created a new class that holds all the Code Editor functionality and integrated as a Editor in FlatCAM, the location is in flatcamEditors folder
+- remade all the functions for view_source, scripts and view_code to use the new TextEditor class; now all the Code Editor tabs are being kept alive, before only one could be in an open state
+
 1.10.2019
 
 - fixed the FCSpinner and FCDoubleSpinner GUI elements to select all on first click and deselect on second click in the Spinbox LineEdit

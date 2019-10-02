@@ -1306,13 +1306,13 @@ class SolderPaste(FlatCAMTool):
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
         # add the tab if it was closed
-        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, _("Code Editor"))
+        self.app.ui.plot_tab_area.addTab(self.app.ui.text_editor_tab, _("Code Editor"))
 
         # first clear previous text in text editor (if any)
         self.app.ui.code_editor.clear()
 
         # Switch plot_area to CNCJob tab
-        self.app.ui.plot_tab_area.setCurrentWidget(self.app.ui.cncjob_tab)
+        self.app.ui.plot_tab_area.setCurrentWidget(self.app.ui.text_editor_tab)
 
         name = self.cnc_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)

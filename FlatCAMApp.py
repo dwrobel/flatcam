@@ -48,6 +48,7 @@ from FlatCAMPostProc import load_postprocessors
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
 from flatcamEditors.FlatCAMExcEditor import FlatCAMExcEditor
 from flatcamEditors.FlatCAMGrbEditor import FlatCAMGrbEditor
+from flatcamEditors.FlatCAMTextEditor import TextEditor
 
 from FlatCAMProcess import *
 from FlatCAMWorkerStack import WorkerStack
@@ -1997,16 +1998,6 @@ class App(QtCore.QObject):
         self.ui.tools_defaults_form.tools_film_group.film_color_button.clicked.connect(
             self.on_film_color_button)
 
-        # ########## Modify G-CODE Plot Area TAB ###########
-        self.ui.code_editor.textChanged.connect(self.handleTextChanged)
-        self.ui.buttonOpen.clicked.connect(self.handleOpen)
-        self.ui.buttonSave.clicked.connect(self.handleSaveGCode)
-        self.ui.buttonPrint.clicked.connect(self.handlePrint)
-        self.ui.buttonPreview.clicked.connect(self.handlePreview)
-        self.ui.buttonFind.clicked.connect(self.handleFindGCode)
-        self.ui.buttonReplace.clicked.connect(self.handleReplaceGCode)
-        self.ui.button_copy_all.clicked.connect(self.handleCopyAll)
-
         # portability changed signal
         self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
 
@@ -2356,7 +2347,6 @@ class App(QtCore.QObject):
 
         self.shell = FCShell(self, version=self.version)
         self.shell._edit.set_model_data(self.myKeywords)
-        self.ui.code_editor.set_model_data(self.myKeywords)
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
@@ -4099,19 +4089,35 @@ class App(QtCore.QObject):
 
         self.new_object('gerber', 'new_grb', initialize, plot=False)
 
-
-    def new_script_object(self):
+    def new_script_object(self, name=None):
         """
         Creates a new, blank TCL Script object.
-
+        :param name: a name for the new object
         :return: None
         """
         self.report_usage("new_script_object()")
 
         def initialize(obj, self):
-            obj.source_file = ""
+            obj.source_file = _(
+            "#\n"
+            "# CREATE A NEW FLATCAM TCL SCRIPT\n"
+            "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
+            "#\n\n"
+            "# FlatCAM commands list:\n"
+            "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, ClearCopper,\n"
+            "# Cncjob, Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, GetNames,\n"
+            "# GetSys, ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillDrills,\n"
+            "# MillSlots, Mirror, New, NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n"
+            "# Options, Paint, Panelize, Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, SubtractPoly,\n"
+            "# SubtractRectangle, Version, WriteGCode\n"
+            "#\n\n"
+        )
+        if name is None:
+            outname = 'new_script'
+        else:
+            outname = name
 
-        self.new_object('script', 'new_script', initialize, plot=False)
+        self.new_object('script', outname, initialize, plot=False)
 
 
     def new_notes_object(self):
@@ -4170,7 +4176,6 @@ class App(QtCore.QObject):
         # update the SHELL auto-completer model with the name of the new object
         self.myKeywords.append(obj.options['name'])
         self.shell._edit.set_model_data(self.myKeywords)
-        self.ui.code_editor.set_model_data(self.myKeywords)
 
         if autoselect:
             # select the just opened object but deselect the previous ones
@@ -5037,7 +5042,6 @@ class App(QtCore.QObject):
                 self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
             self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
             self.shell._edit.set_model_data(self.myKeywords)
-            self.ui.code_editor.set_model_data(self.myKeywords)
 
     def del_extension(self, ext_type):
         if ext_type == 'excellon':
@@ -5090,7 +5094,6 @@ class App(QtCore.QObject):
                 self.ui.util_defaults_form.kw_group.kw_list_text.get_value().replace(' ', '').split(',')
             self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
             self.shell._edit.set_model_data(self.myKeywords)
-            self.ui.code_editor.set_model_data(self.myKeywords)
 
     def restore_extensions(self, ext_type):
         if ext_type == 'excellon':
@@ -5114,7 +5117,6 @@ class App(QtCore.QObject):
             self.autocomplete_kw_list = self.default_keywords
             self.myKeywords = self.tcl_commands_list + self.autocomplete_kw_list + self.tcl_keywords
             self.shell._edit.set_model_data(self.myKeywords)
-            self.ui.code_editor.set_model_data(self.myKeywords)
 
     def delete_all_extensions(self, ext_type):
         if ext_type == 'excellon':
@@ -5129,7 +5131,6 @@ class App(QtCore.QObject):
             # update the self.myKeywords so the model is updated
             self.myKeywords = self.tcl_commands_list + self.tcl_keywords
             self.shell._edit.set_model_data(self.myKeywords)
-            self.ui.code_editor.set_model_data(self.myKeywords)
 
     def on_edit_join(self, name=None):
         """
@@ -6553,192 +6554,6 @@ class App(QtCore.QObject):
 
         # This will write the setting to the platform specific storage.
         del settings
-
-    def handlePrint(self):
-        self.report_usage("handlePrint()")
-
-        dialog = QtPrintSupport.QPrintDialog()
-        if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            self.ui.code_editor.document().print_(dialog.printer())
-
-    def handlePreview(self):
-        self.report_usage("handlePreview()")
-
-        dialog = QtPrintSupport.QPrintPreviewDialog()
-        dialog.paintRequested.connect(self.ui.code_editor.print_)
-        dialog.exec_()
-
-    def handleTextChanged(self):
-        # enable = not self.ui.code_editor.document().isEmpty()
-        # self.ui.buttonPrint.setEnabled(enable)
-        # self.ui.buttonPreview.setEnabled(enable)
-        pass
-
-    def handleOpen(self, filt=None):
-        self.report_usage("handleOpen()")
-
-        if filt:
-            _filter_ = filt
-        else:
-            _filter_ = "G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
-                       "All Files (*.*)"
-
-        path, _f = QtWidgets.QFileDialog.getOpenFileName(
-            caption=_('Open file'), directory=self.get_last_folder(), filter=_filter_)
-
-        if path:
-            file = QtCore.QFile(path)
-            if file.open(QtCore.QIODevice.ReadOnly):
-                stream = QtCore.QTextStream(file)
-                self.gcode_edited = stream.readAll()
-                self.ui.code_editor.setPlainText(self.gcode_edited)
-                file.close()
-
-    def handleSaveGCode(self, name=None, filt=None):
-        self.report_usage("handleSaveGCode()")
-
-        if filt:
-            _filter_ = filt
-        else:
-            _filter_ = "G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
-                       "All Files (*.*)"
-
-        if name:
-            obj_name = name
-        else:
-            try:
-                obj_name = self.collection.get_active().options['name']
-            except AttributeError:
-                obj_name = 'file'
-                if filt is None:
-                    _filter_ = "FlatConfig Files (*.FlatConfig);;All Files (*.*)"
-
-        try:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(
-                caption=_("Export G-Code ..."),
-                directory=self.defaults["global_last_folder"] + '/' + str(obj_name),
-                filter=_filter_
-            )[0])
-        except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export G-Code ..."), filter=_filter_)[0])
-
-        if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Export Code cancelled."))
-            return
-        else:
-            try:
-                my_gcode = self.ui.code_editor.toPlainText()
-                with open(filename, 'w') as f:
-                    for line in my_gcode:
-                        f.write(line)
-            except FileNotFoundError:
-                self.inform.emit('[WARNING] %s' %
-                                 _("No such file or directory"))
-                return
-            except PermissionError:
-                self.inform.emit('[WARNING] %s' %
-                                 _("Permission denied, saving not possible.\n"
-                                   "Most likely another app is holding the file open and not accessible."))
-                return
-
-        # Just for adding it to the recent files list.
-        if self.defaults["global_open_style"] is False:
-            self.file_opened.emit("cncjob", filename)
-        self.file_saved.emit("cncjob", filename)
-        self.inform.emit('%s: %s' % (_("Saved to"), str(filename)))
-
-    def handleFindGCode(self):
-        self.report_usage("handleFindGCode()")
-
-        flags = QtGui.QTextDocument.FindCaseSensitively
-        text_to_be_found = self.ui.entryFind.get_value()
-
-        r = self.ui.code_editor.find(str(text_to_be_found), flags)
-        if r is False:
-            self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
-
-    def handleReplaceGCode(self):
-        self.report_usage("handleReplaceGCode()")
-
-        old = self.ui.entryFind.get_value()
-        new = self.ui.entryReplace.get_value()
-
-        if self.ui.sel_all_cb.isChecked():
-            while True:
-                cursor = self.ui.code_editor.textCursor()
-                cursor.beginEditBlock()
-                flags = QtGui.QTextDocument.FindCaseSensitively
-                # self.ui.editor is the QPlainTextEdit
-                r = self.ui.code_editor.find(str(old), flags)
-                if r:
-                    qc = self.ui.code_editor.textCursor()
-                    if qc.hasSelection():
-                        qc.insertText(new)
-                else:
-                    self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
-                    break
-            # Mark end of undo block
-            cursor.endEditBlock()
-        else:
-            cursor = self.ui.code_editor.textCursor()
-            cursor.beginEditBlock()
-            qc = self.ui.code_editor.textCursor()
-            if qc.hasSelection():
-                qc.insertText(new)
-            # Mark end of undo block
-            cursor.endEditBlock()
-
-    def handleCopyAll(self):
-        text = self.ui.code_editor.toPlainText()
-        self.clipboard.setText(text)
-        self.inform.emit(_("Code Editor content copied to clipboard ..."))
-
-    def handleRunCode(self):
-        # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
-        # tries to print on a hidden widget, therefore show the dock if hidden
-        if self.ui.shell_dock.isHidden():
-            self.ui.shell_dock.show()
-
-        self.script_code = deepcopy(self.ui.code_editor.toPlainText())
-        # self.shell._sysShell.exec_command(script_code)
-
-        old_line = ''
-        for tcl_command_line in self.script_code.splitlines():
-            # do not process lines starting with '#' = comment and empty lines
-            if not tcl_command_line.startswith('#') and tcl_command_line != '':
-                # id FlatCAM is run in Windows then replace all the slashes with
-                # the UNIX style slash that TCL understands
-                if sys.platform == 'win32':
-                    if "open" in tcl_command_line:
-                        tcl_command_line = tcl_command_line.replace('\\', '/')
-
-                if old_line != '':
-                    new_command = old_line + tcl_command_line + '\n'
-                else:
-                    new_command = tcl_command_line
-
-                # execute the actual Tcl command
-                try:
-                    self.shell.open_proccessing()  # Disables input box.
-
-                    result = self.tcl.eval(str(new_command))
-                    if result != 'None':
-                        self.shell.append_output(result + '\n')
-
-                    old_line = ''
-                except tk.TclError:
-                    old_line = old_line + tcl_command_line + '\n'
-                except Exception as e:
-                    log.debug("App.handleRunCode() --> %s" % str(e))
-
-        if old_line != '':
-            # it means that the script finished with an error
-            result = self.tcl.eval("set errorInfo")
-            self.log.error("Exec command Exception: %s" % (result + '\n'))
-            self.shell.append_error('ERROR: ' + result + '\n')
-
-        self.shell.close_proccessing()
 
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case
@@ -9138,38 +8953,29 @@ class App(QtCore.QObject):
     # ###############################################################################################################
 
     def init_code_editor(self, name):
-        # Signals section
-        # Disconnect the old signals
-        try:
-            self.ui.buttonOpen.clicked.disconnect()
-        except TypeError:
-            pass
 
-        try:
-            self.ui.buttonSave.clicked.disconnect()
-        except TypeError:
-            pass
+        self.ui.text_editor_tab = TextEditor(app=self)
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, '%s' % name)
-        self.ui.cncjob_tab.setObjectName('cncjob_tab')
+        self.ui.plot_tab_area.addTab(self.ui.text_editor_tab, '%s' % name)
+        self.ui.text_editor_tab.setObjectName('text_editor_tab')
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
         self.ui.rel_position_label.setText("")
 
         # first clear previous text in text editor (if any)
-        self.ui.code_editor.clear()
-        self.ui.code_editor.setReadOnly(False)
+        self.ui.text_editor_tab.code_editor.clear()
+        self.ui.text_editor_tab.code_editor.setReadOnly(False)
         self.toggle_codeeditor = True
-        self.ui.code_editor.completer_enable = False
-        self.ui.buttonRun.hide()
+        self.ui.text_editor_tab.code_editor.completer_enable = False
+        self.ui.text_editor_tab.buttonRun.hide()
 
         # make sure to keep a reference to the code editor
-        self.reference_code_editor = self.ui.code_editor
+        self.reference_code_editor = self.ui.text_editor_tab.code_editor
 
         # Switch plot_area to CNCJob tab
-        self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
+        self.ui.plot_tab_area.setCurrentWidget(self.ui.text_editor_tab)
 
     def on_view_source(self):
         self.inform.emit('%s' %
@@ -9193,9 +8999,30 @@ class App(QtCore.QObject):
         else:
             flt = "All Files (*.*)"
 
-        self.init_code_editor(name=_("Source Editor"))
-        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
-        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
+        self.source_editor_tab = TextEditor(app=self)
+
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.source_editor_tab, '%s' % _("Source Editor"))
+        self.source_editor_tab.setObjectName('source_editor_tab')
+
+        # delete the absolute and relative position and messages in the infobar
+        self.ui.position_label.setText("")
+        self.ui.rel_position_label.setText("")
+
+        # first clear previous text in text editor (if any)
+        self.source_editor_tab.code_editor.clear()
+        self.source_editor_tab.code_editor.setReadOnly(False)
+
+        self.source_editor_tab.code_editor.completer_enable = False
+        self.source_editor_tab.buttonRun.hide()
+
+        # Switch plot_area to CNCJob tab
+        self.ui.plot_tab_area.setCurrentWidget(self.source_editor_tab)
+
+        self.source_editor_tab.buttonOpen.clicked.disconnect()
+        self.source_editor_tab.buttonOpen.clicked.connect(lambda: self.source_editor_tab.handleOpen(filt=flt))
+        self.source_editor_tab.buttonSave.clicked.disconnect()
+        self.source_editor_tab.buttonSave.clicked.connect(lambda: self.source_editor_tab.handleSaveGCode(filt=flt))
 
         # then append the text from GCode to the text editor
         if obj.kind == 'cncjob':
@@ -9218,22 +9045,22 @@ class App(QtCore.QObject):
                                  _("There is no selected object for which to see it's source file code."))
                 return 'fail'
 
-        self.ui.cncjob_frame.hide()
+        self.source_editor_tab.t_frame.hide()
         try:
             for line in file:
                 QtWidgets.QApplication.processEvents()
                 proc_line = str(line).strip('\n')
-                self.ui.code_editor.append(proc_line)
+                self.source_editor_tab.code_editor.append(proc_line)
         except Exception as e:
             log.debug('App.on_view_source() -->%s' % str(e))
             self.inform.emit('[ERROR] %s: %s' %
                              (_('Failed to load the source code for the selected object'), str(e)))
             return
 
-        self.handleTextChanged()
-        self.ui.cncjob_frame.show()
+        self.source_editor_tab.handleTextChanged()
+        self.source_editor_tab.t_frame.show()
 
-        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+        self.source_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
         self.proc_container.view.set_idle()
         # self.ui.show()
 
@@ -9242,16 +9069,18 @@ class App(QtCore.QObject):
 
         if self.toggle_codeeditor is False:
             self.init_code_editor(name=_("Code Editor"))
-            self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen())
-            self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode())
+            self.ui.text_editor_tab.buttonOpen.clicked.disconnect()
+            self.ui.text_editor_tab.buttonOpen.clicked.connect(lambda: self.ui.text_editor_tab.handleOpen())
+            self.ui.text_editor_tab.buttonSave.clicked.disconnect()
+            self.ui.text_editor_tab.buttonSave.clicked.connect(lambda: self.ui.text_editor_tab.handleSaveGCode())
         else:
             for idx in range(self.ui.plot_tab_area.count()):
-                if self.ui.plot_tab_area.widget(idx).objectName() == "cncjob_tab":
+                if self.ui.plot_tab_area.widget(idx).objectName() == "text_editor_tab":
                     self.ui.plot_tab_area.closeTab(idx)
                     break
             self.toggle_codeeditor = False
 
-    def on_filenewscript(self, silent=False):
+    def on_filenewscript(self, silent=False, name=None, text=None):
         """
         Will create a new script file and open it in the Code Editor
         :param silent: if True will not display status messages
@@ -9262,36 +9091,64 @@ class App(QtCore.QObject):
                              _("New TCL script file created in Code Editor."))
 
         flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
-        self.init_code_editor(name=_("Script Editor"))
-        self.ui.code_editor.completer_enable = True
-        self.ui.code_editor.append(_(
-            "#\n"
-            "# CREATE A NEW FLATCAM TCL SCRIPT\n"
-            "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
-            "#\n\n"
-            "# FlatCAM commands list:\n"
-            "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, ClearCopper,\n"
-            "# Cncjob, Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, GetNames,\n"
-            "# GetSys, ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillDrills,\n"
-            "# MillSlots, Mirror, New, NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n"
-            "# Options, Paint, Panelize, Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, SubtractPoly,\n"
-            "# SubtractRectangle, Version, WriteGCode\n"
-            "#\n\n"
-        ))
 
-        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
-        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
-        self.ui.buttonRun.show()
+        self.proc_container.view.set_busy(_("Loading..."))
+
+        self.script_editor_tab = TextEditor(app=self)
+
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
+        self.script_editor_tab.setObjectName('script_editor_tab')
+
+        # delete the absolute and relative position and messages in the infobar
+        self.ui.position_label.setText("")
+        self.ui.rel_position_label.setText("")
+
+        # first clear previous text in text editor (if any)
+        self.script_editor_tab.code_editor.clear()
+        self.script_editor_tab.code_editor.setReadOnly(False)
+
+        self.script_editor_tab.code_editor.completer_enable = True
+        self.script_editor_tab.buttonRun.show()
+
+        # Switch plot_area to CNCJob tab
+        self.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
+
+        self.script_editor_tab.buttonOpen.clicked.disconnect()
+        self.script_editor_tab.buttonOpen.clicked.connect(lambda: self.script_editor_tab.handleOpen(filt=flt))
+        self.script_editor_tab.buttonSave.clicked.disconnect()
+        self.script_editor_tab.buttonSave.clicked.connect(lambda: self.script_editor_tab.handleSaveGCode(filt=flt))
+
         try:
-            self.ui.buttonRun.clicked.disconnect(self.handleRunCode)
+            self.script_editor_tab.buttonRun.clicked.disconnect()
         except TypeError:
             pass
-        self.ui.buttonRun.clicked.connect(self.handleRunCode)
+        self.script_editor_tab.buttonRun.clicked.connect(self.script_editor_tab.handleRunCode)
 
-        self.handleTextChanged()
-        self.ui.code_editor.show()
+        self.script_editor_tab.handleTextChanged()
 
-        self.new_script_object()
+        if name is not None:
+            self.new_script_object(name=name)
+            script_obj = self.collection.get_by_name(name)
+        else:
+            self.new_script_object()
+            script_obj = self.collection.get_by_name('new_script')
+
+        script_text = script_obj.source_file
+
+        self.script_editor_tab.t_frame.hide()
+        if text is not None:
+            try:
+                for line in text:
+                    self.script_editor_tab.code_editor.append(line)
+            except TypeError:
+                self.script_editor_tab.code_editor.append(text)
+
+        else:
+            self.script_editor_tab.code_editor.append(script_text)
+        self.script_editor_tab.t_frame.show()
+
+        self.proc_container.view.set_idle()
 
     def on_fileopenscript(self, name=None, silent=False):
         """
@@ -9301,6 +9158,8 @@ class App(QtCore.QObject):
         :param name: name of a Tcl script file to open
         :return:
         """
+        script_content = []
+
         if name:
             filename = name
         else:
@@ -9318,17 +9177,17 @@ class App(QtCore.QObject):
 
         if filename == "":
             if silent is False:
-                self.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Open TCL script cancelled."))
+                self.inform.emit('[WARNING_NOTCL] %s' % _("Open TCL script cancelled."))
         else:
-            self.on_filenewscript()
+            self.proc_container.view.set_busy(_("Loading..."))
 
             try:
                 with open(filename, "r") as opened_script:
                     try:
                         for line in opened_script:
+                            QtWidgets.QApplication.processEvents()
                             proc_line = str(line).strip('\n')
-                            self.ui.code_editor.append(proc_line)
+                            script_content.append(proc_line)
                     except Exception as e:
                         log.debug('App.on_fileopenscript() -->%s' % str(e))
                         if silent is False:
@@ -9336,16 +9195,16 @@ class App(QtCore.QObject):
                                              ('App.on_fileopenscript() -->', str(e)))
                         return
 
-                    self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
-
-                    self.handleTextChanged()
                     if silent is False:
-                        self.inform.emit('[success] %s' %
-                                         _("TCL script file opened in Code Editor."))
-                    # self.ui.show()
+                        self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor."))
 
             except Exception as e:
                 log.debug("App.on_fileopenscript() -> %s" % str(e))
+
+            self.proc_container.view.set_idle()
+
+            script_name = filename.split('/')[-1].split('\\')[-1]
+            self.on_filenewscript(name=script_name, text=script_content)
 
     def on_filerunscript(self, name=None, silent=False):
         """
@@ -10558,12 +10417,12 @@ class App(QtCore.QObject):
                                     alignment=Qt.AlignBottom | Qt.AlignLeft,
                                     color=QtGui.QColor("gray"))
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Code Editor"))
+        self.ui.plot_tab_area.addTab(self.ui.text_editor_tab, _("Code Editor"))
         # first clear previous text in text editor (if any)
-        self.ui.code_editor.clear()
+        self.ui.text_editor_tab.code_editor.clear()
 
         # Switch plot_area to CNCJob tab
-        self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
+        self.ui.plot_tab_area.setCurrentWidget(self.ui.text_editor_tab)
 
         try:
             if filename:
@@ -10571,7 +10430,7 @@ class App(QtCore.QObject):
                 if f.open(QtCore.QIODevice.ReadOnly):
                     stream = QtCore.QTextStream(f)
                     gcode_edited = stream.readAll()
-                    self.ui.code_editor.setPlainText(gcode_edited)
+                    self.ui.text_editor_tab.code_editor.setPlainText(gcode_edited)
                     f.close()
         except IOError:
             App.log.error("Failed to open config file: %s" % filename)

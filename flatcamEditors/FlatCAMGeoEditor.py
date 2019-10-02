@@ -4081,7 +4081,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def on_shape_complete(self):
         self.app.log.debug("on_shape_complete()")
 
-        geom = self.active_tool.geometry.geo
+        geom = []
+        try:
+            for shape in self.active_tool.geometry:
+                geom.append(shape.geo)
+        except TypeError:
+            geom = self.active_tool.geometry.geo
 
         if self.app.defaults['geometry_editor_milling_type'] == 'cl':
             # reverse the geometry coordinates direction to allow creation of Gcode for  climb milling
@@ -4110,8 +4115,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> %s" % str(e))
                 return 'fail'
 
+        shape_list = list()
+        try:
+            for geo in geom:
+                shape_list.append(DrawToolShape(geo))
+        except TypeError:
+            shape_list.append(DrawToolShape(geom))
+
         # Add shape
-        self.add_shape(DrawToolShape(geom))
+        self.add_shape(shape_list)
 
         # Remove any utility shapes
         self.delete_utility_geometry()
