@@ -152,19 +152,20 @@ class ToolMove(FlatCAMTool):
                                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object(s) selected."))
                                     return "fail"
 
+                                # remove any mark aperture shape that may be displayed
                                 for sel_obj in obj_list:
                                     # if the Gerber mark shapes are enabled they need to be disabled before move
                                     if isinstance(sel_obj, FlatCAMGerber):
                                         sel_obj.ui.aperture_table_visibility_cb.setChecked(False)
 
-                                    # offset solid_geometry
-                                    sel_obj.offset((dx, dy))
-                                    # sel_obj.plot()
-
                                     try:
                                         sel_obj.replotApertures.emit()
                                     except Exception as e:
                                         pass
+
+                                for sel_obj in obj_list:
+                                    # offset solid_geometry
+                                    sel_obj.offset((dx, dy))
 
                                     # Update the object bounding box options
                                     a, b, c, d = sel_obj.bounds()
