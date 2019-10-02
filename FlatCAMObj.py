@@ -6492,6 +6492,21 @@ class FlatCAMScript(FlatCAMObj):
 
         self.kind = "script"
 
+        self.options.update({
+            "plot": True,
+            "type": 'Script',
+            "source_file": '',
+        })
+
+        self.units = ''
+        self.decimals = 4
+
+        self.ser_attrs = ['options', 'kind', 'source_file']
+        self.source_file = ''
+        self.script_code = ''
+
+        self.script_editor_tab = None
+
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
         FlatCAMApp.App.log.debug("FlatCAMScript.set_ui()")
@@ -6542,11 +6557,10 @@ class FlatCAMScript(FlatCAMObj):
 
         self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
 
-        # add the source file to the Code Editor
+        self.ser_attrs = ['options', 'kind', 'source_file']
+
         for line in self.source_file.splitlines():
             self.script_editor_tab.code_editor.append(line)
-
-        self.ser_attrs = ['options', 'kind', 'source_file']
 
         self.build_ui()
 

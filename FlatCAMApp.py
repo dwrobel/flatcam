@@ -3980,6 +3980,7 @@ class App(QtCore.QObject):
         # object that is created, it will strip the name of the object and the underline (if the original key was
         # let's say "excellon_toolchange", it will strip the excellon_) and to the obj.options the key will become
         # "toolchange"
+
         for option in self.options:
             if option.find(kind + "_") == 0:
                 oname = option[len(kind) + 1:]
