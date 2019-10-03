@@ -10,6 +10,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+3.10.2019
+
+-
+
 2.10.2019
 
 - fixed bug in Geometry Editor that did not allow the copy of geometric elements

@@ -1232,6 +1232,7 @@ class App(QtCore.QObject):
             "script_text": "",
             "script_plot": True,
             "script_source_file": "",
+            "document_autocompleter": False,
             "document_text": "",
             "document_plot": True,
             "document_source_file": "",
@@ -1747,6 +1748,7 @@ class App(QtCore.QObject):
         self.ui.menufilenewgeo.triggered.connect(self.new_geometry_object)
         self.ui.menufilenewgrb.triggered.connect(self.new_gerber_object)
         self.ui.menufilenewexc.triggered.connect(self.new_excellon_object)
+        self.ui.menufilenewdoc.triggered.connect(self.new_document_object)
 
         self.ui.menufileopengerber.triggered.connect(self.on_fileopengerber)
         self.ui.menufileopenexcellon.triggered.connect(self.on_fileopenexcellon)

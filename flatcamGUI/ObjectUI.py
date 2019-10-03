@@ -1793,6 +1793,22 @@ class DocumentObjectUI(ObjectUI):
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
+        h_lay = QtWidgets.QHBoxLayout()
+        h_lay.setAlignment(QtCore.Qt.AlignVCenter)
+        self.custom_box.addLayout(h_lay)
+
+        self.autocomplete_cb = FCCheckBox("%s" % _("Auto Completer"))
+        self.autocomplete_cb.setToolTip(
+            _("This selects if the auto completer is enabled in the Document Editor.")
+        )
+        self.autocomplete_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        h_lay.addWidget(self.autocomplete_cb)
+        h_lay.addStretch()
+
         # Plot CB - this is added only for compatibility; other FlatCAM objects expect it and the mechanism is already
         # established and I don't want to changed it right now
         self.plot_cb = FCCheckBox()

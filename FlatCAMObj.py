@@ -6676,6 +6676,15 @@ class FlatCAMDocument(FlatCAMObj):
 
         self.kind = "document"
 
+        self.units = ''
+        self.decimals = 4
+
+        self.ser_attrs = ['options', 'kind', 'source_file']
+        self.source_file = ''
+        self.doc_code = ''
+
+        self.document_editor_tab = None
+
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
         FlatCAMApp.App.log.debug("FlatCAMDocument.set_ui()")
@@ -6703,9 +6712,90 @@ class FlatCAMDocument(FlatCAMObj):
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
 
+        self.document_editor_tab = TextEditor(app=self.app)
+
+        # first clear previous text in text editor (if any)
+        self.document_editor_tab.code_editor.clear()
+        self.document_editor_tab.code_editor.setReadOnly(False)
+
+        self.document_editor_tab.buttonRun.hide()
+
+        self.ui.autocomplete_cb.set_value(self.app.defaults['document_autocompleter'])
+        self.on_autocomplete_changed(state=self.app.defaults['document_autocompleter'])
+
+        flt = "FlatCAM Docs (*.FlatDoc);;All Files (*.*)"
+        self.document_editor_tab.buttonOpen.clicked.disconnect()
+        self.document_editor_tab.buttonOpen.clicked.connect(lambda: self.document_editor_tab.handleOpen(filt=flt))
+        self.document_editor_tab.buttonSave.clicked.disconnect()
+        self.document_editor_tab.buttonSave.clicked.connect(lambda: self.document_editor_tab.handleSaveGCode(filt=flt))
+
+        self.document_editor_tab.code_editor.textChanged.connect(self.on_text_changed)
+        self.document_editor_tab.handleTextChanged()
+
+        self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
+
+        self.ser_attrs = ['options', 'kind', 'source_file']
+
+        for line in self.source_file.splitlines():
+            self.document_editor_tab.code_editor.append(line)
+
         self.build_ui()
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)
+        tab_here = False
+
+        # try to not add too many times a tab that it is already installed
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == self.options['name']:
+                tab_here = True
+                break
+
+        # add the tab if it is not already added
+        if tab_here is False:
+            self.app.ui.plot_tab_area.addTab(self.document_editor_tab, '%s' % _("Document Editor"))
+            self.document_editor_tab.setObjectName(self.options['name'])
+
+        # Switch plot_area to CNCJob tab
+        self.app.ui.plot_tab_area.setCurrentWidget(self.document_editor_tab)
+
+    def on_autocomplete_changed(self, state):
+        if state:
+            self.document_editor_tab.code_editor.completer_enable = True
+        else:
+            self.document_editor_tab.code_editor.completer_enable = False
+
+    def on_text_changed(self):
+        self.source_file = self.document_editor_tab.code_editor.toHtml()
+        print(self.source_file)
+
+    def to_dict(self):
+        """
+        Returns a representation of the object as a dictionary.
+        Attributes to include are listed in ``self.ser_attrs``.
+
+        :return: A dictionary-encoded copy of the object.
+        :rtype: dict
+        """
+        d = {}
+        for attr in self.ser_attrs:
+            d[attr] = getattr(self, attr)
+        return d
+
+    def from_dict(self, d):
+        """
+        Sets object's attributes from a dictionary.
+        Attributes to include are listed in ``self.ser_attrs``.
+        This method will look only for only and all the
+        attributes in ``self.ser_attrs``. They must all
+        be present. Use only for deserializing saved
+        objects.
+
+        :param d: Dictionary of attributes to set in the object.
+        :type d: dict
+        :return: None
+        """
+        for attr in self.ser_attrs:
+            setattr(self, attr, d[attr])
 
 # end of file

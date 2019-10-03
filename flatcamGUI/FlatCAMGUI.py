@@ -71,6 +71,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufilenewexc.setToolTip(
             _("Will create a new, empty Excellon Object.")
         )
+        self.menufilenew.addSeparator()
+
+        self.menufilenewdoc = self.menufilenew.addAction(QtGui.QIcon('share/notes16_1.png'), _('Document\tD'))
+        self.menufilenewdoc.setToolTip(
+            _("Will create a new, empty Document Object.")
+        )
 
         self.menufile_open = self.menufile.addMenu(QtGui.QIcon('share/folder32_bis.png'), _('Open'))
         self.menufile_open.setToolTipsVisible(True)
