@@ -10,6 +10,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.10.2019
+
+- updated the Film Tool and added the ability to generate Punched Positive films (holes in the pads) when a Gerber file is the film's source. The punch holes source can be either an Excellon file or the pads center
+
 3.10.2019
 
 - previously I've added the initial layout for the FlatCAMDocument object
