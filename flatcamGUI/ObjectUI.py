@@ -14,6 +14,7 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from flatcamGUI.GUIElements import *
+import sys
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -1793,6 +1794,13 @@ class DocumentObjectUI(ObjectUI):
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
+        # Plot CB - this is added only for compatibility; other FlatCAM objects expect it and the mechanism is already
+        # established and I don't want to changed it right now
+        self.plot_cb = FCCheckBox()
+        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.custom_box.addWidget(self.plot_cb)
+        self.plot_cb.hide()
+
         h_lay = QtWidgets.QHBoxLayout()
         h_lay.setAlignment(QtCore.Qt.AlignVCenter)
         self.custom_box.addLayout(h_lay)
@@ -1809,12 +1817,134 @@ class DocumentObjectUI(ObjectUI):
         h_lay.addWidget(self.autocomplete_cb)
         h_lay.addStretch()
 
-        # Plot CB - this is added only for compatibility; other FlatCAM objects expect it and the mechanism is already
-        # established and I don't want to changed it right now
-        self.plot_cb = FCCheckBox()
-        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.custom_box.addWidget(self.plot_cb)
-        self.plot_cb.hide()
+        # ##############################################################
+        # ############ FORM LAYOUT #####################################
+        # ##############################################################
+
+        self.form_box = QtWidgets.QFormLayout()
+        self.custom_box.addLayout(self.form_box)
+
+        # Font
+        self.font_type_label = QtWidgets.QLabel('%s:' % _("Font Type"))
+
+        if sys.platform == "win32":
+            f_current = QtGui.QFont("Arial")
+        elif sys.platform == "linux":
+            f_current = QtGui.QFont("FreeMono")
+        else:
+            f_current = QtGui.QFont("Helvetica Neue")
+
+        self.font_name = f_current.family()
+
+        self.font_type_cb = QtWidgets.QFontComboBox(self)
+        self.font_type_cb.setCurrentFont(f_current)
+
+        self.form_box.addRow(self.font_type_label, self.font_type_cb)
+
+        # Font Size
+        self.font_size_label = QtWidgets.QLabel('%s:' % _("Font Size"))
+
+        self.font_size_cb = FCComboBox()
+        self.font_size_cb.setEditable(True)
+        self.font_size_cb.setMinimumContentsLength(3)
+        self.font_size_cb.setMaximumWidth(70)
+
+        font_sizes = ['6', '7', '8', '9', '10', '11', '12', '13', '14',
+                      '15', '16', '18', '20', '22', '24', '26', '28',
+                      '32', '36', '40', '44', '48', '54', '60', '66',
+                      '72', '80', '88', '96']
+
+        for i in font_sizes:
+            self.font_size_cb.addItem(i)
+
+        size_hlay = QtWidgets.QHBoxLayout()
+        size_hlay.addWidget(self.font_size_cb)
+        size_hlay.addStretch()
+
+        self.font_bold_tb = QtWidgets.QToolButton()
+        self.font_bold_tb.setCheckable(True)
+        self.font_bold_tb.setIcon(QtGui.QIcon('share/bold32.png'))
+        size_hlay.addWidget(self.font_bold_tb)
+
+        self.font_italic_tb = QtWidgets.QToolButton()
+        self.font_italic_tb.setCheckable(True)
+        self.font_italic_tb.setIcon(QtGui.QIcon('share/italic32.png'))
+        size_hlay.addWidget(self.font_italic_tb)
+        self.font_under_tb = QtWidgets.QToolButton()
+        self.font_under_tb.setCheckable(True)
+        self.font_under_tb.setIcon(QtGui.QIcon('share/underline32.png'))
+        size_hlay.addWidget(self.font_under_tb)
+
+        self.form_box.addRow(self.font_size_label, size_hlay)
+
+        # Alignment Choices
+        self.alignment_label = QtWidgets.QLabel('%s:' % _("Alignment"))
+
+        al_hlay = QtWidgets.QHBoxLayout()
+
+        self.al_left_tb = QtWidgets.QToolButton()
+        self.al_left_tb.setToolTip(_("Align Left"))
+        self.al_left_tb.setIcon(QtGui.QIcon('share/align_left32.png'))
+        al_hlay.addWidget(self.al_left_tb)
+
+        self.al_center_tb = QtWidgets.QToolButton()
+        self.al_center_tb.setToolTip(_("Center"))
+        self.al_center_tb.setIcon(QtGui.QIcon('share/align_center32.png'))
+        al_hlay.addWidget(self.al_center_tb)
+
+        self.al_right_tb = QtWidgets.QToolButton()
+        self.al_right_tb.setToolTip(_("Align Right"))
+        self.al_right_tb.setIcon(QtGui.QIcon('share/align_right32.png'))
+        al_hlay.addWidget(self.al_right_tb)
+
+        self.al_justify_tb = QtWidgets.QToolButton()
+        self.al_justify_tb.setToolTip(_("Justify"))
+        self.al_justify_tb.setIcon(QtGui.QIcon('share/align_justify32.png'))
+        al_hlay.addWidget(self.al_justify_tb)
+
+        self.form_box.addRow(self.alignment_label, al_hlay)
+
+        # Font Color
+        self.font_color_label = QtWidgets.QLabel('%s:' % _('Font Color'))
+        self.font_color_label.setToolTip(
+           _("Set the font color for the selected text")
+        )
+        self.font_color_entry = FCEntry()
+        self.font_color_button = QtWidgets.QPushButton()
+        self.font_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_1 = QtWidgets.QHBoxLayout()
+        self.form_box_child_1.addWidget(self.font_color_entry)
+        self.form_box_child_1.addWidget(self.font_color_button)
+        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        self.form_box.addRow(self.font_color_label, self.form_box_child_1)
+
+        # Selection Color
+        self.sel_color_label = QtWidgets.QLabel('%s:' % _('Selection Color'))
+        self.sel_color_label.setToolTip(
+           _("Set the selection color when doing text selection.")
+        )
+        self.sel_color_entry = FCEntry()
+        self.sel_color_button = QtWidgets.QPushButton()
+        self.sel_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_2 = QtWidgets.QHBoxLayout()
+        self.form_box_child_2.addWidget(self.sel_color_entry)
+        self.form_box_child_2.addWidget(self.sel_color_button)
+        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        self.form_box.addRow(self.sel_color_label, self.form_box_child_2)
+
+        # Tab size
+        self.tab_size_label = QtWidgets.QLabel('%s:' % _('Tab Size'))
+        self.tab_size_label.setToolTip(
+            _("Set the tab size. In pixels. Default value is 80 pixels.")
+        )
+        self.tab_size_spinner = FCSpinner()
+        self.tab_size_spinner.set_range(0, 1000)
+
+        self.form_box.addRow(self.tab_size_label, self.tab_size_spinner)
 
         self.custom_box.addStretch()
 

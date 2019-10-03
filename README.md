@@ -12,7 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 
 3.10.2019
 
--
+- previously I've added the initial layout for the FlatCAMDocument object
+- added more editing features in the Selected Tab for the FlatCAMDocument object
 
 2.10.2019
 

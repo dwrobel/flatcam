@@ -6683,6 +6683,10 @@ class FlatCAMDocument(FlatCAMObj):
         self.source_file = ''
         self.doc_code = ''
 
+        self.font_italic = None
+        self.font_bold = None
+        self.font_underline =None
+
         self.document_editor_tab = None
 
     def set_ui(self, ui):
@@ -6713,6 +6717,13 @@ class FlatCAMDocument(FlatCAMObj):
             ))
 
         self.document_editor_tab = TextEditor(app=self.app)
+        stylesheet = """
+                        QTextEdit {selection-background-color:%s;
+                                   selection-color:white;
+                        }
+                     """ % self.app.defaults["document_sel_color"]
+
+        self.document_editor_tab.code_editor.setStyleSheet(stylesheet)
 
         # first clear previous text in text editor (if any)
         self.document_editor_tab.code_editor.clear()
@@ -6722,18 +6733,53 @@ class FlatCAMDocument(FlatCAMObj):
 
         self.ui.autocomplete_cb.set_value(self.app.defaults['document_autocompleter'])
         self.on_autocomplete_changed(state=self.app.defaults['document_autocompleter'])
+        self.on_tab_size_change(val=self.app.defaults['document_tab_size'])
 
         flt = "FlatCAM Docs (*.FlatDoc);;All Files (*.*)"
+
+        # ######################################################################
+        # ######################## SIGNALS #####################################
+        # ######################################################################
         self.document_editor_tab.buttonOpen.clicked.disconnect()
         self.document_editor_tab.buttonOpen.clicked.connect(lambda: self.document_editor_tab.handleOpen(filt=flt))
         self.document_editor_tab.buttonSave.clicked.disconnect()
         self.document_editor_tab.buttonSave.clicked.connect(lambda: self.document_editor_tab.handleSaveGCode(filt=flt))
 
         self.document_editor_tab.code_editor.textChanged.connect(self.on_text_changed)
-        self.document_editor_tab.handleTextChanged()
+
+        self.ui.font_type_cb.currentFontChanged.connect(self.font_family)
+        self.ui.font_size_cb.activated.connect(self.font_size)
+        self.ui.font_bold_tb.clicked.connect(self.on_bold_button)
+        self.ui.font_italic_tb.clicked.connect(self.on_italic_button)
+        self.ui.font_under_tb.clicked.connect(self.on_underline_button)
+
+        self.ui.font_color_entry.editingFinished.connect(self.on_font_color_entry)
+        self.ui.font_color_button.clicked.connect(self.on_font_color_button)
+        self.ui.sel_color_entry.editingFinished.connect(self.on_selection_color_entry)
+        self.ui.sel_color_button.clicked.connect(self.on_selection_color_button)
+
+        self.ui.al_left_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignLeft))
+        self.ui.al_center_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignCenter))
+        self.ui.al_right_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignRight))
+        self.ui.al_justify_tb.clicked.connect(
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignJustify)
+        )
 
         self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
+        self.ui.tab_size_spinner.editingFinished.connect(self.on_tab_size_change)
+        # #######################################################################
 
+        self.ui.font_color_entry.set_value(self.app.defaults['document_font_color'])
+        self.ui.font_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['document_font_color']))
+
+        self.ui.sel_color_entry.set_value(self.app.defaults['document_sel_color'])
+        self.ui.sel_color_button.setStyleSheet(
+            "background-color:%s" % self.app.defaults['document_sel_color'])
+
+        self.ui.font_size_cb.setCurrentIndex(int(self.app.defaults['document_font_size']))
+
+        self.document_editor_tab.handleTextChanged()
         self.ser_attrs = ['options', 'kind', 'source_file']
 
         for line in self.source_file.splitlines():
@@ -6765,9 +6811,105 @@ class FlatCAMDocument(FlatCAMObj):
         else:
             self.document_editor_tab.code_editor.completer_enable = False
 
+    def on_tab_size_change(self, val=None):
+        try:
+            self.ui.tab_size_spinner.editingFinished.disconnect(self.on_tab_size_change)
+        except TypeError:
+            pass
+
+        if val:
+            self.ui.tab_size_spinner.set_value(val)
+
+        tab_balue = int(self.ui.tab_size_spinner.get_value())
+        self.document_editor_tab.code_editor.setTabStopWidth(tab_balue)
+        self.app.defaults['document_tab_size'] = tab_balue
+
+        self.ui.tab_size_spinner.editingFinished.connect(self.on_tab_size_change)
+
     def on_text_changed(self):
         self.source_file = self.document_editor_tab.code_editor.toHtml()
         print(self.source_file)
+
+    def font_family(self, font):
+        # self.document_editor_tab.code_editor.selectAll()
+        font.setPointSize(float(self.ui.font_size_cb.get_value()))
+        self.document_editor_tab.code_editor.setCurrentFont(font)
+        self.font_name = self.ui.font_type_cb.currentFont().family()
+
+    def font_size(self):
+        # self.document_editor_tab.code_editor.selectAll()
+        self.document_editor_tab.code_editor.setFontPointSize(float(self.ui.font_size_cb.get_value()))
+
+    def on_bold_button(self):
+        if self.ui.font_bold_tb.isChecked():
+            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Bold)
+            self.font_bold = True
+        else:
+            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Normal)
+            self.font_bold = False
+
+    def on_italic_button(self):
+        if self.ui.font_italic_tb.isChecked():
+            self.document_editor_tab.code_editor.setFontItalic(True)
+            self.font_italic = True
+        else:
+            self.document_editor_tab.code_editor.setFontItalic(False)
+            self.font_italic = False
+
+    def on_underline_button(self):
+        if self.ui.font_under_tb.isChecked():
+            self.document_editor_tab.code_editor.setFontUnderline(True)
+            self.font_underline = True
+        else:
+            self.document_editor_tab.code_editor.setFontUnderline(False)
+            self.font_underline = False
+
+    # Setting font colors handlers
+    def on_font_color_entry(self):
+        self.app.defaults['document_font_color'] = self.ui.font_color_entry.get_value()
+        self.ui.font_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['document_font_color']))
+
+    def on_font_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['document_font_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        font_color = c_dialog.getColor(initial=current_color)
+
+        if font_color.isValid() is False:
+            return
+
+        self.document_editor_tab.code_editor.setTextColor(font_color)
+        self.ui.font_color_button.setStyleSheet("background-color:%s" % str(font_color.name()))
+
+        new_val = str(font_color.name())
+        self.ui.font_color_entry.set_value(new_val)
+        self.app.defaults['document_font_color'] = new_val
+
+    # Setting selection colors handlers
+    def on_selection_color_entry(self):
+        self.app.defaults['document_sel_color'] = self.ui.sel_color_entry.get_value()
+        self.ui.sel_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['document_sel_color']))
+
+    def on_selection_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['document_sel_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        sel_color = c_dialog.getColor(initial=current_color)
+
+        if sel_color.isValid() is False:
+            return
+
+        p = QtGui.QPalette()
+        p.setColor(QtGui.QPalette.Highlight, sel_color)
+        p.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor('white'))
+
+        self.document_editor_tab.code_editor.setPalette(p)
+
+        self.ui.sel_color_button.setStyleSheet("background-color:%s" % str(sel_color.name()))
+
+        new_val = str(sel_color.name())
+        self.ui.sel_color_entry.set_value(new_val)
+        self.app.defaults['document_sel_color'] = new_val
 
     def to_dict(self):
         """

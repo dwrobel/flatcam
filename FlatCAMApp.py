@@ -1232,10 +1232,15 @@ class App(QtCore.QObject):
             "script_text": "",
             "script_plot": True,
             "script_source_file": "",
+
             "document_autocompleter": False,
             "document_text": "",
             "document_plot": True,
             "document_source_file": "",
+            "document_font_color": '#000000',
+            "document_sel_color": '#0055ff',
+            "document_font_size": 6,
+            "document_tab_size": 80,
         })
 
         # ############################################################
@@ -4192,7 +4197,7 @@ class App(QtCore.QObject):
                 kind=obj.kind.capitalize(), color='orange', name=str(obj.options['name'])))
         elif obj.kind == 'document':
             self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='violet', name=str(obj.options['name'])))
+                kind=obj.kind.capitalize(), color='darkCyan', name=str(obj.options['name'])))
 
         # update the SHELL auto-completer model with the name of the new object
         self.shell._edit.set_model_data(self.myKeywords)

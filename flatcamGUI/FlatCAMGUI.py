@@ -2591,6 +2591,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_B:
                     self.app.new_gerber_object()
 
+                # New Geometry
+                if key == QtCore.Qt.Key_D:
+                    self.app.new_document_object()
+
                 # Copy Object Name
                 if key == QtCore.Qt.Key_E:
                     self.app.object2editor()

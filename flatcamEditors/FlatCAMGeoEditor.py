@@ -236,7 +236,7 @@ class TextInputTool(FlatCAMTool):
 
         self.font_type_cb = QtWidgets.QFontComboBox(self)
         self.font_type_cb.setCurrentFont(f_current)
-        self.form_layout.addRow("Font:", self.font_type_cb)
+        self.form_layout.addRow(QtWidgets.QLabel('%s:' % _("Font")), self.font_type_cb)
 
         # Flag variables to show if font is bold, italic, both or none (regular)
         self.font_bold = False
@@ -308,7 +308,7 @@ class TextInputTool(FlatCAMTool):
         self.font_italic_tb.setIcon(QtGui.QIcon('share/italic32.png'))
         hlay.addWidget(self.font_italic_tb)
 
-        self.form_layout.addRow("Size:", hlay)
+        self.form_layout.addRow(QtWidgets.QLabel('%s:' % "Size"), hlay)
 
         # Text input
         self.text_input_entry = FCTextAreaRich()
@@ -317,7 +317,7 @@ class TextInputTool(FlatCAMTool):
         # self.text_input_entry.setMaximumHeight(150)
         self.text_input_entry.setCurrentFont(f_current)
         self.text_input_entry.setFontPointSize(10)
-        self.form_layout.addRow("Text:", self.text_input_entry)
+        self.form_layout.addRow(QtWidgets.QLabel('%s:' % _("Text")), self.text_input_entry)
 
         # Buttons
         hlay1 = QtWidgets.QHBoxLayout()

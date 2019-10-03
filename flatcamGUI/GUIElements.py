@@ -660,7 +660,7 @@ class FCTextAreaRich(QtWidgets.QTextEdit):
 
 class FCTextAreaExtended(QtWidgets.QTextEdit):
     def __init__(self, parent=None):
-        super(FCTextAreaExtended, self).__init__(parent)
+        super().__init__(parent)
 
         self.completer = MyCompleter()
 

@@ -762,7 +762,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     color='orange', name=str(obj.options['name'])))
             elif obj.kind == 'document':
                 self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='violet', name=str(obj.options['name'])))
+                    color='darkCyan', name=str(obj.options['name'])))
         except IndexError:
             # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')
