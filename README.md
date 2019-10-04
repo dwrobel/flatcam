@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed exit FullScreen with Escape key
 - added a new menu category in the MenuBar named 'Objects'. It will hold the objects found in the Project tab. Useful when working in FullScreen
 - disabeld a log.debug in ObjectColection.get_by_name()
+- added a Toggle Notebook button named 'NB' in the QMenBar which toggle the notebook
 
 3.10.2019
 

@@ -1841,7 +1841,7 @@ class App(QtCore.QObject):
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
         self.ui.menuview_toggle_parea.triggered.connect(self.on_toggle_plotarea)
         self.ui.menuview_toggle_notebook.triggered.connect(self.on_toggle_notebook)
-
+        self.ui.menu_toggle_nb.triggered.connect(self.on_toggle_notebook)
         self.ui.menuview_toggle_grid.triggered.connect(self.on_toggle_grid)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_menu)
@@ -5753,8 +5753,10 @@ class App(QtCore.QObject):
     def on_toggle_notebook(self):
         if self.ui.splitter.sizes()[0] == 0:
             self.ui.splitter.setSizes([1, 1])
+            self.ui.menu_toggle_nb.setChecked(True)
         else:
             self.ui.splitter.setSizes([0, 1])
+            self.ui.menu_toggle_nb.setChecked(False)
 
     def on_toggle_axis(self):
         self.report_usage("on_toggle_axis()")
