@@ -21,6 +21,8 @@ CAD program, and create G-Code for Isolation routing.
 - added a new menu category in the MenuBar named 'Objects'. It will hold the objects found in the Project tab. Useful when working in FullScreen
 - disabeld a log.debug in ObjectColection.get_by_name()
 - added a Toggle Notebook button named 'NB' in the QMenBar which toggle the notebook
+- in Gerber isolation section, the tool dia value is updated when changing from Circular to V-shape and reverse
+- in Tool Film, when punching holes in a positive film, if the resulting object geometry is the same as the source object geometry, the film will not ge generated
 
 3.10.2019
 

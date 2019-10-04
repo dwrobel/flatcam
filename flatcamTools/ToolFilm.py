@@ -440,7 +440,7 @@ class Film(FlatCAMTool):
                     if punch_size >= float(film_obj.apertures[apid]['width']) or \
                             punch_size >= float(film_obj.apertures[apid]['height']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _(" Could not generate punched hole film because the punch hole size"
+                                             _("Could not generate punched hole film because the punch hole size"
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
                     else:
@@ -450,7 +450,17 @@ class Film(FlatCAMTool):
                                     punching_geo.append(elem['follow'].buffer(punch_size / 2))
 
             punching_geo = MultiPolygon(punching_geo)
-            punched_solid_geometry = MultiPolygon(film_obj.solid_geometry).difference(punching_geo)
+            if not isinstance(film_obj.solid_geometry, Polygon):
+                temp_solid_geometry = MultiPolygon(film_obj.solid_geometry)
+            else:
+                temp_solid_geometry = film_obj.solid_geometry
+            punched_solid_geometry = temp_solid_geometry.difference(punching_geo)
+
+            if punched_solid_geometry == temp_solid_geometry:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Could not generate punched hole film because the newly created object geometry "
+                                       "is the same as the one in the source object geometry..."))
+                return 'fail'
 
             def init_func(new_obj, app_obj):
                 new_obj.solid_geometry = deepcopy(punched_solid_geometry)

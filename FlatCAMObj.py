@@ -727,6 +727,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.cutzlabel.hide()
             self.ui.cutz_spinner.hide()
             self.ui.iso_tool_dia_entry.setDisabled(False)
+            # update the value in the self.iso_tool_dia_entry once this is selected
+            self.ui.iso_tool_dia_entry.set_value(self.options['isotooldia'])
         else:
             self.ui.tipdialabel.show()
             self.ui.tipdia_spinner.show()
@@ -735,6 +737,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.cutzlabel.show()
             self.ui.cutz_spinner.show()
             self.ui.iso_tool_dia_entry.setDisabled(True)
+            # update the value in the self.iso_tool_dia_entry once this is selected
+            self.on_calculate_tooldia()
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)
