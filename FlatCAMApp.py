@@ -2920,12 +2920,12 @@ class App(QtCore.QObject):
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
         self.distance_tool = Distance(self)
-        self.distance_tool.install(icon=QtGui.QIcon('share/measure16.png'), pos=self.ui.menuedit,
+        self.distance_tool.install(icon=QtGui.QIcon('share/distance16.png'), pos=self.ui.menuedit,
                                    before=self.ui.menueditorigin,
                                    separator=False)
 
         self.distance_min_tool = DistanceMin(self)
-        self.distance_min_tool.install(icon=QtGui.QIcon('share/measure16.png'), pos=self.ui.menuedit,
+        self.distance_min_tool.install(icon=QtGui.QIcon('share/distance_min16.png'), pos=self.ui.menuedit,
                                        before=self.ui.menueditorigin,
                                        separator=True)
 
@@ -3061,6 +3061,11 @@ class App(QtCore.QObject):
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
         self.ui.delete_btn.triggered.connect(self.on_delete)
+
+        self.ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
+        self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
+        self.ui.origin_btn.triggered.connect(self.on_set_origin)
+        self.ui.jmp_btn.triggered.connect(self.on_jump_to)
 
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
         self.ui.new_script_btn.triggered.connect(self.on_filenewscript)

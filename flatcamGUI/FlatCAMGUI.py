@@ -317,7 +317,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Separator
         self.menuedit.addSeparator()
-        self.menueditorigin = self.menuedit.addAction(QtGui.QIcon('share/origin.png'), _('Se&t Origin\tO'))
+        self.menueditorigin = self.menuedit.addAction(QtGui.QIcon('share/origin16.png'), _('Se&t Origin\tO'))
         self.menueditjump = self.menuedit.addAction(QtGui.QIcon('share/jump_to16.png'), _('Jump to Location\tJ'))
 
         # Separator
@@ -688,6 +688,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.toolbargeo.addSeparator()
         self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), _("&Delete"))
+        self.toolbargeo.addSeparator()
+        self.distance_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance32.png'), _("Distance Tool"))
+        self.distance_min_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance_min32.png'),
+                                                          _("Distance Min Tool"))
+        self.origin_btn = self.toolbargeo.addAction(QtGui.QIcon('share/origin32.png'), _('Set Origin'))
+        self.jmp_btn = self.toolbargeo.addAction(QtGui.QIcon('share/jump_to16.png'), _('Jump to Location'))
+
 
         # ########################################################################
         # ########################## View Toolbar# ###############################
@@ -712,7 +719,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## Tools Toolbar# ##############################
         # ########################################################################
         self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), _("2Sided Tool"))
-        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16_bis.png'), _("&Cutout Tool"))
+        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16_bis.png'), _("Cutout Tool"))
         self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/ncc16.png'), _("NCC Tool"))
         self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint Tool"))
         self.toolbartools.addSeparator()
@@ -2089,6 +2096,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.toolbargeo.addSeparator()
         self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), _("&Delete"))
+        self.toolbargeo.addSeparator()
+        self.distance_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance32.png'), _("Distance Tool"))
+        self.distance_min_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance_min32.png'),
+                                                          _("Distance Min Tool"))
+        self.origin_btn = self.toolbargeo.addAction(QtGui.QIcon('share/origin32.png'), _('Set Origin'))
+        self.jmp_btn = self.toolbargeo.addAction(QtGui.QIcon('share/jump_to16.png'), _('Jump to Location'))
 
         # ## View Toolbar # ##
         self.replot_btn = self.toolbarview.addAction(QtGui.QIcon('share/replot32.png'), _("&Replot"))

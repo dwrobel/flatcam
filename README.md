@@ -24,6 +24,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Gerber isolation section, the tool dia value is updated when changing from Circular to V-shape and reverse
 - in Tool Film, when punching holes in a positive film, if the resulting object geometry is the same as the source object geometry, the film will not ge generated
 - fixed a bug that when a Gerber object is edited and it has as solid_geometry a single Polygon, saving the result was failing due of len() function not working on a single Polygon
+- added the Distance Tool, Distance Min Tool, Jump To and Set Origin functions to the Edit Toolbar
 
 3.10.2019
 
