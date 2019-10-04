@@ -315,6 +315,7 @@ class Film(FlatCAMTool):
         if type_of_film == 'neg':
             self.boundary_label.show()
             self.boundary_entry.show()
+            self.punch_cb.set_value(False)  # required so the self.punch_frame it's hidden also by the signal emitted
             self.punch_cb.hide()
         else:
             self.boundary_label.hide()

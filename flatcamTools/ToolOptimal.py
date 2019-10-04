@@ -59,15 +59,19 @@ class ToolOptimal(FlatCAMTool):
             "Gerber object for which to find the minimum distance between copper features."
         )
 
-        self.title_res_label = QtWidgets.QLabel('<b>%s</b>' % _("Minimum distance between copper features"))
+        self.title_res_label = QtWidgets.QLabel('<b>%s:</b>' % _("Minimum distance"))
+        self.title_res_label.setToolTip(_("Display minimum distance between copper features."))
         self.result_label = QtWidgets.QLabel('%s:' % _("Determined"))
-        self.show_res = QtWidgets.QLabel('%s' % '')
+        self.result_entry = FCEntry()
+        self.result_entry.setReadOnly(True)
 
-        self.units_lbl = QtWidgets.QLabel(self.units)
+        self.units_lbl = QtWidgets.QLabel(self.units.lower())
+        self.units_lbl.setDisabled(True)
 
         self.freq_label = QtWidgets.QLabel('%s:' % _("Occurring"))
         self.freq_label.setToolTip(_("How many times this minimum is found."))
-        self.freq_res = QtWidgets.QLabel('%s' % '')
+        self.freq_entry = FCEntry()
+        self.freq_entry.setReadOnly(True)
 
         self.precision_label = QtWidgets.QLabel('%s:' % _("Precision"))
         self.precision_label.setToolTip(_("Number of decimals kept for found distances."))
@@ -76,12 +80,12 @@ class ToolOptimal(FlatCAMTool):
         self.precision_spinner.set_range(2, 10)
         self.precision_spinner.setWrapping(True)
 
-        self.locations_cb = FCCheckBox(_("Locations"))
-        self.locations_cb.setToolTip(_("Locations where minimum distance was found."))
+        self.locations_cb = FCCheckBox(_("Minimum points coordinates"))
+        self.locations_cb.setToolTip(_("Coordinates for points where minimum distance was found."))
 
         self.locations_textb = FCTextArea(parent=self)
         self.locations_textb.setReadOnly(True)
-        self.locations_textb.setToolTip(_("Locations where minimum distance was found."))
+        self.locations_textb.setToolTip(_("Coordinates for points where minimum distance was found."))
         stylesheet = """
                         QTextEdit { selection-background-color:yellow;
                                     selection-color:black;
@@ -90,10 +94,18 @@ class ToolOptimal(FlatCAMTool):
 
         self.locations_textb.setStyleSheet(stylesheet)
 
+        self.locate_button = QtWidgets.QPushButton(_("Jump to selected position"))
+        self.locate_button.setToolTip(
+            _("Select a position in the Locations text box and then\n"
+              "click this button.")
+        )
+        self.locate_button.setMinimumWidth(60)
+        self.locate_button.setDisabled(True)
+
         hlay = QtWidgets.QHBoxLayout()
 
-        hlay.addWidget(self.show_res)
-        hlay.addStretch()
+        hlay.addWidget(self.result_entry)
+        # hlay.addStretch()
         hlay.addWidget(self.units_lbl)
 
         form_lay.addRow(QtWidgets.QLabel(""))
@@ -103,11 +115,14 @@ class ToolOptimal(FlatCAMTool):
         form_lay.addRow(QtWidgets.QLabel(""))
         form_lay.addRow(self.title_res_label)
         form_lay.addRow(self.result_label, hlay)
-        form_lay.addRow(self.freq_label, self.freq_res)
+        form_lay.addRow(self.freq_label, self.freq_entry)
         form_lay.addRow(self.locations_cb)
         form_lay.addRow(self.locations_textb)
+        form_lay.addRow(self.locate_button)
 
-        self.calculate_button = QtWidgets.QPushButton(_("Find Distance"))
+        self.loc_ois = OptionalHideInputSection(self.locations_cb, [self.locations_textb, self.locate_button])
+        
+        self.calculate_button = QtWidgets.QPushButton(_("Find Minimum"))
         self.calculate_button.setToolTip(
             _("Calculate the minimum distance between copper features,\n"
               "this will allow the determination of the right tool to\n"
@@ -116,45 +131,17 @@ class ToolOptimal(FlatCAMTool):
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
 
-        self.locate_button = QtWidgets.QPushButton(_("Locate position"))
-        self.locate_button.setToolTip(
-            _("Select a position in the Locations text box and then\n"
-              "click this button.")
-        )
-        self.locate_button.setMinimumWidth(60)
-        self.layout.addWidget(self.locate_button)
-        self.locate_button.setDisabled(True)
-
         self.decimals = 4
 
         self.selected_text = ''
-        # self.dt_label = QtWidgets.QLabel("<b>%s:</b>" % _('Alignment Drill Diameter'))
-        # self.dt_label.setToolTip(
-        #     _("Diameter of the drill for the "
-        #       "alignment holes.")
-        # )
-        # self.layout.addWidget(self.dt_label)
-        #
-        # hlay = QtWidgets.QHBoxLayout()
-        # self.layout.addLayout(hlay)
-        #
-        # self.drill_dia = FCEntry()
-        # self.dd_label = QtWidgets.QLabel('%s:' % _("Drill dia"))
-        # self.dd_label.setToolTip(
-        #     _("Diameter of the drill for the "
-        #       "alignment holes.")
-        # )
-        # hlay.addWidget(self.dd_label)
-        # hlay.addWidget(self.drill_dia)
 
+        # ## Signals
         self.calculate_button.clicked.connect(self.find_minimum_distance)
         self.locate_button.clicked.connect(self.on_locate_position)
         self.update_text.connect(self.on_update_text)
         self.locations_textb.cursorPositionChanged.connect(self.on_textbox_clicked)
-        self.locations_cb.stateChanged.connect(self.on_location_cb)
-        self.layout.addStretch()
 
-        # ## Signals
+        self.layout.addStretch()
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+O', **kwargs)
@@ -162,7 +149,9 @@ class ToolOptimal(FlatCAMTool):
     def run(self, toggle=True):
         self.app.report_usage("ToolOptimal()")
 
-        self.show_res.setText('')
+        self.result_entry.set_value(0.0)
+        self.freq_entry.set_value('0')
+
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
             if self.app.ui.splitter.sizes()[0] == 0:
@@ -202,8 +191,8 @@ class ToolOptimal(FlatCAMTool):
         self.locations_textb.setVisible(False)
         self.locate_button.setVisible(False)
 
-        self.show_res.setText('')
-        self.freq_res.setText('')
+        self.result_entry.set_value(0.0)
+        self.freq_entry.set_value('0')
         self.reset_fields()
 
     def find_minimum_distance(self):
@@ -296,11 +285,11 @@ class ToolOptimal(FlatCAMTool):
                 min_list = list(min_dict.keys())
                 min_dist = min(min_list)
                 min_dist_string = '%.*f' % (self.decimals, float(min_dist))
-                self.show_res.setText(min_dist_string)
+                self.result_entry.set_Value(min_dist_string)
 
                 freq = len(min_dict[min_dist])
                 freq = '%d' % int(freq)
-                self.freq_res.setText(freq)
+                self.freq_entry.set_value(freq)
 
                 self.update_text.emit(min_dict[min_dist])
 
@@ -349,14 +338,6 @@ class ToolOptimal(FlatCAMTool):
         cursor.setBlockFormat(tmp)
 
         self.selected_text = cursor.selectedText()
-
-    def on_location_cb(self, state):
-        if state:
-            self.locations_textb.setVisible(True)
-            self.locate_button.setVisible(True)
-        else:
-            self.locations_textb.setVisible(False)
-            self.locate_button.setVisible(False)
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

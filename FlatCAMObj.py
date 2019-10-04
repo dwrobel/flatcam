@@ -1546,14 +1546,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     if aperture_to_plot_mark in self.apertures:
                         for elem in self.apertures[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
-                                    geo = elem['solid']
-                                    if type(geo) == Polygon or type(geo) == LineString:
-                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
+                                geo = elem['solid']
+                                if type(geo) == Polygon or type(geo) == LineString:
+                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
+                                                        face_color=color, visible=visibility)
+                                else:
+                                    for el in geo:
+                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
                                                             face_color=color, visible=visibility)
-                                    else:
-                                        for el in geo:
-                                            self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
-                                                                face_color=color, visible=visibility)
 
                     self.mark_shapes[aperture_to_plot_mark].redraw()
 
@@ -4323,7 +4323,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         tooldia = float(self.ui.geo_tools_table.item(row, 1).text())
         new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
-        new_cutz = float('%.*f' % (self.decimals, -new_cutz)) # this value has to be negative
+        new_cutz = float('%.*f' % (self.decimals, -new_cutz))   # this value has to be negative
         self.ui.cutz_entry.set_value(new_cutz)
 
         # store the new CutZ value into storage (self.tools)
@@ -5337,8 +5337,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except TypeError:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("An (x,y) pair of values are needed. "
-                                   "Probable you entered only one value in the Offset field."
-            ))
+                                   "Probable you entered only one value in the Offset field.")
+                                 )
             return
 
         self.geo_len = 0
@@ -5421,8 +5421,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.app.inform.emit('[ERROR] %s' %
                                      _("The Toolchange X,Y field in Edit -> Preferences "
                                        "has to be in the format (x, y)\n"
-                                       "but now there is only one value, not two."
-                ))
+                                       "but now there is only one value, not two.")
+                                     )
                 return 'fail'
             coords_xy[0] *= factor
             coords_xy[1] *= factor
@@ -5518,7 +5518,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except TypeError:  # Element is not iterable...
             # if self.app.is_legacy is False:
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
-
 
     def plot(self, visible=None, kind=None):
         """
@@ -6242,8 +6241,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 m6_code = self.parse_custom_toolchange_code(self.ui.toolchange_text.get_value())
                 if m6_code is None or m6_code == '':
                     self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Cancelled. The Toolchange Custom code is enabled but it's empty."
-                    ))
+                                         _("Cancelled. The Toolchange Custom code is enabled but it's empty.")
+                                         )
                     return 'fail'
 
                 g = g.replace('M6', m6_code)
@@ -6543,7 +6542,7 @@ class FlatCAMScript(FlatCAMObj):
         self.script_editor_tab.buttonRun.show()
 
         self.ui.autocomplete_cb.set_value(self.app.defaults['script_autocompleter'])
-        self.on_autocomplete_changed(state= self.app.defaults['script_autocompleter'])
+        self.on_autocomplete_changed(state=self.app.defaults['script_autocompleter'])
 
         flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
         self.script_editor_tab.buttonOpen.clicked.disconnect()

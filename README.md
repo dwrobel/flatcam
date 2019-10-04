@@ -14,6 +14,11 @@ CAD program, and create G-Code for Isolation routing.
 
 - updated the Film Tool and added the ability to generate Punched Positive films (holes in the pads) when a Gerber file is the film's source. The punch holes source can be either an Excellon file or the pads center
 - optimized Rules Check Tool so it runs faster when doing Copper 2 Copper rule
+- small GUI changes in Optimal Tool and in Film Tool
+- some PEP8 corrections
+- some code annotations to make it easier to navigate in the FlatCAMGUI.py
+- fixed exit FullScreen with Escape key
+
 
 3.10.2019
 

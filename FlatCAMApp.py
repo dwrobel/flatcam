@@ -5169,7 +5169,6 @@ class App(QtCore.QObject):
         obj_name_single = str(name) if name else "Combo_SingleGeo"
         obj_name_multi = str(name) if name else "Combo_MultiGeo"
 
-        tooldias = []
         geo_type_list = set()
 
         objs = self.collection.get_selected()
@@ -5691,10 +5690,10 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
-    def on_fullscreen(self):
+    def on_fullscreen(self, disable=False):
         self.report_usage("on_fullscreen()")
 
-        if self.toggle_fscreen is False:
+        if self.toggle_fscreen is False and disable is False:
             # self.ui.showFullScreen()
             self.ui.setWindowFlags(self.ui.windowFlags() | Qt.FramelessWindowHint)
             a = self.ui.geometry()
@@ -5723,7 +5722,7 @@ class App(QtCore.QObject):
                 tb.setVisible(False)
             self.ui.splitter_left.setVisible(False)
             self.toggle_fscreen = True
-        else:
+        elif self.toggle_fscreen is True or disable is True:
             self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.FramelessWindowHint)
             self.ui.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
             self.ui.showNormal()
@@ -9252,8 +9251,8 @@ class App(QtCore.QObject):
             filenames = [name]
         else:
             try:
-                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open TCL script"),
-                                                                     directory=self.get_last_folder(), filter=_filter_)
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(
+                    caption=_("Open TCL script"), directory=self.get_last_folder(), filter=_filter_)
             except TypeError:
                 filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open TCL script"), filter=_filter_)
 
@@ -10119,6 +10118,7 @@ class App(QtCore.QObject):
         it with shapes extracted from the SVG file.
 
         :param filename: Path to the SVG file.
+        :param geo_type: Type of FlatCAM object that will be created from SVG
         :param outname:
         :return:
         """
@@ -10162,6 +10162,7 @@ class App(QtCore.QObject):
         it with shapes extracted from the DXF file.
 
         :param filename: Path to the DXF file.
+        :param geo_type: Type of FlatCAM object that will be created from DXF
         :param outname:
         :type putname: str
         :return:
@@ -10175,8 +10176,7 @@ class App(QtCore.QObject):
             obj_type = geo_type
         else:
             self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Not supported type is picked as parameter. "
-                             "Only Geometry and Gerber are supported"))
+                             _("Not supported type is picked as parameter. Only Geometry and Gerber are supported"))
             return
 
         units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
@@ -10196,8 +10196,7 @@ class App(QtCore.QObject):
             self.file_opened.emit("dxf", filename)
 
             # GUI feedback
-            self.inform.emit('[success] %s: %s' %
-                             (_("Opened"), filename))
+            self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
             self.progress.emit(100)
 
     def import_image(self, filename, o_type='gerber', dpi=96, mode='black', mask=[250, 250, 250, 250], outname=None):
@@ -11749,6 +11748,6 @@ class GracefulException(Exception):
         super().__init__()
 
     def __str__(self):
-        return ('\n\n%s' % _("The user requested a graceful exit of the current task."))
+        return '\n\n%s' % _("The user requested a graceful exit of the current task.")
 
 # end of file
