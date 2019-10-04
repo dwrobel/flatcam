@@ -669,6 +669,12 @@ class RulesCheck(FlatCAMTool):
                     if 'solid' in geo_el and geo_el['solid'] is not None:
                         total_geo_grb_3.append(geo_el['solid'])
 
+        total_geo_grb_1 = MultiPolygon(total_geo_grb_1)
+        total_geo_grb_1 = total_geo_grb_1.buffer(0)
+
+        total_geo_grb_3 = MultiPolygon(total_geo_grb_3)
+        total_geo_grb_3 = total_geo_grb_3.buffer(0)
+
         iterations = len(total_geo_grb_1) * len(total_geo_grb_3)
         log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
 
