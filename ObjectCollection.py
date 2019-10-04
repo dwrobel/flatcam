@@ -561,7 +561,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :return: The requested object or None if no such object.
         :rtype: FlatCAMObj or None
         """
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
+        # FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
 
         if isCaseSensitive is None or isCaseSensitive is True:
             for obj in self.get_list():
