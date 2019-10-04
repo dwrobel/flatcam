@@ -201,7 +201,7 @@ class App(QtCore.QObject):
     object_plotted = QtCore.pyqtSignal(object)
 
     # Emitted when a new object has been added or deleted from/to the collection
-    object_status_changed = QtCore.pyqtSignal(object, str)
+    object_status_changed = QtCore.pyqtSignal(object, str, str)
 
     message = QtCore.pyqtSignal(str, str, str)
 
@@ -2017,6 +2017,8 @@ class App(QtCore.QObject):
 
         # Object list
         self.collection.view.activated.connect(self.on_row_activated)
+
+        self.object_status_changed.connect(self.on_collection_updated)
 
         # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
         self.ui.general_defaults_form.general_gui_set_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
@@ -7582,6 +7584,120 @@ class App(QtCore.QObject):
             if index.internalPointer().parent_item != self.collection.root_item:
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
         self.collection.on_item_activated(index)
+
+    def on_collection_updated(self, obj, state, old_name):
+        """
+        Create a menu from the object loaded in the collection.
+        TODO: should use the collection model to do this
+
+        :param obj: object that was changd (added, deleted, renamed)
+        :param state: what was done with the objectCand be: added, deleted, delete_all, renamed
+        :param old_name: the old name of the object before the action that triggered this slot happened
+        :return: None
+        """
+        icon_files = {
+            "gerber": "share/flatcam_icon16.png",
+            "excellon": "share/drill16.png",
+            "cncjob": "share/cnc16.png",
+            "geometry": "share/geometry16.png",
+            "script": "share/script_new16.png",
+            "document": "share/notes16_1.png"
+        }
+
+        if state == 'append':
+            for act in self.ui.menuobjects.actions():
+                try:
+                    act.triggered.disconnect()
+                except TypeError:
+                    pass
+            self.ui.menuobjects.clear()
+
+            gerber_list = list()
+            exc_list = list()
+            cncjob_list = list()
+            geo_list = list()
+            script_list = list()
+            doc_list = list()
+
+            for name in self.collection.get_names():
+                obj_named = self.collection.get_by_name(name)
+                if obj_named.kind == 'gerber':
+                    gerber_list.append(name)
+                elif obj_named.kind == 'excellon':
+                    exc_list.append(name)
+                elif obj_named.kind == 'cncjob':
+                    cncjob_list.append(name)
+                elif obj_named.kind == 'geometry':
+                    geo_list.append(name)
+                elif obj_named.kind == 'script':
+                    script_list.append(name)
+                elif obj_named.kind == 'document':
+                    doc_list.append(name)
+
+            def add_act(name):
+                obj_for_icon = self.collection.get_by_name(name)
+                add_action = QtWidgets.QAction(parent=self.ui.menuobjects)
+                add_action.setText(name)
+                add_action.setIcon(QtGui.QIcon(icon_files[obj_for_icon.kind]))
+                add_action.triggered.connect(lambda: self.collection.set_exclusive_active(name))
+                self.ui.menuobjects.addAction(add_action)
+
+            for name in gerber_list:
+                add_act(name)
+            self.ui.menuobjects.addSeparator()
+
+            for name in exc_list:
+                add_act(name)
+            self.ui.menuobjects.addSeparator()
+
+            for name in cncjob_list:
+                add_act(name)
+            self.ui.menuobjects.addSeparator()
+
+            for name in geo_list:
+                add_act(name)
+            self.ui.menuobjects.addSeparator()
+
+            for name in script_list:
+                add_act(name)
+            self.ui.menuobjects.addSeparator()
+
+            for name in doc_list:
+                add_act(name)
+
+
+        elif state == 'delete':
+            for act in self.ui.menuobjects.actions():
+                if act.text() == obj.options['name']:
+                    try:
+                        act.triggered.disconnect()
+                    except TypeError:
+                        pass
+                    self.ui.menuobjects.removeAction(act)
+                    break
+        elif state == 'rename':
+            for act in self.ui.menuobjects.actions():
+                if act.text() == old_name:
+                    add_action = QtWidgets.QAction(parent=self.ui.menuobjects)
+                    add_action.setText(obj.options['name'])
+                    add_action.setIcon(QtGui.QIcon(icon_files[obj.kind]))
+                    add_action.triggered.connect(lambda: self.collection.set_exclusive_active(obj.options['name']))
+
+                    self.ui.menuobjects.insertAction(act, add_action)
+
+                    try:
+                        act.triggered.disconnect()
+                    except TypeError:
+                        pass
+                    self.ui.menuobjects.removeAction(act)
+                    break
+        elif state =='delete_all':
+            for act in self.ui.menuobjects.actions():
+                try:
+                    act.triggered.disconnect()
+                except TypeError:
+                    pass
+            self.ui.menuobjects.clear()
 
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():

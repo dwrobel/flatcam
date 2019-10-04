@@ -425,17 +425,17 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     # rename the object
                     obj.options["name"] = deepcopy(data)
 
+                    self.app.object_status_changed.emit(obj, 'rename', old_name)
+
                     # update the SHELL auto-completer model data
                     try:
                         self.app.myKeywords.remove(old_name)
                         self.app.myKeywords.append(new_name)
                         self.app.shell._edit.set_model_data(self.app.myKeywords)
-                        self.app.ui.code_editor.set_model_data(self.app.myKeywords)
                     except Exception as e:
                         log.debug(
                             "setData() --> Could not remove the old object name from auto-completer model list. %s" %
                             str(e))
-
                     # obj.build_ui()
                     self.app.inform.emit(_("Object renamed from <b>{old}</b> to <b>{new}</b>").format(old=old_name,
                                                                                                       new=new_name))
@@ -504,7 +504,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.app.should_we_save = True
 
-        self.app.object_status_changed.emit(obj, 'append')
+        self.app.object_status_changed.emit(obj, 'append', name)
 
         # decide if to show or hide the Notebook side of the screen
         if self.app.defaults["global_project_autohide"] is True:
@@ -601,14 +601,16 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             log.debug(
                 "delete_active() --> Could not remove the old object name from auto-completer model list. %s" % str(e))
 
+        self.app.object_status_changed.emit(active.obj, 'delete', name)
+
+        # ############ OBJECT DELETION FROM MODEL STARTS HERE ####################
         self.beginRemoveRows(self.index(group.row(), 0, QtCore.QModelIndex()), active.row(), active.row())
-
         group.remove_child(active)
-
         # after deletion of object store the current list of objects into the self.app.all_objects_list
         self.app.all_objects_list = self.get_list()
-
         self.endRemoveRows()
+        # ############ OBJECT DELETION FROM MODEL STOPS HERE ####################
+
         if self.app.is_legacy is False:
             self.app.plotcanvas.redraw()
 
@@ -626,6 +628,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
+
+        self.app.object_status_changed.emit(None, 'delete_all', '')
+
         try:
             self.app.all_objects_list.clear()
 
@@ -708,6 +713,16 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         except Exception as e:
             log.error("[ERROR] Cause: %s" % str(e))
             raise
+
+    def set_exclusive_active(self, name):
+        """
+        Make the object with the name in parameters the only selected object
+
+        :param name: name of object to be selected and made the only active object
+        :return: None
+        """
+        self.set_all_inactive()
+        self.set_active(name)
 
     def set_inactive(self, name):
         """

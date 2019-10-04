@@ -18,7 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - some PEP8 corrections
 - some code annotations to make it easier to navigate in the FlatCAMGUI.py
 - fixed exit FullScreen with Escape key
-
+- added a new menu category in the MenuBar named 'Objects'. It will hold the objects found in the Project tab. Useful when working in FullScreen
 
 3.10.2019
 
