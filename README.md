@@ -19,10 +19,11 @@ CAD program, and create G-Code for Isolation routing.
 - some code annotations to make it easier to navigate in the FlatCAMGUI.py
 - fixed exit FullScreen with Escape key
 - added a new menu category in the MenuBar named 'Objects'. It will hold the objects found in the Project tab. Useful when working in FullScreen
-- disabeld a log.debug in ObjectColection.get_by_name()
+- disabled a log.debug in ObjectColection.get_by_name()
 - added a Toggle Notebook button named 'NB' in the QMenBar which toggle the notebook
 - in Gerber isolation section, the tool dia value is updated when changing from Circular to V-shape and reverse
 - in Tool Film, when punching holes in a positive film, if the resulting object geometry is the same as the source object geometry, the film will not ge generated
+- fixed a bug that when a Gerber object is edited and it has as solid_geometry a single Polygon, saving the result was failing due of len() function not working on a single Polygon
 
 3.10.2019
 

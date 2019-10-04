@@ -3229,10 +3229,16 @@ class App(QtCore.QObject):
                         self.grb_editor.deactivate_grb_editor()
 
                         # delete the old object (the source object) if it was an empty one
-                        if len(edited_obj.solid_geometry) == 0:
-                            old_name = edited_obj.options['name']
-                            self.collection.set_active(old_name)
-                            self.collection.delete_active()
+                        try:
+                            if len(edited_obj.solid_geometry) == 0:
+                                old_name = edited_obj.options['name']
+                                self.collection.set_active(old_name)
+                                self.collection.delete_active()
+                        except TypeError:
+                            # if the solid_geometry is a single Polygon the len() will not work
+                            # in any case, falling here means that we have something in the solid_geometry, even if only
+                            # a single Polygon, therefore we pass this
+                            pass
 
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
