@@ -27,11 +27,13 @@ class ToolOptimal(FlatCAMTool):
     toolName = _("Optimal Tool")
 
     update_text = pyqtSignal(list)
+    update_sec_text = pyqtSignal(dict)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.decimals = 4
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -48,6 +50,8 @@ class ToolOptimal(FlatCAMTool):
         form_lay = QtWidgets.QFormLayout()
         self.layout.addLayout(form_lay)
 
+        form_lay.addRow(QtWidgets.QLabel(""))
+
         # ## Gerber Object to mirror
         self.gerber_object_combo = QtWidgets.QComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
@@ -58,9 +62,23 @@ class ToolOptimal(FlatCAMTool):
         self.gerber_object_label.setToolTip(
             "Gerber object for which to find the minimum distance between copper features."
         )
+        form_lay.addRow(self.gerber_object_label, self.gerber_object_combo)
 
+        # Precision = nr of decimals
+        self.precision_label = QtWidgets.QLabel('%s:' % _("Precision"))
+        self.precision_label.setToolTip(_("Number of decimals kept for found distances."))
+
+        self.precision_spinner = FCSpinner()
+        self.precision_spinner.set_range(2, 10)
+        self.precision_spinner.setWrapping(True)
+        form_lay.addRow(self.precision_label, self.precision_spinner)
+
+        # Results Title
         self.title_res_label = QtWidgets.QLabel('<b>%s:</b>' % _("Minimum distance"))
         self.title_res_label.setToolTip(_("Display minimum distance between copper features."))
+        form_lay.addRow(self.title_res_label)
+
+        # Result value
         self.result_label = QtWidgets.QLabel('%s:' % _("Determined"))
         self.result_entry = FCEntry()
         self.result_entry.setReadOnly(True)
@@ -68,21 +86,25 @@ class ToolOptimal(FlatCAMTool):
         self.units_lbl = QtWidgets.QLabel(self.units.lower())
         self.units_lbl.setDisabled(True)
 
+        hlay = QtWidgets.QHBoxLayout()
+        hlay.addWidget(self.result_entry)
+        hlay.addWidget(self.units_lbl)
+
+        form_lay.addRow(self.result_label, hlay)
+
+        # Frequency of minimum encounter
         self.freq_label = QtWidgets.QLabel('%s:' % _("Occurring"))
         self.freq_label.setToolTip(_("How many times this minimum is found."))
         self.freq_entry = FCEntry()
         self.freq_entry.setReadOnly(True)
+        form_lay.addRow(self.freq_label, self.freq_entry)
 
-        self.precision_label = QtWidgets.QLabel('%s:' % _("Precision"))
-        self.precision_label.setToolTip(_("Number of decimals kept for found distances."))
-
-        self.precision_spinner = FCSpinner()
-        self.precision_spinner.set_range(2, 10)
-        self.precision_spinner.setWrapping(True)
-
+        # Control if to display the locations of where the minimum was found
         self.locations_cb = FCCheckBox(_("Minimum points coordinates"))
         self.locations_cb.setToolTip(_("Coordinates for points where minimum distance was found."))
+        form_lay.addRow(self.locations_cb)
 
+        # Locations where minimum was found
         self.locations_textb = FCTextArea(parent=self)
         self.locations_textb.setReadOnly(True)
         self.locations_textb.setToolTip(_("Coordinates for points where minimum distance was found."))
@@ -93,7 +115,20 @@ class ToolOptimal(FlatCAMTool):
                      """
 
         self.locations_textb.setStyleSheet(stylesheet)
+        form_lay.addRow(self.locations_textb)
 
+        self.title_second_res_label = QtWidgets.QLabel('<b>%s:</b>' % _("Other distances"))
+        self.title_second_res_label.setToolTip(_("Will display other distances in the Gerber file ordered from\n"
+                                                 "the minimum to the maximum, not including the absolute minimum."))
+        form_lay.addRow(self.title_second_res_label)
+
+        # Control if to display the locations of where the minimum was found
+        self.sec_locations_cb = FCCheckBox(_("Other distances points coordinates"))
+        self.sec_locations_cb.setToolTip(_("Other distances and the coordinates for points\n"
+                                           "where the distance was found."))
+        form_lay.addRow(self.sec_locations_cb)
+
+        # Jump button
         self.locate_button = QtWidgets.QPushButton(_("Jump to selected position"))
         self.locate_button.setToolTip(
             _("Select a position in the Locations text box and then\n"
@@ -101,27 +136,17 @@ class ToolOptimal(FlatCAMTool):
         )
         self.locate_button.setMinimumWidth(60)
         self.locate_button.setDisabled(True)
-
-        hlay = QtWidgets.QHBoxLayout()
-
-        hlay.addWidget(self.result_entry)
-        # hlay.addStretch()
-        hlay.addWidget(self.units_lbl)
-
-        form_lay.addRow(QtWidgets.QLabel(""))
-        form_lay.addRow(self.gerber_object_label, self.gerber_object_combo)
-        form_lay.addRow(self.precision_label, self.precision_spinner)
-
-        form_lay.addRow(QtWidgets.QLabel(""))
-        form_lay.addRow(self.title_res_label)
-        form_lay.addRow(self.result_label, hlay)
-        form_lay.addRow(self.freq_label, self.freq_entry)
-        form_lay.addRow(self.locations_cb)
-        form_lay.addRow(self.locations_textb)
         form_lay.addRow(self.locate_button)
 
-        self.loc_ois = OptionalHideInputSection(self.locations_cb, [self.locations_textb, self.locate_button])
-        
+        # this way I can hide/show the frame
+        self.sec_locations_frame = QtWidgets.QFrame()
+        self.sec_locations_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.sec_locations_frame)
+        self.distances_box = QtWidgets.QVBoxLayout()
+        self.distances_box.setContentsMargins(0, 0, 0, 0)
+        self.sec_locations_frame.setLayout(self.distances_box)
+
+        # GO button
         self.calculate_button = QtWidgets.QPushButton(_("Find Minimum"))
         self.calculate_button.setToolTip(
             _("Calculate the minimum distance between copper features,\n"
@@ -131,7 +156,8 @@ class ToolOptimal(FlatCAMTool):
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
 
-        self.decimals = 4
+        self.loc_ois = OptionalHideInputSection(self.locations_cb, [self.locations_textb, self.locate_button])
+        self.sec_loc_ois = OptionalHideInputSection(self.sec_locations_cb, [self.sec_locations_frame])
 
         self.selected_text = ''
 
@@ -140,6 +166,10 @@ class ToolOptimal(FlatCAMTool):
         self.locate_button.clicked.connect(self.on_locate_position)
         self.update_text.connect(self.on_update_text)
         self.locations_textb.cursorPositionChanged.connect(self.on_textbox_clicked)
+
+        self.locate_sec_button.clicked.connect(self.on_locate_sec_position)
+        self.update_sec_text.connect(self.on_update_sec_text)
+        self.locations_sec_textb.cursorPositionChanged.connect(self.on_textbox_sec_clicked)
 
         self.layout.addStretch()
 
@@ -285,13 +315,16 @@ class ToolOptimal(FlatCAMTool):
                 min_list = list(min_dict.keys())
                 min_dist = min(min_list)
                 min_dist_string = '%.*f' % (self.decimals, float(min_dist))
-                self.result_entry.set_Value(min_dist_string)
+                self.result_entry.set_value(min_dist_string)
 
                 freq = len(min_dict[min_dist])
                 freq = '%d' % int(freq)
                 self.freq_entry.set_value(freq)
 
-                self.update_text.emit(min_dict[min_dist])
+                min_locations = min_dict.pop(min_dist)
+
+                self.update_text.emit(min_locations)
+                self.update_sec_text.emit(min_dict)
 
                 app_obj.inform.emit('[success] %s' % _("Optimal Tool. Finished successfully."))
             except Exception as ee:
@@ -311,12 +344,18 @@ class ToolOptimal(FlatCAMTool):
         except Exception as e:
             self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format (x, y).")
 
+    def on_locate_sec_position(self):
+        pass
+
     def on_update_text(self, data):
         txt = ''
         for loc in data:
             txt += '%s\n' % str(loc)
         self.locations_textb.setPlainText(txt)
         self.locate_button.setDisabled(False)
+
+    def on_update_sec_text(self, data):
+        pass
 
     def on_textbox_clicked(self):
         # new cursor - select all document
@@ -338,6 +377,9 @@ class ToolOptimal(FlatCAMTool):
         cursor.setBlockFormat(tmp)
 
         self.selected_text = cursor.selectedText()
+
+    def on_textbox_sec_clicked(self):
+        pass
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
