@@ -1324,7 +1324,7 @@ class TransformEditorTool(FlatCAMTool):
                     # get mirroring coords from the point entry
                     if self.flip_ref_cb.isChecked():
                         px, py = eval('{}'.format(self.flip_ref_entry.text()))
-                    # get mirroing coords from the center of an all-enclosing bounding box
+                    # get mirroring coords from the center of an all-enclosing bounding box
                     else:
                         # first get a bounding box to fit all
                         for sha in shape_list:
@@ -2455,6 +2455,61 @@ class FCSelect(DrawTool):
         return ""
 
 
+class FCExplode(FCShapeTool):
+    def __init__(self, draw_app):
+        FCShapeTool.__init__(self, draw_app)
+        self.name = 'explode'
+
+        self.draw_app = draw_app
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception as e:
+            pass
+
+        self.storage = self.draw_app.storage
+        self.origin = (0, 0)
+        self.destination = None
+
+        self.draw_app.active_tool = self
+        if len(self.draw_app.get_selected()) == 0:
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                          _("No shape selected. Select a shape to explode"))
+        else:
+            self.make()
+
+    def make(self):
+        to_be_deleted_list = list()
+        lines = list()
+
+        for shape in self.draw_app.get_selected():
+            to_be_deleted_list.append(shape)
+            geo = shape.geo
+            ext_coords = list(geo.exterior.coords)
+
+            for c in range(len(ext_coords)):
+                if c < len(ext_coords) - 1:
+                    lines.append(LineString([ext_coords[c], ext_coords[c + 1]]))
+
+            for int_geo in geo.interiors:
+                int_coords = list(int_geo.coords)
+                for c in range(len(int_coords)):
+                    if c < len(int_coords):
+                        lines.append(LineString([int_coords[c], int_coords[c + 1]]))
+
+        for shape in to_be_deleted_list:
+            self.draw_app.storage.remove(shape)
+            if shape in self.draw_app.selected:
+                self.draw_app.selected.remove(shape)
+
+        geo_list = list()
+        for line in lines:
+            geo_list.append(DrawToolShape(line))
+        self.geometry = geo_list
+        self.draw_app.on_shape_complete()
+        self.draw_app.app.inform.emit('[success] %s...' % _("Done. Polygons exploded into lines."))
+
+
 class FCMove(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
@@ -3015,7 +3070,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
             "transform": {"button": self.app.ui.geo_transform_btn,
                       "constructor": FCTransform},
             "copy": {"button": self.app.ui.geo_copy_btn,
-                     "constructor": FCCopy}
+                     "constructor": FCCopy},
+            "explode": {"button": self.app.ui.geo_explode_btn,
+                     "constructor": FCExplode}
         }
 
         # # ## Data
@@ -4041,7 +4098,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
             if type(geometry) == LineString or type(geometry) == LinearRing:
                 plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0,
-                                                     tolerance=self.fcgeometry.drawing_tolerance))
+                                                     tolerance=self.fcgeometry.drawing_tolerance,
+                                                     linewidth=linewidth))
 
             if type(geometry) == Point:
                 pass
@@ -4098,9 +4156,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
                         elif isinstance(p, LinearRing):
                             pl.append(Polygon(p.coords[::-1]))
-                        # elif isinstance(p, LineString):
-                        #     pl.append(LineString(p.coords[::-1]))
-                geom = MultiPolygon(pl)
+                        elif isinstance(p, LineString):
+                            pl.append(LineString(p.coords[::-1]))
+                try:
+                    geom = MultiPolygon(pl)
+                except TypeError:
+                    # this may happen if the geom elements are made out of LineStrings because you can't create a
+                    # MultiPolygon out of LineStrings
+                    pass
             except TypeError:
                 if isinstance(geom, Polygon) and geom is not None:
                     geom = Polygon(geom.exterior.coords[::-1], geom.interiors)

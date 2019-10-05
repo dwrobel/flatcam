@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed an issue with the tool table context menu in Paint Tool
 - made some changes in the GUI in Paint Tool, NCC Tool and SolderPaste Tool
 - changed some of the icons; added attributions for icons source in the About FlatCAM window
+- added a new tool in the Geometry Editor named Explode which is the opposite of Union Tool: it will explode the polygons into lines
 
 4.10.2019
 

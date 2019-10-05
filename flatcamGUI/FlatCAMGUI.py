@@ -775,6 +775,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), _('Polygon Union'))
+        self.geo_explode_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/explode32.png'), _('Polygon Explode'))
+
         self.geo_intersection_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/intersection32.png'),
                                                                     _('Polygon Intersection'))
         self.geo_subtract_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/subtract32.png'),
@@ -2174,6 +2176,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), _('Polygon Union'))
+        self.geo_explode_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/explode32.png'), _('Polygon Explode'))
+
         self.geo_intersection_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/intersection32.png'),
                                                                     _('Polygon Intersection'))
         self.geo_subtract_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/subtract32.png'),

@@ -235,7 +235,7 @@ class ShapeCollectionVisual(CompoundVisual):
         self.freeze()
 
     def add(self, shape=None, color=None, face_color=None, alpha=None, visible=True,
-            update=False, layer=1, tolerance=0.01):
+            update=False, layer=1, tolerance=0.01, linewidth=None):
         """
         Adds shape to collection
         :return:
@@ -253,6 +253,8 @@ class ShapeCollectionVisual(CompoundVisual):
             Layer number. 0 - lowest.
         :param tolerance: float
             Geometry simplifying tolerance
+        :param linewidth: int
+            Not used, for compatibility
         :return: int
             Index of shape
         """

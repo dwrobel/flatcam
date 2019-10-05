@@ -810,7 +810,8 @@ class ShapeCollectionLegacy:
             self.axes = self.app.plotcanvas.new_axes(axes_name)
 
     def add(self, shape=None, color=None, face_color=None, alpha=None, visible=True,
-            update=False, layer=1, tolerance=0.01, obj=None, gcode_parsed=None, tool_tolerance=None, tooldia=None):
+            update=False, layer=1, tolerance=0.01, obj=None, gcode_parsed=None, tool_tolerance=None, tooldia=None,
+            linewidth=None):
         """
         This function will add shapes to the shape collection
 
@@ -826,6 +827,7 @@ class ShapeCollectionLegacy:
         :param gcode_parsed: not used; just for compatibility with VIsPy canvas
         :param tool_tolerance: just for compatibility with VIsPy canvas
         :param tooldia:
+        :param linewidth: the width of the line
         :return:
         """
         self._color = color[:-2] if color is not None else None
@@ -853,6 +855,7 @@ class ShapeCollectionLegacy:
                 self.shape_dict.update({
                     'color': self._color,
                     'face_color': self._face_color,
+                    'linewidth': linewidth,
                     'alpha': self._alpha,
                     'shape': sh
                 })
@@ -865,6 +868,7 @@ class ShapeCollectionLegacy:
             self.shape_dict.update({
                 'color': self._color,
                 'face_color': self._face_color,
+                'linewidth': linewidth,
                 'alpha': self._alpha,
                 'shape': shape
             })
@@ -928,15 +932,21 @@ class ShapeCollectionLegacy:
                 elif obj_type == 'geometry':
                     if type(local_shapes[element]['shape']) == Polygon:
                         x, y = local_shapes[element]['shape'].exterior.coords.xy
-                        self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                        self.axes.plot(x, y, local_shapes[element]['color'],
+                                       linestyle='-',
+                                       linewidth=local_shapes[element]['linewidth'])
                         for ints in local_shapes[element]['shape'].interiors:
                             x, y = ints.coords.xy
-                            self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                            self.axes.plot(x, y, local_shapes[element]['color'],
+                                           linestyle='-',
+                                           linewidth=local_shapes[element]['linewidth'])
                     elif type(local_shapes[element]['shape']) == LineString or \
                             type(local_shapes[element]['shape']) == LinearRing:
 
                         x, y = local_shapes[element]['shape'].coords.xy
-                        self.axes.plot(x, y, local_shapes[element]['color'], linestyle='-')
+                        self.axes.plot(x, y, local_shapes[element]['color'],
+                                       linestyle='-',
+                                       linewidth=local_shapes[element]['linewidth'])
 
                 elif obj_type == 'gerber':
                     if self.obj.options["multicolored"]:
