@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - remade the Tool Calculators to use the QSpinBox in order to simplify the user interaction and remove possible errors
 - remade: Tool Cutout, Tool 2Sided, Tool Image, Panelize Tool, NCC Tool, Paint Tool  to use the QSpinBox GUI elements
 - optimized the Transformation Tool both in GUI and in functionality and replaced the entries with QSpinBox
+- fixed an issue with the tool table context menu in Paint Tool
+- made some changes in the GUI in Paint Tool, NCC Tool and SolderPaste Tool
 
 4.10.2019
 

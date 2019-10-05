@@ -351,6 +351,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.addWidget(self.generate_paint_button)
 
         self.tools_box.addStretch()
+        # #################################### FINSIHED GUI #####################################
+        # #######################################################################################
 
         self.obj_name = ""
         self.paint_obj = None
@@ -412,7 +414,9 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
-        # ## Signals
+        # #############################################################################
+        # ################################# Signals ###################################
+        # #############################################################################
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.editingFinished.connect(self.on_tool_add)
         # self.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
@@ -426,6 +430,16 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
 
+        # #############################################################################
+        # ###################### Setup CONTEXT MENU ###################################
+        # #############################################################################
+        self.tools_table.setupContextMenu()
+        self.tools_table.addContextMenu(
+            "Add", self.on_add_tool_by_key, icon=QtGui.QIcon("share/plus16.png"))
+        self.tools_table.addContextMenu(
+            "Delete", lambda:
+            self.on_tool_delete(rows_to_delete=None, all=None), icon=QtGui.QIcon("share/delete32.png"))
+
     def on_type_obj_index_changed(self, index):
         obj_type = self.type_obj_combo.currentIndex()
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -433,6 +447,22 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
+
+    def on_add_tool_by_key(self):
+        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
+                                       text='%s:' % _('Enter a Tool Diameter'),
+                                       min=0.0000, max=99.9999, decimals=4)
+        tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+        val, ok = tool_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                return
+            self.on_tool_add(dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
     def run(self, toggle=True):
         self.app.report_usage("ToolPaint()")
@@ -488,15 +518,6 @@ class ToolPaint(FlatCAMTool, Gerber):
             # disable rest-machining for single polygon painting
             self.rest_cb.set_value(False)
             self.rest_cb.setDisabled(True)
-            # delete all tools except first row / tool for single polygon painting
-            # list_to_del = list(range(1, self.tools_table.rowCount()))
-            # if list_to_del:
-            #     self.on_tool_delete(rows_to_delete=list_to_del)
-            # # disable addTool and delTool
-            # self.addtool_entry.setDisabled(True)
-            # self.addtool_btn.setDisabled(True)
-            # self.deltool_btn.setDisabled(True)
-            # self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
         if self.selectmethod_combo.get_value() == 'area':
             # disable rest-machining for single polygon painting
             self.rest_cb.set_value(False)
@@ -545,13 +566,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         else:
             self.decimals = 2
             self.addtool_entry.set_value(1)
-
-        self.tools_table.setupContextMenu()
-        self.tools_table.addContextMenu(
-            "Add", lambda: self.on_tool_add(dia=None, muted=None), icon=QtGui.QIcon("share/plus16.png"))
-        self.tools_table.addContextMenu(
-            "Delete", lambda:
-            self.on_tool_delete(rows_to_delete=None, all=None), icon=QtGui.QIcon("share/delete32.png"))
 
         # set the working variables to a known state
         self.paint_tools.clear()

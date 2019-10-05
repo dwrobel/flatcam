@@ -6636,46 +6636,17 @@ class App(QtCore.QObject):
         if notebook_widget_name == 'tool_tab':
             tool_widget = self.ui.tool_scroll_area.widget().objectName()
 
-            tool_add_popup = FCInputDialog(title="New Tool ...",
-                                           text='Enter a Tool Diameter:',
-                                           min=0.0000, max=99.9999, decimals=4)
-            tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-            val, ok = tool_add_popup.get_value()
-
             # and only if the tool is NCC Tool
             if tool_widget == self.ncclear_tool.toolName:
-                if ok:
-                    if float(val) == 0:
-                        self.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Please enter a tool diameter with non-zero value, in Float format."))
-                        return
-                    self.ncclear_tool.on_tool_add(dia=float(val))
-                else:
-                    self.inform.emit('[WARNING_NOTCL] %s...' %
-                                     _("Adding Tool cancelled"))
+                self.ncclear_tool.on_add_tool_by_key()
+
             # and only if the tool is Paint Area Tool
             elif tool_widget == self.paint_tool.toolName:
-                if ok:
-                    if float(val) == 0:
-                        self.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Please enter a tool diameter with non-zero value, in Float format."))
-                        return
-                    self.paint_tool.on_tool_add(dia=float(val))
-                else:
-                    self.inform.emit('[WARNING_NOTCL] %s...' %
-                                     _("Adding Tool cancelled"))
+                self.paint_tool.on_add_tool_by_key()
+
             # and only if the tool is Solder Paste Dispensing Tool
             elif tool_widget == self.paste_tool.toolName:
-                if ok:
-                    if float(val) == 0:
-                        self.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Please enter a tool diameter with non-zero value, in Float format."))
-                        return
-                    self.paste_tool.on_tool_add(dia=float(val))
-                else:
-                    self.inform.emit('[WARNING_NOTCL] %s...' %
-                                     _("Adding Tool cancelled"))
+                self.paste_tool.on_add_tool_by_key()
 
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
     # See description bellow.

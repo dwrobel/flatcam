@@ -225,6 +225,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("The tip diameter for V-Shape Tool"))
         self.tipdia_entry = FCDoubleSpinner()
         self.tipdia_entry.set_precision(self.decimals)
+        self.tipdia_entry.setSingleStep(0.1)
 
         form.addRow(self.tipdialabel, self.tipdia_entry)
 
@@ -235,6 +236,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "In degree."))
         self.tipangle_entry = FCDoubleSpinner()
         self.tipangle_entry.set_precision(self.decimals)
+        self.tipangle_entry.setSingleStep(5)
 
         form.addRow(self.tipanglelabel, self.tipangle_entry)
 
@@ -460,30 +462,39 @@ class NonCopperClear(FlatCAMTool, Gerber):
         )
         self.tools_box.addWidget(self.generate_ncc_button)
         self.tools_box.addStretch()
+        # ############################ FINSIHED GUI ###################################
+        # #############################################################################
 
+        # #############################################################################
+        # ###################### Setup CONTEXT MENU ###################################
+        # #############################################################################
         self.tools_table.setupContextMenu()
         self.tools_table.addContextMenu(
-            "Add", lambda: self.on_tool_add(dia=None, muted=None), icon=QtGui.QIcon("share/plus16.png"))
+            "Add", self.on_add_tool_by_key, icon=QtGui.QIcon("share/plus16.png"))
         self.tools_table.addContextMenu(
             "Delete", lambda:
             self.on_tool_delete(rows_to_delete=None, all=None), icon=QtGui.QIcon("share/delete32.png"))
 
+        # #############################################################################
+        # ########################## VARIABLES ########################################
+        # #############################################################################
         self.units = ''
-        self.ncc_tools = {}
+        self.ncc_tools = dict()
         self.tooluid = 0
+
         # store here the default data for Geometry Data
-        self.default_data = {}
+        self.default_data = dict()
 
         self.obj_name = ""
         self.ncc_obj = None
 
-        self.sel_rect = []
+        self.sel_rect = list()
 
         self.bound_obj_name = ""
         self.bound_obj = None
 
-        self.ncc_dia_list = []
-        self.iso_dia_list = []
+        self.ncc_dia_list = list()
+        self.iso_dia_list = list()
         self.has_offset = None
         self.o_name = None
         self.overlap = None
@@ -497,13 +508,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.mm = None
         self.mr = None
+
         # store here solid_geometry when there are tool with isolation job
-        self.solid_geometry = []
+        self.solid_geometry = list()
 
         self.select_method = None
+        self.tool_type_item_options = list()
 
-        self.tool_type_item_options = []
-
+        # #############################################################################
+        # ############################ SGINALS ########################################
+        # #############################################################################
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.editingFinished.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
@@ -521,6 +535,22 @@ class NonCopperClear(FlatCAMTool, Gerber):
         obj_type = self.type_obj_combo.currentIndex()
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
+
+    def on_add_tool_by_key(self):
+        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
+                                       text='%s:' % _('Enter a Tool Diameter'),
+                                       min=0.0000, max=99.9999, decimals=4)
+        tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+        val, ok = tool_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                return
+            self.on_tool_add(dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
