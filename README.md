@@ -10,6 +10,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.10.2019
+
+- remade the Tool Calculators to use the QSpinBox in order to simplify the user interaction and remove possible errors
+- remade: Tool Cutout, Tool 2Sided, Tool Image, Panelize Tool, NCC Tool, Paint Tool  to use the QSpinBox GUI elements
+
 4.10.2019
 
 - updated the Film Tool and added the ability to generate Punched Positive films (holes in the pads) when a Gerber file is the film's source. The punch holes source can be either an Excellon file or the pads center

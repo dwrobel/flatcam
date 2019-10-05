@@ -8,7 +8,7 @@
 
 from FlatCAMTool import FlatCAMTool
 
-from flatcamGUI.GUIElements import RadioSet, FCComboBox, IntEntry
+from flatcamGUI.GUIElements import RadioSet, FCComboBox, FCSpinner
 from PyQt5 import QtGui, QtWidgets
 
 import gettext
@@ -59,11 +59,9 @@ class ToolImage(FlatCAMTool):
         ti_form_layout.addRow(self.tf_type_obj_combo_label, self.tf_type_obj_combo)
 
         # DPI value of the imported image
-        self.dpi_entry = IntEntry()
+        self.dpi_entry = FCSpinner()
         self.dpi_label = QtWidgets.QLabel('%s:' % _("DPI value"))
-        self.dpi_label.setToolTip(
-           _("Specify a DPI value for the image.")
-        )
+        self.dpi_label.setToolTip(_("Specify a DPI value for the image.") )
         ti_form_layout.addRow(self.dpi_label, self.dpi_entry)
 
         self.emty_lbl = QtWidgets.QLabel("")
@@ -86,7 +84,9 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.image_type_label, self.image_type)
 
         # Mask value of the imported image when image monochrome
-        self.mask_bw_entry = IntEntry()
+        self.mask_bw_entry = FCSpinner()
+        self.mask_bw_entry.set_range(0, 255)
+
         self.mask_bw_label = QtWidgets.QLabel("%s <b>B/W</b>:" % _('Mask value'))
         self.mask_bw_label.setToolTip(
             _("Mask for monochrome image.\n"
@@ -99,7 +99,9 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_bw_label, self.mask_bw_entry)
 
         # Mask value of the imported image for RED color when image color
-        self.mask_r_entry = IntEntry()
+        self.mask_r_entry = FCSpinner()
+        self.mask_r_entry.set_range(0, 255)
+
         self.mask_r_label = QtWidgets.QLabel("%s <b>R:</b>" % _('Mask value'))
         self.mask_r_label.setToolTip(
             _("Mask for RED color.\n"
@@ -110,7 +112,9 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_r_label, self.mask_r_entry)
 
         # Mask value of the imported image for GREEN color when image color
-        self.mask_g_entry = IntEntry()
+        self.mask_g_entry = FCSpinner()
+        self.mask_g_entry.set_range(0, 255)
+
         self.mask_g_label = QtWidgets.QLabel("%s <b>G:</b>" % _('Mask value'))
         self.mask_g_label.setToolTip(
             _("Mask for GREEN color.\n"
@@ -121,7 +125,9 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_g_label, self.mask_g_entry)
 
         # Mask value of the imported image for BLUE color when image color
-        self.mask_b_entry = IntEntry()
+        self.mask_b_entry = FCSpinner()
+        self.mask_b_entry.set_range(0, 255)
+
         self.mask_b_label = QtWidgets.QLabel("%s <b>B:</b>" % _('Mask value'))
         self.mask_b_label.setToolTip(
             _("Mask for BLUE color.\n"
@@ -132,15 +138,11 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_b_label, self.mask_b_entry)
 
         # Buttons
-        hlay = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay)
-        hlay.addStretch()
-
         self.import_button = QtWidgets.QPushButton(_("Import image"))
         self.import_button.setToolTip(
             _("Open a image of raster type and then import it in FlatCAM.")
         )
-        hlay.addWidget(self.import_button)
+        self.layout.addWidget(self.import_button)
 
         self.layout.addStretch()
 

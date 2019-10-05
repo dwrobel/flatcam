@@ -26,6 +26,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def __init__(self, app):
         self.app = app
+        self.decimals = 4
 
         FlatCAMTool.__init__(self, app)
         Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
@@ -156,19 +157,14 @@ class ToolPaint(FlatCAMTool, Gerber):
         form.addRow(self.order_label, self.order_radio)
 
         # ### Add a new Tool ## ##
-        hlay = QtWidgets.QHBoxLayout()
-        self.tools_box.addLayout(hlay)
-
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool.")
         )
-        self.addtool_entry = FCEntry2()
+        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry.set_precision(self.decimals)
 
-        # hlay.addWidget(self.addtool_label)
-        # hlay.addStretch()
-        hlay.addWidget(self.addtool_entry_lbl)
-        hlay.addWidget(self.addtool_entry)
+        form.addRow(self.addtool_entry_lbl, self.addtool_entry)
 
         grid2 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid2)
@@ -200,6 +196,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         grid3 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid3)
+        grid3.setColumnStretch(0, 0)
+        grid3.setColumnStretch(1, 1)
 
         # Overlap
         ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
@@ -230,7 +228,9 @@ class ToolPaint(FlatCAMTool, Gerber):
               "be painted.")
         )
         grid3.addWidget(marginlabel, 2, 0)
-        self.paintmargin_entry = FCEntry()
+        self.paintmargin_entry = FCDoubleSpinner()
+        self.paintmargin_entry.set_precision(self.decimals)
+
         grid3.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
@@ -376,9 +376,6 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.sel_rect = []
 
-        # Number of decimals for tools used in this Tool
-        self.decimals = 4
-
         # store here the default data for Geometry Data
         self.default_data = {}
         self.default_data.update({
@@ -417,7 +414,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # ## Signals
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        self.addtool_entry.returnPressed.connect(self.on_tool_add)
+        self.addtool_entry.editingFinished.connect(self.on_tool_add)
         # self.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.tools_table.itemChanged.connect(self.on_tool_edit)
         self.deltool_btn.clicked.connect(self.on_tool_delete)

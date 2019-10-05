@@ -19,6 +19,7 @@ class DblSidedTool(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
+        self.decimals = 4
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -219,25 +220,30 @@ class DblSidedTool(FlatCAMTool):
         grid_lay3.addWidget(self.alignment_holes, 0, 0)
         grid_lay3.addWidget(self.add_drill_point_button, 0, 1)
 
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+
         # ## Drill diameter for alignment holes
         self.dt_label = QtWidgets.QLabel("<b>%s:</b>" % _('Alignment Drill Diameter'))
         self.dt_label.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")
         )
-        self.layout.addWidget(self.dt_label)
+        grid0.addWidget(self.dt_label, 0, 0, 1, 2)
 
-        hlay = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay)
+        # Drill diameter value
+        self.drill_dia = FCDoubleSpinner()
+        self.drill_dia.set_precision(self.decimals)
 
-        self.drill_dia = FCEntry()
         self.dd_label = QtWidgets.QLabel('%s:' % _("Drill dia"))
         self.dd_label.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")
         )
-        hlay.addWidget(self.dd_label)
-        hlay.addWidget(self.drill_dia)
+        grid0.addWidget(self.dd_label, 1, 0)
+        grid0.addWidget(self.drill_dia, 1, 1)
 
         hlay2 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay2)

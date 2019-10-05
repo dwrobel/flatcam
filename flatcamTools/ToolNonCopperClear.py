@@ -27,6 +27,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def __init__(self, app):
         self.app = app
+        self.decimals = 4
 
         FlatCAMTool.__init__(self, app)
         Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])
@@ -213,14 +214,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table")
         )
-        self.addtool_entry = FCEntry2()
+        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry.set_precision(self.decimals)
+
         form.addRow(self.addtool_entry_lbl, self.addtool_entry)
 
         # Tip Dia
         self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
         self.tipdialabel.setToolTip(
             _("The tip diameter for V-Shape Tool"))
-        self.tipdia_entry = LengthEntry()
+        self.tipdia_entry = FCDoubleSpinner()
+        self.tipdia_entry.set_precision(self.decimals)
+
         form.addRow(self.tipdialabel, self.tipdia_entry)
 
         # Tip Angle
@@ -228,7 +233,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tipanglelabel.setToolTip(
             _("The tip angle for V-Shape Tool.\n"
               "In degree."))
-        self.tipangle_entry = LengthEntry()
+        self.tipangle_entry = FCDoubleSpinner()
+        self.tipangle_entry.set_precision(self.decimals)
+
         form.addRow(self.tipanglelabel, self.tipangle_entry)
 
         grid2 = QtWidgets.QGridLayout()
@@ -271,7 +278,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
            _("Depth of cut into material. Negative value.\n"
              "In FlatCAM units.")
         )
-        self.cutz_entry = FloatEntry()
+        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry.set_precision(self.decimals)
+        self.cutz_entry.set_range(-99999, -0.00000000000001)
+
         self.cutz_entry.setToolTip(
            _("Depth of cut into material. Negative value.\n"
              "In FlatCAM units.")
@@ -305,7 +315,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Bounding box margin.")
         )
         grid3.addWidget(nccmarginlabel, 3, 0)
-        self.ncc_margin_entry = FCEntry()
+        self.ncc_margin_entry = FCDoubleSpinner()
+        self.ncc_margin_entry.set_precision(self.decimals)
+
         grid3.addWidget(self.ncc_margin_entry, 3, 1)
 
         # Method
@@ -488,15 +500,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # store here solid_geometry when there are tool with isolation job
         self.solid_geometry = []
 
-        # the number of decimals for the tools used in this FlatCAM Tool
-        self.decimals = 4
-
         self.select_method = None
 
         self.tool_type_item_options = []
 
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        self.addtool_entry.returnPressed.connect(self.on_tool_add)
+        self.addtool_entry.editingFinished.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.generate_ncc_button.clicked.connect(self.on_ncc_click)
 
@@ -958,7 +967,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         for k, v in self.ncc_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.*f' % self.decimals, (v[tool_v])))
+                    tool_dias.append(float('%.*f' % (self.decimals, (v[tool_v]))))
 
         if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:

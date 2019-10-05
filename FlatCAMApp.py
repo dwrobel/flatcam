@@ -2979,6 +2979,7 @@ class App(QtCore.QObject):
         self.image_tool = ToolImage(self)
         self.image_tool.install(icon=QtGui.QIcon('share/image32.png'), pos=self.ui.menufileimport,
                                 separator=True)
+
         self.pcb_wizard_tool = PcbWizard(self)
         self.pcb_wizard_tool.install(icon=QtGui.QIcon('share/drill32.png'), pos=self.ui.menufileimport)
 

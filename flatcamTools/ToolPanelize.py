@@ -143,7 +143,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(panel_data_label)
 
         # Spacing Columns
-        self.spacing_columns = FCEntry()
+        self.spacing_columns = FCSpinner()
         self.spacing_columns_label = QtWidgets.QLabel('%s:' % _("Spacing cols"))
         self.spacing_columns_label.setToolTip(
             _("Spacing between columns of the desired panel.\n"
@@ -152,7 +152,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_columns_label, self.spacing_columns)
 
         # Spacing Rows
-        self.spacing_rows = FCEntry()
+        self.spacing_rows = FCSpinner()
         self.spacing_rows_label = QtWidgets.QLabel('%s:' % _("Spacing rows"))
         self.spacing_rows_label.setToolTip(
             _("Spacing between rows of the desired panel.\n"
@@ -161,7 +161,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_rows_label, self.spacing_rows)
 
         # Columns
-        self.columns = FCEntry()
+        self.columns = FCSpinner()
         self.columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
             _("Number of columns of the desired panel")
@@ -169,7 +169,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.columns_label, self.columns)
 
         # Rows
-        self.rows = FCEntry()
+        self.rows = FCSpinner()
         self.rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
             _("Number of rows of the desired panel")
@@ -200,7 +200,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.constrain_cb)
 
-        self.x_width_entry = FCEntry()
+        self.x_width_entry = FCSpinner()
         self.x_width_lbl = QtWidgets.QLabel('%s:' % _("Width (DX)"))
         self.x_width_lbl.setToolTip(
             _("The width (DX) within which the panel must fit.\n"
@@ -208,7 +208,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
-        self.y_height_entry = FCEntry()
+        self.y_height_entry = FCSpinner()
         self.y_height_lbl = QtWidgets.QLabel('%s:' % _("Height (DY)"))
         self.y_height_lbl.setToolTip(
             _("The height (DY)within which the panel must fit.\n"
@@ -386,77 +386,20 @@ class Panelize(FlatCAMTool):
 
         self.outname = name + '_panelized'
 
-        try:
-            spacing_columns = float(self.spacing_columns.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                spacing_columns = float(self.spacing_columns.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
+        spacing_columns = float(self.spacing_columns.get_value())
         spacing_columns = spacing_columns if spacing_columns is not None else 0
 
-        try:
-            spacing_rows = float(self.spacing_rows.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                spacing_rows = float(self.spacing_rows.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
+        spacing_rows = float(self.spacing_rows.get_value())
         spacing_rows = spacing_rows if spacing_rows is not None else 0
 
-        try:
-            rows = int(self.rows.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                rows = float(self.rows.get_value().replace(',', '.'))
-                rows = int(rows)
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
+        rows = int(self.rows.get_value())
         rows = rows if rows is not None else 1
 
-        try:
-            columns = int(self.columns.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                columns = float(self.columns.get_value().replace(',', '.'))
-                columns = int(columns)
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
+        columns = int(self.columns.get_value())
         columns = columns if columns is not None else 1
 
-        try:
-            constrain_dx = float(self.x_width_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                constrain_dx = float(self.x_width_entry.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
-
-        try:
-            constrain_dy = float(self.y_height_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                constrain_dy = float(self.y_height_entry.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
+        constrain_dx = float(self.x_width_entry.get_value())
+        constrain_dy = float(self.y_height_entry.get_value())
 
         panel_type = str(self.panel_type_radio.get_value())
 
