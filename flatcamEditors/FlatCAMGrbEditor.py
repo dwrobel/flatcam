@@ -1809,27 +1809,45 @@ class FCMarkArea(FCShapeTool):
         self.activate_markarea()
 
     def activate_markarea(self):
-        self.draw_app.hide_tool('all')
         self.draw_app.ma_tool_frame.show()
 
         # clear previous marking
         self.draw_app.ma_annotation.clear(update=True)
 
         try:
-            self.draw_app.ma_threshold__button.clicked.disconnect()
+            self.draw_app.ma_threshold_button.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
-        self.draw_app.ma_threshold__button.clicked.connect(self.on_markarea_click)
+        self.draw_app.ma_threshold_button.clicked.connect(self.on_markarea_click)
+
+        try:
+            self.draw_app.ma_delete_button.clicked.disconnect()
+        except TypeError:
+            pass
+        self.draw_app.ma_delete_button.clicked.connect(self.on_markarea_delete)
+
+        try:
+            self.draw_app.ma_clear_button.clicked.disconnect()
+        except TypeError:
+            pass
+        self.draw_app.ma_clear_button.clicked.connect(self.on_markarea_clear)
 
     def deactivate_markarea(self):
-        self.draw_app.ma_threshold__button.clicked.disconnect()
+        self.draw_app.ma_threshold_button.clicked.disconnect()
         self.complete = True
         self.draw_app.select_tool("select")
         self.draw_app.hide_tool(self.name)
 
     def on_markarea_click(self):
         self.draw_app.on_markarea()
+
+    def on_markarea_clear(self):
+        self.draw_app.ma_annotation.clear(update=True)
         self.deactivate_markarea()
+
+    def on_markarea_delete(self):
+        self.draw_app.delete_marked_polygons()
+        self.on_markarea_clear()
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2332,6 +2350,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app = app
         self.canvas = self.app.plotcanvas
+        self.decimals = 4
 
         # Current application units in Upper Case
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
@@ -2581,7 +2600,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.ma_tool_frame.hide()
 
         # Title
-        ma_title_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Mark polygon areas'))
+        ma_title_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Mark polygons'))
         ma_title_lbl.setToolTip(
             _("Mark the polygon areas.")
         )
@@ -2596,16 +2615,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
             _("The threshold value, all areas less than this are marked.\n"
               "Can have a value between 0.0000 and 9999.9999")
         )
-        self.ma_upper_threshold_entry = FCEntry()
-        self.ma_upper_threshold_entry.setValidator(QtGui.QDoubleValidator(0.0000, 9999.9999, 4))
+        self.ma_upper_threshold_entry = FCDoubleSpinner()
+        self.ma_upper_threshold_entry.set_precision(self.decimals)
+        self.ma_upper_threshold_entry.set_range(0, 10000)
 
         self.ma_lower_threshold_lbl = QtWidgets.QLabel('%s:' % _("Area LOWER threshold"))
         self.ma_lower_threshold_lbl.setToolTip(
             _("The threshold value, all areas more than this are marked.\n"
               "Can have a value between 0.0000 and 9999.9999")
         )
-        self.ma_lower_threshold_entry = FCEntry()
-        self.ma_lower_threshold_entry.setValidator(QtGui.QDoubleValidator(0.0000, 9999.9999, 4))
+        self.ma_lower_threshold_entry = FCDoubleSpinner()
+        self.ma_lower_threshold_entry.set_precision(self.decimals)
+        self.ma_lower_threshold_entry.set_range(0, 10000)
 
         ma_form_layout.addRow(self.ma_lower_threshold_lbl, self.ma_lower_threshold_entry)
         ma_form_layout.addRow(self.ma_upper_threshold_lbl, self.ma_upper_threshold_entry)
@@ -2614,8 +2635,23 @@ class FlatCAMGrbEditor(QtCore.QObject):
         hlay_ma = QtWidgets.QHBoxLayout()
         self.ma_tools_box.addLayout(hlay_ma)
 
-        self.ma_threshold__button = QtWidgets.QPushButton(_("Go"))
-        hlay_ma.addWidget(self.ma_threshold__button)
+        self.ma_threshold_button = QtWidgets.QPushButton(_("Mark"))
+        self.ma_threshold_button.setToolTip(
+            _("Mark the polygons that fit within limits.")
+        )
+        hlay_ma.addWidget(self.ma_threshold_button)
+
+        self.ma_delete_button = QtWidgets.QPushButton(_("Delete"))
+        self.ma_delete_button.setToolTip(
+            _("Delete all the marked polygons.")
+        )
+        hlay_ma.addWidget(self.ma_delete_button)
+
+        self.ma_clear_button = QtWidgets.QPushButton(_("Clear"))
+        self.ma_clear_button.setToolTip(
+            _("Clear all the markings.")
+        )
+        hlay_ma.addWidget(self.ma_clear_button)
 
         # ######################
         # ### Add Pad Array ####
@@ -2786,27 +2822,30 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # # ## Data
         self.active_tool = None
 
-        self.storage_dict = {}
-        self.current_storage = []
+        self.storage_dict = dict()
+        self.current_storage = list()
 
-        self.sorted_apid = []
+        self.sorted_apid = list()
 
-        self.new_apertures = {}
-        self.new_aperture_macros = {}
+        self.new_apertures = dict()
+        self.new_aperture_macros = dict()
 
         # store here the plot promises, if empty the delayed plot will be activated
-        self.grb_plot_promises = []
+        self.grb_plot_promises = list()
 
         # dictionary to store the tool_row and aperture codes in Tool_table
         # it will be updated everytime self.build_ui() is called
-        self.olddia_newdia = {}
+        self.olddia_newdia = dict()
 
-        self.tool2tooldia = {}
+        self.tool2tooldia = dict()
 
         # this will store the value for the last selected tool, for use after clicking on canvas when the selection
         # is cleared but as a side effect also the selected tool is cleared
         self.last_aperture_selected = None
-        self.utility = []
+        self.utility = list()
+
+        # this will store the polygons marked by mark are to be perhaps deleted
+        self.geo_to_delete = list()
 
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
@@ -4828,16 +4867,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.ma_annotation.clear(update=True)
 
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
-        upper_threshold_val = None
-        lower_threshold_val = None
+
         text = []
         position = []
 
-        for apid in self.gerber_obj.apertures:
-            if 'geometry' in self.gerber_obj.apertures[apid]:
-                for geo_el in self.gerber_obj.apertures[apid]['geometry']:
-                    if 'solid' in geo_el:
-                        area = geo_el['solid'].area
+        for apid in self.storage_dict:
+            if 'geometry' in self.storage_dict[apid]:
+                for geo_el in self.storage_dict[apid]['geometry']:
+                    if 'solid' in geo_el.geo:
+                        area = geo_el.geo['solid'].area
                         try:
                             upper_threshold_val = self.ma_upper_threshold_entry.get_value()
                         except Exception as e:
@@ -4849,20 +4887,29 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             lower_threshold_val = 0.0
 
                         if float(upper_threshold_val) > area > float(lower_threshold_val):
-                            current_pos = geo_el['solid'].exterior.coords[-1]
+                            current_pos = geo_el.geo['solid'].exterior.coords[-1]
                             text_elem = '%.4f' % area
                             text.append(text_elem)
                             position.append(current_pos)
+                            self.geo_to_delete.append(geo_el)
 
         if text:
             self.ma_annotation.set(text=text, pos=position, visible=True,
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color='#000000FF')
             self.app.inform.emit('[success] %s' %
-                                 _("Polygon areas marked."))
+                                 _("Polygons marked."))
         else:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("There are no polygons to mark area."))
+                                 _("No polygons were marked. None fit within the limits."))
+
+    def delete_marked_polygons(self):
+        for shape_sel in self.geo_to_delete:
+            self.delete_shape(shape_sel)
+
+        self.build_ui()
+        self.plot_all()
+        self.app.inform.emit('[success] %s' % _("Done. Apertures geometry deleted."))
 
     def on_eraser(self):
         self.select_tool('eraser')

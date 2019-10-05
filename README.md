@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.10.2019
+
+- remade the Mark area Tool in Gerber Editor to be able to clear the markings and also to delete the marked polygons (Gerber apertures)
+
 5.10.2019
 
 - remade the Tool Calculators to use the QSpinBox in order to simplify the user interaction and remove possible errors
