@@ -2939,7 +2939,7 @@ class App(QtCore.QObject):
         self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'))
 
         self.calculator_tool = ToolCalculator(self)
-        self.calculator_tool.install(icon=QtGui.QIcon('share/calculator24.png'), separator=True)
+        self.calculator_tool.install(icon=QtGui.QIcon('share/calculator16.png'), separator=True)
 
         self.sub_tool = ToolSub(self)
         self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menutool, separator=True)
@@ -4394,6 +4394,16 @@ class App(QtCore.QObject):
                 )
                 license_label.setOpenExternalLinks(True)
 
+                attributions_label = QtWidgets.QLabel(
+                    _(
+                        'Some of the icons used are from the following sources: <BR>'
+                        '<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" '
+                        'title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/"             '
+                        'title="Flaticon">www.flaticon.com</a></div><br>'
+                        'Icons by <a target="_blank" href="https://icons8.com">Icons8</a>'
+                    )
+                )
+
                 # layouts
                 layout1 = QtWidgets.QVBoxLayout()
                 layout1_1 = QtWidgets.QHBoxLayout()
@@ -4436,6 +4446,12 @@ class App(QtCore.QObject):
                 self.license_tab_layout = QtWidgets.QVBoxLayout(self.license_tab)
                 self.license_tab_layout.setContentsMargins(2, 2, 2, 2)
                 tab_widget.addTab(self.license_tab, _("License"))
+
+                self.attributions_tab = QtWidgets.QWidget()
+                self.attributions_tab.setObjectName("attributions_about")
+                self.attributions_tab_layout = QtWidgets.QVBoxLayout(self.attributions_tab)
+                self.attributions_tab_layout.setContentsMargins(2, 2, 2, 2)
+                tab_widget.addTab(self.attributions_tab, _("Attributions"))
 
                 self.splash_tab_layout.addWidget(logo, stretch=0)
                 self.splash_tab_layout.addWidget(title, stretch=1)
@@ -4544,6 +4560,9 @@ class App(QtCore.QObject):
 
                 self.license_tab_layout.addWidget(license_label)
                 self.license_tab_layout.addStretch()
+
+                self.attributions_tab_layout.addWidget(attributions_label)
+                self.attributions_tab_layout.addStretch()
 
                 layout3.addStretch()
                 layout3.addWidget(closebtn)

@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - optimized the Transformation Tool both in GUI and in functionality and replaced the entries with QSpinBox
 - fixed an issue with the tool table context menu in Paint Tool
 - made some changes in the GUI in Paint Tool, NCC Tool and SolderPaste Tool
+- changed some of the icons; added attributions for icons source in the About FlatCAM window
 
 4.10.2019
 
