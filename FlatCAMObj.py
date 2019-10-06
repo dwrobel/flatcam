@@ -6831,7 +6831,7 @@ class FlatCAMDocument(FlatCAMObj):
 
     def on_text_changed(self):
         self.source_file = self.document_editor_tab.code_editor.toHtml()
-        print(self.source_file)
+        # print(self.source_file)
 
     def font_family(self, font):
         # self.document_editor_tab.code_editor.selectAll()

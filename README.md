@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - remade the Mark area Tool in Gerber Editor to be able to clear the markings and also to delete the marked polygons (Gerber apertures)
 - working in adding to the Optimal Tool the rest of the distances found in the Gerber and the locations associated; added GUI
+- added display of the results for the Rules Check Tool in a formatted way
 
 5.10.2019
 

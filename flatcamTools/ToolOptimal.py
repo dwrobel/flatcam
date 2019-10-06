@@ -117,6 +117,17 @@ class ToolOptimal(FlatCAMTool):
         self.locations_textb.setStyleSheet(stylesheet)
         form_lay.addRow(self.locations_textb)
 
+        # Jump button
+        self.locate_button = QtWidgets.QPushButton(_("Jump to selected position"))
+        self.locate_button.setToolTip(
+            _("Select a position in the Locations text box and then\n"
+              "click this button.")
+        )
+        self.locate_button.setMinimumWidth(60)
+        self.locate_button.setDisabled(True)
+        form_lay.addRow(self.locate_button)
+
+        # Other distances in Gerber
         self.title_second_res_label = QtWidgets.QLabel('<b>%s:</b>' % _("Other distances"))
         self.title_second_res_label.setToolTip(_("Will display other distances in the Gerber file ordered from\n"
                                                  "the minimum to the maximum, not including the absolute minimum."))
@@ -128,16 +139,6 @@ class ToolOptimal(FlatCAMTool):
                                            "where the distance was found."))
         form_lay.addRow(self.sec_locations_cb)
 
-        # Jump button
-        self.locate_button = QtWidgets.QPushButton(_("Jump to selected position"))
-        self.locate_button.setToolTip(
-            _("Select a position in the Locations text box and then\n"
-              "click this button.")
-        )
-        self.locate_button.setMinimumWidth(60)
-        self.locate_button.setDisabled(True)
-        form_lay.addRow(self.locate_button)
-
         # this way I can hide/show the frame
         self.sec_locations_frame = QtWidgets.QFrame()
         self.sec_locations_frame.setContentsMargins(0, 0, 0, 0)
@@ -145,6 +146,42 @@ class ToolOptimal(FlatCAMTool):
         self.distances_box = QtWidgets.QVBoxLayout()
         self.distances_box.setContentsMargins(0, 0, 0, 0)
         self.sec_locations_frame.setLayout(self.distances_box)
+
+        # Other distances
+        self.distances_textb = FCTextArea(parent=self)
+        self.distances_textb.setReadOnly(True)
+        self.distances_textb.setToolTip(_("Gerber distances."))
+        stylesheet = """
+                        QTextEdit { selection-background-color:yellow;
+                                    selection-color:black;
+                        }
+                     """
+
+        self.distances_textb.setStyleSheet(stylesheet)
+        self.distances_box.addWidget(self.distances_textb)
+
+        # Locations where minimum was found
+        self.locations_sec_textb = FCTextArea(parent=self)
+        self.locations_sec_textb.setReadOnly(True)
+        self.locations_sec_textb.setToolTip(_("Coordinates for points where the selected distance was found."))
+        stylesheet = """
+                        QTextEdit { selection-background-color:yellow;
+                                    selection-color:black;
+                        }
+                     """
+
+        self.locations_sec_textb.setStyleSheet(stylesheet)
+        self.distances_box.addWidget(self.locations_sec_textb)
+
+        # Jump button
+        self.locate_sec_button = QtWidgets.QPushButton(_("Jump to selected position"))
+        self.locate_sec_button.setToolTip(
+            _("Select a position in the Locations text box and then\n"
+              "click this button.")
+        )
+        self.locate_sec_button.setMinimumWidth(60)
+        self.locate_sec_button.setDisabled(True)
+        self.distances_box.addWidget(self.locate_sec_button)
 
         # GO button
         self.calculate_button = QtWidgets.QPushButton(_("Find Minimum"))

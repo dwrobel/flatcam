@@ -811,7 +811,7 @@ class RulesCheck(FlatCAMTool):
             name = elem['name']
             for apid in elem['apertures']:
                 tool_dia = float(elem['apertures'][apid]['size'])
-                if tool_dia < float(size):
+                if tool_dia < float(size) and tool_dia != 0.0:
                     dia_list.append(tool_dia)
                     for geo_el in elem['apertures'][apid]['geometry']:
                         if 'solid' in geo_el.keys():
@@ -934,11 +934,11 @@ class RulesCheck(FlatCAMTool):
         if gerber_obj:
             name_list.append(gerber_obj['name'])
         if gerber_extra_obj:
-            name_list.append(gerber_obj['name'])
+            name_list.append(gerber_extra_obj['name'])
         if exc_obj:
-            name_list.append(gerber_obj['name'])
+            name_list.append(exc_obj['name'])
         if exc_extra_obj:
-            name_list.append(gerber_obj['name'])
+            name_list.append(exc_extra_obj['name'])
 
         obj_violations['name'] = name_list
         obj_violations['points'] = points_list
@@ -1388,7 +1388,35 @@ class RulesCheck(FlatCAMTool):
         self.app.worker_task.emit({'fcn': worker_job, 'params': [self.app]})
 
     def on_tool_finished(self, res):
-        print(res)
+        def init(new_obj, app_obj):
+            txt = ''
+            for el in res:
+                txt += '<b>RULE NAME:</b>\t%s\n' % str(el[0]).upper()
+                if isinstance(el[1][0]['name'], list):
+                    for name in el[1][0]['name']:
+                        txt += 'File name: %s\n' % str(name)
+                    else:
+                        txt += 'File name: %s\n' % str(el[1][0]['name'])
+
+                point_txt = ''
+                if el[1][0]['points']:
+                    txt += '{title}: <span style="color:{color};">{status}</span>.\n'.format(title=_("STATUS"),
+                                                                                             color='red',
+                                                                                             status=_("FAILED"))
+
+                    for pt in el[1][0]['points']:
+                        point_txt += str(pt)
+                        point_txt += ', '
+                    txt += 'Violations: %s\n' % str(point_txt)
+                else:
+                    txt += '{title}: <span style="color:{color};">{status}</span>.\n'.format(title=_("STATUS"),
+                                                                                             color='green',
+                                                                                             status=_("PASSED"))
+                    txt += '%s\n' % _("Violations: There are no violations for the current rule.")
+                txt += '\n\n'
+            new_obj.source_file = txt
+
+        self.app.new_object('document', name='Rules Check results', initialize=init, plot=False )
 
     def reset_fields(self):
         # self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
