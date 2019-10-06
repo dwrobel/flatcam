@@ -2368,7 +2368,7 @@ class App(QtCore.QObject):
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
         self.shell.append_output("FlatCAM %s - " % self.version)
-        self.shell.append_output(_("Open Source Software - Type help to get started\n\n"))
+        self.shell.append_output(_("Type >help< to get started\n\n"))
 
         self.init_tcl()
 
@@ -4371,7 +4371,7 @@ class App(QtCore.QObject):
 
                 license_label = QtWidgets.QLabel(
                     _(
-                        '(c) Copyright 2014 Juan Pablo Caram.\n\n'
+                        '\n'
                         'Licensed under the MIT license:\n'
                         'http://www.opensource.org/licenses/mit-license.php\n\n'
                         'Permission is hereby granted, free of charge, to any person obtaining a copy\n'
@@ -4379,7 +4379,7 @@ class App(QtCore.QObject):
                         'in the Software without restriction, including without limitation the rights\n'
                         'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n'
                         'copies of the Software, and to permit persons to whom the Software is\n'
-                       ' furnished to do so, subject to the following conditions:\n\n'
+                        'furnished to do so, subject to the following conditions:\n\n'
 
                         'The above copyright notice and this permission notice shall be included in\n'
                         'all copies or substantial portions of the Software.\n\n'
@@ -4480,10 +4480,10 @@ class App(QtCore.QObject):
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Denis Hayrullin"))
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Kamil Sopko"))
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Marius Stanciu"),
-                                          QtWidgets.QLabel('%s' % _("Maintainer >=2019")))
+                                          QtWidgets.QLabel('%s' % _("Maintainer >= 2019")))
                 self.prog_form_lay.addRow(QtWidgets.QLabel(''))
 
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Alexandru Lazar"))
+                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Alex Lazar"))
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Matthieu Berthomé"))
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Mike Evans"))
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Victor Benso"))

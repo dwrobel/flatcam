@@ -27,7 +27,7 @@ class ToolOptimal(FlatCAMTool):
     toolName = _("Optimal Tool")
 
     update_text = pyqtSignal(list)
-    update_sec_text = pyqtSignal(dict)
+    update_sec_distances = pyqtSignal(dict)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -196,7 +196,15 @@ class ToolOptimal(FlatCAMTool):
         self.loc_ois = OptionalHideInputSection(self.locations_cb, [self.locations_textb, self.locate_button])
         self.sec_loc_ois = OptionalHideInputSection(self.sec_locations_cb, [self.sec_locations_frame])
 
+        # this is the line selected in the textbox with the locations of the minimum
         self.selected_text = ''
+
+        # this is the line selected in the textbox with the locations of the other distances found in the Gerber object
+        self.selected_locations_text = ''
+
+        # dict to hold the distances between every two elements in Gerber as keys and the actual locations where that
+        # distances happen as values
+        self.min_dict = dict()
 
         # ## Signals
         self.calculate_button.clicked.connect(self.find_minimum_distance)
@@ -205,8 +213,9 @@ class ToolOptimal(FlatCAMTool):
         self.locations_textb.cursorPositionChanged.connect(self.on_textbox_clicked)
 
         self.locate_sec_button.clicked.connect(self.on_locate_sec_position)
-        self.update_sec_text.connect(self.on_update_sec_text)
-        self.locations_sec_textb.cursorPositionChanged.connect(self.on_textbox_sec_clicked)
+        self.update_sec_distances.connect(self.on_update_sec_distances_txt)
+        self.distances_textb.cursorPositionChanged.connect(self.on_distances_textb_clicked)
+        self.locations_sec_textb.cursorPositionChanged.connect(self.on_locations_sec_clicked)
 
         self.layout.addStretch()
 
@@ -315,7 +324,7 @@ class ToolOptimal(FlatCAMTool):
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
                                 str(geo_len)))
 
-                min_dict = dict()
+                self.min_dict = dict()
                 idx = 1
                 for geo in total_geo:
                     for s_geo in total_geo[idx:]:
@@ -333,10 +342,10 @@ class ToolOptimal(FlatCAMTool):
                         loc = (float('%.*f' % (self.decimals, (min(loc_1.x, loc_2.x) + (abs(dx) / 2)))),
                                float('%.*f' % (self.decimals, (min(loc_1.y, loc_2.y) + (abs(dy) / 2)))))
 
-                        if dist in min_dict:
-                            min_dict[dist].append(loc)
+                        if dist in self.min_dict:
+                            self.min_dict[dist].append(loc)
                         else:
-                            min_dict[dist] = [loc]
+                            self.min_dict[dist] = [loc]
 
                         pol_nr += 1
                         disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
@@ -349,19 +358,19 @@ class ToolOptimal(FlatCAMTool):
                 app_obj.inform.emit(
                     _("Optimal Tool. Finding the minimum distance."))
 
-                min_list = list(min_dict.keys())
+                min_list = list(self.min_dict.keys())
                 min_dist = min(min_list)
                 min_dist_string = '%.*f' % (self.decimals, float(min_dist))
                 self.result_entry.set_value(min_dist_string)
 
-                freq = len(min_dict[min_dist])
+                freq = len(self.min_dict[min_dist])
                 freq = '%d' % int(freq)
                 self.freq_entry.set_value(freq)
 
-                min_locations = min_dict.pop(min_dist)
+                min_locations = self.min_dict.pop(min_dist)
 
                 self.update_text.emit(min_locations)
-                self.update_sec_text.emit(min_dict)
+                self.update_sec_distances.emit(self.min_dict)
 
                 app_obj.inform.emit('[success] %s' % _("Optimal Tool. Finished successfully."))
             except Exception as ee:
@@ -379,10 +388,8 @@ class ToolOptimal(FlatCAMTool):
             loc = eval(self.selected_text)
             self.app.on_jump_to(custom_location=loc)
         except Exception as e:
+            log.debug("ToolOptimal.on_locate_position() --> %s" % str(e))
             self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format (x, y).")
-
-    def on_locate_sec_position(self):
-        pass
 
     def on_update_text(self, data):
         txt = ''
@@ -390,9 +397,6 @@ class ToolOptimal(FlatCAMTool):
             txt += '%s\n' % str(loc)
         self.locations_textb.setPlainText(txt)
         self.locate_button.setDisabled(False)
-
-    def on_update_sec_text(self, data):
-        pass
 
     def on_textbox_clicked(self):
         # new cursor - select all document
@@ -415,8 +419,72 @@ class ToolOptimal(FlatCAMTool):
 
         self.selected_text = cursor.selectedText()
 
-    def on_textbox_sec_clicked(self):
-        pass
+    def on_update_sec_distances_txt(self, data):
+        distance_list = sorted(list(data.keys()))
+        txt = ''
+        for loc in distance_list:
+            txt += '%s\n' % str(loc)
+        self.distances_textb.setPlainText(txt)
+        self.locate_sec_button.setDisabled(False)
+
+    def on_distances_textb_clicked(self):
+        # new cursor - select all document
+        cursor = self.distances_textb.textCursor()
+        cursor.select(QtGui.QTextCursor.Document)
+
+        # clear previous selection highlight
+        tmp = cursor.blockFormat()
+        tmp.clearBackground()
+        cursor.setBlockFormat(tmp)
+
+        # new cursor - select the current line
+        cursor = self.distances_textb.textCursor()
+        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+
+        # highlight the current selected line
+        tmp = cursor.blockFormat()
+        tmp.setBackground(QtGui.QBrush(QtCore.Qt.yellow))
+        cursor.setBlockFormat(tmp)
+
+        distance_text = cursor.selectedText()
+        key_in_min_dict = eval(distance_text)
+        self.on_update_locations_text(dist=key_in_min_dict)
+
+    def on_update_locations_text(self, dist):
+        distance_list = self.min_dict[dist]
+        txt = ''
+        for loc in distance_list:
+            txt += '%s\n' % str(loc)
+        self.locations_sec_textb.setPlainText(txt)
+
+    def on_locations_sec_clicked(self):
+        # new cursor - select all document
+        cursor = self.locations_sec_textb.textCursor()
+        cursor.select(QtGui.QTextCursor.Document)
+
+        # clear previous selection highlight
+        tmp = cursor.blockFormat()
+        tmp.clearBackground()
+        cursor.setBlockFormat(tmp)
+
+        # new cursor - select the current line
+        cursor = self.locations_sec_textb.textCursor()
+        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+
+        # highlight the current selected line
+        tmp = cursor.blockFormat()
+        tmp.setBackground(QtGui.QBrush(QtCore.Qt.yellow))
+        cursor.setBlockFormat(tmp)
+
+        self.selected_locations_text = cursor.selectedText()
+
+    def on_locate_sec_position(self):
+        try:
+            loc = eval(self.selected_locations_text)
+            self.app.on_jump_to(custom_location=loc)
+        except Exception as e:
+            log.debug("ToolOptimal.on_locate_sec_position() --> %s" % str(e))
+            self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format (x, y).")
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

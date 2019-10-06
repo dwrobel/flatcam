@@ -1809,7 +1809,7 @@ class _BrowserTextEdit(QTextEdit):
 
     def clear(self):
         QTextEdit.clear(self)
-        text = "FlatCAM %s - Open Source Software - Type help to get started\n\n" % self.version
+        text = "FlatCAM %s - Type >help< to get started\n\n" % self.version
         text = html.escape(text)
         text = text.replace('\n', '<br/>')
         self.moveCursor(QTextCursor.End)
