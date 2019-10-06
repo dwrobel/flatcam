@@ -35,15 +35,18 @@ class ToolOptimal(FlatCAMTool):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
         self.decimals = 4
 
+        # ############################################################################
+        # ############################ GUI creation ##################################
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
-        title_label.setStyleSheet("""
-                        QLabel
-                        {
-                            font-size: 16px;
-                            font-weight: bold;
-                        }
-                        """)
+        title_label.setStyleSheet(
+            """
+            QLabel
+            {
+                font-size: 16px;
+                font-weight: bold;
+            }
+            """)
         self.layout.addWidget(title_label)
 
         # ## Form Layout
@@ -107,10 +110,9 @@ class ToolOptimal(FlatCAMTool):
         # Locations where minimum was found
         self.locations_textb = FCTextArea(parent=self)
         self.locations_textb.setReadOnly(True)
-        self.locations_textb.setToolTip(_("Coordinates for points where minimum distance was found."))
         stylesheet = """
-                        QTextEdit { selection-background-color:yellow;
-                                    selection-color:black;
+                        QTextEdit { selection-background-color:blue;
+                                    selection-color:white;
                         }
                      """
 
@@ -147,26 +149,38 @@ class ToolOptimal(FlatCAMTool):
         self.distances_box.setContentsMargins(0, 0, 0, 0)
         self.sec_locations_frame.setLayout(self.distances_box)
 
+        # Other Distances label
+        self.distances_label = QtWidgets.QLabel('%s' % _("Gerber distances"))
+        self.distances_label.setToolTip(_("Other distances and the coordinates for points\n"
+                                          "where the distance was found."))
+        self.distances_box.addWidget(self.distances_label)
+
         # Other distances
         self.distances_textb = FCTextArea(parent=self)
         self.distances_textb.setReadOnly(True)
-        self.distances_textb.setToolTip(_("Gerber distances."))
         stylesheet = """
-                        QTextEdit { selection-background-color:yellow;
-                                    selection-color:black;
+                        QTextEdit { selection-background-color:blue;
+                                    selection-color:white;
                         }
                      """
 
         self.distances_textb.setStyleSheet(stylesheet)
         self.distances_box.addWidget(self.distances_textb)
 
+        self.distances_box.addWidget(QtWidgets.QLabel(''))
+
+        # Other Locations label
+        self.locations_label = QtWidgets.QLabel('%s' % _("Points coordinates"))
+        self.locations_label.setToolTip(_("Other distances and the coordinates for points\n"
+                                          "where the distance was found."))
+        self.distances_box.addWidget(self.locations_label)
+
         # Locations where minimum was found
         self.locations_sec_textb = FCTextArea(parent=self)
         self.locations_sec_textb.setReadOnly(True)
-        self.locations_sec_textb.setToolTip(_("Coordinates for points where the selected distance was found."))
         stylesheet = """
-                        QTextEdit { selection-background-color:yellow;
-                                    selection-color:black;
+                        QTextEdit { selection-background-color:blue;
+                                    selection-color:white;
                         }
                      """
 
@@ -195,6 +209,8 @@ class ToolOptimal(FlatCAMTool):
 
         self.loc_ois = OptionalHideInputSection(self.locations_cb, [self.locations_textb, self.locate_button])
         self.sec_loc_ois = OptionalHideInputSection(self.sec_locations_cb, [self.sec_locations_frame])
+        # ################## Finished GUI creation ###################################
+        # ############################################################################
 
         # this is the line selected in the textbox with the locations of the minimum
         self.selected_text = ''
@@ -206,7 +222,9 @@ class ToolOptimal(FlatCAMTool):
         # distances happen as values
         self.min_dict = dict()
 
-        # ## Signals
+        # ############################################################################
+        # ############################ Signals #######################################
+        # ############################################################################
         self.calculate_button.clicked.connect(self.find_minimum_distance)
         self.locate_button.clicked.connect(self.on_locate_position)
         self.update_text.connect(self.on_update_text)
@@ -317,8 +335,15 @@ class ToolOptimal(FlatCAMTool):
                 total_geo = MultiPolygon(total_geo)
                 total_geo = total_geo.buffer(0)
 
-                geo_len = len(total_geo)
-                geo_len = (geo_len * (geo_len - 1)) / 2
+                try:
+                    __ = iter(total_geo)
+                    geo_len = len(total_geo)
+                    geo_len = (geo_len * (geo_len - 1)) / 2
+                except TypeError:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("The Gerber object has one Polygon as geometry.\n"
+                                          "There are no distances between geometry elements to be found."))
+                    return 'fail'
 
                 app_obj.inform.emit(
                     '%s: %s' % (_("Optimal Tool. Finding the distances between each two elements. Iterations"),
@@ -337,15 +362,15 @@ class ToolOptimal(FlatCAMTool):
                         dist = float('%.*f' % (self.decimals, dist))
                         loc_1, loc_2 = nearest_points(geo, s_geo)
 
-                        dx = loc_1.x - loc_2.x
-                        dy = loc_1.y - loc_2.y
-                        loc = (float('%.*f' % (self.decimals, (min(loc_1.x, loc_2.x) + (abs(dx) / 2)))),
-                               float('%.*f' % (self.decimals, (min(loc_1.y, loc_2.y) + (abs(dy) / 2)))))
+                        proc_loc = (
+                            (float('%.*f' % (self.decimals, loc_1.x)), float('%.*f' % (self.decimals, loc_1.y))),
+                            (float('%.*f' % (self.decimals, loc_2.x)), float('%.*f' % (self.decimals, loc_2.y)))
+                        )
 
                         if dist in self.min_dict:
-                            self.min_dict[dist].append(loc)
+                            self.min_dict[dist].append(proc_loc)
                         else:
-                            self.min_dict[dist] = [loc]
+                            self.min_dict[dist] = [proc_loc]
 
                         pol_nr += 1
                         disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
@@ -384,17 +409,35 @@ class ToolOptimal(FlatCAMTool):
     def on_locate_position(self):
         # cursor = self.locations_textb.textCursor()
         # self.selected_text = cursor.selectedText()
+
         try:
-            loc = eval(self.selected_text)
+            if self.selected_text != '':
+                loc = eval(self.selected_text)
+            else:
+                return 'fail'
+        except Exception as e:
+            log.debug("ToolOptimal.on_locate_position() --> first try %s" % str(e))
+            self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format "
+                                 "((x0, y0), (x1, y1)).")
+            return 'fail'
+
+        try:
+            loc_1 = loc[0]
+            loc_2 = loc[1]
+            dx = loc_1[0] - loc_2[0]
+            dy = loc_1[1] - loc_2[1]
+            loc = (float('%.*f' % (self.decimals, (min(loc_1[0], loc_2[0]) + (abs(dx) / 2)))),
+                   float('%.*f' % (self.decimals, (min(loc_1[1], loc_2[1]) + (abs(dy) / 2)))))
             self.app.on_jump_to(custom_location=loc)
         except Exception as e:
-            log.debug("ToolOptimal.on_locate_position() --> %s" % str(e))
-            self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format (x, y).")
+            log.debug("ToolOptimal.on_locate_position() --> sec try %s" % str(e))
+            return 'fail'
 
     def on_update_text(self, data):
         txt = ''
         for loc in data:
-            txt += '%s\n' % str(loc)
+            if loc:
+                txt += '%s, %s\n' % (str(loc[0]), str(loc[1]))
         self.locations_textb.setPlainText(txt)
         self.locate_button.setDisabled(False)
 
@@ -454,7 +497,8 @@ class ToolOptimal(FlatCAMTool):
         distance_list = self.min_dict[dist]
         txt = ''
         for loc in distance_list:
-            txt += '%s\n' % str(loc)
+            if loc:
+                txt += '%s, %s\n' % (str(loc[0]), str(loc[1]))
         self.locations_sec_textb.setPlainText(txt)
 
     def on_locations_sec_clicked(self):
@@ -480,11 +524,27 @@ class ToolOptimal(FlatCAMTool):
 
     def on_locate_sec_position(self):
         try:
-            loc = eval(self.selected_locations_text)
+            if self.selected_locations_text != '':
+                loc = eval(self.selected_locations_text)
+            else:
+                return 'fail'
+        except Exception as e:
+            log.debug("ToolOptimal.on_locate_sec_position() --> first try %s" % str(e))
+            self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format "
+                                 "((x0, y0), (x1, y1)).")
+            return 'fail'
+
+        try:
+            loc_1 = loc[0]
+            loc_2 = loc[1]
+            dx = loc_1[0] - loc_2[0]
+            dy = loc_1[1] - loc_2[1]
+            loc = (float('%.*f' % (self.decimals, (min(loc_1[0], loc_2[0]) + (abs(dx) / 2)))),
+                   float('%.*f' % (self.decimals, (min(loc_1[1], loc_2[1]) + (abs(dy) / 2)))))
             self.app.on_jump_to(custom_location=loc)
         except Exception as e:
-            log.debug("ToolOptimal.on_locate_sec_position() --> %s" % str(e))
-            self.app.inform.emit("[ERROR_NOTCL] The selected text is no valid location in the format (x, y).")
+            log.debug("ToolOptimal.on_locate_sec_position() --> sec try %s" % str(e))
+            return 'fail'
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

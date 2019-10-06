@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 7.10.2019
 
 - fixed an conflict in a signal usage that was triggered by Tool SolderPaste when a new project was created
+- updated Optimal Tool to display both points coordinates that made a distance (and the minimum) not only the middle point (which is still the place where the jump happen)
 
 6.10.2019
 
