@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - moved the ApertureMacro class from camlib to ParseGerber file
 - moved back the ApertureMacro class to camlib for now and made some import changes in the new ParseGerber and ParseExcellon classes
 - some changes to the tests - perhaps I will try adding a few tests in the future
+- changed the Jump To icon and reverted some changes to the parseGerber and ParseExcellon classes
 
 5.10.2019
 

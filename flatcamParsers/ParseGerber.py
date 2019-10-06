@@ -1,35 +1,12 @@
-from camlib import Geometry, ApertureMacro, parse_gerber_number, arc, arctan2, arc_angle
-import FlatCAMApp
+from camlib import *
 import FlatCAMTranslation as fcTranslate
-
-from shapely.geometry import Polygon, Point, LineString, MultiPolygon
-from shapely.ops import cascaded_union
-import shapely.affinity as affinity
-from shapely.geometry import box as shply_box
-import re
-import traceback
-from copy import deepcopy
 
 import gettext
 import builtins
 
-import numpy as np
-from numpy import Inf
-from math import sqrt, pi, sin, cos
-import sys
-
-import logging
-
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
-log = logging.getLogger('base2')
-log.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter('[%(levelname)s] %(message)s')
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
-log.addHandler(handler)
 
 class Gerber(Geometry):
     """
