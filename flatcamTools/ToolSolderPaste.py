@@ -699,7 +699,12 @@ class SolderPaste(FlatCAMTool):
         :param status: what kind of change happened: 'append' or 'delete'
         :return:
         """
-        obj_name = obj.options['name']
+        try:
+            obj_name = obj.options['name']
+        except AttributeError:
+            # this happen when the 'delete all' is emitted since in that case the obj is set to None and None has no
+            # attribute named 'options'
+            return
 
         if status == 'append':
             idx = self.obj_combo.findText(obj_name)

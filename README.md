@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.10.2019
+
+- fixed an conflict in a signal usage that was triggered by Tool SolderPaste when a new project was created
+
 6.10.2019
 
 - remade the Mark area Tool in Gerber Editor to be able to clear the markings and also to delete the marked polygons (Gerber apertures)
