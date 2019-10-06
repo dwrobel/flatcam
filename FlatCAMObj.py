@@ -16,6 +16,8 @@ from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
 from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from camlib import *
+from flatcamParsers.ParseExcellon import Excellon
+from flatcamParsers.ParseGerber import Gerber
 
 import itertools
 import tkinter as tk

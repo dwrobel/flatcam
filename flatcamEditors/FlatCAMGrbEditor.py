@@ -24,6 +24,7 @@ from camlib import *
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, \
     SpinBoxDelegate, EvalEntry, EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox
 from FlatCAMObj import FlatCAMGerber
+from flatcamParsers.ParseGerber import Gerber
 from FlatCAMTool import FlatCAMTool
 
 from numpy.linalg import norm as numpy_norm

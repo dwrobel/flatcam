@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - working in adding to the Optimal Tool the rest of the distances found in the Gerber and the locations associated; added GUI
 - added display of the results for the Rules Check Tool in a formatted way
 - made the Rules Check Tool document window Read Only
+- made FlatCAMExcellon and FlatCAMGerber into their own files in the flatcamParser folder
 
 5.10.2019
 

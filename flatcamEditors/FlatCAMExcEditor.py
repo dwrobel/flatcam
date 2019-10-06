@@ -19,6 +19,7 @@ from rtree import index as rtindex
 from camlib import *
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, SpinBoxDelegate
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, FlatCAMGeoEditor
+from flatcamParsers.ParseExcellon import Excellon
 
 from copy import copy, deepcopy
 
