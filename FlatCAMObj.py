@@ -6692,6 +6692,8 @@ class FlatCAMDocument(FlatCAMObj):
 
         self.document_editor_tab = None
 
+        self._read_only = False
+
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
         FlatCAMApp.App.log.debug("FlatCAMDocument.set_ui()")
@@ -6730,7 +6732,7 @@ class FlatCAMDocument(FlatCAMObj):
 
         # first clear previous text in text editor (if any)
         self.document_editor_tab.code_editor.clear()
-        self.document_editor_tab.code_editor.setReadOnly(False)
+        self.document_editor_tab.code_editor.setReadOnly(self._read_only)
 
         self.document_editor_tab.buttonRun.hide()
 
@@ -6789,6 +6791,17 @@ class FlatCAMDocument(FlatCAMObj):
             self.document_editor_tab.code_editor.append(line)
 
         self.build_ui()
+
+    @property
+    def read_only(self):
+        return self._read_only
+
+    @read_only.setter
+    def read_only(self, val):
+        if val:
+            self._read_only = True
+        else:
+            self._read_only = False
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)

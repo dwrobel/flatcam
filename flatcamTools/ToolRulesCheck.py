@@ -1415,6 +1415,7 @@ class RulesCheck(FlatCAMTool):
                     txt += '%s\n' % _("Violations: There are no violations for the current rule.")
                 txt += '\n\n'
             new_obj.source_file = txt
+            new_obj.read_only = True
 
         self.app.new_object('document', name='Rules Check results', initialize=init, plot=False )
 
