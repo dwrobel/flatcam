@@ -3,6 +3,7 @@ import unittest
 from shapely.geometry import LineString, Polygon
 from shapely.ops import cascaded_union, unary_union
 from matplotlib.pyplot import plot, subplot, show, cla, clf, xlim, ylim, title
+from matplotlib.axes import *
 from camlib import *
 from copy import deepcopy
 

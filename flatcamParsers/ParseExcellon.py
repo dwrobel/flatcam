@@ -1,7 +1,31 @@
-from camlib import *
+from camlib import Geometry
+import FlatCAMApp
+
+import FlatCAMTranslation as fcTranslate
+
+from shapely.geometry import Polygon, Point, LineString, MultiPolygon
+from shapely.ops import cascaded_union
+import shapely.affinity as affinity
+
+import re
+import traceback
+import gettext
+import builtins
+import numpy as np
+from numpy import Inf
+
+import logging
 
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base2')
+log.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('[%(levelname)s] %(message)s')
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 
 class Excellon(Geometry):
@@ -265,7 +289,7 @@ class Excellon(Geometry):
 
         line_units = ''
 
-        #### Parsing starts here ## ##
+        # ## Parsing starts here ## ##
         line_num = 0  # Line number
         eline = ""
         try:

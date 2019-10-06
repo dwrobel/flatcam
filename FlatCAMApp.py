@@ -52,7 +52,7 @@ from flatcamEditors.FlatCAMTextEditor import TextEditor
 
 from FlatCAMProcess import *
 from FlatCAMWorkerStack import WorkerStack
-from flatcamGUI.VisPyVisuals import Color
+# from flatcamGUI.VisPyVisuals import Color
 from vispy.gloo.util import _screenshot
 from vispy.io import write_png
 
@@ -71,12 +71,12 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
-# ########################################
-# #                App                 ###
-# ########################################
-
 
 class App(QtCore.QObject):
+    # ########################################
+    # #                App                 ###
+    # ########################################
+
     """
     The main application class. The constructor starts the GUI.
     """

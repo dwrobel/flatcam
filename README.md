@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - made the Rules Check Tool document window Read Only
 - made Excellon and Gerber classes from camlib into their own files in the flatcamParser folder
 - moved the ApertureMacro class from camlib to ParseGerber file
+- moved back the ApertureMacro class to camlib for now and made some import changes in the new ParseGerber and ParseExcellon classes
+- some changes to the tests - perhaps I will try adding a few tests in the future
 
 5.10.2019
 

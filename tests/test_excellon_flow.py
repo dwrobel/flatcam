@@ -1,9 +1,9 @@
 import unittest
-from PyQt4 import QtGui
+from PyQt5 import QtGui, QtWidgets
 import sys
 from FlatCAMApp import App
 from FlatCAMObj import FlatCAMExcellon, FlatCAMCNCjob
-from ObjectUI import ExcellonObjectUI
+from flatcamGUI.ObjectUI import ExcellonObjectUI
 import tempfile
 import os
 from time import sleep
@@ -21,7 +21,7 @@ class ExcellonFlowTestCase(unittest.TestCase):
     filename = 'case1.drl'
 
     def setUp(self):
-        self.app = QtGui.QApplication(sys.argv)
+        self.app = QtWidgets.QApplication(sys.argv)
 
         # Create App, keep app defaults (do not load
         # user-defined defaults).
@@ -79,19 +79,19 @@ class ExcellonFlowTestCase(unittest.TestCase):
                                  option, value, form_field.get_value()
                              ))
 
-        #--------------------------------------------------
+        # --------------------------------------------------
         # Changes in the GUI should be read in when
         # running any process. Changing something here.
-        #--------------------------------------------------
+        # --------------------------------------------------
 
         form_field = excellon_obj.form_fields['feedrate']
         value = form_field.get_value()
         form_field.set_value(value * 1.1)  # Increase by 10%
         print(("'feedrate' == {}".format(value)))
 
-        #--------------------------------------------------
+        # --------------------------------------------------
         # Create GCode using all tools.
-        #--------------------------------------------------
+        # --------------------------------------------------
 
         assert isinstance(excellon_obj, FlatCAMExcellon)  # Just for the IDE
         ui = excellon_obj.ui
@@ -110,9 +110,9 @@ class ExcellonFlowTestCase(unittest.TestCase):
             sleep(0.1)
             self.app.processEvents()
 
-        #---------------------------------------------
+        # ---------------------------------------------
         # Check that GUI has been read in.
-        #---------------------------------------------
+        # ---------------------------------------------
 
         value = excellon_obj.options['feedrate']
         form_value = form_field.get_value()
@@ -121,33 +121,33 @@ class ExcellonFlowTestCase(unittest.TestCase):
                          "which has {}".format('feedrate', form_value, value))
         print(("'feedrate' == {}".format(value)))
 
-        #---------------------------------------------
+        # ---------------------------------------------
         # Check that only 1 object has been created.
-        #---------------------------------------------
+        # ---------------------------------------------
 
         names = self.fc.collection.get_names()
         self.assertEqual(len(names), 2,
                          "Expected 2 objects, found %d" % len(names))
 
-        #-------------------------------------------------------
+        # -------------------------------------------------------
         # Make sure the CNCJob Object has the correct name
-        #-------------------------------------------------------
+        # -------------------------------------------------------
 
         cncjob_name = excellon_name + "_cnc"
         self.assertTrue(cncjob_name in names,
                         "Object named %s not found." % cncjob_name)
 
-        #-------------------------------------------------------
+        # -------------------------------------------------------
         # Get the object make sure it's a cncjob object
-        #-------------------------------------------------------
+        # -------------------------------------------------------
 
         cncjob_obj = self.fc.collection.get_by_name(cncjob_name)
         self.assertTrue(isinstance(cncjob_obj, FlatCAMCNCjob),
                         "Expected a FlatCAMCNCjob, got %s" % type(cncjob_obj))
 
-        #-----------------------------------------
+        # -----------------------------------------
         # Export G-Code, check output
-        #-----------------------------------------
+        # -----------------------------------------
         assert isinstance(cncjob_obj, FlatCAMCNCjob)  # For IDE
 
         # get system temporary file(try create it and delete)

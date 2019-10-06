@@ -1,5 +1,6 @@
 import unittest
-import camlib
+from flatcamParsers.ParseExcellon import Excellon
+from flatcamParsers.ParseGerber import Gerber
 
 
 class ExcellonNumberParseTestInch(unittest.TestCase):
@@ -16,39 +17,39 @@ class ExcellonNumberParseTestInch(unittest.TestCase):
     # of digits you typed and automatically fill in the missing zeros.
 
     def test_inch_leading_6digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         self.assertEqual(excellon.zeros, "L")
         self.assertEqual(excellon.parse_number("123456"), 12.3456)
 
     def test_inch_leading_5digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         self.assertEqual(excellon.parse_number("12345"), 12.345)
 
     def test_inch_leading_15digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         self.assertEqual(excellon.parse_number("012345"), 1.2345)
 
     def test_inch_leading_51digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         self.assertEqual(excellon.parse_number("123450"), 12.345)
 
     def test_inch_trailing_6digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.zeros = "T"
         self.assertEqual(excellon.parse_number("123456"), 12.3456)
 
     def test_inch_trailing_5digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.zeros = "T"
         self.assertEqual(excellon.parse_number("12345"), 1.2345)
 
     def test_inch_trailing_15digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.zeros = "T"
         self.assertEqual(excellon.parse_number("012345"), 1.2345)
 
     def test_inch_trailing_51digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.zeros = "T"
         self.assertEqual(excellon.parse_number("123450"), 12.345)
 
@@ -67,45 +68,45 @@ class ExcellonNumberParseTestMetric(unittest.TestCase):
     # of digits you typed and automatically fill in the missing zeros.
 
     def test_inch_leading_6digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.units = "mm"
         self.assertEqual(excellon.parse_number("123456"), 123.456)
 
     def test_inch_leading_5digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.units = "mm"
         self.assertEqual(excellon.parse_number("12345"), 123.45)
 
     def test_inch_leading_15digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.units = "mm"
         self.assertEqual(excellon.parse_number("012345"), 12.345)
 
     def test_inch_leading_51digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.units = "mm"
         self.assertEqual(excellon.parse_number("123450"), 123.45)
 
     def test_inch_trailing_6digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.units = "mm"
         excellon.zeros = "T"
         self.assertEqual(excellon.parse_number("123456"), 123.456)
 
     def test_inch_trailing_5digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.units = "mm"
         excellon.zeros = "T"
         self.assertEqual(excellon.parse_number("12345"), 12.345)
 
     def test_inch_trailing_15digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.units = "mm"
         excellon.zeros = "T"
         self.assertEqual(excellon.parse_number("012345"), 12.345)
 
     def test_inch_trailing_51digit(self):
-        excellon = camlib.Excellon()
+        excellon = Excellon()
         excellon.units = "mm"
         excellon.zeros = "T"
         self.assertEqual(excellon.parse_number("123450"), 123.45)
@@ -114,7 +115,7 @@ class ExcellonNumberParseTestMetric(unittest.TestCase):
 class ExcellonFormatM72Test(unittest.TestCase):
 
     def setUp(self):
-        self.excellon = camlib.Excellon()
+        self.excellon = Excellon()
         code = """
         M48
         M72
@@ -141,7 +142,7 @@ class ExcellonFormatM72Test(unittest.TestCase):
 class ExcellonFormatM71Test(unittest.TestCase):
 
     def setUp(self):
-        self.excellon = camlib.Excellon()
+        self.excellon = Excellon()
         code = """
         M48
         M71
@@ -168,7 +169,7 @@ class ExcellonFormatM71Test(unittest.TestCase):
 class ExcellonFormatINCHLZTest(unittest.TestCase):
 
     def setUp(self):
-        self.excellon = camlib.Excellon()
+        self.excellon = Excellon()
         code = """
         M48
         INCH,LZ
@@ -195,7 +196,7 @@ class ExcellonFormatINCHLZTest(unittest.TestCase):
 class ExcellonFormatINCHTest(unittest.TestCase):
 
     def setUp(self):
-        self.excellon = camlib.Excellon()
+        self.excellon = Excellon()
         code = """
         M48
         INCH,LZ
@@ -222,7 +223,7 @@ class ExcellonFormatINCHTest(unittest.TestCase):
 class ExcellonFormatINCHTZTest(unittest.TestCase):
 
     def setUp(self):
-        self.excellon = camlib.Excellon()
+        self.excellon = Excellon()
         code = """
         M48
         INCH,TZ
@@ -249,7 +250,7 @@ class ExcellonFormatINCHTZTest(unittest.TestCase):
 class ExcellonFormatMETRICLZTest(unittest.TestCase):
 
     def setUp(self):
-        self.excellon = camlib.Excellon()
+        self.excellon = Excellon()
         code = """
         M48
         METRIC,LZ
@@ -276,7 +277,7 @@ class ExcellonFormatMETRICLZTest(unittest.TestCase):
 class ExcellonFormatMETRICTest(unittest.TestCase):
 
     def setUp(self):
-        self.excellon = camlib.Excellon()
+        self.excellon = Excellon()
         code = """
         M48
         METRIC,LZ
@@ -303,7 +304,7 @@ class ExcellonFormatMETRICTest(unittest.TestCase):
 class ExcellonFormatMETRICTZTest(unittest.TestCase):
 
     def setUp(self):
-        self.excellon = camlib.Excellon()
+        self.excellon = Excellon()
         code = """
         M48
         METRIC,TZ
