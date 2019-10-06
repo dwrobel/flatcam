@@ -405,8 +405,8 @@ class App(QtCore.QObject):
 
             self.splash.show()
             self.splash.showMessage(_("FlatCAM is initializing ..."),
-                               alignment=Qt.AlignBottom | Qt.AlignLeft,
-                               color=QtGui.QColor("gray"))
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
         else:
             show_splash = 0
 
@@ -1271,7 +1271,7 @@ class App(QtCore.QObject):
 
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
-            self.defaults['global_serial'] = ''.join([random.choice(chars) for i in range(20)])
+            self.defaults['global_serial'] = ''.join([random.choice(chars) for __ in range(20)])
             self.save_defaults(silent=True, first_time=True)
 
         self.propagate_defaults(silent=True)
@@ -2154,7 +2154,8 @@ class App(QtCore.QObject):
 
         self.default_keywords = ['Desktop', 'Documents', 'FlatConfig', 'FlatPrj', 'Marius', 'My Documents', 'Paste_1',
                                  'Repetier', 'Roland_MDX_20', 'Users', 'Toolchange_Custom', 'Toolchange_Probe_MACH3',
-                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis', 'axisoffset',
+                                 'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis',
+                                 'axisoffset',
                                  'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dwell',
                                  'dwelltime', 'feedrate_z', 'grbl_11', 'grbl_laser', 'gridoffsety', 'gridx', 'gridy',
@@ -9900,7 +9901,6 @@ class App(QtCore.QObject):
         format_exc = ';FILE_FORMAT=%d:%d\n' % (self.defaults["excellon_exp_integer"],
                                                self.defaults["excellon_exp_decimals"]
                                                )
-        units = ''
 
         if local_use is None:
             try:
