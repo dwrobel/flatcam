@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a dark theme to FlatCAM (only for canvas). The selection is done in Edit -> Preferences -> General -> GUI Settings
 - updated the .POT file and worked a bit in the romanian translation
 - small changes: reduced the thickness of the axis in 3D mode from 3 pixels to 1 pixel
+- made sure that is the text in the source file of a FlatCAMDocument is HTML is loaded as such
 
 6.10.2019
 

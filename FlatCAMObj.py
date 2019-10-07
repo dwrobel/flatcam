@@ -6,6 +6,8 @@
 # MIT Licence                                              #
 # ########################################################## ##
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QTextDocument
 import copy
 import inspect  # TODO: For debugging only.
 from datetime import datetime
@@ -6789,8 +6791,11 @@ class FlatCAMDocument(FlatCAMObj):
         self.document_editor_tab.handleTextChanged()
         self.ser_attrs = ['options', 'kind', 'source_file']
 
-        for line in self.source_file.splitlines():
-            self.document_editor_tab.code_editor.append(line)
+        if Qt.mightBeRichText(self.source_file):
+            self.document_editor_tab.code_editor.setHtml(self.source_file)
+        else:
+            for line in self.source_file.splitlines():
+                self.document_editor_tab.code_editor.append(line)
 
         self.build_ui()
 
