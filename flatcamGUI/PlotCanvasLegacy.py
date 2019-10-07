@@ -77,6 +77,11 @@ class CanvasCache(QtCore.QObject):
         self.axes.set_xticks([])
         self.axes.set_yticks([])
 
+        if self.app.defaults['global_theme'] == 'white':
+            self.axes.set_facecolor('#FFFFFF')
+        else:
+            self.axes.set_facecolor('#000000')
+
         self.canvas = FigureCanvas(self.figure)
 
         self.cache = None
@@ -140,6 +145,13 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         self.app = app
 
+        if self.app.defaults['global_theme'] == 'white':
+            theme_color = '#FFFFFF'
+            tick_color = '#000000'
+        else:
+            theme_color = '#000000'
+            tick_color = '#FFFFFF'
+
         # Options
         self.x_margin = 15  # pixels
         self.y_margin = 25  # Pixels
@@ -149,15 +161,25 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # Plots go onto a single matplotlib.figure
         self.figure = Figure(dpi=50)  # TODO: dpi needed?
-        self.figure.patch.set_visible(False)
+        self.figure.patch.set_visible(True)
+        self.figure.set_facecolor(theme_color)
 
         # These axes show the ticks and grid. No plotting done here.
         # New axes must have a label, otherwise mpl returns an existing one.
         self.axes = self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label="base", alpha=0.0)
         self.axes.set_aspect(1)
-        self.axes.grid(True)
+        self.axes.grid(True, color='gray')
         self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
         self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
+
+        self.axes.tick_params(axis='x', color=tick_color, labelcolor=tick_color)
+        self.axes.tick_params(axis='y', color=tick_color, labelcolor=tick_color)
+        self.axes.spines['bottom'].set_color(tick_color)
+        self.axes.spines['top'].set_color(tick_color)
+        self.axes.spines['right'].set_color(tick_color)
+        self.axes.spines['left'].set_color(tick_color)
+
+        self.axes.set_facecolor(theme_color)
 
         self.ch_line = None
         self.cv_line = None
@@ -264,10 +286,15 @@ class PlotCanvasLegacy(QtCore.QObject):
         # else:
         #     c = MplCursor(axes=axes, color='black', linewidth=1)
 
-        if  big is True:
+        if self.app.defaults['global_theme'] == 'white':
+            color = '#000000'
+        else:
+            color = '#FFFFFF'
+
+        if big is True:
             self.big_cursor = True
-            self.ch_line = self.axes.axhline(color=(0.0, 0.0, 0.0), linewidth=1)
-            self.cv_line = self.axes.axvline(color=(0.0, 0.0, 0.0), linewidth=1)
+            self.ch_line = self.axes.axhline(color=color, linewidth=1)
+            self.cv_line = self.axes.axvline(color=color, linewidth=1)
         else:
             self.big_cursor = False
 
@@ -286,6 +313,11 @@ class PlotCanvasLegacy(QtCore.QObject):
         """
         # there is no point in drawing mouse cursor when panning as it jumps in a confusing way
         if self.app.app_cursor.enabled is True and self.panning is False:
+            if self.app.defaults['global_theme'] == 'white':
+                color = '#000000'
+            else:
+                color = '#FFFFFF'
+
             if self.big_cursor is False:
                 try:
                     x, y = self.app.geo_editor.snap(x_pos, y_pos)
@@ -294,13 +326,13 @@ class PlotCanvasLegacy(QtCore.QObject):
                     # The size of the cursor is multiplied by 1.65 because that value made the cursor similar with the
                     # one in the OpenGL(3D) graphic engine
                     pointer_size = int(float(self.app.defaults["global_cursor_size"] ) * 1.65)
-                    elements = self.axes.plot(x, y, 'k+', ms=pointer_size, mew=1, animated=True)
+                    elements = self.axes.plot(x, y, '+', color=color, ms=pointer_size, mew=1, animated=True)
                     for el in elements:
                         self.axes.draw_artist(el)
                 except Exception as e:
                     # this happen at app initialization since self.app.geo_editor does not exist yet
-                    # I could reshuffle the object instantiating order but what's the point? I could crash something else
-                    # and that's pythonic, too
+                    # I could reshuffle the object instantiating order but what's the point?
+                    # I could crash something else and that's pythonic, too
                     pass
             else:
                 self.ch_line.set_ydata(y_pos)
@@ -476,7 +508,7 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # Adjust axes
         for ax in self.figure.get_axes():
-            ax.set_xlim((x - half_width , x + half_width))
+            ax.set_xlim((x - half_width, x + half_width))
             ax.set_ylim((y - half_height, y + half_height))
 
         # Re-draw

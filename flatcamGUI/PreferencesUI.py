@@ -557,6 +557,27 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         # Create a form layout for the Application general settings
         self.form_box = QtWidgets.QFormLayout()
 
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 0, 0)
+
+        # Theme selection
+        self.theme_label = QtWidgets.QLabel('%s:' % _('Theme'))
+        self.theme_label.setToolTip(
+            _("Select a theme for FlatCAM.\n"
+              "The application will restart after change.")
+        )
+        self.theme_radio = RadioSet([
+            {"label": _("White"), "value": "white"},
+            {"label": _("Dark"), "value": "black"}
+        ], orientation='horizontal', stretch=False)
+
+        grid0.addWidget(self.theme_label, 1, 0)
+        grid0.addWidget(self.theme_radio, 1, 1)
+
         # Layout selection
         self.layout_label = QtWidgets.QLabel('%s:' % _('Layout'))
         self.layout_label.setToolTip(
@@ -567,6 +588,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         # don't translate the QCombo items as they are used in QSettings and identified by name
         self.layout_combo.addItem("standard")
         self.layout_combo.addItem("compact")
+
+        grid0.addWidget(self.layout_label, 2, 0)
+        grid0.addWidget(self.layout_combo, 2, 1)
 
         # Set the current index for layout_combo
         settings = QSettings("Open Source", "FlatCAM")
@@ -588,6 +612,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.style_combo.setCurrentIndex(index)
         self.style_combo.activated[str].connect(self.handle_style)
 
+        grid0.addWidget(self.style_label, 3, 0)
+        grid0.addWidget(self.style_combo, 3, 1)
+
         # Enable High DPI Support
         self.hdpi_label = QtWidgets.QLabel('%s:' % _('HDPI Support'))
         self.hdpi_label.setToolTip(
@@ -603,6 +630,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             self.hdpi_cb.set_value(False)
         self.hdpi_cb.stateChanged.connect(self.handle_hdpi)
 
+        grid0.addWidget(self.hdpi_label, 4, 0)
+        grid0.addWidget(self.hdpi_cb, 4, 1)
+
         # Clear Settings
         self.clear_label = QtWidgets.QLabel('%s:' % _('Clear GUI Settings'))
         self.clear_label.setToolTip(
@@ -611,6 +641,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         self.clear_btn = FCButton(_("Clear"))
         self.clear_btn.clicked.connect(self.handle_clear)
+
+        grid0.addWidget(self.clear_label, 5, 0)
+        grid0.addWidget(self.clear_btn, 5, 1)
 
         # Enable Hover box
         self.hover_label = QtWidgets.QLabel('%s:' % _('Hover Shape'))
@@ -621,6 +654,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         self.hover_cb = FCCheckBox()
 
+        grid0.addWidget(self.hover_label, 6, 0)
+        grid0.addWidget(self.hover_cb, 6, 1)
+
         # Enable Selection box
         self.selection_label = QtWidgets.QLabel('%s:' % _('Sel. Shape'))
         self.selection_label.setToolTip(
@@ -630,6 +666,11 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "right to left.")
         )
         self.selection_cb = FCCheckBox()
+
+        grid0.addWidget(self.selection_label, 7, 0)
+        grid0.addWidget(self.selection_cb, 7, 1)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 8, 0)
 
         # Notebook Font Size
         self.notebook_font_size_label = QtWidgets.QLabel('%s:' % _('NB Font Size'))
@@ -649,6 +690,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.notebook_font_size_spinner.set_value(12)
 
+        grid0.addWidget(self.notebook_font_size_label, 9, 0)
+        grid0.addWidget(self.notebook_font_size_spinner, 9, 1)
+
         # Axis Font Size
         self.axis_font_size_label = QtWidgets.QLabel('%s:' % _('Axis Font Size'))
         self.axis_font_size_label.setToolTip(
@@ -664,6 +708,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             self.axis_font_size_spinner.set_value(settings.value('axis_font_size', type=int))
         else:
             self.axis_font_size_spinner.set_value(8)
+
+        grid0.addWidget(self.axis_font_size_label, 10, 0)
+        grid0.addWidget(self.axis_font_size_spinner, 10, 1)
 
         # TextBox Font Size
         self.textbox_font_size_label = QtWidgets.QLabel('%s:' % _('Textbox Font Size'))
@@ -682,8 +729,11 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.textbox_font_size_spinner.set_value(10)
 
+        grid0.addWidget(self.textbox_font_size_label, 11, 0)
+        grid0.addWidget(self.textbox_font_size_spinner, 11, 1)
+
         # Just to add empty rows
-        self.spacelabel = QtWidgets.QLabel('')
+        grid0.addWidget(QtWidgets.QLabel(''), 12, 0)
 
         # Splash Screen
         self.splash_label = QtWidgets.QLabel('%s:' % _('Splash Screen'))
@@ -697,12 +747,18 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.splash_cb.set_value(False)
 
+        grid0.addWidget(self.splash_label, 13, 0)
+        grid0.addWidget(self.splash_cb, 13, 1)
+
         # Sys Tray Icon
         self.systray_label = QtWidgets.QLabel('%s:' % _('Sys Tray Icon'))
         self.systray_label.setToolTip(
             _("Enable display of FlatCAM icon in Sys Tray.")
         )
         self.systray_cb = FCCheckBox()
+
+        grid0.addWidget(self.systray_label, 14, 0)
+        grid0.addWidget(self.systray_cb, 14, 1)
 
         # Shell StartUp CB
         self.shell_startup_label = QtWidgets.QLabel('%s:' % _('Shell at StartUp'))
@@ -716,6 +772,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "start automatically at startup.")
         )
 
+        grid0.addWidget(self.shell_startup_label, 15, 0)
+        grid0.addWidget(self.shell_startup_cb, 15, 1)
+
         # Project at StartUp CB
         self.project_startup_label = QtWidgets.QLabel('%s:' % _('Project at StartUp'))
         self.project_startup_label.setToolTip(
@@ -727,6 +786,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             _("Check this box if you want the project/selected/tool tab area to\n"
               "to be shown automatically at startup.")
         )
+
+        grid0.addWidget(self.project_startup_label, 16, 0)
+        grid0.addWidget(self.project_startup_cb, 16, 1)
 
         # Project autohide CB
         self.project_autohide_label = QtWidgets.QLabel('%s:' % _('Project AutoHide'))
@@ -742,6 +804,11 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "to show whenever a new object is created.")
         )
 
+        grid0.addWidget(self.project_autohide_label, 17, 0)
+        grid0.addWidget(self.project_autohide_cb, 17, 1)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 18, 0)
+
         # Enable/Disable ToolTips globally
         self.toggle_tooltips_label = QtWidgets.QLabel('<b>%s:</b>' % _('Enable ToolTips'))
         self.toggle_tooltips_label.setToolTip(
@@ -753,6 +820,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             _("Check this box if you want to have toolTips displayed\n"
               "when hovering with mouse over items throughout the App.")
         )
+
+        grid0.addWidget(self.toggle_tooltips_label, 19, 0)
+        grid0.addWidget(self.toggle_tooltips_cb, 19, 1)
 
         # Mouse Cursor Shape
         self.cursor_lbl = QtWidgets.QLabel('%s:' % _('Mouse Cursor'))
@@ -767,6 +837,9 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             {"label": _("Big"), "value": "big"}
         ], orientation='horizontal', stretch=False)
 
+        grid0.addWidget(self.cursor_lbl, 20, 0)
+        grid0.addWidget(self.cursor_radio, 20, 1)
+
         self.cursor_size_lbl = QtWidgets.QLabel('%s:' % _('Mouse Cursor Size'))
         self.cursor_size_lbl.setToolTip(
            _("Set the size of the mouse cursor, in pixels.")
@@ -776,34 +849,8 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.cursor_size_entry.set_range(10, 70)
         self.cursor_size_entry.setWrapping(True)
 
-
-        # Add (label - input field) pair to the QFormLayout
-        self.form_box.addRow(self.spacelabel, self.spacelabel)
-
-        self.form_box.addRow(self.layout_label, self.layout_combo)
-        self.form_box.addRow(self.style_label, self.style_combo)
-        self.form_box.addRow(self.hdpi_label, self.hdpi_cb)
-        self.form_box.addRow(self.clear_label, self.clear_btn)
-        self.form_box.addRow(self.hover_label, self.hover_cb)
-        self.form_box.addRow(self.selection_label, self.selection_cb)
-        self.form_box.addRow(QtWidgets.QLabel(''))
-        self.form_box.addRow(self.notebook_font_size_label, self.notebook_font_size_spinner)
-        self.form_box.addRow(self.axis_font_size_label, self.axis_font_size_spinner)
-        self.form_box.addRow(self.textbox_font_size_label, self.textbox_font_size_spinner)
-        self.form_box.addRow(QtWidgets.QLabel(''))
-        self.form_box.addRow(self.splash_label, self.splash_cb)
-        self.form_box.addRow(self.systray_label, self.systray_cb)
-        self.form_box.addRow(self.shell_startup_label, self.shell_startup_cb)
-        self.form_box.addRow(self.project_startup_label, self.project_startup_cb)
-        self.form_box.addRow(self.project_autohide_label, self.project_autohide_cb)
-        self.form_box.addRow(QtWidgets.QLabel(''))
-        self.form_box.addRow(self.toggle_tooltips_label, self.toggle_tooltips_cb)
-        self.form_box.addRow(self.cursor_lbl, self.cursor_radio)
-        self.form_box.addRow(self.cursor_size_lbl, self.cursor_size_entry)
-
-        # Add the QFormLayout that holds the Application general defaults
-        # to the main layout of this TAB
-        self.layout.addLayout(self.form_box)
+        grid0.addWidget(self.cursor_size_lbl, 21, 0)
+        grid0.addWidget(self.cursor_size_entry, 21, 1)
 
         # Delete confirmation
         self.delete_conf_cb = FCCheckBox(_('Delete object confirmation'))
@@ -812,7 +859,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "whenever the Delete object(s) event is triggered, either by\n"
               "menu shortcut or key shortcut.")
         )
-        self.layout.addWidget(self.delete_conf_cb)
+        grid0.addWidget(self.delete_conf_cb, 22, 0, 1, 2)
 
         self.layout.addStretch()
 

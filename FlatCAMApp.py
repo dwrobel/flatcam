@@ -424,6 +424,17 @@ class App(QtCore.QObject):
 
         self.ui = FlatCAMGUI(self.version, self.beta, self)
 
+        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.cursor_color_3D = 'black'
+        else:
+            self.cursor_color_3D = 'gray'
+
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
 
@@ -484,6 +495,7 @@ class App(QtCore.QObject):
             "global_activity_icon": self.ui.general_defaults_form.general_gui_group.activity_combo,
 
             # General GUI Settings
+            "global_theme": self.ui.general_defaults_form.general_gui_set_group.theme_radio,
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
             "global_selection_shape": self.ui.general_defaults_form.general_gui_set_group.selection_cb,
@@ -918,6 +930,7 @@ class App(QtCore.QObject):
             "global_zdownrate": None,
 
             # General GUI Settings
+            "global_theme": 'white',
             "global_hover": False,
             "global_selection_shape": True,
             "global_layout": "compact",
@@ -1996,6 +2009,7 @@ class App(QtCore.QObject):
         # ############ GUI SETTINGS SIGNALS ###############
         # #################################################
 
+        self.ui.general_defaults_form.general_gui_set_group.theme_radio.activated_custom.connect(self.on_theme_change)
         self.ui.general_defaults_form.general_gui_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
 
         # ########## CNC Job related signals #############
@@ -2824,6 +2838,15 @@ class App(QtCore.QObject):
                                 name)
                                )
 
+    def on_theme_change(self, val):
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('theme', val)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
+        self.on_app_restart()
+
     def on_app_restart(self):
 
         # make sure that the Sys Tray icon is hidden before restart otherwise it will
@@ -2831,7 +2854,7 @@ class App(QtCore.QObject):
         try:
             self.trayIcon.hide()
         except Exception as e:
-            log.debug("App.on_app_restart() --> %s" % str(e))
+           pass
 
         fcTranslate.restart_program(app=self)
 
@@ -6958,7 +6981,8 @@ class App(QtCore.QObject):
         if self.grid_status() == True:
             # Update cursor
             self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
-                                     symbol='++', edge_color='black', size=self.defaults["global_cursor_size"])
+                                     symbol='++', edge_color=self.cursor_color_3D,
+                                     size=self.defaults["global_cursor_size"])
 
         # Set the position label
         self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
@@ -7936,7 +7960,8 @@ class App(QtCore.QObject):
 
                     # Update cursor
                     self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
-                                             symbol='++', edge_color='black', size=self.defaults["global_cursor_size"])
+                                             symbol='++', edge_color=self.cursor_color_3D,
+                                             size=self.defaults["global_cursor_size"])
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])
 

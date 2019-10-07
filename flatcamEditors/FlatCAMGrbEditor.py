@@ -4446,7 +4446,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             x, y = self.app.geo_editor.snap(x, y)
 
             # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black',
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
                                          size=self.app.defaults["global_cursor_size"])
 
         self.snap_x = x

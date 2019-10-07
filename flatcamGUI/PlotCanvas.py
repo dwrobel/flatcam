@@ -9,7 +9,7 @@
 from PyQt5 import QtCore
 
 import logging
-from flatcamGUI.VisPyCanvas import VisPyCanvas, time
+from flatcamGUI.VisPyCanvas import VisPyCanvas, time, Color
 from flatcamGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
 from vispy.scene.visuals import InfiniteLine, Line
 import numpy as np
@@ -44,6 +44,17 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # Parent container
         self.container = container
 
+        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.line_color = (0.3, 0.0, 0.0, 1.0)
+        else:
+            self.line_color = (0.4, 0.4, 0.4, 1.0)
+
         # workspace lines; I didn't use the rectangle because I didn't want to add another VisPy Node,
         # which might decrease performance
         self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
@@ -68,7 +79,6 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.draw_workspace()
 
         self.line_parent = None
-        self.line_color = (0.3, 0.0, 0.0, 1.0)
         self.cursor_v_line = InfiniteLine(pos=None, color=self.line_color, vertical=True,
                                           parent=self.line_parent)
 
@@ -328,7 +338,10 @@ class CursorBig(QtCore.QObject):
         if 'edge_color' in kwargs:
             color = kwargs['edge_color']
         else:
-            color = (0.0, 0.0, 0.0, 1.0)
+            if self.app.defaults['global_theme'] == 'white':
+                color = '#000000FF'
+            else:
+                color = '#FFFFFFFF'
 
         position = [pos[0][0], pos[0][1]]
         self.mouse_position_updated.emit(position)
