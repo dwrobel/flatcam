@@ -55,13 +55,13 @@ class VisPyCanvas(scene.SceneCanvas):
         top_padding.height_max = 0
 
         self.yaxis = scene.AxisWidget(
-            orientation='left', axis_color=tick_color, text_color=tick_color, font_size=a_fsize
+            orientation='left', axis_color=tick_color, text_color=tick_color, font_size=a_fsize, axis_width=1
         )
         self.yaxis.width_max = 55
         self.grid_widget.add_widget(self.yaxis, row=1, col=0)
 
         self.xaxis = scene.AxisWidget(
-            orientation='bottom', axis_color=tick_color, text_color=tick_color, font_size=a_fsize,
+            orientation='bottom', axis_color=tick_color, text_color=tick_color, font_size=a_fsize, axis_width=1,
             anchors=['center', 'bottom']
         )
         self.xaxis.height_max = 30
