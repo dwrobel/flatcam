@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed an conflict in a signal usage that was triggered by Tool SolderPaste when a new project was created
 - updated Optimal Tool to display both points coordinates that made a distance (and the minimum) not only the middle point (which is still the place where the jump happen)
 - added a dark theme to FlatCAM (only for canvas). The selection is done in Edit -> Preferences -> General -> GUI Settings
+- updated the .POT file and worked a bit in the romanian translation
 
 6.10.2019
 
