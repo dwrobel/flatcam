@@ -51,7 +51,7 @@ class RulesCheck(FlatCAMTool):
 
         self.gerber_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Gerber Files"))
         self.gerber_title_lbl.setToolTip(
-            _("Gerber files for which to check rules.")
+            _("Gerber objects for which to check rules.")
         )
 
         self.all_obj_cb = FCCheckBox()
@@ -64,7 +64,7 @@ class RulesCheck(FlatCAMTool):
 
         self.copper_t_object_lbl = QtWidgets.QLabel('%s:' % _("Top"))
         self.copper_t_object_lbl.setToolTip(
-            _("The Gerber Copper Top file for which rules are checked.")
+            _("The Top Gerber Copper object for which rules are checked.")
         )
 
         self.copper_t_cb = FCCheckBox()
@@ -77,7 +77,7 @@ class RulesCheck(FlatCAMTool):
 
         self.copper_b_object_lbl = QtWidgets.QLabel('%s:' % _("Bottom"))
         self.copper_b_object_lbl.setToolTip(
-            _("The Gerber Copper Bottom file for which rules are checked.")
+            _("The Bottom Gerber Copper object for which rules are checked.")
         )
 
         self.copper_b_cb = FCCheckBox()
@@ -90,7 +90,7 @@ class RulesCheck(FlatCAMTool):
 
         self.sm_t_object_lbl = QtWidgets.QLabel('%s:' % _("SM Top"))
         self.sm_t_object_lbl.setToolTip(
-            _("The Gerber Solder Mask Top file for which rules are checked.")
+            _("The Top Gerber Solder Mask object for which rules are checked.")
         )
 
         self.sm_t_cb = FCCheckBox()
@@ -103,7 +103,7 @@ class RulesCheck(FlatCAMTool):
 
         self.sm_b_object_lbl = QtWidgets.QLabel('%s:' % _("SM Bottom"))
         self.sm_b_object_lbl.setToolTip(
-            _("The Gerber Solder Mask Top file for which rules are checked.")
+            _("The Bottom Gerber Solder Mask object for which rules are checked.")
         )
 
         self.sm_b_cb = FCCheckBox()
@@ -116,7 +116,7 @@ class RulesCheck(FlatCAMTool):
 
         self.ss_t_object_lbl = QtWidgets.QLabel('%s:' % _("Silk Top"))
         self.ss_t_object_lbl.setToolTip(
-            _("The Gerber Silkscreen Top file for which rules are checked.")
+            _("The Top Gerber Silkscreen object for which rules are checked.")
         )
 
         self.ss_t_cb = FCCheckBox()
@@ -129,7 +129,7 @@ class RulesCheck(FlatCAMTool):
 
         self.ss_b_object_lbl = QtWidgets.QLabel('%s:' % _("Silk Bottom"))
         self.ss_b_object_lbl.setToolTip(
-            _("The Gerber Silkscreen Bottom file for which rules are checked.")
+            _("The Bottom Gerber Silkscreen object for which rules are checked.")
         )
 
         self.ss_b_cb = FCCheckBox()
@@ -142,7 +142,7 @@ class RulesCheck(FlatCAMTool):
 
         self.outline_object_lbl = QtWidgets.QLabel('%s:' % _("Outline"))
         self.outline_object_lbl.setToolTip(
-            _("The Gerber Outline (Cutout) file for which rules are checked.")
+            _("The Gerber Outline (Cutout) object for which rules are checked.")
         )
 
         self.out_cb = FCCheckBox()
@@ -180,9 +180,9 @@ class RulesCheck(FlatCAMTool):
 
         self.grid_layout.addWidget(QtWidgets.QLabel(""), 8, 0, 1, 3)
 
-        self.excellon_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Excellon Files"))
+        self.excellon_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Excellon Objects"))
         self.excellon_title_lbl.setToolTip(
-            _("Excellon files for which to check rules.")
+            _("Excellon objects for which to check rules.")
         )
 
         # Excellon 1 object
@@ -193,8 +193,8 @@ class RulesCheck(FlatCAMTool):
 
         self.e1_object_lbl = QtWidgets.QLabel('%s:' % _("Excellon 1"))
         self.e1_object_lbl.setToolTip(
-            _("Object to be panelized. This means that it will\n"
-              "be duplicated in an array of rows and columns.")
+            _("Excellon object for which to check rules.\n"
+              "Holds the plated holes or a general Excellon file content.")
         )
 
         self.e1_cb = FCCheckBox()
@@ -207,8 +207,8 @@ class RulesCheck(FlatCAMTool):
 
         self.e2_object_lbl = QtWidgets.QLabel('%s:' % _("Excellon 2"))
         self.e2_object_lbl.setToolTip(
-            _("Object to be panelized. This means that it will\n"
-              "be duplicated in an array of rows and columns.")
+            _("Excellon object for which to check rules.\n"
+              "Holds the non-plated holes.")
         )
 
         self.e2_cb = FCCheckBox()

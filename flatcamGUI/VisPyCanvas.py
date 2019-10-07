@@ -44,6 +44,8 @@ class VisPyCanvas(scene.SceneCanvas):
             theme_color = Color('#000000')
             tick_color = Color('gray')
             back_color = Color('#000000')
+            # back_color = Color('#272822') # darker
+            # back_color = Color('#3c3f41') # lighter
 
         self.central_widget.bgcolor = back_color
         self.central_widget.border_color = back_color
