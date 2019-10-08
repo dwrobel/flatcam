@@ -703,7 +703,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
 
         self.axis_font_size_spinner = FCSpinner()
-        self.axis_font_size_spinner.setRange(8, 40)
+        self.axis_font_size_spinner.setRange(0, 40)
         self.axis_font_size_spinner.setWrapping(True)
 
         settings = QSettings("Open Source", "FlatCAM")
@@ -1732,6 +1732,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_angle_entry = FCDoubleSpinner()
         self.grb_angle_entry.set_precision(4)
+        self.grb_angle_entry.set_range(-360, 360)
         self.grb_angle_entry.setSingleStep(5)
 
         grid0.addWidget(self.grb_angle_label, 9, 0)
@@ -1760,6 +1761,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_circular_angle_entry = FCDoubleSpinner()
         self.grb_circular_angle_entry.set_precision(4)
+        self.grb_circular_angle_entry.set_range(-360, 360)
+
         self.grb_circular_angle_entry.setSingleStep(5)
 
         grid0.addWidget(self.grb_circular_angle_label, 12, 0)
@@ -1775,6 +1778,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_buff_entry = FCDoubleSpinner()
         self.grb_buff_entry.set_precision(4)
+        self.grb_buff_entry.set_range(-9999, 9999)
+
 
         grid0.addWidget(self.grb_buff_label, 14, 0)
         grid0.addWidget(self.grb_buff_entry, 14, 1)
@@ -1789,6 +1794,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_scale_entry = FCDoubleSpinner()
         self.grb_scale_entry.set_precision(4)
+        self.grb_scale_entry.set_range(0, 9999)
 
         grid0.addWidget(self.grb_scale_label, 16, 0)
         grid0.addWidget(self.grb_scale_entry, 16, 1)
@@ -1803,6 +1809,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_ma_low_entry = FCDoubleSpinner()
         self.grb_ma_low_entry.set_precision(4)
+        self.grb_ma_low_entry.set_range(0, 9999)
 
         grid0.addWidget(self.grb_ma_low_label, 18, 0)
         grid0.addWidget(self.grb_ma_low_entry, 18, 1)
@@ -1814,6 +1821,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         self.grb_ma_high_entry = FCDoubleSpinner()
         self.grb_ma_high_entry.set_precision(4)
+        self.grb_ma_high_entry.set_range(0, 9999)
 
         grid0.addWidget(self.grb_ma_high_label, 19, 0)
         grid0.addWidget(self.grb_ma_high_entry, 19, 1)

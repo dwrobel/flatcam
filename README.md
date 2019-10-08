@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - Toggle Code Editor now works as expected even when the user is closing the Editor tab and not using the command Toggle Code Editor
 - more changes in Preferences GUI, replacing the FCEntries with Spinners
 - some small fixes in toggle units conversion
+- small GUI changes
 
 7.10.2019
 
