@@ -515,6 +515,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.select_method = None
         self.tool_type_item_options = list()
 
+        self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
+
         # #############################################################################
         # ############################ SGINALS ########################################
         # #############################################################################
@@ -918,36 +920,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         else:
             if self.tool_type_radio.get_value() == 'V':
 
-                try:
-                    tip_dia = float(self.tipdia_entry.get_value())
-                except ValueError:
-                    # try to convert comma to decimal point. if it's still not working error message and return
-                    try:
-                        tip_dia = float(self.tipdia_entry.get_value().replace(',', '.'))
-                    except ValueError:
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, "
-                                                                    "use a number."))
-                        return
+                tip_dia = float(self.tipdia_entry.get_value())
+                tip_angle = float(self.tipangle_entry.get_value()) / 2
+                cut_z = float(self.cutz_entry.get_value())
 
-                try:
-                    tip_angle = float(self.tipangle_entry.get_value()) / 2
-                except ValueError:
-                    # try to convert comma to decimal point. if it's still not working error message and return
-                    try:
-                        tip_angle = float(self.tipangle_entry.get_value().replace(',', '.')) / 2
-                    except ValueError:
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
-                        return
-
-                try:
-                    cut_z = float(self.cutz_entry.get_value())
-                except ValueError:
-                    # try to convert comma to decimal point. if it's still not working error message and return
-                    try:
-                        cut_z = float(self.cutz_entry.get_value().replace(',', '.'))
-                    except ValueError:
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
-                        return
                 # calculated tool diameter so the cut_z parameter is obeyed
                 tool_dia = tip_dia + 2 * cut_z * math.tan(math.radians(tip_angle))
 
@@ -971,7 +947,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.build_ui()
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter to add, in Float format."))
                 return
-
 
         tool_dia = float('%.*f' % (self.decimals, tool_dia))
 
@@ -1110,22 +1085,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.build_ui()
 
     def on_ncc_click(self):
+        """
+        Slot for clicking signal of the self.generate.ncc_button
+        :return: None
+        """
 
         # init values for the next usage
         self.reset_usage()
-
         self.app.report_usage("on_paint_button_click")
 
-        try:
-            self.overlap = float(self.ncc_overlap_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                self.overlap = float(self.ncc_overlap_entry.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, "
-                                                             "use a number."))
-                return
+        self.overlap = float(self.ncc_overlap_entry.get_value())
+
+        self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
 
         if self.overlap >= 1 or self.overlap < 0:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Overlap value must be between "
@@ -1134,9 +1105,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.connect = self.ncc_connect_cb.get_value()
         self.contour = self.ncc_contour_cb.get_value()
-
         self.has_offset = self.ncc_choice_offset_cb.isChecked()
-
         self.rest = self.ncc_rest_cb.get_value()
 
         self.obj_name = self.object_combo.currentText()
@@ -1410,22 +1379,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
         if margin is not None:
             ncc_margin = margin
         else:
-            try:
-                ncc_margin = float(self.ncc_margin_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    ncc_margin = float(self.ncc_margin_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
-                    return
+            ncc_margin = float(self.ncc_margin_entry.get_value())
 
         if select_method is not None:
             ncc_select = select_method
         else:
             ncc_select = self.reference_radio.get_value()
 
-        overlap = overlap if overlap else self.app.defaults["tools_nccoverlap"]
+        overlap = overlap if overlap else float(self.app.defaults["tools_nccoverlap"])
+
         connect = connect if connect else self.app.defaults["tools_nccconnect"]
         contour = contour if contour else self.app.defaults["tools_ncccontour"]
         order = order if order else self.ncc_order_radio.get_value()
@@ -1788,15 +1750,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 try:
                                     if isinstance(p, Polygon):
                                         if ncc_method == 'standard':
-                                            cp = self.clear_polygon(p, tool, self.app.defaults["gerber_circle_steps"],
+                                            cp = self.clear_polygon(p, tool, self.grb_circle_steps,
                                                                     overlap=overlap, contour=contour, connect=connect,
                                                                     prog_plot=prog_plot)
                                         elif ncc_method == 'seed':
-                                            cp = self.clear_polygon2(p, tool, self.app.defaults["gerber_circle_steps"],
+                                            cp = self.clear_polygon2(p, tool, self.grb_circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=prog_plot)
                                         else:
-                                            cp = self.clear_polygon3(p, tool, self.app.defaults["gerber_circle_steps"],
+                                            cp = self.clear_polygon3(p, tool, self.grb_circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=prog_plot)
                                         if cp:
@@ -1806,19 +1768,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                             if pol is not None:
                                                 if ncc_method == 'standard':
                                                     cp = self.clear_polygon(pol, tool,
-                                                                            self.app.defaults["gerber_circle_steps"],
+                                                                            self.grb_circle_steps,
                                                                             overlap=overlap, contour=contour,
                                                                             connect=connect,
                                                                             prog_plot=prog_plot)
                                                 elif ncc_method == 'seed':
                                                     cp = self.clear_polygon2(pol, tool,
-                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=prog_plot)
                                                 else:
                                                     cp = self.clear_polygon3(pol, tool,
-                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=prog_plot)
@@ -1890,7 +1852,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                app_obj.inform.emit('[ERROR] %s' % _("There is no Painting Geometry in the file.\n"
+                app_obj.inform.emit('[ERROR] %s' % _("There is no NCC Geometry in the file.\n"
                                                      "Usually it means that the tool diameter is too big "
                                                      "for the painted geometry.\n"
                                                      "Change the painting parameters and try again."))
@@ -2140,17 +2102,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                     try:
                                         if ncc_method == 'standard':
                                             cp = self.clear_polygon(p, tool_used,
-                                                                    self.app.defaults["gerber_circle_steps"],
+                                                                    self.grb_circle_steps,
                                                                     overlap=overlap, contour=contour, connect=connect,
                                                                     prog_plot=prog_plot)
                                         elif ncc_method == 'seed':
                                             cp = self.clear_polygon2(p, tool_used,
-                                                                     self.app.defaults["gerber_circle_steps"],
+                                                                     self.grb_circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=prog_plot)
                                         else:
                                             cp = self.clear_polygon3(p, tool_used,
-                                                                     self.app.defaults["gerber_circle_steps"],
+                                                                     self.grb_circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=prog_plot)
                                         cleared_geo.append(list(cp.get_objects()))
@@ -2165,19 +2127,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                             try:
                                                 if ncc_method == 'standard':
                                                     cp = self.clear_polygon(poly, tool_used,
-                                                                            self.app.defaults["gerber_circle_steps"],
+                                                                            self.grb_circle_steps,
                                                                             overlap=overlap, contour=contour,
                                                                             connect=connect,
                                                                             prog_plot=prog_plot)
                                                 elif ncc_method == 'seed':
                                                     cp = self.clear_polygon2(poly, tool_used,
-                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=prog_plot)
                                                 else:
                                                     cp = self.clear_polygon3(poly, tool_used,
-                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=prog_plot)

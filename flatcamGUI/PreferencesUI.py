@@ -911,7 +911,10 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("App Preferences")))
 
         # Create a form layout for the Application general settings
-        self.form_box = QtWidgets.QFormLayout()
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
 
         # Units for FlatCAM
         self.unitslabel = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('Units'))
@@ -920,6 +923,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                      "FLatCAM is started."))
         self.units_radio = RadioSet([{'label': _('IN'), 'value': 'IN'},
                                      {'label': _('MM'), 'value': 'MM'}])
+
+        grid0.addWidget(self.unitslabel, 0, 0)
+        grid0.addWidget(self.units_radio, 0, 1)
 
         # Graphic Engine for FlatCAM
         self.ge_label = QtWidgets.QLabel('<b>%s:</b>' % _('Graphic Engine'))
@@ -932,6 +938,10 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.ge_radio = RadioSet([{'label': _('Legacy(2D)'), 'value': '2D'},
                                   {'label': _('OpenGL(3D)'), 'value': '3D'}])
 
+        grid0.addWidget(self.ge_label, 1, 0)
+        grid0.addWidget(self.ge_radio, 1, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 2, 0)
+
         # Application Level for FlatCAM
         self.app_level_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('APP. LEVEL'))
         self.app_level_label.setToolTip(_("Choose the default level of usage for FlatCAM.\n"
@@ -942,7 +952,10 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.app_level_radio = RadioSet([{'label': _('Basic'), 'value': 'b'},
                                          {'label': _('Advanced'), 'value': 'a'}])
 
-        # Application Level for FlatCAM
+        grid0.addWidget(self.app_level_label, 3, 0)
+        grid0.addWidget(self.app_level_radio, 3, 1)
+
+        # Portability for FlatCAM
         self.portability_label = QtWidgets.QLabel('%s:' % _('Portable app'))
         self.portability_label.setToolTip(_("Choose if the application should run as portable.\n\n"
                                             "If Checked the application will run portable,\n"
@@ -950,11 +963,17 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                             "in the application folder, in the lib\\config subfolder."))
         self.portability_cb = FCCheckBox()
 
+        grid0.addWidget(self.portability_label, 4, 0)
+        grid0.addWidget(self.portability_cb, 4, 1)
+
         # Languages for FlatCAM
         self.languagelabel = QtWidgets.QLabel('<b>%s:</b>' % _('Languages'))
         self.languagelabel.setToolTip(_("Set the language used throughout FlatCAM."))
         self.language_cb = FCComboBox()
-        self.languagespace = QtWidgets.QLabel('')
+
+        grid0.addWidget(self.languagelabel, 5, 0)
+        grid0.addWidget(self.language_cb, 5, 1)
+
         self.language_apply_btn = FCButton(_("Apply Language"))
         self.language_apply_btn.setToolTip(_("Set the language used throughout FlatCAM.\n"
                                              "The app will restart after click."
@@ -963,6 +982,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                              "restart after the button is clicked due of Windows\n"
                                              "security features. In this case the language will be\n"
                                              "applied at the next app start."))
+
+        grid0.addWidget(self.language_apply_btn, 6, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 7, 0)
 
         # Version Check CB
         self.version_check_label = QtWidgets.QLabel('%s:' % _('Version Check'))
@@ -976,6 +998,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "for a new version automatically at startup.")
         )
 
+        grid0.addWidget(self.version_check_label, 8, 0)
+        grid0.addWidget(self.version_check_cb, 8, 1)
+
         # Send Stats CB
         self.send_stats_label = QtWidgets.QLabel('%s:' % _('Send Stats'))
         self.send_stats_label.setToolTip(
@@ -988,6 +1013,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "stats automatically at startup, to help improve FlatCAM.")
         )
 
+        grid0.addWidget(self.send_stats_label, 9, 0)
+        grid0.addWidget(self.send_stats_cb, 9, 1)
+
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
 
         # Select mouse pan button
@@ -998,11 +1026,17 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.pan_button_radio = RadioSet([{'label': _('MMB'), 'value': '3'},
                                           {'label': _('RMB'), 'value': '2'}])
 
+        grid0.addWidget(self.panbuttonlabel, 10, 0)
+        grid0.addWidget(self.pan_button_radio, 10, 1)
+
         # Multiple Selection Modifier Key
         self.mselectlabel = QtWidgets.QLabel('<b>%s:</b>' % _('Multiple Sel'))
         self.mselectlabel.setToolTip(_("Select the key used for multiple selection."))
         self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
                                        {'label': _('SHIFT'), 'value': 'Shift'}])
+
+        grid0.addWidget(self.mselectlabel, 11, 0)
+        grid0.addWidget(self.mselect_radio, 11, 1)
 
         # Worker Numbers
         self.worker_number_label = QtWidgets.QLabel('%s:' % _('Workers number'))
@@ -1024,6 +1058,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "After change, it will be applied at next App start.")
         )
         self.worker_number_sb.set_range(2, 16)
+
+        grid0.addWidget(self.worker_number_label, 12, 0)
+        grid0.addWidget(self.worker_number_sb, 12, 1)
 
         # Geometric tolerance
         tol_label = QtWidgets.QLabel('%s:' % _("Geo Tolerance"))
@@ -1047,34 +1084,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.tol_entry.setSingleStep(0.001)
         self.tol_entry.set_precision(6)
 
-        # Just to add empty rows
-        self.spacelabel = QtWidgets.QLabel('')
-
-        # Add (label - input field) pair to the QFormLayout
-        self.form_box.addRow(self.unitslabel, self.units_radio)
-        self.form_box.addRow(self.ge_label, self.ge_radio)
-        self.form_box.addRow(QtWidgets.QLabel(''))
-        self.form_box.addRow(self.app_level_label, self.app_level_radio)
-        self.form_box.addRow(self.portability_label, self.portability_cb)
-        self.form_box.addRow(QtWidgets.QLabel(''))
-
-        self.form_box.addRow(self.languagelabel, self.language_cb)
-        self.form_box.addRow(self.languagespace, self.language_apply_btn)
-
-        self.form_box.addRow(self.spacelabel, self.spacelabel)
-        self.form_box.addRow(self.version_check_label, self.version_check_cb)
-        self.form_box.addRow(self.send_stats_label, self.send_stats_cb)
-
-        self.form_box.addRow(self.panbuttonlabel, self.pan_button_radio)
-        self.form_box.addRow(self.mselectlabel, self.mselect_radio)
-        self.form_box.addRow(self.worker_number_label, self.worker_number_sb)
-        self.form_box.addRow(tol_label, self.tol_entry)
-
-        self.form_box.addRow(self.spacelabel, self.spacelabel)
-
-        # Add the QFormLayout that holds the Application general defaults
-        # to the main layout of this TAB
-        self.layout.addLayout(self.form_box)
+        grid0.addWidget(tol_label, 13, 0)
+        grid0.addWidget(self.tol_entry, 13, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 14, 0)
 
         # Open behavior
         self.open_style_cb = FCCheckBox('%s' % _('"Open" behavior'))
@@ -1084,8 +1096,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "When unchecked the path for opening files is the one used last: either the\n"
               "path for saving files or the path for opening files.")
         )
-        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.layout.addWidget(self.open_style_cb)
+
+        grid0.addWidget(self.open_style_cb, 15, 0, 1, 2)
 
         # Save compressed project CB
         self.save_type_cb = FCCheckBox(_('Save Compressed Project'))
@@ -1093,30 +1105,23 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Whether to save a compressed or uncompressed project.\n"
               "When checked it will save a compressed FlatCAM project.")
         )
-        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.layout.addWidget(self.save_type_cb)
 
-        hlay1 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay1)
+        grid0.addWidget(self.save_type_cb, 16, 0, 1, 2)
 
         # Project LZMA Comppression Level
-        self.compress_combo = FCComboBox()
-        self.compress_label = QtWidgets.QLabel('%s:' % _('Compression Level'))
+        self.compress_spinner = FCSpinner()
+        self.compress_spinner.set_range(0, 9)
+        self.compress_label = QtWidgets.QLabel('%s:' % _('Compression'))
         self.compress_label.setToolTip(
             _("The level of compression used when saving\n"
               "a FlatCAM project. Higher value means better compression\n"
               "but require more RAM usage and more processing time.")
         )
-        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.compress_combo.addItems([str(i) for i in range(10)])
 
-        hlay1.addWidget(self.compress_label)
-        hlay1.addWidget(self.compress_combo)
+        grid0.addWidget(self.compress_label, 17, 0)
+        grid0.addWidget(self.compress_spinner, 17, 1)
 
-        self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_combo], True)
-
-        self.form_box_2 = QtWidgets.QFormLayout()
-        self.layout.addLayout(self.form_box_2)
+        self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_spinner], True)
 
         self.layout.addStretch()
 
@@ -2871,11 +2876,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         tdlabel.setToolTip(
             _("Diameters of the cutting tools, separated by ','")
         )
-        self.cnctooldia_entry = FCDoubleSpinner()
-        self.cnctooldia_entry.set_range(0.000001, 999.9999)
-        self.cnctooldia_entry.set_precision(4)
-        self.cnctooldia_entry.setSingleStep(0.1)
-        self.cnctooldia_entry.setWrapping(True)
+        self.cnctooldia_entry = FCEntry()
 
         grid0.addWidget(tdlabel, 3, 0)
         grid0.addWidget(self.cnctooldia_entry, 3, 1)
@@ -3309,8 +3310,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
-        # grid0.setColumnStretch(1, 1)
-        # grid0.setColumnStretch(2, 1)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
 
         # Plot CB
         # self.plot_cb = QtWidgets.QCheckBox('Plot')
@@ -3671,7 +3672,10 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
         self.tipdialabel.setToolTip(
             _("The tip diameter for V-Shape Tool"))
-        self.tipdia_entry = LengthEntry()
+        self.tipdia_entry = FCDoubleSpinner()
+        self.tipdia_entry.set_precision(4)
+        self.tipdia_entry.set_range(0, 1000)
+        self.tipdia_entry.setSingleStep(0.1)
 
         grid0.addWidget(self.tipdialabel, 2, 0)
         grid0.addWidget(self.tipdia_entry, 2, 1)
@@ -3681,7 +3685,11 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.tipanglelabel.setToolTip(
             _("The tip angle for V-Shape Tool.\n"
               "In degree."))
-        self.tipangle_entry = LengthEntry()
+        self.tipangle_entry = FCDoubleSpinner()
+        self.tipangle_entry.set_precision(4)
+        self.tipangle_entry.set_range(-360, 360)
+        self.tipangle_entry.setSingleStep(5)
+        self.tipangle_entry.setWrapping(True)
 
         grid0.addWidget(self.tipanglelabel, 3, 0)
         grid0.addWidget(self.tipangle_entry, 3, 1)
@@ -3732,7 +3740,11 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
            _("Depth of cut into material. Negative value.\n"
              "In FlatCAM units.")
         )
-        self.cutz_entry = FloatEntry()
+        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry.set_precision(4)
+        self.cutz_entry.set_range(-1000, -0.000001)
+        self.cutz_entry.setSingleStep(0.1)
+
         self.cutz_entry.setToolTip(
            _("Depth of cut into material. Negative value.\n"
              "In FlatCAM units.")
@@ -3768,7 +3780,11 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             _("Bounding box margin.")
         )
         grid0.addWidget(nccmarginlabel, 8, 0)
-        self.ncc_margin_entry = FloatEntry()
+        self.ncc_margin_entry = FCDoubleSpinner()
+        self.ncc_margin_entry.set_precision(4)
+        self.ncc_margin_entry.set_range(-10000, 10000)
+        self.ncc_margin_entry.setSingleStep(0.1)
+
         grid0.addWidget(self.ncc_margin_entry, 8, 1)
 
         # Method

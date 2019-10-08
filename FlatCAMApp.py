@@ -471,7 +471,7 @@ class App(QtCore.QObject):
 
             "global_open_style": self.ui.general_defaults_form.general_app_group.open_style_cb,
 
-            "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
+            "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_spinner,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
 
             # General GUI Preferences
@@ -866,7 +866,7 @@ class App(QtCore.QObject):
             "global_project_autohide": True,
             "global_toggle_tooltips": True,
             "global_worker_number": 2,
-            "global_tolerance": 0.005,
+            "global_tolerance": 0.0002,
             "global_open_style": True,
             "global_delete_confirmation": True,
             "global_compression_level": 3,
@@ -2907,16 +2907,16 @@ class App(QtCore.QObject):
                 if units is None:
                     self.defaults_form_fields[field].set_value(self.defaults[field])
                 elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value(self.defaults[field], decimals=6)
+                    self.defaults_form_fields[field].set_value(self.defaults[field])
                 elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value(self.defaults[field], decimals=4)
+                    self.defaults_form_fields[field].set_value(self.defaults[field])
             else:
                 if units is None:
                     self.defaults_form_fields[field].set_value(self.defaults[field] * factor)
                 elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value((self.defaults[field] * factor), decimals=6)
+                    self.defaults_form_fields[field].set_value((self.defaults[field] * factor))
                 elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value((self.defaults[field] * factor), decimals=4)
+                    self.defaults_form_fields[field].set_value((self.defaults[field] * factor))
         except KeyError:
             # self.log.debug("defaults_write_form(): No field for: %s" % option)
             # TODO: Rethink this?
@@ -5464,7 +5464,7 @@ class App(QtCore.QObject):
 
         # Options to scale
         dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin', "gerber_isooverlap",
-                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f"
+                      "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f",
 
                       'excellon_drillz',  'excellon_travelz', "excellon_toolchangexy",
                       'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
@@ -5480,7 +5480,7 @@ class App(QtCore.QObject):
                       'cncjob_tooldia',
 
                       'tools_paintmargin', 'tools_painttooldia', 'tools_paintoverlap',
-                      "tools_ncctools", "tools_nccoverlap", "tools_nccmargin", "tools_ncccutz", "tools_ncctipdia"
+                      "tools_ncctools", "tools_nccoverlap", "tools_nccmargin", "tools_ncccutz", "tools_ncctipdia",
                       "tools_2sided_drilldia", "tools_film_boundary",
                       "tools_cutouttooldia", 'tools_cutoutmargin', 'tools_cutoutgapsize',
                       "tools_panelize_constrainx", "tools_panelize_constrainy",
@@ -5570,12 +5570,12 @@ class App(QtCore.QObject):
                         self.options[dim] = float('%.4f' % val)
                 else:
                     val = 0.1
-                    try:
-                        val = float(self.options[dim]) * sfactor
-                    except Exception as e:
-                        log.debug('App.on_toggle_units().scale_options() --> %s' % str(e))
-
-                    self.options[dim] = val
+                    if self.options[dim]:
+                        try:
+                            val = float(self.options[dim]) * sfactor
+                        except Exception as e:
+                            log.debug('App.on_toggle_units().scale_options() --> %s' % str(e))
+                        self.options[dim] = val
 
         def scale_defaults(sfactor):
             for dim in dimensions:
@@ -5652,12 +5652,13 @@ class App(QtCore.QObject):
                         self.defaults[dim] = float('%.4f' % val)
                 else:
                     val = 0.1
-                    try:
-                        val = float(self.defaults[dim]) * sfactor
-                    except Exception as e:
-                        log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+                    if self.defaults[dim]:
+                        try:
+                            val = float(self.defaults[dim]) * sfactor
+                        except Exception as e:
+                            log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
 
-                    self.defaults[dim] = val
+                        self.defaults[dim] = val
 
         # The scaling factor depending on choice of units.
         factor = 1/25.4

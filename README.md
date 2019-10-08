@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - in Preferences General, Gerber, Geometry, Excellon, CNCJob sections made all the input fields of type SpinBox (where possible)
 - updated the Distance Tool utility geometry color to adapt to the dark theme canvas
 - Toggle Code Editor now works as expected even when the user is closing the Editor tab and not using the command Toggle Code Editor
+- more changes in Preferences GUI, replacing the FCEntries with Spinners
+- some small fixes in toggle units conversion
 
 7.10.2019
 

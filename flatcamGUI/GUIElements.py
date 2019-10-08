@@ -546,7 +546,7 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.readyToEdit = True
 
     def get_value(self):
-        return str(self.value())
+        return int(self.value())
 
     def set_value(self, val):
         try:
@@ -603,7 +603,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             self.readyToEdit = True
 
     def get_value(self):
-        return str(self.value())
+        return float(self.value())
 
     def set_value(self, val):
         try:
