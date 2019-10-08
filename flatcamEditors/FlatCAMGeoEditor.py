@@ -4256,7 +4256,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # # ## Grid snap
         if self.options["grid_snap"]:
             if self.options["global_gridx"] != 0:
-                snap_x_ = round(x / self.options["global_gridx"]) * self.options['global_gridx']
+                snap_x_ = round(x / float(self.options["global_gridx"])) * float(self.options['global_gridx'])
             else:
                 snap_x_ = x
 
@@ -4264,12 +4264,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # and it will use the snap distance from GridX entry
             if self.app.ui.grid_gap_link_cb.isChecked():
                 if self.options["global_gridx"] != 0:
-                    snap_y_ = round(y / self.options["global_gridx"]) * self.options['global_gridx']
+                    snap_y_ = round(y / float(self.options["global_gridx"])) * float(self.options['global_gridx'])
                 else:
                     snap_y_ = y
             else:
                 if self.options["global_gridy"] != 0:
-                    snap_y_ = round(y / self.options["global_gridy"]) * self.options['global_gridy']
+                    snap_y_ = round(y / float(self.options["global_gridy"])) * float(self.options['global_gridy'])
                 else:
                     snap_y_ = y
             nearest_grid_distance = distance((x, y), (snap_x_, snap_y_))

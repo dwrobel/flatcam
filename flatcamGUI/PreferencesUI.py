@@ -264,19 +264,25 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.gridx_label.setToolTip(
            _("This is the Grid snap value on X axis.")
         )
-        self.gridx_entry = FCEntry3()
+        self.gridx_entry = FCDoubleSpinner()
+        self.gridx_entry.set_precision(4)
+        self.gridx_entry.setSingleStep(0.1)
 
         # Grid Y Entry
         self.gridy_label = QtWidgets.QLabel('%s:' % _('Grid Y value'))
         self.gridy_label.setToolTip(
             _("This is the Grid snap value on Y axis.")
         )
-        self.gridy_entry = FCEntry3()
+        self.gridy_entry = FCDoubleSpinner()
+        self.gridy_entry.set_precision(4)
+        self.gridy_entry.setSingleStep(0.1)
 
         # Snap Max Entry
         self.snap_max_label = QtWidgets.QLabel('%s:' % _('Snap Max'))
         self.snap_max_label.setToolTip(_("Max. magnet distance"))
-        self.snap_max_dist_entry = FCEntry()
+        self.snap_max_dist_entry = FCDoubleSpinner()
+        self.snap_max_dist_entry.set_precision(4)
+        self.snap_max_dist_entry.setSingleStep(0.1)
 
         # Workspace
         self.workspace_lbl = QtWidgets.QLabel('%s:' % _('Workspace'))
@@ -326,8 +332,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.pf_color_alpha_spinner = FCSpinner()
         self.pf_color_alpha_spinner.setMinimumWidth(70)
-        self.pf_color_alpha_spinner.setMinimum(0)
-        self.pf_color_alpha_spinner.setMaximum(255)
+        self.pf_color_alpha_spinner.set_range(0, 255)
 
         self.form_box_child_2 = QtWidgets.QHBoxLayout()
         self.form_box_child_2.addWidget(self.pf_color_alpha_slider)
@@ -376,8 +381,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.sf_color_alpha_spinner = FCSpinner()
         self.sf_color_alpha_spinner.setMinimumWidth(70)
-        self.sf_color_alpha_spinner.setMinimum(0)
-        self.sf_color_alpha_spinner.setMaximum(255)
+        self.sf_color_alpha_spinner.set_range(0, 255)
 
         self.form_box_child_5 = QtWidgets.QHBoxLayout()
         self.form_box_child_5.addWidget(self.sf_color_alpha_slider)
@@ -426,8 +430,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.alt_sf_color_alpha_spinner = FCSpinner()
         self.alt_sf_color_alpha_spinner.setMinimumWidth(70)
-        self.alt_sf_color_alpha_spinner.setMinimum(0)
-        self.alt_sf_color_alpha_spinner.setMaximum(255)
+        self.alt_sf_color_alpha_spinner.set_range(0, 255)
 
         self.form_box_child_8 = QtWidgets.QHBoxLayout()
         self.form_box_child_8.addWidget(self.alt_sf_color_alpha_slider)
@@ -571,7 +574,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "The application will restart after change.")
         )
         self.theme_radio = RadioSet([
-            {"label": _("White"), "value": "white"},
+            {"label": _("Light"), "value": "white"},
             {"label": _("Dark"), "value": "black"}
         ], orientation='horizontal', stretch=False)
 
@@ -1032,7 +1035,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             "performance. Higher value will provide more\n"
             "performance at the expense of level of detail."
         ))
-        self.tol_entry = FCEntry()
+        self.tol_entry = FCDoubleSpinner()
         self.tol_entry.setToolTip(_(
             "This value can counter the effect of the Circle Steps\n"
             "parameter. Default value is 0.01.\n"
@@ -1041,6 +1044,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             "performance. Higher value will provide more\n"
             "performance at the expense of level of detail."
         ))
+        self.tol_entry.setSingleStep(0.001)
+        self.tol_entry.set_precision(6)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -1160,7 +1166,9 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
             _("The number of circle steps for Gerber \n"
               "circular aperture linear approximation.")
         )
-        self.circle_steps_entry = IntEntry()
+        self.circle_steps_entry = FCSpinner()
+        self.circle_steps_entry.set_range(0, 9999)
+
         grid0.addWidget(self.circle_steps_label, 1, 0)
         grid0.addWidget(self.circle_steps_entry, 1, 1, 1, 2)
 
@@ -1241,7 +1249,11 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
             _("Diameter of the cutting tool.")
         )
         grid0.addWidget(tdlabel, 0, 0)
-        self.iso_tool_dia_entry = LengthEntry()
+        self.iso_tool_dia_entry = FCDoubleSpinner()
+        self.iso_tool_dia_entry.set_precision(4)
+        self.iso_tool_dia_entry.setSingleStep(0.1)
+        self.iso_tool_dia_entry.set_range(-9999, 9999)
+
         grid0.addWidget(self.iso_tool_dia_entry, 0, 1)
 
         # Nr of passes
@@ -1312,7 +1324,10 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "distance.")
         )
         grid1.addWidget(bmlabel, 0, 0)
-        self.noncopper_margin_entry = LengthEntry()
+        self.noncopper_margin_entry = FCDoubleSpinner()
+        self.noncopper_margin_entry.set_precision(4)
+        self.noncopper_margin_entry.setSingleStep(0.1)
+        self.noncopper_margin_entry.set_range(-9999, 9999)
         grid1.addWidget(self.noncopper_margin_entry, 0, 1)
 
         # Rounded corners
@@ -1334,8 +1349,12 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
             _("Distance of the edges of the box\n"
               "to the nearest polygon.")
         )
+        self.bbmargin_entry = FCDoubleSpinner()
+        self.bbmargin_entry.set_precision(4)
+        self.bbmargin_entry.setSingleStep(0.1)
+        self.bbmargin_entry.set_range(-9999, 9999)
+
         grid2.addWidget(bbmargin, 0, 0)
-        self.bbmargin_entry = LengthEntry()
         grid2.addWidget(self.bbmargin_entry, 0, 1)
 
         self.bbrounded_cb = FCCheckBox(label='%s' % _("Rounded Geo"))
@@ -1521,9 +1540,11 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
 
         hlay1 = QtWidgets.QHBoxLayout()
 
-        self.format_whole_entry = IntEntry()
-        self.format_whole_entry.setMaxLength(1)
-        self.format_whole_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.format_whole_entry = FCSpinner()
+        self.format_whole_entry.set_range(0, 9)
+        self.format_whole_entry.setSingleStep(1)
+        self.format_whole_entry.setWrapping(True)
+
         self.format_whole_entry.setMinimumWidth(30)
         self.format_whole_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
@@ -1535,9 +1556,11 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         gerber_separator_label.setFixedWidth(5)
         hlay1.addWidget(gerber_separator_label, QtCore.Qt.AlignLeft)
 
-        self.format_dec_entry = IntEntry()
-        self.format_dec_entry.setMaxLength(1)
-        self.format_dec_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.format_dec_entry = FCSpinner()
+        self.format_dec_entry.set_range(0, 9)
+        self.format_dec_entry.setSingleStep(1)
+        self.format_dec_entry.setWrapping(True)
+
         self.format_dec_entry.setMinimumWidth(30)
         self.format_dec_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
@@ -1600,7 +1623,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
               "Increases the performance when moving a\n"
               "large number of geometric elements.")
         )
-        self.sel_limit_entry = IntEntry()
+        self.sel_limit_entry = FCSpinner()
+        self.sel_limit_entry.set_range(0, 9999)
 
         grid0.addWidget(self.sel_limit_label, 0, 0)
         grid0.addWidget(self.sel_limit_entry, 0, 1)
@@ -1611,8 +1635,9 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Code for the new aperture")
         )
 
-        self.addcode_entry = FCEntry()
-        self.addcode_entry.setValidator(QtGui.QIntValidator(0, 99))
+        self.addcode_entry = FCSpinner()
+        self.addcode_entry.set_range(10, 99)
+        self.addcode_entry.setWrapping(True)
 
         grid0.addWidget(self.addcode_entry_lbl, 1, 0)
         grid0.addWidget(self.addcode_entry, 1, 1)
@@ -1623,8 +1648,9 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Size for the new aperture")
         )
 
-        self.addsize_entry = FCEntry()
-        self.addsize_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
+        self.addsize_entry = FCDoubleSpinner()
+        self.addsize_entry.set_range(0, 100)
+        self.addsize_entry.set_precision(4)
 
         grid0.addWidget(self.addsize_entry_lbl, 2, 0)
         grid0.addWidget(self.addsize_entry, 2, 1)
@@ -1648,7 +1674,9 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Specify how many pads to be in the array.")
         )
 
-        self.grb_array_size_entry = LengthEntry()
+        self.grb_array_size_entry = FCSpinner()
+        self.grb_array_size_entry.set_range(0, 9999)
+
 
         grid0.addWidget(self.grb_array_size_label, 4, 0)
         grid0.addWidget(self.grb_array_size_entry, 4, 1)
@@ -1686,7 +1714,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Pitch = Distance between elements of the array.")
         )
         # self.drill_pitch_label.setMinimumWidth(100)
-        self.grb_pitch_entry = LengthEntry()
+        self.grb_pitch_entry = FCDoubleSpinner()
+        self.grb_pitch_entry.set_precision(4)
 
         grid0.addWidget(self.grb_pitch_label, 8, 0)
         grid0.addWidget(self.grb_pitch_entry, 8, 1)
@@ -1696,7 +1725,9 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
-        self.grb_angle_entry = LengthEntry()
+        self.grb_angle_entry = FCDoubleSpinner()
+        self.grb_angle_entry.set_precision(4)
+        self.grb_angle_entry.setSingleStep(5)
 
         grid0.addWidget(self.grb_angle_label, 9, 0)
         grid0.addWidget(self.grb_angle_entry, 9, 1)
@@ -1722,7 +1753,9 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_circular_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
-        self.grb_circular_angle_entry = LengthEntry()
+        self.grb_circular_angle_entry = FCDoubleSpinner()
+        self.grb_circular_angle_entry.set_precision(4)
+        self.grb_circular_angle_entry.setSingleStep(5)
 
         grid0.addWidget(self.grb_circular_angle_label, 12, 0)
         grid0.addWidget(self.grb_circular_angle_entry, 12, 1)
@@ -1735,7 +1768,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_buff_label.setToolTip(
             _("Distance at which to buffer the Gerber element.")
         )
-        self.grb_buff_entry = LengthEntry()
+        self.grb_buff_entry = FCDoubleSpinner()
+        self.grb_buff_entry.set_precision(4)
 
         grid0.addWidget(self.grb_buff_label, 14, 0)
         grid0.addWidget(self.grb_buff_entry, 14, 1)
@@ -1748,7 +1782,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_scale_label.setToolTip(
             _("Factor to scale the Gerber element.")
         )
-        self.grb_scale_entry = LengthEntry()
+        self.grb_scale_entry = FCDoubleSpinner()
+        self.grb_scale_entry.set_precision(4)
 
         grid0.addWidget(self.grb_scale_label, 16, 0)
         grid0.addWidget(self.grb_scale_entry, 16, 1)
@@ -1761,7 +1796,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_ma_low_label.setToolTip(
             _("Threshold value under which the apertures are not marked.")
         )
-        self.grb_ma_low_entry = LengthEntry()
+        self.grb_ma_low_entry = FCDoubleSpinner()
+        self.grb_ma_low_entry.set_precision(4)
 
         grid0.addWidget(self.grb_ma_low_label, 18, 0)
         grid0.addWidget(self.grb_ma_low_entry, 18, 1)
@@ -1771,7 +1807,8 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_ma_high_label.setToolTip(
             _("Threshold value over which the apertures are not marked.")
         )
-        self.grb_ma_high_entry = LengthEntry()
+        self.grb_ma_high_entry = FCDoubleSpinner()
+        self.grb_ma_high_entry.set_precision(4)
 
         grid0.addWidget(self.grb_ma_high_label, 19, 0)
         grid0.addWidget(self.grb_ma_high_entry, 19, 1)
@@ -1840,9 +1877,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             _("Default values for INCH are 2:4"))
         hlay1.addWidget(self.excellon_format_in_label, QtCore.Qt.AlignLeft)
 
-        self.excellon_format_upper_in_entry = IntEntry()
-        self.excellon_format_upper_in_entry.setMaxLength(1)
-        self.excellon_format_upper_in_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.excellon_format_upper_in_entry = FCSpinner()
+        self.excellon_format_upper_in_entry.set_range(0, 9)
         self.excellon_format_upper_in_entry.setMinimumWidth(30)
         self.excellon_format_upper_in_entry.setToolTip(
            _("This numbers signify the number of digits in\n"
@@ -1854,9 +1890,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         excellon_separator_in_label.setFixedWidth(5)
         hlay1.addWidget(excellon_separator_in_label, QtCore.Qt.AlignLeft)
 
-        self.excellon_format_lower_in_entry = IntEntry()
-        self.excellon_format_lower_in_entry.setMaxLength(1)
-        self.excellon_format_lower_in_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.excellon_format_lower_in_entry = FCSpinner()
+        self.excellon_format_lower_in_entry.set_range(0, 9)
         self.excellon_format_lower_in_entry.setMinimumWidth(30)
         self.excellon_format_lower_in_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
@@ -1873,9 +1908,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             _("Default values for METRIC are 3:3"))
         hlay2.addWidget(self.excellon_format_mm_label, QtCore.Qt.AlignLeft)
 
-        self.excellon_format_upper_mm_entry = IntEntry()
-        self.excellon_format_upper_mm_entry.setMaxLength(1)
-        self.excellon_format_upper_mm_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.excellon_format_upper_mm_entry = FCSpinner()
+        self.excellon_format_upper_mm_entry.set_range(0, 9)
         self.excellon_format_upper_mm_entry.setMinimumWidth(30)
         self.excellon_format_upper_mm_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
@@ -1887,9 +1921,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         excellon_separator_mm_label.setFixedWidth(5)
         hlay2.addWidget(excellon_separator_mm_label, QtCore.Qt.AlignLeft)
 
-        self.excellon_format_lower_mm_entry = IntEntry()
-        self.excellon_format_lower_mm_entry.setMaxLength(1)
-        self.excellon_format_lower_mm_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.excellon_format_lower_mm_entry = FCSpinner()
+        self.excellon_format_lower_mm_entry.set_range(0, 9)
         self.excellon_format_lower_mm_entry.setMinimumWidth(30)
         self.excellon_format_lower_mm_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
@@ -1998,8 +2031,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(self.optimization_time_label, 6, 0)
 
-        self.optimization_time_entry = IntEntry()
-        self.optimization_time_entry.setValidator(QtGui.QIntValidator(0, 999))
+        self.optimization_time_entry = FCSpinner()
+        self.optimization_time_entry.set_range(0, 999)
         grid2.addWidget(self.optimization_time_entry, 6, 1)
 
         current_platform = platform.architecture()[0]
@@ -2053,7 +2086,9 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "below the copper surface.")
         )
         grid2.addWidget(cutzlabel, 0, 0)
-        self.cutz_entry = LengthEntry()
+        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry.set_range(-9999, -0.000001)
+        self.cutz_entry.set_precision(4)
         grid2.addWidget(self.cutz_entry, 0, 1)
 
         # Travel Z
@@ -2063,7 +2098,10 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "across the XY plane.")
         )
         grid2.addWidget(travelzlabel, 1, 0)
-        self.travelz_entry = LengthEntry()
+        self.travelz_entry = FCDoubleSpinner()
+        self.travelz_entry.set_precision(4)
+        self.travelz_entry.set_range(0, 999)
+
         grid2.addWidget(self.travelz_entry, 1, 1)
 
         # Tool change:
@@ -2082,7 +2120,10 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "tool change.")
         )
         grid2.addWidget(toolchangezlabel, 3, 0)
-        self.toolchangez_entry = LengthEntry()
+        self.toolchangez_entry = FCDoubleSpinner()
+        self.toolchangez_entry.set_precision(4)
+        self.toolchangez_entry.set_range(0, 999)
+
         grid2.addWidget(self.toolchangez_entry, 3, 1)
 
         # End Move Z
@@ -2091,8 +2132,11 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             _("Height of the tool after\n"
               "the last move at the end of the job.")
         )
+        self.eendz_entry = FCDoubleSpinner()
+        self.eendz_entry.set_precision(4)
+        self.eendz_entry.set_range(0, 999)
+
         grid2.addWidget(endzlabel, 4, 0)
-        self.eendz_entry = LengthEntry()
         grid2.addWidget(self.eendz_entry, 4, 1)
 
         # Feedrate Z
@@ -2103,8 +2147,11 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "So called 'Plunge' feedrate.\n"
               "This is for linear move G01.")
         )
+        self.feedrate_entry = FCDoubleSpinner()
+        self.feedrate_entry.set_precision(4)
+        self.feedrate_entry.set_range(0, 999)
+
         grid2.addWidget(frlabel, 5, 0)
-        self.feedrate_entry = LengthEntry()
         grid2.addWidget(self.feedrate_entry, 5, 1)
 
         # Spindle speed
@@ -2128,7 +2175,9 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             _("Number of time units for spindle to dwell.")
         )
         self.dwell_cb = FCCheckBox()
-        self.dwelltime_entry = FCEntry()
+        self.dwelltime_entry = FCDoubleSpinner()
+        self.dwelltime_entry.set_precision(4)
+        self.dwelltime_entry.set_range(0, 99999.9999)
 
         grid2.addWidget(dwelllabel, 7, 0)
         grid2.addWidget(self.dwell_cb, 7, 1)
@@ -2177,16 +2226,23 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         tdlabel.setToolTip(
             _("Diameter of the cutting tool.")
         )
+        self.tooldia_entry = FCDoubleSpinner()
+        self.tooldia_entry.set_precision(4)
+        self.tooldia_entry.set_range(0, 999.9999)
+
         grid2.addWidget(tdlabel, 12, 0)
-        self.tooldia_entry = LengthEntry()
         grid2.addWidget(self.tooldia_entry, 12, 1)
+
         stdlabel = QtWidgets.QLabel('%s:' % _('Slot Tool dia'))
         stdlabel.setToolTip(
             _("Diameter of the cutting tool\n"
               "when milling slots.")
         )
+        self.slot_tooldia_entry = FCDoubleSpinner()
+        self.slot_tooldia_entry.set_precision(4)
+        self.slot_tooldia_entry.set_range(0, 999.9999)
+
         grid2.addWidget(stdlabel, 13, 0)
-        self.slot_tooldia_entry = LengthEntry()
         grid2.addWidget(self.slot_tooldia_entry, 13, 1)
 
         grid4 = QtWidgets.QGridLayout()
@@ -2229,8 +2285,11 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
             _("Some drill bits (the larger ones) need to drill deeper\n"
               "to create the desired exit hole diameter due of the tip shape.\n"
               "The value here can compensate the Cut Z parameter."))
+        self.offset_entry = FCDoubleSpinner()
+        self.offset_entry.set_precision(4)
+        self.offset_entry.set_range(-999.9999, 999.9999)
+
         grid1.addWidget(offsetlabel, 0, 0)
-        self.offset_entry = LengthEntry()
         grid1.addWidget(self.offset_entry, 0, 1)
 
         toolchange_xy_label = QtWidgets.QLabel('%s:' % _('Toolchange X,Y'))
@@ -2259,8 +2318,11 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
               "It is useful only for Marlin,\n"
               "ignore for any other cases.")
         )
+        self.feedrate_rapid_entry = FCDoubleSpinner()
+        self.feedrate_rapid_entry.set_precision(4)
+        self.feedrate_rapid_entry.set_range(0, 9999999.9999)
+
         grid1.addWidget(fr_rapid_label, 3, 0)
-        self.feedrate_rapid_entry = LengthEntry()
         grid1.addWidget(self.feedrate_rapid_entry, 3, 1)
 
         # Probe depth
@@ -2269,8 +2331,11 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
             _("The maximum depth that the probe is allowed\n"
               "to probe. Negative value, in current units.")
         )
+        self.pdepth_entry = FCDoubleSpinner()
+        self.pdepth_entry.set_precision(4)
+        self.pdepth_entry.set_range(-99999, -0.000001)
+
         grid1.addWidget(self.pdepth_label, 4, 0)
-        self.pdepth_entry = FCEntry()
         grid1.addWidget(self.pdepth_entry, 4, 1)
 
         # Probe feedrate
@@ -2278,8 +2343,11 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         self.feedrate_probe_label.setToolTip(
            _("The feedrate used while the probe is probing.")
         )
+        self.feedrate_probe_entry = FCDoubleSpinner()
+        self.feedrate_probe_entry.set_precision(4)
+        self.feedrate_probe_entry.set_range(0, 9999999.9999)
+
         grid1.addWidget(self.feedrate_probe_label, 5, 0)
-        self.feedrate_probe_entry = FCEntry()
         grid1.addWidget(self.feedrate_probe_entry, 5, 1)
 
         # Spindle direction
@@ -2366,9 +2434,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
         hlay1 = QtWidgets.QHBoxLayout()
 
-        self.format_whole_entry = IntEntry()
-        self.format_whole_entry.setMaxLength(1)
-        self.format_whole_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.format_whole_entry = FCSpinner()
+        self.format_whole_entry.set_range(0, 9)
         self.format_whole_entry.setMinimumWidth(30)
         self.format_whole_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
@@ -2380,9 +2447,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         excellon_separator_label.setFixedWidth(5)
         hlay1.addWidget(excellon_separator_label, QtCore.Qt.AlignLeft)
 
-        self.format_dec_entry = IntEntry()
-        self.format_dec_entry.setMaxLength(1)
-        self.format_dec_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.format_dec_entry = FCSpinner()
+        self.format_dec_entry.set_range(0, 9)
         self.format_dec_entry.setMinimumWidth(30)
         self.format_dec_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
@@ -2499,7 +2565,8 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
               "Increases the performance when moving a\n"
               "large number of geometric elements.")
         )
-        self.sel_limit_entry = IntEntry()
+        self.sel_limit_entry = FCSpinner()
+        self.sel_limit_entry.set_range(0, 99999)
 
         grid0.addWidget(self.sel_limit_label, 0, 0)
         grid0.addWidget(self.sel_limit_entry, 0, 1)
@@ -2510,8 +2577,9 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
             _("Diameter for the new tool")
         )
 
-        self.addtool_entry = FCEntry()
-        self.addtool_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
+        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry.set_range(0.000001, 99.9999)
+        self.addtool_entry.set_precision(4)
 
         grid0.addWidget(self.addtool_entry_lbl, 1, 0)
         grid0.addWidget(self.addtool_entry, 1, 1)
@@ -2523,7 +2591,8 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         )
         # self.drill_array_size_label.setMinimumWidth(100)
 
-        self.drill_array_size_entry = LengthEntry()
+        self.drill_array_size_entry = FCSpinner()
+        self.drill_array_size_entry.set_range(0, 9999)
 
         grid0.addWidget(self.drill_array_size_label, 2, 0)
         grid0.addWidget(self.drill_array_size_entry, 2, 1)
@@ -2553,7 +2622,9 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
             _("Pitch = Distance between elements of the array.")
         )
         # self.drill_pitch_label.setMinimumWidth(100)
-        self.drill_pitch_entry = LengthEntry()
+        self.drill_pitch_entry = FCDoubleSpinner()
+        self.drill_pitch_entry.set_range(0, 99999.9999)
+        self.drill_pitch_entry.set_precision(4)
 
         grid0.addWidget(self.drill_pitch_label, 5, 0)
         grid0.addWidget(self.drill_pitch_entry, 5, 1)
@@ -2563,7 +2634,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.drill_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
-        self.drill_angle_entry = LengthEntry()
+        self.drill_angle_entry = FCDoubleSpinner()
+        self.drill_pitch_entry.set_range(-360, 360)
+        self.drill_pitch_entry.set_precision(4)
+        self.drill_angle_entry.setWrapping(True)
+        self.drill_angle_entry.setSingleStep(5)
 
         grid0.addWidget(self.drill_angle_label, 6, 0)
         grid0.addWidget(self.drill_angle_entry, 6, 1)
@@ -2589,7 +2664,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.drill_circular_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
-        self.drill_circular_angle_entry = LengthEntry()
+        self.drill_circular_angle_entry = FCDoubleSpinner()
+        self.drill_circular_angle_entry.set_range(-360, 360)
+        self.drill_circular_angle_entry.set_precision(4)
+        self.drill_circular_angle_entry.setWrapping(True)
+        self.drill_circular_angle_entry.setSingleStep(5)
 
         grid0.addWidget(self.drill_circular_angle_label, 9, 0)
         grid0.addWidget(self.drill_circular_angle_entry, 9, 1)
@@ -2606,7 +2685,12 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         )
         self.slot_length_label.setMinimumWidth(100)
 
-        self.slot_length_entry = LengthEntry()
+        self.slot_length_entry = FCDoubleSpinner()
+        self.slot_length_entry.set_range(0, 99999)
+        self.slot_length_entry.set_precision(4)
+        self.slot_length_entry.setWrapping(True)
+        self.slot_length_entry.setSingleStep(1)
+
         grid0.addWidget(self.slot_length_label, 11, 0)
         grid0.addWidget(self.slot_length_entry, 11, 1)
 
@@ -2637,10 +2721,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.slot_angle_label.setMinimumWidth(100)
 
         self.slot_angle_spinner = FCDoubleSpinner()
-        self.slot_angle_spinner.set_precision(2)
+        self.slot_angle_spinner.set_precision(4)
         self.slot_angle_spinner.setWrapping(True)
         self.slot_angle_spinner.setRange(-359.99, 360.00)
-        self.slot_angle_spinner.setSingleStep(1.0)
+        self.slot_angle_spinner.setSingleStep(5)
+
         grid0.addWidget(self.slot_angle_label, 13, 0)
         grid0.addWidget(self.slot_angle_spinner, 13, 1)
 
@@ -2657,7 +2742,8 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         )
         # self.slot_array_size_label.setMinimumWidth(100)
 
-        self.slot_array_size_entry = LengthEntry()
+        self.slot_array_size_entry = FCSpinner()
+        self.slot_array_size_entry.set_range(0, 999999)
 
         grid0.addWidget(self.slot_array_size_label, 15, 0)
         grid0.addWidget(self.slot_array_size_entry, 15, 1)
@@ -2684,7 +2770,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
             _("Pitch = Distance between elements of the array.")
         )
         # self.drill_pitch_label.setMinimumWidth(100)
-        self.slot_array_pitch_entry = LengthEntry()
+        self.slot_array_pitch_entry = FCDoubleSpinner()
+        self.slot_array_pitch_entry.set_precision(4)
+        self.slot_array_pitch_entry.setWrapping(True)
+        self.slot_array_pitch_entry.setRange(0, 999999)
+        self.slot_array_pitch_entry.setSingleStep(1)
 
         grid0.addWidget(self.slot_array_pitch_label, 17, 0)
         grid0.addWidget(self.slot_array_pitch_entry, 17, 1)
@@ -2694,7 +2784,11 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.slot_array_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
-        self.slot_array_angle_entry = LengthEntry()
+        self.slot_array_angle_entry = FCDoubleSpinner()
+        self.slot_array_angle_entry.set_precision(4)
+        self.slot_array_angle_entry.setWrapping(True)
+        self.slot_array_angle_entry.setRange(-360, 360)
+        self.slot_array_angle_entry.setSingleStep(5)
 
         grid0.addWidget(self.slot_array_angle_label, 18, 0)
         grid0.addWidget(self.slot_array_angle_entry, 18, 1)
@@ -2720,7 +2814,12 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.slot_array_circular_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
-        self.slot_array_circular_angle_entry = LengthEntry()
+        self.slot_array_circular_angle_entry = FCDoubleSpinner()
+        self.slot_array_circular_angle_entry.set_precision(4)
+        self.slot_array_circular_angle_entry.setWrapping(True)
+        self.slot_array_circular_angle_entry.setRange(-360, 360)
+        self.slot_array_circular_angle_entry.setSingleStep(5)
+
 
         grid0.addWidget(self.slot_array_circular_angle_label, 21, 0)
         grid0.addWidget(self.slot_array_circular_angle_entry, 21, 1)
@@ -2748,6 +2847,8 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
 
         # Number of circle steps for circular aperture linear approximation
         self.circle_steps_label = QtWidgets.QLabel('%s:' % _("Circle Steps"))
@@ -2755,8 +2856,10 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
             _("The number of circle steps for <b>Geometry</b> \n"
               "circle and arc shapes linear approximation.")
         )
+        self.circle_steps_entry = FCSpinner()
+        self.circle_steps_entry.set_range(0, 999)
+
         grid0.addWidget(self.circle_steps_label, 1, 0)
-        self.circle_steps_entry = IntEntry()
         grid0.addWidget(self.circle_steps_entry, 1, 1)
 
         # Tools
@@ -2768,8 +2871,13 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         tdlabel.setToolTip(
             _("Diameters of the cutting tools, separated by ','")
         )
+        self.cnctooldia_entry = FCDoubleSpinner()
+        self.cnctooldia_entry.set_range(0.000001, 999.9999)
+        self.cnctooldia_entry.set_precision(4)
+        self.cnctooldia_entry.setSingleStep(0.1)
+        self.cnctooldia_entry.setWrapping(True)
+
         grid0.addWidget(tdlabel, 3, 0)
-        self.cnctooldia_entry = FCEntry()
         grid0.addWidget(self.cnctooldia_entry, 3, 1)
 
         self.layout.addStretch()
@@ -2802,8 +2910,13 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("Cutting depth (negative)\n"
               "below the copper surface.")
         )
+        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry.set_range(-999.999, -0.000001)
+        self.cutz_entry.set_precision(4)
+        self.cutz_entry.setSingleStep(0.1)
+        self.cutz_entry.setWrapping(True)
+
         grid1.addWidget(cutzlabel, 0, 0)
-        self.cutz_entry = LengthEntry()
         grid1.addWidget(self.cutz_entry, 0, 1)
 
         # Multidepth CheckBox
@@ -2828,8 +2941,13 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "which has negative value.")
         )
 
+        self.depthperpass_entry = FCDoubleSpinner()
+        self.depthperpass_entry.set_range(0, 99999)
+        self.depthperpass_entry.set_precision(4)
+        self.depthperpass_entry.setSingleStep(0.1)
+        self.depthperpass_entry.setWrapping(True)
+
         grid1.addWidget(dplabel, 2, 0)
-        self.depthperpass_entry = LengthEntry()
         grid1.addWidget(self.depthperpass_entry, 2, 1)
 
         self.ois_multidepth = OptionalInputSection(self.multidepth_cb, [self.depthperpass_entry])
@@ -2840,8 +2958,13 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("Height of the tool when\n"
               "moving without cutting.")
         )
+        self.travelz_entry = FCDoubleSpinner()
+        self.travelz_entry.set_range(0, 99999)
+        self.travelz_entry.set_precision(4)
+        self.travelz_entry.setSingleStep(0.1)
+        self.travelz_entry.setWrapping(True)
+
         grid1.addWidget(travelzlabel, 3, 0)
-        self.travelz_entry = LengthEntry()
         grid1.addWidget(self.travelz_entry, 3, 1)
 
         # Tool change:
@@ -2864,8 +2987,13 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
                 "tool change."
             )
         )
+        self.toolchangez_entry = FCDoubleSpinner()
+        self.toolchangez_entry.set_range(0, 99999)
+        self.toolchangez_entry.set_precision(4)
+        self.toolchangez_entry.setSingleStep(0.1)
+        self.toolchangez_entry.setWrapping(True)
+
         grid1.addWidget(toolchangezlabel, 5, 0)
-        self.toolchangez_entry = LengthEntry()
         grid1.addWidget(self.toolchangez_entry, 5, 1)
 
         # End move Z
@@ -2874,8 +3002,13 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("Height of the tool after\n"
               "the last move at the end of the job.")
         )
+        self.gendz_entry = FCDoubleSpinner()
+        self.gendz_entry.set_range(0, 99999)
+        self.gendz_entry.set_precision(4)
+        self.gendz_entry.setSingleStep(0.1)
+        self.gendz_entry.setWrapping(True)
+
         grid1.addWidget(endzlabel, 6, 0)
-        self.gendz_entry = LengthEntry()
         grid1.addWidget(self.gendz_entry, 6, 1)
 
         # Feedrate X-Y
@@ -2884,8 +3017,13 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("Cutting speed in the XY\n"
               "plane in units per minute")
         )
+        self.cncfeedrate_entry = FCDoubleSpinner()
+        self.cncfeedrate_entry.set_range(0, 99999)
+        self.cncfeedrate_entry.set_precision(4)
+        self.cncfeedrate_entry.setSingleStep(0.1)
+        self.cncfeedrate_entry.setWrapping(True)
+
         grid1.addWidget(frlabel, 7, 0)
-        self.cncfeedrate_entry = LengthEntry()
         grid1.addWidget(self.cncfeedrate_entry, 7, 1)
 
         # Feedrate Z (Plunge)
@@ -2895,8 +3033,13 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "plane in units per minute.\n"
               "It is called also Plunge.")
         )
+        self.cncplunge_entry = FCDoubleSpinner()
+        self.cncplunge_entry.set_range(0, 99999)
+        self.cncplunge_entry.set_precision(4)
+        self.cncplunge_entry.setSingleStep(0.1)
+        self.cncplunge_entry.setWrapping(True)
+
         grid1.addWidget(frz_label, 8, 0)
-        self.cncplunge_entry = LengthEntry()
         grid1.addWidget(self.cncplunge_entry, 8, 1)
 
         # Spindle Speed
@@ -2922,7 +3065,12 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         dwelltime.setToolTip(
             _("Number of time units for spindle to dwell.")
         )
-        self.dwelltime_entry = FCEntry()
+        self.dwelltime_entry = FCDoubleSpinner()
+        self.dwelltime_entry.set_range(0, 99999)
+        self.dwelltime_entry.set_precision(4)
+        self.dwelltime_entry.setSingleStep(0.1)
+        self.dwelltime_entry.setWrapping(True)
+
         grid1.addWidget(self.dwell_cb, 10, 0)
         grid1.addWidget(dwelltime, 11, 0)
         grid1.addWidget(self.dwelltime_entry, 11, 1)
@@ -2992,8 +3140,13 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "It is useful only for Marlin,\n"
               "ignore for any other cases.")
         )
+        self.cncfeedrate_rapid_entry = FCDoubleSpinner()
+        self.cncfeedrate_rapid_entry.set_range(0, 99999)
+        self.cncfeedrate_rapid_entry.set_precision(4)
+        self.cncfeedrate_rapid_entry.setSingleStep(0.1)
+        self.cncfeedrate_rapid_entry.setWrapping(True)
+
         grid1.addWidget(fr_rapid_label, 4, 0)
-        self.cncfeedrate_rapid_entry = LengthEntry()
         grid1.addWidget(self.cncfeedrate_rapid_entry, 4, 1)
 
         # End move extra cut
@@ -3012,8 +3165,13 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
             _("The maximum depth that the probe is allowed\n"
               "to probe. Negative value, in current units.")
         )
+        self.pdepth_entry = FCDoubleSpinner()
+        self.pdepth_entry.set_range(-99999, -0.000001)
+        self.pdepth_entry.set_precision(4)
+        self.pdepth_entry.setSingleStep(0.1)
+        self.pdepth_entry.setWrapping(True)
+
         grid1.addWidget(self.pdepth_label, 6, 0)
-        self.pdepth_entry = FCEntry()
         grid1.addWidget(self.pdepth_entry, 6, 1)
 
         # Probe feedrate
@@ -3021,8 +3179,13 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         self.feedrate_probe_label.setToolTip(
             _("The feedrate used while the probe is probing.")
         )
+        self.feedrate_probe_entry = FCDoubleSpinner()
+        self.feedrate_probe_entry.set_range(0, 99999)
+        self.feedrate_probe_entry.set_precision(4)
+        self.feedrate_probe_entry.setSingleStep(0.1)
+        self.feedrate_probe_entry.setWrapping(True)
+
         grid1.addWidget(self.feedrate_probe_label, 7, 0)
-        self.feedrate_probe_entry = FCEntry()
         grid1.addWidget(self.feedrate_probe_entry, 7, 1)
 
         # Spindle direction
@@ -3058,8 +3221,13 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "Useful for auto-leveling.\n"
               "A value of 0 means no segmentation on the X axis.")
         )
+        self.segx_entry = FCDoubleSpinner()
+        self.segx_entry.set_range(0, 99999)
+        self.segx_entry.set_precision(4)
+        self.segx_entry.setSingleStep(0.1)
+        self.segx_entry.setWrapping(True)
+
         grid1.addWidget(segx_label, 10, 0)
-        self.segx_entry = FCEntry()
         grid1.addWidget(self.segx_entry, 10, 1)
 
         # Size of trace segment on Y axis
@@ -3069,8 +3237,13 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "Useful for auto-leveling.\n"
               "A value of 0 means no segmentation on the Y axis.")
         )
+        self.segy_entry = FCDoubleSpinner()
+        self.segy_entry.set_range(0, 99999)
+        self.segy_entry.set_precision(4)
+        self.segy_entry.setSingleStep(0.1)
+        self.segy_entry.setWrapping(True)
+
         grid1.addWidget(segy_label, 11, 0)
-        self.segy_entry = FCEntry()
         grid1.addWidget(self.segy_entry, 11, 1)
 
         self.layout.addStretch()
@@ -3102,7 +3275,8 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
               "Increases the performance when moving a\n"
               "large number of geometric elements.")
         )
-        self.sel_limit_entry = IntEntry()
+        self.sel_limit_entry = FCSpinner()
+        self.sel_limit_entry.set_range(0, 9999)
 
         grid0.addWidget(self.sel_limit_label, 0, 0)
         grid0.addWidget(self.sel_limit_entry, 0, 1)
@@ -3186,7 +3360,8 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
               "circle and arc shapes linear approximation.")
         )
         grid0.addWidget(self.steps_per_circle_label, 3, 0)
-        self.steps_per_circle_entry = IntEntry()
+        self.steps_per_circle_entry = FCSpinner()
+        self.steps_per_circle_entry.set_range(0, 99999)
         grid0.addWidget(self.steps_per_circle_entry, 3, 1)
 
         # Tool dia for plot
@@ -3195,7 +3370,12 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             _("The width of the travel lines to be\n"
               "rendered in the plot.")
         )
-        self.tooldia_entry = LengthEntry()
+        self.tooldia_entry = FCDoubleSpinner()
+        self.tooldia_entry.set_range(0, 99999)
+        self.tooldia_entry.set_precision(4)
+        self.tooldia_entry.setSingleStep(0.1)
+        self.tooldia_entry.setWrapping(True)
+
         grid0.addWidget(tdlabel, 4, 0)
         grid0.addWidget(self.tooldia_entry, 4, 1)
 
@@ -3208,7 +3388,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             _("The number of decimals to be used for \n"
               "the X, Y, Z coordinates in CNC code (GCODE, etc.)")
         )
-        self.coords_dec_entry = IntEntry()
+        self.coords_dec_entry = FCSpinner()
+        self.coords_dec_entry.set_range(0, 9)
+        self.coords_dec_entry.setWrapping(True)
+
         grid0.addWidget(cdeclabel, 6, 0)
         grid0.addWidget(self.coords_dec_entry, 6, 1)
 
@@ -3218,7 +3401,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             _("The number of decimals to be used for \n"
               "the Feedrate parameter in CNC code (GCODE, etc.)")
         )
-        self.fr_dec_entry = IntEntry()
+        self.fr_dec_entry = FCSpinner()
+        self.fr_dec_entry.set_range(0, 9)
+        self.fr_dec_entry.setWrapping(True)
+
         grid0.addWidget(frdeclabel, 7, 0)
         grid0.addWidget(self.fr_dec_entry, 7, 1)
 
@@ -3407,6 +3593,8 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.annotation_fontsize_label, 2, 0)
         self.annotation_fontsize_sp = FCSpinner()
+        self.annotation_fontsize_sp.set_range(0, 9999)
+
         grid0.addWidget(self.annotation_fontsize_sp, 2, 1)
         grid0.addWidget(QtWidgets.QLabel(''), 2, 2)
 

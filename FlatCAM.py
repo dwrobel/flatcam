@@ -9,13 +9,10 @@ from flatcamGUI import VisPyPatches
 from multiprocessing import freeze_support
 # import copyreg
 # import types
-import qdarkstyle
 
 if sys.platform == "win32":
     # cx_freeze 'module win32' workaround
     pass
-
-os.environ['QT_API'] = 'pyqt5'
 
 
 def debug_trace():
@@ -51,7 +48,7 @@ if __name__ == '__main__':
         os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "0"
 
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+
     # apply style
     settings = QSettings("Open Source", "FlatCAM")
     if settings.contains("style"):

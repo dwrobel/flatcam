@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.10.2019
+
+- modified the FCSpinner and FCDoubleSpinner GUI elements such that the wheel event will not change the values inside unless there is a focus in the lineedit of the SpinBox
+- in Preferences General, Gerber, Geometry, Excellon, CNCJob sections made all the input fields of type SpinBox (where possible)
+- updated the Distance Tool utility geometry color to adapt to the dark theme canvas
+
 7.10.2019
 
 - fixed an conflict in a signal usage that was triggered by Tool SolderPaste when a new project was created

@@ -524,6 +524,11 @@ class FCSpinner(QtWidgets.QSpinBox):
             return True
         return False
 
+    def wheelEvent(self, *args, **kwargs):
+        # should work only there is a focus in the lineedit of the SpinBox
+        if self.readyToEdit is False:
+            super().wheelEvent(*args, **kwargs)
+
     def on_edit_finished(self):
         self.clearFocus()
 
@@ -578,6 +583,11 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     def on_edit_finished(self):
         self.clearFocus()
+
+    def wheelEvent(self, *args, **kwargs):
+        # should work only there is a focus in the lineedit of the SpinBox
+        if self.readyToEdit is False:
+            super().wheelEvent(*args, **kwargs)
 
     # def mousePressEvent(self, e, parent=None):
     #     super(FCDoubleSpinner, self).mousePressEvent(e)  # required to deselect on 2e click

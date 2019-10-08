@@ -5967,22 +5967,22 @@ class App(QtCore.QObject):
         if state:
             # first try to disconnect
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.editingFinished.\
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.editingFinished.\
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.editingFinished.\
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged.\
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.editingFinished.\
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
@@ -5999,13 +5999,13 @@ class App(QtCore.QObject):
                 pass
 
             # the connect them
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged.connect(
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.editingFinished.connect(
                 self.on_excellon_format_changed)
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged.connect(
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.editingFinished.connect(
                 self.on_excellon_format_changed)
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged.connect(
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.editingFinished.connect(
                 self.on_excellon_format_changed)
-            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged.connect(
+            self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.editingFinished.connect(
                 self.on_excellon_format_changed)
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio.activated_custom.connect(
                 self.on_excellon_zeros_changed)
@@ -6014,22 +6014,22 @@ class App(QtCore.QObject):
         else:
             # disconnect the signals
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.textChanged. \
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry.editingFinished. \
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.textChanged. \
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry.editingFinished. \
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.textChanged. \
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry.editingFinished. \
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass
             try:
-                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.textChanged. \
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry.editingFinished. \
                     disconnect(self.on_excellon_format_changed)
             except TypeError:
                 pass

@@ -3042,14 +3042,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.aptype_cb.set_value(self.app.defaults["gerber_editor_newtype"])
         self.apdim_entry.set_value(self.app.defaults["gerber_editor_newdim"])
 
-        self.pad_array_size_entry.set_value(self.app.defaults["gerber_editor_array_size"])
+        self.pad_array_size_entry.set_value(int(self.app.defaults["gerber_editor_array_size"]))
         # linear array
         self.pad_axis_radio.set_value(self.app.defaults["gerber_editor_lin_axis"])
-        self.pad_pitch_entry.set_value(self.app.defaults["gerber_editor_lin_pitch"])
+        self.pad_pitch_entry.set_value(float(self.app.defaults["gerber_editor_lin_pitch"]))
         self.linear_angle_spinner.set_value(self.app.defaults["gerber_editor_lin_angle"])
         # circular array
         self.pad_direction_radio.set_value(self.app.defaults["gerber_editor_circ_dir"])
-        self.pad_angle_entry.set_value(self.app.defaults["gerber_editor_circ_angle"])
+        self.pad_angle_entry.set_value(float(self.app.defaults["gerber_editor_circ_angle"]))
 
     def build_ui(self, first_run=None):
 

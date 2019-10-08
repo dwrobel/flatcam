@@ -428,7 +428,17 @@ class Distance(FlatCAMTool):
         # second draw the new shape of the utility geometry
         meas_line = LineString([pos, self.points[0]])
 
-        color = '#000000FF'
+        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            color = '#000000FF'
+        else:
+            color = '#FFFFFFFF'
+
         self.sel_shapes.add(meas_line, color=color, update=True, layer=0, tolerance=None)
 
         if self.app.is_legacy is True:

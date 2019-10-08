@@ -630,7 +630,7 @@ class Gerber(Geometry):
 
                         # --- Buffered ---
                         try:
-                            log.debug("Bare op-code %d." % current_operation_code)
+                            # log.debug("Bare op-code %d." % current_operation_code)
                             geo_dict = dict()
                             flash = self.create_flash_geometry(
                                 Point(current_x, current_y), self.apertures[current_aperture],
