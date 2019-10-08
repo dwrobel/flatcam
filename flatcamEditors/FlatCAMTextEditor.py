@@ -264,37 +264,4 @@ class TextEditor(QtWidgets.QWidget):
         self.app.inform.emit(_("Code Editor content copied to clipboard ..."))
 
     # def closeEvent(self, QCloseEvent):
-    #     try:
-    #         self.code_editor.textChanged.disconnect()
-    #     except TypeError:
-    #         pass
-    #     try:
-    #         self.buttonOpen.clicked.disconnect()
-    #     except TypeError:
-    #         pass
-    #     try:
-    #         self.buttonPrint.clicked.disconnect()
-    #     except TypeError:
-    #         pass
-    #     try:
-    #         self.buttonPreview.clicked.disconnect()
-    #     except TypeError:
-    #         pass
-    #     try:
-    #         self.buttonFind.clicked.disconnect()
-    #     except TypeError:
-    #         pass
-    #     try:
-    #         self.buttonReplace.clicked.disconnect()
-    #     except TypeError:
-    #         pass
-    #     try:
-    #         self.button_copy_all.clicked.disconnect()
-    #     except TypeError:
-    #         pass
-    #     try:
-    #         self.buttonRun.clicked.disconnect()
-    #     except TypeError:
-    #         pass
-    #
     #     super().closeEvent(QCloseEvent)

@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified the FCSpinner and FCDoubleSpinner GUI elements such that the wheel event will not change the values inside unless there is a focus in the lineedit of the SpinBox
 - in Preferences General, Gerber, Geometry, Excellon, CNCJob sections made all the input fields of type SpinBox (where possible)
 - updated the Distance Tool utility geometry color to adapt to the dark theme canvas
+- Toggle Code Editor now works as expected even when the user is closing the Editor tab and not using the command Toggle Code Editor
 
 7.10.2019
 

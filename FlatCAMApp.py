@@ -2114,6 +2114,9 @@ class App(QtCore.QObject):
         # connect the abort_all_tasks related slots to the related signals
         self.proc_container.idle_flag.connect(self.app_is_idle)
 
+        # signal emitted when a tab is closed in the Plot Area
+        self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
+
         # #####################################################################################
         # ########### FINISHED CONNECTING SIGNALS #############################################
         # #####################################################################################
@@ -2506,6 +2509,8 @@ class App(QtCore.QObject):
 
         # Variable to store the GCODE that was edited
         self.gcode_edited = ""
+
+        self.text_editor_tab = None
 
         # reference for the self.ui.code_editor
         self.reference_code_editor = None
@@ -7259,13 +7264,6 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.setCurrentWidget(self.ui.preferences_tab)
         # self.ui.show()
 
-        # this disconnect() is done so the slot will be connected only once
-        try:
-            self.ui.plot_tab_area.tab_closed_signal.disconnect(self.on_preferences_closed)
-        except (TypeError, AttributeError):
-            pass
-        self.ui.plot_tab_area.tab_closed_signal.connect(self.on_preferences_closed)
-
         # detect changes in the preferences
         for idx in range(self.ui.pref_tab_area.count()):
             for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
@@ -7319,56 +7317,60 @@ class App(QtCore.QObject):
                          _("Preferences edited but not saved."))
         self.preferences_changed_flag = True
 
-    def on_preferences_closed(self):
-        # disconnect
-        for idx in range(self.ui.pref_tab_area.count()):
-            for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
-                try:
-                    tb.textEdited.disconnect(self.on_preferences_edited)
-                except (TypeError, AttributeError):
-                    pass
+    def on_plot_area_tab_closed(self, title):
+        if title == _("Preferences"):
+            # disconnect
+            for idx in range(self.ui.pref_tab_area.count()):
+                for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
+                    try:
+                        tb.textEdited.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
 
-                try:
-                    tb.modificationChanged.disconnect(self.on_preferences_edited)
-                except (TypeError, AttributeError):
-                    pass
+                    try:
+                        tb.modificationChanged.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
 
-                try:
-                    tb.toggled.disconnect(self.on_preferences_edited)
-                except (TypeError, AttributeError):
-                    pass
+                    try:
+                        tb.toggled.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
 
-                try:
-                    tb.valueChanged.disconnect(self.on_preferences_edited)
-                except (TypeError, AttributeError):
-                    pass
+                    try:
+                        tb.valueChanged.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
 
-                try:
-                    tb.currentIndexChanged.disconnect(self.on_preferences_edited)
-                except (TypeError, AttributeError):
-                    pass
+                    try:
+                        tb.currentIndexChanged.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
 
-        if self.preferences_changed_flag is True:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setText(_("One or more values are changed.\n"
-                             "Do you want to save the Preferences?"))
-            msgbox.setWindowTitle(_("Save Preferences"))
-            msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+            if self.preferences_changed_flag is True:
+                msgbox = QtWidgets.QMessageBox()
+                msgbox.setText(_("One or more values are changed.\n"
+                                 "Do you want to save the Preferences?"))
+                msgbox.setWindowTitle(_("Save Preferences"))
+                msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
 
-            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+                bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
-            msgbox.setDefaultButton(bt_yes)
-            msgbox.exec_()
-            response = msgbox.clickedButton()
+                msgbox.setDefaultButton(bt_yes)
+                msgbox.exec_()
+                response = msgbox.clickedButton()
 
-            if response == bt_yes:
-                self.on_save_button()
-                self.inform.emit('[success] %s' %
-                                 _("Preferences saved."))
-            else:
-                self.preferences_changed_flag = False
-                return
+                if response == bt_yes:
+                    self.on_save_button()
+                    self.inform.emit('[success] %s' %
+                                     _("Preferences saved."))
+                else:
+                    self.preferences_changed_flag = False
+                    return
+
+        if title == _("Code Editor"):
+            self.toggle_codeeditor = False
 
     def on_flipy(self):
         self.report_usage("on_flipy()")
@@ -9226,28 +9228,28 @@ class App(QtCore.QObject):
 
     def init_code_editor(self, name):
 
-        self.ui.text_editor_tab = TextEditor(app=self)
+        self.text_editor_tab = TextEditor(app=self)
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.text_editor_tab, '%s' % name)
-        self.ui.text_editor_tab.setObjectName('text_editor_tab')
+        self.ui.plot_tab_area.addTab(self.text_editor_tab, '%s' % name)
+        self.text_editor_tab.setObjectName('text_editor_tab')
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
         self.ui.rel_position_label.setText("")
 
         # first clear previous text in text editor (if any)
-        self.ui.text_editor_tab.code_editor.clear()
-        self.ui.text_editor_tab.code_editor.setReadOnly(False)
+        self.text_editor_tab.code_editor.clear()
+        self.text_editor_tab.code_editor.setReadOnly(False)
         self.toggle_codeeditor = True
-        self.ui.text_editor_tab.code_editor.completer_enable = False
-        self.ui.text_editor_tab.buttonRun.hide()
+        self.text_editor_tab.code_editor.completer_enable = False
+        self.text_editor_tab.buttonRun.hide()
 
         # make sure to keep a reference to the code editor
-        self.reference_code_editor = self.ui.text_editor_tab.code_editor
+        self.reference_code_editor = self.text_editor_tab.code_editor
 
         # Switch plot_area to CNCJob tab
-        self.ui.plot_tab_area.setCurrentWidget(self.ui.text_editor_tab)
+        self.ui.plot_tab_area.setCurrentWidget(self.text_editor_tab)
 
     def on_view_source(self):
         self.inform.emit('%s' %
@@ -9341,16 +9343,21 @@ class App(QtCore.QObject):
 
         if self.toggle_codeeditor is False:
             self.init_code_editor(name=_("Code Editor"))
-            self.ui.text_editor_tab.buttonOpen.clicked.disconnect()
-            self.ui.text_editor_tab.buttonOpen.clicked.connect(lambda: self.ui.text_editor_tab.handleOpen())
-            self.ui.text_editor_tab.buttonSave.clicked.disconnect()
-            self.ui.text_editor_tab.buttonSave.clicked.connect(lambda: self.ui.text_editor_tab.handleSaveGCode())
+
+            self.text_editor_tab.buttonOpen.clicked.disconnect()
+            self.text_editor_tab.buttonOpen.clicked.connect(self.text_editor_tab.handleOpen)
+            self.text_editor_tab.buttonSave.clicked.disconnect()
+            self.text_editor_tab.buttonSave.clicked.connect(self.text_editor_tab.handleSaveGCode)
         else:
             for idx in range(self.ui.plot_tab_area.count()):
                 if self.ui.plot_tab_area.widget(idx).objectName() == "text_editor_tab":
                     self.ui.plot_tab_area.closeTab(idx)
                     break
             self.toggle_codeeditor = False
+
+    def on_code_editor_close(self):
+        print("closed")
+        self.toggle_codeeditor = False
 
     def on_filenewscript(self, silent=False, name=None, text=None):
         """
@@ -11727,6 +11734,16 @@ class App(QtCore.QObject):
                     self.app_quit.emit()
         except Exception as e:
             traceback.print_exc()
+
+    def on_plotarea_tab_closed(self, tab_idx):
+        widget = self.ui.plot_tab_area.widget(tab_idx)
+
+        if widget is not None:
+            print(widget.objectName())
+            if widget.objectName() == 'text_editor_tab':
+                print("aha")
+            widget.deleteLater()
+        self.ui.plot_tab_area.removeTab(tab_idx)
 
     def on_options_app2project(self):
         """

@@ -1538,7 +1538,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
 
 class FCDetachableTab2(FCDetachableTab):
-    tab_closed_signal = pyqtSignal()
+    tab_closed_signal = pyqtSignal(object)
 
     def __init__(self, protect=None, protect_by_name=None, parent=None):
         super(FCDetachableTab2, self).__init__(protect=protect, protect_by_name=protect_by_name, parent=parent)
@@ -1552,9 +1552,7 @@ class FCDetachableTab2(FCDetachableTab):
         """
         idx = self.currentIndex()
 
-        # emit the signal only if the name is the one we want; the name should be a parameter somehow
-        if self.tabText(idx) == _("Preferences"):
-            self.tab_closed_signal.emit()
+        self.tab_closed_signal.emit(self.tabText(idx))
 
         self.removeTab(currentIndex)
 
