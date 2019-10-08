@@ -589,11 +589,13 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         if self.readyToEdit is False:
             super().wheelEvent(*args, **kwargs)
 
-    # def mousePressEvent(self, e, parent=None):
-    #     super(FCDoubleSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
-    #     if self.readyToEdit:
-    #         self.lineEdit().selectAll()
-    #         self.readyToEdit = False
+    # def keyPressEvent(self, in_event):  # 46 = dot; 44 = comma:
+    #     if in_event.key() == 44:
+    #         print(in_event, "ahaaa")
+    #         event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, 46, Qt.NoModifier, 0, 0, 0)
+    #         QtWidgets.QApplication.sendEvent(self.parent(), event)
+    #     else:
+    #         super().keyPressEvent(in_event)
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
