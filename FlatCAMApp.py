@@ -144,8 +144,8 @@ class App(QtCore.QObject):
     # Manual URL
     manual_url = "http://flatcam.org/manual/index.html"
     video_url = "https://www.youtube.com/playlist?list=PLVvP2SYRpx-AQgNlfoxw93tXUXon7G94_"
-    gerber_spec_url ="https://www.ucamco.com/files/downloads/file/81/The_Gerber_File_Format_specification." \
-                     "pdf?7ac957791daba2cdf4c2c913f67a43da"
+    gerber_spec_url = "https://www.ucamco.com/files/downloads/file/81/The_Gerber_File_Format_specification." \
+                      "pdf?7ac957791daba2cdf4c2c913f67a43da"
     excellon_spec_url = "https://www.ucamco.com/files/downloads/file/305/the_xnc_file_format_specification.pdf"
     bug_report_url = "https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open"
 
@@ -2420,7 +2420,7 @@ class App(QtCore.QObject):
         self.move_tool = None
         self.cutout_tool = None
         self.ncclear_tool = None
-        self.optimal_tool=None
+        self.optimal_tool = None
         self.paint_tool = None
         self.transform_tool = None
         self.properties_tool = None
@@ -2560,6 +2560,9 @@ class App(QtCore.QObject):
 
         # set the value used in the Windows Title
         self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
+
+        # this will hold the TCL instance
+        self.tcl = None
 
         # ###############################################################################
         # ############# Save defaults to factory_defaults.FlatConfig file ###############
@@ -2859,7 +2862,7 @@ class App(QtCore.QObject):
         try:
             self.trayIcon.hide()
         except Exception as e:
-           pass
+            pass
 
         fcTranslate.restart_program(app=self)
 
@@ -4719,22 +4722,21 @@ class App(QtCore.QObject):
             f = open(data_path + "/current_defaults.FlatConfig", "w")
             json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
             f.close()
-        except:
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed to write defaults to file."))
+        except Exception as e:
+            log.debug("App.save_defaults() --> %s" % str(e))
+            self.inform.emit(f'[ERROR_NOTCL] {_("Failed to write defaults to file.")}')
             return
 
         if not silent:
-            self.inform.emit('[success] %s' %
-                             _("Preferences saved."))
+            self.inform.emit(f'[success] {_("Preferences saved.")}')
 
-    def save_factory_defaults(self, silent=False, data_path=None):
+    def save_factory_defaults(self, silent_message=False, data_path=None):
         """
         Saves application factory default options
         ``self.defaults`` to factory_defaults.FlatConfig.
         It's a one time job done just after the first install.
 
-        :param silent: whether to display a message in status bar or not; boolean
+        :param silent_message: whether to display a message in status bar or not; boolean
         :param data_path: the path where to save the default preferences file (factory_defaults.FlatConfig)
         When the application is portable it should be a mobile location.
         :return: None
@@ -4753,8 +4755,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Could not load factory defaults file.")
             App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Could not load factory defaults file."))
+            self.inform.emit(f'[ERROR_NOTCL] {_("Could not load factory defaults file.")}')
             return
 
         try:
@@ -4763,8 +4764,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Failed to parse factory defaults file.")
             App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed to parse factory defaults file."))
+            self.inform.emit(f'[ERROR_NOTCL] {_("Failed to parse factory defaults file.")}')
             return
 
         # Update options
@@ -4777,13 +4777,13 @@ class App(QtCore.QObject):
             f_f_def_s = open(data_path + "/factory_defaults.FlatConfig", "w")
             json.dump(factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
             f_f_def_s.close()
-        except:
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed to write factory defaults to file."))
+        except Exception as e:
+            log.debug(f"App.save_factory_default() save update --> {str(e)}")
+            self.inform.emit(f'[ERROR_NOTCL] {_("Failed to write factory defaults to file.")}')
             return
 
-        if silent is False:
-            self.inform.emit(_("Factory defaults saved."))
+        if silent_message is False:
+            self.inform.emit(f'{_("Factory defaults saved.")}')
 
     def final_save(self):
         """
@@ -4793,8 +4793,7 @@ class App(QtCore.QObject):
         :return: None
         """
         if self.save_in_progress:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Application is saving the project. Please wait ..."))
+            self.inform.emit(f'[WARNING_NOTCL] {_("Application is saving the project. Please wait ...")}')
             return
 
         if self.should_we_save and self.collection.get_list():

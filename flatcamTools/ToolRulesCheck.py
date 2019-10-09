@@ -489,6 +489,8 @@ class RulesCheck(FlatCAMTool):
         self.pool = self.app.pool
         self.results = None
 
+        self.decimals = 4
+
     # def on_object_loaded(self, index, row):
     #     print(index.internalPointer().child_items[row].obj.options['name'], index.data())
 
@@ -574,20 +576,37 @@ class RulesCheck(FlatCAMTool):
         if not gerber_obj:
             return 'Fail. Not enough Gerber objects to check Gerber 2 Gerber clearance'
 
-        total_geo = list()
+        obj_violations['name'] = gerber_obj['name']
+
+        solid_geo = list()
+        clear_geo = list()
         for apid in gerber_obj['apertures']:
             if 'geometry' in gerber_obj['apertures'][apid]:
                 geometry = gerber_obj['apertures'][apid]['geometry']
                 for geo_el in geometry:
                     if 'solid' in geo_el and geo_el['solid'] is not None:
-                        total_geo.append(geo_el['solid'])
+                        solid_geo.append(geo_el['solid'])
+                    if 'clear' in geo_el and geo_el['clear'] is not None:
+                        clear_geo.append(geo_el['clear'])
 
-        total_geo = MultiPolygon(total_geo)
-        total_geo = total_geo.buffer(0)
+        if clear_geo:
+            total_geo = list()
+            for geo_c in clear_geo:
+                for geo_s in solid_geo:
+                    if geo_c.within(geo_s):
+                        total_geo.append(geo_s.difference(geo_c))
+        else:
+            total_geo = MultiPolygon(solid_geo)
+            total_geo = total_geo.buffer(0.000001)
 
-        iterations = len(total_geo)
-        iterations = (iterations * (iterations - 1)) / 2
+        if isinstance(total_geo, Polygon):
+            iterations = 1
+            obj_violations['points'] =['Failed. Only one polygon.']
 
+            return rule_title, [obj_violations]
+        else:
+            iterations = len(total_geo)
+            iterations = (iterations * (iterations - 1)) / 2
         log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
 
         min_dict = dict()
@@ -608,14 +627,12 @@ class RulesCheck(FlatCAMTool):
                     else:
                         min_dict[dist] = [loc]
             idx += 1
-
-        points_list = list()
+        points_list = set()
         for dist in min_dict.keys():
             for location in min_dict[dist]:
-                points_list.append(location)
+                points_list.add(location)
 
-        obj_violations['name'] = gerber_obj['name']
-        obj_violations['points'] = points_list
+        obj_violations['points'] = list(points_list)
         violations.append(deepcopy(obj_violations))
 
         return rule_title, violations
@@ -675,7 +692,17 @@ class RulesCheck(FlatCAMTool):
         total_geo_grb_3 = MultiPolygon(total_geo_grb_3)
         total_geo_grb_3 = total_geo_grb_3.buffer(0)
 
-        iterations = len(total_geo_grb_1) * len(total_geo_grb_3)
+        if isinstance(total_geo_grb_1, Polygon):
+            len_1 = 1
+        else:
+            len_1 = len(total_geo_grb_1)
+
+        if isinstance(total_geo_grb_3, Polygon):
+            len_3 = 1
+        else:
+            len_3 = len(total_geo_grb_3)
+
+        iterations = len_1 * len_3
         log.debug("RulesCheck.check_gerber_clearance(). Iterations: %s" % str(iterations))
 
         min_dict = dict()
@@ -905,7 +932,17 @@ class RulesCheck(FlatCAMTool):
                     for geo in geometry:
                         total_geo_exc.append(geo)
 
-        iterations = len(total_geo_grb) * len(total_geo_exc)
+        if isinstance(total_geo_grb, Polygon):
+            len_1 = 1
+        else:
+            len_1 = len(total_geo_grb)
+
+        if isinstance(total_geo_exc, Polygon):
+            len_2 = 1
+        else:
+            len_2 = len(total_geo_exc)
+
+        iterations = len_1 * len_2
         log.debug("RulesCheck.check_gerber_annular_ring(). Iterations: %s" % str(iterations))
 
         min_dict = dict()
@@ -976,7 +1013,6 @@ class RulesCheck(FlatCAMTool):
 
             # RULE: Check Copper to Copper Clearance
             if self.clearance_copper2copper_cb.get_value():
-                copper_dict = dict()
 
                 try:
                     copper_copper_clearance = float(self.clearance_copper2copper_entry.get_value())
@@ -988,25 +1024,28 @@ class RulesCheck(FlatCAMTool):
                     return
 
                 if self.copper_t_cb.get_value():
-                    copper_obj = self.copper_t_object.currentText()
-                    if copper_obj is not '':
-                        copper_dict['name'] = deepcopy(copper_obj)
-                        copper_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_obj).apertures)
+                    copper_t_obj = self.copper_t_object.currentText()
+                    copper_t_dict = dict()
+
+                    if copper_t_obj is not '':
+                        copper_t_dict['name'] = deepcopy(copper_t_obj)
+                        copper_t_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_t_obj).apertures)
 
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
-                                                                  args=(copper_dict,
+                                                                  args=(copper_t_dict,
                                                                         copper_copper_clearance,
-                                                                        _("TOP: Copper to Copper clearance"))))
+                                                                        _("TOP -> Copper to Copper clearance"))))
                 if self.copper_b_cb.get_value():
-                    copper_obj = self.copper_b_object.currentText()
-                    if copper_obj is not '':
-                        copper_dict['name'] = deepcopy(copper_obj)
-                        copper_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_obj).apertures)
+                    copper_b_obj = self.copper_b_object.currentText()
+                    copper_b_dict = dict()
+                    if copper_b_obj is not '':
+                        copper_b_dict['name'] = deepcopy(copper_b_obj)
+                        copper_b_dict['apertures'] = deepcopy(self.app.collection.get_by_name(copper_b_obj).apertures)
 
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
-                                                                  args=(copper_dict,
+                                                                  args=(copper_b_dict,
                                                                         copper_copper_clearance,
-                                                                        _("BOTTOM: Copper to Copper clearance"))))
+                                                                        _("BOTTOM -> Copper to Copper clearance"))))
 
                 if self.copper_t_cb.get_value() is False and self.copper_b_cb.get_value() is False:
                     self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
@@ -1090,7 +1129,7 @@ class RulesCheck(FlatCAMTool):
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(silk_dict,
                                                                         silk_silk_clearance,
-                                                                        _("TOP: Silk to Silk clearance"))))
+                                                                        _("TOP -> Silk to Silk clearance"))))
                 if self.ss_b_cb.get_value():
                     silk_obj = self.ss_b_object.currentText()
                     if silk_obj is not '':
@@ -1100,7 +1139,7 @@ class RulesCheck(FlatCAMTool):
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(silk_dict,
                                                                         silk_silk_clearance,
-                                                                        _("BOTTOM: Silk to Silk clearance"))))
+                                                                        _("BOTTOM -> Silk to Silk clearance"))))
 
                 if self.ss_t_cb.get_value() is False and self.ss_b_cb.get_value() is False:
                     self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
@@ -1164,13 +1203,13 @@ class RulesCheck(FlatCAMTool):
                     self.results.append(self.pool.apply_async(self.check_gerber_clearance,
                                                               args=(objs,
                                                                     silk_sm_clearance,
-                                                                    _("TOP: Silk to Solder Mask Clearance"))))
+                                                                    _("TOP -> Silk to Solder Mask Clearance"))))
                 elif bottom_ss is True and bottom_sm is True:
                     objs = [silk_b_dict, sm_b_dict]
                     self.results.append(self.pool.apply_async(self.check_gerber_clearance,
                                                               args=(objs,
                                                                     silk_sm_clearance,
-                                                                    _("BOTTOM: Silk to Solder Mask Clearance"))))
+                                                                    _("BOTTOM -> Silk to Solder Mask Clearance"))))
                 else:
                     self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
                         _("Silk to Solder Mask Clearance"),
@@ -1254,7 +1293,7 @@ class RulesCheck(FlatCAMTool):
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(sm_dict,
                                                                         sm_sm_clearance,
-                                                                        _("TOP: Minimum Solder Mask Sliver"))))
+                                                                        _("TOP -> Minimum Solder Mask Sliver"))))
                 if self.sm_b_cb.get_value():
                     solder_obj = self.sm_b_object.currentText()
                     if solder_obj is not '':
@@ -1264,7 +1303,7 @@ class RulesCheck(FlatCAMTool):
                         self.results.append(self.pool.apply_async(self.check_inside_gerber_clearance,
                                                                   args=(sm_dict,
                                                                         sm_sm_clearance,
-                                                                        _("BOTTOM: Minimum Solder Mask Sliver"))))
+                                                                        _("BOTTOM -> Minimum Solder Mask Sliver"))))
 
                 if self.sm_t_cb.get_value() is False and self.sm_b_cb.get_value() is False:
                     self.app.inform.emit('[ERROR_NOTCL] %s. %s' % (
@@ -1391,29 +1430,31 @@ class RulesCheck(FlatCAMTool):
         def init(new_obj, app_obj):
             txt = ''
             for el in res:
-                txt += '<b>RULE NAME:</b>\t%s\n' % str(el[0]).upper()
+                txt += '<b>RULE NAME:</b>&nbsp;&nbsp;&nbsp;&nbsp;%s<BR>' % str(el[0]).upper()
                 if isinstance(el[1][0]['name'], list):
                     for name in el[1][0]['name']:
-                        txt += 'File name: %s\n' % str(name)
-                    else:
-                        txt += 'File name: %s\n' % str(el[1][0]['name'])
+                        txt += 'File name: %s<BR>' % str(name)
+                else:
+                    txt += 'File name: %s<BR>' % str(el[1][0]['name'])
 
                 point_txt = ''
                 if el[1][0]['points']:
-                    txt += '{title}: <span style="color:{color};">{status}</span>.\n'.format(title=_("STATUS"),
-                                                                                             color='red',
-                                                                                             status=_("FAILED"))
-
-                    for pt in el[1][0]['points']:
-                        point_txt += str(pt)
-                        point_txt += ', '
-                    txt += 'Violations: %s\n' % str(point_txt)
+                    txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
+                                                                                               color='red',
+                                                                                               status=_("FAILED"))
+                    if 'Failed' in el[1][0]['points'][0]:
+                        point_txt = el[1][0]['points'][0]
+                    else:
+                        for pt in el[1][0]['points']:
+                            point_txt += '(%.*f, %.*f)' % (self.decimals, float(pt[0]), self.decimals, float(pt[1]))
+                            point_txt += ', '
+                    txt += 'Violations: %s<BR>' % str(point_txt)
                 else:
-                    txt += '{title}: <span style="color:{color};">{status}</span>.\n'.format(title=_("STATUS"),
-                                                                                             color='green',
-                                                                                             status=_("PASSED"))
-                    txt += '%s\n' % _("Violations: There are no violations for the current rule.")
-                txt += '\n\n'
+                    txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
+                                                                                               color='green',
+                                                                                               status=_("PASSED"))
+                    txt += '%s<BR>' % _("Violations: There are no violations for the current rule.")
+                txt += '<BR><BR>'
             new_obj.source_file = txt
             new_obj.read_only = True
 

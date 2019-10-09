@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.10.2019
+
+- updated the Rules Check Tool - solved some issues
+
 8.10.2019
 
 - modified the FCSpinner and FCDoubleSpinner GUI elements such that the wheel event will not change the values inside unless there is a focus in the lineedit of the SpinBox
