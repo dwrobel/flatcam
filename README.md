@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the Rules Check Tool - solved some issues
 - made FCDoubleSpinner to use either comma or dot as a decimal separator
 - fixed the FCDoubleSpinner to only allow the amount of decimals already set with set_precision()
+- fixed ToolPanelize to use FCDoubleSpinner in some places
 
 8.10.2019
 
