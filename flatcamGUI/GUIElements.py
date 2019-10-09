@@ -571,17 +571,14 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
         self.editingFinished.connect(self.on_edit_finished)
         self.lineEdit().installEventFilter(self)
-        self.lineEdit().setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]*"), self))
 
-    def valueFromText(self, p_str):
-        text = p_str.replace(',', '.')
-        try:
-            return float(text)
-        except ValueError:
-            return 0.0
+        # by default don't allow the minus sign to be entered as the default for QDoubleSpinBox is the positive range
+        # between 0.00 and 99.00 (2 decimals)
+        self.lineEdit().setValidator(
+            QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
-    def validate(self, p_str, p_int):
-        return QtGui.QValidator.Acceptable, p_str, p_int
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
@@ -593,21 +590,10 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             return True
         return False
 
-    def on_edit_finished(self):
-        self.clearFocus()
-
     def wheelEvent(self, *args, **kwargs):
         # should work only there is a focus in the lineedit of the SpinBox
         if self.readyToEdit is False:
             super().wheelEvent(*args, **kwargs)
-
-    # def keyPressEvent(self, in_event):  # 46 = dot; 44 = comma:
-    #     if in_event.key() == 44:
-    #         print(in_event, "ahaaa")
-    #         event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, 46, Qt.NoModifier, 0, 0, 0)
-    #         QtWidgets.QApplication.sendEvent(self.parent(), event)
-    #     else:
-    #         super().keyPressEvent(in_event)
 
     def focusOutEvent(self, e):
         # don't focus out if the user requests an popup menu
@@ -615,6 +601,23 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.lineEdit().deselect()
             self.readyToEdit = True
+
+    def valueFromText(self, p_str):
+        text = p_str.replace(',', '.')
+        try:
+            ret_val = float(text)
+        except ValueError:
+            ret_val = 0.0
+
+        return ret_val
+
+    def validate(self, p_str, p_int):
+        try:
+            if float(p_str) < self.minimum() or float(p_str) > self.maximum():
+                return QtGui.QValidator.Intermediate, p_str, p_int
+        except ValueError:
+            pass
+        return QtGui.QValidator.Acceptable, p_str, p_int
 
     def get_value(self):
         return float(self.value())
@@ -630,7 +633,19 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     def set_precision(self, val):
         self.setDecimals(val)
 
+        # make sure that the user can't type more decimals than the set precision
+        if self.minimum() < 0 or self.maximum() < 0:
+            self.lineEdit().setValidator(
+                QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+        else:
+            self.lineEdit().setValidator(
+                QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+
     def set_range(self, min_val, max_val):
+        if min_val < 0 or max_val < 0:
+            self.lineEdit().setValidator(
+                QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+
         self.setRange(min_val, max_val)
 
 
