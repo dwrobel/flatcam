@@ -722,10 +722,10 @@ class RulesCheck(FlatCAMTool):
                     else:
                         min_dict[dist] = [loc]
 
-        points_list = list()
+        points_list = set()
         for dist in min_dict.keys():
             for location in min_dict[dist]:
-                points_list.append(location)
+                points_list.add(location)
 
         name_list = list()
         if gerber_1:
@@ -736,7 +736,7 @@ class RulesCheck(FlatCAMTool):
             name_list.append(gerber_3['name'])
 
         obj_violations['name'] = name_list
-        obj_violations['points'] = points_list
+        obj_violations['points'] = list(points_list)
         violations.append(deepcopy(obj_violations))
 
         return rule_title, violations
@@ -804,18 +804,18 @@ class RulesCheck(FlatCAMTool):
                     min_dict[dist] = [loc]
             idx += 1
 
-        points_list = list()
+        points_list = set()
         for dist in min_dict.keys():
             if float(dist) < size:
                 for location in min_dict[dist]:
-                    points_list.append(location)
+                    points_list.add(location)
 
         name_list = list()
         for elem in elements:
             name_list.append(elem['name'])
 
         obj_violations['name'] = name_list
-        obj_violations['points'] = points_list
+        obj_violations['points'] = list(points_list)
         violations.append(deepcopy(obj_violations))
 
         return rule, violations
