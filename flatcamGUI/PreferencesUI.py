@@ -2101,6 +2101,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(cutzlabel, 0, 0)
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_range(-9999, -0.000001)
+        self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.set_precision(4)
         grid2.addWidget(self.cutz_entry, 0, 1)
 
