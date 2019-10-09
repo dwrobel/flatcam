@@ -1698,7 +1698,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_array_linear_label, 6, 0, 1, 2)
 
         # Linear Pad Array direction
-        self.grb_axis_label = QtWidgets.QLabel('%s:' % _('Linear Dir.'))
+        self.grb_axis_label = QtWidgets.QLabel('%s:' % _('Linear Direction'))
         self.grb_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -1742,7 +1742,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_array_circ_label, 10, 0, 1, 2)
 
         # Circular Pad Array direction
-        self.grb_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Dir.'))
+        self.grb_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Direction'))
         self.grb_circular_direction_label.setToolTip(
             _("Direction for circular array.\n"
               "Can be CW = clockwise or CCW = counter clockwise.")
@@ -1755,7 +1755,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.grb_circular_dir_radio, 11, 1)
 
         # Circular Pad Array Angle
-        self.grb_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circ. Angle'))
+        self.grb_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circular Angle'))
         self.grb_circular_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
@@ -2614,7 +2614,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_array_linear_label, 3, 0, 1, 2)
 
         # Linear Drill Array direction
-        self.drill_axis_label = QtWidgets.QLabel('%s:' % _('Linear Dir.'))
+        self.drill_axis_label = QtWidgets.QLabel('%s:' % _('Linear Direction'))
         self.drill_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -2660,7 +2660,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_array_circ_label, 7, 0, 1, 2)
 
         # Circular Drill Array direction
-        self.drill_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Dir.'))
+        self.drill_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Direction'))
         self.drill_circular_direction_label.setToolTip(
             _("Direction for circular array.\n"
               "Can be CW = clockwise or CCW = counter clockwise.")
@@ -2673,7 +2673,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_circular_dir_radio, 8, 1)
 
         # Circular Drill Array Angle
-        self.drill_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circ. Angle'))
+        self.drill_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circular Angle'))
         self.drill_circular_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
@@ -2762,7 +2762,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_array_size_entry, 15, 1)
 
         # Linear Slot Array direction
-        self.slot_array_axis_label = QtWidgets.QLabel('%s:' % _('Linear Dir.'))
+        self.slot_array_axis_label = QtWidgets.QLabel('%s:' % _('Linear Direction'))
         self.slot_array_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -2810,7 +2810,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_array_circ_label, 19, 0, 1, 2)
 
         # Circular Slot Array direction
-        self.slot_array_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Dir.'))
+        self.slot_array_circular_direction_label = QtWidgets.QLabel('%s:' % _('Circular Direction'))
         self.slot_array_circular_direction_label.setToolTip(
             _("Direction for circular array.\n"
               "Can be CW = clockwise or CCW = counter clockwise.")
@@ -2823,7 +2823,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.slot_array_circular_dir_radio, 20, 1)
 
         # Circular Slot Array Angle
-        self.slot_array_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circ. Angle'))
+        self.slot_array_circular_angle_label = QtWidgets.QLabel('%s:' % _('Circular Angle'))
         self.slot_array_circular_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
