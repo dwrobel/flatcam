@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 9.10.2019
 
 - updated the Rules Check Tool - solved some issues
+- made FCDoubleSpinner to use either comma or dot as a decimal separator
 
 8.10.2019
 

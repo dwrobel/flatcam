@@ -565,17 +565,23 @@ class FCSpinner(QtWidgets.QSpinBox):
 
 
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
-    def __init__(self, parent=None, decimals=None):
+    def __init__(self, parent=None):
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
 
-        if decimals:
-            dec = int(decimals)
-        else:
-            dec = int(4)
-
         self.editingFinished.connect(self.on_edit_finished)
         self.lineEdit().installEventFilter(self)
+        self.lineEdit().setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]*"), self))
+
+    def valueFromText(self, p_str):
+        text = p_str.replace(',', '.')
+        try:
+            return float(text)
+        except ValueError:
+            return 0.0
+
+    def validate(self, p_str, p_int):
+        return QtGui.QValidator.Acceptable, p_str, p_int
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
