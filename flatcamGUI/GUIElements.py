@@ -565,9 +565,15 @@ class FCSpinner(QtWidgets.QSpinBox):
 
 
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, decimals=None):
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
+
+        if decimals:
+            dec = int(decimals)
+        else:
+            dec = int(4)
+
         self.editingFinished.connect(self.on_edit_finished)
         self.lineEdit().installEventFilter(self)
 
