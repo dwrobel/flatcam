@@ -66,7 +66,7 @@ class Gerber(Geometry):
         self.steps_per_circle = int(self.app.defaults["gerber_circle_steps"])
 
         # Initialize parent
-        Geometry.__init__(self, geo_steps_per_circle=int(self.app.defaults["gerber_circle_steps"]))
+        Geometry.__init__(self, geo_steps_per_circle=self.steps_per_circle)
 
         # Number format
         self.int_digits = 3

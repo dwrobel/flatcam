@@ -414,7 +414,7 @@ class FlatCAMObj(QtCore.QObject):
         return self.shapes.visible
 
     @visible.setter
-    def visible(self, value, threaded=True):
+    def visible(self, value, threaded=False):
         log.debug("FlatCAMObj.visible()")
 
         def worker_task(app_obj):
