@@ -50,6 +50,10 @@ class ToolMove(FlatCAMTool):
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="move")
 
+        self.mm = None
+        self.mp = None
+        self.kr = None
+
         self.replot_signal[list].connect(self.replot)
 
     def install(self, icon=None, separator=None, **kwargs):
@@ -90,10 +94,11 @@ class ToolMove(FlatCAMTool):
             # signal that there is a command active and it is 'Move'
             self.app.command_active = "Move"
 
-            if self.app.collection.get_selected():
+            sel_obj_list = self.app.collection.get_selected()
+            if sel_obj_list:
                 self.app.inform.emit(_("MOVE: Click on the Start point ..."))
                 # draw the selection box
-                self.draw_sel_bbox()
+                self.draw_sel_bbox(obj_list=sel_obj_list)
             else:
                 self.setVisible(False)
                 # signal that there is no command active
@@ -143,7 +148,8 @@ class ToolMove(FlatCAMTool):
                     dx = pos[0] - self.point1[0]
                     dy = pos[1] - self.point1[1]
 
-                    obj_list = self.app.collection.get_selected()
+                    # move only the objects selected and plotted
+                    obj_list = [obj for obj in self.app.collection.get_selected() if obj.options['plot']]
 
                     def job_move(app_obj):
                         with self.app.proc_container.new(_("Moving...")) as proc:
@@ -248,13 +254,12 @@ class ToolMove(FlatCAMTool):
             self.toggle()
         return
 
-    def draw_sel_bbox(self):
+    def draw_sel_bbox(self, obj_list):
         xminlist = []
         yminlist = []
         xmaxlist = []
         ymaxlist = []
 
-        obj_list = self.app.collection.get_selected()
         if not obj_list:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Object(s) not selected"))
             self.toggle()
@@ -263,13 +268,16 @@ class ToolMove(FlatCAMTool):
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_move)
             self.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.on_left_click)
             self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_press)
+
             # first get a bounding box to fit all
             for obj in obj_list:
-                xmin, ymin, xmax, ymax = obj.bounds()
-                xminlist.append(xmin)
-                yminlist.append(ymin)
-                xmaxlist.append(xmax)
-                ymaxlist.append(ymax)
+                # don't move disabled objects, move only plotted objects
+                if obj.options['plot']:
+                    xmin, ymin, xmax, ymax = obj.bounds()
+                    xminlist.append(xmin)
+                    yminlist.append(ymin)
+                    xmaxlist.append(xmax)
+                    ymaxlist.append(ymax)
 
             # get the minimum x,y and maximum x,y for all objects selected
             xminimal = min(xminlist)

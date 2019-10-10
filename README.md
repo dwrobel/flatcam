@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - made FCDoubleSpinner to use either comma or dot as a decimal separator
 - fixed the FCDoubleSpinner to only allow the amount of decimals already set with set_precision()
 - fixed ToolPanelize to use FCDoubleSpinner in some places
+- fixed Tool Move to work only for objects that are selected but also plotted, therefore disabled objects will not be moved even if selected
 
 8.10.2019
 
