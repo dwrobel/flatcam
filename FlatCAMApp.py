@@ -8169,11 +8169,12 @@ class App(QtCore.QObject):
         try:
             # If there is no element in the overlapped objects list then make everyone inactive
             # because we selected "nothing"
-            if not objects_under_the_click_list:
-                self.collection.set_all_inactive()
+            self.collection.set_all_inactive()
 
-                # delete the possible selection box around a possible selected object
-                self.delete_selection_shape()
+            # delete the possible selection box around a possible selected object
+            self.delete_selection_shape()
+
+            if not objects_under_the_click_list:
 
                 # and as a convenience move the focus to the Project tab because Selected tab is now empty but
                 # only when working on App

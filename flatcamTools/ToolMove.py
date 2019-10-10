@@ -263,6 +263,7 @@ class ToolMove(FlatCAMTool):
             self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_move)
             self.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.on_left_click)
             self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_press)
+
             # first get a bounding box to fit all
             for obj in obj_list:
                 xmin, ymin, xmax, ymax = obj.bounds()
