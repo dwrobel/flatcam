@@ -143,7 +143,10 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(panel_data_label)
 
         # Spacing Columns
-        self.spacing_columns = FCSpinner()
+        self.spacing_columns = FCDoubleSpinner()
+        self.spacing_columns.set_range(0, 9999)
+        self.spacing_columns.set_precision(4)
+
         self.spacing_columns_label = QtWidgets.QLabel('%s:' % _("Spacing cols"))
         self.spacing_columns_label.setToolTip(
             _("Spacing between columns of the desired panel.\n"
@@ -152,7 +155,10 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_columns_label, self.spacing_columns)
 
         # Spacing Rows
-        self.spacing_rows = FCSpinner()
+        self.spacing_rows = FCDoubleSpinner()
+        self.spacing_rows.set_range(0, 9999)
+        self.spacing_rows.set_precision(4)
+
         self.spacing_rows_label = QtWidgets.QLabel('%s:' % _("Spacing rows"))
         self.spacing_rows_label.setToolTip(
             _("Spacing between rows of the desired panel.\n"
@@ -162,6 +168,8 @@ class Panelize(FlatCAMTool):
 
         # Columns
         self.columns = FCSpinner()
+        self.columns.set_range(0, 9999)
+
         self.columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
             _("Number of columns of the desired panel")
@@ -170,6 +178,8 @@ class Panelize(FlatCAMTool):
 
         # Rows
         self.rows = FCSpinner()
+        self.rows.set_range(0, 9999)
+
         self.rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
             _("Number of rows of the desired panel")
@@ -200,7 +210,10 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.constrain_cb)
 
-        self.x_width_entry = FCSpinner()
+        self.x_width_entry = FCDoubleSpinner()
+        self.x_width_entry.set_precision(4)
+        self.x_width_entry.set_range(0, 9999)
+
         self.x_width_lbl = QtWidgets.QLabel('%s:' % _("Width (DX)"))
         self.x_width_lbl.setToolTip(
             _("The width (DX) within which the panel must fit.\n"
@@ -208,7 +221,10 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
-        self.y_height_entry = FCSpinner()
+        self.y_height_entry = FCDoubleSpinner()
+        self.y_height_entry.set_range(0, 9999)
+        self.y_height_entry.set_precision(4)
+
         self.y_height_lbl = QtWidgets.QLabel('%s:' % _("Height (DY)"))
         self.y_height_lbl.setToolTip(
             _("The height (DY)within which the panel must fit.\n"
