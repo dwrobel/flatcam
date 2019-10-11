@@ -14,6 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 - added a Bookmark Manager and a Bookmark menu in the Help Menu
 - added an initial support for rows drag and drop in FCTable in GUIElements; it crashes for CellWidgets for now, if CellWidgetsare in the table rows
 - fixed some issues in the Bookmark Manager
+- modified the Bookmark manager to be installed as a widget tab in Plot Area; fixed the drag & drop function for the table rows that have CellWidgets inside
+- marked in gray color the rows in the Bookmark Manager table that will populate the BookMark menu
+- made sure that only one instance of the BookmarkManager class is active at one time
 
 10.10.2019
 

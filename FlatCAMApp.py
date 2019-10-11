@@ -474,6 +474,8 @@ class App(QtCore.QObject):
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_spinner,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
 
+            "global_bookmarks_limit": self.ui.general_defaults_form.general_app_group.bm_limit_spinner,
+
             # General GUI Preferences
             "global_gridx": self.ui.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.ui.general_defaults_form.general_gui_group.gridy_entry,
@@ -922,6 +924,7 @@ class App(QtCore.QObject):
             "global_recent_limit": 10,  # Max. items in recent list.
 
             "global_bookmarks": dict(),
+            "global_bookmarks_limit": 10,
 
             "fit_key": 'V',
             "zoom_out_key": '-',
@@ -2436,8 +2439,13 @@ class App(QtCore.QObject):
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         self.install_tools()
 
+        # ##################################################################################
+        # ########################### BookMarks Manager ####################################
+        # ##################################################################################
+
         # install Bookmark Manager and populate bookmarks in the Help -> Bookmarks
         self.install_bookmarks()
+        self.book_dialog_tab = BookmarkManager(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui)
 
         # ### System Font Parsing ###
         # self.f_parse = ParseFont(self)
@@ -4611,13 +4619,23 @@ class App(QtCore.QObject):
 
         AboutDialog(self.ui).exec_()
 
-    def install_bookmarks(self):
-        # self.ui.menuhelp_bookmarks_manager.triggered.connect(lambda: webbrowser.open(self.app_url))
-        self.defaults["global_bookmarks"].update(
-            {
-                'FlatCAM': "http://flatcam.org"
-            }
-        )
+    def install_bookmarks(self, book_dict=None):
+        """
+        Install the bookmarks actions in the Help menu -> Bookmarks
+
+        :param book_dict: a dict having the actions text as keys and the weblinks as the values
+        :return: None
+        """
+
+        if book_dict is None:
+            self.defaults["global_bookmarks"].update(
+                {
+                    'FlatCAM': "http://flatcam.org"
+                }
+            )
+        else:
+            self.defaults["global_bookmarks"].clear()
+            self.defaults["global_bookmarks"].update(book_dict)
 
         # first try to disconnect if somehow they get connected from elsewhere
         for act in self.ui.menuhelp_bookmarks.actions():
@@ -4626,313 +4644,44 @@ class App(QtCore.QObject):
             except TypeError:
                 pass
 
+            # clear all actions except the last one who is the Bookmark manager
+            if act is self.ui.menuhelp_bookmarks.actions()[-1]:
+                pass
+            else:
+                self.ui.menuhelp_bookmarks.removeAction(act)
+
+        bm_limit = int(self.defaults["global_bookmarks_limit"])
         if self.defaults["global_bookmarks"]:
-            for title, weblink in self.defaults["global_bookmarks"].items():
+            for title, weblink in list(self.defaults["global_bookmarks"].items())[:bm_limit]:
                 act = QtWidgets.QAction(parent=self.ui.menuhelp_bookmarks)
                 act.setText(title)
 
                 act.setIcon(QtGui.QIcon('share/link16.png'))
-                act.triggered.connect(lambda: webbrowser.open(weblink))
+                # from here: https://stackoverflow.com/questions/20390323/pyqt-dynamic-generate-qmenu-action-and-connect
+                act.triggered.connect(lambda sig, link=weblink: webbrowser.open(link))
                 self.ui.menuhelp_bookmarks.insertAction(self.ui.menuhelp_bookmarks_manager, act)
 
         self.ui.menuhelp_bookmarks_manager.triggered.connect(self.on_bookmarks_manager)
 
     def on_bookmarks_manager(self):
 
-        class BookDialog(QtWidgets.QDialog):
-            def __init__(self, app, storage, parent=None):
-                super(BookDialog, self).__init__(parent)
+        for idx in range(self.ui.plot_tab_area.count()):
+            if self.ui.plot_tab_area.tabText(idx) == _("Bookmarks Manager"):
+                # there can be only one instance of Bookmark Manager at one time
+                return
 
-                self.app = app
+        # BookDialog(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui).exec_()
+        self.book_dialog_tab = BookmarkManager(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui)
 
-                assert isinstance(storage, dict), "Storage argument is not a dictionary"
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.book_dialog_tab, _("Bookmarks Manager"))
 
-                self.bm_dict = storage
+        # delete the absolute and relative position and messages in the infobar
+        self.ui.position_label.setText("")
+        self.ui.rel_position_label.setText("")
 
-                # Icon and title
-                self.setWindowIcon(parent.app_icon)
-                self.setWindowTitle(_("Bookmark Manager"))
-                self.resize(600, 400)
-
-                # title = QtWidgets.QLabel(
-                #     "<font size=8><B>FlatCAM</B></font><BR>"
-                # )
-                # title.setOpenExternalLinks(True)
-
-                # layouts
-                layout = QtWidgets.QVBoxLayout()
-                self.setLayout(layout)
-
-                table_hlay = QtWidgets.QHBoxLayout()
-                layout.addLayout(table_hlay)
-
-                self.table_widget = FCTable()
-                self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-                table_hlay.addWidget(self.table_widget)
-
-                self.table_widget.setColumnCount(3)
-                self.table_widget.setColumnWidth(0, 20)
-                self.table_widget.setHorizontalHeaderLabels(
-                    [
-                        '#',
-                        _('Title'),
-                        _('Web Link')
-                    ]
-                )
-                self.table_widget.horizontalHeaderItem(0).setToolTip(
-                    _("Index"))
-                self.table_widget.horizontalHeaderItem(1).setToolTip(
-                    _("Description of the link that is set as an menu action.\n"
-                      "Try to keep it short because it is installed as a menu item."))
-                self.table_widget.horizontalHeaderItem(2).setToolTip(
-                    _("Web Link. E.g: https://your_website.org "))
-
-                # pal = QtGui.QPalette()
-                # pal.setColor(QtGui.QPalette.Background, Qt.white)
-
-                # New Bookmark
-                new_vlay = QtWidgets.QVBoxLayout()
-                layout.addLayout(new_vlay)
-
-                new_title_lbl = QtWidgets.QLabel(_("<b>New Bookmark</b>"))
-                new_vlay.addWidget(new_title_lbl)
-
-                form0 = QtWidgets.QFormLayout()
-                new_vlay.addLayout(form0)
-
-                title_lbl = QtWidgets.QLabel('%s:' % _("Title"))
-                self.title_entry = FCEntry()
-                form0.addRow(title_lbl, self.title_entry)
-
-                link_lbl = QtWidgets.QLabel('%s:' % _("Web Link"))
-                self.link_entry = FCEntry()
-                self.link_entry.set_value('http://')
-                form0.addRow(link_lbl, self.link_entry)
-
-                # Buttons Layout
-                button_hlay = QtWidgets.QHBoxLayout()
-                layout.addLayout(button_hlay)
-
-                add_entry_btn = FCButton(_("Add Entry"))
-                remove_entry_btn = FCButton(_("Remove Entry"))
-                export_list_btn = FCButton(_("Export List"))
-                import_list_btn = FCButton(_("Import List"))
-                closebtn = QtWidgets.QPushButton(_("Close"))
-
-                # button_hlay.addStretch()
-                button_hlay.addWidget(add_entry_btn)
-                button_hlay.addWidget(remove_entry_btn)
-
-                button_hlay.addWidget(export_list_btn)
-                button_hlay.addWidget(import_list_btn)
-                button_hlay.addWidget(closebtn)
-                # ##############################################################################
-                # ######################## SIGNALS #############################################
-                # ##############################################################################
-
-                add_entry_btn.clicked.connect(self.on_add_entry)
-                remove_entry_btn.clicked.connect(self.on_remove_entry)
-                export_list_btn.clicked.connect(self.on_export_bookmarks)
-                import_list_btn.clicked.connect(self.on_import_bookmarks)
-                closebtn.clicked.connect(self.accept)
-
-                self.build_bm_ui()
-
-            def build_bm_ui(self):
-
-                self.table_widget.setRowCount(len(self.bm_dict))
-
-                nr_crt = 0
-                for title, weblink in self.bm_dict.items():
-                    row = nr_crt
-                    nr_crt += 1
-                    id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
-                    # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-                    self.table_widget.setItem(row, 0, id_item)  # Tool name/id
-
-                    title_item = QtWidgets.QTableWidgetItem(title)
-
-                    self.table_widget.setItem(row, 1, title_item)
-
-                    weblink_txt = QtWidgets.QTextBrowser()
-                    weblink_txt.setOpenExternalLinks(True)
-                    weblink_txt.setFrameStyle(QtWidgets.QFrame.NoFrame)
-                    weblink_txt.document().setDefaultStyleSheet("a{ text-decoration: none; }")
-
-                    weblink_txt.setHtml('<a href=%s>%s</a>' % (weblink, weblink))
-
-                    self.table_widget.setCellWidget(row, 2, weblink_txt)
-
-                    vertical_header = self.table_widget.verticalHeader()
-                    vertical_header.hide()
-
-                    horizontal_header = self.table_widget.horizontalHeader()
-                    horizontal_header.setMinimumSectionSize(10)
-                    horizontal_header.setDefaultSectionSize(70)
-                    horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-                    horizontal_header.resizeSection(0, 20)
-                    horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-                    horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
-
-            def on_add_entry(self, **kwargs):
-                """
-                Add a entry in the Bookmark Table and in the menu actions
-                :return: None
-                """
-                if 'title' in kwargs:
-                    title = kwargs['title']
-                else:
-                    title = self.title_entry.get_value()
-                if title == '':
-                    self.app.inform.emit(f'[ERROR_NOTCL] {_("Title entry is empty.")}')
-                    return 'fail'
-
-                if 'link' is kwargs:
-                    link = kwargs['link']
-                else:
-                    link = self.link_entry.get_value()
-                if link == '':
-                    self.app.inform.emit(f'[ERROR_NOTCL] {_("Web link entry is empty.")}')
-                    return 'fail'
-
-                # if 'http' not in link or 'https' not in link:
-                #     link = 'http://' + link
-
-                if title in self.bm_dict.keys() or link in self.bm_dict.values():
-                    self.app.inform.emit(f'[ERROR_NOTCL] {_("Either the Title or the Weblink already in the table.")}')
-                    return 'fail'
-
-                # for some reason if the last char in the weblink is a slash it does not make the link clickable
-                # so I remove it
-                if link[-1] == '/':
-                    link = link[:-1]
-                # add the new entry to storage
-                self.bm_dict[title] = link
-
-                # add the link to the menu
-                act = QtWidgets.QAction(parent=self.app.ui.menuhelp_bookmarks)
-                act.setText(title)
-                act.setIcon(QtGui.QIcon('share/link16.png'))
-                act.triggered.connect(lambda: webbrowser.open(link))
-                self.app.ui.menuhelp_bookmarks.insertAction(self.app.ui.menuhelp_bookmarks_manager, act)
-
-                # add the new entry to the bookmark manager table
-                self.build_bm_ui()
-
-            def on_remove_entry(self):
-                """
-                Remove an Entry in the Bookmark table and from the menu actions
-                :return:
-                """
-                index_list = []
-                for model_index in self.table_widget.selectionModel().selectedRows():
-                    index = QtCore.QPersistentModelIndex(model_index)
-                    index_list.append(index)
-                    title_to_remove = self.table_widget.item(model_index.row(), 1).text()
-
-                    if title_to_remove in list(self.bm_dict.keys()):
-                        # remove from the storage
-                        self.bm_dict.pop(title_to_remove, None)
-
-                        for act in self.app.ui.menuhelp_bookmarks.actions():
-                            if act.text() == title_to_remove:
-                                # disconnect the signal
-                                try:
-                                    act.triggered.disconnect()
-                                except TypeError:
-                                    pass
-                                # remove the action from the menu
-                                self.app.ui.menuhelp_bookmarks.removeAction(act)
-
-                for index in index_list:
-                    self.table_widget.model().removeRow(index.row())
-
-            def on_export_bookmarks(self):
-                self.app.report_usage("on_export_bookmarks")
-                App.log.debug("on_export_bookmarks()")
-
-                date = str(datetime.today()).rpartition('.')[0]
-                date = ''.join(c for c in date if c not in ':-')
-                date = date.replace(' ', '_')
-
-                filter__ = "Text File (*.TXT);;All Files (*.*)"
-                filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
-                                                                     filter=filter__)
-
-                filename = str(filename)
-
-                if filename == "":
-                    self.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("FlatCAM bookmarks export cancelled."))
-                    return
-                else:
-                    try:
-                        f = open(filename, 'w')
-                        f.close()
-                    except PermissionError:
-                        self.app.inform.emit('[WARNING] %s' %
-                                             _("Permission denied, saving not possible.\n"
-                                               "Most likely another app is holding the file open and not accessible."))
-                        return
-                    except IOError:
-                        App.log.debug('Creating a new bookmarks file ...')
-                        f = open(filename, 'w')
-                        f.close()
-                    except:
-                        e = sys.exc_info()[0]
-                        App.log.error("Could not load defaults file.")
-                        App.log.error(str(e))
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Could not load bookamrks file."))
-                        return
-
-                    # Save update options
-                    try:
-                        with open(filename, "w") as f:
-                            for title, link in self.bm_dict.items():
-                                line2write = str(title) + ':' + str(link) + '\n'
-                                print(line2write)
-                                f.write(line2write)
-                    except:
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Failed to write bookmarks to file."))
-                        return
-                self.app.inform.emit('[success] %s: %s' %
-                                     (_("Exported bookmarks to"), filename))
-
-            def on_import_bookmarks(self):
-                App.log.debug("on_import_bookmarks()")
-
-                filter_ = "Text File (*.txt);;All Files (*.*)"
-                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Bookmarks"),
-                                                                     filter=filter_)
-
-                filename = str(filename)
-
-                if filename == "":
-                    self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("FlatCAM bookmarks import cancelled."))
-                else:
-                    try:
-                        with open(filename) as f:
-                            bookmarks = f.readlines()
-                    except IOError:
-                        self.app.log.error("Could not load bookamrks file.")
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Could not load bookmarks file."))
-                        return
-
-                    for line in bookmarks:
-                        proc_line = line.replace(' ', '').partition(':')
-                        self.on_add_entry(title=proc_line[0], link=proc_line[2])
-
-                    self.app.inform.emit('[success] %s: %s' %
-                                         (_("Imported Bookmarks from"), filename))
-
-            def closeEvent(self, QCloseEvent):
-                super().closeEvent(QCloseEvent)
-
-        BookDialog(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui).exec_()
+        # Switch plot_area to preferences page
+        self.ui.plot_tab_area.setCurrentWidget(self.book_dialog_tab)
 
     def on_file_savedefaults(self):
         """
@@ -7702,6 +7451,10 @@ class App(QtCore.QObject):
 
         if title == _("Code Editor"):
             self.toggle_codeeditor = False
+
+        if title == _("Bookmarks Manager"):
+            self.book_dialog_tab.rebuild_actions()
+            self.book_dialog_tab.deleteLater()
 
     def on_flipy(self):
         self.report_usage("on_flipy()")

@@ -1123,6 +1123,17 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_spinner], True)
 
+        self.bm_limit_spinner = FCSpinner()
+        self.bm_limit_label = QtWidgets.QLabel('%s:' % _('Bookmarks limit'))
+        self.bm_limit_label.setToolTip(
+            _("The maximum number of bookmarks that may be installed in the menu.\n"
+              "The number of bookmarks in the bookmark manager may be greater\n"
+              "but the menu will hold only so much.")
+        )
+
+        grid0.addWidget(self.bm_limit_label, 18, 0)
+        grid0.addWidget(self.bm_limit_spinner, 18, 1)
+
         self.layout.addStretch()
 
         if sys.platform != 'win32':
