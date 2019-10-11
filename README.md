@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - added a Bookmark Manager and a Bookmark menu in the Help Menu
 - added an initial support for rows drag and drop in FCTable in GUIElements; it crashes for CellWidgets for now, if CellWidgetsare in the table rows
+- fixed some issues in the Bookmark Manager
 
 10.10.2019
 

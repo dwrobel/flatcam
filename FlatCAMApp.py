@@ -4774,18 +4774,22 @@ class App(QtCore.QObject):
                     horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
                     horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
 
-            def on_add_entry(self, title=None, link=None):
+            def on_add_entry(self, **kwargs):
                 """
                 Add a entry in the Bookmark Table and in the menu actions
                 :return: None
                 """
-                if title is None:
+                if 'title' in kwargs:
+                    title = kwargs['title']
+                else:
                     title = self.title_entry.get_value()
                 if title == '':
                     self.app.inform.emit(f'[ERROR_NOTCL] {_("Title entry is empty.")}')
                     return 'fail'
 
-                if link is None:
+                if 'link' is kwargs:
+                    link = kwargs['link']
+                else:
                     link = self.link_entry.get_value()
                 if link == '':
                     self.app.inform.emit(f'[ERROR_NOTCL] {_("Web link entry is empty.")}')
@@ -4798,6 +4802,10 @@ class App(QtCore.QObject):
                     self.app.inform.emit(f'[ERROR_NOTCL] {_("Either the Title or the Weblink already in the table.")}')
                     return 'fail'
 
+                # for some reason if the last char in the weblink is a slash it does not make the link clickable
+                # so I remove it
+                if link[-1] == '/':
+                    link = link[:-1]
                 # add the new entry to storage
                 self.bm_dict[title] = link
 
