@@ -20,6 +20,7 @@ from copy import copy
 import re
 import logging
 import html
+from copy import deepcopy
 
 log = logging.getLogger('base')
 
@@ -1704,8 +1705,21 @@ class OptionalHideInputSection:
 
 
 class FCTable(QtWidgets.QTableWidget):
-    def __init__(self, parent=None):
+    def __init__(self, drag_drop=False, parent=None):
         super(FCTable, self).__init__(parent)
+
+        if drag_drop:
+            self.setDragEnabled(True)
+            self.setAcceptDrops(True)
+            self.viewport().setAcceptDrops(True)
+            self.setDragDropOverwriteMode(False)
+            self.setDropIndicatorShown(True)
+
+            self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+            self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+
+        self.rows_to_move = list()
 
     def sizeHint(self):
         default_hint_size = super(FCTable, self).sizeHint()
@@ -1723,7 +1737,7 @@ class FCTable(QtWidgets.QTableWidget):
             width += self.columnWidth(i)
         return width
 
-    # color is in format QtGui.Qcolor(r, g, b, alpha) with or without alpfa
+    # color is in format QtGui.Qcolor(r, g, b, alpha) with or without alpha
     def setColortoRow(self, rowIndex, color):
         for j in range(self.columnCount()):
             self.item(rowIndex, j).setBackground(color)
@@ -1748,6 +1762,72 @@ class FCTable(QtWidgets.QTableWidget):
             action.setIcon(icon)
         self.addAction(action)
         action.triggered.connect(call_function)
+
+    def dropEvent(self, event: QtGui.QDropEvent):
+        if not event.isAccepted() and event.source() == self:
+            drop_row = self.drop_on(event)
+
+            rows = sorted(set(item.row() for item in self.selectedItems()))
+            # rows_to_move = [
+            #     [QtWidgets.QTableWidgetItem(self.item(row_index, column_index))
+            #      for column_index in range(self.columnCount())] for row_index in rows
+            # ]
+            self.rows_to_move[:] = []
+            for row_index in rows:
+                row_items = list()
+                for column_index in range(self.columnCount()):
+                    r_item = self.item(row_index, column_index)
+                    w_item = self.cellWidget(row_index, column_index)
+
+                    if r_item is not None:
+                        row_items.append(QtWidgets.QTableWidgetItem(r_item))
+                    elif w_item is not None:
+                        row_items.append(w_item)
+
+                self.rows_to_move.append(row_items)
+
+            for row_index in reversed(rows):
+                self.removeRow(row_index)
+                if row_index < drop_row:
+                    drop_row -= 1
+
+            for row_index, data in enumerate(self.rows_to_move):
+                row_index += drop_row
+                self.insertRow(row_index)
+
+                for column_index, column_data in enumerate(data):
+                    if isinstance(column_data, QtWidgets.QTableWidgetItem):
+                        self.setItem(row_index, column_index, column_data)
+                    else:
+                        self.setCellWidget(row_index, column_index, column_data)
+
+            event.accept()
+            for row_index in range(len(self.rows_to_move)):
+                self.item(drop_row + row_index, 0).setSelected(True)
+                self.item(drop_row + row_index, 1).setSelected(True)
+
+        super().dropEvent(event)
+
+    def drop_on(self, event):
+        ret_val = False
+        index = self.indexAt(event.pos())
+        if not index.isValid():
+            return self.rowCount()
+
+        ret_val = index.row() + 1 if self.is_below(event.pos(), index) else index.row()
+
+        return ret_val
+
+    def is_below(self, pos, index):
+        rect = self.visualRect(index)
+        margin = 2
+        if pos.y() - rect.top() < margin:
+            return False
+        elif rect.bottom() - pos.y() < margin:
+            return True
+        # noinspection PyTypeChecker
+        return rect.contains(pos, True) and not (
+                    int(self.model().flags(index)) & Qt.ItemIsDropEnabled) and pos.y() >= rect.center().y()
 
 
 class SpinBoxDelegate(QtWidgets.QItemDelegate):

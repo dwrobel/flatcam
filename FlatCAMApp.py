@@ -21,7 +21,7 @@ import subprocess
 import ctypes
 
 import tkinter as tk
-from PyQt5 import QtPrintSupport
+from PyQt5 import QtPrintSupport, QtNetwork
 
 from contextlib import contextmanager
 import gc
@@ -921,6 +921,8 @@ class App(QtCore.QObject):
             "global_shell_at_startup": False,  # Show the shell at startup.
             "global_recent_limit": 10,  # Max. items in recent list.
 
+            "global_bookmarks": dict(),
+
             "fit_key": 'V',
             "zoom_out_key": '-',
             "zoom_in_key": '=',
@@ -1546,6 +1548,10 @@ class App(QtCore.QObject):
 
         })
 
+        # ----------------------------------------------------------------------------------------------------
+        #   Update the self.options from the self.defaults
+        #   The self.defaults holds the application defaults while the self.options holds the object defaults
+        # -----------------------------------------------------------------------------------------------------
         self.options.update(self.defaults)  # Copy app defaults to project options
 
         self.gen_form = None
@@ -1557,10 +1563,12 @@ class App(QtCore.QObject):
         self.fa_form = None
 
         self.on_options_combo_change(0)  # Will show the initial form
-
         # ################################
 
-        # ### Initialize the color box's color in Preferences -> Global -> Color
+        # -----------------------------------------------------------------------------------------------------
+        #   Initialize the color box's color in Preferences -> Global -> Color
+        # -----------------------------------------------------------------------------------------------------
+
         # Init Plot Colors
         self.ui.general_defaults_form.general_gui_group.pf_color_entry.set_value(self.defaults['global_plot_fill'])
         self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
@@ -1702,10 +1710,9 @@ class App(QtCore.QObject):
                 self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
                                                   parent=self.parent_w)
 
-        # ###############################################
-        # ############# Worker SETUP ####################
-        # ###############################################
-
+        # #################################################################
+        # ####################### Worker SETUP ############################
+        # #################################################################
         if self.defaults["global_worker_number"]:
             self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
         else:
@@ -1713,10 +1720,9 @@ class App(QtCore.QObject):
         self.worker_task.connect(self.workers.add_task)
         self.log.debug("Finished creating Workers crew.")
 
-        # ################################################
-        # ############### Activity Monitor ###############
-        # ################################################
-
+        # #################################################################
+        # ######################## Activity Monitor #######################
+        # #################################################################
         if self.defaults["global_activity_icon"] == "Ball green":
             icon = 'share/active_2_static.png'
             movie = "share/active_2.gif"
@@ -1737,11 +1743,11 @@ class App(QtCore.QObject):
         self.ui.infobar.addWidget(self.activity_view)
         self.proc_container = FCVisibleProcessContainer(self.activity_view)
 
-        # ################################################
-        # ############### Signal handling ################
-        # ################################################
+        # #################################################################
+        # ######################### Signal handling #######################
+        # #################################################################
 
-        # ############# Custom signals  ##################
+        # ########################### Custom signals  #####################
         # signal for displaying messages in status bar
         self.inform.connect(self.info)
         # signal to be called when the app is quiting
@@ -1862,7 +1868,6 @@ class App(QtCore.QObject):
         self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
 
         self.ui.menuhelp_about.triggered.connect(self.on_about)
-        self.ui.menuhelp_home.triggered.connect(lambda: webbrowser.open(self.app_url))
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
         self.ui.menuhelp_report_bug.triggered.connect(lambda: webbrowser.open(self.bug_report_url))
         self.ui.menuhelp_exc_spec.triggered.connect(lambda: webbrowser.open(self.excellon_spec_url))
@@ -2430,6 +2435,9 @@ class App(QtCore.QObject):
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         self.install_tools()
+
+        # install Bookmark Manager and populate bookmarks in the Help -> Bookmarks
+        self.install_bookmarks()
 
         # ### System Font Parsing ###
         # self.f_parse = ParseFont(self)
@@ -4602,6 +4610,321 @@ class App(QtCore.QObject):
                 closebtn.clicked.connect(self.accept)
 
         AboutDialog(self.ui).exec_()
+
+    def install_bookmarks(self):
+        # self.ui.menuhelp_bookmarks_manager.triggered.connect(lambda: webbrowser.open(self.app_url))
+        self.defaults["global_bookmarks"].update(
+            {
+                'FlatCAM': "http://flatcam.org"
+            }
+        )
+
+        # first try to disconnect if somehow they get connected from elsewhere
+        for act in self.ui.menuhelp_bookmarks.actions():
+            try:
+                act.triggered.disconnect()
+            except TypeError:
+                pass
+
+        if self.defaults["global_bookmarks"]:
+            for title, weblink in self.defaults["global_bookmarks"].items():
+                act = QtWidgets.QAction(parent=self.ui.menuhelp_bookmarks)
+                act.setText(title)
+
+                act.setIcon(QtGui.QIcon('share/link16.png'))
+                act.triggered.connect(lambda: webbrowser.open(weblink))
+                self.ui.menuhelp_bookmarks.insertAction(self.ui.menuhelp_bookmarks_manager, act)
+
+        self.ui.menuhelp_bookmarks_manager.triggered.connect(self.on_bookmarks_manager)
+
+    def on_bookmarks_manager(self):
+
+        class BookDialog(QtWidgets.QDialog):
+            def __init__(self, app, storage, parent=None):
+                super(BookDialog, self).__init__(parent)
+
+                self.app = app
+
+                assert isinstance(storage, dict), "Storage argument is not a dictionary"
+
+                self.bm_dict = storage
+
+                # Icon and title
+                self.setWindowIcon(parent.app_icon)
+                self.setWindowTitle(_("Bookmark Manager"))
+                self.resize(600, 400)
+
+                # title = QtWidgets.QLabel(
+                #     "<font size=8><B>FlatCAM</B></font><BR>"
+                # )
+                # title.setOpenExternalLinks(True)
+
+                # layouts
+                layout = QtWidgets.QVBoxLayout()
+                self.setLayout(layout)
+
+                table_hlay = QtWidgets.QHBoxLayout()
+                layout.addLayout(table_hlay)
+
+                self.table_widget = FCTable()
+                self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+                table_hlay.addWidget(self.table_widget)
+
+                self.table_widget.setColumnCount(3)
+                self.table_widget.setColumnWidth(0, 20)
+                self.table_widget.setHorizontalHeaderLabels(
+                    [
+                        '#',
+                        _('Title'),
+                        _('Web Link')
+                    ]
+                )
+                self.table_widget.horizontalHeaderItem(0).setToolTip(
+                    _("Index"))
+                self.table_widget.horizontalHeaderItem(1).setToolTip(
+                    _("Description of the link that is set as an menu action.\n"
+                      "Try to keep it short because it is installed as a menu item."))
+                self.table_widget.horizontalHeaderItem(2).setToolTip(
+                    _("Web Link. E.g: https://your_website.org "))
+
+                # pal = QtGui.QPalette()
+                # pal.setColor(QtGui.QPalette.Background, Qt.white)
+
+                # New Bookmark
+                new_vlay = QtWidgets.QVBoxLayout()
+                layout.addLayout(new_vlay)
+
+                new_title_lbl = QtWidgets.QLabel(_("<b>New Bookmark</b>"))
+                new_vlay.addWidget(new_title_lbl)
+
+                form0 = QtWidgets.QFormLayout()
+                new_vlay.addLayout(form0)
+
+                title_lbl = QtWidgets.QLabel('%s:' % _("Title"))
+                self.title_entry = FCEntry()
+                form0.addRow(title_lbl, self.title_entry)
+
+                link_lbl = QtWidgets.QLabel('%s:' % _("Web Link"))
+                self.link_entry = FCEntry()
+                self.link_entry.set_value('http://')
+                form0.addRow(link_lbl, self.link_entry)
+
+                # Buttons Layout
+                button_hlay = QtWidgets.QHBoxLayout()
+                layout.addLayout(button_hlay)
+
+                add_entry_btn = FCButton(_("Add Entry"))
+                remove_entry_btn = FCButton(_("Remove Entry"))
+                export_list_btn = FCButton(_("Export List"))
+                import_list_btn = FCButton(_("Import List"))
+                closebtn = QtWidgets.QPushButton(_("Close"))
+
+                # button_hlay.addStretch()
+                button_hlay.addWidget(add_entry_btn)
+                button_hlay.addWidget(remove_entry_btn)
+
+                button_hlay.addWidget(export_list_btn)
+                button_hlay.addWidget(import_list_btn)
+                button_hlay.addWidget(closebtn)
+                # ##############################################################################
+                # ######################## SIGNALS #############################################
+                # ##############################################################################
+
+                add_entry_btn.clicked.connect(self.on_add_entry)
+                remove_entry_btn.clicked.connect(self.on_remove_entry)
+                export_list_btn.clicked.connect(self.on_export_bookmarks)
+                import_list_btn.clicked.connect(self.on_import_bookmarks)
+                closebtn.clicked.connect(self.accept)
+
+                self.build_bm_ui()
+
+            def build_bm_ui(self):
+
+                self.table_widget.setRowCount(len(self.bm_dict))
+
+                nr_crt = 0
+                for title, weblink in self.bm_dict.items():
+                    row = nr_crt
+                    nr_crt += 1
+                    id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
+                    # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                    self.table_widget.setItem(row, 0, id_item)  # Tool name/id
+
+                    title_item = QtWidgets.QTableWidgetItem(title)
+
+                    self.table_widget.setItem(row, 1, title_item)
+
+                    weblink_txt = QtWidgets.QTextBrowser()
+                    weblink_txt.setOpenExternalLinks(True)
+                    weblink_txt.setFrameStyle(QtWidgets.QFrame.NoFrame)
+                    weblink_txt.document().setDefaultStyleSheet("a{ text-decoration: none; }")
+
+                    weblink_txt.setHtml('<a href=%s>%s</a>' % (weblink, weblink))
+
+                    self.table_widget.setCellWidget(row, 2, weblink_txt)
+
+                    vertical_header = self.table_widget.verticalHeader()
+                    vertical_header.hide()
+
+                    horizontal_header = self.table_widget.horizontalHeader()
+                    horizontal_header.setMinimumSectionSize(10)
+                    horizontal_header.setDefaultSectionSize(70)
+                    horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+                    horizontal_header.resizeSection(0, 20)
+                    horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+                    horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+
+            def on_add_entry(self, title=None, link=None):
+                """
+                Add a entry in the Bookmark Table and in the menu actions
+                :return: None
+                """
+                if title is None:
+                    title = self.title_entry.get_value()
+                if title == '':
+                    self.app.inform.emit(f'[ERROR_NOTCL] {_("Title entry is empty.")}')
+                    return 'fail'
+
+                if link is None:
+                    link = self.link_entry.get_value()
+                if link == '':
+                    self.app.inform.emit(f'[ERROR_NOTCL] {_("Web link entry is empty.")}')
+                    return 'fail'
+
+                # if 'http' not in link or 'https' not in link:
+                #     link = 'http://' + link
+
+                if title in self.bm_dict.keys() or link in self.bm_dict.values():
+                    self.app.inform.emit(f'[ERROR_NOTCL] {_("Either the Title or the Weblink already in the table.")}')
+                    return 'fail'
+
+                # add the new entry to storage
+                self.bm_dict[title] = link
+
+                # add the link to the menu
+                act = QtWidgets.QAction(parent=self.app.ui.menuhelp_bookmarks)
+                act.setText(title)
+                act.setIcon(QtGui.QIcon('share/link16.png'))
+                act.triggered.connect(lambda: webbrowser.open(link))
+                self.app.ui.menuhelp_bookmarks.insertAction(self.app.ui.menuhelp_bookmarks_manager, act)
+
+                # add the new entry to the bookmark manager table
+                self.build_bm_ui()
+
+            def on_remove_entry(self):
+                """
+                Remove an Entry in the Bookmark table and from the menu actions
+                :return:
+                """
+                index_list = []
+                for model_index in self.table_widget.selectionModel().selectedRows():
+                    index = QtCore.QPersistentModelIndex(model_index)
+                    index_list.append(index)
+                    title_to_remove = self.table_widget.item(model_index.row(), 1).text()
+
+                    if title_to_remove in list(self.bm_dict.keys()):
+                        # remove from the storage
+                        self.bm_dict.pop(title_to_remove, None)
+
+                        for act in self.app.ui.menuhelp_bookmarks.actions():
+                            if act.text() == title_to_remove:
+                                # disconnect the signal
+                                try:
+                                    act.triggered.disconnect()
+                                except TypeError:
+                                    pass
+                                # remove the action from the menu
+                                self.app.ui.menuhelp_bookmarks.removeAction(act)
+
+                for index in index_list:
+                    self.table_widget.model().removeRow(index.row())
+
+            def on_export_bookmarks(self):
+                self.app.report_usage("on_export_bookmarks")
+                App.log.debug("on_export_bookmarks()")
+
+                date = str(datetime.today()).rpartition('.')[0]
+                date = ''.join(c for c in date if c not in ':-')
+                date = date.replace(' ', '_')
+
+                filter__ = "Text File (*.TXT);;All Files (*.*)"
+                filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
+                                                                     filter=filter__)
+
+                filename = str(filename)
+
+                if filename == "":
+                    self.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("FlatCAM bookmarks export cancelled."))
+                    return
+                else:
+                    try:
+                        f = open(filename, 'w')
+                        f.close()
+                    except PermissionError:
+                        self.app.inform.emit('[WARNING] %s' %
+                                             _("Permission denied, saving not possible.\n"
+                                               "Most likely another app is holding the file open and not accessible."))
+                        return
+                    except IOError:
+                        App.log.debug('Creating a new bookmarks file ...')
+                        f = open(filename, 'w')
+                        f.close()
+                    except:
+                        e = sys.exc_info()[0]
+                        App.log.error("Could not load defaults file.")
+                        App.log.error(str(e))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                             _("Could not load bookamrks file."))
+                        return
+
+                    # Save update options
+                    try:
+                        with open(filename, "w") as f:
+                            for title, link in self.bm_dict.items():
+                                line2write = str(title) + ':' + str(link) + '\n'
+                                print(line2write)
+                                f.write(line2write)
+                    except:
+                        self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                             _("Failed to write bookmarks to file."))
+                        return
+                self.app.inform.emit('[success] %s: %s' %
+                                     (_("Exported bookmarks to"), filename))
+
+            def on_import_bookmarks(self):
+                App.log.debug("on_import_bookmarks()")
+
+                filter_ = "Text File (*.txt);;All Files (*.*)"
+                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Bookmarks"),
+                                                                     filter=filter_)
+
+                filename = str(filename)
+
+                if filename == "":
+                    self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                         _("FlatCAM bookmarks import cancelled."))
+                else:
+                    try:
+                        with open(filename) as f:
+                            bookmarks = f.readlines()
+                    except IOError:
+                        self.app.log.error("Could not load bookamrks file.")
+                        self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                             _("Could not load bookmarks file."))
+                        return
+
+                    for line in bookmarks:
+                        proc_line = line.replace(' ', '').partition(':')
+                        self.on_add_entry(title=proc_line[0], link=proc_line[2])
+
+                    self.app.inform.emit('[success] %s: %s' %
+                                         (_("Imported Bookmarks from"), filename))
+
+            def closeEvent(self, QCloseEvent):
+                super().closeEvent(QCloseEvent)
+
+        BookDialog(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui).exec_()
 
     def on_file_savedefaults(self):
         """

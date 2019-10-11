@@ -422,9 +422,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## Help # ######################################
         # ########################################################################
-        self.menuhelp = self.menu.addMenu(_('&Help'))
+        self.menuhelp = self.menu.addMenu(_('Help'))
         self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), _('Online Help\tF1'))
-        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), _('FlatCAM.org'))
+
+        self.menuhelp_bookmarks = self.menuhelp.addMenu(QtGui.QIcon('share/bookmarks16.png'), _('Bookmarks'))
+        self.menuhelp_bookmarks.addSeparator()
+        self.menuhelp_bookmarks_manager = self.menuhelp_bookmarks.addAction(
+            QtGui.QIcon('share/bookmarks16.png'), _('Bookmarks Manager'))
+
         self.menuhelp.addSeparator()
         self.menuhelp_report_bug = self.menuhelp.addAction(QtGui.QIcon('share/bug16.png'), _('Report a bug'))
         self.menuhelp.addSeparator()

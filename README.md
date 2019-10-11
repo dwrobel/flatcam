@@ -9,13 +9,21 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.10.2019
+
+- added a Bookmark Manager and a Bookmark menu in the Help Menu
+- added an initial support for rows drag and drop in FCTable in GUIElements; it crashes for CellWidgets for now, if CellWidgetsare in the table rows
+
+10.10.2019
+
+- fixed Tool Move to work only for objects that are selected but also plotted, therefore disabled objects will not be moved even if selected
+
 9.10.2019
 
 - updated the Rules Check Tool - solved some issues
 - made FCDoubleSpinner to use either comma or dot as a decimal separator
 - fixed the FCDoubleSpinner to only allow the amount of decimals already set with set_precision()
 - fixed ToolPanelize to use FCDoubleSpinner in some places
-- fixed Tool Move to work only for objects that are selected but also plotted, therefore disabled objects will not be moved even if selected
 
 8.10.2019
 
