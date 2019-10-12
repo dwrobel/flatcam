@@ -12,6 +12,7 @@ import logging
 from flatcamGUI.VisPyCanvas import VisPyCanvas, time, Color
 from flatcamGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
 from vispy.scene.visuals import InfiniteLine, Line
+
 import numpy as np
 from vispy.geometry import Rect
 
@@ -102,6 +103,8 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.big_cursor = None
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
+
+        self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
     # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
     # all CNC have a limited workspace
@@ -249,6 +252,43 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.cursor_h_line.set_data(pos=pos[1], color=self.line_color)
         self.cursor_v_line.set_data(pos=pos[0], color=self.line_color)
         self.view.scene.update()
+
+    def on_mouse_scroll(self, event):
+        # key modifiers
+        modifiers = event.modifiers
+        pan_delta_x = self.fcapp.defaults["global_gridx"]
+        pan_delta_y = self.fcapp.defaults["global_gridy"]
+        curr_pos = event.pos
+
+        # Controlled pan by mouse wheel
+        if 'Shift' in modifiers:
+            p1 = np.array(curr_pos)[:2]
+
+            if event.delta[1] > 0:
+                curr_pos[0] -= pan_delta_x
+            else:
+                curr_pos[0] += pan_delta_x
+            p2 = np.array(curr_pos)[:2]
+            self.view.camera.pan(p2 - p1)
+        elif 'Control' in modifiers:
+            p1 = np.array(curr_pos)[:2]
+
+            if event.delta[1] > 0:
+                curr_pos[1] += pan_delta_y
+            else:
+                curr_pos[1] -= pan_delta_y
+            p2 = np.array(curr_pos)[:2]
+            self.view.camera.pan(p2 - p1)
+
+
+        if self.fcapp.grid_status() == True:
+            pos_canvas = self.translate_coords(curr_pos)
+            pos = self.fcapp.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+
+            # Update cursor
+            self.fcapp.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                           symbol='++', edge_color=self.fcapp.cursor_color_3D,
+                                           size=self.fcapp.defaults["global_cursor_size"])
 
     def new_text_group(self, collection=None):
         if collection:

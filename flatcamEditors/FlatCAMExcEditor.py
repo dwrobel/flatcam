@@ -2814,7 +2814,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            self.app.plotcanvas.graph_event_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_double_click', self.app.on_mouse_double_click_over_plot)
         else:
             self.app.plotcanvas.graph_event_disconnect(self.app.mp)
             self.app.plotcanvas.graph_event_disconnect(self.app.mm)
@@ -2844,7 +2844,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                               self.app.on_mouse_click_release_over_plot)
         self.app.mdc = self.app.plotcanvas.graph_event_connect('mouse_double_click',
-                                                               self.app.on_double_click_over_plot)
+                                                               self.app.on_mouse_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
         if self.app.is_legacy is False:

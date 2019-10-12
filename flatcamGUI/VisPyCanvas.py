@@ -133,6 +133,9 @@ class Camera(scene.PanZoomCamera):
         if event.handled or not self.interactive:
             return
 
+        # key modifiers
+        modifiers = event.mouse_event.modifiers
+
         # Limit mouse move events
         last_event = event.last_event
         t = time.time()
@@ -147,21 +150,21 @@ class Camera(scene.PanZoomCamera):
             event.handled = True
             return
 
-        # Scrolling
+        # ################### Scrolling ##########################
         BaseCamera.viewbox_mouse_event(self, event)
 
         if event.type == 'mouse_wheel':
-            center = self._scene_transform.imap(event.pos)
-            scale = (1 + self.zoom_factor) ** (-event.delta[1] * 30)
-            self.limited_zoom(scale, center)
+            if not modifiers:
+                center = self._scene_transform.imap(event.pos)
+                scale = (1 + self.zoom_factor) ** (-event.delta[1] * 30)
+                self.limited_zoom(scale, center)
             event.handled = True
 
         elif event.type == 'mouse_move':
             if event.press_event is None:
                 return
 
-            modifiers = event.mouse_event.modifiers
-
+            # ################ Panning ############################
             # self.pan_button_setting is actually self.FlatCAM.APP.defaults['global_pan_button']
             if event.button == int(self.pan_button_setting) and not modifiers:
                 # Translate

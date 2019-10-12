@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed the Gerber Parser convert units unnecessary usage. The only units conversion should be done when creating the new object, after the parsing
 - more fixes in Rules Check Tool
+- optimized the Move Tool
+- added support for key-based panning in 3D graphic engine. Moving the mouse wheel while pressing the CTRL key will pan up-down and while pressing SHIFT key will pan left-right
 
 11.10.2019
 

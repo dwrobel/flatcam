@@ -7996,7 +7996,7 @@ class App(QtCore.QObject):
         except Exception as e:
             App.log.debug("App.on_mouse_click_over_plot() --> Outside plot? --> %s" % str(e))
 
-    def on_double_click_over_plot(self, event):
+    def on_mouse_double_click_over_plot(self, event):
         if event.button == 1:
             self.doubleclick = True
 
@@ -8207,7 +8207,12 @@ class App(QtCore.QObject):
         """
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
+        # delete previous selection shape
         self.delete_selection_shape()
+
+        # make all objects inactive
+        self.collection.set_all_inactive()
+        
         for obj in self.collection.get_list():
             try:
                 # select the object(s) only if it is enabled (plotted)
@@ -11510,7 +11515,7 @@ class App(QtCore.QObject):
         self.mm = self.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
         self.mp = self.plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
         self.mr = self.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release_over_plot)
-        self.mdc = self.plotcanvas.graph_event_connect('mouse_double_click', self.on_double_click_over_plot)
+        self.mdc = self.plotcanvas.graph_event_connect('mouse_double_click', self.on_mouse_double_click_over_plot)
 
         # Keys over plot enabled
         self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
@@ -11844,107 +11849,107 @@ class App(QtCore.QObject):
         self.options.update(self.defaults)
         self.options_write_form()
 
-    def on_options_project2app(self):
-        """
-        Callback for Options->Transfer Options->Project=>App. Copies options
-        from project defaults to application defaults.
+    # def on_options_project2app(self):
+    #     """
+    #     Callback for Options->Transfer Options->Project=>App. Copies options
+    #     from project defaults to application defaults.
+    #
+    #     :return: None
+    #     """
+    #
+    #     self.report_usage("on_options_project2app")
+    #
+    #     self.options_read_form()
+    #     self.defaults.update(self.options)
+    #     self.defaults_write_form()
 
-        :return: None
-        """
+    # def on_options_project2object(self):
+    #     """
+    #     Callback for Options->Transfer Options->Project=>Object. Copies options
+    #     from project defaults to the currently selected object.
+    #
+    #     :return: None
+    #     """
+    #
+    #     self.report_usage("on_options_project2object")
+    #
+    #     self.options_read_form()
+    #     obj = self.collection.get_active()
+    #     if obj is None:
+    #         self.inform.emit('[WARNING_NOTCL] %s' %
+    #                          _("No object selected."))
+    #         return
+    #     for option in self.options:
+    #         if option.find(obj.kind + "_") == 0:
+    #             oname = option[len(obj.kind) + 1:]
+    #             obj.options[oname] = self.options[option]
+    #     obj.to_form()  # Update UI
 
-        self.report_usage("on_options_project2app")
+    # def on_options_object2project(self):
+    #     """
+    #     Callback for Options->Transfer Options->Object=>Project. Copies options
+    #     from the currently selected object to project defaults.
+    #
+    #     :return: None
+    #     """
+    #
+    #     self.report_usage("on_options_object2project")
+    #
+    #     obj = self.collection.get_active()
+    #     if obj is None:
+    #         self.inform.emit('[WARNING_NOTCL] %s' %
+    #                          _("No object selected."))
+    #         return
+    #     obj.read_form()
+    #     for option in obj.options:
+    #         if option in ['name']:  # TODO: Handle this better...
+    #             continue
+    #         self.options[obj.kind + "_" + option] = obj.options[option]
+    #     self.options_write_form()
 
-        self.options_read_form()
-        self.defaults.update(self.options)
-        self.defaults_write_form()
+    # def on_options_object2app(self):
+    #     """
+    #     Callback for Options->Transfer Options->Object=>App. Copies options
+    #     from the currently selected object to application defaults.
+    #
+    #     :return: None
+    #     """
+    #
+    #     self.report_usage("on_options_object2app")
+    #
+    #     obj = self.collection.get_active()
+    #     if obj is None:
+    #         self.inform.emit('[WARNING_NOTCL] %s' %
+    #                          _("No object selected."))
+    #         return
+    #     obj.read_form()
+    #     for option in obj.options:
+    #         if option in ['name']:  # TODO: Handle this better...
+    #             continue
+    #         self.defaults[obj.kind + "_" + option] = obj.options[option]
+    #     self.defaults_write_form()
 
-    def on_options_project2object(self):
-        """
-        Callback for Options->Transfer Options->Project=>Object. Copies options
-        from project defaults to the currently selected object.
-
-        :return: None
-        """
-
-        self.report_usage("on_options_project2object")
-
-        self.options_read_form()
-        obj = self.collection.get_active()
-        if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected."))
-            return
-        for option in self.options:
-            if option.find(obj.kind + "_") == 0:
-                oname = option[len(obj.kind) + 1:]
-                obj.options[oname] = self.options[option]
-        obj.to_form()  # Update UI
-
-    def on_options_object2project(self):
-        """
-        Callback for Options->Transfer Options->Object=>Project. Copies options
-        from the currently selected object to project defaults.
-
-        :return: None
-        """
-
-        self.report_usage("on_options_object2project")
-
-        obj = self.collection.get_active()
-        if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected."))
-            return
-        obj.read_form()
-        for option in obj.options:
-            if option in ['name']:  # TODO: Handle this better...
-                continue
-            self.options[obj.kind + "_" + option] = obj.options[option]
-        self.options_write_form()
-
-    def on_options_object2app(self):
-        """
-        Callback for Options->Transfer Options->Object=>App. Copies options
-        from the currently selected object to application defaults.
-
-        :return: None
-        """
-
-        self.report_usage("on_options_object2app")
-
-        obj = self.collection.get_active()
-        if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected."))
-            return
-        obj.read_form()
-        for option in obj.options:
-            if option in ['name']:  # TODO: Handle this better...
-                continue
-            self.defaults[obj.kind + "_" + option] = obj.options[option]
-        self.defaults_write_form()
-
-    def on_options_app2object(self):
-        """
-        Callback for Options->Transfer Options->App=>Object. Copies options
-        from application defaults to the currently selected object.
-
-        :return: None
-        """
-
-        self.report_usage("on_options_app2object")
-
-        self.defaults_read_form()
-        obj = self.collection.get_active()
-        if obj is None:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("No object selected."))
-            return
-        for option in self.defaults:
-            if option.find(obj.kind + "_") == 0:
-                oname = option[len(obj.kind) + 1:]
-                obj.options[oname] = self.defaults[option]
-        obj.to_form()  # Update UI
+    # def on_options_app2object(self):
+    #     """
+    #     Callback for Options->Transfer Options->App=>Object. Copies options
+    #     from application defaults to the currently selected object.
+    #
+    #     :return: None
+    #     """
+    #
+    #     self.report_usage("on_options_app2object")
+    #
+    #     self.defaults_read_form()
+    #     obj = self.collection.get_active()
+    #     if obj is None:
+    #         self.inform.emit('[WARNING_NOTCL] %s' %
+    #                          _("No object selected."))
+    #         return
+    #     for option in self.defaults:
+    #         if option.find(obj.kind + "_") == 0:
+    #             oname = option[len(obj.kind) + 1:]
+    #             obj.options[oname] = self.defaults[option]
+    #     obj.to_form()  # Update UI
 
 
 class ArgsThread(QtCore.QObject):
