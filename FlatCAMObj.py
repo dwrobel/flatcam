@@ -784,15 +784,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             if str(self.apertures[ap_code]['type']) == 'R' or str(self.apertures[ap_code]['type']) == 'O':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['width'] * self.file_units_factor,
-                                    self.decimals, self.apertures[ap_code]['height'] * self.file_units_factor
+                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['width'],
+                                    self.decimals, self.apertures[ap_code]['height']
                                     )
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             elif str(self.apertures[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['diam'] * self.file_units_factor,
-                                    self.decimals, self.apertures[ap_code]['nVertices'] * self.file_units_factor)
+                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['diam'],
+                                    self.decimals, self.apertures[ap_code]['nVertices'])
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             else:
@@ -802,7 +802,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             try:
                 if self.apertures[ap_code]['size'] is not None:
                     ap_size_item = QtWidgets.QTableWidgetItem(
-                        '%.*f' % (self.decimals, float(self.apertures[ap_code]['size'] * self.file_units_factor)))
+                        '%.*f' % (self.decimals, float(self.apertures[ap_code]['size'])))
                 else:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:
@@ -1408,6 +1408,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return: None
         :rtype: None
         """
+
+        # units conversion to get a conversion should be done only once even if we found multiple
+        # units declaration inside a Gerber file (it can happen to find also the obsolete declaration)
+        if self.conversion_done is True:
+            log.debug("Gerber units conversion cancelled. Already done.")
+            return
+
         log.debug("FlatCAMObj.FlatCAMGerber.convert_units()")
 
         factor = Gerber.convert_units(self, units)

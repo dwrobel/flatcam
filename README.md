@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+12.10.2019
+
+- fixed the Gerber Parser convert units unnecessary usage. The only units conversion should be done when creating the new object, after the parsing
+
+
 11.10.2019
 
 - added a Bookmark Manager and a Bookmark menu in the Help Menu

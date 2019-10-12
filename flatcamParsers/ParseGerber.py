@@ -99,7 +99,7 @@ class Gerber(Geometry):
         '''
 
         # store the file units here:
-        self.gerber_units = self.app.defaults['gerber_def_units']
+        self.units = self.app.defaults['gerber_def_units']
 
         # aperture storage
         self.apertures = {}
@@ -204,6 +204,10 @@ class Gerber(Geometry):
         # Aperture macros
         self.am1_re = re.compile(r'^%AM([^\*]+)\*([^%]+)?(%)?$')
         self.am2_re = re.compile(r'(.*)%$')
+
+        # flag to store if a conversion was done. It is needed because multiple units declarations can be found
+        # in a Gerber file (normal or obsolete ones)
+        self.conversion_done = False
 
         self.use_buffer_for_union = self.app.defaults["gerber_use_buffer_for_union"]
 
@@ -501,10 +505,11 @@ class Gerber(Geometry):
                 # Example: %MOIN*%
                 match = self.mode_re.search(gline)
                 if match:
-                    self.gerber_units = match.group(1)
-                    log.debug("Gerber units found = %s" % self.gerber_units)
+                    self.units = match.group(1)
+                    log.debug("Gerber units found = %s" % self.units)
                     # Changed for issue #80
-                    self.convert_units(match.group(1))
+                    # self.convert_units(match.group(1))
+                    self.conversion_done = True
                     continue
 
                 # ############################################################# ##
@@ -523,10 +528,11 @@ class Gerber(Geometry):
                         "D-no zero suppression)" % self.gerber_zeros)
                     log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
-                    self.gerber_units = match.group(5)
-                    log.debug("Gerber units found = %s" % self.gerber_units)
+                    self.units = match.group(5)
+                    log.debug("Gerber units found = %s" % self.units)
                     # Changed for issue #80
-                    self.convert_units(match.group(5))
+                    # self.convert_units(match.group(5))
+                    self.conversion_done = True
                     continue
 
                 # ############################################################# ##
@@ -551,10 +557,11 @@ class Gerber(Geometry):
                             "D-no zerosuppressionn)" % self.gerber_zeros)
                         log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
-                        self.gerber_units = match.group(1)
-                        log.debug("Gerber units found = %s" % self.gerber_units)
+                        self.units = match.group(1)
+                        log.debug("Gerber units found = %s" % self.units)
                         # Changed for issue #80
-                        self.convert_units(match.group(5))
+                        # self.convert_units(match.group(5))
+                        self.conversion_done = True
                         continue
 
                 # ############################################################# ##
@@ -565,7 +572,8 @@ class Gerber(Geometry):
                     obs_gerber_units = {'0': 'IN', '1': 'MM'}[match.group(1)]
                     log.warning("Gerber obsolete units found = %s" % obs_gerber_units)
                     # Changed for issue #80
-                    self.convert_units({'0': 'IN', '1': 'MM'}[match.group(1)])
+                    # self.convert_units({'0': 'IN', '1': 'MM'}[match.group(1)])
+                    self.conversion_done = True
                     continue
 
                 # ############################################################# ##
@@ -1353,13 +1361,6 @@ class Gerber(Geometry):
                         self.apertures[last_path_aperture]['geometry'] = []
                     self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
-            # TODO: make sure to keep track of units changes because right now it seems to happen in a weird way
-            # find out the conversion factor used to convert inside the self.apertures keys: size, width, height
-            file_units = self.gerber_units if self.gerber_units else 'IN'
-            app_units = self.app.defaults['units']
-
-            conversion_factor = 25.4 if file_units == 'IN' else (1 / 25.4) if file_units != app_units else 1
-
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths
             self.follow_geometry = follow_buffer
@@ -1420,6 +1421,9 @@ class Gerber(Geometry):
                 #             pass
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
+
+            # init this for the following operations
+            self.conversion_done = False
         except Exception as err:
             ex_type, ex, tb = sys.exc_info()
             traceback.print_tb(tb)
@@ -1541,7 +1545,7 @@ class Gerber(Geometry):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("camlib.Gerber.bounds()")
+        log.debug("parseGerber.Gerber.bounds()")
 
         if self.solid_geometry is None:
             log.debug("solid_geometry is None")
@@ -1582,6 +1586,38 @@ class Gerber(Geometry):
         bounds_coords = bounds_rec(self.solid_geometry)
         return bounds_coords
 
+    def convert_units(self, obj_units):
+        """
+        Converts the units of the object to ``units`` by scaling all
+        the geometry appropriately. This call ``scale()``. Don't call
+        it again in descendents.
+
+        :param units: "IN" or "MM"
+        :type units: str
+        :return: Scaling factor resulting from unit change.
+        :rtype: float
+        """
+
+        if obj_units.upper() == self.units.upper():
+            log.debug("parseGerber.Gerber.convert_units() --> Factor: 1")
+            return 1.0
+
+        if obj_units.upper() == "MM":
+            factor = 25.4
+            log.debug("parseGerber.Gerber.convert_units() --> Factor: 25.4")
+        elif obj_units.upper() == "IN":
+            factor = 1 / 25.4
+            log.debug("parseGerber.Gerber.convert_units() --> Factor: %s" % str(1 / 25.4))
+        else:
+            log.error("Unsupported units: %s" % str(obj_units))
+            log.debug("parseGerber.Gerber.convert_units() --> Factor: 1")
+            return 1.0
+
+        self.units = obj_units
+        self.file_units_factor = factor
+        self.scale(factor, factor)
+        return factor
+
     def scale(self, xfactor, yfactor=None, point=None):
         """
         Scales the objects' geometry on the XY plane by a given factor.
@@ -1604,7 +1640,7 @@ class Gerber(Geometry):
         :param point: reference point for scaling operation
         :rtype : None
         """
-        log.debug("camlib.Gerber.scale()")
+        log.debug("parseGerber.Gerber.scale()")
 
         try:
             xfactor = float(xfactor)
@@ -1664,14 +1700,35 @@ class Gerber(Geometry):
         # we need to scale the geometry stored in the Gerber apertures, too
         try:
             for apid in self.apertures:
+                new_geometry = list()
                 if 'geometry' in self.apertures[apid]:
                     for geo_el in self.apertures[apid]['geometry']:
+                        new_geo_el = dict()
                         if 'solid' in geo_el:
-                            geo_el['solid'] = scale_geom(geo_el['solid'])
+                            new_geo_el['solid'] = scale_geom(geo_el['solid'])
                         if 'follow' in geo_el:
-                            geo_el['follow'] = scale_geom(geo_el['follow'])
+                            new_geo_el['follow'] = scale_geom(geo_el['follow'])
                         if 'clear' in geo_el:
-                            geo_el['clear'] = scale_geom(geo_el['clear'])
+                            new_geo_el['clear'] = scale_geom(geo_el['clear'])
+                        new_geometry.append(new_geo_el)
+
+                self.apertures[apid]['geometry'] = deepcopy(new_geometry)
+
+                try:
+                    if str(self.apertures[apid]['type']) == 'R' or str(self.apertures[apid]['type']) == 'O':
+                        self.apertures[apid]['width'] *= xfactor
+                        self.apertures[apid]['height'] *= xfactor
+                    elif str(self.apertures[apid]['type']) == 'P':
+                        self.apertures[apid]['diam'] *= xfactor
+                        self.apertures[apid]['nVertices'] *= xfactor
+                except KeyError:
+                    pass
+
+                try:
+                    if self.apertures[apid]['size'] is not None:
+                        self.apertures[apid]['size'] = float(self.apertures[apid]['size'] * xfactor)
+                except KeyError:
+                    pass
 
         except Exception as e:
             log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
@@ -1708,7 +1765,7 @@ class Gerber(Geometry):
         :type vect: tuple
         :return: None
         """
-        log.debug("camlib.Gerber.offset()")
+        log.debug("parseGerber.Gerber.offset()")
 
         try:
             dx, dy = vect
@@ -1792,7 +1849,7 @@ class Gerber(Geometry):
         :type point: list
         :return: None
         """
-        log.debug("camlib.Gerber.mirror()")
+        log.debug("parseGerber.Gerber.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -1866,7 +1923,7 @@ class Gerber(Geometry):
         :param point: reference point for skewing operation
         :return None
         """
-        log.debug("camlib.Gerber.skew()")
+        log.debug("parseGerber.Gerber.skew()")
 
         px, py = point
 
@@ -1927,7 +1984,7 @@ class Gerber(Geometry):
         :param point:
         :return:
         """
-        log.debug("camlib.Gerber.rotate()")
+        log.debug("parseGerber.Gerber.rotate()")
 
         px, py = point
 
@@ -1980,3 +2037,35 @@ class Gerber(Geometry):
         self.app.inform.emit('[success] %s' %
                              _("Gerber Rotate done."))
         self.app.proc_container.new_text = ''
+
+
+def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
+    """
+    Parse a single number of Gerber coordinates.
+
+    :param strnumber: String containing a number in decimal digits
+    from a coordinate data block, possibly with a leading sign.
+    :type strnumber: str
+    :param int_digits: Number of digits used for the integer
+    part of the number
+    :type frac_digits: int
+    :param frac_digits: Number of digits used for the fractional
+    part of the number
+    :type frac_digits: int
+    :param zeros: If 'L', leading zeros are removed and trailing zeros are kept. Same situation for 'D' when
+    no zero suppression is done. If 'T', is in reverse.
+    :type zeros: str
+    :return: The number in floating point.
+    :rtype: float
+    """
+
+    ret_val = None
+
+    if zeros == 'L' or zeros == 'D':
+        ret_val = int(strnumber) * (10 ** (-frac_digits))
+
+    if zeros == 'T':
+        int_val = int(strnumber)
+        ret_val = (int_val * (10 ** ((int_digits + frac_digits) - len(strnumber)))) * (10 ** (-frac_digits))
+
+    return ret_val

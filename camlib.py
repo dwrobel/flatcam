@@ -467,7 +467,7 @@ class Geometry(object):
 
     def __init__(self, geo_steps_per_circle=None):
         # Units (in or mm)
-        self.units = Geometry.defaults["units"]
+        self.units = self.app.defaults["units"]
         
         # Final geometry: MultiPolygon or list (of geometry constructs)
         self.solid_geometry = None
@@ -1756,7 +1756,7 @@ class Geometry(object):
 
         return optimized_geometry
 
-    def convert_units(self, units):
+    def convert_units(self, obj_units):
         """
         Converts the units of the object to ``units`` by scaling all
         the geometry appropriately. This call ``scale()``. Don't call
@@ -1767,20 +1767,23 @@ class Geometry(object):
         :return: Scaling factor resulting from unit change.
         :rtype: float
         """
-        log.debug("camlib.Geometry.convert_units()")
 
-        if units.upper() == self.units.upper():
+        if obj_units.upper() == self.units.upper():
+            log.debug("camlib.Geometry.convert_units() --> Factor: 1")
             return 1.0
 
-        if units.upper() == "MM":
+        if obj_units.upper() == "MM":
             factor = 25.4
-        elif units.upper() == "IN":
+            log.debug("camlib.Geometry.convert_units() --> Factor: 25.4")
+        elif obj_units.upper() == "IN":
             factor = 1 / 25.4
+            log.debug("camlib.Geometry.convert_units() --> Factor: %s" % str(1 / 25.4))
         else:
-            log.error("Unsupported units: %s" % str(units))
+            log.error("Unsupported units: %s" % str(obj_units))
+            log.debug("camlib.Geometry.convert_units() --> Factor: 1")
             return 1.0
 
-        self.units = units
+        self.units = obj_units
         self.scale(factor, factor)
         self.file_units_factor = factor
         return factor
@@ -5320,39 +5323,6 @@ def dict2obj(d):
 #         except:
 #             log.error("Cannot plot: " + str(type(g)))
 #             continue
-
-
-def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
-    """
-    Parse a single number of Gerber coordinates.
-
-    :param strnumber: String containing a number in decimal digits
-    from a coordinate data block, possibly with a leading sign.
-    :type strnumber: str
-    :param int_digits: Number of digits used for the integer
-    part of the number
-    :type frac_digits: int
-    :param frac_digits: Number of digits used for the fractional
-    part of the number
-    :type frac_digits: int
-    :param zeros: If 'L', leading zeros are removed and trailing zeros are kept. Same situation for 'D' when
-    no zero suppression is done. If 'T', is in reverse.
-    :type zeros: str
-    :return: The number in floating point.
-    :rtype: float
-    """
-
-    ret_val = None
-
-    if zeros == 'L' or zeros == 'D':
-        ret_val = int(strnumber) * (10 ** (-frac_digits))
-
-    if zeros == 'T':
-        int_val = int(strnumber)
-        ret_val = (int_val * (10 ** ((int_digits + frac_digits) - len(strnumber)))) * (10 ** (-frac_digits))
-
-    return ret_val
-
 
 # def alpha_shape(points, alpha):
 #     """
