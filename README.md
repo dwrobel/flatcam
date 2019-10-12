@@ -12,7 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 12.10.2019
 
 - fixed the Gerber Parser convert units unnecessary usage. The only units conversion should be done when creating the new object, after the parsing
-
+- more fixes in Rules Check Tool
 
 11.10.2019
 

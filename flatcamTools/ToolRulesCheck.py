@@ -564,6 +564,8 @@ class RulesCheck(FlatCAMTool):
 
     @staticmethod
     def check_inside_gerber_clearance(gerber_obj, size, rule):
+        log.debug("RulesCheck.check_inside_gerber_clearance()")
+
         rule_title = rule
 
         violations = list()
@@ -639,6 +641,7 @@ class RulesCheck(FlatCAMTool):
 
     @staticmethod
     def check_gerber_clearance(gerber_list, size, rule):
+        log.debug("RulesCheck.check_gerber_clearance()")
         rule_title = rule
 
         violations = list()
@@ -694,11 +697,13 @@ class RulesCheck(FlatCAMTool):
 
         if isinstance(total_geo_grb_1, Polygon):
             len_1 = 1
+            total_geo_grb_1 = [total_geo_grb_1]
         else:
             len_1 = len(total_geo_grb_1)
 
         if isinstance(total_geo_grb_3, Polygon):
             len_3 = 1
+            total_geo_grb_3 = [total_geo_grb_3]
         else:
             len_3 = len(total_geo_grb_3)
 
@@ -743,6 +748,8 @@ class RulesCheck(FlatCAMTool):
 
     @staticmethod
     def check_holes_size(elements, size):
+        log.debug("RulesCheck.check_holes_size()")
+
         rule = _("Hole Size")
 
         violations = list()
@@ -757,7 +764,7 @@ class RulesCheck(FlatCAMTool):
 
             name = elem['name']
             for tool in elem['tools']:
-                tool_dia = float(elem['tools'][tool]['C'])
+                tool_dia = float('%.*f' % (4, float(elem['tools'][tool]['C'])))
                 if tool_dia < float(size):
                     dia_list.append(tool_dia)
             obj_violations['name'] = name
@@ -768,6 +775,7 @@ class RulesCheck(FlatCAMTool):
 
     @staticmethod
     def check_holes_clearance(elements, size):
+        log.debug("RulesCheck.check_holes_clearance()")
         rule = _("Hole to Hole Clearance")
 
         violations = list()
@@ -822,6 +830,8 @@ class RulesCheck(FlatCAMTool):
 
     @staticmethod
     def check_traces_size(elements, size):
+        log.debug("RulesCheck.check_traces_size()")
+
         rule = _("Trace Size")
 
         violations = list()
@@ -934,11 +944,13 @@ class RulesCheck(FlatCAMTool):
 
         if isinstance(total_geo_grb, Polygon):
             len_1 = 1
+            total_geo_grb = [total_geo_grb]
         else:
             len_1 = len(total_geo_grb)
 
         if isinstance(total_geo_exc, Polygon):
             len_2 = 1
+            total_geo_exc = [total_geo_exc]
         else:
             len_2 = len(total_geo_exc)
 
@@ -946,21 +958,32 @@ class RulesCheck(FlatCAMTool):
         log.debug("RulesCheck.check_gerber_annular_ring(). Iterations: %s" % str(iterations))
 
         min_dict = dict()
+        dist = None
         for geo in total_geo_grb:
             for s_geo in total_geo_exc:
-                # minimize the number of distances by not taking into considerations those that are too small
-                dist = geo.exterior.distance(s_geo)
-                if float(dist) < float(size):
-                    loc_1, loc_2 = nearest_points(geo.exterior, s_geo)
+                try:
+                    # minimize the number of distances by not taking into considerations those that are too small
+                    dist = abs(geo.exterior.distance(s_geo))
+                except Exception as e:
+                    log.debug("RulesCheck.check_gerber_annular_ring() --> %s" % str(e))
 
-                    dx = loc_1.x - loc_2.x
-                    dy = loc_1.y - loc_2.y
-                    loc = min(loc_1.x, loc_2.x) + (abs(dx) / 2), min(loc_1.y, loc_2.y) + (abs(dy) / 2)
+                if dist > 0:
+                    if float(dist) < float(size):
+                        loc_1, loc_2 = nearest_points(geo.exterior, s_geo)
 
+                        dx = loc_1.x - loc_2.x
+                        dy = loc_1.y - loc_2.y
+                        loc = min(loc_1.x, loc_2.x) + (abs(dx) / 2), min(loc_1.y, loc_2.y) + (abs(dy) / 2)
+
+                        if dist in min_dict:
+                            min_dict[dist].append(loc)
+                        else:
+                            min_dict[dist] = [loc]
+                else:
                     if dist in min_dict:
-                        min_dict[dist].append(loc)
+                        min_dict[dist].append(s_geo.representative_point())
                     else:
-                        min_dict[dist] = [loc]
+                        min_dict[dist] = [s_geo.representative_point()]
 
         points_list = list()
         for dist in min_dict.keys():
@@ -968,19 +991,32 @@ class RulesCheck(FlatCAMTool):
                 points_list.append(location)
 
         name_list = list()
-        if gerber_obj:
-            name_list.append(gerber_obj['name'])
-        if gerber_extra_obj:
-            name_list.append(gerber_extra_obj['name'])
-        if exc_obj:
-            name_list.append(exc_obj['name'])
-        if exc_extra_obj:
-            name_list.append(exc_extra_obj['name'])
+        try:
+            if gerber_obj:
+                name_list.append(gerber_obj['name'])
+        except KeyError:
+            pass
+        try:
+            if gerber_extra_obj:
+                name_list.append(gerber_extra_obj['name'])
+        except KeyError:
+            pass
+
+        try:
+            if exc_obj:
+                name_list.append(exc_obj['name'])
+        except KeyError:
+            pass
+
+        try:
+            if exc_extra_obj:
+                name_list.append(exc_extra_obj['name'])
+        except KeyError:
+            pass
 
         obj_violations['name'] = name_list
         obj_violations['points'] = points_list
         violations.append(deepcopy(obj_violations))
-
         return rule_title, violations
 
     def execute(self):
@@ -1438,22 +1474,46 @@ class RulesCheck(FlatCAMTool):
                     txt += 'File name: %s<BR>' % str(el[1][0]['name'])
 
                 point_txt = ''
-                if el[1][0]['points']:
-                    txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
-                                                                                               color='red',
-                                                                                               status=_("FAILED"))
-                    if 'Failed' in el[1][0]['points'][0]:
-                        point_txt = el[1][0]['points'][0]
+                try:
+                    if el[1][0]['points']:
+                        txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
+                                                                                                   color='red',
+                                                                                                   status=_("FAILED"))
+                        if 'Failed' in el[1][0]['points'][0]:
+                            point_txt = el[1][0]['points'][0]
+                        else:
+                            for pt in el[1][0]['points']:
+                                point_txt += '(%.*f, %.*f)' % (self.decimals, float(pt[0]), self.decimals, float(pt[1]))
+                                point_txt += ', '
+                        txt += 'Violations: %s<BR>' % str(point_txt)
                     else:
-                        for pt in el[1][0]['points']:
-                            point_txt += '(%.*f, %.*f)' % (self.decimals, float(pt[0]), self.decimals, float(pt[1]))
-                            point_txt += ', '
-                    txt += 'Violations: %s<BR>' % str(point_txt)
-                else:
-                    txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
-                                                                                               color='green',
-                                                                                               status=_("PASSED"))
-                    txt += '%s<BR>' % _("Violations: There are no violations for the current rule.")
+                        txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
+                                                                                                   color='green',
+                                                                                                   status=_("PASSED"))
+                        txt += '%s<BR>' % _("Violations: There are no violations for the current rule.")
+                except KeyError:
+                    pass
+
+                try:
+                    if el[1][0]['dia']:
+                        txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
+                                                                                                   color='red',
+                                                                                                   status=_("FAILED"))
+                        if 'Failed' in el[1][0]['dia']:
+                            point_txt = el[1][0]['dia']
+                        else:
+                            for pt in el[1][0]['dia']:
+                                point_txt += '%.*f' % (self.decimals, float(pt))
+                                point_txt += ', '
+                        txt += 'Violations: %s<BR>' % str(point_txt)
+                    else:
+                        txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
+                                                                                                   color='green',
+                                                                                                   status=_("PASSED"))
+                        txt += '%s<BR>' % _("Violations: There are no violations for the current rule.")
+                except KeyError:
+                    pass
+
                 txt += '<BR><BR>'
             new_obj.source_file = txt
             new_obj.read_only = True
