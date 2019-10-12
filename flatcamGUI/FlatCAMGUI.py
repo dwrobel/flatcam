@@ -43,8 +43,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ######### ##
         self.menu = self.menuBar()
 
-        # self.menu_toggle_nb = QtWidgets.QAction(QtGui.QIcon('share/notebook32.png'), "NB")
-        self.menu_toggle_nb = QtWidgets.QAction("NB")
+        self.menu_toggle_nb = QtWidgets.QAction(QtGui.QIcon('share/notebook32.png'), _("Toggle Panel"))
+        self.menu_toggle_nb.setToolTip(
+            _("Toggle Panel")
+        )
+        # self.menu_toggle_nb = QtWidgets.QAction("NB")
 
         self.menu_toggle_nb.setCheckable(True)
         self.menu.addAction(self.menu_toggle_nb)

@@ -7,6 +7,7 @@
 # ########################################################## ##
 
 
+from PyQt5 import QtWidgets
 from io import StringIO
 
 import numpy as np
@@ -1273,6 +1274,9 @@ class Geometry(object):
                 # graceful abort requested by the user
                 raise FlatCAMApp.GracefulException
 
+            # provide the app with a way to process the GUI events when in a blocking loop
+            QtWidgets.QApplication.processEvents()
+
             # Can only result in a Polygon or MultiPolygon
             current = current.buffer(-tooldia * (1 - overlap), int(int(steps_per_circle) / 4))
             if current.area > 0:
@@ -1361,6 +1365,9 @@ class Geometry(object):
             if self.app.abort_flag:
                 # graceful abort requested by the user
                 raise FlatCAMApp.GracefulException
+
+            # provide the app with a way to process the GUI events when in a blocking loop
+            QtWidgets.QApplication.processEvents()
 
             path = Point(seedpoint).buffer(radius, int(steps_per_circle / 4)).exterior
             path = path.intersection(path_margin)
@@ -1458,6 +1465,9 @@ class Geometry(object):
             if self.app.abort_flag:
                 # graceful abort requested by the user
                 raise FlatCAMApp.GracefulException
+
+            # provide the app with a way to process the GUI events when in a blocking loop
+            QtWidgets.QApplication.processEvents()
 
             line = LineString([(left, y), (right, y)])
             line = line.intersection(margin_poly)

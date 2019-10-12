@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - more fixes in Rules Check Tool
 - optimized the Move Tool
 - added support for key-based panning in 3D graphic engine. Moving the mouse wheel while pressing the CTRL key will pan up-down and while pressing SHIFT key will pan left-right
+- fixed a bug in NCC Tool and start trying to make the App responsive while the NCC tool is run in a non-threaded way
+- fixed a GUI bug with the QMenuBar recently introduced
 
 11.10.2019
 

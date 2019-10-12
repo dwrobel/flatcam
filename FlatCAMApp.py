@@ -126,7 +126,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.98
-    version_date = "2019/10/7"
+    version_date = "2019/10/13"
     beta = True
     engine = '3D'
 
@@ -1245,7 +1245,8 @@ class App(QtCore.QObject):
                                           'minoffset, multidepth, name, offset, opt_type, order, outname, overlap, '
                                           'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
                                           'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '
-                                          'toolchange_xy, use_threads, value, x, x0, x1, y, y0, y1, z_cut, z_move',
+                                          'toolchange_xy, tooldia, use_threads, value, x, x0, x1, y, y0, y1, z_cut, '
+                                          'z_move',
             "script_autocompleter": True,
             "script_text": "",
             "script_plot": True,
@@ -2189,7 +2190,7 @@ class App(QtCore.QObject):
                                  'outname', 'overlap', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
                                  'preamble', 'radius', 'ref', 'rest', 'rows', 'shellvar_', 'scale_factor',
                                  'spacing_columns',
-                                 'spacing_rows', 'spindlespeed', 'toolchange_xy', 'use_threads', 'value', 'x',
+                                 'spacing_rows', 'spindlespeed', 'toolchange_xy','tooldia', 'use_threads', 'value', 'x',
                                  'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
                                  ]
 
@@ -2386,6 +2387,10 @@ class App(QtCore.QObject):
         # ####################################################################################
         # ####################### Shell SETUP ################################################
         # ####################################################################################
+        # this will hold the TCL instance
+        self.tcl = None
+
+        self.init_tcl()
 
         self.shell = FCShell(self, version=self.version)
         self.shell._edit.set_model_data(self.myKeywords)
@@ -2394,8 +2399,6 @@ class App(QtCore.QObject):
         self.shell.resize(*self.defaults["global_shell_shape"])
         self.shell.append_output("FlatCAM %s - " % self.version)
         self.shell.append_output(_("Type >help< to get started\n\n"))
-
-        self.init_tcl()
 
         self.ui.shell_dock = QtWidgets.QDockWidget("FlatCAM TCL Shell")
         self.ui.shell_dock.setObjectName('Shell_DockWidget')
@@ -2445,7 +2448,7 @@ class App(QtCore.QObject):
 
         # install Bookmark Manager and populate bookmarks in the Help -> Bookmarks
         self.install_bookmarks()
-        self.book_dialog_tab = BookmarkManager(app=self, storage=self.defaults["global_bookmarks"], parent=self.ui)
+        self.book_dialog_tab = BookmarkManager(app=self, storage=self.defaults["global_bookmarks"])
 
         # ### System Font Parsing ###
         # self.f_parse = ParseFont(self)
@@ -2576,9 +2579,6 @@ class App(QtCore.QObject):
 
         # set the value used in the Windows Title
         self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
-
-        # this will hold the TCL instance
-        self.tcl = None
 
         # ###############################################################################
         # ############# Save defaults to factory_defaults.FlatConfig file ###############
@@ -3413,7 +3413,7 @@ class App(QtCore.QObject):
         Initialize the TCL Shell. A dock widget that holds the GUI interface to the FlatCAM command line.
         :return: None
         """
-        if hasattr(self, 'tcl'):
+        if hasattr(self, 'tcl') and self.tcl is not None:
             # self.tcl = None
             # TODO  we need  to clean  non default variables and procedures here
             # new object cannot be used here as it  will not remember values created for next passes,
