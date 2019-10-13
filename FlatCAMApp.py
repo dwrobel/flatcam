@@ -33,6 +33,8 @@ from multiprocessing import Pool, cpu_count
 import socket
 from array import array
 
+import vispy.scene as scene
+
 # #######################################
 # #      Imports part of FlatCAM       ##
 # #######################################
@@ -1866,6 +1868,7 @@ class App(QtCore.QObject):
         self.ui.menuview_toggle_notebook.triggered.connect(self.on_toggle_notebook)
         self.ui.menu_toggle_nb.triggered.connect(self.on_toggle_notebook)
         self.ui.menuview_toggle_grid.triggered.connect(self.on_toggle_grid)
+        self.ui.menuview_toggle_grid_lines.triggered.connect(self.on_toggle_grid_lines)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_menu)
 
@@ -2514,6 +2517,9 @@ class App(QtCore.QObject):
 
         # Variable to hold the status of the axis
         self.toggle_axis = True
+
+        # Variable to hold the status of the grid lines
+        self.toggle_grid_lines = True
 
         # Variable to store the status of the fullscreen event
         self.toggle_fscreen = False
@@ -5934,6 +5940,32 @@ class App(QtCore.QObject):
 
         self.ui.grid_snap_btn.trigger()
 
+    def on_toggle_grid_lines(self):
+        self.report_usage("on_toggle_grd_lines()")
+
+        if self.toggle_grid_lines is False:
+            if self.is_legacy is False:
+                self.plotcanvas.grid._grid_color_fn['color'] = Color('dimgray').rgba
+
+            else:
+                self.plotcanvas.axes.grid(True)
+                try:
+                    self.plotcanvas.canvas.draw()
+                except IndexError:
+                    pass
+                pass
+            self.toggle_grid_lines = True
+        else:
+            if self.is_legacy is False:
+                self.plotcanvas.grid._grid_color_fn['color'] = Color('#FFFFFFFF').rgba
+            else:
+                self.plotcanvas.axes.grid(False)
+                try:
+                    self.plotcanvas.canvas.draw()
+                except IndexError:
+                    pass
+            self.toggle_grid_lines = False
+
     def on_options_combo_change(self, sel):
         """
         Called when the combo box to choose between application defaults and
@@ -8899,12 +8931,13 @@ class App(QtCore.QObject):
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
-        image = _screenshot()
-        data = np.asarray(image)
-        if not data.ndim == 3 and data.shape[-1] in (3, 4):
-            self.inform.emit('[[WARNING_NOTCL]] %s' %
-                             _('Data must be a 3D array with last dimension 3 or 4'))
-            return
+        if self.is_legacy is False:
+            image = _screenshot()
+            data = np.asarray(image)
+            if not data.ndim == 3 and data.shape[-1] in (3, 4):
+                self.inform.emit('[[WARNING_NOTCL]] %s' %
+                                 _('Data must be a 3D array with last dimension 3 or 4'))
+                return
 
         filter_ = "PNG File (*.png);;All Files (*.*)"
         try:
@@ -8921,7 +8954,11 @@ class App(QtCore.QObject):
             self.inform.emit(_("Export PNG cancelled."))
             return
         else:
-            write_png(filename, data)
+            if self.is_legacy is False:
+                write_png(filename, data)
+            else:
+                self.plotcanvas.figure.savefig(filename)
+
             if self.defaults["global_open_style"] is False:
                 self.file_opened.emit("png", filename)
             self.file_saved.emit("png", filename)

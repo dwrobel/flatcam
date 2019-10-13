@@ -393,7 +393,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview.addSeparator()
 
         self.menuview_toggle_code_editor = self.menuview.addAction(QtGui.QIcon('share/code_editor32.png'),
-                                                                   _('Toggle Code Editor\tCTRL+E'))
+                                                                   _('Toggle Code Editor\tSHIFT+E'))
         self.menuview.addSeparator()
         self.menuview_toggle_fscreen = self.menuview.addAction(
             QtGui.QIcon('share/fscreen32.png'), _("&Toggle FullScreen\tALT+F10"))
@@ -403,8 +403,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon('share/notebook32.png'), _("&Toggle Project/Sel/Tool\t`"))
 
         self.menuview.addSeparator()
-        self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), _("&Toggle Grid Snap\tG")
-                                                            )
+        self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'),
+                                                            _("&Toggle Grid Snap\tG"))
+        self.menuview_toggle_grid_lines = self.menuview.addAction(QtGui.QIcon('share/grid32.png'),
+                                                                  _("&Toggle Grid Lines\tALT+G"))
         self.menuview_toggle_axis = self.menuview.addAction(QtGui.QIcon('share/axis32.png'), _("&Toggle Axis\tSHIFT+G")
                                                             )
         self.menuview_toggle_workspace = self.menuview.addAction(QtGui.QIcon('share/workspace24.png'),
@@ -2447,6 +2449,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Transformation Tool
                 if key == QtCore.Qt.Key_E:
                     self.app.transform_tool.run(toggle=True)
+                    return
+
+                # Toggle Grid lines
+                if key == QtCore.Qt.Key_G:
+                    self.app.on_toggle_grid_lines()
                     return
 
                 # Solder Paste Dispensing Tool

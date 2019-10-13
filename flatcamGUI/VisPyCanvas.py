@@ -83,11 +83,12 @@ class VisPyCanvas(scene.SceneCanvas):
         self.xaxis.link_view(view)
         self.yaxis.link_view(view)
 
-        grid1 = scene.GridLines(parent=view.scene, color='dimgray')
-        grid1.set_gl_state(depth_test=False)
+        # grid1 = scene.GridLines(parent=view.scene, color='dimgray')
+        # grid1.set_gl_state(depth_test=False)
 
         self.view = view
-        self.grid = grid1
+        self.grid = scene.GridLines(parent=self.view.scene, color='dimgray')
+        self.grid.set_gl_state(depth_test=False)
 
         self.freeze()
 

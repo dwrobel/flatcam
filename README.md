@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.10.2019
+
+- fixed a bug in the Merge functions
+- fixed the Export PNG function when using the 2D legacy graphic engine
+- added a new capability to toggle the grid lines for both graphic engines: menu link in View and key shortcut combo ALT+G
+
 12.10.2019
 
 - fixed the Gerber Parser convert units unnecessary usage. The only units conversion should be done when creating the new object, after the parsing

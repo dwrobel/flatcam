@@ -2041,6 +2041,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         :return: None
         """
 
+        try:
+            decimals_exc = self.decimals
+        except AttributeError:
+            decimals_exc = 4
+
         # flag to signal that we need to reorder the tools dictionary and drills and slots lists
         flag_order = False
 
@@ -2067,7 +2072,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         exc.app.log.warning("Failed to copy option.", option)
 
             for drill in exc.drills:
-                exc_tool_dia = float('%.*f' % (self.decimals, exc.tools[drill['tool']]['C']))
+                exc_tool_dia = float('%.*f' % (decimals_exc, exc.tools[drill['tool']]['C']))
 
                 if exc_tool_dia not in custom_dict_drills:
                     custom_dict_drills[exc_tool_dia] = [drill['point']]
@@ -2075,7 +2080,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     custom_dict_drills[exc_tool_dia].append(drill['point'])
 
             for slot in exc.slots:
-                exc_tool_dia = float('%.*f' % (self.decimals, exc.tools[slot['tool']]['C']))
+                exc_tool_dia = float('%.*f' % (decimals_exc, exc.tools[slot['tool']]['C']))
 
                 if exc_tool_dia not in custom_dict_slots:
                     custom_dict_slots[exc_tool_dia] = [[slot['start'], slot['stop']]]
@@ -2168,7 +2173,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 temp_tools[tool_name_temp] = spec_temp
 
                 for drill in exc_final.drills:
-                    exc_tool_dia = float('%.*f' % (self.decimals, exc_final.tools[drill['tool']]['C']))
+                    exc_tool_dia = float('%.*f' % (decimals_exc, exc_final.tools[drill['tool']]['C']))
                     if exc_tool_dia == ordered_dia:
                         temp_drills.append(
                             {
@@ -2178,7 +2183,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         )
 
                 for slot in exc_final.slots:
-                    slot_tool_dia = float('%.*f' % (self.decimals, exc_final.tools[slot['tool']]['C']))
+                    slot_tool_dia = float('%.*f' % (decimals_exc, exc_final.tools[slot['tool']]['C']))
                     if slot_tool_dia == ordered_dia:
                         temp_slots.append(
                             {
