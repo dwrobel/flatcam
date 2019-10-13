@@ -32,6 +32,7 @@ class RulesCheck(FlatCAMTool):
     def __init__(self, app):
         super(RulesCheck, self).__init__(self)
         self.app = app
+        self.decimals = 4
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -48,12 +49,19 @@ class RulesCheck(FlatCAMTool):
         self.grid_layout = QtWidgets.QGridLayout()
         self.layout.addLayout(self.grid_layout)
 
+        self.grid_layout.setColumnStretch(0, 0)
+        self.grid_layout.setColumnStretch(1, 3)
+        self.grid_layout.setColumnStretch(2, 0)
+
         self.gerber_title_lbl = QtWidgets.QLabel('<b>%s</b>:' % _("Gerber Files"))
         self.gerber_title_lbl.setToolTip(
             _("Gerber objects for which to check rules.")
         )
 
         self.all_obj_cb = FCCheckBox()
+
+        self.grid_layout.addWidget(self.gerber_title_lbl, 0, 0, 1, 2)
+        self.grid_layout.addWidget(self.all_obj_cb, 0, 2)
 
         # Copper Top object
         self.copper_t_object = QtWidgets.QComboBox()
@@ -68,6 +76,10 @@ class RulesCheck(FlatCAMTool):
 
         self.copper_t_cb = FCCheckBox()
 
+        self.grid_layout.addWidget(self.copper_t_object_lbl, 1, 0)
+        self.grid_layout.addWidget(self.copper_t_object, 1, 1)
+        self.grid_layout.addWidget(self.copper_t_cb, 1, 2)
+
         # Copper Bottom object
         self.copper_b_object = QtWidgets.QComboBox()
         self.copper_b_object.setModel(self.app.collection)
@@ -80,6 +92,10 @@ class RulesCheck(FlatCAMTool):
         )
 
         self.copper_b_cb = FCCheckBox()
+
+        self.grid_layout.addWidget(self.copper_b_object_lbl, 2, 0)
+        self.grid_layout.addWidget(self.copper_b_object, 2, 1)
+        self.grid_layout.addWidget(self.copper_b_cb, 2, 2)
 
         # SolderMask Top object
         self.sm_t_object = QtWidgets.QComboBox()
@@ -94,6 +110,10 @@ class RulesCheck(FlatCAMTool):
 
         self.sm_t_cb = FCCheckBox()
 
+        self.grid_layout.addWidget(self.sm_t_object_lbl, 3, 0)
+        self.grid_layout.addWidget(self.sm_t_object, 3, 1)
+        self.grid_layout.addWidget(self.sm_t_cb, 3, 2)
+
         # SolderMask Bottom object
         self.sm_b_object = QtWidgets.QComboBox()
         self.sm_b_object.setModel(self.app.collection)
@@ -106,6 +126,10 @@ class RulesCheck(FlatCAMTool):
         )
 
         self.sm_b_cb = FCCheckBox()
+
+        self.grid_layout.addWidget(self.sm_b_object_lbl, 4, 0)
+        self.grid_layout.addWidget(self.sm_b_object, 4, 1)
+        self.grid_layout.addWidget(self.sm_b_cb, 4, 2)
 
         # SilkScreen Top object
         self.ss_t_object = QtWidgets.QComboBox()
@@ -120,6 +144,10 @@ class RulesCheck(FlatCAMTool):
 
         self.ss_t_cb = FCCheckBox()
 
+        self.grid_layout.addWidget(self.ss_t_object_lbl, 5, 0)
+        self.grid_layout.addWidget(self.ss_t_object, 5, 1)
+        self.grid_layout.addWidget(self.ss_t_cb, 5, 2)
+
         # SilkScreen Bottom object
         self.ss_b_object = QtWidgets.QComboBox()
         self.ss_b_object.setModel(self.app.collection)
@@ -132,6 +160,10 @@ class RulesCheck(FlatCAMTool):
         )
 
         self.ss_b_cb = FCCheckBox()
+
+        self.grid_layout.addWidget(self.ss_b_object_lbl, 6, 0)
+        self.grid_layout.addWidget(self.ss_b_object, 6, 1)
+        self.grid_layout.addWidget(self.ss_b_cb, 6, 2)
 
         # Outline object
         self.outline_object = QtWidgets.QComboBox()
@@ -146,33 +178,6 @@ class RulesCheck(FlatCAMTool):
 
         self.out_cb = FCCheckBox()
 
-        self.grid_layout.addWidget(self.gerber_title_lbl, 0, 0, 1, 2)
-        self.grid_layout.addWidget(self.all_obj_cb, 0, 2)
-
-        self.grid_layout.addWidget(self.copper_t_object_lbl, 1, 0)
-        self.grid_layout.addWidget(self.copper_t_object, 1, 1)
-        self.grid_layout.addWidget(self.copper_t_cb, 1, 2)
-
-        self.grid_layout.addWidget(self.copper_b_object_lbl, 2, 0)
-        self.grid_layout.addWidget(self.copper_b_object, 2, 1)
-        self.grid_layout.addWidget(self.copper_b_cb, 2, 2)
-
-        self.grid_layout.addWidget(self.sm_t_object_lbl, 3, 0)
-        self.grid_layout.addWidget(self.sm_t_object, 3, 1)
-        self.grid_layout.addWidget(self.sm_t_cb, 3, 2)
-
-        self.grid_layout.addWidget(self.sm_b_object_lbl, 4, 0)
-        self.grid_layout.addWidget(self.sm_b_object, 4, 1)
-        self.grid_layout.addWidget(self.sm_b_cb, 4, 2)
-
-        self.grid_layout.addWidget(self.ss_t_object_lbl, 5, 0)
-        self.grid_layout.addWidget(self.ss_t_object, 5, 1)
-        self.grid_layout.addWidget(self.ss_t_cb, 5, 2)
-
-        self.grid_layout.addWidget(self.ss_b_object_lbl, 6, 0)
-        self.grid_layout.addWidget(self.ss_b_object, 6, 1)
-        self.grid_layout.addWidget(self.ss_b_cb, 6, 2)
-
         self.grid_layout.addWidget(self.outline_object_lbl, 7, 0)
         self.grid_layout.addWidget(self.outline_object, 7, 1)
         self.grid_layout.addWidget(self.out_cb, 7, 2)
@@ -183,6 +188,8 @@ class RulesCheck(FlatCAMTool):
         self.excellon_title_lbl.setToolTip(
             _("Excellon objects for which to check rules.")
         )
+
+        self.grid_layout.addWidget(self.excellon_title_lbl, 9, 0, 1, 3)
 
         # Excellon 1 object
         self.e1_object = QtWidgets.QComboBox()
@@ -198,6 +205,10 @@ class RulesCheck(FlatCAMTool):
 
         self.e1_cb = FCCheckBox()
 
+        self.grid_layout.addWidget(self.e1_object_lbl, 10, 0)
+        self.grid_layout.addWidget(self.e1_object, 10, 1)
+        self.grid_layout.addWidget(self.e1_cb, 10, 2)
+
         # Excellon 2 object
         self.e2_object = QtWidgets.QComboBox()
         self.e2_object.setModel(self.app.collection)
@@ -212,21 +223,11 @@ class RulesCheck(FlatCAMTool):
 
         self.e2_cb = FCCheckBox()
 
-        self.grid_layout.addWidget(self.excellon_title_lbl, 9, 0, 1, 3)
-
-        self.grid_layout.addWidget(self.e1_object_lbl, 10, 0)
-        self.grid_layout.addWidget(self.e1_object, 10, 1)
-        self.grid_layout.addWidget(self.e1_cb, 10, 2)
-
         self.grid_layout.addWidget(self.e2_object_lbl, 11, 0)
         self.grid_layout.addWidget(self.e2_object, 11, 1)
         self.grid_layout.addWidget(self.e2_cb, 11, 2)
 
         self.grid_layout.addWidget(QtWidgets.QLabel(""), 12, 0, 1, 3)
-
-        self.grid_layout.setColumnStretch(0, 0)
-        self.grid_layout.setColumnStretch(1, 3)
-        self.grid_layout.setColumnStretch(2, 0)
 
         # Control All
         self.all_cb = FCCheckBox('%s' % _("All Rules"))
@@ -253,11 +254,15 @@ class RulesCheck(FlatCAMTool):
         )
         self.form_layout_1.addRow(self.trace_size_cb)
 
-        # Copper2copper clearance value
-        self.trace_size_entry = FCEntry()
+        # Trace size value
+        self.trace_size_entry = FCDoubleSpinner()
+        self.trace_size_entry.set_range(0.00001, 999.99999)
+        self.trace_size_entry.set_precision(self.decimals)
+        self.trace_size_entry.setSingleStep(0.1)
+
         self.trace_size_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.trace_size_lbl.setToolTip(
-            _("Minimum acceptable clearance value.")
+            _("Minimum acceptable trace size.")
         )
         self.form_layout_1.addRow(self.trace_size_lbl, self.trace_size_entry)
 
@@ -272,7 +277,11 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_copper2copper_cb)
 
         # Copper2copper clearance value
-        self.clearance_copper2copper_entry = FCEntry()
+        self.clearance_copper2copper_entry = FCDoubleSpinner()
+        self.clearance_copper2copper_entry.set_range(0.00001, 999.99999)
+        self.clearance_copper2copper_entry.set_precision(self.decimals)
+        self.clearance_copper2copper_entry.setSingleStep(0.1)
+
         self.clearance_copper2copper_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.clearance_copper2copper_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
@@ -291,7 +300,11 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_copper2ol_cb)
 
         # Copper2outline clearance value
-        self.clearance_copper2ol_entry = FCEntry()
+        self.clearance_copper2ol_entry = FCDoubleSpinner()
+        self.clearance_copper2ol_entry.set_range(0.00001, 999.99999)
+        self.clearance_copper2ol_entry.set_precision(self.decimals)
+        self.clearance_copper2ol_entry.setSingleStep(0.1)
+
         self.clearance_copper2ol_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.clearance_copper2ol_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
@@ -310,7 +323,11 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_silk2silk_cb)
 
         # Copper2silkscreen clearance value
-        self.clearance_silk2silk_entry = FCEntry()
+        self.clearance_silk2silk_entry = FCDoubleSpinner()
+        self.clearance_silk2silk_entry.set_range(0.00001, 999.99999)
+        self.clearance_silk2silk_entry.set_precision(self.decimals)
+        self.clearance_silk2silk_entry.setSingleStep(0.1)
+
         self.clearance_silk2silk_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.clearance_silk2silk_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
@@ -329,7 +346,11 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_silk2sm_cb)
 
         # Silkscreen2soldermask clearance value
-        self.clearance_silk2sm_entry = FCEntry()
+        self.clearance_silk2sm_entry = FCDoubleSpinner()
+        self.clearance_silk2sm_entry.set_range(0.00001, 999.99999)
+        self.clearance_silk2sm_entry.set_precision(self.decimals)
+        self.clearance_silk2sm_entry.setSingleStep(0.1)
+
         self.clearance_silk2sm_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.clearance_silk2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
@@ -348,7 +369,11 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_silk2ol_cb)
 
         # Silk2outline clearance value
-        self.clearance_silk2ol_entry = FCEntry()
+        self.clearance_silk2ol_entry = FCDoubleSpinner()
+        self.clearance_silk2ol_entry.set_range(0.00001, 999.99999)
+        self.clearance_silk2ol_entry.set_precision(self.decimals)
+        self.clearance_silk2ol_entry.setSingleStep(0.1)
+
         self.clearance_silk2ol_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.clearance_silk2ol_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
@@ -367,7 +392,11 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_sm2sm_cb)
 
         # Soldermask2soldermask clearance value
-        self.clearance_sm2sm_entry = FCEntry()
+        self.clearance_sm2sm_entry = FCDoubleSpinner()
+        self.clearance_sm2sm_entry.set_range(0.00001, 999.99999)
+        self.clearance_sm2sm_entry.set_precision(self.decimals)
+        self.clearance_sm2sm_entry.setSingleStep(0.1)
+
         self.clearance_sm2sm_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.clearance_sm2sm_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
@@ -386,7 +415,11 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.ring_integrity_cb)
 
         # Ring integrity value
-        self.ring_integrity_entry = FCEntry()
+        self.ring_integrity_entry = FCDoubleSpinner()
+        self.ring_integrity_entry.set_range(0.00001, 999.99999)
+        self.ring_integrity_entry.set_precision(self.decimals)
+        self.ring_integrity_entry.setSingleStep(0.1)
+
         self.ring_integrity_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.ring_integrity_lbl.setToolTip(
             _("Minimum acceptable ring value.")
@@ -407,7 +440,11 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_d2d_cb)
 
         # Hole2Hole clearance value
-        self.clearance_d2d_entry = FCEntry()
+        self.clearance_d2d_entry = FCDoubleSpinner()
+        self.clearance_d2d_entry.set_range(0.00001, 999.99999)
+        self.clearance_d2d_entry.set_precision(self.decimals)
+        self.clearance_d2d_entry.setSingleStep(0.1)
+
         self.clearance_d2d_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.clearance_d2d_lbl.setToolTip(
             _("Minimum acceptable clearance value.")
@@ -426,10 +463,14 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.drill_size_cb)
 
         # Drile holes value
-        self.drill_size_entry = FCEntry()
+        self.drill_size_entry = FCDoubleSpinner()
+        self.drill_size_entry.set_range(0.00001, 999.99999)
+        self.drill_size_entry.set_precision(self.decimals)
+        self.drill_size_entry.setSingleStep(0.1)
+
         self.drill_size_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
         self.drill_size_lbl.setToolTip(
-            _("Minimum acceptable clearance value.")
+            _("Minimum acceptable drill size.")
         )
         self.form_layout_1.addRow(self.drill_size_lbl, self.drill_size_entry)
 
@@ -559,6 +600,28 @@ class RulesCheck(FlatCAMTool):
 
         self.e1_object.setDisabled(True)
         self.e2_object.setDisabled(True)
+
+        self.trace_size_cb.set_value(self.app.defaults["tools_cr_trace_size"])
+        self.trace_size_entry.set_value(float(self.app.defaults["tools_cr_trace_size_val"]))
+        self.clearance_copper2copper_cb.set_value(self.app.defaults["tools_cr_c2c"])
+        self.clearance_copper2copper_entry.set_value(float(self.app.defaults["tools_cr_c2c_val"]))
+        self.clearance_copper2ol_cb.set_value(self.app.defaults["tools_cr_c2o"])
+        self.clearance_copper2ol_entry.set_value(float(self.app.defaults["tools_cr_c2o_val"]))
+        self.clearance_silk2silk_cb.set_value(self.app.defaults["tools_cr_s2s"])
+        self.clearance_silk2silk_entry.set_value(float(self.app.defaults["tools_cr_s2s_val"]))
+        self.clearance_silk2sm_cb.set_value(self.app.defaults["tools_cr_s2sm"])
+        self.clearance_silk2sm_entry.set_value(float(self.app.defaults["tools_cr_s2sm_val"]))
+        self.clearance_silk2ol_cb.set_value(self.app.defaults["tools_cr_s2o"])
+        self.clearance_silk2ol_entry.set_value(float(self.app.defaults["tools_cr_s2o_val"]))
+        self.clearance_sm2sm_cb.set_value(self.app.defaults["tools_cr_sm2sm"])
+        self.clearance_sm2sm_entry.set_value(float(self.app.defaults["tools_cr_sm2sm_val"]))
+        self.ring_integrity_cb.set_value(self.app.defaults["tools_cr_ri"])
+        self.ring_integrity_entry.set_value(float(self.app.defaults["tools_cr_ri_val"]))
+        self.clearance_d2d_cb.set_value(self.app.defaults["tools_cr_h2h"])
+        self.clearance_d2d_entry.set_value(float(self.app.defaults["tools_cr_h2h_val"]))
+        self.drill_size_cb.set_value(self.app.defaults["tools_cr_dh"])
+        self.drill_size_entry.set_value(float(self.app.defaults["tools_cr_dh_val"]))
+
         self.reset_fields()
 
     @staticmethod

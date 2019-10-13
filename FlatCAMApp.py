@@ -128,7 +128,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.98
-    version_date = "2019/10/13"
+    version_date = "2019/10/16"
     beta = True
     engine = '3D'
 
@@ -753,8 +753,17 @@ class App(QtCore.QObject):
             # Film Tool
             "tools_film_type": self.ui.tools_defaults_form.tools_film_group.film_type_radio,
             "tools_film_boundary": self.ui.tools_defaults_form.tools_film_group.film_boundary_entry,
-            "tools_film_scale": self.ui.tools_defaults_form.tools_film_group.film_scale_entry,
+            "tools_film_scale_stroke": self.ui.tools_defaults_form.tools_film_group.film_scale_stroke_entry,
             "tools_film_color": self.ui.tools_defaults_form.tools_film_group.film_color_entry,
+            "tools_film_scale_cb": self.ui.tools_defaults_form.tools_film_group.film_scale_cb,
+            "tools_film_scale_x_entry": self.ui.tools_defaults_form.tools_film_group.film_scalex_entry,
+            "tools_film_scale_y_entry": self.ui.tools_defaults_form.tools_film_group.film_scaley_entry,
+            "tools_film_skew_cb": self.ui.tools_defaults_form.tools_film_group.film_skew_cb,
+            "tools_film_skew_x_entry": self.ui.tools_defaults_form.tools_film_group.film_skewx_entry,
+            "tools_film_skew_y_entry": self.ui.tools_defaults_form.tools_film_group.film_skewy_entry,
+            "tools_film_skew_ref_radio": self.ui.tools_defaults_form.tools_film_group.film_skew_reference,
+            "tools_film_mirror_cb": self.ui.tools_defaults_form.tools_film_group.film_mirror_cb,
+            "tools_film_mirror_axis_radio": self.ui.tools_defaults_form.tools_film_group.film_mirror_axis,
 
             # Panelize Tool
             "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,
@@ -806,6 +815,35 @@ class App(QtCore.QObject):
             "tools_solderpaste_dwellrev": self.ui.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
             "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
             "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb,
+
+            # ###################################################################################
+            # ################################ TOOLS 2 ##########################################
+            # ###################################################################################
+
+            # Optimal Tool
+            "tools_opt_precision": self.ui.tools2_defaults_form.tools2_optimal_group.precision_sp,
+
+            # Check Rules Tool
+            "tools_cr_trace_size": self.ui.tools2_defaults_form.tools2_checkrules_group.trace_size_cb,
+            "tools_cr_trace_size_val": self.ui.tools2_defaults_form.tools2_checkrules_group.trace_size_entry,
+            "tools_cr_c2c": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_copper2copper_cb,
+            "tools_cr_c2c_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_copper2copper_entry,
+            "tools_cr_c2o": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_copper2ol_cb,
+            "tools_cr_c2o_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_copper2ol_entry,
+            "tools_cr_s2s": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2silk_cb,
+            "tools_cr_s2s_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2silk_entry,
+            "tools_cr_s2sm": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2sm_cb,
+            "tools_cr_s2sm_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2sm_entry,
+            "tools_cr_s2o": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2ol_cb,
+            "tools_cr_s2o_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_silk2ol_entry,
+            "tools_cr_sm2sm": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_sm2sm_cb,
+            "tools_cr_sm2sm_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_sm2sm_entry,
+            "tools_cr_ri": self.ui.tools2_defaults_form.tools2_checkrules_group.ring_integrity_cb,
+            "tools_cr_ri_val": self.ui.tools2_defaults_form.tools2_checkrules_group.ring_integrity_entry,
+            "tools_cr_h2h": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_d2d_cb,
+            "tools_cr_h2h_val": self.ui.tools2_defaults_form.tools2_checkrules_group.clearance_d2d_entry,
+            "tools_cr_dh": self.ui.tools2_defaults_form.tools2_checkrules_group.drill_size_cb,
+            "tools_cr_dh_val": self.ui.tools2_defaults_form.tools2_checkrules_group.drill_size_entry,
 
             # Utilities
             # File associations
@@ -1172,8 +1210,17 @@ class App(QtCore.QObject):
             # Film Tool
             "tools_film_type": 'neg',
             "tools_film_boundary": 0.0393701,
-            "tools_film_scale": 0,
+            "tools_film_scale_stroke": 0,
             "tools_film_color": '#000000',
+            "tools_film_scale_cb": False,
+            "tools_film_scale_x_entry": 1.0,
+            "tools_film_scale_y_entry": 1.0,
+            "tools_film_skew_cb": False,
+            "tools_film_skew_x_entry": 0.0,
+            "tools_film_skew_y_entry": 0.0,
+            "tools_film_skew_ref_radio": 'bottomleft',
+            "tools_film_mirror_cb": False,
+            "tools_film_mirror_axis_radio": 'none',
 
             # Panel Tool
             "tools_panelize_spacing_columns": 0,
@@ -1227,6 +1274,35 @@ class App(QtCore.QObject):
 
             # Subtract Tool
             "tools_sub_close_paths": True,
+
+            # ###################################################################################
+            # ################################ TOOLS 2 ##########################################
+            # ###################################################################################
+
+            # Optimal Tool
+            "tools_opt_precision": 4,
+
+            # Check Rules Tool
+            "tools_cr_trace_size": True,
+            "tools_cr_trace_size_val": 0.01,
+            "tools_cr_c2c": True,
+            "tools_cr_c2c_val": 0.01,
+            "tools_cr_c2o": True,
+            "tools_cr_c2o_val": 0.03937,
+            "tools_cr_s2s": True,
+            "tools_cr_s2s_val": 0.01,
+            "tools_cr_s2sm": True,
+            "tools_cr_s2sm_val": 0.01,
+            "tools_cr_s2o": True,
+            "tools_cr_s2o_val": 0.03937,
+            "tools_cr_sm2sm": True,
+            "tools_cr_sm2sm_val": 0.01,
+            "tools_cr_ri": True,
+            "tools_cr_ri_val": 0.015,
+            "tools_cr_h2h": True,
+            "tools_cr_h2h_val": 0.015,
+            "tools_cr_dh": True,
+            "tools_cr_dh_val": 0.011811,
 
             # Utilities
             # file associations
@@ -1413,7 +1489,7 @@ class App(QtCore.QObject):
 
             "tools_film_type": self.ui.tools_options_form.tools_film_group.film_type_radio,
             "tools_film_boundary": self.ui.tools_options_form.tools_film_group.film_boundary_entry,
-            "tools_film_scale": self.ui.tools_options_form.tools_film_group.film_scale_entry,
+            "tools_film_scale_stroke": self.ui.tools_options_form.tools_film_group.film_scale_stroke_entry,
 
             "tools_panelize_spacing_columns": self.ui.tools_options_form.tools_panelize_group.pspacing_columns,
             "tools_panelize_spacing_rows": self.ui.tools_options_form.tools_panelize_group.pspacing_rows,
@@ -1535,7 +1611,7 @@ class App(QtCore.QObject):
 
             "tools_film_type": 'neg',
             "tools_film_boundary": 1,
-            "tools_film_scale": 0,
+            "tools_film_scale_stroke": 0,
 
             "tools_panelize_spacing_columns": 0,
             "tools_panelize_spacing_rows": 0,
@@ -2194,8 +2270,8 @@ class App(QtCore.QObject):
                                  'outname', 'overlap', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
                                  'preamble', 'radius', 'ref', 'rest', 'rows', 'shellvar_', 'scale_factor',
                                  'spacing_columns',
-                                 'spacing_rows', 'spindlespeed', 'toolchange_xy','tooldia', 'use_threads', 'value', 'x',
-                                 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
+                                 'spacing_rows', 'spindlespeed', 'toolchange_xy', 'tooldia', 'use_threads', 'value',
+                                 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
                                  ]
 
         self.tcl_keywords = [

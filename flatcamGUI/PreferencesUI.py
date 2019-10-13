@@ -213,15 +213,15 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
 
-        self.tools2_checkrules = Tools2RulesCheckPrefGroupUI()
-        self.tools2_checkrules.setMinimumWidth(220)
+        self.tools2_checkrules_group = Tools2RulesCheckPrefGroupUI()
+        self.tools2_checkrules_group.setMinimumWidth(220)
 
-        self.tools2_optimal = Tools2OptimalPrefGroupUI()
-        self.tools2_optimal.setMinimumWidth(220)
+        self.tools2_optimal_group = Tools2OptimalPrefGroupUI()
+        self.tools2_optimal_group.setMinimumWidth(220)
 
         self.vlay = QtWidgets.QVBoxLayout()
-        self.vlay.addWidget(self.tools2_checkrules)
-        self.vlay.addWidget(self.tools2_optimal)
+        self.vlay.addWidget(self.tools2_checkrules_group)
+        self.vlay.addWidget(self.tools2_optimal_group)
 
         self.vlay1 = QtWidgets.QVBoxLayout()
 
@@ -4322,7 +4322,12 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.film_color_label, 1, 0)
         grid0.addWidget(film_color_widget, 1, 1)
 
-        self.film_boundary_entry = FCEntry()
+        # Film Border
+        self.film_boundary_entry = FCDoubleSpinner()
+        self.film_boundary_entry.set_precision(self.decimals)
+        self.film_boundary_entry.set_range(0, 9999.9999)
+        self.film_boundary_entry.setSingleStep(0.1)
+
         self.film_boundary_label = QtWidgets.QLabel('%s:' % _("Border"))
         self.film_boundary_label.setToolTip(
             _("Specify a border around the object.\n"
@@ -4337,15 +4342,19 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.film_boundary_label, 2, 0)
         grid0.addWidget(self.film_boundary_entry, 2, 1)
 
-        self.film_scale_entry = FCEntry()
-        self.film_scale_label = QtWidgets.QLabel('%s:' % _("Scale Stroke"))
-        self.film_scale_label.setToolTip(
+        self.film_scale_stroke_entry = FCDoubleSpinner()
+        self.film_scale_stroke_entry.set_precision(self.decimals)
+        self.film_scale_stroke_entry.set_range(0, 9999.9999)
+        self.film_scale_stroke_entry.setSingleStep(0.1)
+
+        self.film_scale_stroke_label = QtWidgets.QLabel('%s:' % _("Scale Stroke"))
+        self.film_scale_stroke_label.setToolTip(
             _("Scale the line stroke thickness of each feature in the SVG file.\n"
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
               "therefore the fine features may be more affected by this parameter.")
         )
-        grid0.addWidget(self.film_scale_label, 3, 0)
-        grid0.addWidget(self.film_scale_entry, 3, 1)
+        grid0.addWidget(self.film_scale_stroke_label, 3, 0)
+        grid0.addWidget(self.film_scale_stroke_entry, 3, 1)
 
         self.film_adj_label = QtWidgets.QLabel('<b>%s</b>' % _("Film Adjustments"))
         self.film_adj_label.setToolTip(
@@ -4453,7 +4462,6 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.film_mirror_axis_label, 13, 0)
         grid0.addWidget(self.film_mirror_axis, 13, 1)
-
 
         self.layout.addStretch()
 
@@ -4969,7 +4977,7 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("Substractor Tool Options")))
 
-        # ## Solder Paste Dispensing
+        # ## Subtractor Tool Parameters
         self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.sublabel.setToolTip(
             _("A tool to substract one Gerber or Geometry object\n"
@@ -4989,19 +4997,220 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
 
         super(Tools2RulesCheckPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str(_("Substractor Tool Options")))
+        self.setTitle(str(_("Check Rules Tool Options")))
+        self.decimals = 4
 
-        # ## Solder Paste Dispensing
-        self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
-        self.sublabel.setToolTip(
-            _("A tool to substract one Gerber or Geometry object\n"
-              "from another of the same type.")
+        self.crlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.crlabel.setToolTip(
+            _("A tool to check if Gerber files fir within a set\n"
+              "of Manufacturing Rules.")
         )
-        self.layout.addWidget(self.sublabel)
+        self.layout.addWidget(self.crlabel)
 
-        self.close_paths_cb = FCCheckBox(_("Close paths"))
-        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
-        self.layout.addWidget(self.close_paths_cb)
+        # Form Layout
+        self.form_layout_1 = QtWidgets.QFormLayout()
+        self.layout.addLayout(self.form_layout_1)
+
+        # Trace size
+        self.trace_size_cb = FCCheckBox('%s:' % _("Trace Size"))
+        self.trace_size_cb.setToolTip(
+            _("This checks if the minimum size for traces is met.")
+        )
+        self.form_layout_1.addRow(self.trace_size_cb)
+
+        # Trace size value
+        self.trace_size_entry = FCDoubleSpinner()
+        self.trace_size_entry.set_range(0.00001, 999.99999)
+        self.trace_size_entry.set_precision(self.decimals)
+        self.trace_size_entry.setSingleStep(0.1)
+
+        self.trace_size_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.trace_size_lbl.setToolTip(
+            _("Minimum acceptable trace size.")
+        )
+        self.form_layout_1.addRow(self.trace_size_lbl, self.trace_size_entry)
+
+        # Copper2copper clearance
+        self.clearance_copper2copper_cb = FCCheckBox('%s:' % _("Copper to Copper clearance"))
+        self.clearance_copper2copper_cb.setToolTip(
+            _("This checks if the minimum clearance between copper\n"
+              "features is met.")
+        )
+        self.form_layout_1.addRow(self.clearance_copper2copper_cb)
+
+        # Copper2copper clearance value
+        self.clearance_copper2copper_entry = FCDoubleSpinner()
+        self.clearance_copper2copper_entry.set_range(0.00001, 999.99999)
+        self.clearance_copper2copper_entry.set_precision(self.decimals)
+        self.clearance_copper2copper_entry.setSingleStep(0.1)
+
+        self.clearance_copper2copper_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_copper2copper_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.clearance_copper2copper_lbl, self.clearance_copper2copper_entry)
+
+        # Copper2outline clearance
+        self.clearance_copper2ol_cb = FCCheckBox('%s:' % _("Copper to Outline clearance"))
+        self.clearance_copper2ol_cb.setToolTip(
+            _("This checks if the minimum clearance between copper\n"
+              "features and the outline is met.")
+        )
+        self.form_layout_1.addRow(self.clearance_copper2ol_cb)
+
+        # Copper2outline clearance value
+        self.clearance_copper2ol_entry = FCDoubleSpinner()
+        self.clearance_copper2ol_entry.set_range(0.00001, 999.99999)
+        self.clearance_copper2ol_entry.set_precision(self.decimals)
+        self.clearance_copper2ol_entry.setSingleStep(0.1)
+
+        self.clearance_copper2ol_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_copper2ol_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.clearance_copper2ol_lbl, self.clearance_copper2ol_entry)
+
+        # Silkscreen2silkscreen clearance
+        self.clearance_silk2silk_cb = FCCheckBox('%s:' % _("Silk to Silk Clearance"))
+        self.clearance_silk2silk_cb.setToolTip(
+            _("This checks if the minimum clearance between silkscreen\n"
+              "features and silkscreen features is met.")
+        )
+        self.form_layout_1.addRow(self.clearance_silk2silk_cb)
+
+        # Copper2silkscreen clearance value
+        self.clearance_silk2silk_entry = FCDoubleSpinner()
+        self.clearance_silk2silk_entry.set_range(0.00001, 999.99999)
+        self.clearance_silk2silk_entry.set_precision(self.decimals)
+        self.clearance_silk2silk_entry.setSingleStep(0.1)
+
+        self.clearance_silk2silk_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_silk2silk_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.clearance_silk2silk_lbl, self.clearance_silk2silk_entry)
+
+        # Silkscreen2soldermask clearance
+        self.clearance_silk2sm_cb = FCCheckBox('%s:' % _("Silk to Solder Mask Clearance"))
+        self.clearance_silk2sm_cb.setToolTip(
+            _("This checks if the minimum clearance between silkscreen\n"
+              "features and soldermask features is met.")
+        )
+        self.form_layout_1.addRow(self.clearance_silk2sm_cb)
+
+        # Silkscreen2soldermask clearance value
+        self.clearance_silk2sm_entry = FCDoubleSpinner()
+        self.clearance_silk2sm_entry.set_range(0.00001, 999.99999)
+        self.clearance_silk2sm_entry.set_precision(self.decimals)
+        self.clearance_silk2sm_entry.setSingleStep(0.1)
+
+        self.clearance_silk2sm_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_silk2sm_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.clearance_silk2sm_lbl, self.clearance_silk2sm_entry)
+
+        # Silk2outline clearance
+        self.clearance_silk2ol_cb = FCCheckBox('%s:' % _("Silk to Outline Clearance"))
+        self.clearance_silk2ol_cb.setToolTip(
+            _("This checks if the minimum clearance between silk\n"
+              "features and the outline is met.")
+        )
+        self.form_layout_1.addRow(self.clearance_silk2ol_cb)
+
+        # Silk2outline clearance value
+        self.clearance_silk2ol_entry = FCDoubleSpinner()
+        self.clearance_silk2ol_entry.set_range(0.00001, 999.99999)
+        self.clearance_silk2ol_entry.set_precision(self.decimals)
+        self.clearance_silk2ol_entry.setSingleStep(0.1)
+
+        self.clearance_silk2ol_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_silk2ol_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.clearance_silk2ol_lbl, self.clearance_silk2ol_entry)
+
+        # Soldermask2soldermask clearance
+        self.clearance_sm2sm_cb = FCCheckBox('%s:' % _("Minimum Solder Mask Sliver"))
+        self.clearance_sm2sm_cb.setToolTip(
+            _("This checks if the minimum clearance between soldermask\n"
+              "features and soldermask features is met.")
+        )
+        self.form_layout_1.addRow(self.clearance_sm2sm_cb)
+
+        # Soldermask2soldermask clearance value
+        self.clearance_sm2sm_entry = FCDoubleSpinner()
+        self.clearance_sm2sm_entry.set_range(0.00001, 999.99999)
+        self.clearance_sm2sm_entry.set_precision(self.decimals)
+        self.clearance_sm2sm_entry.setSingleStep(0.1)
+
+        self.clearance_sm2sm_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_sm2sm_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.clearance_sm2sm_lbl, self.clearance_sm2sm_entry)
+
+        # Ring integrity check
+        self.ring_integrity_cb = FCCheckBox('%s:' % _("Minimum Annular Ring"))
+        self.ring_integrity_cb.setToolTip(
+            _("This checks if the minimum copper ring left by drilling\n"
+              "a hole into a pad is met.")
+        )
+        self.form_layout_1.addRow(self.ring_integrity_cb)
+
+        # Ring integrity value
+        self.ring_integrity_entry = FCDoubleSpinner()
+        self.ring_integrity_entry.set_range(0.00001, 999.99999)
+        self.ring_integrity_entry.set_precision(self.decimals)
+        self.ring_integrity_entry.setSingleStep(0.1)
+
+        self.ring_integrity_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.ring_integrity_lbl.setToolTip(
+            _("Minimum acceptable ring value.")
+        )
+        self.form_layout_1.addRow(self.ring_integrity_lbl, self.ring_integrity_entry)
+
+        self.form_layout_1.addRow(QtWidgets.QLabel(""))
+
+        # Hole2Hole clearance
+        self.clearance_d2d_cb = FCCheckBox('%s:' % _("Hole to Hole Clearance"))
+        self.clearance_d2d_cb.setToolTip(
+            _("This checks if the minimum clearance between a drill hole\n"
+              "and another drill hole is met.")
+        )
+        self.form_layout_1.addRow(self.clearance_d2d_cb)
+
+        # Hole2Hole clearance value
+        self.clearance_d2d_entry = FCDoubleSpinner()
+        self.clearance_d2d_entry.set_range(0.00001, 999.99999)
+        self.clearance_d2d_entry.set_precision(self.decimals)
+        self.clearance_d2d_entry.setSingleStep(0.1)
+
+        self.clearance_d2d_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.clearance_d2d_lbl.setToolTip(
+            _("Minimum acceptable drill size.")
+        )
+        self.form_layout_1.addRow(self.clearance_d2d_lbl, self.clearance_d2d_entry)
+
+        # Drill holes size check
+        self.drill_size_cb = FCCheckBox('%s:' % _("Hole Size"))
+        self.drill_size_cb.setToolTip(
+            _("This checks if the drill holes\n"
+              "sizes are above the threshold.")
+        )
+        self.form_layout_1.addRow(self.drill_size_cb)
+
+        # Drile holes value
+        self.drill_size_entry = FCDoubleSpinner()
+        self.drill_size_entry.set_range(0.00001, 999.99999)
+        self.drill_size_entry.set_precision(self.decimals)
+        self.drill_size_entry.setSingleStep(0.1)
+
+        self.drill_size_lbl = QtWidgets.QLabel('%s:' % _("Min value"))
+        self.drill_size_lbl.setToolTip(
+            _("Minimum acceptable clearance value.")
+        )
+        self.form_layout_1.addRow(self.drill_size_lbl, self.drill_size_entry)
 
         self.layout.addStretch()
 
@@ -5011,19 +5220,34 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
 
         super(Tools2OptimalPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str(_("Substractor Tool Options")))
+        self.setTitle(str(_("Optimal Tool Options")))
+        self.decimals = 4
 
-        # ## Solder Paste Dispensing
-        self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
-        self.sublabel.setToolTip(
-            _("A tool to substract one Gerber or Geometry object\n"
-              "from another of the same type.")
+        # ## Parameters
+        self.optlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.optlabel.setToolTip(
+            _("A tool to find the minimum distance between\n"
+              "every two Gerber geometric elements")
         )
-        self.layout.addWidget(self.sublabel)
+        self.layout.addWidget(self.optlabel)
 
-        self.close_paths_cb = FCCheckBox(_("Close paths"))
-        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
-        self.layout.addWidget(self.close_paths_cb)
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+
+        self.precision_sp = FCSpinner()
+        self.precision_sp.set_range(2, 10)
+        self.precision_sp.setSingleStep(1)
+        self.precision_sp.setWrapping(True)
+
+        self.precision_lbl = QtWidgets.QLabel('%s:' % _("Precision"))
+        self.precision_lbl.setToolTip(
+            _("Number of decimals for the distances and coordinates in this tool.")
+        )
+
+        grid0.addWidget(self.precision_lbl, 0, 0)
+        grid0.addWidget(self.precision_sp, 0, 1)
 
         self.layout.addStretch()
 

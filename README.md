@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - changed the grid colors for 3D graphic engine when in Dark mode
 - enhanced the Tool Film adding the Film adjustments and added the GUI in Preferences
 - set the GUI layout in Preferences for a new category named Tools 2
+- added the Preferences for Check Rules Tool and for Optimal Tool and also updated the Film Tool to use the default settings in Preferences
 
 12.10.2019
 

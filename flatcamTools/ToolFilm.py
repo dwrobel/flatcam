@@ -430,11 +430,22 @@ class Film(FlatCAMTool):
         b_entry = self.app.defaults["tools_film_boundary"] if self.app.defaults["tools_film_boundary"] else 0.0
         self.boundary_entry.set_value(float(b_entry))
 
-        scale_stroke_width = self.app.defaults["tools_film_scale"] if self.app.defaults["tools_film_scale"] else 0.0
+        scale_stroke_width = self.app.defaults["tools_film_scale_stroke"] if \
+            self.app.defaults["tools_film_scale_stroke"] else 0.0
         self.film_scale_stroke_entry.set_value(int(scale_stroke_width))
 
         self.punch_cb.set_value(False)
         self.source_punch.set_value('exc')
+
+        self.film_scale_cb.set_value(self.app.defaults["tools_film_scale_cb"])
+        self.film_scalex_entry.set_value(float(self.app.defaults["tools_film_scale_x_entry"]))
+        self.film_scaley_entry.set_value(float(self.app.defaults["tools_film_scale_y_entry"]))
+        self.film_skew_cb.set_value(self.app.defaults["tools_film_skew_cb"])
+        self.film_skewx_entry.set_value(float(self.app.defaults["tools_film_skew_x_entry"]))
+        self.film_skewy_entry.set_value(float(self.app.defaults["tools_film_skew_y_entry"]))
+        self.film_skew_reference.set_value(self.app.defaults["tools_film_skew_ref_radio"])
+        self.film_mirror_cb.set_value(self.app.defaults["tools_film_mirror_cb"])
+        self.film_mirror_axis.set_value(self.app.defaults["tools_film_mirror_axis_radio"])
 
     def on_film_type(self, val):
         type_of_film = val

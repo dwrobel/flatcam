@@ -270,7 +270,7 @@ class ToolOptimal(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Optimal Tool"))
 
     def set_tool_ui(self):
-        self.precision_spinner.set_value(int(self.decimals))
+        self.precision_spinner.set_value(int(self.app.defaults["tools_opt_precision"]))
         self.locations_textb.clear()
         # new cursor - select all document
         cursor = self.locations_textb.textCursor()
