@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the Export PNG function when using the 2D legacy graphic engine
 - added a new capability to toggle the grid lines for both graphic engines: menu link in View and key shortcut combo ALT+G
 - changed the grid colors for 3D graphic engine when in Dark mode
+- enhanced the Tool Film adding the Film adjustments and added the GUI in Preferences
+- set the GUI layout in Preferences for a new category named Tools 2
 
 12.10.2019
 

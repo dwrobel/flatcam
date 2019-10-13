@@ -1,3 +1,10 @@
+# ##########################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 3/10/2019                                          #
+# MIT Licence                                              #
+# ##########################################################
+
 from FlatCAMTool import FlatCAMTool
 from ObjectCollection import *
 from FlatCAMApp import *

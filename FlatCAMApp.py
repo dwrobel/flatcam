@@ -1566,6 +1566,7 @@ class App(QtCore.QObject):
         self.geo_form = None
         self.cnc_form = None
         self.tools_form = None
+        self.tools2_form = None
         self.fa_form = None
 
         self.on_options_combo_change(0)  # Will show the initial form
@@ -6000,6 +6001,7 @@ class App(QtCore.QObject):
             self.geo_form = self.ui.geometry_defaults_form
             self.cnc_form = self.ui.cncjob_defaults_form
             self.tools_form = self.ui.tools_defaults_form
+            self.tools2_form = self.ui.tools2_defaults_form
             self.fa_form = self.ui.util_defaults_form
         elif sel == 1:
             self.gen_form = self.ui.general_options_form
@@ -6008,6 +6010,7 @@ class App(QtCore.QObject):
             self.geo_form = self.ui.geometry_options_form
             self.cnc_form = self.ui.cncjob_options_form
             self.tools_form = self.ui.tools_options_form
+            self.tools2_form = self.ui.tools2_options_form
             self.fa_form = self.ui.util_options_form
         else:
             return
@@ -6053,6 +6056,13 @@ class App(QtCore.QObject):
             self.log.debug("Nothing to remove")
         self.ui.tools_scroll_area.setWidget(self.tools_form)
         self.tools_form.show()
+
+        try:
+            self.ui.tools2_scroll_area.takeWidget()
+        except:
+            self.log.debug("Nothing to remove")
+        self.ui.tools2_scroll_area.setWidget(self.tools2_form)
+        self.tools2_form.show()
 
         try:
             self.ui.fa_scroll_area.takeWidget()
@@ -9697,13 +9707,13 @@ class App(QtCore.QObject):
         self.set_ui_title(name=self.project_filename)
         self.should_we_save = False
 
-    def export_svg(self, obj_name, filename, scale_factor=0.00):
+    def export_svg(self, obj_name, filename, scale_stroke_factor=0.00):
         """
         Exports a Geometry Object to an SVG file.
 
         :param obj_name: the name of the FlatCAM object to be saved as SVG
         :param filename: Path to the SVG file to save to.
-        :param scale_factor: factor by which to change/scale the thickness of the features
+        :param scale_stroke_factor: factor by which to change/scale the thickness of the features
         :return:
         """
         self.report_usage("export_svg()")
@@ -9720,7 +9730,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % obj_name
 
         with self.proc_container.new(_("Exporting SVG")) as proc:
-            exported_svg = obj.export_svg(scale_factor=scale_factor)
+            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor)
 
             # Determine bounding area for svg export
             bounds = obj.bounds()
@@ -9763,7 +9773,12 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s: %s' %
                              (_("SVG file exported to"), filename))
 
-    def export_svg_negative(self, obj_name, box_name, filename, boundary, scale_factor=0.00, use_thread=True):
+    def export_svg_negative(self, obj_name, box_name, filename, boundary,
+                            scale_stroke_factor=0.00,
+                            scale_factor_x=None, scale_factor_y=None,
+                            skew_factor_x=None, skew_factor_y=None, skew_reference='center',
+                            mirror=None,
+                            use_thread=True):
         """
         Exports a Geometry Object to an SVG file in negative.
 
@@ -9771,7 +9786,14 @@ class App(QtCore.QObject):
         :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
         :param filename: Path to the SVG file to save to.
         :param boundary: thickness of a black border to surround all the features
-        :param scale_factor: factor by which to change/scale the thickness of the features
+        :param scale_stroke_factor: factor by which to change/scale the thickness of the features
+        :param scale_factor_x: factor to scale the svg geometry on the X axis
+        :param scale_factor_y: factor to scale the svg geometry on the Y axis
+        :param skew_factor_x: factor to skew the svg geometry on the X axis
+        :param skew_factor_y: factor to skew the svg geometry on the Y axis
+        :param skew_reference: reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft', 'topright' and
+        those are the 4 points of the bounding box of the geometry to be skewed.
+        :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
         :param use_thread: if to be run in a separate thread; boolean
         :return:
         """
@@ -9800,7 +9822,11 @@ class App(QtCore.QObject):
             box = obj
 
         def make_negative_film():
-            exported_svg = obj.export_svg(scale_factor=scale_factor)
+            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
+                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                          mirror=mirror
+                                          )
 
             # Determine bounding area for svg export
             bounds = box.bounds()
@@ -9889,14 +9915,27 @@ class App(QtCore.QObject):
         else:
             make_negative_film()
 
-    def export_svg_positive(self, obj_name, box_name, filename, scale_factor=0.00, use_thread=True):
+    def export_svg_positive(self, obj_name, box_name, filename,
+                            scale_stroke_factor=0.00,
+                            scale_factor_x=None, scale_factor_y=None,
+                            skew_factor_x=None, skew_factor_y=None, skew_reference='center',
+                            mirror=None,
+                            use_thread=True):
         """
         Exports a Geometry Object to an SVG file in positive black.
 
         :param obj_name: the name of the FlatCAM object to be saved as SVG
         :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
         :param filename: Path to the SVG file to save to.
-        :param scale_factor: factor by which to change/scale the thickness of the features
+        :param scale_stroke_factor: factor by which to change/scale the thickness of the features
+        :param scale_factor_x: factor to scale the svg geometry on the X axis
+        :param scale_factor_y: factor to scale the svg geometry on the Y axis
+        :param skew_factor_x: factor to skew the svg geometry on the X axis
+        :param skew_factor_y: factor to skew the svg geometry on the Y axis
+        :param skew_reference: reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft', 'topright' and
+        those are the 4 points of the bounding box of the geometry to be skewed.
+        :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
+
         :param use_thread: if to be run in a separate thread; boolean
         :return:
         """
@@ -9925,7 +9964,11 @@ class App(QtCore.QObject):
             box = obj
 
         def make_positive_film():
-            exported_svg = obj.export_svg(scale_factor=scale_factor)
+            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
+                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                          mirror=mirror
+                                          )
 
             self.progress.emit(40)
 

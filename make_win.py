@@ -1,4 +1,4 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
@@ -11,12 +11,12 @@
 # This is not an aid to install FlatCAM from source on     #
 # Windows platforms. It is only useful when FlatCAM is up  #
 # and running and ready to be packaged.                    #
-# ########################################################## ##
+# ##########################################################
 
-# ########################################################## ##
-# File Modified (major mod): Marius Adrian Stanciu         #
+# ##########################################################
+# File Modified: Marius Adrian Stanciu                     #
 # Date: 3/10/2019                                          #
-# ########################################################## ##
+# ##########################################################
 
 
 # Files not needed: Qt, tk.dll, tcl.dll, tk/, tcl/, vtk/,

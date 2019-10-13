@@ -1,10 +1,9 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
@@ -30,6 +29,8 @@ class Film(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
+
+        self.decimals = 4
 
         # Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -121,20 +122,141 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.tf_box_combo_label, 3, 0)
         grid0.addWidget(self.tf_box_combo, 3, 1)
 
-        # Scale Stroke size
-        self.film_scale_entry = FCDoubleSpinner()
-        self.film_scale_entry.set_range(-999.9999, 999.9999)
+        grid0.addWidget(QtWidgets.QLabel(''), 4, 0)
 
-        self.film_scale_label = QtWidgets.QLabel('%s:' % _("Scale Stroke"))
-        self.film_scale_label.setToolTip(
+        self.film_adj_label = QtWidgets.QLabel('<b>%s</b>' % _("Film Adjustments"))
+        self.film_adj_label.setToolTip(
+            _("Sometime the printers will distort the print shape, especially the Laser types.\n"
+              "This section provide the tools to compensate for the print distortions.")
+        )
+
+        grid0.addWidget(self.film_adj_label, 5, 0, 1, 2)
+
+        # Scale Geometry
+        self.film_scale_cb = FCCheckBox('%s' % _("Scale Film geometry"))
+        self.film_scale_cb.setToolTip(
+            _("A value greater than 1 will stretch the film\n"
+              "while a value less than 1 will jolt it.")
+        )
+        self.film_scale_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        grid0.addWidget(self.film_scale_cb, 6, 0, 1, 2)
+
+        self.film_scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
+        self.film_scalex_entry = FCDoubleSpinner()
+        self.film_scalex_entry.set_range(-999.9999, 999.9999)
+        self.film_scalex_entry.set_precision(self.decimals)
+        self.film_scalex_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_scalex_label, 7, 0)
+        grid0.addWidget(self.film_scalex_entry, 7, 1)
+
+        self.film_scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
+        self.film_scaley_entry = FCDoubleSpinner()
+        self.film_scaley_entry.set_range(-999.9999, 999.9999)
+        self.film_scaley_entry.set_precision(self.decimals)
+        self.film_scaley_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_scaley_label, 8, 0)
+        grid0.addWidget(self.film_scaley_entry, 8, 1)
+
+        self.ois_scale = OptionalInputSection(self.film_scale_cb, [self.film_scalex_label, self.film_scalex_entry,
+                                                                   self.film_scaley_label,  self.film_scaley_entry])
+        # Skew Geometry
+        self.film_skew_cb =FCCheckBox('%s' % _("Skew Film geometry"))
+        self.film_skew_cb.setToolTip(
+            _("Positive values will skew to the right\n"
+              "while negative values will skew to the left.")
+        )
+        self.film_skew_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        grid0.addWidget(self.film_skew_cb, 9, 0, 1, 2)
+
+        self.film_skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
+        self.film_skewx_entry = FCDoubleSpinner()
+        self.film_skewx_entry.set_range(-999.9999, 999.9999)
+        self.film_skewx_entry.set_precision(self.decimals)
+        self.film_skewx_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_skewx_label, 10, 0)
+        grid0.addWidget(self.film_skewx_entry, 10, 1)
+
+        self.film_skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
+        self.film_skewy_entry = FCDoubleSpinner()
+        self.film_skewy_entry.set_range(-999.9999, 999.9999)
+        self.film_skewy_entry.set_precision(self.decimals)
+        self.film_skewy_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_skewy_label, 11, 0)
+        grid0.addWidget(self.film_skewy_entry, 11, 1)
+
+        self.film_skew_ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        self.film_skew_ref_label.setToolTip(
+            _("The reference point to be used as origin for the skew.\n"
+              "It can be one of the four points of the geometry bounding box.")
+        )
+        self.film_skew_reference = RadioSet([{'label': _('Bottom Left'), 'value': 'bottomleft'},
+                                          {'label': _('Top Left'), 'value': 'topleft'},
+                                          {'label': _('Bottom Right'), 'value': 'bottomright'},
+                                          {'label': _('Top right'), 'value': 'topright'}],
+                                            orientation='vertical',
+                                            stretch=False)
+
+        grid0.addWidget(self.film_skew_ref_label, 12, 0)
+        grid0.addWidget(self.film_skew_reference, 12, 1)
+
+        self.ois_skew = OptionalInputSection(self.film_skew_cb, [self.film_skewx_label, self.film_skewx_entry,
+                                                                 self.film_skewy_label,  self.film_skewy_entry,
+                                                                 self.film_skew_reference])
+        # Mirror Geometry
+        self.film_mirror_cb = FCCheckBox('%s' % _("Mirror Film geometry"))
+        self.film_mirror_cb.setToolTip(
+            _("Mirror the film geometry on the selected axis or on both.")
+        )
+        self.film_mirror_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        grid0.addWidget(self.film_mirror_cb, 13, 0, 1, 2)
+
+        self.film_mirror_axis = RadioSet([{'label': _('None'), 'value': 'none'},
+                                          {'label': _('X'), 'value': 'x'},
+                                          {'label': _('Y'), 'value': 'y'},
+                                          {'label': _('Both'), 'value': 'both'}],
+                                         stretch=False)
+        self.film_mirror_axis_label = QtWidgets.QLabel('%s:' % _("Mirror axis"))
+
+        grid0.addWidget(self.film_mirror_axis_label, 14, 0)
+        grid0.addWidget(self.film_mirror_axis, 14, 1)
+
+        self.ois_mirror = OptionalInputSection(self.film_mirror_cb,
+                                               [self.film_mirror_axis_label, self.film_mirror_axis])
+
+        grid0.addWidget(QtWidgets.QLabel(''), 15, 0)
+
+        # Scale Stroke size
+        self.film_scale_stroke_entry = FCDoubleSpinner()
+        self.film_scale_stroke_entry.set_range(-999.9999, 999.9999)
+        self.film_scale_stroke_entry.setSingleStep(0.01)
+        self.film_scale_stroke_entry.set_precision(self.decimals)
+
+        self.film_scale_stroke_label = QtWidgets.QLabel('%s:' % _("Scale Stroke"))
+        self.film_scale_stroke_label.setToolTip(
             _("Scale the line stroke thickness of each feature in the SVG file.\n"
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
               "therefore the fine features may be more affected by this parameter.")
         )
-        grid0.addWidget(self.film_scale_label, 4, 0)
-        grid0.addWidget(self.film_scale_entry, 4, 1)
+        grid0.addWidget(self.film_scale_stroke_label, 16, 0)
+        grid0.addWidget(self.film_scale_stroke_entry, 16, 1)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 5, 0)
+        grid0.addWidget(QtWidgets.QLabel(''), 17, 0)
 
         # Film Type
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
@@ -149,12 +271,15 @@ class Film(FlatCAMTool):
               "with white on a black canvas.\n"
               "The Film format is SVG.")
         )
-        grid0.addWidget(self.film_type_label, 6, 0)
-        grid0.addWidget(self.film_type, 6, 1)
+        grid0.addWidget(self.film_type_label, 18, 0)
+        grid0.addWidget(self.film_type, 18, 1)
 
         # Boundary for negative film generation
         self.boundary_entry = FCDoubleSpinner()
         self.boundary_entry.set_range(-999.9999, 999.9999)
+        self.boundary_entry.setSingleStep(0.01)
+        self.boundary_entry.set_precision(self.decimals)
+
         self.boundary_label = QtWidgets.QLabel('%s:' % _("Border"))
         self.boundary_label.setToolTip(
             _("Specify a border around the object.\n"
@@ -166,8 +291,8 @@ class Film(FlatCAMTool):
               "white color like the rest and which may confound with the\n"
               "surroundings if not for this border.")
         )
-        grid0.addWidget(self.boundary_label, 7, 0)
-        grid0.addWidget(self.boundary_entry, 7, 1)
+        grid0.addWidget(self.boundary_label, 19, 0)
+        grid0.addWidget(self.boundary_entry, 19, 1)
 
         self.boundary_label.hide()
         self.boundary_entry.hide()
@@ -177,7 +302,7 @@ class Film(FlatCAMTool):
         self.punch_cb.setToolTip(_("When checked the generated film will have holes in pads when\n"
                                    "the generated film is positive. This is done to help drilling,\n"
                                    "when done manually."))
-        grid0.addWidget(self.punch_cb, 8, 0, 1, 2)
+        grid0.addWidget(self.punch_cb, 20, 0, 1, 2)
 
         # this way I can hide/show the frame
         self.punch_frame = QtWidgets.QFrame()
@@ -199,8 +324,8 @@ class Film(FlatCAMTool):
               "- Pad Center -> will try to use the pads center as reference.")
         )
         self.source_punch = RadioSet([{'label': _('Excellon'), 'value': 'exc'},
-                                   {'label': _('Pad center'), 'value': 'pad'}],
-                                   stretch=False)
+                                      {'label': _('Pad center'), 'value': 'pad'}],
+                                     stretch=False)
         punch_grid.addWidget(self.source_label, 0, 0)
         punch_grid.addWidget(self.source_punch, 0, 1)
 
@@ -222,6 +347,8 @@ class Film(FlatCAMTool):
         self.punch_size_label.setToolTip(_("The value here will control how big is the punch hole in the pads."))
         self.punch_size_spinner = FCDoubleSpinner()
         self.punch_size_spinner.set_range(0, 999.9999)
+        self.punch_size_spinner.setSingleStep(0.1)
+        self.punch_size_spinner.set_precision(self.decimals)
 
         punch_grid.addWidget(self.punch_size_label, 2, 0)
         punch_grid.addWidget(self.punch_size_spinner, 2, 1)
@@ -304,7 +431,7 @@ class Film(FlatCAMTool):
         self.boundary_entry.set_value(float(b_entry))
 
         scale_stroke_width = self.app.defaults["tools_film_scale"] if self.app.defaults["tools_film_scale"] else 0.0
-        self.film_scale_entry.set_value(int(scale_stroke_width))
+        self.film_scale_stroke_entry.set_value(int(scale_stroke_width))
 
         self.punch_cb.set_value(False)
         self.source_punch.set_value('exc')
@@ -356,7 +483,7 @@ class Film(FlatCAMTool):
                                  _("No FlatCAM object selected. Load an object for Box and retry."))
             return
 
-        scale_stroke_width = float(self.film_scale_entry.get_value())
+        scale_stroke_width = float(self.film_scale_stroke_entry.get_value())
 
         source = self.source_punch.get_value()
 
@@ -377,6 +504,29 @@ class Film(FlatCAMTool):
 
     def generate_positive_normal_film(self, name, boxname, factor):
         log.debug("ToolFilm.Film.generate_positive_normal_film() started ...")
+
+        scale_factor_x = None
+        scale_factor_y = None
+        skew_factor_x = None
+        skew_factor_y = None
+        mirror = None
+        skew_reference = 'center'
+
+        if self.film_scale_cb.get_value():
+            if self.film_scalex_entry.get_value() != 1.0:
+                scale_factor_x = self.film_scalex_entry.get_value()
+            if self.film_scaley_entry.get_value() != 1.0:
+                scale_factor_y = self.film_scaley_entry.get_value()
+        if self.film_skew_cb.get_value():
+            if self.film_skewx_entry.get_value() != 0.0:
+                skew_factor_x = self.film_skewx_entry.get_value()
+            if self.film_skewy_entry.get_value() != 0.0:
+                skew_factor_y = self.film_skewy_entry.get_value()
+
+            skew_reference = self.film_skew_reference.get_value()
+        if self.film_mirror_cb.get_value():
+            if self.film_mirror_axis.get_value() != 'none':
+                mirror = self.film_mirror_axis.get_value()
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export SVG positive"),
@@ -391,7 +541,13 @@ class Film(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export SVG positive cancelled."))
             return
         else:
-            self.app.export_svg_positive(name, boxname, filename, scale_factor=factor)
+            self.app.export_svg_positive(name, boxname, filename,
+                                         scale_stroke_factor=factor,
+                                         scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                         skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                         skew_reference=skew_reference,
+                                         mirror=mirror
+                                         )
 
     def generate_positive_punched_film(self, name, boxname, source, factor):
 
@@ -473,6 +629,29 @@ class Film(FlatCAMTool):
     def generate_negative_film(self, name, boxname, factor):
         log.debug("ToolFilm.Film.generate_negative_film() started ...")
 
+        scale_factor_x = None
+        scale_factor_y = None
+        skew_factor_x = None
+        skew_factor_y = None
+        mirror = None
+        skew_reference = 'center'
+
+        if self.film_scale_cb.get_value():
+            if self.film_scalex_entry.get_value() != 1.0:
+                scale_factor_x = self.film_scalex_entry.get_value()
+            if self.film_scaley_entry.get_value() != 1.0:
+                scale_factor_y = self.film_scaley_entry.get_value()
+        if self.film_skew_cb.get_value():
+            if self.film_skewx_entry.get_value() != 0.0:
+                skew_factor_x = self.film_skewx_entry.get_value()
+            if self.film_skewy_entry.get_value() != 0.0:
+                skew_factor_y = self.film_skewy_entry.get_value()
+
+            skew_reference = self.film_skew_reference.get_value()
+        if self.film_mirror_cb.get_value():
+            if self.film_mirror_axis.get_value() != 'none':
+                mirror = self.film_mirror_axis.get_value()
+
         border = float(self.boundary_entry.get_value())
 
         if border is None:
@@ -492,7 +671,13 @@ class Film(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export SVG negative cancelled."))
             return
         else:
-            self.app.export_svg_negative(name, boxname, filename, border, scale_factor=factor)
+            self.app.export_svg_negative(name, boxname, filename, border,
+                                         scale_stroke_factor=factor,
+                                         scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
+                                         skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
+                                         skew_reference=skew_reference,
+                                         mirror=mirror
+                                         )
 
     def reset_fields(self):
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

@@ -1027,6 +1027,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.tools_scroll_area = QtWidgets.QScrollArea()
         self.tools_tab_lay.addWidget(self.tools_scroll_area)
 
+        self.tools2_tab = QtWidgets.QWidget()
+        self.pref_tab_area.addTab(self.tools2_tab, _("TOOLS 2"))
+        self.tools2_tab_lay = QtWidgets.QVBoxLayout()
+        self.tools2_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.tools2_tab.setLayout(self.tools2_tab_lay)
+
+        self.tools2_scroll_area = QtWidgets.QScrollArea()
+        self.tools2_tab_lay.addWidget(self.tools2_scroll_area)
+
         self.fa_tab = QtWidgets.QWidget()
         self.fa_tab.setObjectName("fa_tab")
         self.pref_tab_area.addTab(self.fa_tab, _("UTILITIES"))
@@ -1980,6 +1989,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_defaults_form = GeometryPreferencesUI()
         self.cncjob_defaults_form = CNCJobPreferencesUI()
         self.tools_defaults_form = ToolsPreferencesUI()
+        self.tools2_defaults_form = Tools2PreferencesUI()
         self.util_defaults_form = UtilPreferencesUI()
 
         self.general_options_form = GeneralPreferencesUI()
@@ -1988,6 +1998,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_options_form = GeometryPreferencesUI()
         self.cncjob_options_form = CNCJobPreferencesUI()
         self.tools_options_form = ToolsPreferencesUI()
+        self.tools2_options_form = Tools2PreferencesUI()
         self.util_options_form = UtilPreferencesUI()
 
         QtWidgets.qApp.installEventFilter(self)

@@ -1836,37 +1836,69 @@ class Geometry(object):
         """
         self.solid_geometry = [cascaded_union(self.solid_geometry)]
 
-    def export_svg(self, scale_factor=0.00):
+    def export_svg(self, scale_stroke_factor=0.00,
+                   scale_factor_x=None, scale_factor_y=None,
+                   skew_factor_x=None, skew_factor_y=None,
+                   skew_reference='center',
+                   mirror=None):
         """
         Exports the Geometry Object as a SVG Element
 
         :return: SVG Element
         """
 
-        # Make sure we see a Shapely Geometry class and not a list
+        geom = None
 
+        # Make sure we see a Shapely Geometry class and not a list
         if str(type(self)) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
             flat_geo = []
             if self.multigeo:
                 for tool in self.tools:
                     flat_geo += self.flatten(self.tools[tool]['solid_geometry'])
-                geom = cascaded_union(flat_geo)
+                geom_svg = cascaded_union(flat_geo)
             else:
-                geom = cascaded_union(self.flatten())
+                geom_svg = cascaded_union(self.flatten())
         else:
-            geom = cascaded_union(self.flatten())
+            geom_svg = cascaded_union(self.flatten())
+
+        skew_ref = 'center'
+        if skew_reference != 'center':
+            xmin, ymin, xmax, ymax = geom_svg.bounds
+            if skew_reference == 'topleft':
+                skew_ref = (xmin, ymax)
+            elif skew_reference == 'bottomleft':
+                skew_ref = (xmin, ymin)
+            elif skew_reference == 'topright':
+                skew_ref = (xmax, ymax)
+            elif skew_reference == 'bottomright':
+                skew_ref = (xmax, ymin)
+
+        if scale_factor_x:
+            geom = affinity.scale(geom_svg, scale_factor_x, 1.0)
+        if scale_factor_y:
+            geom = affinity.scale(geom_svg, 1.0, scale_factor_y)
+        if skew_factor_x:
+            geom = affinity.skew(geom_svg, skew_factor_x, 0.0, origin=skew_ref)
+        if skew_factor_y:
+            geom = affinity.skew(geom_svg, 0.0, skew_factor_y, origin=skew_ref)
+        if mirror:
+            if mirror == 'x':
+                geom = affinity.scale(geom_svg, 1.0, -1.0)
+            if mirror == 'y':
+                geom = affinity.scale(geom_svg, -1.0, 1.0)
+            if mirror == 'both':
+                geom = affinity.scale(geom_svg, -1.0, -1.0)
 
         # scale_factor is a multiplication factor for the SVG stroke-width used within shapely's svg export
-
-        # If 0 or less which is invalid then default to 0.05
+        # If 0 or less which is invalid then default to 0.01
         # This value appears to work for zooming, and getting the output svg line width
         # to match that viewed on screen with FlatCam
         # MS: I choose a factor of 0.01 so the scale is right for PCB UV film
-        if scale_factor <= 0:
-            scale_factor = 0.01
+        if scale_stroke_factor <= 0:
+            scale_stroke_factor = 0.01
 
         # Convert to a SVG
-        svg_elem = geom.svg(scale_factor=scale_factor)
+        svg_elem = geom.svg(scale_factor=scale_stroke_factor)
         return svg_elem
 
     def mirror(self, axis, point):
@@ -4599,7 +4631,7 @@ class CNCjob(Geometry):
         gcode += self.doformat(p.lift_code, x=first_x, y=first_y)  # Stop cutting
         return gcode
 
-    def export_svg(self, scale_factor=0.00):
+    def export_svg(self, scale_stroke_factor=0.00):
         """
         Exports the CNC Job as a SVG Element
 
@@ -4611,14 +4643,14 @@ class CNCjob(Geometry):
         # This way what is on screen will match what is outputed for the svg
         # This is quite a useful feature for svg's used with visicut
 
-        if scale_factor <= 0:
-            scale_factor = self.options['tooldia'] / 2
+        if scale_stroke_factor <= 0:
+            scale_stroke_factor = self.options['tooldia'] / 2
 
         # If still 0 then default to 0.05
         # This value appears to work for zooming, and getting the output svg line width
         # to match that viewed on screen with FlatCam
-        if scale_factor == 0:
-            scale_factor = 0.01
+        if scale_stroke_factor == 0:
+            scale_stroke_factor = 0.01
 
         # Separate the list of cuts and travels into 2 distinct lists
         # This way we can add different formatting / colors to both
@@ -4651,9 +4683,9 @@ class CNCjob(Geometry):
         # It's better to have the travels sitting underneath the cuts for visicut
         svg_elem = ""
         if travels:
-            svg_elem = travelsgeom.svg(scale_factor=scale_factor, stroke_color="#F0E24D")
+            svg_elem = travelsgeom.svg(scale_factor=scale_stroke_factor, stroke_color="#F0E24D")
         if cuts:
-            svg_elem += cutsgeom.svg(scale_factor=scale_factor, stroke_color="#5E6CFF")
+            svg_elem += cutsgeom.svg(scale_factor=scale_stroke_factor, stroke_color="#5E6CFF")
 
         return svg_elem
 

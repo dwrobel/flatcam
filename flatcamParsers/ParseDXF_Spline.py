@@ -2,22 +2,24 @@
 # Vasilis Vlachoudis
 # Date: 20-Oct-2015
 
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File modified: Marius Adrian Stanciu                     #
 # Date: 3/10/2019                                          #
-# ########################################################## ##
+# ##########################################################
 
 import math
 import sys
 
+
 def norm(v):
     return math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2])
+
 
 def normalize_2(v):
     m = norm(v)
     return [v[0]/m, v[1]/m, v[2]/m]
+
 
 # ------------------------------------------------------------------------------
 # Convert a B-spline to polyline with a fixed number of segments
@@ -25,7 +27,7 @@ def normalize_2(v):
 # FIXME to become adaptive
 # ------------------------------------------------------------------------------
 def spline2Polyline(xyz, degree, closed, segments, knots):
-    '''
+    """
     :param xyz: DXF spline control points
     :param degree: degree of the Spline curve
     :param closed: closed Spline
@@ -33,7 +35,7 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
     :param segments: how many lines to use for Spline approximation
     :param knots: DXF spline knots
     :return: x,y,z coordinates (each is a list)
-    '''
+    """
 
     # Check if last point coincide with the first one
     if (Vector(xyz[0]) - Vector(xyz[-1])).length2() < 1e-10:
@@ -51,16 +53,16 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
 
     npts = len(xyz)
 
-    if degree<1 or degree>3:
-        #print "invalid degree"
-        return None,None,None
+    if degree < 1 or degree > 3:
+        # print "invalid degree"
+        return None, None, None
 
     # order:
     k = degree+1
 
     if npts < k:
-        #print "not enough control points"
-        return None,None,None
+        # print "not enough control points"
+        return None, None, None
 
     # resolution:
     nseg = segments * npts
@@ -72,12 +74,12 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
 
     i = 1
     for pt in xyz:
-        b[i]   = pt[0]
+        b[i] = pt[0]
         b[i+1] = pt[1]
         b[i+2] = pt[2]
-        i +=3
+        i += 3
 
-    #if periodic:
+    # if periodic:
     if closed:
         _rbsplinu(npts, k, nseg, b, h, p, knots)
     else:
@@ -86,7 +88,7 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
     x = []
     y = []
     z = []
-    for i in range(1,3*nseg+1,3):
+    for i in range(1, 3*nseg+1, 3):
         x.append(p[i])
         y.append(p[i+1])
         z.append(p[i+2])
@@ -94,7 +96,8 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
 #    for i,xyz in enumerate(zip(x,y,z)):
 #        print i,xyz
 
-    return x,y,z
+    return x, y, z
+
 
 # ------------------------------------------------------------------------------
 # Subroutine to generate a B-spline open knot vector with multiplicity
@@ -108,11 +111,12 @@ def spline2Polyline(xyz, degree, closed, segments, knots):
 def _knot(n, order):
     x = [0.0]*(n+order+1)
     for i in range(2, n+order+1):
-        if i>order and i<n+2:
+        if order < i < n+2:
             x[i] = x[i-1] + 1.0
         else:
             x[i] = x[i-1]
     return x
+
 
 # ------------------------------------------------------------------------------
 # Subroutine to generate a B-spline uniform (periodic) knot vector.
@@ -127,6 +131,7 @@ def _knotu(n, order):
     for i in range(2, n+order+1):
         x[i] = float(i-1)
     return x
+
 
 # ------------------------------------------------------------------------------
 # Subroutine to generate rational B-spline basis functions--open knot vector
@@ -163,8 +168,8 @@ def _rbasis(c, t, npts, x, h, r):
             temp[i] = 0.0
 
     # calculate the higher order non-rational basis functions
-    for k in range(2,c+1):
-        for i in range(1,nplusc-k+1):
+    for k in range(2, c+1):
+        for i in range(1, nplusc-k+1):
             # if the lower order basis function is zero skip the calculation
             if temp[i] != 0.0:
                 d = ((t-x[i])*temp[i])/(x[i+k-1]-x[i])
@@ -184,7 +189,7 @@ def _rbasis(c, t, npts, x, h, r):
 
     # calculate sum for denominator of rational basis functions
     s = 0.0
-    for i in range(1,npts+1):
+    for i in range(1, npts+1):
         s += temp[i]*h[i]
 
     # form rational basis functions and put in r vector
@@ -193,6 +198,7 @@ def _rbasis(c, t, npts, x, h, r):
             r[i] = (temp[i]*h[i])/s
         else:
             r[i] = 0
+
 
 # ------------------------------------------------------------------------------
 # Generates a rational B-spline curve using a uniform open knot vector.
@@ -245,10 +251,11 @@ def _rbspline(npts, k, p1, b, h, p, x):
             p[icount+j] = 0.0
             # Do local matrix multiplication
             for i in range(1, npts+1):
-                p[icount+j] +=  nbasis[i]*b[jcount]
+                p[icount+j] += nbasis[i]*b[jcount]
                 jcount += 3
         icount += 3
         t += step
+
 
 # ------------------------------------------------------------------------------
 # Subroutine to generate a rational B-spline curve using an uniform periodic knot vector
@@ -296,15 +303,16 @@ def _rbsplinu(npts, k, p1, b, h, p, x=None):
         nbasis = [0.0]*(npts+1)
         _rbasis(k, t, npts, x, h, nbasis)
         # generate a point on the curve
-        for j in range(1,4):
+        for j in range(1, 4):
             jcount = j
             p[icount+j] = 0.0
             #  Do local matrix multiplication
-            for i in range(1,npts+1):
+            for i in range(1, npts+1):
                 p[icount+j] += nbasis[i]*b[jcount]
                 jcount += 3
         icount += 3
         t += step
+
 
 # Accuracy for comparison operators
 _accuracy = 1E-15
@@ -312,7 +320,7 @@ _accuracy = 1E-15
 
 def Cmp0(x):
     """Compare against zero within _accuracy"""
-    return abs(x)<_accuracy
+    return abs(x) < _accuracy
 
 
 def gauss(A, B):
@@ -337,7 +345,8 @@ def gauss(A, B):
                 j = i
                 ap = api
 
-        if j != k: p[k], p[j] = p[j], p[k]  # Swap values
+        if j != k:
+            p[k], p[j] = p[j], p[k]  # Swap values
 
         for i in range(k + 1, n):
             z = A[p[i]][k] / A[p[k]][k]
@@ -384,20 +393,22 @@ class Vector(list):
         """Set vector"""
         self[0] = x
         self[1] = y
-        if z: self[2] = z
+        if z:
+            self[2] = z
 
     # ----------------------------------------------------------------------
     def __repr__(self):
-        return "[%s]" % (", ".join([repr(x) for x in self]))
+        return "[%s]" % ", ".join([repr(x) for x in self])
 
     # ----------------------------------------------------------------------
     def __str__(self):
-        return "[%s]" % (", ".join([("%15g" % (x)).strip() for x in self]))
+        return "[%s]" % ", ".join([("%15g" % (x)).strip() for x in self])
 
     # ----------------------------------------------------------------------
     def eq(self, v, acc=_accuracy):
         """Test for equality with vector v within accuracy"""
-        if len(self) != len(v): return False
+        if len(self) != len(v):
+            return False
         s2 = 0.0
         for a, b in zip(self, v):
             s2 += (a - b) ** 2
@@ -523,12 +534,12 @@ class Vector(list):
     # ----------------------------------------------------------------------
     def norm(self):
         """Normalize vector and return length"""
-        l = self.length()
-        if l > 0.0:
-            invlen = 1.0 / l
+        length = self.length()
+        if length > 0.0:
+            invlen = 1.0 / length
             for i in range(len(self)):
                 self[i] *= invlen
-        return l
+        return length
 
     normalize = norm
 
@@ -580,8 +591,9 @@ class Vector(list):
         """return containing the direction if normalized with any of the axis"""
 
         v = self.clone()
-        l = v.norm()
-        if abs(l) <= zero: return "O"
+        length = v.norm()
+        if abs(length) <= zero:
+            return "O"
 
         if abs(v[0] - 1.0) < zero:
             return "X"

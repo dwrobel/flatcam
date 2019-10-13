@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Dennis Hayrullin                            #
 # Date: 2/5/2016                                           #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 import numpy as np
 from PyQt5.QtGui import QPalette

@@ -1,3 +1,10 @@
+# ##########################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 10/10/2019                                         #
+# MIT Licence                                              #
+# ##########################################################
+
 from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import *
 import platform
@@ -184,12 +191,46 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.vlay2 = QtWidgets.QVBoxLayout()
         self.vlay2.addWidget(self.tools_panelize_group)
-        self.vlay2.addWidget(self.tools_calculators_group)
+        self.vlay2.addWidget(self.tools_sub_group)
+        self.vlay2.addWidget(self.tools_film_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
         self.vlay3.addWidget(self.tools_solderpaste_group)
-        self.vlay3.addWidget(self.tools_sub_group)
-        self.vlay3.addWidget(self.tools_film_group)
+        self.vlay3.addWidget(self.tools_calculators_group)
+
+        self.layout.addLayout(self.vlay)
+        self.layout.addLayout(self.vlay1)
+        self.layout.addLayout(self.vlay2)
+        self.layout.addLayout(self.vlay3)
+
+        self.layout.addStretch()
+
+
+class Tools2PreferencesUI(QtWidgets.QWidget):
+
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.setLayout(self.layout)
+
+        self.tools2_checkrules = Tools2RulesCheckPrefGroupUI()
+        self.tools2_checkrules.setMinimumWidth(220)
+
+        self.tools2_optimal = Tools2OptimalPrefGroupUI()
+        self.tools2_optimal.setMinimumWidth(220)
+
+        self.vlay = QtWidgets.QVBoxLayout()
+        self.vlay.addWidget(self.tools2_checkrules)
+        self.vlay.addWidget(self.tools2_optimal)
+
+        self.vlay1 = QtWidgets.QVBoxLayout()
+
+
+        self.vlay2 = QtWidgets.QVBoxLayout()
+
+
+        self.vlay3 = QtWidgets.QVBoxLayout()
+
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
@@ -4233,8 +4274,9 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         super(ToolsFilmPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Film Tool Options")))
+        self.decimals = 4
 
-        # ## Board cuttout
+        # ## Parameters
         self.film_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.film_label.setToolTip(
             _("Create a PCB film from a Gerber or Geometry\n"
@@ -4304,6 +4346,114 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.film_scale_label, 3, 0)
         grid0.addWidget(self.film_scale_entry, 3, 1)
+
+        self.film_adj_label = QtWidgets.QLabel('<b>%s</b>' % _("Film Adjustments"))
+        self.film_adj_label.setToolTip(
+            _("Sometime the printers will distort the print shape, especially the Laser types.\n"
+              "This section provide the tools to compensate for the print distortions.")
+        )
+
+        grid0.addWidget(self.film_adj_label, 4, 0, 1, 2)
+
+        # Scale Geometry
+        self.film_scale_cb = FCCheckBox('%s' % _("Scale Film geometry"))
+        self.film_scale_cb.setToolTip(
+            _("A value greater than 1 will stretch the film\n"
+              "while a value less than 1 will jolt it.")
+        )
+        self.film_scale_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        grid0.addWidget(self.film_scale_cb, 5, 0, 1, 2)
+
+        self.film_scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
+        self.film_scalex_entry = FCDoubleSpinner()
+        self.film_scalex_entry.set_range(-999.9999, 999.9999)
+        self.film_scalex_entry.set_precision(self.decimals)
+        self.film_scalex_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_scalex_label, 6, 0)
+        grid0.addWidget(self.film_scalex_entry, 6, 1)
+
+        self.film_scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
+        self.film_scaley_entry = FCDoubleSpinner()
+        self.film_scaley_entry.set_range(-999.9999, 999.9999)
+        self.film_scaley_entry.set_precision(self.decimals)
+        self.film_scaley_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_scaley_label, 7, 0)
+        grid0.addWidget(self.film_scaley_entry, 7, 1)
+
+        # Skew Geometry
+        self.film_skew_cb = FCCheckBox('%s' % _("Skew Film geometry"))
+        self.film_skew_cb.setToolTip(
+            _("Positive values will skew to the right\n"
+              "while negative values will skew to the left.")
+        )
+        self.film_skew_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        grid0.addWidget(self.film_skew_cb, 8, 0, 1, 2)
+
+        self.film_skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
+        self.film_skewx_entry = FCDoubleSpinner()
+        self.film_skewx_entry.set_range(-999.9999, 999.9999)
+        self.film_skewx_entry.set_precision(self.decimals)
+        self.film_skewx_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_skewx_label, 9, 0)
+        grid0.addWidget(self.film_skewx_entry, 9, 1)
+
+        self.film_skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
+        self.film_skewy_entry = FCDoubleSpinner()
+        self.film_skewy_entry.set_range(-999.9999, 999.9999)
+        self.film_skewy_entry.set_precision(self.decimals)
+        self.film_skewy_entry.setSingleStep(0.01)
+
+        grid0.addWidget(self.film_skewy_label, 10, 0)
+        grid0.addWidget(self.film_skewy_entry, 10, 1)
+
+        self.film_skew_ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        self.film_skew_ref_label.setToolTip(
+            _("The reference point to be used as origin for the skew.\n"
+              "It can be one of the four points of the geometry bounding box.")
+        )
+        self.film_skew_reference = RadioSet([{'label': _('Bottom Left'), 'value': 'bottomleft'},
+                                             {'label': _('Top Left'), 'value': 'topleft'},
+                                             {'label': _('Bottom Right'), 'value': 'bottomright'},
+                                             {'label': _('Top right'), 'value': 'topright'}],
+                                            orientation='vertical',
+                                            stretch=False)
+
+        grid0.addWidget(self.film_skew_ref_label, 11, 0)
+        grid0.addWidget(self.film_skew_reference, 11, 1)
+
+        # Mirror Geometry
+        self.film_mirror_cb = FCCheckBox('%s' % _("Mirror Film geometry"))
+        self.film_mirror_cb.setToolTip(
+            _("Mirror the film geometry on the selected axis or on both.")
+        )
+        self.film_mirror_cb.setStyleSheet(
+            """
+            QCheckBox {font-weight: bold; color: black}
+            """
+        )
+        grid0.addWidget(self.film_mirror_cb, 12, 0, 1, 2)
+
+        self.film_mirror_axis = RadioSet([{'label': _('None'), 'value': 'none'},
+                                          {'label': _('X'), 'value': 'x'},
+                                          {'label': _('Y'), 'value': 'y'},
+                                          {'label': _('Both'), 'value': 'both'}],
+                                         stretch=False)
+        self.film_mirror_axis_label = QtWidgets.QLabel('%s:' % _("Mirror axis"))
+
+        grid0.addWidget(self.film_mirror_axis_label, 13, 0)
+        grid0.addWidget(self.film_mirror_axis, 13, 1)
+
 
         self.layout.addStretch()
 
@@ -4539,7 +4689,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         # ## Skew/Shear Angle on X axis
         self.skewx_entry = FCEntry()
-        self.skewx_label = QtWidgets.QLabel('%s:' % _("Skew_X angle"))
+        self.skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
         self.skewx_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
@@ -4549,7 +4699,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         # ## Skew/Shear Angle on Y axis
         self.skewy_entry = FCEntry()
-        self.skewy_label = QtWidgets.QLabel('%s:' % _("Skew_Y angle"))
+        self.skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
         self.skewy_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
@@ -4559,7 +4709,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         # ## Scale factor on X axis
         self.scalex_entry = FCEntry()
-        self.scalex_label = QtWidgets.QLabel('%s:' % _("Scale_X factor"))
+        self.scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
         self.scalex_label.setToolTip(
             _("Factor for scaling on X axis.")
         )
@@ -4568,7 +4718,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         # ## Scale factor on X axis
         self.scaley_entry = FCEntry()
-        self.scaley_label = QtWidgets.QLabel('%s:' % _("Scale_Y factor"))
+        self.scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
         self.scaley_label.setToolTip(
             _("Factor for scaling on Y axis.")
         )
@@ -4595,7 +4745,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         # ## Offset distance on X axis
         self.offx_entry = FCEntry()
-        self.offx_label = QtWidgets.QLabel('%s:' % _("Offset_X val"))
+        self.offx_label = QtWidgets.QLabel('%s:' % _("X val"))
         self.offx_label.setToolTip(
            _("Distance to offset on X axis. In current units.")
         )
@@ -4604,7 +4754,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         # ## Offset distance on Y axis
         self.offy_entry = FCEntry()
-        self.offy_label = QtWidgets.QLabel('%s:' % _("Offset_Y val"))
+        self.offy_label = QtWidgets.QLabel('%s:' % _("Y val"))
         self.offy_label.setToolTip(
             _("Distance to offset on Y axis. In current units.")
         )
@@ -4816,6 +4966,50 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
 
         super(ToolsSubPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Substractor Tool Options")))
+
+        # ## Solder Paste Dispensing
+        self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.sublabel.setToolTip(
+            _("A tool to substract one Gerber or Geometry object\n"
+              "from another of the same type.")
+        )
+        self.layout.addWidget(self.sublabel)
+
+        self.close_paths_cb = FCCheckBox(_("Close paths"))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
+        self.layout.addWidget(self.close_paths_cb)
+
+        self.layout.addStretch()
+
+
+class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(Tools2RulesCheckPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Substractor Tool Options")))
+
+        # ## Solder Paste Dispensing
+        self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.sublabel.setToolTip(
+            _("A tool to substract one Gerber or Geometry object\n"
+              "from another of the same type.")
+        )
+        self.layout.addWidget(self.sublabel)
+
+        self.close_paths_cb = FCCheckBox(_("Close paths"))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
+        self.layout.addWidget(self.close_paths_cb)
+
+        self.layout.addStretch()
+
+
+class Tools2OptimalPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(Tools2OptimalPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Substractor Tool Options")))
 

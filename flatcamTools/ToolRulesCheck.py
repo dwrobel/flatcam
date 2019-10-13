@@ -1,10 +1,9 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
-# Date: 09/27/2019                                          #
+# Date: 09/27/2019                                         #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMTool import FlatCAMTool
 from copy import copy, deepcopy
@@ -602,9 +601,7 @@ class RulesCheck(FlatCAMTool):
             total_geo = total_geo.buffer(0.000001)
 
         if isinstance(total_geo, Polygon):
-            iterations = 1
-            obj_violations['points'] =['Failed. Only one polygon.']
-
+            obj_violations['points'] = ['Failed. Only one polygon.']
             return rule_title, [obj_violations]
         else:
             iterations = len(total_geo)
@@ -846,21 +843,26 @@ class RulesCheck(FlatCAMTool):
             dia_list = []
             points_list = []
             name = elem['name']
+
             for apid in elem['apertures']:
-                tool_dia = float(elem['apertures'][apid]['size'])
-                if tool_dia < float(size) and tool_dia != 0.0:
-                    dia_list.append(tool_dia)
-                    for geo_el in elem['apertures'][apid]['geometry']:
-                        if 'solid' in geo_el.keys():
-                            geo = geo_el['solid']
-                            pt = geo.representative_point()
-                            points_list.append((pt.x, pt.y))
+                try:
+                    tool_dia = float(elem['apertures'][apid]['size'])
+                    if tool_dia < float(size) and tool_dia != 0.0:
+                        dia_list.append(tool_dia)
+                        for geo_el in elem['apertures'][apid]['geometry']:
+                            if 'solid' in geo_el.keys():
+                                geo = geo_el['solid']
+                                pt = geo.representative_point()
+                                points_list.append((pt.x, pt.y))
+                except Exception as e:
+                    # An exception  will be raised for the 'size' key in case of apertures of type AM (macro) which does
+                    # not have the size key
+                    pass
 
             obj_violations['name'] = name
             obj_violations['size'] = dia_list
             obj_violations['points'] = points_list
             violations.append(deepcopy(obj_violations))
-
         return rule, violations
 
     @staticmethod
@@ -1025,7 +1027,7 @@ class RulesCheck(FlatCAMTool):
         log.debug("RuleCheck() executing")
 
         def worker_job(app_obj):
-            proc = self.app.proc_container.new(_("Working..."))
+            self.app.proc_container.new(_("Working..."))
 
             # RULE: Check Trace Size
             if self.trace_size_cb.get_value():
@@ -1518,7 +1520,7 @@ class RulesCheck(FlatCAMTool):
             new_obj.source_file = txt
             new_obj.read_only = True
 
-        self.app.new_object('document', name='Rules Check results', initialize=init, plot=False )
+        self.app.new_object('document', name='Rules Check results', initialize=init, plot=False)
 
     def reset_fields(self):
         # self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

@@ -1,3 +1,10 @@
+# ##########################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 8/17/2019                                          #
+# MIT Licence                                              #
+# ##########################################################
+
 from tclCommands.TclCommand import TclCommand
 from ObjectCollection import *
 

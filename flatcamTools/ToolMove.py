@@ -1,6 +1,5 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
