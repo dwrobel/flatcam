@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a bug in the Merge functions
 - fixed the Export PNG function when using the 2D legacy graphic engine
 - added a new capability to toggle the grid lines for both graphic engines: menu link in View and key shortcut combo ALT+G
+- changed the grid colors for 3D graphic engine when in Dark mode
 
 12.10.2019
 

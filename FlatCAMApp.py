@@ -5943,10 +5943,18 @@ class App(QtCore.QObject):
     def on_toggle_grid_lines(self):
         self.report_usage("on_toggle_grd_lines()")
 
+        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
         if self.toggle_grid_lines is False:
             if self.is_legacy is False:
-                self.plotcanvas.grid._grid_color_fn['color'] = Color('dimgray').rgba
-
+                if theme == 'white':
+                    self.plotcanvas.grid._grid_color_fn['color'] = Color('dimgray').rgba
+                else:
+                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#FFFFFFFF').rgba
             else:
                 self.plotcanvas.axes.grid(True)
                 try:
@@ -5957,7 +5965,10 @@ class App(QtCore.QObject):
             self.toggle_grid_lines = True
         else:
             if self.is_legacy is False:
-                self.plotcanvas.grid._grid_color_fn['color'] = Color('#FFFFFFFF').rgba
+                if theme == 'white':
+                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#dededeff').rgba
+                else:
+                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#000000FF').rgba
             else:
                 self.plotcanvas.axes.grid(False)
                 try:

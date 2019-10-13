@@ -86,8 +86,18 @@ class VisPyCanvas(scene.SceneCanvas):
         # grid1 = scene.GridLines(parent=view.scene, color='dimgray')
         # grid1.set_gl_state(depth_test=False)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
         self.view = view
-        self.grid = scene.GridLines(parent=self.view.scene, color='dimgray')
+        if theme == 'white':
+            self.grid = scene.GridLines(parent=self.view.scene, color='dimgray')
+        else:
+            self.grid = scene.GridLines(parent=self.view.scene, color='#dededeff')
+
         self.grid.set_gl_state(depth_test=False)
 
         self.freeze()
