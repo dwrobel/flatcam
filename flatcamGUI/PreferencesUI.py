@@ -4205,6 +4205,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.paintoverlap_entry.setWrapping(True)
         self.paintoverlap_entry.setRange(0.000, 0.999)
         self.paintoverlap_entry.setSingleStep(0.1)
+
         grid0.addWidget(ovlabel, 2, 0)
         grid0.addWidget(self.paintoverlap_entry, 2, 1)
 
@@ -4653,7 +4654,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.tip_angle_entry = FCDoubleSpinner()
         self.tip_angle_entry.set_range(0.0, 180.0)
         self.tip_angle_entry.set_precision(self.decimals)
-        self.tip_angle_entry.setSingleStep(10)
+        self.tip_angle_entry.setSingleStep(5)
 
         self.tip_angle_label = QtWidgets.QLabel('%s:' % _("Tip Angle"))
         self.tip_angle_label.setToolTip(
@@ -4665,7 +4666,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
 
         # ## Depth-of-cut Cut Z
         self.cut_z_entry = FCDoubleSpinner()
-        self.cut_z_entry.set_range(-0.000001, -9999.9999)
+        self.cut_z_entry.set_range(-9999.9999, -0.00001)
         self.cut_z_entry.set_precision(self.decimals)
         self.cut_z_entry.setSingleStep(0.01)
 
