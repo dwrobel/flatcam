@@ -333,13 +333,13 @@ class ToolTransform(FlatCAMTool):
         self.flipy_button.clicked.connect(self.on_flipy)
         self.flip_ref_button.clicked.connect(self.on_flip_add_coords)
 
-        self.rotate_entry.editingFinished.connect(self.on_rotate)
-        self.skewx_entry.editingFinished.connect(self.on_skewx)
-        self.skewy_entry.editingFinished.connect(self.on_skewy)
-        self.scalex_entry.editingFinished.connect(self.on_scalex)
-        self.scaley_entry.editingFinished.connect(self.on_scaley)
-        self.offx_entry.editingFinished.connect(self.on_offx)
-        self.offy_entry.editingFinished.connect(self.on_offy)
+        self.rotate_entry.returnPressed.connect(self.on_rotate)
+        self.skewx_entry.returnPressed.connect(self.on_skewx)
+        self.skewy_entry.returnPressed.connect(self.on_skewy)
+        self.scalex_entry.returnPressed.connect(self.on_scalex)
+        self.scaley_entry.returnPressed.connect(self.on_scaley)
+        self.offx_entry.returnPressed.connect(self.on_offx)
+        self.offy_entry.returnPressed.connect(self.on_offy)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolTransform()")

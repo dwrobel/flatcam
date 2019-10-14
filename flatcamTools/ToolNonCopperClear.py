@@ -520,7 +520,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ############################ SGINALS ########################################
         # #############################################################################
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        self.addtool_entry.editingFinished.connect(self.on_tool_add)
+        self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.generate_ncc_button.clicked.connect(self.on_ncc_click)
 

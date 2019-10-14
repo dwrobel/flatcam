@@ -512,6 +512,9 @@ class EvalEntry2(QtWidgets.QLineEdit):
 
 
 class FCSpinner(QtWidgets.QSpinBox):
+
+    returnPressed = pyqtSignal()
+
     def __init__(self, parent=None):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
@@ -527,6 +530,13 @@ class FCSpinner(QtWidgets.QSpinBox):
                 self.lineEdit().deselect()
             return True
         return False
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Enter:
+            self.returnPressed.emit()
+            self.clearFocus()
+        else:
+            super().keyPressEvent(event)
 
     def wheelEvent(self, *args, **kwargs):
         # should work only there is a focus in the lineedit of the SpinBox
@@ -569,6 +579,9 @@ class FCSpinner(QtWidgets.QSpinBox):
 
 
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
+
+    returnPressed = pyqtSignal()
+
     def __init__(self, parent=None):
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
@@ -593,6 +606,13 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
                 self.lineEdit().deselect()
             return True
         return False
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Enter:
+            self.returnPressed.emit()
+            self.clearFocus()
+        else:
+            super().keyPressEvent(event)
 
     def wheelEvent(self, *args, **kwargs):
         # should work only there is a focus in the lineedit of the SpinBox

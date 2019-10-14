@@ -417,7 +417,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # ################################# Signals ###################################
         # #############################################################################
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        self.addtool_entry.editingFinished.connect(self.on_tool_add)
+        self.addtool_entry.returnPressed.connect(self.on_tool_add)
         # self.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.tools_table.itemChanged.connect(self.on_tool_edit)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
@@ -574,28 +574,28 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.default_data.update({
             "name": '_paint',
             "plot": self.app.defaults["geometry_plot"],
-            "cutz": self.app.defaults["geometry_cutz"],
+            "cutz": float(self.app.defaults["geometry_cutz"]),
             "vtipdia": 0.1,
             "vtipangle": 30,
-            "travelz": self.app.defaults["geometry_travelz"],
-            "feedrate": self.app.defaults["geometry_feedrate"],
-            "feedrate_z": self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid": self.app.defaults["geometry_feedrate_rapid"],
+            "travelz": float(self.app.defaults["geometry_travelz"]),
+            "feedrate": float(self.app.defaults["geometry_feedrate"]),
+            "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
+            "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
             "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": self.app.defaults["geometry_dwelltime"],
+            "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
             "multidepth": self.app.defaults["geometry_multidepth"],
             "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "depthperpass": self.app.defaults["geometry_depthperpass"],
+            "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
             "extracut": self.app.defaults["geometry_extracut"],
             "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangez": self.app.defaults["geometry_toolchangez"],
-            "endz": self.app.defaults["geometry_endz"],
+            "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
+            "endz": float(self.app.defaults["geometry_endz"]),
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
 
-            "tooldia": self.app.defaults["tools_painttooldia"],
-            "paintmargin": self.app.defaults["tools_paintmargin"],
+            "tooldia": float(self.app.defaults["tools_painttooldia"]),
+            "paintmargin": float(self.app.defaults["tools_paintmargin"]),
             "paintmethod": self.app.defaults["tools_paintmethod"],
             "selectmethod": self.app.defaults["tools_selectmethod"],
             "pathconnect": self.app.defaults["tools_pathconnect"],
@@ -605,7 +605,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # call on self.on_tool_add() counts as an call to self.build_ui()
         # through this, we add a initial row / tool in the tool_table
-        self.on_tool_add(self.app.defaults["tools_painttooldia"], muted=True)
+        self.on_tool_add(float(self.app.defaults["tools_painttooldia"]), muted=True)
 
         # if the Paint Method is "Single" disable the tool table context menu
         if self.default_data["selectmethod"] == "single":
@@ -715,16 +715,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         if dia:
             tool_dia = dia
         else:
-            try:
-                tool_dia = float(self.addtool_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            tool_dia = float(self.addtool_entry.get_value())
 
             if tool_dia is None:
                 self.build_ui()
@@ -938,16 +929,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # #####################################################
         self.app.inform.emit(_("Paint Tool. Reading parameters."))
 
-        try:
-            self.overlap = float(self.paintoverlap_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                self.overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
+        self.overlap = float(self.paintoverlap_entry.get_value())
 
         if self.overlap >= 1 or self.overlap < 0:
             self.app.inform.emit('[ERROR_NOTCL] %s' %

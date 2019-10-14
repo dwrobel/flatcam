@@ -231,9 +231,9 @@ class ToolCalculator(FlatCAMTool):
 
         # ## Signals
         self.cutDepth_entry.valueChanged.connect(self.on_calculate_tool_dia)
-        self.cutDepth_entry.editingFinished.connect(self.on_calculate_tool_dia)
-        self.tipDia_entry.editingFinished.connect(self.on_calculate_tool_dia)
-        self.tipAngle_entry.editingFinished.connect(self.on_calculate_tool_dia)
+        self.cutDepth_entry.returnPressed.connect(self.on_calculate_tool_dia)
+        self.tipDia_entry.returnPressed.connect(self.on_calculate_tool_dia)
+        self.tipAngle_entry.returnPressed.connect(self.on_calculate_tool_dia)
         self.calculate_vshape_button.clicked.connect(self.on_calculate_tool_dia)
 
         self.mm_entry.editingFinished.connect(self.on_calculate_inch_units)

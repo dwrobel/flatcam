@@ -184,7 +184,7 @@ class FlatCAMObj(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
         try:
-            self.ui.scale_entry.editingFinished.connect(self.on_scale_button_click)
+            self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
         except (TypeError, AttributeError):
             pass
         # self.ui.skew_button.clicked.connect(self.on_skew_button_click)
@@ -3796,7 +3796,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
-        self.ui.addtool_entry.editingFinished.connect(lambda: self.on_tool_add())
+        self.ui.addtool_entry.returnPressed.connect(lambda: self.on_tool_add())
 
     def set_tool_offset_visibility(self, current_row):
         if current_row is None:
@@ -3856,6 +3856,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             elif isinstance(current_widget, FloatEntry) or isinstance(current_widget, LengthEntry) or \
                     isinstance(current_widget, FCEntry) or isinstance(current_widget, IntEntry):
                 current_widget.editingFinished.connect(self.gui_form_to_storage)
+            elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
+                current_widget.returnPressed.connect(self.gui_form_to_storage)
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             for col in [2, 3, 4]:
@@ -3870,7 +3872,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.ui.geo_tools_table.currentItemChanged.connect(self.on_row_selection_change)
         self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
-        self.ui.tool_offset_entry.editingFinished.connect(self.on_offset_value_edited)
+        self.ui.tool_offset_entry.returnPressed.connect(self.on_offset_value_edited)
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             self.ui.geo_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
@@ -3897,6 +3899,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 try:
                     self.ui.grid3.itemAt(i).widget().editingFinished.disconnect(self.gui_form_to_storage)
                 except (TypeError, AttributeError):
+                    pass
+            elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
+                try:
+                    self.ui.grid3.itemAt(i).widget().returnPressed.disconnect(self.gui_form_to_storage)
+                except TypeError:
                     pass
 
         for row in range(self.ui.geo_tools_table.rowCount()):
@@ -3932,7 +3939,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
 
         try:
-            self.ui.tool_offset_entry.editingFinished.disconnect()
+            self.ui.tool_offset_entry.returnPressed.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -6793,7 +6800,7 @@ class FlatCAMDocument(FlatCAMObj):
         )
 
         self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
-        self.ui.tab_size_spinner.editingFinished.connect(self.on_tab_size_change)
+        self.ui.tab_size_spinner.returnPressed.connect(self.on_tab_size_change)
         # #######################################################################
 
         self.ui.font_color_entry.set_value(self.app.defaults['document_font_color'])
@@ -6854,7 +6861,7 @@ class FlatCAMDocument(FlatCAMObj):
 
     def on_tab_size_change(self, val=None):
         try:
-            self.ui.tab_size_spinner.editingFinished.disconnect(self.on_tab_size_change)
+            self.ui.tab_size_spinner.returnPressed.disconnect(self.on_tab_size_change)
         except TypeError:
             pass
 
@@ -6865,7 +6872,7 @@ class FlatCAMDocument(FlatCAMObj):
         self.document_editor_tab.code_editor.setTabStopWidth(tab_balue)
         self.app.defaults['document_tab_size'] = tab_balue
 
-        self.ui.tab_size_spinner.editingFinished.connect(self.on_tab_size_change)
+        self.ui.tab_size_spinner.returnPressed.connect(self.on_tab_size_change)
 
     def on_text_changed(self):
         self.source_file = self.document_editor_tab.code_editor.toHtml()
