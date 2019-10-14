@@ -5872,7 +5872,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
-            # "tooldia": self.ui.tooldia_entry,
+            "tooldia": self.ui.tooldia_entry,
             "append": self.ui.append_text,
             "prepend": self.ui.prepend_text,
             "toolchange_macro": self.ui.toolchange_text,
@@ -5906,6 +5906,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.ui.units_time_label.setDisabled(True)
         except AttributeError:
             pass
+
+        if self.multitool is False:
+            self.ui.tooldia_entry.show()
+            self.ui.updateplot_button.show()
+        else:
+            self.ui.tooldia_entry.hide()
+            self.ui.updateplot_button.hide()
 
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
         self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
@@ -5965,7 +5972,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         and plots the object.
         """
         self.read_form()
-        self.plot()
+        self.on_plot_kind_change()
 
     def on_plot_kind_change(self):
         kind = self.ui.cncplot_method_combo.get_value()

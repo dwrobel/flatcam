@@ -78,10 +78,10 @@ class ObjectUI(QtWidgets.QWidget):
         # ## Common to all objects ##
         # ###########################
         if common is True:
-            grid0 = QtWidgets.QGridLayout()
-            layout.addLayout(grid0)
-            grid0.setColumnStretch(0, 0)
-            grid0.setColumnStretch(1, 1)
+            self.common_grid = QtWidgets.QGridLayout()
+            layout.addLayout(self.common_grid)
+            self.common_grid.setColumnStretch(0, 0)
+            self.common_grid.setColumnStretch(1, 1)
 
             # ### Scale ####
             self.scale_label = QtWidgets.QLabel('<b>%s</b>' % _('Scale'))
@@ -89,7 +89,7 @@ class ObjectUI(QtWidgets.QWidget):
                 _("Change the size of the object.")
             )
 
-            grid0.addWidget(self.scale_label, 0, 0, 1, 3)
+            self.common_grid.addWidget(self.scale_label, 0, 0, 1, 3)
 
             # Factor
             faclabel = QtWidgets.QLabel('%s:' % _('Factor'))
@@ -111,9 +111,9 @@ class ObjectUI(QtWidgets.QWidget):
             )
             self.scale_button.setMinimumWidth(70)
 
-            grid0.addWidget(faclabel, 1, 0)
-            grid0.addWidget(self.scale_entry, 1, 1)
-            grid0.addWidget(self.scale_button, 1, 2)
+            self.common_grid.addWidget(faclabel, 1, 0)
+            self.common_grid.addWidget(self.scale_entry, 1, 1)
+            self.common_grid.addWidget(self.scale_button, 1, 2)
 
             # ### Offset ####
             self.offset_label = QtWidgets.QLabel('<b>%s</b>' % _('Offset'))
@@ -121,7 +121,7 @@ class ObjectUI(QtWidgets.QWidget):
                 _("Change the position of this object.")
             )
 
-            grid0.addWidget(self.offset_label, 2, 0, 1, 3)
+            self.common_grid.addWidget(self.offset_label, 2, 0, 1, 3)
 
             self.offset_vectorlabel = QtWidgets.QLabel('%s:' % _('Vector'))
             self.offset_vectorlabel.setToolTip(
@@ -137,9 +137,9 @@ class ObjectUI(QtWidgets.QWidget):
             )
             self.offset_button.setMinimumWidth(70)
 
-            grid0.addWidget(self.offset_vectorlabel, 3, 0)
-            grid0.addWidget(self.offsetvector_entry, 3, 1)
-            grid0.addWidget(self.offset_button, 3, 2)
+            self.common_grid.addWidget(self.offset_vectorlabel, 3, 0)
+            self.common_grid.addWidget(self.offsetvector_entry, 3, 1)
+            self.common_grid.addWidget(self.offset_button, 3, 2)
 
         layout.addStretch()
 
@@ -1583,17 +1583,8 @@ class CNCObjectUI(ObjectUI):
         ObjectUI.__init__(self, title=_('CNC Job Object'), icon_file='share/cnc32.png', parent=parent)
         self.decimals = 4
 
-        # Scale and offset ans skew are not available for CNCJob objects.
-        # Hiding from the GUI.
-        for i in range(0, self.scale_grid.count()):
-            self.scale_grid.itemAt(i).widget().hide()
-        self.scale_label.hide()
-        self.scale_button.hide()
-
-        for i in range(0, self.offset_grid.count()):
-            self.offset_grid.itemAt(i).widget().hide()
-        self.offset_label.hide()
-        self.offset_button.hide()
+        for i in range(0, self.common_grid.count()):
+            self.common_grid.itemAt(i).widget().hide()
 
         # ## Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
@@ -1715,9 +1706,6 @@ class CNCObjectUI(ObjectUI):
         self.cnc_tools_table = FCTable()
         self.custom_box.addWidget(self.cnc_tools_table)
 
-        # self.cnc_tools_table.setColumnCount(4)
-        # self.cnc_tools_table.setHorizontalHeaderLabels(['#', 'Dia', 'Plot', ''])
-        # self.cnc_tools_table.setColumnHidden(3, True)
         self.cnc_tools_table.setColumnCount(7)
         self.cnc_tools_table.setColumnWidth(0, 20)
         self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Offset'), _('Type'), _('TT'), '',
@@ -1725,6 +1713,12 @@ class CNCObjectUI(ObjectUI):
         self.cnc_tools_table.setColumnHidden(5, True)
         # stylesheet = "::section{Background-color:rgb(239,239,245)}"
         # self.cnc_tools_table.horizontalHeader().setStyleSheet(stylesheet)
+
+        self.tooldia_entry = FCDoubleSpinner()
+        self.tooldia_entry.set_range(0, 9999.9999)
+        self.tooldia_entry.set_precision(self.decimals)
+        self.tooldia_entry.setSingleStep(0.1)
+        self.custom_box.addWidget(self.tooldia_entry)
 
         # Update plot button
         self.updateplot_button = QtWidgets.QPushButton(_('Update Plot'))

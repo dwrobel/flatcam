@@ -18,6 +18,9 @@ CAD program, and create G-Code for Isolation routing.
 - updated the translation files (~ 89% translation level)
 - changed the splash screen as it seems that FlatCAM beta will never be more than beta
 - changed some of the signals from returnPressed to editingFinished due of now using the SpinBoxes
+- fixed an issue that caused the impossibility to load a GCode file that contained the % symbol even when was loaded in a regular way from the File menu
+- re-added the CNC tool diameter entry for the CNCjob object in Selected tab.FCSpinner
+- since the CNCjob geometry creation is only useful for graphical purposes and have no impact on the GCode creation I have removed the cascaded union on the GCode geometry therefore speeding up the Gcode display by many factors (perhaps hundreds of times faster)
 
 13.10.2019
 

@@ -3937,7 +3937,7 @@ class CNCjob(Geometry):
                 match = re.search(r'^\s*([A-Z])\s*([\+\-\.\d\s]+)', gline)
         return command
 
-    def gcode_parse(self):
+    def gcode_parse(self, force_parsing=None):
         """
         G-Code parser (from self.gcode). Generates dictionary with
         single-segment LineString's and "kind" indicating cut or travel,
@@ -3968,10 +3968,12 @@ class CNCjob(Geometry):
         path = [pos_xy]
         # path = [(0, 0)]
 
+        self.app.inform.emit('%s: %d' % (_("Parsing GCode file. Number of lines"), len(self.gcode.splitlines())))
         # Process every instruction
         for line in StringIO(self.gcode):
-            if '%MO' in line or '%' in line or 'MOIN' in line or 'MOMM' in line:
-                return "fail"
+            if force_parsing is False or force_parsing is None:
+                if '%MO' in line or '%' in line or 'MOIN' in line or 'MOMM' in line:
+                    return "fail"
 
             gobj = self.codes_split(line)
 
@@ -4056,6 +4058,7 @@ class CNCjob(Geometry):
             for code in gobj:
                 current[code] = gobj[code]
 
+        self.app.inform.emit('%s...' % _("Creating Geometry from the parsed GCode file. "))
         # There might not be a change in height at the
         # end, therefore, see here too if there is
         # a final path.
@@ -4318,8 +4321,14 @@ class CNCjob(Geometry):
                 pass
 
     def create_geometry(self):
+        self.app.inform.emit('%s: %s' % (_("Unifying Geometry from parsed Geometry segments"),
+                                         str(len(self.gcode_parsed))))
         # TODO: This takes forever. Too much data?
-        self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+        # self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
+
+        # This is much faster but not so nice to look at as you can see different segments of the geometry
+        self.solid_geometry = [geo['geom'] for geo in self.gcode_parsed]
+
         return self.solid_geometry
 
     # code snippet added by Lei Zheng in a rejected pull request on FlatCAM https://bitbucket.org/realthunder/

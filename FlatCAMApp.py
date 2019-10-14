@@ -8909,7 +8909,7 @@ class App(QtCore.QObject):
         else:
             for filename in filenames:
                 if filename != '':
-                    self.worker_task.emit({'fcn': self.open_gcode, 'params': [filename]})
+                    self.worker_task.emit({'fcn': self.open_gcode, 'params': [filename, None, True]})
 
     def on_file_openproject(self, checked=None):
         """
@@ -10803,7 +10803,7 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s: %s' %
                              (_("Opened"), filename))
 
-    def open_gcode(self, filename, outname=None, plot=True):
+    def open_gcode(self, filename, outname=None, force_parsing=None, plot=True):
         """
         Opens a G-gcode file, parses it and creates a new object for
         it in the program. Thread-safe.
@@ -10824,6 +10824,7 @@ class App(QtCore.QObject):
             assert isinstance(app_obj_, App), \
                 "Initializer expected App, got %s" % type(app_obj_)
 
+            app_obj_.inform.emit('%s...' % _("Reading GCode file"))
             try:
                 f = open(filename)
                 gcode = f.read()
@@ -10835,7 +10836,7 @@ class App(QtCore.QObject):
 
             job_obj.gcode = gcode
 
-            ret = job_obj.gcode_parse()
+            ret = job_obj.gcode_parse(force_parsing=force_parsing)
             if ret == "fail":
                 self.inform.emit('[ERROR_NOTCL] %s' %
                                  _("This is not GCODE"))
@@ -10852,7 +10853,8 @@ class App(QtCore.QObject):
             ret = self.new_object("cncjob", name, obj_init, autoselected=False, plot=plot)
             if ret == 'fail':
                 self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to create CNCJob Object. Probable not a GCode file.\n "
+                                 _("Failed to create CNCJob Object. Probable not a GCode file. "
+                                   "Try to load it from File menu.\n "
                                    "Attempting to create a FlatCAM CNCJob Object from "
                                    "G-Code file failed during processing"))
                 return "fail"
