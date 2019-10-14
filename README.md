@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - converted all ObjectUI entries to FCDoubleSpinner and FCSpinner
 - updated the translation files (~ 89% translation level)
 - changed the splash screen as it seems that FlatCAM beta will never be more than beta
+- changed some of the signals from returnPressed to editingFinished due of now using the SpinBoxes
 
 13.10.2019
 

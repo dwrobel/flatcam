@@ -416,7 +416,7 @@ class SolderPaste(FlatCAMTool):
         # ## Signals
         self.combo_context_del_action.triggered.connect(self.on_delete_object)
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        self.addtool_entry.returnPressed.connect(self.on_tool_add)
+        self.addtool_entry.editingFinished.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.soldergeo_btn.clicked.connect(self.on_create_geo_click)
         self.solder_gcode_btn.clicked.connect(self.on_create_gcode_click)

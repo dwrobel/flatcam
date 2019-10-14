@@ -122,11 +122,6 @@ class FlatCAMObj(QtCore.QObject):
 
         self.plot_single_object.connect(self.single_object_plot)
 
-        # assert isinstance(self.ui, ObjectUI)
-        # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
-        # self.ui.offset_button.clicked.connect(self.on_offset_button_click)
-        # self.ui.scale_button.clicked.connect(self.on_scale_button_click)
-
     def __del__(self):
         pass
 
@@ -189,7 +184,7 @@ class FlatCAMObj(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
         try:
-            self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+            self.ui.scale_entry.editingFinished.connect(self.on_scale_button_click)
         except (TypeError, AttributeError):
             pass
         # self.ui.skew_button.clicked.connect(self.on_skew_button_click)
@@ -3801,7 +3796,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
-        self.ui.addtool_entry.returnPressed.connect(lambda: self.on_tool_add())
+        self.ui.addtool_entry.editingFinished.connect(lambda: self.on_tool_add())
 
     def set_tool_offset_visibility(self, current_row):
         if current_row is None:
