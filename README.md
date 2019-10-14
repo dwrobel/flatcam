@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - added the Check Rules Tool parameters to the unit conversion list
 - converted more of the Preferences entries to FCDoubleSpinner and FCSpinner
 - converted all ObjectUI entries to FCDoubleSpinner and FCSpinner
+- updated the translation files (~ 89% translation level)
 
 13.10.2019
 
