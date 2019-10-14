@@ -1,10 +1,9 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File Modified by: Marius Adrian Stanciu (c)              #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMTool import FlatCAMTool
 from copy import copy, deepcopy
@@ -27,6 +26,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def __init__(self, app):
         self.app = app
+        self.decimals = 4
 
         FlatCAMTool.__init__(self, app)
         Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])
@@ -213,14 +213,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table")
         )
-        self.addtool_entry = FCEntry2()
+        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry.set_precision(self.decimals)
+
         form.addRow(self.addtool_entry_lbl, self.addtool_entry)
 
         # Tip Dia
         self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
         self.tipdialabel.setToolTip(
             _("The tip diameter for V-Shape Tool"))
-        self.tipdia_entry = LengthEntry()
+        self.tipdia_entry = FCDoubleSpinner()
+        self.tipdia_entry.set_precision(self.decimals)
+        self.tipdia_entry.setSingleStep(0.1)
+
         form.addRow(self.tipdialabel, self.tipdia_entry)
 
         # Tip Angle
@@ -228,7 +233,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tipanglelabel.setToolTip(
             _("The tip angle for V-Shape Tool.\n"
               "In degree."))
-        self.tipangle_entry = LengthEntry()
+        self.tipangle_entry = FCDoubleSpinner()
+        self.tipangle_entry.set_precision(self.decimals)
+        self.tipangle_entry.setSingleStep(5)
+
         form.addRow(self.tipanglelabel, self.tipangle_entry)
 
         grid2 = QtWidgets.QGridLayout()
@@ -271,7 +279,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
            _("Depth of cut into material. Negative value.\n"
              "In FlatCAM units.")
         )
-        self.cutz_entry = FloatEntry()
+        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry.set_precision(self.decimals)
+        self.cutz_entry.set_range(-99999, -0.00000000000001)
+
         self.cutz_entry.setToolTip(
            _("Depth of cut into material. Negative value.\n"
              "In FlatCAM units.")
@@ -305,7 +316,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Bounding box margin.")
         )
         grid3.addWidget(nccmarginlabel, 3, 0)
-        self.ncc_margin_entry = FCEntry()
+        self.ncc_margin_entry = FCDoubleSpinner()
+        self.ncc_margin_entry.set_precision(self.decimals)
+
         grid3.addWidget(self.ncc_margin_entry, 3, 1)
 
         # Method
@@ -448,30 +461,39 @@ class NonCopperClear(FlatCAMTool, Gerber):
         )
         self.tools_box.addWidget(self.generate_ncc_button)
         self.tools_box.addStretch()
+        # ############################ FINSIHED GUI ###################################
+        # #############################################################################
 
+        # #############################################################################
+        # ###################### Setup CONTEXT MENU ###################################
+        # #############################################################################
         self.tools_table.setupContextMenu()
         self.tools_table.addContextMenu(
-            "Add", lambda: self.on_tool_add(dia=None, muted=None), icon=QtGui.QIcon("share/plus16.png"))
+            "Add", self.on_add_tool_by_key, icon=QtGui.QIcon("share/plus16.png"))
         self.tools_table.addContextMenu(
             "Delete", lambda:
             self.on_tool_delete(rows_to_delete=None, all=None), icon=QtGui.QIcon("share/delete32.png"))
 
+        # #############################################################################
+        # ########################## VARIABLES ########################################
+        # #############################################################################
         self.units = ''
-        self.ncc_tools = {}
+        self.ncc_tools = dict()
         self.tooluid = 0
+
         # store here the default data for Geometry Data
-        self.default_data = {}
+        self.default_data = dict()
 
         self.obj_name = ""
         self.ncc_obj = None
 
-        self.sel_rect = []
+        self.sel_rect = list()
 
         self.bound_obj_name = ""
         self.bound_obj = None
 
-        self.ncc_dia_list = []
-        self.iso_dia_list = []
+        self.ncc_dia_list = list()
+        self.iso_dia_list = list()
         self.has_offset = None
         self.o_name = None
         self.overlap = None
@@ -485,11 +507,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.mm = None
         self.mr = None
+
         # store here solid_geometry when there are tool with isolation job
-        self.solid_geometry = []
+        self.solid_geometry = list()
 
-        self.tool_type_item_options = []
+        self.select_method = None
+        self.tool_type_item_options = list()
 
+        self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
+
+        # #############################################################################
+        # ############################ SGINALS ########################################
+        # #############################################################################
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
@@ -507,6 +536,22 @@ class NonCopperClear(FlatCAMTool, Gerber):
         obj_type = self.type_obj_combo.currentIndex()
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
+
+    def on_add_tool_by_key(self):
+        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
+                                       text='%s:' % _('Enter a Tool Diameter'),
+                                       min=0.0000, max=99.9999, decimals=4)
+        tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+        val, ok = tool_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                return
+            self.on_tool_add(dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
@@ -546,6 +591,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.app.ui.notebook.setTabText(2, _("NCC Tool"))
 
     def set_tool_ui(self):
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
         self.tools_frame.show()
 
         self.ncc_order_radio.set_value(self.app.defaults["tools_nccorder"])
@@ -619,7 +671,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.tooluid += 1
             self.ncc_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
@@ -651,7 +703,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         sorted_tools = []
         for k, v in self.ncc_tools.items():
-            sorted_tools.append(float('%.4f' % float(v['tooldia'])))
+            if self.units == "IN":
+                sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
+            else:
+                sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
         order = self.ncc_order_radio.get_value()
         if order == 'fwd':
@@ -667,7 +722,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         for tool_sorted in sorted_tools:
             for tooluid_key, tooluid_value in self.ncc_tools.items():
-                if float('%.4f' % tooluid_value['tooldia']) == tool_sorted:
+                if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
                     id_ = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
                     id_.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -675,12 +730,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     self.tools_table.setItem(row_no, 0, id_)  # Tool name/id
 
                     # Make sure that the drill diameter when in MM is with no more than 2 decimals
-                    # There are no drill bits in MM with more than 3 decimals diameter
-                    # For INCH the decimals should be no more than 3. There are no drills under 10mils
-                    if self.units == 'MM':
-                        dia = QtWidgets.QTableWidgetItem('%.2f' % tooluid_value['tooldia'])
-                    else:
-                        dia = QtWidgets.QTableWidgetItem('%.4f' % tooluid_value['tooldia'])
+                    # There are no drill bits in MM with more than 2 decimals diameter
+                    # For INCH the decimals should be no more than 4. There are no drills under 10mils
+                    dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -867,36 +919,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         else:
             if self.tool_type_radio.get_value() == 'V':
 
-                try:
-                    tip_dia = float(self.tipdia_entry.get_value())
-                except ValueError:
-                    # try to convert comma to decimal point. if it's still not working error message and return
-                    try:
-                        tip_dia = float(self.tipdia_entry.get_value().replace(',', '.'))
-                    except ValueError:
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, "
-                                                                    "use a number."))
-                        return
+                tip_dia = float(self.tipdia_entry.get_value())
+                tip_angle = float(self.tipangle_entry.get_value()) / 2
+                cut_z = float(self.cutz_entry.get_value())
 
-                try:
-                    tip_angle = float(self.tipangle_entry.get_value()) / 2
-                except ValueError:
-                    # try to convert comma to decimal point. if it's still not working error message and return
-                    try:
-                        tip_angle = float(self.tipangle_entry.get_value().replace(',', '.')) / 2
-                    except ValueError:
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
-                        return
-
-                try:
-                    cut_z = float(self.cutz_entry.get_value())
-                except ValueError:
-                    # try to convert comma to decimal point. if it's still not working error message and return
-                    try:
-                        cut_z = float(self.cutz_entry.get_value().replace(',', '.'))
-                    except ValueError:
-                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
-                        return
                 # calculated tool diameter so the cut_z parameter is obeyed
                 tool_dia = tip_dia + 2 * cut_z * math.tan(math.radians(tip_angle))
 
@@ -921,10 +947,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter to add, in Float format."))
                 return
 
-        if self.units == 'MM':
-            tool_dia = float('%.2f' % tool_dia)
-        else:
-            tool_dia = float('%.4f' % tool_dia)
+        tool_dia = float('%.*f' % (self.decimals, tool_dia))
 
         if tool_dia == 0:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter with non-zero value, "
@@ -948,9 +971,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         for k, v in self.ncc_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, (v[tool_v]))))
 
-        if float('%.4f' % tool_dia) in tool_dias:
+        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
@@ -960,7 +983,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
             self.ncc_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
@@ -981,7 +1004,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         for k, v in self.ncc_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
         for row in range(self.tools_table.rowCount()):
 
@@ -1061,22 +1084,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.build_ui()
 
     def on_ncc_click(self):
+        """
+        Slot for clicking signal of the self.generate.ncc_button
+        :return: None
+        """
 
         # init values for the next usage
         self.reset_usage()
-
         self.app.report_usage("on_paint_button_click")
 
-        try:
-            self.overlap = float(self.ncc_overlap_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                self.overlap = float(self.ncc_overlap_entry.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, "
-                                                             "use a number."))
-                return
+        self.overlap = float(self.ncc_overlap_entry.get_value())
+
+        self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
 
         if self.overlap >= 1 or self.overlap < 0:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Overlap value must be between "
@@ -1085,9 +1104,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.connect = self.ncc_connect_cb.get_value()
         self.contour = self.ncc_contour_cb.get_value()
-
         self.has_offset = self.ncc_choice_offset_cb.isChecked()
-
         self.rest = self.ncc_rest_cb.get_value()
 
         self.obj_name = self.object_combo.currentText()
@@ -1282,7 +1299,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
             self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
-                                         symbol='++', edge_color='black', size=self.app.defaults["global_cursor_size"])
+                                         symbol='++', edge_color=self.app.cursor_color_3D,
+                                         size=self.app.defaults["global_cursor_size"])
 
         # update the positions on status bar
         self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
@@ -1339,12 +1357,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
         :param rest: True if to use rest-machining
         :param tools_storage: whether to use the current tools_storage self.ncc_tools or a different one.
         Usage of the different one is related to when this function is called from a TcL command.
+        :param plot: if True after the job is finished the result will be plotted, else it will not.
         :param run_threaded: If True the method will be run in a threaded way suitable for GUI usage; if False it will
         run non-threaded for TclShell usage
         :return:
         """
-
-        proc = self.app.proc_container.new(_("Non-Copper clearing ..."))
+        if run_threaded:
+            proc = self.app.proc_container.new(_("Non-Copper clearing ..."))
+        else:
+            self.app.proc_container.view.set_busy(_("Non-Copper clearing ..."))
+            QtWidgets.QApplication.processEvents()
 
         # #####################################################################
         # ####### Read the parameters #########################################
@@ -1360,22 +1382,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
         if margin is not None:
             ncc_margin = margin
         else:
-            try:
-                ncc_margin = float(self.ncc_margin_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    ncc_margin = float(self.ncc_margin_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
-                    return
+            ncc_margin = float(self.ncc_margin_entry.get_value())
 
         if select_method is not None:
             ncc_select = select_method
         else:
             ncc_select = self.reference_radio.get_value()
 
-        overlap = overlap if overlap else self.app.defaults["tools_nccoverlap"]
+        overlap = overlap if overlap else float(self.app.defaults["tools_nccoverlap"])
+
         connect = connect if connect else self.app.defaults["tools_nccconnect"]
         contour = contour if contour else self.app.defaults["tools_ncccontour"]
         order = order if order else self.ncc_order_radio.get_value()
@@ -1514,6 +1529,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
+            # provide the app with a way to process the GUI events when in a blocking loop
+            if not run_threaded:
+                QtWidgets.QApplication.processEvents()
+
             log.debug("NCC Tool. Normal copper clearing task started.")
             self.app.inform.emit(_("NCC Tool. Finished non-copper polygons. Normal copper clearing task started."))
 
@@ -1592,6 +1611,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     else:
                         try:
                             for geo_elem in isolated_geo:
+                                # provide the app with a way to process the GUI events when in a blocking loop
+                                QtWidgets.QApplication.processEvents()
+
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
                                     raise FlatCAMApp.GracefulException
@@ -1641,7 +1663,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 break
 
                         for k, v in tools_storage.items():
-                            if float('%.4f' % v['tooldia']) == float('%.4f' % tool_iso):
+                            if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                tool_iso)):
                                 current_uid = int(k)
                                 # add the solid_geometry to the current too in self.paint_tools dictionary
                                 # and then reset the temporary list that stored that solid_geometry
@@ -1696,6 +1719,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     # graceful abort requested by the user
                     raise FlatCAMApp.GracefulException
 
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
+
                 app_obj.inform.emit(
                     '[success] %s %s%s %s' % (_('NCC Tool clearing with tool diameter = '),
                                               str(tool),
@@ -1730,6 +1756,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     if len(area.geoms) > 0:
                         pol_nr = 0
                         for p in area.geoms:
+                            # provide the app with a way to process the GUI events when in a blocking loop
+                            QtWidgets.QApplication.processEvents()
+
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
                                 raise FlatCAMApp.GracefulException
@@ -1737,15 +1766,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 try:
                                     if isinstance(p, Polygon):
                                         if ncc_method == 'standard':
-                                            cp = self.clear_polygon(p, tool, self.app.defaults["gerber_circle_steps"],
+                                            cp = self.clear_polygon(p, tool, self.grb_circle_steps,
                                                                     overlap=overlap, contour=contour, connect=connect,
                                                                     prog_plot=prog_plot)
                                         elif ncc_method == 'seed':
-                                            cp = self.clear_polygon2(p, tool, self.app.defaults["gerber_circle_steps"],
+                                            cp = self.clear_polygon2(p, tool, self.grb_circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=prog_plot)
                                         else:
-                                            cp = self.clear_polygon3(p, tool, self.app.defaults["gerber_circle_steps"],
+                                            cp = self.clear_polygon3(p, tool, self.grb_circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=prog_plot)
                                         if cp:
@@ -1755,19 +1784,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                             if pol is not None:
                                                 if ncc_method == 'standard':
                                                     cp = self.clear_polygon(pol, tool,
-                                                                            self.app.defaults["gerber_circle_steps"],
+                                                                            self.grb_circle_steps,
                                                                             overlap=overlap, contour=contour,
                                                                             connect=connect,
                                                                             prog_plot=prog_plot)
                                                 elif ncc_method == 'seed':
                                                     cp = self.clear_polygon2(pol, tool,
-                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=prog_plot)
                                                 else:
                                                     cp = self.clear_polygon3(pol, tool,
-                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=prog_plot)
@@ -1799,7 +1828,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             # find the tooluid associated with the current tool_dia so we know where to add the tool
                             # solid_geometry
                             for k, v in tools_storage.items():
-                                if float('%.4f' % v['tooldia']) == float('%.4f' % tool):
+                                if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                    tool)):
                                     current_uid = int(k)
 
                                     # add the solid_geometry to the current too in self.paint_tools dictionary
@@ -1838,7 +1868,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                app_obj.inform.emit('[ERROR] %s' % _("There is no Painting Geometry in the file.\n"
+                app_obj.inform.emit('[ERROR] %s' % _("There is no NCC Geometry in the file.\n"
                                                      "Usually it means that the tool diameter is too big "
                                                      "for the painted geometry.\n"
                                                      "Change the painting parameters and try again."))
@@ -1864,6 +1894,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             log.debug("NCC Tool. Rest machining copper clearing task started.")
             app_obj.inform.emit('_(NCC Tool. Rest machining copper clearing task started.')
+
+            # provide the app with a way to process the GUI events when in a blocking loop
+            if not run_threaded:
+                QtWidgets.QApplication.processEvents()
 
             # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
             # will store the number of tools for which the isolation is broken
@@ -1920,6 +1954,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     else:
                         try:
                             for geo_elem in isolated_geo:
+                                # provide the app with a way to process the GUI events when in a blocking loop
+                                QtWidgets.QApplication.processEvents()
+
                                 if self.app.abort_flag:
                                     # graceful abort requested by the user
                                     raise FlatCAMApp.GracefulException
@@ -1972,7 +2009,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 break
 
                         for k, v in tools_storage.items():
-                            if float('%.4f' % v['tooldia']) == float('%.4f' % tool_iso):
+                            if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                tool_iso)):
                                 current_uid = int(k)
                                 # add the solid_geometry to the current too in self.paint_tools dictionary
                                 # and then reset the temporary list that stored that solid_geometry
@@ -2047,6 +2085,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 # Area to clear
                 for poly in cleared_by_last_tool:
+                    # provide the app with a way to process the GUI events when in a blocking loop
+                    QtWidgets.QApplication.processEvents()
+
                     if self.app.abort_flag:
                         # graceful abort requested by the user
                         raise FlatCAMApp.GracefulException
@@ -2083,21 +2124,24 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 raise FlatCAMApp.GracefulException
 
                             if p is not None:
+                                # provide the app with a way to process the GUI events when in a blocking loop
+                                QtWidgets.QApplication.processEvents()
+
                                 if isinstance(p, Polygon):
                                     try:
                                         if ncc_method == 'standard':
                                             cp = self.clear_polygon(p, tool_used,
-                                                                    self.app.defaults["gerber_circle_steps"],
+                                                                    self.grb_circle_steps,
                                                                     overlap=overlap, contour=contour, connect=connect,
                                                                     prog_plot=prog_plot)
                                         elif ncc_method == 'seed':
                                             cp = self.clear_polygon2(p, tool_used,
-                                                                     self.app.defaults["gerber_circle_steps"],
+                                                                     self.grb_circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=prog_plot)
                                         else:
                                             cp = self.clear_polygon3(p, tool_used,
-                                                                     self.app.defaults["gerber_circle_steps"],
+                                                                     self.grb_circle_steps,
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=prog_plot)
                                         cleared_geo.append(list(cp.get_objects()))
@@ -2109,22 +2153,25 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 elif isinstance(p, MultiPolygon):
                                     for poly in p:
                                         if poly is not None:
+                                            # provide the app with a way to process the GUI events when in a blocking loop
+                                            QtWidgets.QApplication.processEvents()
+
                                             try:
                                                 if ncc_method == 'standard':
                                                     cp = self.clear_polygon(poly, tool_used,
-                                                                            self.app.defaults["gerber_circle_steps"],
+                                                                            self.grb_circle_steps,
                                                                             overlap=overlap, contour=contour,
                                                                             connect=connect,
                                                                             prog_plot=prog_plot)
                                                 elif ncc_method == 'seed':
                                                     cp = self.clear_polygon2(poly, tool_used,
-                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=prog_plot)
                                                 else:
                                                     cp = self.clear_polygon3(poly, tool_used,
-                                                                             self.app.defaults["gerber_circle_steps"],
+                                                                             self.grb_circle_steps,
                                                                              overlap=overlap, contour=contour,
                                                                              connect=connect,
                                                                              prog_plot=prog_plot)
@@ -2172,7 +2219,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             # find the tooluid associated with the current tool_dia so we know
                             # where to add the tool solid_geometry
                             for k, v in tools_storage.items():
-                                if float('%.4f' % v['tooldia']) == float('%.4f' % tool):
+                                if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                    tool)):
                                     current_uid = int(k)
 
                                     # add the solid_geometry to the current too in self.paint_tools dictionary
@@ -2219,13 +2267,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 else:
                     app_obj.new_object("geometry", name, gen_clear_area, plot=plot)
             except FlatCAMApp.GracefulException:
-                proc.done()
+                if run_threaded:
+                    proc.done()
                 return
             except Exception as e:
-                proc.done()
+                if run_threaded:
+                    proc.done()
                 traceback.print_stack()
                 return
-            proc.done()
+            if run_threaded:
+                proc.done()
+            else:
+                app_obj.proc_container.view.set_idle()
+
             # focus on Selected Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
@@ -2614,6 +2668,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         except Exception as e:
             try:
                 for el in target:
+                    # provide the app with a way to process the GUI events when in a blocking loop
+                    QtWidgets.QApplication.processEvents()
+
                     if self.app.abort_flag:
                         # graceful abort requested by the user
                         raise FlatCAMApp.GracefulException

@@ -1,3 +1,10 @@
+# ##########################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 3/10/2019                                          #
+# MIT Licence                                              #
+# ##########################################################
+
 from FlatCAMTool import FlatCAMTool
 from ObjectCollection import *
 from FlatCAMApp import *
@@ -22,6 +29,7 @@ class CutOut(FlatCAMTool):
 
         self.app = app
         self.canvas = app.plotcanvas
+        self.decimals = 4
 
         # Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -87,7 +95,9 @@ class CutOut(FlatCAMTool):
         form_layout.addRow(self.kindlabel, self.obj_kind_combo)
 
         # Tool Diameter
-        self.dia = FCEntry()
+        self.dia = FCDoubleSpinner()
+        self.dia.set_precision(self.decimals)
+
         self.dia_label = QtWidgets.QLabel('%s:' % _("Tool dia"))
         self.dia_label.setToolTip(
            _("Diameter of the tool used to cutout\n"
@@ -96,7 +106,9 @@ class CutOut(FlatCAMTool):
         form_layout.addRow(self.dia_label, self.dia)
 
         # Margin
-        self.margin = FCEntry()
+        self.margin = FCDoubleSpinner()
+        self.margin.set_precision(self.decimals)
+
         self.margin_label = QtWidgets.QLabel('%s:' % _("Margin:"))
         self.margin_label.setToolTip(
            _("Margin over bounds. A positive value here\n"
@@ -106,7 +118,9 @@ class CutOut(FlatCAMTool):
         form_layout.addRow(self.margin_label, self.margin)
 
         # Gapsize
-        self.gapsize = FCEntry()
+        self.gapsize = FCDoubleSpinner()
+        self.gapsize.set_precision(self.decimals)
+
         self.gapsize_label = QtWidgets.QLabel('%s:' % _("Gap size:"))
         self.gapsize_label.setToolTip(
            _("The size of the bridge gaps in the cutout\n"
@@ -381,17 +395,7 @@ class CutOut(FlatCAMTool):
                                  _("There is no object selected for Cutout.\nSelect one and try again."))
             return
 
-        try:
-            dia = float(self.dia.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                dia = float(self.dia.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
-                return
-
+        dia = float(self.dia.get_value())
         if 0 in {dia}:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Tool Diameter is zero value. Change it to a positive real number."))
@@ -402,27 +406,8 @@ class CutOut(FlatCAMTool):
         except ValueError:
             return
 
-        try:
-            margin = float(self.margin.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                margin = float(self.margin.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Margin value is missing or wrong format. Add it and retry."))
-                return
-
-        try:
-            gapsize = float(self.gapsize.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                gapsize = float(self.gapsize.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Gap size value is missing or wrong format. Add it and retry."))
-                return
+        margin = float(self.margin.get_value())
+        gapsize = float(self.gapsize.get_value())
 
         try:
             gaps = self.gaps.get_value()
@@ -579,17 +564,7 @@ class CutOut(FlatCAMTool):
         if cutout_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(name)))
 
-        try:
-            dia = float(self.dia.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                dia = float(self.dia.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
-                return
-
+        dia = float(self.dia.get_value())
         if 0 in {dia}:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Tool Diameter is zero value. Change it to a positive real number."))
@@ -600,27 +575,8 @@ class CutOut(FlatCAMTool):
         except ValueError:
             return
 
-        try:
-            margin = float(self.margin.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                margin = float(self.margin.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Margin value is missing or wrong format. Add it and retry."))
-                return
-
-        try:
-            gapsize = float(self.gapsize.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                gapsize = float(self.gapsize.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Gap size value is missing or wrong format. Add it and retry."))
-                return
+        margin = float(self.margin.get_value())
+        gapsize = float(self.gapsize.get_value())
 
         try:
             gaps = self.gaps.get_value()
@@ -749,32 +705,13 @@ class CutOut(FlatCAMTool):
         self.app.inform.emit(_("Click on the selected geometry object perimeter to create a bridge gap ..."))
         self.app.geo_editor.tool_shape.enabled = True
 
-        try:
-            self.cutting_dia = float(self.dia.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                self.cutting_dia = float(self.dia.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
-                return
-
+        self.cutting_dia = float(self.dia.get_value())
         if 0 in {self.cutting_dia}:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
 
-        try:
-            self.cutting_gapsize = float(self.gapsize.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                self.cutting_gapsize = float(self.gapsize.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Gap size value is missing or wrong format. Add it and retry."))
-                return
+        self.cutting_gapsize = float(self.gapsize.get_value())
 
         name = self.man_object_combo.currentText()
         # Get Geometry source object to be used as target for Manual adding Gaps
@@ -799,7 +736,6 @@ class CutOut(FlatCAMTool):
         self.kp = self.app.plotcanvas.graph_event_connect('key_press', self.on_key_press)
         self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
         self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
-
 
     def on_manual_cutout(self, click_pos):
         name = self.man_object_combo.currentText()
@@ -851,17 +787,7 @@ class CutOut(FlatCAMTool):
                                    "Select a Gerber file and try again."))
             return
 
-        try:
-            dia = float(self.dia.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                dia = float(self.dia.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
-                return
-
+        dia = float(self.dia.get_value())
         if 0 in {dia}:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Tool Diameter is zero value. Change it to a positive real number."))
@@ -872,17 +798,7 @@ class CutOut(FlatCAMTool):
         except ValueError:
             return
 
-        try:
-            margin = float(self.margin.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                margin = float(self.margin.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Margin value is missing or wrong format. Add it and retry."))
-                return
-
+        margin = float(self.margin.get_value())
         convex_box = self.convex_box.get_value()
 
         def geo_init(geo_obj, app_obj):

@@ -7,6 +7,8 @@ from FlatCAMApp import App
 from flatcamGUI import VisPyPatches
 
 from multiprocessing import freeze_support
+# import copyreg
+# import types
 
 if sys.platform == "win32":
     # cx_freeze 'module win32' workaround

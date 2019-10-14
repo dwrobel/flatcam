@@ -1,14 +1,15 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
-# ########################################################## ##
+# ##########################################################
 # File modified by: Dennis Hayrullin                       #
-# ########################################################## ##
+# File modified by: Marius Stanciu                         #
+# ##########################################################
 
 # from PyQt5.QtCore import QModelIndex
 from FlatCAMObj import *
@@ -186,21 +187,27 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         ("gerber", "Gerber"),
         ("excellon", "Excellon"),
         ("geometry", "Geometry"),
-        ("cncjob", "CNC Job")
+        ("cncjob", "CNC Job"),
+        ("script", "Scripts"),
+        ("document", "Document"),
     ]
 
     classdict = {
         "gerber": FlatCAMGerber,
         "excellon": FlatCAMExcellon,
         "cncjob": FlatCAMCNCjob,
-        "geometry": FlatCAMGeometry
+        "geometry": FlatCAMGeometry,
+        "script": FlatCAMScript,
+        "document": FlatCAMDocument
     }
 
     icon_files = {
         "gerber": "share/flatcam_icon16.png",
         "excellon": "share/drill16.png",
         "cncjob": "share/cnc16.png",
-        "geometry": "share/geometry16.png"
+        "geometry": "share/geometry16.png",
+        "script": "share/script_new16.png",
+        "document": "share/notes16_1.png"
     }
 
     root_item = None
@@ -322,6 +329,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     self.app.ui.menuprojectedit.setVisible(False)
                 if type(obj) != FlatCAMGerber and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMCNCjob:
                     self.app.ui.menuprojectviewsource.setVisible(False)
+                if type(obj) != FlatCAMGerber and type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and \
+                        type(obj) != FlatCAMCNCjob:
+                    # meaning for Scripts and for Document type of FlatCAM object
+                    self.app.ui.menuprojectenable.setVisible(False)
+                    self.app.ui.menuprojectdisable.setVisible(False)
+                    self.app.ui.menuprojectedit.setVisible(False)
+                    self.app.ui.menuprojectproperties.setVisible(False)
+                    self.app.ui.menuprojectgeneratecnc.setVisible(False)
         else:
             self.app.ui.menuprojectgeneratecnc.setVisible(False)
 
@@ -411,17 +426,17 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     # rename the object
                     obj.options["name"] = deepcopy(data)
 
+                    self.app.object_status_changed.emit(obj, 'rename', old_name)
+
                     # update the SHELL auto-completer model data
                     try:
                         self.app.myKeywords.remove(old_name)
                         self.app.myKeywords.append(new_name)
                         self.app.shell._edit.set_model_data(self.app.myKeywords)
-                        self.app.ui.code_editor.set_model_data(self.app.myKeywords)
                     except Exception as e:
                         log.debug(
                             "setData() --> Could not remove the old object name from auto-completer model list. %s" %
                             str(e))
-
                     # obj.build_ui()
                     self.app.inform.emit(_("Object renamed from <b>{old}</b> to <b>{new}</b>").format(old=old_name,
                                                                                                       new=new_name))
@@ -490,7 +505,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.app.should_we_save = True
 
-        self.app.object_status_changed.emit(obj, 'append')
+        self.app.object_status_changed.emit(obj, 'append', name)
 
         # decide if to show or hide the Notebook side of the screen
         if self.app.defaults["global_project_autohide"] is True:
@@ -547,7 +562,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :return: The requested object or None if no such object.
         :rtype: FlatCAMObj or None
         """
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
+        # FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
 
         if isCaseSensitive is None or isCaseSensitive is True:
             for obj in self.get_list():
@@ -570,24 +585,33 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # send signal with the object that is deleted
         # self.app.object_status_changed.emit(active.obj, 'delete')
 
+        # some objects add a Tab on creation, close it here
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == active.obj.options['name']:
+                self.app.ui.plot_tab_area.removeTab(idx)
+                break
+
         # update the SHELL auto-completer model data
         name = active.obj.options['name']
         try:
             self.app.myKeywords.remove(name)
             self.app.shell._edit.set_model_data(self.app.myKeywords)
-            self.app.ui.code_editor.set_model_data(self.app.myKeywords)
+            # this is not needed any more because now the code editor is created on demand
+            # self.app.ui.code_editor.set_model_data(self.app.myKeywords)
         except Exception as e:
             log.debug(
                 "delete_active() --> Could not remove the old object name from auto-completer model list. %s" % str(e))
 
+        self.app.object_status_changed.emit(active.obj, 'delete', name)
+
+        # ############ OBJECT DELETION FROM MODEL STARTS HERE ####################
         self.beginRemoveRows(self.index(group.row(), 0, QtCore.QModelIndex()), active.row(), active.row())
-
         group.remove_child(active)
-
         # after deletion of object store the current list of objects into the self.app.all_objects_list
         self.app.all_objects_list = self.get_list()
-
         self.endRemoveRows()
+        # ############ OBJECT DELETION FROM MODEL STOPS HERE ####################
+
         if self.app.is_legacy is False:
             self.app.plotcanvas.redraw()
 
@@ -605,6 +629,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
+
+        self.app.object_status_changed.emit(None, 'delete_all', '')
+
         try:
             self.app.all_objects_list.clear()
 
@@ -688,6 +715,16 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             log.error("[ERROR] Cause: %s" % str(e))
             raise
 
+    def set_exclusive_active(self, name):
+        """
+        Make the object with the name in parameters the only selected object
+
+        :param name: name of object to be selected and made the only active object
+        :return: None
+        """
+        self.set_all_inactive()
+        self.set_active(name)
+
     def set_inactive(self, name):
         """
         Unselect object by name from the project list. This triggers the
@@ -736,7 +773,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             elif obj.kind == 'geometry':
                 self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
                     color='red', name=str(obj.options['name'])))
-
+            elif obj.kind == 'script':
+                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='orange', name=str(obj.options['name'])))
+            elif obj.kind == 'document':
+                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='darkCyan', name=str(obj.options['name'])))
         except IndexError:
             # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')

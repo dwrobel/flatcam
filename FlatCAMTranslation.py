@@ -1,6 +1,5 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
@@ -8,14 +7,15 @@
 
 import os
 import sys
+import logging
 from pathlib import Path
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
-from flatcamGUI.GUIElements import log
 import gettext
 
+log = logging.getLogger('base')
 
 # import builtins
 #

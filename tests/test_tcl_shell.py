@@ -1,13 +1,13 @@
 import sys
 import unittest
-from PyQt4 import QtGui
-from PyQt4.QtCore import QThread
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import QThread
 
 from FlatCAMApp import App
 from os import listdir
 from os.path import isfile
 from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMCNCjob, FlatCAMExcellon
-from ObjectUI import GerberObjectUI, GeometryObjectUI
+from flatcamGUI.ObjectUI import GerberObjectUI, GeometryObjectUI
 from time import sleep
 import os
 import tempfile
@@ -36,13 +36,13 @@ class TclShellTest(unittest.TestCase):
     # reason for this is reuse one test window only,
 
     # CANNOT DO THIS HERE!!!
-    #from tests.test_tclCommands import *
+    # from tests.test_tclCommands import *
 
     @classmethod
     def setUpClass(cls):
 
         cls.setup = True
-        cls.app = QtGui.QApplication(sys.argv)
+        cls.app = QtWidgets.QApplication(sys.argv)
 
         # Create App, keep app defaults (do not load
         # user-defined defaults).
@@ -78,9 +78,9 @@ class TclShellTest(unittest.TestCase):
         self.fc.exec_command_test('set_sys units IN')
         self.fc.exec_command_test('new')
 
-        #----------------------------------------
+        # ----------------------------------------
         # Units must be IN
-        #----------------------------------------
+        # ----------------------------------------
         units = self.fc.exec_command_test('get_sys units')
         self.assertEqual(units, "IN")
 
@@ -88,9 +88,9 @@ class TclShellTest(unittest.TestCase):
         self.fc.exec_command_test('set_sys units MM')
         self.fc.exec_command_test('new')
 
-        #----------------------------------------
+        # ----------------------------------------
         # Units must be MM
-        #----------------------------------------
+        # ----------------------------------------
         units = self.fc.exec_command_test('get_sys units')
         self.assertEqual(units, "MM")
 
@@ -103,9 +103,9 @@ class TclShellTest(unittest.TestCase):
 
         gbr_cmd = 'open_gerber {path}/{filename} -outname {outname}'
 
-        #-----------------------------------------
+        # -----------------------------------------
         # Open top layer and check for object type
-        #-----------------------------------------
+        # -----------------------------------------
         cmd = gbr_cmd.format(
             path=self.gerber_files,
             filename=self.copper_top_filename,
@@ -116,9 +116,9 @@ class TclShellTest(unittest.TestCase):
                         "Expected FlatCAMGerber, instead, %s is %s" %
                         (self.gerber_top_name, type(gerber_top_obj)))
 
-        #--------------------------------------------
+        # --------------------------------------------
         # Open bottom layer and check for object type
-        #--------------------------------------------
+        # --------------------------------------------
         cmd = gbr_cmd.format(
             path=self.gerber_files,
             filename=self.copper_bottom_filename,
@@ -129,9 +129,9 @@ class TclShellTest(unittest.TestCase):
                         "Expected FlatCAMGerber, instead, %s is %s" %
                         (self.gerber_bottom_name, type(gerber_bottom_obj)))
 
-        #--------------------------------------------
+        # --------------------------------------------
         # Open cutout layer and check for object type
-        #--------------------------------------------
+        # --------------------------------------------
         cmd = gbr_cmd.format(
             path=self.gerber_files,
             filename=self.cutout_filename,
@@ -160,9 +160,9 @@ class TclShellTest(unittest.TestCase):
 
         # TODO: Check deleteb object is gone.
 
-        #--------------------------------------------
+        # --------------------------------------------
         # Exteriors of cutout layer, check type
-        #--------------------------------------------
+        # --------------------------------------------
         obj = self.fc.collection.get_by_name(self.gerber_cutout_name + '_iso_exterior')
         self.assertTrue(isinstance(obj, FlatCAMGeometry),
                         "Expected FlatCAMGeometry, instead, %s is %s" %
@@ -173,8 +173,14 @@ class TclShellTest(unittest.TestCase):
         self.fc.exec_command_test('mirror %s -box %s -axis X' % (self.gerber_cutout_name, self.gerber_cutout_name))
 
         # exteriors delete and join geometries for bottom layer
-        self.fc.exec_command_test('isolate %s -dia %f -outname %s' % (self.gerber_cutout_name, self.engraver_diameter, self.gerber_cutout_name + '_bottom_iso'))
-        self.fc.exec_command_test('exteriors %s -outname %s' % (self.gerber_cutout_name + '_bottom_iso', self.gerber_cutout_name + '_bottom_iso_exterior'))
+        self.fc.exec_command_test(
+            'isolate %s -dia %f -outname %s' %
+            (self.gerber_cutout_name, self.engraver_diameter, self.gerber_cutout_name + '_bottom_iso')
+        )
+        self.fc.exec_command_test(
+            'exteriors %s -outname %s' %
+            (self.gerber_cutout_name + '_bottom_iso', self.gerber_cutout_name + '_bottom_iso_exterior')
+        )
         self.fc.exec_command_test('delete %s' % (self.gerber_cutout_name + '_bottom_iso'))
         obj = self.fc.collection.get_by_name(self.gerber_cutout_name + '_bottom_iso_exterior')
         self.assertTrue(isinstance(obj, FlatCAMGeometry),
@@ -187,12 +193,20 @@ class TclShellTest(unittest.TestCase):
                          "Expected 5 objects, found %d" % len(names))
 
         # isolate traces
-        self.fc.exec_command_test('isolate %s -dia %f' %  (self.gerber_top_name, self.engraver_diameter))
-        self.fc.exec_command_test('isolate %s -dia %f' %  (self.gerber_bottom_name, self.engraver_diameter))
+        self.fc.exec_command_test('isolate %s -dia %f' % (self.gerber_top_name, self.engraver_diameter))
+        self.fc.exec_command_test('isolate %s -dia %f' % (self.gerber_bottom_name, self.engraver_diameter))
 
         # join isolated geometries for top and  bottom
-        self.fc.exec_command_test('join_geometries %s %s %s' %  (self.gerber_top_name + '_join_iso', self.gerber_top_name + '_iso', self.gerber_cutout_name + '_iso_exterior'))
-        self.fc.exec_command_test('join_geometries %s %s %s' %  (self.gerber_bottom_name + '_join_iso', self.gerber_bottom_name + '_iso', self.gerber_cutout_name + '_bottom_iso_exterior'))
+        self.fc.exec_command_test(
+            'join_geometries %s %s %s' %
+            (self.gerber_top_name + '_join_iso', self.gerber_top_name + '_iso',
+             self.gerber_cutout_name + '_iso_exterior')
+        )
+        self.fc.exec_command_test(
+            'join_geometries %s %s %s' %
+            (self.gerber_bottom_name + '_join_iso', self.gerber_bottom_name + '_iso',
+             self.gerber_cutout_name + '_bottom_iso_exterior')
+        )
 
         # at this stage we should have 9 objects
         names = self.fc.collection.get_names()
@@ -211,14 +225,21 @@ class TclShellTest(unittest.TestCase):
                          "Expected 5 objects, found %d" % len(names))
 
         # geocutout bottom test (it cuts  to same object)
-        self.fc.exec_command_test('isolate %s -dia %f -outname %s' % (self.gerber_cutout_name, self.cutout_diameter, self.gerber_cutout_name + '_bottom_iso'))
-        self.fc.exec_command_test('exteriors %s -outname %s' % (self.gerber_cutout_name + '_bottom_iso', self.gerber_cutout_name + '_bottom_iso_exterior'))
+        self.fc.exec_command_test(
+            'isolate %s -dia %f -outname %s' %
+            (self.gerber_cutout_name, self.cutout_diameter, self.gerber_cutout_name + '_bottom_iso')
+        )
+        self.fc.exec_command_test(
+            'exteriors %s -outname %s' %
+            (self.gerber_cutout_name + '_bottom_iso', self.gerber_cutout_name + '_bottom_iso_exterior')
+        )
         self.fc.exec_command_test('delete %s' % (self.gerber_cutout_name + '_bottom_iso'))
         obj = self.fc.collection.get_by_name(self.gerber_cutout_name + '_bottom_iso_exterior')
         self.assertTrue(isinstance(obj, FlatCAMGeometry),
                         "Expected FlatCAMGeometry, instead, %s is %s" %
                         (self.gerber_cutout_name + '_bottom_iso_exterior', type(obj)))
-        self.fc.exec_command_test('geocutout %s -dia %f -gapsize 0.3 -gaps 4' % (self.gerber_cutout_name + '_bottom_iso_exterior', self.cutout_diameter))
+        self.fc.exec_command_test('geocutout %s -dia %f -gapsize 0.3 -gaps 4' %
+                                  (self.gerber_cutout_name + '_bottom_iso_exterior', self.cutout_diameter))
 
         # at this stage we should have 6 objects
         names = self.fc.collection.get_names()
@@ -229,7 +250,8 @@ class TclShellTest(unittest.TestCase):
 
     def test_open_gerber(self):
 
-        self.fc.exec_command_test('open_gerber %s/%s -outname %s' % (self.gerber_files, self.copper_top_filename, self.gerber_top_name))
+        self.fc.exec_command_test('open_gerber %s/%s -outname %s' %
+                                  (self.gerber_files, self.copper_top_filename, self.gerber_top_name))
         gerber_top_obj = self.fc.collection.get_by_name(self.gerber_top_name)
         self.assertTrue(isinstance(gerber_top_obj, FlatCAMGerber),
                         "Expected FlatCAMGerber, instead, %s is %s" %
@@ -237,7 +259,8 @@ class TclShellTest(unittest.TestCase):
 
     def test_excellon_flow(self):
 
-        self.fc.exec_command_test('open_excellon %s/%s -outname %s' % (self.gerber_files, self.excellon_filename, self.excellon_name))
+        self.fc.exec_command_test('open_excellon %s/%s -outname %s' %
+                                  (self.gerber_files, self.excellon_filename, self.excellon_name))
         excellon_obj = self.fc.collection.get_by_name(self.excellon_name)
         self.assertTrue(isinstance(excellon_obj, FlatCAMExcellon),
                         "Expected FlatCAMExcellon, instead, %s is %s" %

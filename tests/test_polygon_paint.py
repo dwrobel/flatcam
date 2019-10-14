@@ -1,9 +1,9 @@
 import sys
 import unittest
-from PyQt4 import QtGui
+from PyQt5 import QtGui, QtWidgets
 from FlatCAMApp import App
 from FlatCAMObj import FlatCAMGeometry, FlatCAMCNCjob
-from ObjectUI import GerberObjectUI, GeometryObjectUI
+from flatcamGUI.ObjectUI import GerberObjectUI, GeometryObjectUI
 from time import sleep
 import os
 import tempfile
@@ -13,7 +13,7 @@ from shapely.geometry import LineString, LinearRing, Polygon, MultiPolygon
 class PolyPaintTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.app = QtGui.QApplication(sys.argv)
+        self.app = QtWidgets.QApplication(sys.argv)
 
         # Create App, keep app defaults (do not load
         # user-defined defaults).
@@ -218,10 +218,3 @@ class PolyPaintTestCase(unittest.TestCase):
             self.assertTrue(isinstance(geo, LineString))
             # Lots of points (Should be 1000s)
             self.assertGreater(len(geo.coords), 2)
-
-
-
-
-
-
-

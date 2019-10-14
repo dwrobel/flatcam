@@ -1,6 +1,5 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
@@ -50,6 +49,10 @@ class ToolMove(FlatCAMTool):
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.sel_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name="move")
 
+        self.mm = None
+        self.mp = None
+        self.kr = None
+
         self.replot_signal[list].connect(self.replot)
 
     def install(self, icon=None, separator=None, **kwargs):
@@ -90,14 +93,19 @@ class ToolMove(FlatCAMTool):
             # signal that there is a command active and it is 'Move'
             self.app.command_active = "Move"
 
-            if self.app.collection.get_selected():
+            sel_obj_list = self.app.collection.get_selected()
+            if sel_obj_list:
                 self.app.inform.emit(_("MOVE: Click on the Start point ..."))
+
+                # if we have an object selected then we can safely activate the mouse events
+                self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_move)
+                self.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.on_left_click)
+                self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_press)
+
                 # draw the selection box
                 self.draw_sel_bbox()
             else:
-                self.setVisible(False)
-                # signal that there is no command active
-                self.app.command_active = None
+                self.toggle()
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("MOVE action cancelled. No object(s) to move."))
 
     def on_left_click(self, event):
@@ -143,7 +151,9 @@ class ToolMove(FlatCAMTool):
                     dx = pos[0] - self.point1[0]
                     dy = pos[1] - self.point1[1]
 
-                    obj_list = self.app.collection.get_selected()
+                    # move only the objects selected and plotted and visible
+                    obj_list = [obj for obj in self.app.collection.get_selected()
+                                if obj.options['plot'] and obj.visible is True]
 
                     def job_move(app_obj):
                         with self.app.proc_container.new(_("Moving...")) as proc:
@@ -152,19 +162,20 @@ class ToolMove(FlatCAMTool):
                                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object(s) selected."))
                                     return "fail"
 
+                                # remove any mark aperture shape that may be displayed
                                 for sel_obj in obj_list:
                                     # if the Gerber mark shapes are enabled they need to be disabled before move
                                     if isinstance(sel_obj, FlatCAMGerber):
                                         sel_obj.ui.aperture_table_visibility_cb.setChecked(False)
 
-                                    # offset solid_geometry
-                                    sel_obj.offset((dx, dy))
-                                    # sel_obj.plot()
-
                                     try:
                                         sel_obj.replotApertures.emit()
                                     except Exception as e:
                                         pass
+
+                                for sel_obj in obj_list:
+                                    # offset solid_geometry
+                                    sel_obj.offset((dx, dy))
 
                                     # Update the object bounding box options
                                     a, b, c, d = sel_obj.bounds()
@@ -254,38 +265,33 @@ class ToolMove(FlatCAMTool):
         ymaxlist = []
 
         obj_list = self.app.collection.get_selected()
-        if not obj_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Object(s) not selected"))
-            self.toggle()
-        else:
-            # if we have an object selected then we can safely activate the mouse events
-            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_move)
-            self.mp = self.app.plotcanvas.graph_event_connect('mouse_press', self.on_left_click)
-            self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_press)
-            # first get a bounding box to fit all
-            for obj in obj_list:
+
+        # first get a bounding box to fit all
+        for obj in obj_list:
+            # don't move disabled objects, move only plotted objects
+            if obj.options['plot']:
                 xmin, ymin, xmax, ymax = obj.bounds()
                 xminlist.append(xmin)
                 yminlist.append(ymin)
                 xmaxlist.append(xmax)
                 ymaxlist.append(ymax)
 
-            # get the minimum x,y and maximum x,y for all objects selected
-            xminimal = min(xminlist)
-            yminimal = min(yminlist)
-            xmaximal = max(xmaxlist)
-            ymaximal = max(ymaxlist)
+        # get the minimum x,y and maximum x,y for all objects selected
+        xminimal = min(xminlist)
+        yminimal = min(yminlist)
+        xmaximal = max(xmaxlist)
+        ymaximal = max(ymaxlist)
 
-            p1 = (xminimal, yminimal)
-            p2 = (xmaximal, yminimal)
-            p3 = (xmaximal, ymaximal)
-            p4 = (xminimal, ymaximal)
+        p1 = (xminimal, yminimal)
+        p2 = (xmaximal, yminimal)
+        p3 = (xmaximal, ymaximal)
+        p4 = (xminimal, ymaximal)
 
-            self.old_coords = [p1, p2, p3, p4]
-            self.draw_shape(Polygon(self.old_coords))
+        self.old_coords = [p1, p2, p3, p4]
+        self.draw_shape(Polygon(self.old_coords))
 
-            if self.app.is_legacy is True:
-                self.sel_shapes.redraw()
+        if self.app.is_legacy is True:
+            self.sel_shapes.redraw()
 
     def update_sel_bbox(self, pos):
         self.delete_shape()

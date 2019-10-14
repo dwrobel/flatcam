@@ -1,6 +1,5 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 8/17/2019                                          #
 # MIT Licence                                              #
@@ -19,6 +18,7 @@ from rtree import index as rtindex
 from camlib import *
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, SpinBoxDelegate
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, FlatCAMGeoEditor
+from flatcamParsers.ParseExcellon import Excellon
 
 from copy import copy, deepcopy
 
@@ -1984,7 +1984,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        self.addtool_entry.returnPressed.connect(self.on_tool_add)
+        self.addtool_entry.editingFinished.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         # self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.tools_table_exc.cellPressed.connect(self.on_row_selected)
@@ -2014,7 +2014,10 @@ class FlatCAMExcEditor(QtCore.QObject):
         # VisPy Visuals
         if self.app.is_legacy is False:
             self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
-            self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
+            if self.app.plotcanvas.big_cursor is True:
+                self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1, line_width=2)
+            else:
+                self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='shapes_exc_editor')
@@ -2042,6 +2045,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.pos = None
 
         self.complete = False
+
+        # Number of decimals used by tools in this class
+        self.decimals = 4
 
         def make_callback(thetool):
             def f():
@@ -2113,16 +2119,18 @@ class FlatCAMExcEditor(QtCore.QObject):
         # updated units
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
 
         # build the self.points_edit dict {dimaters: [point_list]}
         for drill in self.exc_obj.drills:
             if drill['tool'] in self.exc_obj.tools:
-                if self.units == 'IN':
-                    tool_dia = float('%.4f' % self.exc_obj.tools[drill['tool']]['C'])
-                else:
-                    tool_dia = float('%.2f' % self.exc_obj.tools[drill['tool']]['C'])
+                tool_dia = float('%.*f' % (self.decimals, self.exc_obj.tools[drill['tool']]['C']))
 
                 try:
                     self.points_edit[tool_dia].append(drill['point'])
@@ -2132,10 +2140,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # build the self.slot_points_edit dict {dimaters: {"start": Point, "stop": Point}}
         for slot in self.exc_obj.slots:
             if slot['tool'] in self.exc_obj.tools:
-                if self.units == 'IN':
-                    tool_dia = float('%.4f' % self.exc_obj.tools[slot['tool']]['C'])
-                else:
-                    tool_dia = float('%.2f' % self.exc_obj.tools[slot['tool']]['C'])
+                tool_dia = float('%.*f' % (self.decimals, self.exc_obj.tools[slot['tool']]['C']))
 
                 try:
                     self.slot_points_edit[tool_dia].append({
@@ -2171,10 +2176,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             # Excellon file has no tool diameter information. In this case do not order the diameter in the table
             # but use the real order found in the exc_obj.tools
             for k, v in self.exc_obj.tools.items():
-                if self.units == 'IN':
-                    tool_dia = float('%.4f' % v['C'])
-                else:
-                    tool_dia = float('%.2f' % v['C'])
+                tool_dia = float('%.*f' % (self.decimals, v['C']))
                 self.tool2tooldia[int(k)] = tool_dia
 
         # Init GUI
@@ -2271,12 +2273,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.tools_table_exc.setItem(self.tool_row, 0, idd)  # Tool name/id
 
             # Make sure that the drill diameter when in MM is with no more than 2 decimals
-            # There are no drill bits in MM with more than 3 decimals diameter
-            # For INCH the decimals should be no more than 3. There are no drills under 10mils
-            if self.units == 'MM':
-                dia = QtWidgets.QTableWidgetItem('%.2f' % self.olddia_newdia[tool_no])
-            else:
-                dia = QtWidgets.QTableWidgetItem('%.4f' % self.olddia_newdia[tool_no])
+            # There are no drill bits in MM with more than 2 decimals diameter
+            # For INCH the decimals should be no more than 4. There are no drills under 10mils
+            dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.olddia_newdia[tool_no]))
 
             dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -2474,9 +2473,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             else:
                 if isinstance(dia, list):
                     for dd in dia:
-                        deleted_tool_dia_list.append(float('%.4f' % dd))
+                        deleted_tool_dia_list.append(float('%.*f' % (self.decimals, dd)))
                 else:
-                    deleted_tool_dia_list.append(float('%.4f' % dia))
+                    deleted_tool_dia_list.append(float('%.*f' % (self.decimals, dia)))
         except Exception as e:
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("Select a tool in Tool Table"))
@@ -2814,7 +2813,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            self.app.plotcanvas.graph_event_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_double_click', self.app.on_mouse_double_click_over_plot)
         else:
             self.app.plotcanvas.graph_event_disconnect(self.app.mp)
             self.app.plotcanvas.graph_event_disconnect(self.app.mm)
@@ -2844,7 +2843,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                               self.app.on_mouse_click_release_over_plot)
         self.app.mdc = self.app.plotcanvas.graph_event_connect('mouse_double_click',
-                                                               self.app.on_double_click_over_plot)
+                                                               self.app.on_mouse_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
         if self.app.is_legacy is False:
@@ -2977,7 +2976,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # add a first tool in the Tool Table but only if the Excellon Object is empty
         if not self.tool2tooldia:
-            self.on_tool_add(tooldia=float(self.app.defaults['excellon_editor_newdia']))
+            self.on_tool_add(tooldia=float('%.2f' % float(self.app.defaults['excellon_editor_newdia'])))
 
     def update_fcexcellon(self, exc_obj):
         """
@@ -3657,7 +3656,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             x, y = self.app.geo_editor.snap(x, y)
 
             # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black',
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
                                          size=self.app.defaults["global_cursor_size"])
 
         self.snap_x = x
@@ -3706,7 +3705,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.app.selection_type = None
 
         # Update cursor
-        self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black',
+        self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
                                      size=self.app.defaults["global_cursor_size"])
 
     def on_canvas_key_release(self, event):

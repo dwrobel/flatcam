@@ -1,4 +1,4 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
@@ -17,7 +17,7 @@
 #  * All transformations                                   #
 #                                                          #
 #  Reference: www.w3.org/TR/SVG/Overview.html              #
-# ########################################################## ##
+# ##########################################################
 
 # import xml.etree.ElementTree as ET
 from svg.path import Line, Arc, CubicBezier, QuadraticBezier, parse_path
@@ -135,6 +135,7 @@ def path2shapely(path, object_type, res=1.0):
         geometry.append(geo_element)
 
     return geometry
+
 
 def svgrect2shapely(rect, n_points=32):
     """
@@ -284,7 +285,7 @@ def svgpolygon2shapely(polygon):
     # return LinearRing(points)
 
 
-def getsvggeo(node, object_type, root = None):
+def getsvggeo(node, object_type, root=None):
     """
     Extracts and flattens all geometry from an SVG node
     into a list of Shapely geometry.
@@ -481,6 +482,7 @@ def getsvgtext(node, object_type, units='MM'):
                     raise Exception('Unknown transformation: %s', tr)
 
     return geo
+
 
 def parse_svg_point_list(ptliststr):
     """

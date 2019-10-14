@@ -1,17 +1,17 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://caram.cl/software/flatcam                         #
-# Author: Juan Pablo Caram (c)                             #
-# Date: 2/5/2014                                           #
+# Author: Dennis Hayrullin (c)                             #
+# Date: 2016                                               #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from PyQt5 import QtCore
 
 import logging
-from flatcamGUI.VisPyCanvas import VisPyCanvas, time
+from flatcamGUI.VisPyCanvas import VisPyCanvas, time, Color
 from flatcamGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
 from vispy.scene.visuals import InfiniteLine, Line
+
 import numpy as np
 from vispy.geometry import Rect
 
@@ -44,6 +44,17 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # Parent container
         self.container = container
 
+        settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.line_color = (0.3, 0.0, 0.0, 1.0)
+        else:
+            self.line_color = (0.4, 0.4, 0.4, 1.0)
+
         # workspace lines; I didn't use the rectangle because I didn't want to add another VisPy Node,
         # which might decrease performance
         self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
@@ -68,7 +79,6 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.draw_workspace()
 
         self.line_parent = None
-        self.line_color = (0.3, 0.0, 0.0, 1.0)
         self.cursor_v_line = InfiniteLine(pos=None, color=self.line_color, vertical=True,
                                           parent=self.line_parent)
 
@@ -89,9 +99,11 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.text_collection.enabled = True
 
         self.c = None
-
+        self.big_cursor = None
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
+
+        self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
     # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
     # all CNC have a limited workspace
@@ -104,7 +116,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         a3l_in = np.array([(0, 0), (16.5, 0), (16.5, 11.7), (0, 11.7)])
 
         a4p_mm = np.array([(0, 0), (210, 0), (210, 297), (0, 297)])
-        a4l_mm = np.array([(0, 0), (297, 0), (297,210), (0, 210)])
+        a4l_mm = np.array([(0, 0), (297, 0), (297, 210), (0, 210)])
         a3p_mm = np.array([(0, 0), (297, 0), (297, 420), (0, 420)])
         a3l_mm = np.array([(0, 0), (420, 0), (420, 297), (0, 297)])
 
@@ -130,14 +142,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.delete_workspace()
 
         self.b_line = Line(pos=a[0:2], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias= True, method='agg', parent=self.view.scene)
+                           antialias=True, method='agg', parent=self.view.scene)
         self.r_line = Line(pos=a[1:3], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias= True, method='agg', parent=self.view.scene)
+                           antialias=True, method='agg', parent=self.view.scene)
 
         self.t_line = Line(pos=a[2:4], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias= True, method='agg', parent=self.view.scene)
+                           antialias=True, method='agg', parent=self.view.scene)
         self.l_line = Line(pos=np.array((a[0], a[3])), color=(0.70, 0.3, 0.3, 1.0),
-                           antialias= True, method='agg', parent=self.view.scene)
+                           antialias=True, method='agg', parent=self.view.scene)
 
         if self.fcapp.defaults['global_workspace'] is False:
             self.delete_workspace()
@@ -196,13 +208,33 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         return ShapeCollection(parent=self.view.scene, pool=self.fcapp.pool, **kwargs)
 
     def new_cursor(self, big=None):
+        """
+        Will create a mouse cursor pointer on canvas
+
+        :param big: if True will create a mouse cursor made out of infinite lines
+        :return: the mouse cursor object
+        """
         if big is True:
+            self.big_cursor = True
             self.c = CursorBig()
+
+            # in case there are multiple new_cursor calls, best to disconnect first the signals
+            try:
+                self.c.mouse_state_updated.disconnect(self.on_mouse_state)
+            except (TypeError, AttributeError):
+                pass
+            try:
+                self.c.mouse_position_updated.disconnect(self.on_mouse_position)
+            except (TypeError, AttributeError):
+                pass
+
             self.c.mouse_state_updated.connect(self.on_mouse_state)
             self.c.mouse_position_updated.connect(self.on_mouse_position)
         else:
+            self.big_cursor = False
             self.c = Cursor(pos=np.empty((0, 2)), parent=self.view.scene)
             self.c.antialias = 0
+
         return self.c
 
     def on_mouse_state(self, state):
@@ -219,6 +251,42 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.cursor_h_line.set_data(pos=pos[1], color=self.line_color)
         self.cursor_v_line.set_data(pos=pos[0], color=self.line_color)
         self.view.scene.update()
+
+    def on_mouse_scroll(self, event):
+        # key modifiers
+        modifiers = event.modifiers
+        pan_delta_x = self.fcapp.defaults["global_gridx"]
+        pan_delta_y = self.fcapp.defaults["global_gridy"]
+        curr_pos = event.pos
+
+        # Controlled pan by mouse wheel
+        if 'Shift' in modifiers:
+            p1 = np.array(curr_pos)[:2]
+
+            if event.delta[1] > 0:
+                curr_pos[0] -= pan_delta_x
+            else:
+                curr_pos[0] += pan_delta_x
+            p2 = np.array(curr_pos)[:2]
+            self.view.camera.pan(p2 - p1)
+        elif 'Control' in modifiers:
+            p1 = np.array(curr_pos)[:2]
+
+            if event.delta[1] > 0:
+                curr_pos[1] += pan_delta_y
+            else:
+                curr_pos[1] -= pan_delta_y
+            p2 = np.array(curr_pos)[:2]
+            self.view.camera.pan(p2 - p1)
+
+        if self.fcapp.grid_status() == True:
+            pos_canvas = self.translate_coords(curr_pos)
+            pos = self.fcapp.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+
+            # Update cursor
+            self.fcapp.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                           symbol='++', edge_color=self.fcapp.cursor_color_3D,
+                                           size=self.fcapp.defaults["global_cursor_size"])
 
     def new_text_group(self, collection=None):
         if collection:
@@ -308,7 +376,10 @@ class CursorBig(QtCore.QObject):
         if 'edge_color' in kwargs:
             color = kwargs['edge_color']
         else:
-            color = (0.0, 0.0, 0.0, 1.0)
+            if self.app.defaults['global_theme'] == 'white':
+                color = '#000000FF'
+            else:
+                color = '#FFFFFFFF'
 
         position = [pos[0][0], pos[0][1]]
         self.mouse_position_updated.emit(position)
