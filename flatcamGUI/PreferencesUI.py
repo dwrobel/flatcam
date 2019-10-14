@@ -3964,6 +3964,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         super(ToolsCutoutPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Cutout Tool Options")))
+        self.decimals = 4
 
         # ## Board cuttout
         self.board_cutout_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -3983,7 +3984,11 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
               "the PCB shape out of the surrounding material.")
         )
         grid0.addWidget(tdclabel, 0, 0)
-        self.cutout_tooldia_entry = LengthEntry()
+        self.cutout_tooldia_entry = FCDoubleSpinner()
+        self.cutout_tooldia_entry.set_range(0.000001, 9999.9999)
+        self.cutout_tooldia_entry.set_precision(self.decimals)
+        self.cutout_tooldia_entry.setSingleStep(0.1)
+
         grid0.addWidget(self.cutout_tooldia_entry, 0, 1)
 
         # Object kind
@@ -4008,7 +4013,11 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
               "the actual PCB border")
         )
         grid0.addWidget(marginlabel, 2, 0)
-        self.cutout_margin_entry = LengthEntry()
+        self.cutout_margin_entry = FCDoubleSpinner()
+        self.cutout_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.cutout_margin_entry.set_precision(self.decimals)
+        self.cutout_margin_entry.setSingleStep(0.1)
+
         grid0.addWidget(self.cutout_margin_entry, 2, 1)
 
         gaplabel = QtWidgets.QLabel('%s:' % _('Gap size'))
@@ -4019,7 +4028,11 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
               "from which the PCB is cutout).")
         )
         grid0.addWidget(gaplabel, 3, 0)
-        self.cutout_gap_entry = LengthEntry()
+        self.cutout_gap_entry = FCDoubleSpinner()
+        self.cutout_gap_entry.set_range(0.000001, 9999.9999)
+        self.cutout_gap_entry.set_precision(self.decimals)
+        self.cutout_gap_entry.setSingleStep(0.1)
+
         grid0.addWidget(self.cutout_gap_entry, 3, 1)
 
         gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
@@ -4063,6 +4076,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         super(Tools2sidedPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("2Sided Tool Options")))
+        self.decimals = 4
 
         # ## Board cuttout
         self.dblsided_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -4076,7 +4090,11 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # ## Drill diameter for alignment holes
-        self.drill_dia_entry = LengthEntry()
+        self.drill_dia_entry = FCDoubleSpinner()
+        self.drill_dia_entry.set_range(0.000001, 9999.9999)
+        self.drill_dia_entry.set_precision(self.decimals)
+        self.drill_dia_entry.setSingleStep(0.1)
+
         self.dd_label = QtWidgets.QLabel('%s:' % _("Drill dia"))
         self.dd_label.setToolTip(
             _("Diameter of the drill for the "
@@ -4120,6 +4138,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         super(ToolsPaintPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Paint Tool Options")))
+        self.decimals = 4
 
         # ------------------------------
         # ## Paint area
@@ -4144,7 +4163,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(ptdlabel, 0, 0)
 
-        self.painttooldia_entry = LengthEntry()
+        self.painttooldia_entry = FCEntry()
+
         grid0.addWidget(self.painttooldia_entry, 0, 1)
 
         self.paint_order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
@@ -4196,7 +4216,11 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "be painted.")
         )
         grid0.addWidget(marginlabel, 3, 0)
-        self.paintmargin_entry = LengthEntry()
+        self.paintmargin_entry = FCDoubleSpinner()
+        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
+        self.paintmargin_entry.set_precision(self.decimals)
+        self.paintmargin_entry.setSingleStep(0.1)
+
         grid0.addWidget(self.paintmargin_entry, 3, 1)
 
         # Method
@@ -4472,6 +4496,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         super(ToolsPanelizePrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Panelize Tool Options")))
+        self.decimals = 4
 
         # ## Board cuttout
         self.panelize_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -4486,7 +4511,11 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # ## Spacing Columns
-        self.pspacing_columns = FCEntry()
+        self.pspacing_columns = FCDoubleSpinner()
+        self.pspacing_columns.set_range(0.000001, 9999.9999)
+        self.pspacing_columns.set_precision(self.decimals)
+        self.pspacing_columns.setSingleStep(0.1)
+
         self.spacing_columns_label = QtWidgets.QLabel('%s:' % _("Spacing cols"))
         self.spacing_columns_label.setToolTip(
             _("Spacing between columns of the desired panel.\n"
@@ -4496,7 +4525,11 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.pspacing_columns, 0, 1)
 
         # ## Spacing Rows
-        self.pspacing_rows = FCEntry()
+        self.pspacing_rows = FCDoubleSpinner()
+        self.pspacing_rows.set_range(0.000001, 9999.9999)
+        self.pspacing_rows.set_precision(self.decimals)
+        self.pspacing_rows.setSingleStep(0.1)
+
         self.spacing_rows_label = QtWidgets.QLabel('%s:' % _("Spacing rows"))
         self.spacing_rows_label.setToolTip(
             _("Spacing between rows of the desired panel.\n"
@@ -4506,7 +4539,10 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.pspacing_rows, 1, 1)
 
         # ## Columns
-        self.pcolumns = FCEntry()
+        self.pcolumns = FCSpinner()
+        self.pcolumns.set_range(1, 1000)
+        self.pcolumns.setSingleStep(1)
+
         self.columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
             _("Number of columns of the desired panel")
@@ -4515,7 +4551,10 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.pcolumns, 2, 1)
 
         # ## Rows
-        self.prows = FCEntry()
+        self.prows = FCSpinner()
+        self.prows.set_range(1, 1000)
+        self.prows.setSingleStep(1)
+
         self.rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
             _("Number of rows of the desired panel")
@@ -4547,7 +4586,11 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.pconstrain_cb, 5, 0)
 
-        self.px_width_entry = FCEntry()
+        self.px_width_entry = FCDoubleSpinner()
+        self.px_width_entry.set_range(0.000001, 9999.9999)
+        self.px_width_entry.set_precision(self.decimals)
+        self.px_width_entry.setSingleStep(0.1)
+
         self.x_width_lbl = QtWidgets.QLabel('%s:' % _("Width (DX)"))
         self.x_width_lbl.setToolTip(
             _("The width (DX) within which the panel must fit.\n"
@@ -4556,7 +4599,11 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.x_width_lbl, 6, 0)
         grid0.addWidget(self.px_width_entry, 6, 1)
 
-        self.py_height_entry = FCEntry()
+        self.py_height_entry = FCDoubleSpinner()
+        self.py_height_entry.set_range(0.000001, 9999.9999)
+        self.py_height_entry.set_precision(self.decimals)
+        self.py_height_entry.setSingleStep(0.1)
+
         self.y_height_lbl = QtWidgets.QLabel('%s:' % _("Height (DY)"))
         self.y_height_lbl.setToolTip(
             _("The height (DY)within which the panel must fit.\n"
@@ -4574,6 +4621,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         super(ToolsCalculatorsPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Calculators Tool Options")))
+        self.decimals = 4
 
         # ## V-shape Calculator Tool
         self.vshape_tool_label = QtWidgets.QLabel("<b>%s:</b>" % _("V-Shape Tool Calculator"))
@@ -4588,7 +4636,11 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid0)
 
         # ## Tip Diameter
-        self.tip_dia_entry = FCEntry()
+        self.tip_dia_entry = FCDoubleSpinner()
+        self.tip_dia_entry.set_range(0.000001, 9999.9999)
+        self.tip_dia_entry.set_precision(self.decimals)
+        self.tip_dia_entry.setSingleStep(0.1)
+
         self.tip_dia_label = QtWidgets.QLabel('%s:' % _("Tip Diameter"))
         self.tip_dia_label.setToolTip(
             _("This is the tool tip diameter.\n"
@@ -4598,7 +4650,11 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tip_dia_entry, 0, 1)
 
         # ## Tip angle
-        self.tip_angle_entry = FCEntry()
+        self.tip_angle_entry = FCDoubleSpinner()
+        self.tip_angle_entry.set_range(0.0, 180.0)
+        self.tip_angle_entry.set_precision(self.decimals)
+        self.tip_angle_entry.setSingleStep(10)
+
         self.tip_angle_label = QtWidgets.QLabel('%s:' % _("Tip Angle"))
         self.tip_angle_label.setToolTip(
             _("This is the angle on the tip of the tool.\n"
@@ -4608,7 +4664,11 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tip_angle_entry, 1, 1)
 
         # ## Depth-of-cut Cut Z
-        self.cut_z_entry = FCEntry()
+        self.cut_z_entry = FCDoubleSpinner()
+        self.cut_z_entry.set_range(-0.000001, -9999.9999)
+        self.cut_z_entry.set_precision(self.decimals)
+        self.cut_z_entry.setSingleStep(0.01)
+
         self.cut_z_label = QtWidgets.QLabel('%s:' % _("Cut Z"))
         self.cut_z_label.setToolTip(
             _("This is depth to cut into material.\n"
@@ -4629,7 +4689,11 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(grid1)
 
         # ## PCB Length
-        self.pcblength_entry = FCEntry()
+        self.pcblength_entry = FCDoubleSpinner()
+        self.pcblength_entry.set_range(0.000001, 9999.9999)
+        self.pcblength_entry.set_precision(self.decimals)
+        self.pcblength_entry.setSingleStep(0.1)
+
         self.pcblengthlabel = QtWidgets.QLabel('%s:' % _("Board Length"))
 
         self.pcblengthlabel.setToolTip(_('This is the board length. In centimeters.'))
@@ -4637,7 +4701,11 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.pcblength_entry, 0, 1)
 
         # ## PCB Width
-        self.pcbwidth_entry = FCEntry()
+        self.pcbwidth_entry = FCDoubleSpinner()
+        self.pcbwidth_entry.set_range(0.000001, 9999.9999)
+        self.pcbwidth_entry.set_precision(self.decimals)
+        self.pcbwidth_entry.setSingleStep(0.1)
+
         self.pcbwidthlabel = QtWidgets.QLabel('%s:' % _("Board Width"))
 
         self.pcbwidthlabel.setToolTip(_('This is the board width.In centimeters.'))
@@ -4646,7 +4714,10 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
 
         # ## Current Density
         self.cdensity_label = QtWidgets.QLabel('%s:' % _("Current Density"))
-        self.cdensity_entry = FCEntry()
+        self.cdensity_entry = FCDoubleSpinner()
+        self.cdensity_entry.set_range(0.000001, 9999.9999)
+        self.cdensity_entry.set_precision(self.decimals)
+        self.cdensity_entry.setSingleStep(0.1)
 
         self.cdensity_label.setToolTip(_("Current density to pass through the board. \n"
                                          "In Amps per Square Feet ASF."))
@@ -4655,7 +4726,10 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
 
         # ## PCB Copper Growth
         self.growth_label = QtWidgets.QLabel('%s:' % _("Copper Growth"))
-        self.growth_entry = FCEntry()
+        self.growth_entry = FCDoubleSpinner()
+        self.growth_entry.set_range(0.000001, 9999.9999)
+        self.growth_entry.set_precision(self.decimals)
+        self.growth_entry.setSingleStep(0.01)
 
         self.growth_label.setToolTip(_("How thick the copper growth is intended to be.\n"
                                        "In microns."))
@@ -4671,6 +4745,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         super(ToolsTransformPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Transform Tool Options")))
+        self.decimals = 4
 
         # ## Transformations
         self.transform_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -4682,56 +4757,88 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
 
         # ## Rotate Angle
-        self.rotate_entry = FCEntry()
-        self.rotate_label = QtWidgets.QLabel('%s:' % _("Rotate Angle"))
+
+        rotate_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Rotate"))
+        grid0.addWidget(rotate_title_lbl, 0, 0, 1, 2)
+
+        self.rotate_entry = FCDoubleSpinner()
+        self.rotate_entry.set_range(-360.0, 360.0)
+        self.rotate_entry.set_precision(self.decimals)
+        self.rotate_entry.setSingleStep(15)
+
+        self.rotate_label = QtWidgets.QLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
             _("Angle for Rotation action, in degrees.\n"
               "Float number between -360 and 359.\n"
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")
         )
-        grid0.addWidget(self.rotate_label, 0, 0)
-        grid0.addWidget(self.rotate_entry, 0, 1)
+        grid0.addWidget(self.rotate_label, 1, 0)
+        grid0.addWidget(self.rotate_entry, 1, 1)
 
         # ## Skew/Shear Angle on X axis
-        self.skewx_entry = FCEntry()
+        skew_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Skew"))
+        grid0.addWidget(skew_title_lbl, 2, 0, 1, 2)
+
+        self.skewx_entry = FCDoubleSpinner()
+        self.skewx_entry.set_range(-360.0, 360.0)
+        self.skewx_entry.set_precision(self.decimals)
+        self.skewx_entry.setSingleStep(0.1)
+
         self.skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
         self.skewx_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        grid0.addWidget(self.skewx_label, 1, 0)
-        grid0.addWidget(self.skewx_entry, 1, 1)
+        grid0.addWidget(self.skewx_label, 3, 0)
+        grid0.addWidget(self.skewx_entry, 3, 1)
 
         # ## Skew/Shear Angle on Y axis
-        self.skewy_entry = FCEntry()
+        self.skewy_entry = FCDoubleSpinner()
+        self.skewy_entry.set_range(-360.0, 360.0)
+        self.skewy_entry.set_precision(self.decimals)
+        self.skewy_entry.setSingleStep(0.1)
+
         self.skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
         self.skewy_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        grid0.addWidget(self.skewy_label, 2, 0)
-        grid0.addWidget(self.skewy_entry, 2, 1)
+        grid0.addWidget(self.skewy_label, 4, 0)
+        grid0.addWidget(self.skewy_entry, 4, 1)
 
         # ## Scale factor on X axis
-        self.scalex_entry = FCEntry()
+        scale_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Scale"))
+        grid0.addWidget(scale_title_lbl, 5, 0, 1, 2)
+
+        self.scalex_entry = FCDoubleSpinner()
+        self.scalex_entry.set_range(0, 9999.9999)
+        self.scalex_entry.set_precision(self.decimals)
+        self.scalex_entry.setSingleStep(0.1)
+
         self.scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
         self.scalex_label.setToolTip(
             _("Factor for scaling on X axis.")
         )
-        grid0.addWidget(self.scalex_label, 3, 0)
-        grid0.addWidget(self.scalex_entry, 3, 1)
+        grid0.addWidget(self.scalex_label, 6, 0)
+        grid0.addWidget(self.scalex_entry, 6, 1)
 
         # ## Scale factor on X axis
-        self.scaley_entry = FCEntry()
+        self.scaley_entry = FCDoubleSpinner()
+        self.scaley_entry.set_range(0, 9999.9999)
+        self.scaley_entry.set_precision(self.decimals)
+        self.scaley_entry.setSingleStep(0.1)
+
         self.scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
         self.scaley_label.setToolTip(
             _("Factor for scaling on Y axis.")
         )
-        grid0.addWidget(self.scaley_label, 4, 0)
-        grid0.addWidget(self.scaley_entry, 4, 1)
+        grid0.addWidget(self.scaley_label, 7, 0)
+        grid0.addWidget(self.scaley_entry, 7, 1)
 
         # ## Link Scale factors
         self.link_cb = FCCheckBox(_("Link"))
@@ -4739,7 +4846,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
             _("Scale the selected object(s)\n"
               "using the Scale_X factor for both axis.")
         )
-        grid0.addWidget(self.link_cb, 5, 0)
+        grid0.addWidget(self.link_cb, 8, 0)
 
         # ## Scale Reference
         self.reference_cb = FCCheckBox('%s' % _("Scale Reference"))
@@ -4749,25 +4856,36 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "and the center of the biggest bounding box\n"
               "of the selected objects when unchecked.")
         )
-        grid0.addWidget(self.reference_cb, 5, 1)
+        grid0.addWidget(self.reference_cb, 8, 1)
 
         # ## Offset distance on X axis
-        self.offx_entry = FCEntry()
+        offset_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Offset"))
+        grid0.addWidget(offset_title_lbl, 9, 0, 1, 2)
+
+        self.offx_entry = FCDoubleSpinner()
+        self.offx_entry.set_range(-9999.9999, 9999.9999)
+        self.offx_entry.set_precision(self.decimals)
+        self.offx_entry.setSingleStep(0.1)
+
         self.offx_label = QtWidgets.QLabel('%s:' % _("X val"))
         self.offx_label.setToolTip(
            _("Distance to offset on X axis. In current units.")
         )
-        grid0.addWidget(self.offx_label, 6, 0)
-        grid0.addWidget(self.offx_entry, 6, 1)
+        grid0.addWidget(self.offx_label, 10, 0)
+        grid0.addWidget(self.offx_entry, 10, 1)
 
         # ## Offset distance on Y axis
-        self.offy_entry = FCEntry()
+        self.offy_entry = FCDoubleSpinner()
+        self.offy_entry.set_range(-9999.9999, 9999.9999)
+        self.offy_entry.set_precision(self.decimals)
+        self.offy_entry.setSingleStep(0.1)
+
         self.offy_label = QtWidgets.QLabel('%s:' % _("Y val"))
         self.offy_label.setToolTip(
             _("Distance to offset on Y axis. In current units.")
         )
-        grid0.addWidget(self.offy_label, 7, 0)
-        grid0.addWidget(self.offy_entry, 7, 1)
+        grid0.addWidget(self.offy_label, 11, 0)
+        grid0.addWidget(self.offy_entry, 11, 1)
 
         # ## Mirror (Flip) Reference Point
         self.mirror_reference_cb = FCCheckBox('%s' % _("Mirror Reference"))
@@ -4781,9 +4899,9 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "Then click Add button to insert coordinates.\n"
               "Or enter the coords in format (x, y) in the\n"
               "Point Entry field and click Flip on X(Y)"))
-        grid0.addWidget(self.mirror_reference_cb, 8, 1)
+        grid0.addWidget(self.mirror_reference_cb, 12, 0, 1, 2)
 
-        self.flip_ref_label = QtWidgets.QLabel('%s:' % _(" Mirror Ref. Point"))
+        self.flip_ref_label = QtWidgets.QLabel('<b>%s</b>' % _("Mirror Reference point"))
         self.flip_ref_label.setToolTip(
             _("Coordinates in format (x, y) used as reference for mirroring.\n"
               "The 'x' in (x, y) will be used when using Flip on X and\n"
@@ -4791,8 +4909,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         )
         self.flip_ref_entry = EvalEntry2("(0, 0)")
 
-        grid0.addWidget(self.flip_ref_label, 9, 0)
-        grid0.addWidget(self.flip_ref_entry, 9, 1)
+        grid0.addWidget(self.flip_ref_label, 13, 0, 1, 2)
+        grid0.addWidget(self.flip_ref_entry, 14, 0, 1, 2)
 
         self.layout.addStretch()
 

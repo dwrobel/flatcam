@@ -1541,9 +1541,11 @@ class RulesCheck(FlatCAMTool):
                 point_txt = ''
                 try:
                     if el[1][0]['points']:
-                        txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
-                                                                                                   color='red',
-                                                                                                   status=_("FAILED"))
+                        txt += '{title}: <span style="color:{color};background-color:{h_color}"' \
+                               '>&nbsp;{status} </span>.<BR>'.format(title=_("STATUS"),
+                                                                     h_color='red',
+                                                                     color='white',
+                                                                     status=_("FAILED"))
                         if 'Failed' in el[1][0]['points'][0]:
                             point_txt = el[1][0]['points'][0]
                         else:
@@ -1552,18 +1554,22 @@ class RulesCheck(FlatCAMTool):
                                 point_txt += ', '
                         txt += 'Violations: %s<BR>' % str(point_txt)
                     else:
-                        txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
-                                                                                                   color='green',
-                                                                                                   status=_("PASSED"))
+                        txt += '{title}: <span style="color:{color};background-color:{h_color}"' \
+                               '>&nbsp;{status} </span>.<BR>'.format(title=_("STATUS"),
+                                                                     h_color='green',
+                                                                     color='white',
+                                                                     status=_("PASSED"))
                         txt += '%s<BR>' % _("Violations: There are no violations for the current rule.")
                 except KeyError:
                     pass
 
                 try:
                     if el[1][0]['dia']:
-                        txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
-                                                                                                   color='red',
-                                                                                                   status=_("FAILED"))
+                        txt += '{title}: <span style="color:{color};background-color:{h_color}"' \
+                               '>&nbsp;{status} </span>.<BR>'.format(title=_("STATUS"),
+                                                                     h_color='red',
+                                                                     color='white',
+                                                                     status=_("FAILED"))
                         if 'Failed' in el[1][0]['dia']:
                             point_txt = el[1][0]['dia']
                         else:
@@ -1572,9 +1578,11 @@ class RulesCheck(FlatCAMTool):
                                 point_txt += ', '
                         txt += 'Violations: %s<BR>' % str(point_txt)
                     else:
-                        txt += '{title}: <span style="color:{color};">{status}</span>.<BR>'.format(title=_("STATUS"),
-                                                                                                   color='green',
-                                                                                                   status=_("PASSED"))
+                        txt += '{title}: <span style="color:{color};background-color:{h_color}"' \
+                               '>&nbsp;{status} </span>.<BR>'.format(title=_("STATUS"),
+                                                                     h_color='green',
+                                                                     color='white',
+                                                                     status=_("PASSED"))
                         txt += '%s<BR>' % _("Violations: There are no violations for the current rule.")
                 except KeyError:
                     pass

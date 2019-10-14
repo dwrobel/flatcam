@@ -1024,7 +1024,7 @@ class App(QtCore.QObject):
             # Gerber Editor
             "gerber_editor_sel_limit": 30,
             "gerber_editor_newcode": 10,
-            "gerber_editor_newsize": 0.8,
+            "gerber_editor_newsize": 0.031496,
             "gerber_editor_newtype": 'C',
             "gerber_editor_newdim": "0.5, 0.5",
             "gerber_editor_array_size": 5,
@@ -1034,7 +1034,7 @@ class App(QtCore.QObject):
             "gerber_editor_circ_dir": 'CW',
             "gerber_editor_circ_angle": 0.0,
             "gerber_editor_scale_f": 1.0,
-            "gerber_editor_buff_f": 0.1,
+            "gerber_editor_buff_f": 0.01,
             "gerber_editor_ma_low": 0.0,
             "gerber_editor_ma_high": 1.0,
 
@@ -1228,8 +1228,8 @@ class App(QtCore.QObject):
             "tools_panelize_columns": 1,
             "tools_panelize_rows": 1,
             "tools_panelize_constrain": False,
-            "tools_panelize_constrainx": 0.0,
-            "tools_panelize_constrainy": 0.0,
+            "tools_panelize_constrainx": 200.0,
+            "tools_panelize_constrainy": 290.0,
             "tools_panelize_panel_type": 'gerber',
 
             # Calculators Tool
@@ -2673,7 +2673,7 @@ class App(QtCore.QObject):
 
         # if the file contain an empty dictionary then save the factory defaults into the file
         if not factory_defaults:
-            self.save_factory_defaults(silent=False)
+            self.save_factory_defaults(silent_message=False)
 
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
             initial_lay = 'compact'
@@ -5112,7 +5112,7 @@ class App(QtCore.QObject):
 
             # save the current defaults to the new defaults file
             self.save_defaults(silent=True, data_path=current_data_path)
-            self.save_factory_defaults(silent=True, data_path=current_data_path)
+            self.save_factory_defaults(silent_message=True, data_path=current_data_path)
 
         else:
             data[line_no] = 'portable=False\n'
@@ -5654,6 +5654,9 @@ class App(QtCore.QObject):
                       "tools_solderpaste_z_dispense", "tools_solderpaste_z_stop", "tools_solderpaste_z_travel",
                       "tools_solderpaste_z_toolchange", "tools_solderpaste_xy_toolchange", "tools_solderpaste_frxy",
                       "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
+                      "tools_cr_trace_size_val", "tools_cr_c2c_val", "tools_cr_c2o_val", "tools_cr_s2s_val",
+                      "tools_cr_s2sm_val", "tools_cr_s2o_val", "tools_cr_sm2sm_val", "tools_cr_ri_val",
+                      "tools_cr_h2h_val", "tools_cr_dh_val",
 
                       'global_gridx', 'global_gridy', 'global_snap_max', "global_tolerance"]
 

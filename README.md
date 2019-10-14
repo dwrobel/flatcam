@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.10.2019
+
+- modified the result highlight color in Check Rules Tool
+- added the Check Rules Tool parameters to the unit conversion list
+- converted more of the Preferences entries to FCDoubleSpinner and FCSpinner
+
 13.10.2019
 
 - fixed a bug in the Merge functions
