@@ -4713,7 +4713,8 @@ class App(QtCore.QObject):
         if book_dict is None:
             self.defaults["global_bookmarks"].update(
                 {
-                    'FlatCAM': "http://flatcam.org"
+                    '1': ['FlatCAM', "http://flatcam.org"],
+                    '2': ['Backup Site', ""]
                 }
             )
         else:
@@ -4735,19 +4736,39 @@ class App(QtCore.QObject):
 
         bm_limit = int(self.defaults["global_bookmarks_limit"])
         if self.defaults["global_bookmarks"]:
-            for title, weblink in list(self.defaults["global_bookmarks"].items())[:bm_limit]:
+
+            # order the self.defaults["global_bookmarks"] dict keys by the value as integer
+            # the whole convoluted things is because when serializing the self.defaults (on app close or save)
+            # the JSON is first making the keys as strings (therefore I have to use strings too
+            # or do the conversion :(
+            # )
+            # and it is ordering them (actually I want that to make the defaults easy to search within) but making
+            # the '10' entry jsut after '1' therefore ordering as strings
+
+            sorted_bookmarks = sorted(list(self.defaults["global_bookmarks"].items())[:bm_limit],
+                                      key=lambda x: int(x[0]))
+            for entry, bookmark in sorted_bookmarks:
+                title = bookmark[0]
+                weblink = bookmark[1]
+
                 act = QtWidgets.QAction(parent=self.ui.menuhelp_bookmarks)
                 act.setText(title)
 
                 act.setIcon(QtGui.QIcon('share/link16.png'))
                 # from here: https://stackoverflow.com/questions/20390323/pyqt-dynamic-generate-qmenu-action-and-connect
-                act.triggered.connect(lambda sig, link=weblink: webbrowser.open(link))
+                if title == 'Backup Site' and weblink == "":
+                    act.triggered.connect(self.on_backup_site)
+                else:
+                    act.triggered.connect(lambda sig, link=weblink: webbrowser.open(link))
                 self.ui.menuhelp_bookmarks.insertAction(self.ui.menuhelp_bookmarks_manager, act)
 
         self.ui.menuhelp_bookmarks_manager.triggered.connect(self.on_bookmarks_manager)
 
     def on_bookmarks_manager(self):
-
+        """
+        Adds the bookmark manager in a Tab in Plot Area
+        :return:
+        """
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Bookmarks Manager"):
                 # there can be only one instance of Bookmark Manager at one time
@@ -4765,6 +4786,23 @@ class App(QtCore.QObject):
 
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.book_dialog_tab)
+
+    def on_backup_site(self):
+        msgbox = QtWidgets.QMessageBox()
+        msgbox.setText(_("This entry will resolve to another website if:\n\n"
+                         "1. FlatCAM.org website is down\n"
+                         "2. Someone forked FlatCAM project and wants to point\n"
+                         "to his own website\n\n"
+                         "If you can't get any informations about FlatCAM beta\n"
+                         "use the YouTube channel link from the Help menu."))
+
+        msgbox.setWindowTitle(_("Alternative website"))
+        msgbox.setWindowIcon(QtGui.QIcon('share/globe16.png'))
+        bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.YesRole)
+
+        msgbox.setDefaultButton(bt_yes)
+        msgbox.exec_()
+        # response = msgbox.clickedButton()
 
     def on_file_savedefaults(self):
         """

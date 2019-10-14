@@ -3724,7 +3724,7 @@ class BookmarkManager(QtWidgets.QWidget):
         table_hlay = QtWidgets.QHBoxLayout()
         layout.addLayout(table_hlay)
 
-        self.table_widget = FCTable(drag_drop=True)
+        self.table_widget = FCTable(drag_drop=True, protected_rows=[0, 1])
         self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         table_hlay.addWidget(self.table_widget)
 
@@ -3794,8 +3794,8 @@ class BookmarkManager(QtWidgets.QWidget):
         remove_entry_btn.clicked.connect(self.on_remove_entry)
         export_list_btn.clicked.connect(self.on_export_bookmarks)
         import_list_btn.clicked.connect(self.on_import_bookmarks)
-        self.title_entry.editingFinished.connect(self.on_add_entry)
-        self.link_entry.editingFinished.connect(self.on_add_entry)
+        self.title_entry.returnPressed.connect(self.on_add_entry)
+        self.link_entry.returnPressed.connect(self.on_add_entry)
         # closebtn.clicked.connect(self.accept)
 
         self.table_widget.drag_drop_sig.connect(self.mark_table_rows_for_actions)
@@ -3806,15 +3806,19 @@ class BookmarkManager(QtWidgets.QWidget):
         self.table_widget.setRowCount(len(self.bm_dict))
 
         nr_crt = 0
-        for title, weblink in self.bm_dict.items():
+        sorted_bookmarks = sorted(list(self.bm_dict.items()), key=lambda x: int(x[0]))
+        for entry, bookmark in sorted_bookmarks:
             row = nr_crt
             nr_crt += 1
+
+            title = bookmark[0]
+            weblink = bookmark[1]
+
             id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
             # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.table_widget.setItem(row, 0, id_item)  # Tool name/id
 
             title_item = QtWidgets.QTableWidgetItem(title)
-
             self.table_widget.setItem(row, 1, title_item)
 
             weblink_txt = QtWidgets.QTextBrowser()
@@ -3839,6 +3843,10 @@ class BookmarkManager(QtWidgets.QWidget):
 
         self.mark_table_rows_for_actions()
 
+        self.app.defaults["global_bookmarks"].clear()
+        for key, val in self.bm_dict.items():
+            self.app.defaults["global_bookmarks"][key] = deepcopy(val)
+
     def on_add_entry(self, **kwargs):
         """
         Add a entry in the Bookmark Table and in the menu actions
@@ -3856,6 +3864,7 @@ class BookmarkManager(QtWidgets.QWidget):
             link = kwargs['link']
         else:
             link = self.link_entry.get_value()
+
         if link == 'http://':
             self.app.inform.emit(f'[ERROR_NOTCL] {_("Web link entry is empty.")}')
             return 'fail'
@@ -3863,23 +3872,29 @@ class BookmarkManager(QtWidgets.QWidget):
         # if 'http' not in link or 'https' not in link:
         #     link = 'http://' + link
 
-        if title in self.bm_dict.keys() or link in self.bm_dict.values():
-            self.app.inform.emit(f'[ERROR_NOTCL] {_("Either the Title or the Weblink already in the table.")}')
-            return 'fail'
+        for bookmark in self.bm_dict.values():
+            if title == bookmark[0] or link == bookmark[1]:
+                self.app.inform.emit(f'[ERROR_NOTCL] {_("Either the Title or the Weblink already in the table.")}')
+                return 'fail'
 
         # for some reason if the last char in the weblink is a slash it does not make the link clickable
         # so I remove it
         if link[-1] == '/':
             link = link[:-1]
         # add the new entry to storage
-        self.bm_dict[title] = link
+        new_entry = len(self.bm_dict) + 1
+        self.bm_dict[str(new_entry)] = [title, link]
 
-        # add the link to the menu
-        act = QtWidgets.QAction(parent=self.app.ui.menuhelp_bookmarks)
-        act.setText(title)
-        act.setIcon(QtGui.QIcon('share/link16.png'))
-        act.triggered.connect(lambda: webbrowser.open(link))
-        self.app.ui.menuhelp_bookmarks.insertAction(self.app.ui.menuhelp_bookmarks_manager, act)
+        # add the link to the menu but only if it is within the set limit
+        bm_limit = int(self.app.defaults["global_bookmarks_limit"])
+        if len(self.bm_dict) < bm_limit:
+            act = QtWidgets.QAction(parent=self.app.ui.menuhelp_bookmarks)
+            act.setText(title)
+            act.setIcon(QtGui.QIcon('share/link16.png'))
+            act.triggered.connect(lambda: webbrowser.open(link))
+            self.app.ui.menuhelp_bookmarks.insertAction(self.app.ui.menuhelp_bookmarks_manager, act)
+
+        self.app.inform.emit(f'[success] {_("Bookmark added.")}')
 
         # add the new entry to the bookmark manager table
         self.build_bm_ui()
@@ -3895,19 +3910,39 @@ class BookmarkManager(QtWidgets.QWidget):
             index_list.append(index)
             title_to_remove = self.table_widget.item(model_index.row(), 1).text()
 
-            if title_to_remove in list(self.bm_dict.keys()):
-                # remove from the storage
-                self.bm_dict.pop(title_to_remove, None)
+            if title_to_remove == 'FlatCAM' or title_to_remove == 'Backup Site':
+                self.app.inform.emit('[WARNING_NOTCL] %s.' % _("This bookmark can not be removed"))
+                self.build_bm_ui()
+                return
+            else:
+                for k, bookmark in list(self.bm_dict.items()):
+                    if title_to_remove == bookmark[0]:
+                        # remove from the storage
+                        self.bm_dict.pop(k, None)
 
-                for act in self.app.ui.menuhelp_bookmarks.actions():
-                    if act.text() == title_to_remove:
-                        # disconnect the signal
-                        try:
-                            act.triggered.disconnect()
-                        except TypeError:
-                            pass
-                        # remove the action from the menu
-                        self.app.ui.menuhelp_bookmarks.removeAction(act)
+                        for act in self.app.ui.menuhelp_bookmarks.actions():
+                            if act.text() == title_to_remove:
+                                # disconnect the signal
+                                try:
+                                    act.triggered.disconnect()
+                                except TypeError:
+                                    pass
+                                # remove the action from the menu
+                                self.app.ui.menuhelp_bookmarks.removeAction(act)
+
+        # house keeping: it pays to have keys increased by one
+        new_key = 0
+        new_dict = dict()
+        for k, v in self.bm_dict.items():
+            # we start with key 1 so we can use the len(self.bm_dict)
+            # when adding bookmarks (keys in bm_dict)
+            new_key += 1
+            new_dict[str(new_key)] = v
+
+        self.bm_dict = deepcopy(new_dict)
+        new_dict.clear()
+
+        self.app.inform.emit(f'[success] {_("Bookmark removed.")}')
 
         # for index in index_list:
         #     self.table_widget.model().removeRow(index.row())
@@ -4013,9 +4048,10 @@ class BookmarkManager(QtWidgets.QWidget):
             title = self.table_widget.item(row, 1).text()
             wlink = self.table_widget.cellWidget(row, 2).toPlainText()
 
+            entry = int(row) + 1
             self.bm_dict.update(
                 {
-                    title: wlink
+                    str(entry): [title, wlink]
                 }
             )
 

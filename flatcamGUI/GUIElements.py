@@ -1711,7 +1711,7 @@ class FCTable(QtWidgets.QTableWidget):
 
     drag_drop_sig = pyqtSignal()
 
-    def __init__(self, drag_drop=False, parent=None):
+    def __init__(self, drag_drop=False, protected_rows=None, parent=None):
         super(FCTable, self).__init__(parent)
 
         if drag_drop:
@@ -1724,6 +1724,14 @@ class FCTable(QtWidgets.QTableWidget):
             self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
             self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
             self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+
+        self.rows_not_for_drag_and_drop = list()
+        if protected_rows:
+            try:
+                for r in protected_rows:
+                    self.rows_not_for_drag_and_drop.append(r)
+            except TypeError:
+                self.rows_not_for_drag_and_drop = [protected_rows]
 
         self.rows_to_move = list()
 
@@ -1843,6 +1851,12 @@ class FCTable(QtWidgets.QTableWidget):
         """
         if event.source() == self:
             rows = set([mi.row() for mi in self.selectedIndexes()])
+
+            # if one of the selected rows for drag and drop is within the protected list, return
+            for r in rows:
+                if r in self.rows_not_for_drag_and_drop:
+                    return
+
             targetRow = self.indexAt(event.pos()).row()
             rows.discard(targetRow)
             rows = sorted(rows)
