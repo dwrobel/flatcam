@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-10-15 02:33+0300\n"
-"PO-Revision-Date: 2019-10-15 02:33+0300\n"
+"PO-Revision-Date: 2019-10-15 08:04-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -51,15 +51,11 @@ msgid "Detachable Tabs"
 msgstr "Abas Destacáveis"
 
 #: FlatCAMApp.py:2481
-#, fuzzy
-#| msgid ""
-#| "Open Source Software - Type help to get started\n"
-#| "\n"
 msgid ""
 "Type >help< to get started\n"
 "\n"
 msgstr ""
-"Software de Código Aberto - Digite help para iniciar\n"
+"Digite >help< para iniciar\n"
 "\n"
 
 #: FlatCAMApp.py:2706 FlatCAMApp.py:8804
@@ -391,6 +387,11 @@ msgid ""
 "\"Flaticon\">www.flaticon.com</a></div><br>Icons by <a target=\"_blank\" "
 "href=\"https://icons8.com\">Icons8</a>"
 msgstr ""
+"Alguns dos ícones utilizados são das seguintes fontes: <BR><div>Ícones "
+"feitos por <a href=\"https://www.flaticon.com/authors/freepik\" title="
+"\"Freepik\">Freepik</a> de <a href=\"https://www.flaticon.com/\"             "
+"title=\"Flaticon\">www.flaticon.com</a></div><br>Ícones por <a target="
+"\"_blank\" href=\"https://icons8.com\">Icons8</a>"
 
 #: FlatCAMApp.py:4561
 msgid "Splash"
@@ -410,7 +411,7 @@ msgstr "Licença"
 
 #: FlatCAMApp.py:4585
 msgid "Attributions"
-msgstr ""
+msgstr "Atribuições"
 
 #: FlatCAMApp.py:4606
 msgid "Programmer"
@@ -425,8 +426,6 @@ msgid "Program Author"
 msgstr "Autor do Programa"
 
 #: FlatCAMApp.py:4613
-#, fuzzy
-#| msgid "Maintainer >=2019"
 msgid "Maintainer >= 2019"
 msgstr "Mantenedor >= 2019"
 
@@ -445,7 +444,7 @@ msgstr "E-mail"
 #: FlatCAMApp.py:4773 FlatCAMApp.py:4781 FlatCAMApp.py:7625
 #: flatcamGUI/FlatCAMGUI.py:436
 msgid "Bookmarks Manager"
-msgstr ""
+msgstr "Gerenciados de Favoritos"
 
 #: FlatCAMApp.py:4792
 msgid ""
@@ -458,12 +457,18 @@ msgid ""
 "If you can't get any informations about FlatCAM beta\n"
 "use the YouTube channel link from the Help menu."
 msgstr ""
+"Esta entrada será direcionada para outro site se:\n"
+"\n"
+"1. O site FlatCAM.org estiver inativo\n"
+"2. Alguém bifurcou (fork) o projeto FlatCAM e quer apontar\n"
+"para o seu próprio site\n"
+"\n"
+"Se você não conseguir obter informações sobre o FlatCAM beta\n"
+"use o link do canal do YouTube no menu Ajuda."
 
 #: FlatCAMApp.py:4799
-#, fuzzy
-#| msgid "Alternate: Delete Tool"
 msgid "Alternative website"
-msgstr "Alternativo: Excluir Ferramenta"
+msgstr "Site alternativo"
 
 #: FlatCAMApp.py:5002 FlatCAMTranslation.py:166
 msgid ""
@@ -971,58 +976,40 @@ msgid "Save Gerber source file cancelled."
 msgstr "Salvar arquivo fonte Gerber cancelado."
 
 #: FlatCAMApp.py:9160
-#, fuzzy
-#| msgid "No object selected. Please select an Gerber object to export."
 msgid "No object selected. Please select an Script object to export."
 msgstr ""
-"Nenhum objeto selecionado. Por favor, selecione um objeto Gerber para "
-"exportar."
+"Nenhum objeto selecionado. Por favor, selecione um Script para exportar."
 
 #: FlatCAMApp.py:9166
-#, fuzzy
-#| msgid "Failed. Only Gerber objects can be saved as Gerber files..."
 msgid "Failed. Only Script objects can be saved as TCL Script files..."
-msgstr ""
-"Falhou. Somente objetos Gerber podem ser salvos como arquivos Gerber..."
+msgstr "Falhou. Somente Scripts podem ser salvos como arquivos Scripts TCL..."
 
 #: FlatCAMApp.py:9178
-#, fuzzy
-#| msgid "Save Gerber source file"
 msgid "Save Script source file"
-msgstr "Salvar arquivo fonte Gerber"
+msgstr "Salvar arquivo fonte do Script"
 
 #: FlatCAMApp.py:9184
-#, fuzzy
-#| msgid "Save Gerber source file cancelled."
 msgid "Save Script source file cancelled."
-msgstr "Salvar arquivo fonte Gerber cancelado."
+msgstr "Salvar arquivo fonte Script cancelado."
 
 #: FlatCAMApp.py:9204
-#, fuzzy
-#| msgid "No object selected. Please select an Excellon object to export."
 msgid "No object selected. Please select an Document object to export."
 msgstr ""
-"Nenhum objeto selecionado. Por favor, selecione um objeto Excellon para "
-"exportar."
+"Nenhum objeto selecionado. Por favor, selecione um Documento para exportar."
 
 #: FlatCAMApp.py:9210
-#, fuzzy
-#| msgid "Failed. Only Excellon objects can be saved as Excellon files..."
 msgid "Failed. Only Document objects can be saved as Document files..."
 msgstr ""
-"Falhou. Somente objetos Excellon podem ser salvos como arquivos Excellon..."
+"Falhou. Somente objetos Documentos podem ser salvos como arquivos "
+"Documentos..."
 
 #: FlatCAMApp.py:9222
-#, fuzzy
-#| msgid "Save Excellon source file"
 msgid "Save Document source file"
-msgstr "Salvar o arquivo fonte Excellon"
+msgstr "Salvar o arquivo fonte Documento"
 
 #: FlatCAMApp.py:9228
-#, fuzzy
-#| msgid "Save Gerber source file cancelled."
 msgid "Save Document source file cancelled."
-msgstr "Salvar arquivo fonte Gerber cancelado."
+msgstr "Salvar arquivo fonte Documento cancelado."
 
 #: FlatCAMApp.py:9248
 msgid "No object selected. Please select an Excellon object to export."
@@ -1292,10 +1279,8 @@ msgid "Open Excellon file failed. Probable not an Excellon file."
 msgstr "Falha ao abrir Excellon. Provavelmente não é um arquivo Excellon."
 
 #: FlatCAMApp.py:10865
-#, fuzzy
-#| msgid "Opening G-Code file."
 msgid "Reading GCode file"
-msgstr "Abrindo Arquivo G-Code."
+msgstr "Lendo Arquivo G-Code."
 
 #: FlatCAMApp.py:10872
 msgid "Failed to open"
@@ -1310,11 +1295,6 @@ msgid "Opening G-Code."
 msgstr "Abrindo G-Code."
 
 #: FlatCAMApp.py:10894
-#, fuzzy
-#| msgid ""
-#| "Failed to create CNCJob Object. Probable not a GCode file.\n"
-#| " Attempting to create a FlatCAM CNCJob Object from G-Code file failed "
-#| "during processing"
 msgid ""
 "Failed to create CNCJob Object. Probable not a GCode file. Try to load it "
 "from File menu.\n"
@@ -1322,15 +1302,13 @@ msgid ""
 "processing"
 msgstr ""
 "Falha ao criar o objeto Trabalho CNC. Provavelmente não é um arquivo G-"
-"Code. \n"
+"Code.  Tente ler a usando o menu.\n"
 "A tentativa de criar um objeto de Trabalho CNC do arquivo G-Code falhou "
 "durante o processamento"
 
 #: FlatCAMApp.py:10919
-#, fuzzy
-#| msgid "Open TCL script"
 msgid "Opening TCL Script..."
-msgstr "Abrir script TCL"
+msgstr "Abrindo script TCL..."
 
 #: FlatCAMApp.py:10927
 msgid "TCL script file opened in Code Editor."
@@ -1411,10 +1389,8 @@ msgid "Failed to parse recent project item list."
 msgstr "Falha ao analisar a lista de projetos recentes."
 
 #: FlatCAMApp.py:11477
-#, fuzzy
-#| msgid "Recent projects"
 msgid "Clear Recent projects"
-msgstr "Projetos Recentes"
+msgstr "Limpa Projetos Recentes"
 
 #: FlatCAMApp.py:11500
 msgid "Clear Recent files"
@@ -1974,10 +1950,8 @@ msgid "Script Editor"
 msgstr "Editor de Script"
 
 #: FlatCAMObj.py:6850
-#, fuzzy
-#| msgid "Geometry Editor"
 msgid "Document Editor"
-msgstr "Editor de Geometria"
+msgstr "Editor de Documento"
 
 #: FlatCAMProcess.py:172
 msgid "processes running."
@@ -2198,13 +2172,11 @@ msgstr "caminhos traçados."
 
 #: camlib.py:3971
 msgid "Parsing GCode file. Number of lines"
-msgstr ""
+msgstr "Analisando o arquivo G-Code. Número de linhas"
 
 #: camlib.py:4061
-#, fuzzy
-#| msgid "Create Geometry for milling holes."
 msgid "Creating Geometry from the parsed GCode file. "
-msgstr "Cria geometria para furação."
+msgstr "Criando Geometria a partir do arquivo G-Code analisado."
 
 #: camlib.py:4193 camlib.py:4477 camlib.py:4580 camlib.py:4627
 msgid "G91 coordinates not implemented ..."
@@ -2212,7 +2184,7 @@ msgstr "Coordenadas G91 não implementadas..."
 
 #: camlib.py:4324
 msgid "Unifying Geometry from parsed Geometry segments"
-msgstr ""
+msgstr "Unificando Gometria a partir de segmentos de geometria analisados"
 
 #: flatcamEditors/FlatCAMExcEditor.py:45 flatcamEditors/FlatCAMExcEditor.py:70
 #: flatcamEditors/FlatCAMExcEditor.py:152
@@ -2799,7 +2771,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:239
 msgid "Font"
-msgstr ""
+msgstr "Fonte"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:320 flatcamGUI/FlatCAMGUI.py:1864
 msgid "Text"
@@ -3614,16 +3586,12 @@ msgid "Done. Path completed."
 msgstr "Caminho concluído."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2477
-#, fuzzy
-#| msgid "MOVE: No shape selected. Select a shape to move"
 msgid "No shape selected. Select a shape to explode"
-msgstr "MOVER: Nenhuma forma selecionada. Selecione uma forma para mover"
+msgstr "Nenhuma forma selecionada. Selecione uma forma para explodir"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2510
-#, fuzzy
-#| msgid "Done. Polygon completed."
 msgid "Done. Polygons exploded into lines."
-msgstr "Polígono adicionado."
+msgstr "Polígono explodido em linhas."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2532
 msgid "MOVE: No shape selected. Select a shape to move"
@@ -4149,10 +4117,8 @@ msgstr ""
 "Os valores podem estar entre 0.0000 e 999.9999"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2603
-#, fuzzy
-#| msgid "Mark polygon areas"
 msgid "Mark polygons"
-msgstr "Marcar áreas de polígono"
+msgstr "Marcar polígonos"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2605
 msgid "Mark the polygon areas."
@@ -4183,22 +4149,16 @@ msgstr ""
 "Pode ser um valor entre 0.0000 e 9999.9999"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2638
-#, fuzzy
-#| msgid "Mark All"
 msgid "Mark"
-msgstr "Marcar Todos"
+msgstr "Marcar"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2640
-#, fuzzy
-#| msgid "Mark the polygon areas."
 msgid "Mark the polygons that fit within limits."
-msgstr "Marcar as áreas de polígonos."
+msgstr "Marcar os polígonos que se encaixam dentro dos limites."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2646
-#, fuzzy
-#| msgid "Resets all the fields."
 msgid "Delete all the marked polygons."
-msgstr "Redefine todos os campos."
+msgstr "Excluir todos os polígonos marcados."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2650 flatcamGUI/PreferencesUI.py:686
 msgid "Clear"
@@ -4206,7 +4166,7 @@ msgstr "Limpar"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2652
 msgid "Clear all the markings."
-msgstr ""
+msgstr "Limpar todas as marcações."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2672 flatcamGUI/FlatCAMGUI.py:811
 #: flatcamGUI/FlatCAMGUI.py:1813 flatcamGUI/FlatCAMGUI.py:2221
@@ -4332,14 +4292,12 @@ msgid "Done. Scale Tool completed."
 msgstr "Redimensionamento concluído."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4901
-#, fuzzy
-#| msgid "Polygon areas marked."
 msgid "Polygons marked."
-msgstr "Áreas de polígono marcadas."
+msgstr "Polígonos marcados."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4904
 msgid "No polygons were marked. None fit within the limits."
-msgstr ""
+msgstr "Nenhum polígono foi marcado. Nenhum se encaixa dentro dos limites."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:5683
 msgid "Rotation action was not executed."
@@ -4478,10 +4436,8 @@ msgid "Toggle Panel"
 msgstr "Alternar Painel"
 
 #: flatcamGUI/FlatCAMGUI.py:58
-#, fuzzy
-#| msgid "&File"
 msgid "File"
-msgstr "&Arquivo"
+msgstr "Arquivo"
 
 #: flatcamGUI/FlatCAMGUI.py:63
 msgid "&New Project ...\tCTRL+N"
@@ -4521,13 +4477,11 @@ msgstr "Criará um novo Objeto Excellon vazio."
 
 #: flatcamGUI/FlatCAMGUI.py:87
 msgid "Document\tD"
-msgstr ""
+msgstr "Documento\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:89
-#, fuzzy
-#| msgid "Will create a new, empty Geometry Object."
 msgid "Will create a new, empty Document Object."
-msgstr "Criará um novo Objeto Geometria vazio."
+msgstr "Criará um novo Objeto Documento vazio."
 
 #: flatcamGUI/FlatCAMGUI.py:92 flatcamGUI/FlatCAMGUI.py:3659
 #: flatcamTools/ToolPcbWizard.py:61 flatcamTools/ToolPcbWizard.py:68
@@ -4869,10 +4823,8 @@ msgid "Redraw All\tF5"
 msgstr "Redesenha Todos\tF5"
 
 #: flatcamGUI/FlatCAMGUI.py:396
-#, fuzzy
-#| msgid "Toggle Code Editor\tCTRL+E"
 msgid "Toggle Code Editor\tSHIFT+E"
-msgstr "Alternar o Editor de Códigos\tCTRL+E"
+msgstr "Alternar o Editor de Códigos\tSHIFT+E"
 
 #: flatcamGUI/FlatCAMGUI.py:399
 msgid "&Toggle FullScreen\tALT+F10"
@@ -4891,10 +4843,8 @@ msgid "&Toggle Grid Snap\tG"
 msgstr "Al&ternar Encaixe na Grade\tG"
 
 #: flatcamGUI/FlatCAMGUI.py:409
-#, fuzzy
-#| msgid "&Toggle Grid Snap\tG"
 msgid "&Toggle Grid Lines\tALT+G"
-msgstr "Al&ternar Encaixe na Grade\tG"
+msgstr "Al&ternar Encaixe na Grade\tALT+G"
 
 #: flatcamGUI/FlatCAMGUI.py:410
 msgid "&Toggle Axis\tSHIFT+G"
@@ -4905,10 +4855,8 @@ msgid "Toggle Workspace\tSHIFT+W"
 msgstr "Alternar Área de Trabalho\tSHIFT+W"
 
 #: flatcamGUI/FlatCAMGUI.py:418
-#, fuzzy
-#| msgid "Object"
 msgid "Objects"
-msgstr "Objeto"
+msgstr "Objetos"
 
 #: flatcamGUI/FlatCAMGUI.py:423
 msgid "&Tool"
@@ -4928,7 +4876,7 @@ msgstr "Ajuda Online\tF1"
 
 #: flatcamGUI/FlatCAMGUI.py:433
 msgid "Bookmarks"
-msgstr ""
+msgstr "Favoritos"
 
 #: flatcamGUI/FlatCAMGUI.py:439
 msgid "Report a bug"
@@ -5194,14 +5142,12 @@ msgstr "&Excluir"
 #: flatcamGUI/FlatCAMGUI.py:702 flatcamGUI/FlatCAMGUI.py:1422
 #: flatcamGUI/FlatCAMGUI.py:1610 flatcamGUI/FlatCAMGUI.py:2123
 #: flatcamTools/ToolDistance.py:25 flatcamTools/ToolDistance.py:155
-#, fuzzy
-#| msgid "Panel Tool"
 msgid "Distance Tool"
-msgstr "Ferramenta de Painel"
+msgstr "Ferramenta de Distância"
 
 #: flatcamGUI/FlatCAMGUI.py:704 flatcamGUI/FlatCAMGUI.py:2125
 msgid "Distance Min Tool"
-msgstr ""
+msgstr "Ferramenta Distância Min"
 
 #: flatcamGUI/FlatCAMGUI.py:705 flatcamGUI/FlatCAMGUI.py:1418
 #: flatcamGUI/FlatCAMGUI.py:2126
@@ -5209,10 +5155,8 @@ msgid "Set Origin"
 msgstr "Definir Origem"
 
 #: flatcamGUI/FlatCAMGUI.py:706 flatcamGUI/FlatCAMGUI.py:2127
-#, fuzzy
-#| msgid "Jump to Location\tJ"
 msgid "Jump to Location"
-msgstr "Ir para a localização\tJ"
+msgstr "Ir para a localização"
 
 #: flatcamGUI/FlatCAMGUI.py:712 flatcamGUI/FlatCAMGUI.py:2130
 msgid "&Replot"
@@ -5275,17 +5219,13 @@ msgid "Substract Tool"
 msgstr "Ferramenta Subtrair"
 
 #: flatcamGUI/FlatCAMGUI.py:741 flatcamTools/ToolRulesCheck.py:582
-#, fuzzy
-#| msgid "Scale Tool"
 msgid "Rules Tool"
-msgstr "Ferra. de Escala"
+msgstr "Ferramenta de Regras"
 
 #: flatcamGUI/FlatCAMGUI.py:742 flatcamGUI/FlatCAMGUI.py:1428
 #: flatcamTools/ToolOptimal.py:26 flatcamTools/ToolOptimal.py:270
-#, fuzzy
-#| msgid "Film Tool"
 msgid "Optimal Tool"
-msgstr "Ferramenta de Filme"
+msgstr "Ferramenta Ideal"
 
 #: flatcamGUI/FlatCAMGUI.py:746 flatcamGUI/FlatCAMGUI.py:1426
 #: flatcamGUI/FlatCAMGUI.py:2160
@@ -5376,10 +5316,8 @@ msgid "Polygon Union"
 msgstr "União de Polígonos"
 
 #: flatcamGUI/FlatCAMGUI.py:788 flatcamGUI/FlatCAMGUI.py:2200
-#, fuzzy
-#| msgid "Polygon Union"
 msgid "Polygon Explode"
-msgstr "União de Polígonos"
+msgstr "Explosão de Polígonos"
 
 #: flatcamGUI/FlatCAMGUI.py:791 flatcamGUI/FlatCAMGUI.py:2203
 msgid "Polygon Intersection"
@@ -5527,10 +5465,8 @@ msgid "TOOLS"
 msgstr "Ferramentas"
 
 #: flatcamGUI/FlatCAMGUI.py:1031
-#, fuzzy
-#| msgid "TOOLS"
 msgid "TOOLS 2"
-msgstr "Ferramentas"
+msgstr "Ferramentas 2"
 
 #: flatcamGUI/FlatCAMGUI.py:1041
 msgid "UTILITIES"
@@ -5696,7 +5632,7 @@ msgstr "Alternar o Eixo"
 #: flatcamGUI/FlatCAMGUI.py:1424 flatcamGUI/FlatCAMGUI.py:1608
 #: flatcamGUI/FlatCAMGUI.py:1695 flatcamGUI/FlatCAMGUI.py:1817
 msgid "Distance Minimum Tool"
-msgstr ""
+msgstr "Ferramenta Distância Mínima"
 
 #: flatcamGUI/FlatCAMGUI.py:1424
 msgid "Open Preferences Window"
@@ -5752,7 +5688,7 @@ msgstr "Ferramenta de Importação de PDF"
 
 #: flatcamGUI/FlatCAMGUI.py:1429
 msgid "Rules Check Tool"
-msgstr ""
+msgstr "Ferramenta de Verificação de Regras"
 
 #: flatcamGUI/FlatCAMGUI.py:1430
 msgid "View File Source"
@@ -6238,13 +6174,11 @@ msgstr "Sair"
 
 #: flatcamGUI/FlatCAMGUI.py:3736 flatcamGUI/FlatCAMGUI.py:3763
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: flatcamGUI/FlatCAMGUI.py:3737 flatcamGUI/FlatCAMGUI.py:3767
-#, fuzzy
-#| msgid "Link"
 msgid "Web Link"
-msgstr "Fixar Taxa"
+msgstr "Link"
 
 #: flatcamGUI/FlatCAMGUI.py:3741
 msgid ""
@@ -6252,100 +6186,82 @@ msgid ""
 "The rows in gray color will populate the Bookmarks menu.\n"
 "The number of gray colored rows is set in Preferences."
 msgstr ""
+"Índice.\n"
+"As linhas na cor cinza preencherão o menu Favoritos.\n"
+"O número de linhas cinza é definido em Preferências."
 
 #: flatcamGUI/FlatCAMGUI.py:3745
 msgid ""
 "Description of the link that is set as an menu action.\n"
 "Try to keep it short because it is installed as a menu item."
 msgstr ""
+"Descrição do link que está definido como uma ação de menu.\n"
+"Tente mantê-lo curto, pois ele aparece como um item de menu."
 
 #: flatcamGUI/FlatCAMGUI.py:3748
 msgid "Web Link. E.g: https://your_website.org "
-msgstr ""
+msgstr "Link. Ex: https://seu_site.org "
 
 #: flatcamGUI/FlatCAMGUI.py:3757
 msgid "<b>New Bookmark</b>"
-msgstr ""
+msgstr "<b>Novo Favorito</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:3776
-#, fuzzy
-#| msgid "Add Arc"
 msgid "Add Entry"
-msgstr "Adicionar Arco"
+msgstr "Adicionar Entrada"
 
 #: flatcamGUI/FlatCAMGUI.py:3777
 msgid "Remove Entry"
-msgstr ""
+msgstr "Remover Entrada"
 
 #: flatcamGUI/FlatCAMGUI.py:3778
-#, fuzzy
-#| msgid "Export Options"
 msgid "Export List"
-msgstr "Opções da Exportação"
+msgstr "Exportar Lista"
 
 #: flatcamGUI/FlatCAMGUI.py:3779
-#, fuzzy
-#| msgid "Import"
 msgid "Import List"
-msgstr "Importar"
+msgstr "Importar Lista"
 
 #: flatcamGUI/FlatCAMGUI.py:3914
 msgid "This bookmark can not be removed"
-msgstr ""
+msgstr "Este favorito não pode ser removido"
 
 #: flatcamGUI/FlatCAMGUI.py:3961
-#, fuzzy, python-brace-format
-#| msgid "{l_save}/Project_{date}"
+#, python-brace-format
 msgid "{l_save}/FlatCAM_Bookmarks_{date}"
-msgstr "{l_save}/Project_{date}"
+msgstr "{l_save}/FlatCAM_Bookmarks_{date}"
 
 #: flatcamGUI/FlatCAMGUI.py:3969
-#, fuzzy
-#| msgid "FlatCAM preferences export cancelled."
 msgid "FlatCAM bookmarks export cancelled."
-msgstr "Exportação de preferências do FlatCAM cancelada."
+msgstr "Exportação de favoritos do FlatCAM cancelada."
 
 #: flatcamGUI/FlatCAMGUI.py:3989
-#, fuzzy
-#| msgid "Could not load defaults file."
 msgid "Could not load bookamrks file."
-msgstr "Não foi possível carregar o arquivo com os padrões."
+msgstr "Não foi possível carregar o arquivo com os favoritos."
 
 #: flatcamGUI/FlatCAMGUI.py:4000
-#, fuzzy
-#| msgid "Failed to write defaults to file."
 msgid "Failed to write bookmarks to file."
-msgstr "Falha ao gravar os padrões no arquivo."
+msgstr "Falha ao gravar os favoritos no arquivo."
 
 #: flatcamGUI/FlatCAMGUI.py:4003
-#, fuzzy
-#| msgid "Exported preferences to"
 msgid "Exported bookmarks to"
-msgstr "Preferências exportadas para"
+msgstr "Favoritos exportados para"
 
 #: flatcamGUI/FlatCAMGUI.py:4009
-#, fuzzy
-#| msgid "Import FlatCAM Preferences"
 msgid "Import FlatCAM Bookmarks"
-msgstr "Importar Preferências do FlatCAM"
+msgstr "Importar Favoritos do FlatCAM"
 
 #: flatcamGUI/FlatCAMGUI.py:4016
-#, fuzzy
-#| msgid "FlatCAM preferences import cancelled."
 msgid "FlatCAM bookmarks import cancelled."
-msgstr "Importação de preferências do FlatCAM cancelada."
+msgstr "Importação de favoritos do FlatCAM cancelada."
 
 #: flatcamGUI/FlatCAMGUI.py:4024
-#, fuzzy
-#| msgid "Could not load defaults file."
 msgid "Could not load bookmarks file."
-msgstr "Não foi possível carregar o arquivo com os padrões."
+msgstr "Não foi possível carregar o arquivo com os favoritos."
 
 #: flatcamGUI/FlatCAMGUI.py:4032
-#, fuzzy
-#| msgid "Imported Defaults from"
 msgid "Imported Bookmarks from"
-msgstr "Padrões importados de"
+msgstr "Favoritos importados de"
 
 #: flatcamGUI/ObjectUI.py:34
 msgid "FlatCAM Object"
