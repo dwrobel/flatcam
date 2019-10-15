@@ -384,6 +384,11 @@ msgid ""
 "\"Flaticon\">www.flaticon.com</a></div><br>Icons by <a target=\"_blank\" "
 "href=\"https://icons8.com\">Icons8</a>"
 msgstr ""
+"Некоторые из используемых значков взяты из следующих источников: "
+"<BR><div>Иконки сделаны <a href=\"https://www.flaticon.com/authors/freepik\" "
+"title=\"Freepik\">Freepik</a> из <a href=\"https://www.flaticon.com/"
+"\"             title=\"Flaticon\">www.flaticon.com</a></div><br>Иконки от <a "
+"target=\"_blank\" href=\"https://icons8.com\">Icons8</a>"
 
 #: FlatCAMApp.py:4561
 msgid "Splash"
@@ -449,6 +454,14 @@ msgid ""
 "If you can't get any informations about FlatCAM beta\n"
 "use the YouTube channel link from the Help menu."
 msgstr ""
+"Эта запись будет разрешена на другом сайте, если:\n"
+"\n"
+"1. Сайт FlatCAM.org не работает\n"
+"2. Кто-то создал свою ветвь проекта FlatCAM и хочет указать\n"
+"на свой сайт\n"
+"\n"
+"Если вы не можете получить какую-либо информацию о бета-версии FlatCAM\n"
+"используйте ссылку на канал YouTube в меню «Справка»."
 
 #: FlatCAMApp.py:4799
 msgid "Alternative website"
@@ -2147,7 +2160,7 @@ msgstr "путей проложено."
 
 #: camlib.py:3971
 msgid "Parsing GCode file. Number of lines"
-msgstr ""
+msgstr "Разбор файла GCode. Количество строк"
 
 #: camlib.py:4061
 msgid "Creating Geometry from the parsed GCode file. "
@@ -2159,7 +2172,7 @@ msgstr "Координаты G91 не реализованы ..."
 
 #: camlib.py:4324
 msgid "Unifying Geometry from parsed Geometry segments"
-msgstr ""
+msgstr "Объединение геометрии из разбираемых сегментов геометрии"
 
 #: flatcamEditors/FlatCAMExcEditor.py:45 flatcamEditors/FlatCAMExcEditor.py:70
 #: flatcamEditors/FlatCAMExcEditor.py:152
@@ -4273,7 +4286,7 @@ msgstr "Полигональные области отмечены."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4904
 msgid "No polygons were marked. None fit within the limits."
-msgstr ""
+msgstr "Полигоны не были отмечены. Ни один не укладывается в пределы."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:5683
 msgid "Rotation action was not executed."
@@ -4454,7 +4467,7 @@ msgstr "Создаёт новый объект Excellon."
 
 #: flatcamGUI/FlatCAMGUI.py:87
 msgid "Document\tD"
-msgstr ""
+msgstr "Документ\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:89
 #, fuzzy
@@ -4805,10 +4818,8 @@ msgid "Redraw All\tF5"
 msgstr "Перерисовать всё\tF5"
 
 #: flatcamGUI/FlatCAMGUI.py:396
-#, fuzzy
-#| msgid "Toggle Code Editor\tCTRL+E"
 msgid "Toggle Code Editor\tSHIFT+E"
-msgstr "Редактор кода\tCTRL+E"
+msgstr "Переключить редактор кода\tSHIFT+E"
 
 #: flatcamGUI/FlatCAMGUI.py:399
 msgid "&Toggle FullScreen\tALT+F10"
@@ -4827,10 +4838,9 @@ msgid "&Toggle Grid Snap\tG"
 msgstr "&Привязка к сетке\tG"
 
 #: flatcamGUI/FlatCAMGUI.py:409
-#, fuzzy
 #| msgid "&Toggle Grid Snap\tG"
 msgid "&Toggle Grid Lines\tALT+G"
-msgstr "&Привязка к сетке\tG"
+msgstr "&Переключить линии сетки \tALT+G"
 
 #: flatcamGUI/FlatCAMGUI.py:410
 msgid "&Toggle Axis\tSHIFT+G"
@@ -5128,14 +5138,12 @@ msgstr "&Удалить"
 #: flatcamGUI/FlatCAMGUI.py:702 flatcamGUI/FlatCAMGUI.py:1422
 #: flatcamGUI/FlatCAMGUI.py:1610 flatcamGUI/FlatCAMGUI.py:2123
 #: flatcamTools/ToolDistance.py:25 flatcamTools/ToolDistance.py:155
-#, fuzzy
-#| msgid "Panel Tool"
 msgid "Distance Tool"
-msgstr "Панелизация"
+msgstr "Измеритель"
 
 #: flatcamGUI/FlatCAMGUI.py:704 flatcamGUI/FlatCAMGUI.py:2125
 msgid "Distance Min Tool"
-msgstr ""
+msgstr "Минимальное расстояние"
 
 #: flatcamGUI/FlatCAMGUI.py:705 flatcamGUI/FlatCAMGUI.py:1418
 #: flatcamGUI/FlatCAMGUI.py:2126
@@ -5207,17 +5215,13 @@ msgid "Substract Tool"
 msgstr "Вычитатель"
 
 #: flatcamGUI/FlatCAMGUI.py:741 flatcamTools/ToolRulesCheck.py:582
-#, fuzzy
-#| msgid "Scale Tool"
 msgid "Rules Tool"
-msgstr "Масштаб"
+msgstr "Правила"
 
 #: flatcamGUI/FlatCAMGUI.py:742 flatcamGUI/FlatCAMGUI.py:1428
 #: flatcamTools/ToolOptimal.py:26 flatcamTools/ToolOptimal.py:270
-#, fuzzy
-#| msgid "Film Tool"
 msgid "Optimal Tool"
-msgstr "Плёнка"
+msgstr "Оптимизация"
 
 #: flatcamGUI/FlatCAMGUI.py:746 flatcamGUI/FlatCAMGUI.py:1426
 #: flatcamGUI/FlatCAMGUI.py:2160
@@ -5457,10 +5461,8 @@ msgid "TOOLS"
 msgstr "ИНСТРУМЕНТЫ"
 
 #: flatcamGUI/FlatCAMGUI.py:1031
-#, fuzzy
-#| msgid "TOOLS"
 msgid "TOOLS 2"
-msgstr "ИНСТРУМЕНТЫ"
+msgstr "ИНСТРУМЕНТЫ 2"
 
 #: flatcamGUI/FlatCAMGUI.py:1041
 msgid "UTILITIES"
@@ -5626,7 +5628,7 @@ msgstr "Переключить ось"
 #: flatcamGUI/FlatCAMGUI.py:1424 flatcamGUI/FlatCAMGUI.py:1608
 #: flatcamGUI/FlatCAMGUI.py:1695 flatcamGUI/FlatCAMGUI.py:1817
 msgid "Distance Minimum Tool"
-msgstr ""
+msgstr "Минимальное расстояние"
 
 #: flatcamGUI/FlatCAMGUI.py:1424
 msgid "Open Preferences Window"
@@ -5682,7 +5684,7 @@ msgstr "Импорт PDF"
 
 #: flatcamGUI/FlatCAMGUI.py:1429
 msgid "Rules Check Tool"
-msgstr ""
+msgstr "Проверка правил"
 
 #: flatcamGUI/FlatCAMGUI.py:1430
 msgid "View File Source"
@@ -6139,8 +6141,6 @@ msgid "Adding Tool cancelled ..."
 msgstr "Добавление инструмента отменено ..."
 
 #: flatcamGUI/FlatCAMGUI.py:3425
-#, fuzzy
-#| msgid "Measurement Tool exit..."
 msgid "Distance Tool exit..."
 msgstr "Измеритель закрыт ..."
 
@@ -6182,12 +6182,17 @@ msgid ""
 "The rows in gray color will populate the Bookmarks menu.\n"
 "The number of gray colored rows is set in Preferences."
 msgstr ""
+"Индекс.\n"
+"Строки серого цвета будут заполнять меню закладок.\n"
+"Количество строк серого цвета задается в настройках."
 
 #: flatcamGUI/FlatCAMGUI.py:3745
 msgid ""
 "Description of the link that is set as an menu action.\n"
 "Try to keep it short because it is installed as a menu item."
 msgstr ""
+"Описание ссылки, заданной в качестве действия меню.\n"
+"Постарайтесь сделать его коротким, потому что он установлен как пункт меню."
 
 #: flatcamGUI/FlatCAMGUI.py:3748
 msgid "Web Link. E.g: https://your_website.org "
@@ -6417,6 +6422,10 @@ msgid ""
 "When the 'V-shape' is selected then the tool\n"
 "diameter will depend on the chosen cut depth."
 msgstr ""
+"Выберите, какой инструмент использовать для изоляции Gerber:\n"
+"\"Круглый\" или \"V-образный\".\n"
+"Когда выбрана \"V-образная форма\", то диаметр инструмента\n"
+"будет зависеть от выбранной глубины резания."
 
 #: flatcamGUI/ObjectUI.py:296 flatcamGUI/ObjectUI.py:1260
 #: flatcamGUI/PreferencesUI.py:1481 flatcamGUI/PreferencesUI.py:3733
@@ -7810,15 +7819,17 @@ msgstr "Автозаполнение"
 #: flatcamGUI/ObjectUI.py:1893
 msgid "This selects if the auto completer is enabled in the Script Editor."
 msgstr ""
+"Этот параметр выбирает, включено ли автозаполнение в редакторе сценариев."
 
 #: flatcamGUI/ObjectUI.py:1924
 #| msgid "Geometry Object"
 msgid "Document Object"
-msgstr ""
+msgstr "Объект Документа"
 
 #: flatcamGUI/ObjectUI.py:1952
 msgid "This selects if the auto completer is enabled in the Document Editor."
 msgstr ""
+"Этот параметр выбирает, включено ли автозаполнение в редакторе документов."
 
 #: flatcamGUI/ObjectUI.py:1970
 msgid "Font Type"
@@ -7871,6 +7882,8 @@ msgstr "Размер вкладки"
 #: flatcamGUI/ObjectUI.py:2084
 msgid "Set the tab size. In pixels. Default value is 80 pixels."
 msgstr ""
+"Установка размера вкладки. В пикселях. Значение по умолчанию составляет 80 "
+"пикселей."
 
 #: flatcamGUI/PlotCanvasLegacy.py:1082
 msgid ""
@@ -8601,6 +8614,9 @@ msgid ""
 "The number of bookmarks in the bookmark manager may be greater\n"
 "but the menu will hold only so much."
 msgstr ""
+"Максимальное количество закладок, которые могут быть установлены в меню.\n"
+"Количество закладок в диспетчере закладок может быть больше\n"
+"но меню будет содержать только это указанное количество."
 
 #: flatcamGUI/PreferencesUI.py:1190
 msgid "Gerber General"
@@ -8628,6 +8644,8 @@ msgid ""
 "Those values will be used as fallback values\n"
 "in case that they are not found in the Gerber file."
 msgstr ""
+"Эти значения будут использоваться в качестве резервных значений\n"
+"в случае, если они не найдены в файле Gerber."
 
 #: flatcamGUI/PreferencesUI.py:1246 flatcamGUI/PreferencesUI.py:1252
 #: flatcamGUI/PreferencesUI.py:1580 flatcamGUI/PreferencesUI.py:1586
@@ -10145,7 +10163,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:4384 flatcamTools/ToolFilm.py:127
 msgid "Film Adjustments"
-msgstr ""
+msgstr "Регулировка Пленки"
 
 #: flatcamGUI/PreferencesUI.py:4386 flatcamTools/ToolFilm.py:129
 msgid ""
@@ -10153,6 +10171,8 @@ msgid ""
 "types.\n"
 "This section provide the tools to compensate for the print distortions."
 msgstr ""
+"Иногда принтеры могут искажать форму печати,особенно лазерные.\n"
+"В этом разделе представлены инструменты для компенсации искажений печати."
 
 #: flatcamGUI/PreferencesUI.py:4393 flatcamTools/ToolFilm.py:136
 #| msgid "Create Paint Geometry"
@@ -10164,6 +10184,8 @@ msgid ""
 "A value greater than 1 will stretch the film\n"
 "while a value less than 1 will jolt it."
 msgstr ""
+"Значение больше 1 растянет пленку\n"
+"в то время как значение меньше 1 будет её сжимать."
 
 #: flatcamGUI/PreferencesUI.py:4405 flatcamGUI/PreferencesUI.py:4824
 #: flatcamTools/ToolFilm.py:148 flatcamTools/ToolTransform.py:145
@@ -10184,6 +10206,8 @@ msgid ""
 "Positive values will skew to the right\n"
 "while negative values will skew to the left."
 msgstr ""
+"Положительные значения будут смещать вправо,\n"
+"а отрицательные значения будут смещать влево."
 
 #: flatcamGUI/PreferencesUI.py:4436 flatcamGUI/PreferencesUI.py:4793
 #: flatcamTools/ToolFilm.py:181 flatcamTools/ToolTransform.py:95
@@ -10200,6 +10224,8 @@ msgid ""
 "The reference point to be used as origin for the skew.\n"
 "It can be one of the four points of the geometry bounding box."
 msgstr ""
+"Опорная точка, используемая в качестве исходной точки для перекоса.\n"
+"Это может быть одна из четырех точек геометрии ограничительной рамки."
 
 #: flatcamGUI/PreferencesUI.py:4459 flatcamTools/ToolFilm.py:204
 msgid "Bottom Left"
@@ -10735,13 +10761,15 @@ msgstr "Проверка этого закроет пути, прорезанн�
 #: flatcamGUI/PreferencesUI.py:5119
 #| msgid "Calculators Tool Options"
 msgid "Check Rules Tool Options"
-msgstr ""
+msgstr "Параметры проверки правил"
 
 #: flatcamGUI/PreferencesUI.py:5124
 msgid ""
 "A tool to check if Gerber files fir within a set\n"
 "of Manufacturing Rules."
 msgstr ""
+"Инструмент для проверки наличия файлов Gerber в наборе\n"
+"правил изготовления."
 
 #: flatcamGUI/PreferencesUI.py:5134 flatcamTools/ToolRulesCheck.py:251
 #: flatcamTools/ToolRulesCheck.py:895
@@ -10767,18 +10795,18 @@ msgstr "Минимальное значение"
 
 #: flatcamGUI/PreferencesUI.py:5148 flatcamTools/ToolRulesCheck.py:265
 msgid "Minimum acceptable trace size."
-msgstr ""
+msgstr "Минимальный допустимый размер трассировки."
 
 #: flatcamGUI/PreferencesUI.py:5153 flatcamTools/ToolRulesCheck.py:272
 #: flatcamTools/ToolRulesCheck.py:1123 flatcamTools/ToolRulesCheck.py:1153
 msgid "Copper to Copper clearance"
-msgstr ""
+msgstr "Зазор между медными дорожками"
 
 #: flatcamGUI/PreferencesUI.py:5155 flatcamTools/ToolRulesCheck.py:274
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features is met."
-msgstr ""
+msgstr "Проверяет, соблюдены ли минимальные зазоры между медью"
 
 #: flatcamGUI/PreferencesUI.py:5168 flatcamGUI/PreferencesUI.py:5188
 #: flatcamGUI/PreferencesUI.py:5208 flatcamGUI/PreferencesUI.py:5228
@@ -10788,96 +10816,106 @@ msgstr ""
 #: flatcamTools/ToolRulesCheck.py:356 flatcamTools/ToolRulesCheck.py:379
 #: flatcamTools/ToolRulesCheck.py:402 flatcamTools/ToolRulesCheck.py:450
 msgid "Minimum acceptable clearance value."
-msgstr ""
+msgstr "Минимально допустимое значение зазора."
 
 #: flatcamGUI/PreferencesUI.py:5173 flatcamTools/ToolRulesCheck.py:295
 #: flatcamTools/ToolRulesCheck.py:1183 flatcamTools/ToolRulesCheck.py:1189
 #: flatcamTools/ToolRulesCheck.py:1202 flatcamTools/ToolRulesCheck.py:1209
 msgid "Copper to Outline clearance"
-msgstr ""
+msgstr "Зазор между медью и контуром"
 
 #: flatcamGUI/PreferencesUI.py:5175 flatcamTools/ToolRulesCheck.py:297
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features and the outline is met."
 msgstr ""
+"Проверяет, выполнены ли минимальные зазоры между медью\n"
+"и контурами."
 
 #: flatcamGUI/PreferencesUI.py:5193 flatcamTools/ToolRulesCheck.py:318
 msgid "Silk to Silk Clearance"
-msgstr ""
+msgstr "Зазор между шелкографией"
 
 #: flatcamGUI/PreferencesUI.py:5195 flatcamTools/ToolRulesCheck.py:320
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and silkscreen features is met."
-msgstr ""
+msgstr "Проверяет, соблюдены ли минимальные зазоры между шелкографией."
 
 #: flatcamGUI/PreferencesUI.py:5213 flatcamTools/ToolRulesCheck.py:341
 #: flatcamTools/ToolRulesCheck.py:1292 flatcamTools/ToolRulesCheck.py:1298
 #: flatcamTools/ToolRulesCheck.py:1316
 msgid "Silk to Solder Mask Clearance"
-msgstr ""
+msgstr "Зазор между шелкографией и паяльной маской"
 
 #: flatcamGUI/PreferencesUI.py:5215 flatcamTools/ToolRulesCheck.py:343
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and soldermask features is met."
 msgstr ""
+"Проверяет, соблюдены ли минимальные зазоры между шелкографией\n"
+"и паяльной маской."
 
 #: flatcamGUI/PreferencesUI.py:5233 flatcamTools/ToolRulesCheck.py:364
 #: flatcamTools/ToolRulesCheck.py:1346 flatcamTools/ToolRulesCheck.py:1352
 #: flatcamTools/ToolRulesCheck.py:1366 flatcamTools/ToolRulesCheck.py:1373
 msgid "Silk to Outline Clearance"
-msgstr ""
+msgstr "Зазор между шелкографией и контуром"
 
 #: flatcamGUI/PreferencesUI.py:5235 flatcamTools/ToolRulesCheck.py:366
 msgid ""
 "This checks if the minimum clearance between silk\n"
 "features and the outline is met."
 msgstr ""
+"Проверяет, соблюдены ли минимальные зазоры между шелкографией\n"
+"и контурами."
 
 #: flatcamGUI/PreferencesUI.py:5253 flatcamTools/ToolRulesCheck.py:387
 #: flatcamTools/ToolRulesCheck.py:1384 flatcamTools/ToolRulesCheck.py:1411
 msgid "Minimum Solder Mask Sliver"
-msgstr ""
+msgstr "Минимально ширина паяльной маски"
 
 #: flatcamGUI/PreferencesUI.py:5255 flatcamTools/ToolRulesCheck.py:389
 msgid ""
 "This checks if the minimum clearance between soldermask\n"
 "features and soldermask features is met."
 msgstr ""
+"Проверяет, соблюдены ли минимальные зазоры между паяльной маской\n"
+"и встречной паяльной маской."
 
 #: flatcamGUI/PreferencesUI.py:5273 flatcamTools/ToolRulesCheck.py:410
 #: flatcamTools/ToolRulesCheck.py:1449 flatcamTools/ToolRulesCheck.py:1455
 #: flatcamTools/ToolRulesCheck.py:1471 flatcamTools/ToolRulesCheck.py:1478
 msgid "Minimum Annular Ring"
-msgstr ""
+msgstr "Минимальное медное кольцо"
 
 #: flatcamGUI/PreferencesUI.py:5275 flatcamTools/ToolRulesCheck.py:412
 msgid ""
 "This checks if the minimum copper ring left by drilling\n"
 "a hole into a pad is met."
 msgstr ""
+"Проверяет, останется ли минимальное медное кольцо при сверлении\n"
+"отверстия в площадке."
 
 #: flatcamGUI/PreferencesUI.py:5288 flatcamTools/ToolRulesCheck.py:425
 msgid "Minimum acceptable ring value."
-msgstr ""
+msgstr "Минимальное допустимое значение кольца."
 
 #: flatcamGUI/PreferencesUI.py:5295 flatcamTools/ToolRulesCheck.py:435
 #: flatcamTools/ToolRulesCheck.py:839
 #| msgid "Geo Tolerance"
 msgid "Hole to Hole Clearance"
-msgstr ""
+msgstr "Зазор между отверстиями"
 
 #: flatcamGUI/PreferencesUI.py:5297 flatcamTools/ToolRulesCheck.py:437
 msgid ""
 "This checks if the minimum clearance between a drill hole\n"
 "and another drill hole is met."
-msgstr ""
+msgstr "Проверяет, есть ли минимальный зазор между отверстиями."
 
 #: flatcamGUI/PreferencesUI.py:5310 flatcamTools/ToolRulesCheck.py:473
 msgid "Minimum acceptable drill size."
-msgstr ""
+msgstr "Минимальный допустимый размер отверстия."
 
 #: flatcamGUI/PreferencesUI.py:5315 flatcamTools/ToolRulesCheck.py:458
 #: flatcamTools/ToolRulesCheck.py:813
@@ -10889,11 +10927,13 @@ msgid ""
 "This checks if the drill holes\n"
 "sizes are above the threshold."
 msgstr ""
+"Проверяет, превышают ли размеры просверленного отверстия\n"
+"допустимый порог."
 
 #: flatcamGUI/PreferencesUI.py:5342
 #| msgid "Film Tool Options"
 msgid "Optimal Tool Options"
-msgstr ""
+msgstr "Параметры оптимизации"
 
 #: flatcamGUI/PreferencesUI.py:5348
 msgid ""
