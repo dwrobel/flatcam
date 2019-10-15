@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-10-15 02:33+0300\n"
-"PO-Revision-Date: 2019-10-15 15:15-0300\n"
+"PO-Revision-Date: 2019-10-15 15:25-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -10162,31 +10162,31 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:4459 flatcamTools/ToolFilm.py:204
 msgid "Bottom Left"
-msgstr ""
+msgstr "Esquerda Inferior"
 
 #: flatcamGUI/PreferencesUI.py:4460 flatcamTools/ToolFilm.py:205
 msgid "Top Left"
-msgstr ""
+msgstr "Esquerda Superior"
 
 #: flatcamGUI/PreferencesUI.py:4461 flatcamTools/ToolFilm.py:206
 msgid "Bottom Right"
-msgstr ""
+msgstr "Direita Inferior"
 
 #: flatcamGUI/PreferencesUI.py:4462 flatcamTools/ToolFilm.py:207
 msgid "Top right"
-msgstr ""
+msgstr "Direita Superior"
 
 #: flatcamGUI/PreferencesUI.py:4470 flatcamTools/ToolFilm.py:218
 msgid "Mirror Film geometry"
-msgstr ""
+msgstr "Espelhar geometria de filme"
 
 #: flatcamGUI/PreferencesUI.py:4472 flatcamTools/ToolFilm.py:220
 msgid "Mirror the film geometry on the selected axis or on both."
-msgstr ""
+msgstr "Espelha a geometria do filme no eixo selecionado ou em ambos."
 
 #: flatcamGUI/PreferencesUI.py:4484 flatcamTools/ToolFilm.py:232
 msgid "Both"
-msgstr ""
+msgstr "Ambos"
 
 #: flatcamGUI/PreferencesUI.py:4486 flatcamTools/ToolFilm.py:234
 #, fuzzy
@@ -10427,10 +10427,8 @@ msgstr ""
 "a um objeto FlatCAM."
 
 #: flatcamGUI/PreferencesUI.py:4785
-#, fuzzy
-#| msgid "Skew X"
 msgid "Skew"
-msgstr "Inclinar X"
+msgstr "Inclinar"
 
 #: flatcamGUI/PreferencesUI.py:4826 flatcamTools/ToolTransform.py:147
 msgid "Factor for scaling on X axis."
@@ -10461,7 +10459,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:4871 flatcamTools/ToolTransform.py:214
 msgid "X val"
-msgstr ""
+msgstr "X"
 
 #: flatcamGUI/PreferencesUI.py:4873 flatcamTools/ToolTransform.py:216
 msgid "Distance to offset on X axis. In current units."
@@ -10469,7 +10467,7 @@ msgstr "Distância para deslocar no eixo X, nas unidades atuais."
 
 #: flatcamGUI/PreferencesUI.py:4884 flatcamTools/ToolTransform.py:235
 msgid "Y val"
-msgstr ""
+msgstr "Y"
 
 #: flatcamGUI/PreferencesUI.py:4886 flatcamTools/ToolTransform.py:237
 msgid "Distance to offset on Y axis. In current units."
@@ -10692,29 +10690,25 @@ msgstr ""
 "Marcar isso fechará os caminhos cortados pelo objeto substrair Geometria."
 
 #: flatcamGUI/PreferencesUI.py:5119
-#, fuzzy
-#| msgid "Calculators Tool Options"
 msgid "Check Rules Tool Options"
-msgstr "Opções das Calculadoras"
+msgstr "Opções das Regras"
 
 #: flatcamGUI/PreferencesUI.py:5124
 msgid ""
 "A tool to check if Gerber files fir within a set\n"
 "of Manufacturing Rules."
 msgstr ""
+"Uma ferramenta para verificar se os arquivos Gerber atendem um conjunto\n"
+"de regras do fabricante."
 
 #: flatcamGUI/PreferencesUI.py:5134 flatcamTools/ToolRulesCheck.py:251
 #: flatcamTools/ToolRulesCheck.py:895
-#, fuzzy
-#| msgid "Aperture Size"
 msgid "Trace Size"
-msgstr "Tamanho da abertura"
+msgstr "Tamanho do Traçado"
 
 #: flatcamGUI/PreferencesUI.py:5136 flatcamTools/ToolRulesCheck.py:253
-#, fuzzy
-#| msgid "This sets the font size for canvas axis."
 msgid "This checks if the minimum size for traces is met."
-msgstr "Define o tamanho da fonte para o eixo da tela."
+msgstr "Verifica se o tamanho mínimo para traçados é atendido."
 
 #: flatcamGUI/PreferencesUI.py:5146 flatcamGUI/PreferencesUI.py:5166
 #: flatcamGUI/PreferencesUI.py:5186 flatcamGUI/PreferencesUI.py:5206
@@ -10726,14 +10720,12 @@ msgstr "Define o tamanho da fonte para o eixo da tela."
 #: flatcamTools/ToolRulesCheck.py:354 flatcamTools/ToolRulesCheck.py:377
 #: flatcamTools/ToolRulesCheck.py:400 flatcamTools/ToolRulesCheck.py:423
 #: flatcamTools/ToolRulesCheck.py:448 flatcamTools/ToolRulesCheck.py:471
-#, fuzzy
-#| msgid "Mask value"
 msgid "Min value"
-msgstr "Valor da máscara"
+msgstr "Valor Min"
 
 #: flatcamGUI/PreferencesUI.py:5148 flatcamTools/ToolRulesCheck.py:265
 msgid "Minimum acceptable trace size."
-msgstr ""
+msgstr "Mínimo tamanho de traçado aceito."
 
 #: flatcamGUI/PreferencesUI.py:5153 flatcamTools/ToolRulesCheck.py:272
 #: flatcamTools/ToolRulesCheck.py:1123 flatcamTools/ToolRulesCheck.py:1153
