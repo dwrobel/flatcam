@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-10-15 02:33+0300\n"
-"PO-Revision-Date: 2019-10-15 08:10-0300\n"
+"PO-Revision-Date: 2019-10-15 10:16-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -1315,10 +1315,8 @@ msgid "TCL script file opened in Code Editor."
 msgstr "Arquivo de script TCL aberto no Editor de Códigos."
 
 #: FlatCAMApp.py:10930
-#, fuzzy
-#| msgid "Failed to open file"
 msgid "Failed to open TCL Script."
-msgstr "Falha ao abrir o arquivo"
+msgstr "Falha ao abrir o Script TCL."
 
 #: FlatCAMApp.py:10958
 msgid "Opening FlatCAM Config file."
@@ -6143,10 +6141,8 @@ msgid "Adding Tool cancelled ..."
 msgstr "Adicionar ferramenta cancelado ..."
 
 #: flatcamGUI/FlatCAMGUI.py:3425
-#, fuzzy
-#| msgid "Measurement Tool exit..."
 msgid "Distance Tool exit..."
-msgstr "Saída da ferramenta de medição ..."
+msgstr "Sair da ferramenta de medição ..."
 
 #: flatcamGUI/FlatCAMGUI.py:3531
 msgid "Application is saving the project. Please wait ..."
@@ -7730,10 +7726,8 @@ msgid "X coord for Toolchange"
 msgstr "coordenada X para troca de ferramenta"
 
 #: flatcamGUI/ObjectUI.py:1819
-#, fuzzy
-#| msgid "X coord for Toolchange"
 msgid "Y coord for Toolchange"
-msgstr "coordenada X para troca de ferramenta"
+msgstr "coordenada Y para troca de ferramenta"
 
 #: flatcamGUI/ObjectUI.py:1820 flatcamGUI/PreferencesUI.py:3625
 msgid "Z coord for Toolchange"
@@ -7833,10 +7827,8 @@ msgid "Font Color"
 msgstr "Cor da Fonte"
 
 #: flatcamGUI/ObjectUI.py:2052
-#, fuzzy
-#| msgid "Set the font color for the annotation texts."
 msgid "Set the font color for the selected text"
-msgstr "Define a cor da fonte para os textos de anotação."
+msgstr "Define a cor da fonte para o texto selecionado"
 
 #: flatcamGUI/ObjectUI.py:2066
 msgid "Selection Color"
