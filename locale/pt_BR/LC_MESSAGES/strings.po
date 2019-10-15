@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-10-15 02:33+0300\n"
-"PO-Revision-Date: 2019-10-15 10:16-0300\n"
+"PO-Revision-Date: 2019-10-15 15:15-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -6420,6 +6420,10 @@ msgid ""
 "When the 'V-shape' is selected then the tool\n"
 "diameter will depend on the chosen cut depth."
 msgstr ""
+"Escolha qual ferramenta usar para a isolação do Gerber:\n"
+"'Circular' ou 'ponta-V'.\n"
+"Quando 'ponta em V' for selecionada, o diâmetro da\n"
+"ferramenta dependerá da profundidade de corte escolhida."
 
 #: flatcamGUI/ObjectUI.py:296 flatcamGUI/ObjectUI.py:1260
 #: flatcamGUI/PreferencesUI.py:1481 flatcamGUI/PreferencesUI.py:3733
@@ -7793,6 +7797,8 @@ msgstr "Objeto Documento"
 #: flatcamGUI/ObjectUI.py:1952
 msgid "This selects if the auto completer is enabled in the Document Editor."
 msgstr ""
+"Selecionar se o preenchimento automático está ativado no Editor de "
+"Documentos."
 
 #: flatcamGUI/ObjectUI.py:1970
 msgid "Font Type"
@@ -7835,21 +7841,16 @@ msgid "Selection Color"
 msgstr "Cor da Seleção"
 
 #: flatcamGUI/ObjectUI.py:2068
-#, fuzzy
-#| msgid "Set the line color for the 'right to left' selection box."
 msgid "Set the selection color when doing text selection."
-msgstr ""
-"Define a cor da linha para a caixa de seleção 'direita para a esquerda'."
+msgstr "Define a cor da seleção quando selecionando texto."
 
 #: flatcamGUI/ObjectUI.py:2082
-#, fuzzy
-#| msgid "Size"
 msgid "Tab Size"
-msgstr "Tamanho"
+msgstr "Tamanho da Aba"
 
 #: flatcamGUI/ObjectUI.py:2084
 msgid "Set the tab size. In pixels. Default value is 80 pixels."
-msgstr ""
+msgstr "Define o tamanho da aba, em pixels. Valor padrão: 80 pixels."
 
 #: flatcamGUI/PlotCanvasLegacy.py:1082
 msgid ""
@@ -8050,27 +8051,23 @@ msgstr "Configurações da GUI"
 
 #: flatcamGUI/PreferencesUI.py:612
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: flatcamGUI/PreferencesUI.py:614
-#, fuzzy
-#| msgid ""
-#| "Select an style for FlatCAM.\n"
-#| "It will be applied at the next app start."
 msgid ""
 "Select a theme for FlatCAM.\n"
 "The application will restart after change."
 msgstr ""
-"Selecione um estilo para FlatCAM.\n"
-"Ele será aplicado na próxima inicialização."
+"Selecione um tema para FlatCAM.\n"
+"O aplicativo reiniciará após a troca."
 
 #: flatcamGUI/PreferencesUI.py:618
 msgid "Light"
-msgstr ""
+msgstr "Luz"
 
 #: flatcamGUI/PreferencesUI.py:619
 msgid "Dark"
-msgstr ""
+msgstr "Escuro"
 
 #: flatcamGUI/PreferencesUI.py:626
 msgid "Layout"
@@ -8564,10 +8561,8 @@ msgstr ""
 "Quando marcado, o projeto FlatCAM será salvo compactado."
 
 #: flatcamGUI/PreferencesUI.py:1155
-#, fuzzy
-#| msgid "Compression Level"
 msgid "Compression"
-msgstr "Nível de Compactação"
+msgstr "Compressão"
 
 #: flatcamGUI/PreferencesUI.py:1157
 msgid ""
@@ -8581,7 +8576,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1168
 msgid "Bookmarks limit"
-msgstr ""
+msgstr "Limite de favoritos"
 
 #: flatcamGUI/PreferencesUI.py:1170
 msgid ""
@@ -8589,6 +8584,9 @@ msgid ""
 "The number of bookmarks in the bookmark manager may be greater\n"
 "but the menu will hold only so much."
 msgstr ""
+"O número máximo de favoritos que podem ser instalados no menu.\n"
+"O número de favoritos no gerenciador de favoritos pode ser maior,\n"
+"mas o menu mostrará apenas esse número."
 
 #: flatcamGUI/PreferencesUI.py:1190
 msgid "Gerber General"
@@ -8608,16 +8606,16 @@ msgstr ""
 "Aproximação linear de abertura circular."
 
 #: flatcamGUI/PreferencesUI.py:1235
-#, fuzzy
-#| msgid "Defaults"
 msgid "Default Values"
-msgstr "Padrões"
+msgstr "Valores Padrão"
 
 #: flatcamGUI/PreferencesUI.py:1237
 msgid ""
 "Those values will be used as fallback values\n"
 "in case that they are not found in the Gerber file."
 msgstr ""
+"Esses valores serão usados como valores padrão\n"
+"caso eles não sejam encontrados no arquivo Gerber."
 
 #: flatcamGUI/PreferencesUI.py:1246 flatcamGUI/PreferencesUI.py:1252
 #: flatcamGUI/PreferencesUI.py:1580 flatcamGUI/PreferencesUI.py:1586
@@ -8728,17 +8726,14 @@ msgid "Simplify"
 msgstr "Simplificar"
 
 #: flatcamGUI/PreferencesUI.py:1534
-#, fuzzy
-#| msgid ""
-#| "When checked all the Gerber polygons will be\n"
-#| "loaded with simplification having a set tolerance."
 msgid ""
 "When checked all the Gerber polygons will be\n"
 "loaded with simplification having a set tolerance.\n"
 "<<WARNING>>: Don't change this unless you know what you are doing !!!"
 msgstr ""
 "Quando marcado, todos os polígonos Gerber serão\n"
-"carregados com simplificação com uma tolerância definida."
+"carregados com simplificação com uma tolerância definida.\n"
+"<<ATENÇÃO>>: Não altere, a menos que saiba o que está fazendo !!!"
 
 #: flatcamGUI/PreferencesUI.py:1541
 msgid "Tolerance"
@@ -8854,10 +8849,8 @@ msgstr "Matriz Linear de Pads"
 
 #: flatcamGUI/PreferencesUI.py:1753 flatcamGUI/PreferencesUI.py:2670
 #: flatcamGUI/PreferencesUI.py:2818
-#, fuzzy
-#| msgid "Linear Dir."
 msgid "Linear Direction"
-msgstr "Direção"
+msgstr "Direção Linear"
 
 #: flatcamGUI/PreferencesUI.py:1793
 msgid "Circular Pad Array"
@@ -8881,10 +8874,8 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1810 flatcamGUI/PreferencesUI.py:2729
 #: flatcamGUI/PreferencesUI.py:2879
-#, fuzzy
-#| msgid "Circ. Angle"
 msgid "Circular Angle"
-msgstr "Ângulo Circ."
+msgstr "Ângulo Circular"
 
 #: flatcamGUI/PreferencesUI.py:1829
 msgid "Distance at which to buffer the Gerber element."
@@ -10105,7 +10096,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:4384 flatcamTools/ToolFilm.py:127
 msgid "Film Adjustments"
-msgstr ""
+msgstr "Ajustes do Filme"
 
 #: flatcamGUI/PreferencesUI.py:4386 flatcamTools/ToolFilm.py:129
 msgid ""
@@ -10113,64 +10104,61 @@ msgid ""
 "types.\n"
 "This section provide the tools to compensate for the print distortions."
 msgstr ""
+"Algumas vezes, as impressoras distorcem o formato da impressão, "
+"especialmente as laser.\n"
+"Esta seção fornece as ferramentas para compensar as distorções na impressão."
 
 #: flatcamGUI/PreferencesUI.py:4393 flatcamTools/ToolFilm.py:136
-#, fuzzy
-#| msgid "Create Paint Geometry"
 msgid "Scale Film geometry"
-msgstr "Criar Geometria de Pintura"
+msgstr "Escala da Geometria de Filme"
 
 #: flatcamGUI/PreferencesUI.py:4395 flatcamTools/ToolFilm.py:138
 msgid ""
 "A value greater than 1 will stretch the film\n"
 "while a value less than 1 will jolt it."
 msgstr ""
+"Um valor maior que 1 esticará o filme\n"
+"enquanto um valor menor que 1 o reduzirá."
 
 #: flatcamGUI/PreferencesUI.py:4405 flatcamGUI/PreferencesUI.py:4824
 #: flatcamTools/ToolFilm.py:148 flatcamTools/ToolTransform.py:145
-#, fuzzy
-#| msgid "Scale_X factor"
 msgid "X factor"
-msgstr "Fator de Escala X"
+msgstr "Fator X"
 
 #: flatcamGUI/PreferencesUI.py:4414 flatcamGUI/PreferencesUI.py:4837
 #: flatcamTools/ToolFilm.py:157 flatcamTools/ToolTransform.py:166
-#, fuzzy
-#| msgid "Scale_Y factor"
 msgid "Y factor"
-msgstr "Fator de Escala Y"
+msgstr "Fator Y"
 
 #: flatcamGUI/PreferencesUI.py:4424 flatcamTools/ToolFilm.py:169
-#, fuzzy
-#| msgid "New Blank Geometry"
 msgid "Skew Film geometry"
-msgstr "Nova Geometria em Branco"
+msgstr "Inclinar a Geometria de Filme"
 
 #: flatcamGUI/PreferencesUI.py:4426 flatcamTools/ToolFilm.py:171
 msgid ""
 "Positive values will skew to the right\n"
 "while negative values will skew to the left."
 msgstr ""
+"Valores positivos inclinam para a direita\n"
+"enquanto valores negativos inclinam para a esquerda."
 
 #: flatcamGUI/PreferencesUI.py:4436 flatcamGUI/PreferencesUI.py:4793
 #: flatcamTools/ToolFilm.py:181 flatcamTools/ToolTransform.py:95
-#, fuzzy
-#| msgid "Skew_X angle"
 msgid "X angle"
-msgstr "Ângulo de Inclinação X"
+msgstr "Ângulo X"
 
 #: flatcamGUI/PreferencesUI.py:4445 flatcamGUI/PreferencesUI.py:4807
 #: flatcamTools/ToolFilm.py:190 flatcamTools/ToolTransform.py:117
-#, fuzzy
-#| msgid "Skew_Y angle"
 msgid "Y angle"
-msgstr "Ângulo de Inclinação Y"
+msgstr "Ângulo Y"
 
 #: flatcamGUI/PreferencesUI.py:4456 flatcamTools/ToolFilm.py:201
 msgid ""
 "The reference point to be used as origin for the skew.\n"
 "It can be one of the four points of the geometry bounding box."
 msgstr ""
+"O ponto de referência a ser usado como origem para a inclinação.\n"
+"Pode ser um dos quatro pontos da caixa delimitadora de geometria."
 
 #: flatcamGUI/PreferencesUI.py:4459 flatcamTools/ToolFilm.py:204
 msgid "Bottom Left"
