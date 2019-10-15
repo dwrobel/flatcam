@@ -1,14 +1,13 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMCommon import LoudDict
-from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCEntry2, FCTable
+from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCEntry2, FCTable, FCInputDialog
 from FlatCAMApp import log
 from camlib import distance
 from FlatCAMObj import FlatCAMCNCjob
@@ -402,6 +401,9 @@ class SolderPaste(FlatCAMTool):
         self.units = ''
         self.name = ""
 
+        # Number of decimals to be used for tools/nozzles in this FlatCAM Tool
+        self.decimals = 4
+
         # this will be used in the combobox context menu, for delete entry
         self.obj_to_be_deleted_name = ''
 
@@ -414,7 +416,7 @@ class SolderPaste(FlatCAMTool):
         # ## Signals
         self.combo_context_del_action.triggered.connect(self.on_delete_object)
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        self.addtool_entry.returnPressed.connect(self.on_tool_add)
+        self.addtool_entry.editingFinished.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.soldergeo_btn.clicked.connect(self.on_create_geo_click)
         self.solder_gcode_btn.clicked.connect(self.on_create_gcode_click)
@@ -456,6 +458,22 @@ class SolderPaste(FlatCAMTool):
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+K', **kwargs)
+
+    def on_add_tool_by_key(self):
+        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
+                                       text='%s:' % _('Enter a Tool Diameter'),
+                                       min=0.0000, max=99.9999, decimals=4)
+        tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+        val, ok = tool_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                return
+            self.on_tool_add(dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
     def set_tool_ui(self):
         self.form_fields.update({
@@ -499,7 +517,7 @@ class SolderPaste(FlatCAMTool):
             self.tooluid += 1
             self.tooltable_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'data': deepcopy(self.options),
                     'solid_geometry': []
                 }
@@ -509,6 +527,11 @@ class SolderPaste(FlatCAMTool):
         self.obj = None
 
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
 
         for name in list(self.app.postprocessors.keys()):
             # populate only with postprocessor files that start with 'Paste_'
@@ -530,7 +553,7 @@ class SolderPaste(FlatCAMTool):
 
         sorted_tools = []
         for k, v in self.tooltable_tools.items():
-            sorted_tools.append(float('%.4f' % float(v['tooldia'])))
+            sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
         sorted_tools.sort(reverse=True)
 
         n = len(sorted_tools)
@@ -539,7 +562,7 @@ class SolderPaste(FlatCAMTool):
 
         for tool_sorted in sorted_tools:
             for tooluid_key, tooluid_value in self.tooltable_tools.items():
-                if float('%.4f' % tooluid_value['tooldia']) == tool_sorted:
+                if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
                     id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
                     id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -547,12 +570,9 @@ class SolderPaste(FlatCAMTool):
                     self.tools_table.setItem(row_no, 0, id)  # Tool name/id
 
                     # Make sure that the drill diameter when in MM is with no more than 2 decimals
-                    # There are no drill bits in MM with more than 3 decimals diameter
-                    # For INCH the decimals should be no more than 3. There are no drills under 10mils
-                    if self.units == 'MM':
-                        dia = QtWidgets.QTableWidgetItem('%.2f' % tooluid_value['tooldia'])
-                    else:
-                        dia = QtWidgets.QTableWidgetItem('%.4f' % tooluid_value['tooldia'])
+                    # There are no drill bits in MM with more than 2 decimals diameter
+                    # For INCH the decimals should be no more than 4. There are no drills under 10mils
+                    dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -678,7 +698,12 @@ class SolderPaste(FlatCAMTool):
         :param status: what kind of change happened: 'append' or 'delete'
         :return:
         """
-        obj_name = obj.options['name']
+        try:
+            obj_name = obj.options['name']
+        except AttributeError:
+            # this happen when the 'delete all' is emitted since in that case the obj is set to None and None has no
+            # attribute named 'options'
+            return
 
         if status == 'append':
             idx = self.obj_combo.findText(obj_name)
@@ -791,9 +816,9 @@ class SolderPaste(FlatCAMTool):
         for k, v in self.tooltable_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
-        if float('%.4f' % tool_dia) in tool_dias:
+        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Adding Nozzle tool cancelled. Tool already in Tool Table."))
@@ -805,7 +830,7 @@ class SolderPaste(FlatCAMTool):
                                      _("New Nozzle tool added to Tool Table."))
             self.tooltable_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'data': deepcopy(self.options),
                     'solid_geometry': []
                 }
@@ -824,7 +849,7 @@ class SolderPaste(FlatCAMTool):
         for k, v in self.tooltable_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
         for row in range(self.tools_table.rowCount()):
 
@@ -991,7 +1016,7 @@ class SolderPaste(FlatCAMTool):
         for k, v in self.tooltable_tools.items():
             # make sure that the tools diameter is more than zero and not zero
             if float(v['tooldia']) > 0:
-                sorted_tools.append(float('%.4f' % float(v['tooldia'])))
+                sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
         sorted_tools.sort(reverse=True)
 
         if not sorted_tools:
@@ -1049,7 +1074,7 @@ class SolderPaste(FlatCAMTool):
             for tool in sorted_tools:
                 offset = tool / 2
                 for uid, vl in self.tooltable_tools.items():
-                    if float('%.4f' % float(vl['tooldia'])) == tool:
+                    if float('%.*f' % (self.decimals, float(vl['tooldia']))) == tool:
                         tooluid = int(uid)
                         break
 
@@ -1301,13 +1326,13 @@ class SolderPaste(FlatCAMTool):
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
         # add the tab if it was closed
-        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, _("Code Editor"))
+        self.app.ui.plot_tab_area.addTab(self.app.ui.text_editor_tab, _("Code Editor"))
 
         # first clear previous text in text editor (if any)
         self.app.ui.code_editor.clear()
 
         # Switch plot_area to CNCJob tab
-        self.app.ui.plot_tab_area.setCurrentWidget(self.app.ui.cncjob_tab)
+        self.app.ui.plot_tab_area.setCurrentWidget(self.app.ui.text_editor_tab)
 
         name = self.cnc_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)

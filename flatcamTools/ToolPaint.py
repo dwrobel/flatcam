@@ -1,6 +1,5 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
 # File Modified: Marius Adrian Stanciu (c)                 #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
@@ -26,6 +25,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def __init__(self, app):
         self.app = app
+        self.decimals = 4
 
         FlatCAMTool.__init__(self, app)
         Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
@@ -156,19 +156,14 @@ class ToolPaint(FlatCAMTool, Gerber):
         form.addRow(self.order_label, self.order_radio)
 
         # ### Add a new Tool ## ##
-        hlay = QtWidgets.QHBoxLayout()
-        self.tools_box.addLayout(hlay)
-
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool.")
         )
-        self.addtool_entry = FCEntry2()
+        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry.set_precision(self.decimals)
 
-        # hlay.addWidget(self.addtool_label)
-        # hlay.addStretch()
-        hlay.addWidget(self.addtool_entry_lbl)
-        hlay.addWidget(self.addtool_entry)
+        form.addRow(self.addtool_entry_lbl, self.addtool_entry)
 
         grid2 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid2)
@@ -200,6 +195,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         grid3 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid3)
+        grid3.setColumnStretch(0, 0)
+        grid3.setColumnStretch(1, 1)
 
         # Overlap
         ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
@@ -230,7 +227,9 @@ class ToolPaint(FlatCAMTool, Gerber):
               "be painted.")
         )
         grid3.addWidget(marginlabel, 2, 0)
-        self.paintmargin_entry = FCEntry()
+        self.paintmargin_entry = FCDoubleSpinner()
+        self.paintmargin_entry.set_precision(self.decimals)
+
         grid3.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
@@ -351,6 +350,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.addWidget(self.generate_paint_button)
 
         self.tools_box.addStretch()
+        # #################################### FINSIHED GUI #####################################
+        # #######################################################################################
 
         self.obj_name = ""
         self.paint_obj = None
@@ -412,7 +413,9 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
-        # ## Signals
+        # #############################################################################
+        # ################################# Signals ###################################
+        # #############################################################################
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.returnPressed.connect(self.on_tool_add)
         # self.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
@@ -426,6 +429,16 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
 
+        # #############################################################################
+        # ###################### Setup CONTEXT MENU ###################################
+        # #############################################################################
+        self.tools_table.setupContextMenu()
+        self.tools_table.addContextMenu(
+            "Add", self.on_add_tool_by_key, icon=QtGui.QIcon("share/plus16.png"))
+        self.tools_table.addContextMenu(
+            "Delete", lambda:
+            self.on_tool_delete(rows_to_delete=None, all=None), icon=QtGui.QIcon("share/delete32.png"))
+
     def on_type_obj_index_changed(self, index):
         obj_type = self.type_obj_combo.currentIndex()
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -433,6 +446,22 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
+
+    def on_add_tool_by_key(self):
+        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
+                                       text='%s:' % _('Enter a Tool Diameter'),
+                                       min=0.0000, max=99.9999, decimals=4)
+        tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+        val, ok = tool_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                return
+            self.on_tool_add(dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
 
     def run(self, toggle=True):
         self.app.report_usage("ToolPaint()")
@@ -488,15 +517,6 @@ class ToolPaint(FlatCAMTool, Gerber):
             # disable rest-machining for single polygon painting
             self.rest_cb.set_value(False)
             self.rest_cb.setDisabled(True)
-            # delete all tools except first row / tool for single polygon painting
-            # list_to_del = list(range(1, self.tools_table.rowCount()))
-            # if list_to_del:
-            #     self.on_tool_delete(rows_to_delete=list_to_del)
-            # # disable addTool and delTool
-            # self.addtool_entry.setDisabled(True)
-            # self.addtool_btn.setDisabled(True)
-            # self.deltool_btn.setDisabled(True)
-            # self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
         if self.selectmethod_combo.get_value() == 'area':
             # disable rest-machining for single polygon painting
             self.rest_cb.set_value(False)
@@ -540,16 +560,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         if self.units == "IN":
+            self.decimals = 4
             self.addtool_entry.set_value(0.039)
         else:
+            self.decimals = 2
             self.addtool_entry.set_value(1)
-
-        self.tools_table.setupContextMenu()
-        self.tools_table.addContextMenu(
-            "Add", lambda: self.on_tool_add(dia=None, muted=None), icon=QtGui.QIcon("share/plus16.png"))
-        self.tools_table.addContextMenu(
-            "Delete", lambda:
-            self.on_tool_delete(rows_to_delete=None, all=None), icon=QtGui.QIcon("share/delete32.png"))
 
         # set the working variables to a known state
         self.paint_tools.clear()
@@ -559,28 +574,28 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.default_data.update({
             "name": '_paint',
             "plot": self.app.defaults["geometry_plot"],
-            "cutz": self.app.defaults["geometry_cutz"],
+            "cutz": float(self.app.defaults["geometry_cutz"]),
             "vtipdia": 0.1,
             "vtipangle": 30,
-            "travelz": self.app.defaults["geometry_travelz"],
-            "feedrate": self.app.defaults["geometry_feedrate"],
-            "feedrate_z": self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid": self.app.defaults["geometry_feedrate_rapid"],
+            "travelz": float(self.app.defaults["geometry_travelz"]),
+            "feedrate": float(self.app.defaults["geometry_feedrate"]),
+            "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
+            "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
             "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": self.app.defaults["geometry_dwelltime"],
+            "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
             "multidepth": self.app.defaults["geometry_multidepth"],
             "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "depthperpass": self.app.defaults["geometry_depthperpass"],
+            "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
             "extracut": self.app.defaults["geometry_extracut"],
             "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangez": self.app.defaults["geometry_toolchangez"],
-            "endz": self.app.defaults["geometry_endz"],
+            "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
+            "endz": float(self.app.defaults["geometry_endz"]),
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
 
-            "tooldia": self.app.defaults["tools_painttooldia"],
-            "paintmargin": self.app.defaults["tools_paintmargin"],
+            "tooldia": float(self.app.defaults["tools_painttooldia"]),
+            "paintmargin": float(self.app.defaults["tools_paintmargin"]),
             "paintmethod": self.app.defaults["tools_paintmethod"],
             "selectmethod": self.app.defaults["tools_selectmethod"],
             "pathconnect": self.app.defaults["tools_pathconnect"],
@@ -590,7 +605,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # call on self.on_tool_add() counts as an call to self.build_ui()
         # through this, we add a initial row / tool in the tool_table
-        self.on_tool_add(self.app.defaults["tools_painttooldia"], muted=True)
+        self.on_tool_add(float(self.app.defaults["tools_painttooldia"]), muted=True)
 
         # if the Paint Method is "Single" disable the tool table context menu
         if self.default_data["selectmethod"] == "single":
@@ -608,7 +623,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         sorted_tools = []
         for k, v in self.paint_tools.items():
-            sorted_tools.append(float('%.4f' % float(v['tooldia'])))
+            sorted_tools.append(float('%.*f' % (self.decimals, float(v['tooldia']))))
 
         order = self.order_radio.get_value()
         if order == 'fwd':
@@ -624,7 +639,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         for tool_sorted in sorted_tools:
             for tooluid_key, tooluid_value in self.paint_tools.items():
-                if float('%.4f' % tooluid_value['tooldia']) == tool_sorted:
+                if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
                     id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
                     id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -632,12 +647,10 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.tools_table.setItem(row_no, 0, id)  # Tool name/id
 
                     # Make sure that the drill diameter when in MM is with no more than 2 decimals
-                    # There are no drill bits in MM with more than 3 decimals diameter
-                    # For INCH the decimals should be no more than 3. There are no drills under 10mils
-                    if self.units == 'MM':
-                        dia = QtWidgets.QTableWidgetItem('%.2f' % tooluid_value['tooldia'])
-                    else:
-                        dia = QtWidgets.QTableWidgetItem('%.4f' % tooluid_value['tooldia'])
+                    # There are no drill bits in MM with more than 2 decimals diameter
+                    # For INCH the decimals should be no more than 4. There are no drills under 10mils
+
+                    dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, tooluid_value['tooldia']))
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -702,16 +715,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         if dia:
             tool_dia = dia
         else:
-            try:
-                tool_dia = float(self.addtool_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            tool_dia = float(self.addtool_entry.get_value())
 
             if tool_dia is None:
                 self.build_ui()
@@ -736,9 +740,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         for k, v in self.paint_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
-        if float('%.4f' % tool_dia) in tool_dias:
+        if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Adding tool cancelled. Tool already in Tool Table."))
@@ -750,7 +754,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                      _("New tool added to Tool Table."))
             self.paint_tools.update({
                 int(self.tooluid): {
-                    'tooldia': float('%.4f' % tool_dia),
+                    'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
@@ -774,7 +778,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         for k, v in self.paint_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
-                    tool_dias.append(float('%.4f' % v[tool_v]))
+                    tool_dias.append(float('%.*f' % (self.decimals, v[tool_v])))
 
         for row in range(self.tools_table.rowCount()):
             try:
@@ -925,16 +929,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # #####################################################
         self.app.inform.emit(_("Paint Tool. Reading parameters."))
 
-        try:
-            self.overlap = float(self.paintoverlap_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                self.overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
+        self.overlap = float(self.paintoverlap_entry.get_value())
 
         if self.overlap >= 1 or self.overlap < 0:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
@@ -1185,7 +1180,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
             self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
-                                         symbol='++', edge_color='black', size=20)
+                                         symbol='++', edge_color=self.app.cursor_color_3D,
+                                         size=self.app.defaults["global_cursor_size"])
 
         # update the positions on status bar
         self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
@@ -1392,7 +1388,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             for tool_dia in sorted_tools:
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 
@@ -1688,7 +1684,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 
@@ -1916,7 +1912,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 
@@ -2162,7 +2158,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 
@@ -2391,7 +2387,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
                 for k, v in tools_storage.items():
-                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                    if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals, tool_dia)):
                         current_uid = int(k)
                         break
 

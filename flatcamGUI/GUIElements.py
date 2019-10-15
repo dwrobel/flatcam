@@ -1,15 +1,15 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
-# ########################################################## ##
+# ##########################################################
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 3/10/2019                                          #
-# ########################################################## ##
+# ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
@@ -20,6 +20,10 @@ from copy import copy
 import re
 import logging
 import html
+import webbrowser
+from copy import deepcopy
+import sys
+from datetime import datetime
 
 log = logging.getLogger('base')
 
@@ -507,6 +511,168 @@ class EvalEntry2(QtWidgets.QLineEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
+class FCSpinner(QtWidgets.QSpinBox):
+
+    returnPressed = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super(FCSpinner, self).__init__(parent)
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+        self.lineEdit().installEventFilter(self)
+
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if self.readyToEdit:
+                self.lineEdit().selectAll()
+                self.readyToEdit = False
+            else:
+                self.lineEdit().deselect()
+            return True
+        return False
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Enter:
+            self.returnPressed.emit()
+            self.clearFocus()
+        else:
+            super().keyPressEvent(event)
+
+    def wheelEvent(self, *args, **kwargs):
+        # should work only there is a focus in the lineedit of the SpinBox
+        if self.readyToEdit is False:
+            super().wheelEvent(*args, **kwargs)
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    # def mousePressEvent(self, e, parent=None):
+    #     super(FCSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
+    #     if self.readyToEdit:
+    #         self.lineEdit().selectAll()
+    #         self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.lineEdit().deselect()
+            self.readyToEdit = True
+
+    def get_value(self):
+        return int(self.value())
+
+    def set_value(self, val):
+        try:
+            k = int(val)
+        except Exception as e:
+            log.debug(str(e))
+            return
+        self.setValue(k)
+
+    def set_range(self, min_val, max_val):
+        self.setRange(min_val, max_val)
+
+    # def sizeHint(self):
+    #     default_hint_size = super(FCSpinner, self).sizeHint()
+    #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+
+class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
+
+    returnPressed = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super(FCDoubleSpinner, self).__init__(parent)
+        self.readyToEdit = True
+
+        self.editingFinished.connect(self.on_edit_finished)
+        self.lineEdit().installEventFilter(self)
+
+        # by default don't allow the minus sign to be entered as the default for QDoubleSpinBox is the positive range
+        # between 0.00 and 99.00 (2 decimals)
+        self.lineEdit().setValidator(
+            QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if self.readyToEdit:
+                self.lineEdit().selectAll()
+                self.readyToEdit = False
+            else:
+                self.lineEdit().deselect()
+            return True
+        return False
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Enter:
+            self.returnPressed.emit()
+            self.clearFocus()
+        else:
+            super().keyPressEvent(event)
+
+    def wheelEvent(self, *args, **kwargs):
+        # should work only there is a focus in the lineedit of the SpinBox
+        if self.readyToEdit is False:
+            super().wheelEvent(*args, **kwargs)
+
+    def focusOutEvent(self, e):
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.lineEdit().deselect()
+            self.readyToEdit = True
+
+    def valueFromText(self, p_str):
+        text = p_str.replace(',', '.')
+        try:
+            ret_val = float(text)
+        except ValueError:
+            ret_val = 0.0
+
+        return ret_val
+
+    def validate(self, p_str, p_int):
+        try:
+            if float(p_str) < self.minimum() or float(p_str) > self.maximum():
+                return QtGui.QValidator.Intermediate, p_str, p_int
+        except ValueError:
+            pass
+        return QtGui.QValidator.Acceptable, p_str, p_int
+
+    def get_value(self):
+        return float(self.value())
+
+    def set_value(self, val):
+        try:
+            k = float(val)
+        except Exception as e:
+            log.debug(str(e))
+            return
+        self.setValue(k)
+
+    def set_precision(self, val):
+        self.setDecimals(val)
+
+        # make sure that the user can't type more decimals than the set precision
+        if self.minimum() < 0 or self.maximum() < 0:
+            self.lineEdit().setValidator(
+                QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+        else:
+            self.lineEdit().setValidator(
+                QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+
+    def set_range(self, min_val, max_val):
+        if min_val < 0 or max_val < 0:
+            self.lineEdit().setValidator(
+                QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+
+        self.setRange(min_val, max_val)
+
+
 class FCCheckBox(QtWidgets.QCheckBox):
     def __init__(self, label='', parent=None):
         super(FCCheckBox, self).__init__(str(label), parent)
@@ -557,7 +723,7 @@ class FCTextAreaRich(QtWidgets.QTextEdit):
 
 class FCTextAreaExtended(QtWidgets.QTextEdit):
     def __init__(self, parent=None):
-        super(FCTextAreaExtended, self).__init__(parent)
+        super().__init__(parent)
 
         self.completer = MyCompleter()
 
@@ -1425,7 +1591,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
 
 class FCDetachableTab2(FCDetachableTab):
-    tab_closed_signal = pyqtSignal()
+    tab_closed_signal = pyqtSignal(object)
 
     def __init__(self, protect=None, protect_by_name=None, parent=None):
         super(FCDetachableTab2, self).__init__(protect=protect, protect_by_name=protect_by_name, parent=parent)
@@ -1439,9 +1605,7 @@ class FCDetachableTab2(FCDetachableTab):
         """
         idx = self.currentIndex()
 
-        # emit the signal only if the name is the one we want; the name should be a parameter somehow
-        if self.tabText(idx) == _("Preferences"):
-            self.tab_closed_signal.emit()
+        self.tab_closed_signal.emit(self.tabText(idx))
 
         self.removeTab(currentIndex)
 
@@ -1564,8 +1728,32 @@ class OptionalHideInputSection:
 
 
 class FCTable(QtWidgets.QTableWidget):
-    def __init__(self, parent=None):
+
+    drag_drop_sig = pyqtSignal()
+
+    def __init__(self, drag_drop=False, protected_rows=None, parent=None):
         super(FCTable, self).__init__(parent)
+
+        if drag_drop:
+            self.setDragEnabled(True)
+            self.setAcceptDrops(True)
+            self.viewport().setAcceptDrops(True)
+            self.setDragDropOverwriteMode(False)
+            self.setDropIndicatorShown(True)
+
+            self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+            self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+
+        self.rows_not_for_drag_and_drop = list()
+        if protected_rows:
+            try:
+                for r in protected_rows:
+                    self.rows_not_for_drag_and_drop.append(r)
+            except TypeError:
+                self.rows_not_for_drag_and_drop = [protected_rows]
+
+        self.rows_to_move = list()
 
     def sizeHint(self):
         default_hint_size = super(FCTable, self).sizeHint()
@@ -1583,7 +1771,7 @@ class FCTable(QtWidgets.QTableWidget):
             width += self.columnWidth(i)
         return width
 
-    # color is in format QtGui.Qcolor(r, g, b, alpha) with or without alpfa
+    # color is in format QtGui.Qcolor(r, g, b, alpha) with or without alpha
     def setColortoRow(self, rowIndex, color):
         for j in range(self.columnCount()):
             self.item(rowIndex, j).setBackground(color)
@@ -1608,6 +1796,124 @@ class FCTable(QtWidgets.QTableWidget):
             action.setIcon(icon)
         self.addAction(action)
         action.triggered.connect(call_function)
+
+    # def dropEvent(self, event: QtGui.QDropEvent):
+    #     if not event.isAccepted() and event.source() == self:
+    #         drop_row = self.drop_on(event)
+    #
+    #         rows = sorted(set(item.row() for item in self.selectedItems()))
+    #         # rows_to_move = [
+    #         #     [QtWidgets.QTableWidgetItem(self.item(row_index, column_index))
+    #         #      for column_index in range(self.columnCount())] for row_index in rows
+    #         # ]
+    #         self.rows_to_move[:] = []
+    #         for row_index in rows:
+    #             row_items = list()
+    #             for column_index in range(self.columnCount()):
+    #                 r_item = self.item(row_index, column_index)
+    #                 w_item = self.cellWidget(row_index, column_index)
+    #
+    #                 if r_item is not None:
+    #                     row_items.append(QtWidgets.QTableWidgetItem(r_item))
+    #                 elif w_item is not None:
+    #                     row_items.append(w_item)
+    #
+    #             self.rows_to_move.append(row_items)
+    #
+    #         for row_index in reversed(rows):
+    #             self.removeRow(row_index)
+    #             if row_index < drop_row:
+    #                 drop_row -= 1
+    #
+    #         for row_index, data in enumerate(self.rows_to_move):
+    #             row_index += drop_row
+    #             self.insertRow(row_index)
+    #
+    #             for column_index, column_data in enumerate(data):
+    #                 if isinstance(column_data, QtWidgets.QTableWidgetItem):
+    #                     self.setItem(row_index, column_index, column_data)
+    #                 else:
+    #                     self.setCellWidget(row_index, column_index, column_data)
+    #
+    #         event.accept()
+    #         for row_index in range(len(self.rows_to_move)):
+    #             self.item(drop_row + row_index, 0).setSelected(True)
+    #             self.item(drop_row + row_index, 1).setSelected(True)
+    #
+    #     super().dropEvent(event)
+    #
+    # def drop_on(self, event):
+    #     ret_val = False
+    #     index = self.indexAt(event.pos())
+    #     if not index.isValid():
+    #         return self.rowCount()
+    #
+    #     ret_val = index.row() + 1 if self.is_below(event.pos(), index) else index.row()
+    #
+    #     return ret_val
+    #
+    # def is_below(self, pos, index):
+    #     rect = self.visualRect(index)
+    #     margin = 2
+    #     if pos.y() - rect.top() < margin:
+    #         return False
+    #     elif rect.bottom() - pos.y() < margin:
+    #         return True
+    #     # noinspection PyTypeChecker
+    #     return rect.contains(pos, True) and not (
+    #                 int(self.model().flags(index)) & Qt.ItemIsDropEnabled) and pos.y() >= rect.center().y()
+
+    def dropEvent(self, event):
+        """
+        From here: https://stackoverflow.com/questions/26227885/drag-and-drop-rows-within-qtablewidget
+        :param event:
+        :return:
+        """
+        if event.source() == self:
+            rows = set([mi.row() for mi in self.selectedIndexes()])
+
+            # if one of the selected rows for drag and drop is within the protected list, return
+            for r in rows:
+                if r in self.rows_not_for_drag_and_drop:
+                    return
+
+            targetRow = self.indexAt(event.pos()).row()
+            rows.discard(targetRow)
+            rows = sorted(rows)
+
+            if not rows:
+                return
+            if targetRow == -1:
+                targetRow = self.rowCount()
+
+            for _ in range(len(rows)):
+                self.insertRow(targetRow)
+
+            rowMapping = dict()  # Src row to target row.
+            for idx, row in enumerate(rows):
+                if row < targetRow:
+                    rowMapping[row] = targetRow + idx
+                else:
+                    rowMapping[row + len(rows)] = targetRow + idx
+
+            colCount = self.columnCount()
+            for srcRow, tgtRow in sorted(rowMapping.items()):
+                for col in range(0, colCount):
+                    new_item = self.item(srcRow, col)
+                    if new_item is None:
+                        new_item = self.cellWidget(srcRow, col)
+                    if isinstance(new_item, QtWidgets.QTableWidgetItem):
+                        new_item = self.takeItem(srcRow, col)
+                        self.setItem(tgtRow, col, new_item)
+                    else:
+                        self.setCellWidget(tgtRow, col, new_item)
+
+            for row in reversed(sorted(rowMapping.keys())):
+                self.removeRow(row)
+            event.accept()
+            self.drag_drop_sig.emit()
+
+            return
 
 
 class SpinBoxDelegate(QtWidgets.QItemDelegate):
@@ -1652,103 +1958,27 @@ class SpinBoxDelegate(QtWidgets.QItemDelegate):
         spinbox.setDecimals(digits)
 
 
-class FCSpinner(QtWidgets.QSpinBox):
-    def __init__(self, parent=None):
-        super(FCSpinner, self).__init__(parent)
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-
-    def on_edit_finished(self):
-        self.clearFocus()
-
-    def mousePressEvent(self, e, parent=None):
-        super(FCSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
-            self.lineEdit().selectAll()
-            self.readyToEdit = False
-
-    def focusOutEvent(self, e):
-        # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
-            super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.lineEdit().deselect()
-            self.readyToEdit = True
-
-    def get_value(self):
-        return str(self.value())
-
-    def set_value(self, val):
-        try:
-            k = int(val)
-        except Exception as e:
-            log.debug(str(e))
-            return
-        self.setValue(k)
-
-    def set_range(self, min_val, max_val):
-        self.setRange(min_val, max_val)
-
-    # def sizeHint(self):
-    #     default_hint_size = super(FCSpinner, self).sizeHint()
-    #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
-
-
-class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
-    def __init__(self, parent=None):
-        super(FCDoubleSpinner, self).__init__(parent)
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-
-    def on_edit_finished(self):
-        self.clearFocus()
-
-    def mousePressEvent(self, e, parent=None):
-        super(FCDoubleSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
-            self.lineEdit().selectAll()
-            self.readyToEdit = False
-
-    def focusOutEvent(self, e):
-        # don't focus out if the user requests an popup menu
-        if e.reason() != QtCore.Qt.PopupFocusReason:
-            super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
-            self.lineEdit().deselect()
-            self.readyToEdit = True
-
-    def get_value(self):
-        return str(self.value())
-
-    def set_value(self, val):
-        try:
-            k = float(val)
-        except Exception as e:
-            log.debug(str(e))
-            return
-        self.setValue(k)
-
-    def set_precision(self, val):
-        self.setDecimals(val)
-
-    def set_range(self, min_val, max_val):
-        self.setRange(min_val, max_val)
-
-
 class Dialog_box(QtWidgets.QWidget):
-    def __init__(self, title=None, label=None, icon=None):
+    def __init__(self, title=None, label=None, icon=None, initial_text=None):
         """
 
         :param title: string with the window title
         :param label: string with the message inside the dialog box
         """
         super(Dialog_box, self).__init__()
-        self.location = (0, 0)
+        if initial_text is None:
+            self.location = str((0, 0))
+        else:
+            self.location = initial_text
+
         self.ok = False
 
-        dialog_box = QtWidgets.QInputDialog()
-        dialog_box.setMinimumWidth(290)
+        self.dialog_box = QtWidgets.QInputDialog()
+        self.dialog_box.setMinimumWidth(290)
         self.setWindowIcon(icon)
 
-        self.location, self.ok = dialog_box.getText(self, title, label, text="0, 0")
+        self.location, self.ok = self.dialog_box.getText(self, title, label,
+                                                         text=str(self.location).replace('(', '').replace(')', ''))
         self.readyToEdit = True
 
     def mousePressEvent(self, e, parent=None):
@@ -1782,7 +2012,7 @@ class _BrowserTextEdit(QTextEdit):
 
     def clear(self):
         QTextEdit.clear(self)
-        text = "FlatCAM %s - Open Source Software - Type help to get started\n\n" % self.version
+        text = "FlatCAM %s - Type >help< to get started\n\n" % self.version
         text = html.escape(text)
         text = text.replace('\n', '<br/>')
         self.moveCursor(QTextCursor.End)

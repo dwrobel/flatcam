@@ -3,10 +3,11 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 
+
 class TitleBar(QtWidgets.QDialog):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
-        self.setWindowFlags(Qt.FramelessWindowHint);
+        self.setWindowFlags(Qt.FramelessWindowHint)
         css = """
         QWidget{
             Background: #AA00AA;
@@ -60,19 +61,19 @@ class TitleBar(QtWidgets.QDialog):
         self.maximize.clicked.connect(self.showMaxRestore)
 
     def showSmall(self):
-        box.showMinimized();
+        box.showMinimized()
 
     def showMaxRestore(self):
         if(self.maxNormal):
-            box.showNormal();
-            self.maxNormal= False;
-            self.maximize.setIcon(QtGui.QIcon('img/max.png'));
+            box.showNormal()
+            self.maxNormal= False
+            self.maximize.setIcon(QtGui.QIcon('img/max.png'))
             print(1)
         else:
-            box.showMaximized();
-            self.maxNormal=  True;
+            box.showMaximized()
+            self.maxNormal=  True
             print(2)
-            self.maximize.setIcon(QtGui.QIcon('img/max2.png'));
+            self.maximize.setIcon(QtGui.QIcon('img/max2.png'))
 
     def close(self):
         box.close()
@@ -88,7 +89,7 @@ class TitleBar(QtWidgets.QDialog):
 class Frame(QtWidgets.QFrame):
     def __init__(self, parent=None):
         QtWidgets.QFrame.__init__(self, parent)
-        self.m_mouse_down= False;
+        self.m_mouse_down= False
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         css = """
         QFrame{
@@ -122,25 +123,26 @@ class Frame(QtWidgets.QFrame):
         return self.m_titleBar
 
     def mousePressEvent(self,event):
-        self.m_old_pos = event.pos();
-        self.m_mouse_down = event.button()== Qt.LeftButton;
+        self.m_old_pos = event.pos()
+        self.m_mouse_down = event.button()== Qt.LeftButton
 
     def mouseMoveEvent(self,event):
         x=event.x()
         y=event.y()
 
     def mouseReleaseEvent(self,event):
-        m_mouse_down=False;
+        m_mouse_down=False
+
 
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv);
+    app = QtWidgets.QApplication(sys.argv)
     box = Frame()
     box.move(60,60)
-    l=QtWidgets.QVBoxLayout(box.contentWidget());
+    l = QtWidgets.QVBoxLayout(box.contentWidget())
     l.setContentsMargins(0, 0,0 ,0)
-    edit=QtWidgets.QLabel("""I would've did anything for you to show you how much I adored you
+    edit = QtWidgets.QLabel("""I would've did anything for you to show you how much I adored you
 But it's over now, it's too late to save our loveJust promise me you'll think of me
-Every time you look up in the sky and see a star 'cuz I'm  your star.""");
+Every time you look up in the sky and see a star 'cuz I'm  your star.""")
     l.addWidget(edit)
     box.show()
     app.exec_()

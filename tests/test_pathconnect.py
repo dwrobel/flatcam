@@ -84,5 +84,6 @@ class PathConnectTest1(unittest.TestCase):
         matches = [p for p in result if p.equals(LineString([[0, 0], [1, 1], [2, 1]]))]
         self.assertEqual(len(matches), 1)
 
+
 if __name__ == "__main__":
     unittest.main()

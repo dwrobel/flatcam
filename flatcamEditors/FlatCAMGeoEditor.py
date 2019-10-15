@@ -236,7 +236,7 @@ class TextInputTool(FlatCAMTool):
 
         self.font_type_cb = QtWidgets.QFontComboBox(self)
         self.font_type_cb.setCurrentFont(f_current)
-        self.form_layout.addRow("Font:", self.font_type_cb)
+        self.form_layout.addRow(QtWidgets.QLabel('%s:' % _("Font")), self.font_type_cb)
 
         # Flag variables to show if font is bold, italic, both or none (regular)
         self.font_bold = False
@@ -308,7 +308,7 @@ class TextInputTool(FlatCAMTool):
         self.font_italic_tb.setIcon(QtGui.QIcon('share/italic32.png'))
         hlay.addWidget(self.font_italic_tb)
 
-        self.form_layout.addRow("Size:", hlay)
+        self.form_layout.addRow(QtWidgets.QLabel('%s:' % "Size"), hlay)
 
         # Text input
         self.text_input_entry = FCTextAreaRich()
@@ -317,7 +317,7 @@ class TextInputTool(FlatCAMTool):
         # self.text_input_entry.setMaximumHeight(150)
         self.text_input_entry.setCurrentFont(f_current)
         self.text_input_entry.setFontPointSize(10)
-        self.form_layout.addRow("Text:", self.text_input_entry)
+        self.form_layout.addRow(QtWidgets.QLabel('%s:' % _("Text")), self.text_input_entry)
 
         # Buttons
         hlay1 = QtWidgets.QHBoxLayout()
@@ -973,13 +973,13 @@ class TransformEditorTool(FlatCAMTool):
         self.flipy_button.clicked.connect(self.on_flipy)
         self.flip_ref_button.clicked.connect(self.on_flip_add_coords)
 
-        self.rotate_entry.returnPressed.connect(self.on_rotate)
-        self.skewx_entry.returnPressed.connect(self.on_skewx)
-        self.skewy_entry.returnPressed.connect(self.on_skewy)
-        self.scalex_entry.returnPressed.connect(self.on_scalex)
-        self.scaley_entry.returnPressed.connect(self.on_scaley)
-        self.offx_entry.returnPressed.connect(self.on_offx)
-        self.offy_entry.returnPressed.connect(self.on_offy)
+        self.rotate_entry.editingFinished.connect(self.on_rotate)
+        self.skewx_entry.editingFinished.connect(self.on_skewx)
+        self.skewy_entry.editingFinished.connect(self.on_skewy)
+        self.scalex_entry.editingFinished.connect(self.on_scalex)
+        self.scaley_entry.editingFinished.connect(self.on_scaley)
+        self.offx_entry.editingFinished.connect(self.on_offx)
+        self.offy_entry.editingFinished.connect(self.on_offy)
 
         self.set_tool_ui()
 
@@ -1324,7 +1324,7 @@ class TransformEditorTool(FlatCAMTool):
                     # get mirroring coords from the point entry
                     if self.flip_ref_cb.isChecked():
                         px, py = eval('{}'.format(self.flip_ref_entry.text()))
-                    # get mirroing coords from the center of an all-enclosing bounding box
+                    # get mirroring coords from the center of an all-enclosing bounding box
                     else:
                         # first get a bounding box to fit all
                         for sha in shape_list:
@@ -2455,6 +2455,61 @@ class FCSelect(DrawTool):
         return ""
 
 
+class FCExplode(FCShapeTool):
+    def __init__(self, draw_app):
+        FCShapeTool.__init__(self, draw_app)
+        self.name = 'explode'
+
+        self.draw_app = draw_app
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception as e:
+            pass
+
+        self.storage = self.draw_app.storage
+        self.origin = (0, 0)
+        self.destination = None
+
+        self.draw_app.active_tool = self
+        if len(self.draw_app.get_selected()) == 0:
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                          _("No shape selected. Select a shape to explode"))
+        else:
+            self.make()
+
+    def make(self):
+        to_be_deleted_list = list()
+        lines = list()
+
+        for shape in self.draw_app.get_selected():
+            to_be_deleted_list.append(shape)
+            geo = shape.geo
+            ext_coords = list(geo.exterior.coords)
+
+            for c in range(len(ext_coords)):
+                if c < len(ext_coords) - 1:
+                    lines.append(LineString([ext_coords[c], ext_coords[c + 1]]))
+
+            for int_geo in geo.interiors:
+                int_coords = list(int_geo.coords)
+                for c in range(len(int_coords)):
+                    if c < len(int_coords):
+                        lines.append(LineString([int_coords[c], int_coords[c + 1]]))
+
+        for shape in to_be_deleted_list:
+            self.draw_app.storage.remove(shape)
+            if shape in self.draw_app.selected:
+                self.draw_app.selected.remove(shape)
+
+        geo_list = list()
+        for line in lines:
+            geo_list.append(DrawToolShape(line))
+        self.geometry = geo_list
+        self.draw_app.on_shape_complete()
+        self.draw_app.app.inform.emit('[success] %s...' % _("Done. Polygons exploded into lines."))
+
+
 class FCMove(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
@@ -3015,7 +3070,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
             "transform": {"button": self.app.ui.geo_transform_btn,
                       "constructor": FCTransform},
             "copy": {"button": self.app.ui.geo_copy_btn,
-                     "constructor": FCCopy}
+                     "constructor": FCCopy},
+            "explode": {"button": self.app.ui.geo_explode_btn,
+                     "constructor": FCExplode}
         }
 
         # # ## Data
@@ -3103,6 +3160,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.grid_gap_link_cb.setChecked(True)
 
         self.rtree_index = rtindex.Index()
+
+        # Number of decimals used by tools in this class
+        self.decimals = 4
 
         def entry2option(option, entry):
             try:
@@ -3330,7 +3390,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            self.app.plotcanvas.graph_event_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_double_click', self.app.on_mouse_double_click_over_plot)
         else:
 
             self.app.plotcanvas.graph_event_disconnect(self.app.mp)
@@ -3377,7 +3437,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                               self.app.on_mouse_click_release_over_plot)
         self.app.mdc = self.app.plotcanvas.graph_event_connect('mouse_double_click',
-                                                               self.app.on_double_click_over_plot)
+                                                               self.app.on_mouse_double_click_over_plot)
         # self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
         if self.app.is_legacy is False:
@@ -3602,6 +3662,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.replot()
 
+        # updated units
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
@@ -3755,7 +3823,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             x, y = self.snap(x, y)
 
             # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+                                         size=self.app.defaults["global_cursor_size"])
 
         self.snap_x = x
         self.snap_y = y
@@ -4029,7 +4098,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
             if type(geometry) == LineString or type(geometry) == LinearRing:
                 plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0,
-                                                     tolerance=self.fcgeometry.drawing_tolerance))
+                                                     tolerance=self.fcgeometry.drawing_tolerance,
+                                                     linewidth=linewidth))
 
             if type(geometry) == Point:
                 pass
@@ -4069,7 +4139,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def on_shape_complete(self):
         self.app.log.debug("on_shape_complete()")
 
-        geom = self.active_tool.geometry.geo
+        geom = []
+        try:
+            for shape in self.active_tool.geometry:
+                geom.append(shape.geo)
+        except TypeError:
+            geom = self.active_tool.geometry.geo
 
         if self.app.defaults['geometry_editor_milling_type'] == 'cl':
             # reverse the geometry coordinates direction to allow creation of Gcode for  climb milling
@@ -4081,9 +4156,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
                         elif isinstance(p, LinearRing):
                             pl.append(Polygon(p.coords[::-1]))
-                        # elif isinstance(p, LineString):
-                        #     pl.append(LineString(p.coords[::-1]))
-                geom = MultiPolygon(pl)
+                        elif isinstance(p, LineString):
+                            pl.append(LineString(p.coords[::-1]))
+                try:
+                    geom = MultiPolygon(pl)
+                except TypeError:
+                    # this may happen if the geom elements are made out of LineStrings because you can't create a
+                    # MultiPolygon out of LineStrings
+                    pass
             except TypeError:
                 if isinstance(geom, Polygon) and geom is not None:
                     geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
@@ -4098,8 +4178,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 log.debug("FlatCAMGeoEditor.on_shape_complete() Error --> %s" % str(e))
                 return 'fail'
 
+        shape_list = list()
+        try:
+            for geo in geom:
+                shape_list.append(DrawToolShape(geo))
+        except TypeError:
+            shape_list.append(DrawToolShape(geom))
+
         # Add shape
-        self.add_shape(DrawToolShape(geom))
+        self.add_shape(shape_list)
 
         # Remove any utility shapes
         self.delete_utility_geometry()
@@ -4169,7 +4256,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # # ## Grid snap
         if self.options["grid_snap"]:
             if self.options["global_gridx"] != 0:
-                snap_x_ = round(x / self.options["global_gridx"]) * self.options['global_gridx']
+                snap_x_ = round(x / float(self.options["global_gridx"])) * float(self.options['global_gridx'])
             else:
                 snap_x_ = x
 
@@ -4177,12 +4264,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # and it will use the snap distance from GridX entry
             if self.app.ui.grid_gap_link_cb.isChecked():
                 if self.options["global_gridx"] != 0:
-                    snap_y_ = round(y / self.options["global_gridx"]) * self.options['global_gridx']
+                    snap_y_ = round(y / float(self.options["global_gridx"])) * float(self.options['global_gridx'])
                 else:
                     snap_y_ = y
             else:
                 if self.options["global_gridy"] != 0:
-                    snap_y_ = round(y / self.options["global_gridy"]) * self.options['global_gridy']
+                    snap_y_ = round(y / float(self.options["global_gridy"])) * float(self.options['global_gridy'])
                 else:
                     snap_y_ = y
             nearest_grid_distance = distance((x, y), (snap_x_, snap_y_))

@@ -1,20 +1,33 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
+# ##########################################################
+# File modified by: Marius Stanciu                         #
+# ##########################################################
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QTextDocument
 import copy
 import inspect  # TODO: For debugging only.
 from datetime import datetime
+
+from flatcamEditors.FlatCAMTextEditor import TextEditor
 
 from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
 from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
 from camlib import *
+from flatcamParsers.ParseExcellon import Excellon
+from flatcamParsers.ParseGerber import Gerber
+
 import itertools
+import tkinter as tk
+import sys
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -109,11 +122,6 @@ class FlatCAMObj(QtCore.QObject):
 
         self.plot_single_object.connect(self.single_object_plot)
 
-        # assert isinstance(self.ui, ObjectUI)
-        # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
-        # self.ui.offset_button.clicked.connect(self.on_offset_button_click)
-        # self.ui.scale_button.clicked.connect(self.on_scale_button_click)
-
     def __del__(self):
         pass
 
@@ -162,11 +170,23 @@ class FlatCAMObj(QtCore.QObject):
 
         assert isinstance(self.ui, ObjectUI)
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
-        self.ui.offset_button.clicked.connect(self.on_offset_button_click)
-        self.ui.scale_button.clicked.connect(self.on_scale_button_click)
-
-        self.ui.offsetvector_entry.returnPressed.connect(self.on_offset_button_click)
-        self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+        try:
+            # it will raise an exception for those FlatCAM objects that do not build UI with the common elements
+            self.ui.offset_button.clicked.connect(self.on_offset_button_click)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.scale_button.clicked.connect(self.on_scale_button_click)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.offsetvector_entry.returnPressed.connect(self.on_offset_button_click)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+        except (TypeError, AttributeError):
+            pass
         # self.ui.skew_button.clicked.connect(self.on_skew_button_click)
 
     def build_ui(self):
@@ -520,6 +540,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "plot": True,
             "multicolored": False,
             "solid": False,
+            "tool_type": 'circular',
+            "vtipdia": 0.1,
+            "vtipangle": 30,
+            "vcutz": -0.05,
             "isotooldia": 0.016,
             "isopasses": 1,
             "isooverlap": 0.15,
@@ -548,6 +572,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # list of rows with apertures plotted
         self.marked_rows = []
 
+        # Number of decimals to be used by tools in this class
+        self.decimals = 4
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -565,12 +592,23 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         FlatCAMObj.set_ui(self, ui)
         FlatCAMApp.App.log.debug("FlatCAMGerber.set_ui()")
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == 'MM':
+            self.decimals = 2
+        else:
+            self.decimals = 4
+
         self.replotApertures.connect(self.on_mark_cb_click_table)
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "multicolored": self.ui.multicolored_cb,
             "solid": self.ui.solid_cb,
+            "tool_type": self.ui.tool_type_radio,
+            "vtipdia": self.ui.tipdia_spinner,
+            "vtipangle": self.ui.tipangle_spinner,
+            "vcutz": self.ui.cutz_spinner,
             "isotooldia": self.ui.iso_tool_dia_entry,
             "isopasses": self.ui.iso_width_entry,
             "isooverlap": self.ui.iso_overlap_entry,
@@ -606,9 +644,24 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.ui.obj_combo.setCurrentIndex(1)
         self.ui.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+
+        self.ui.tool_type_radio.activated_custom.connect(self.on_tool_type_change)
+        # establish visibility for the GUI elements found in the slot function
+        self.ui.tool_type_radio.activated_custom.emit(self.options['tool_type'])
+
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
+            self.options['tool_type'] = 'circular'
+
+            self.ui.tool_type_label.hide()
+            self.ui.tool_type_radio.hide()
+            self.ui.tipdialabel.hide()
+            self.ui.tipdia_spinner.hide()
+            self.ui.tipanglelabel.hide()
+            self.ui.tipangle_spinner.hide()
+            self.ui.cutzlabel.hide()
+            self.ui.cutz_spinner.hide()
 
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
@@ -621,6 +674,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.except_cb.hide()
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+            self.ui.tipdia_spinner.valueChanged.connect(self.on_calculate_tooldia)
+            self.ui.tipangle_spinner.valueChanged.connect(self.on_calculate_tooldia)
+            self.ui.cutz_spinner.valueChanged.connect(self.on_calculate_tooldia)
 
         if self.app.defaults["gerber_buffering"] == 'no':
             self.ui.create_buffer_button.show()
@@ -637,10 +693,55 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.build_ui()
 
+    def on_calculate_tooldia(self):
+        try:
+            tdia = float(self.ui.tipdia_spinner.get_value())
+        except Exception as e:
+            return
+        try:
+            dang = float(self.ui.tipangle_spinner.get_value())
+        except Exception as e:
+            return
+        try:
+            cutz = float(self.ui.cutz_spinner.get_value())
+        except Exception as e:
+            return
+
+        cutz *= -1
+        if cutz < 0:
+            cutz *= -1
+
+        half_tip_angle = dang / 2
+
+        tool_diameter = tdia + (2 * cutz * math.tan(math.radians(half_tip_angle)))
+        self.ui.iso_tool_dia_entry.set_value(tool_diameter)
+
     def on_type_obj_index_changed(self, index):
         obj_type = self.ui.type_obj_combo.currentIndex()
         self.ui.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.ui.obj_combo.setCurrentIndex(0)
+
+    def on_tool_type_change(self, state):
+        if state == 'circular':
+            self.ui.tipdialabel.hide()
+            self.ui.tipdia_spinner.hide()
+            self.ui.tipanglelabel.hide()
+            self.ui.tipangle_spinner.hide()
+            self.ui.cutzlabel.hide()
+            self.ui.cutz_spinner.hide()
+            self.ui.iso_tool_dia_entry.setDisabled(False)
+            # update the value in the self.iso_tool_dia_entry once this is selected
+            self.ui.iso_tool_dia_entry.set_value(self.options['isotooldia'])
+        else:
+            self.ui.tipdialabel.show()
+            self.ui.tipdia_spinner.show()
+            self.ui.tipanglelabel.show()
+            self.ui.tipangle_spinner.show()
+            self.ui.cutzlabel.show()
+            self.ui.cutz_spinner.show()
+            self.ui.iso_tool_dia_entry.setDisabled(True)
+            # update the value in the self.iso_tool_dia_entry once this is selected
+            self.on_calculate_tooldia()
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)
@@ -682,15 +783,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             if str(self.apertures[ap_code]['type']) == 'R' or str(self.apertures[ap_code]['type']) == 'O':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.apertures[ap_code]['width'] * self.file_units_factor,
-                                    self.apertures[ap_code]['height'] * self.file_units_factor
+                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['width'],
+                                    self.decimals, self.apertures[ap_code]['height']
                                     )
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             elif str(self.apertures[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.apertures[ap_code]['diam'] * self.file_units_factor,
-                                    self.apertures[ap_code]['nVertices'] * self.file_units_factor)
+                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['diam'],
+                                    self.decimals, self.apertures[ap_code]['nVertices'])
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             else:
@@ -699,9 +800,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             try:
                 if self.apertures[ap_code]['size'] is not None:
-                    ap_size_item = QtWidgets.QTableWidgetItem('%.4f' %
-                                                              float(self.apertures[ap_code]['size'] *
-                                                                    self.file_units_factor))
+                    ap_size_item = QtWidgets.QTableWidgetItem(
+                        '%.*f' % (self.decimals, float(self.apertures[ap_code]['size'])))
                 else:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:
@@ -1080,14 +1180,26 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         return 'fail'
                     geo_obj.solid_geometry.append(geom)
 
+                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                    if self.ui.tool_type_radio.get_value() == 'circular':
+                        new_cutz = self.app.defaults['geometry_cutz']
+                        new_vtipdia = self.app.defaults['geometry_vtipdia']
+                        new_vtipangle = self.app.defaults['geometry_vtipangle']
+                        tool_type = 'C1'
+                    else:
+                        new_cutz = self.ui.cutz_spinner.get_value()
+                        new_vtipdia = self.ui.tipdia_spinner.get_value()
+                        new_vtipangle = self.ui.tipangle_spinner.get_value()
+                        tool_type = 'V'
+
                     # store here the default data for Geometry Data
                     default_data = {}
                     default_data.update({
                         "name": iso_name,
                         "plot": self.app.defaults['geometry_plot'],
-                        "cutz": self.app.defaults['geometry_cutz'],
-                        "vtipdia": self.app.defaults['geometry_vtipdia'],
-                        "vtipangle": self.app.defaults['geometry_vtipangle'],
+                        "cutz": new_cutz,
+                        "vtipdia": new_vtipdia,
+                        "vtipangle": new_vtipangle,
                         "travelz": self.app.defaults['geometry_travelz'],
                         "feedrate": self.app.defaults['geometry_feedrate'],
                         "feedrate_z": self.app.defaults['geometry_feedrate_z'],
@@ -1114,7 +1226,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                             'offset': 'Path',
                             'offset_value': 0.0,
                             'type': _('Rough'),
-                            'tool_type': 'C1',
+                            'tool_type': tool_type,
                             'data': default_data,
                             'solid_geometry': geo_obj.solid_geometry
                         }
@@ -1295,6 +1407,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return: None
         :rtype: None
         """
+
+        # units conversion to get a conversion should be done only once even if we found multiple
+        # units declaration inside a Gerber file (it can happen to find also the obsolete declaration)
+        if self.conversion_done is True:
+            log.debug("Gerber units conversion cancelled. Already done.")
+            return
+
         log.debug("FlatCAMObj.FlatCAMGerber.convert_units()")
 
         factor = Gerber.convert_units(self, units)
@@ -1441,14 +1560,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     if aperture_to_plot_mark in self.apertures:
                         for elem in self.apertures[aperture_to_plot_mark]['geometry']:
                             if 'solid' in elem:
-                                    geo = elem['solid']
-                                    if type(geo) == Polygon or type(geo) == LineString:
-                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
+                                geo = elem['solid']
+                                if type(geo) == Polygon or type(geo) == LineString:
+                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
+                                                        face_color=color, visible=visibility)
+                                else:
+                                    for el in geo:
+                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
                                                             face_color=color, visible=visibility)
-                                    else:
-                                        for el in geo:
-                                            self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
-                                                                face_color=color, visible=visibility)
 
                     self.mark_shapes[aperture_to_plot_mark].redraw()
 
@@ -1897,6 +2016,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.multigeo = False
 
+        # Number fo decimals to be used for tools in this class
+        self.decimals = 4
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -1917,6 +2039,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         :param exc_final: Destination FlatCAMExcellon object.
         :return: None
         """
+
+        try:
+            decimals_exc = self.decimals
+        except AttributeError:
+            decimals_exc = 4
 
         # flag to signal that we need to reorder the tools dictionary and drills and slots lists
         flag_order = False
@@ -1944,7 +2071,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         exc.app.log.warning("Failed to copy option.", option)
 
             for drill in exc.drills:
-                exc_tool_dia = float('%.4f' % exc.tools[drill['tool']]['C'])
+                exc_tool_dia = float('%.*f' % (decimals_exc, exc.tools[drill['tool']]['C']))
 
                 if exc_tool_dia not in custom_dict_drills:
                     custom_dict_drills[exc_tool_dia] = [drill['point']]
@@ -1952,7 +2079,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     custom_dict_drills[exc_tool_dia].append(drill['point'])
 
             for slot in exc.slots:
-                exc_tool_dia = float('%.4f' % exc.tools[slot['tool']]['C'])
+                exc_tool_dia = float('%.*f' % (decimals_exc, exc.tools[slot['tool']]['C']))
 
                 if exc_tool_dia not in custom_dict_slots:
                     custom_dict_slots[exc_tool_dia] = [[slot['start'], slot['stop']]]
@@ -2045,7 +2172,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 temp_tools[tool_name_temp] = spec_temp
 
                 for drill in exc_final.drills:
-                    exc_tool_dia = float('%.4f' % exc_final.tools[drill['tool']]['C'])
+                    exc_tool_dia = float('%.*f' % (decimals_exc, exc_final.tools[drill['tool']]['C']))
                     if exc_tool_dia == ordered_dia:
                         temp_drills.append(
                             {
@@ -2055,7 +2182,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         )
 
                 for slot in exc_final.slots:
-                    slot_tool_dia = float('%.4f' % exc_final.tools[slot['tool']]['C'])
+                    slot_tool_dia = float('%.*f' % (decimals_exc, exc_final.tools[slot['tool']]['C']))
                     if slot_tool_dia == ordered_dia:
                         temp_slots.append(
                             {
@@ -2130,10 +2257,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # Make sure that the drill diameter when in MM is with no more than 2 decimals
             # There are no drill bits in MM with more than 3 decimals diameter
             # For INCH the decimals should be no more than 3. There are no drills under 10mils
-            if self.units == 'MM':
-                dia = QtWidgets.QTableWidgetItem('%.2f' % (self.tools[tool_no]['C']))
-            else:
-                dia = QtWidgets.QTableWidgetItem('%.4f' % (self.tools[tool_no]['C']))
+
+            dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.tools[tool_no]['C']))
 
             dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -2148,10 +2273,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
             try:
-                if self.units == 'MM':
-                    t_offset = self.tool_offset[float('%.2f' % float(self.tools[tool_no]['C']))]
-                else:
-                    t_offset = self.tool_offset[float('%.4f' % float(self.tools[tool_no]['C']))]
+                t_offset = self.tool_offset[float('%.*f' % (self.decimals, float(self.tools[tool_no]['C'])))]
             except KeyError:
                 t_offset = self.app.defaults['excellon_offset']
 
@@ -2307,6 +2429,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
+        if self.units == 'MM':
+            self.decimals = 2
+        else:
+            self.decimals = 4
+
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "solid": self.ui.solid_cb,
@@ -2347,10 +2474,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         t_default_offset = self.app.defaults["excellon_offset"]
         if not self.tool_offset:
             for value in self.tools.values():
-                if self.units == 'MM':
-                    dia = float('%.2f' % float(value['C']))
-                else:
-                    dia = float('%.4f' % float(value['C']))
+                dia = float('%.*f' % (self.decimals, float(value['C'])))
                 self.tool_offset[dia] = t_default_offset
 
         # Show/Hide Advanced Options
@@ -2407,10 +2531,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.is_modified = True
 
         row_of_item_changed = self.ui.tools_table.currentRow()
-        if self.units == 'MM':
-            dia = float('%.2f' % float(self.ui.tools_table.item(row_of_item_changed, 1).text()))
-        else:
-            dia = float('%.4f' % float(self.ui.tools_table.item(row_of_item_changed, 1).text()))
+        dia = float('%.*f' % (self.decimals, float(self.ui.tools_table.item(row_of_item_changed, 1).text())))
 
         current_table_offset_edited = None
         if self.ui.tools_table.currentItem() is not None:
@@ -2455,8 +2576,21 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         for x in self.ui.tools_table.selectedItems():
             # from the columnCount we subtract a value of 1 which represent the last column (plot column)
             # which does not have text
-            table_tools_items.append([self.ui.tools_table.item(x.row(), column).text()
-                                      for column in range(0, self.ui.tools_table.columnCount() - 1)])
+            txt = ''
+            elem = list()
+
+            for column in range(0, self.ui.tools_table.columnCount() - 1):
+                try:
+                    txt = self.ui.tools_table.item(x.row(), column).text()
+                except AttributeError:
+                    try:
+                        txt = self.ui.tools_table.cellWidget(x.row(), column).currentText()
+                    except AttributeError:
+                        pass
+                elem.append(txt)
+            table_tools_items.append(deepcopy(elem))
+            # table_tools_items.append([self.ui.tools_table.item(x.row(), column).text()
+            #                           for column in range(0, self.ui.tools_table.columnCount() - 1)])
         for item in table_tools_items:
             item[0] = str(item[0])
         return table_tools_items
@@ -2762,8 +2896,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         for tool in tools:
             # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
-            adj_toolstable_tooldia = float('%.4f' % float(tooldia))
-            adj_file_tooldia = float('%.4f' % float(self.tools[tool]["C"]))
+            adj_toolstable_tooldia = float('%.*f' % (self.decimals, float(tooldia)))
+            adj_file_tooldia = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
             if adj_toolstable_tooldia > adj_file_tooldia + 0.0001:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Milling tool for SLOTS is larger than hole size. Cancelled."))
@@ -2792,8 +2926,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
             for slot in self.slots:
                 if slot['tool'] in tools:
-                    toolstable_tool = float('%.4f' % float(tooldia))
-                    file_tool = float('%.4f' % float(self.tools[tool]["C"]))
+                    toolstable_tool = float('%.*f' % (self.decimals, float(tooldia)))
+                    file_tool = float('%.*f' % (self.decimals, float(self.tools[tool]["C"])))
 
                     # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
                     # for the file_tool (tooldia actually)
@@ -3337,6 +3471,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.old_pp_state = self.app.defaults["geometry_multidepth"]
         self.old_toolchangeg_state = self.app.defaults["geometry_toolchange"]
 
+        # Number of decimals to be used for tools in this class
+        self.decimals = 4
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -3365,10 +3502,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
             # There are no tool bits in MM with more than 3 decimals diameter.
             # For INCH the decimals should be no more than 3. There are no tools under 10mils.
-            if self.units == 'MM':
-                dia_item = QtWidgets.QTableWidgetItem('%.2f' % float(tooluid_value['tooldia']))
-            else:
-                dia_item = QtWidgets.QTableWidgetItem('%.4f' % float(tooluid_value['tooldia']))
+
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooluid_value['tooldia'])))
 
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -3495,6 +3630,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         assert isinstance(self.ui, GeometryObjectUI), \
             "Expected a GeometryObjectUI, got %s" % type(self.ui)
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == 'MM':
+            self.decimals = 2
+        else:
+            self.decimals = 4
+
         # populate postprocessor names in the combobox
         for name in list(self.app.postprocessors.keys()):
             self.ui.pp_geometry_name_cb.addItem(name)
@@ -3584,7 +3726,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             for toold in tools_list:
                 self.tools.update({
                     self.tooluid: {
-                        'tooldia': float(toold),
+                        'tooldia': float('%.*f' % (self.decimals, float(toold))),
                         'offset': 'Path',
                         'offset_value': 0.0,
                         'type': _('Rough'),
@@ -3714,6 +3856,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             elif isinstance(current_widget, FloatEntry) or isinstance(current_widget, LengthEntry) or \
                     isinstance(current_widget, FCEntry) or isinstance(current_widget, IntEntry):
                 current_widget.editingFinished.connect(self.gui_form_to_storage)
+            elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
+                current_widget.returnPressed.connect(self.gui_form_to_storage)
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             for col in [2, 3, 4]:
@@ -3728,7 +3872,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.ui.geo_tools_table.currentItemChanged.connect(self.on_row_selection_change)
         self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
-        self.ui.tool_offset_entry.editingFinished.connect(self.on_offset_value_edited)
+        self.ui.tool_offset_entry.returnPressed.connect(self.on_offset_value_edited)
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             self.ui.geo_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
@@ -3755,6 +3899,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 try:
                     self.ui.grid3.itemAt(i).widget().editingFinished.disconnect(self.gui_form_to_storage)
                 except (TypeError, AttributeError):
+                    pass
+            elif isinstance(current_widget, FCSpinner) or isinstance(current_widget, FCDoubleSpinner):
+                try:
+                    self.ui.grid3.itemAt(i).widget().returnPressed.disconnect(self.gui_form_to_storage)
+                except TypeError:
                     pass
 
         for row in range(self.ui.geo_tools_table.rowCount()):
@@ -3790,7 +3939,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
 
         try:
-            self.ui.tool_offset_entry.editingFinished.disconnect()
+            self.ui.tool_offset_entry.returnPressed.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -3846,10 +3995,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             max_uid = max(tool_uid_list)
         self.tooluid = max_uid + 1
 
-        if self.units == 'IN':
-            tooldia = float('%.4f' % tooldia)
-        else:
-            tooldia = float('%.2f' % tooldia)
+        tooldia = float('%.*f' % (self.decimals, tooldia))
 
         # here we actually add the new tool; if there is no tool in the tool table we add a tool with default data
         # otherwise we add a tool with data copied from last tool
@@ -3996,7 +4142,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                      _("Wrong value format entered, use a number."))
                 return
 
-        tool_dia = float('%.4f' % d)
+        tool_dia = float('%.*f' % (self.decimals, d))
         tooluid = int(self.ui.geo_tools_table.item(current_row, 5).text())
 
         self.tools[tooluid]['tooldia'] = tool_dia
@@ -4203,7 +4349,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         tooldia = float(self.ui.geo_tools_table.item(row, 1).text())
         new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
-        new_cutz = float('%.4f' % -new_cutz) # this value has to be negative
+        new_cutz = float('%.*f' % (self.decimals, -new_cutz))   # this value has to be negative
         self.ui.cutz_entry.set_value(new_cutz)
 
         # store the new CutZ value into storage (self.tools)
@@ -4426,8 +4572,21 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         table_tools_items = []
         if self.multigeo:
             for x in self.ui.geo_tools_table.selectedItems():
-                table_tools_items.append([self.ui.geo_tools_table.item(x.row(), column).text()
-                                          for column in range(0, self.ui.geo_tools_table.columnCount())])
+                elem = list()
+                txt = ''
+
+                for column in range(0, self.ui.geo_tools_table.columnCount()):
+                    try:
+                        txt = self.ui.geo_tools_table.item(x.row(), column).text()
+                    except AttributeError:
+                        try:
+                            txt = self.ui.geo_tools_table.cellWidget(x.row(), column).currentText()
+                        except AttributeError:
+                            pass
+                    elem.append(txt)
+                table_tools_items.append(deepcopy(elem))
+                # table_tools_items.append([self.ui.geo_tools_table.item(x.row(), column).text()
+                #                           for column in range(0, self.ui.geo_tools_table.columnCount())])
         else:
             for x in self.ui.geo_tools_table.selectedItems():
                 r = []
@@ -4441,9 +4600,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     try:
                         txt = self.ui.geo_tools_table.item(x.row(), column).text()
                     except AttributeError:
-                        txt = self.ui.geo_tools_table.cellWidget(x.row(), column).currentText()
-                    except Exception as e:
-                        pass
+                        try:
+                            txt = self.ui.geo_tools_table.cellWidget(x.row(), column).currentText()
+                        except AttributeError:
+                            pass
                     r.append(txt)
                 table_tools_items.append(r)
 
@@ -4563,6 +4723,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         :param segx: number of segments on the X axis, for auto-levelling
         :param segy: number of segments on the Y axis, for auto-levelling
+        :param plot: if True the generated object will be plotted; if False will not be plotted
         :param use_thread: if True use threading
         :return: None
         """
@@ -4625,7 +4786,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 tool_cnt += 1
 
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
-                tooldia_val = float('%.4f' % float(tools_dict[tooluid_key]['tooldia']))
+                tooldia_val = float('%.*f' % (self.decimals, float(tools_dict[tooluid_key]['tooldia'])))
                 dia_cnc_dict.update({
                     'tooldia': tooldia_val
                 })
@@ -4779,7 +4940,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             for tooluid_key in list(tools_dict.keys()):
                 tool_cnt += 1
                 dia_cnc_dict = deepcopy(tools_dict[tooluid_key])
-                tooldia_val = float('%.4f' % float(tools_dict[tooluid_key]['tooldia']))
+                tooldia_val = float('%.*f' % (self.decimals, float(tools_dict[tooluid_key]['tooldia'])))
 
                 dia_cnc_dict.update({
                     'tooldia': tooldia_val
@@ -4789,7 +4950,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # search in the self.tools for the sel_tool_dia and when found see what tooluid has
                 # on the found tooluid in self.tools we also have the solid_geometry that interest us
                 for k, v in self.tools.items():
-                    if float('%.4f' % float(v['tooldia'])) == tooldia_val:
+                    if float('%.*f' % (self.decimals, float(v['tooldia']))) == tooldia_val:
                         current_uid = int(k)
                         break
 
@@ -5202,8 +5363,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except TypeError:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("An (x,y) pair of values are needed. "
-                                   "Probable you entered only one value in the Offset field."
-            ))
+                                   "Probable you entered only one value in the Offset field.")
+                                 )
             return
 
         self.geo_len = 0
@@ -5286,8 +5447,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.app.inform.emit('[ERROR] %s' %
                                      _("The Toolchange X,Y field in Edit -> Preferences "
                                        "has to be in the format (x, y)\n"
-                                       "but now there is only one value, not two."
-                ))
+                                       "but now there is only one value, not two.")
+                                     )
                 return 'fail'
             coords_xy[0] *= factor
             coords_xy[1] *= factor
@@ -5307,7 +5468,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 for dia_key, dia_value in tooluid_value.items():
                     if dia_key == 'tooldia':
                         dia_value *= factor
-                        dia_value = float('%.4f' % dia_value)
+                        dia_value = float('%.*f' % (self.decimals, dia_value))
                         tool_dia_copy[dia_key] = dia_value
                     if dia_key == 'offset':
                         tool_dia_copy[dia_key] = dia_value
@@ -5383,7 +5544,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except TypeError:  # Element is not iterable...
             # if self.app.is_legacy is False:
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
-
 
     def plot(self, visible=None, kind=None):
         """
@@ -5578,6 +5738,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
 
+        self.decimals = 4
+
         if self.app.is_legacy is False:
             self.text_col = self.app.plotcanvas.new_text_collection()
             self.text_col.enabled = True
@@ -5614,10 +5776,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
             # There are no tool bits in MM with more than 2 decimals diameter.
             # For INCH the decimals should be no more than 4. There are no tools under 10mils.
-            if self.units == 'MM':
-                dia_item = QtWidgets.QTableWidgetItem('%.2f' % float(dia_value['tooldia']))
-            else:
-                dia_item = QtWidgets.QTableWidgetItem('%.4f' % float(dia_value['tooldia']))
+
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['tooldia'])))
 
             offset_txt = list(str(dia_value['offset']))
             offset_txt[0] = offset_txt[0].upper()
@@ -5706,13 +5866,20 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         assert isinstance(self.ui, CNCObjectUI), \
             "Expected a CNCObjectUI, got %s" % type(self.ui)
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
         # this signal has to be connected to it's slot before the defaults are populated
         # the decision done in the slot has to override the default value set bellow
         self.ui.toolchange_cb.toggled.connect(self.on_toolchange_custom_clicked)
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
-            # "tooldia": self.ui.tooldia_entry,
+            "tooldia": self.ui.tooldia_entry,
             "append": self.ui.append_text,
             "prepend": self.ui.prepend_text,
             "toolchange_macro": self.ui.toolchange_text,
@@ -5728,7 +5895,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.ui.t_distance_label.show()
                 self.ui.t_distance_entry.setVisible(True)
                 self.ui.t_distance_entry.setDisabled(True)
-                self.ui.t_distance_entry.set_value('%.4f' % float(self.travel_distance))
+                self.ui.t_distance_entry.set_value('%.*f' % (self.decimals, float(self.travel_distance)))
                 self.ui.units_label.setText(str(self.units).lower())
                 self.ui.units_label.setDisabled(True)
 
@@ -5737,15 +5904,22 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.ui.t_time_entry.setDisabled(True)
                 # if time is more than 1 then we have minutes, else we have seconds
                 if self.routing_time > 1:
-                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(self.routing_time)))
+                    self.ui.t_time_entry.set_value('%.*f' % (self.decimals, math.ceil(float(self.routing_time))))
                     self.ui.units_time_label.setText('min')
                 else:
                     time_r = self.routing_time * 60
-                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(time_r)))
+                    self.ui.t_time_entry.set_value('%.*f' % (self.decimals, math.ceil(float(time_r))))
                     self.ui.units_time_label.setText('sec')
                 self.ui.units_time_label.setDisabled(True)
         except AttributeError:
             pass
+
+        if self.multitool is False:
+            self.ui.tooldia_entry.show()
+            self.ui.updateplot_button.show()
+        else:
+            self.ui.tooldia_entry.hide()
+            self.ui.updateplot_button.hide()
 
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
         self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
@@ -5805,7 +5979,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         and plots the object.
         """
         self.read_form()
-        self.plot()
+        self.on_plot_kind_change()
 
     def on_plot_kind_change(self):
         kind = self.ui.cncplot_method_combo.get_value()
@@ -5867,6 +6041,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                              (_("Machine Code file saved to"), filename))
 
     def on_edit_code_click(self, *args):
+        self.app.proc_container.view.set_busy(_("Loading..."))
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
@@ -5877,25 +6052,46 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             self.app.gcode_edited = gco
 
-        self.app.init_code_editor(name=_("Code Editor"))
-        self.app.ui.buttonOpen.clicked.connect(self.app.handleOpen)
-        self.app.ui.buttonSave.clicked.connect(self.app.handleSaveGCode)
+        self.gcode_editor_tab = TextEditor(app=self.app)
 
+        # add the tab if it was closed
+        self.app.ui.plot_tab_area.addTab(self.gcode_editor_tab, '%s' % _("Code Editor"))
+        self.gcode_editor_tab.setObjectName('code_editor_tab')
+
+        # delete the absolute and relative position and messages in the infobar
+        self.app.ui.position_label.setText("")
+        self.app.ui.rel_position_label.setText("")
+
+        # first clear previous text in text editor (if any)
+        self.gcode_editor_tab.code_editor.clear()
+        self.gcode_editor_tab.code_editor.setReadOnly(False)
+
+        self.gcode_editor_tab.code_editor.completer_enable = False
+        self.gcode_editor_tab.buttonRun.hide()
+
+        # Switch plot_area to CNCJob tab
+        self.app.ui.plot_tab_area.setCurrentWidget(self.gcode_editor_tab)
+
+        self.gcode_editor_tab.t_frame.hide()
         # then append the text from GCode to the text editor
         try:
             for line in self.app.gcode_edited:
+                QtWidgets.QApplication.processEvents()
+
                 proc_line = str(line).strip('\n')
-                self.app.ui.code_editor.append(proc_line)
+                self.gcode_editor_tab.code_editor.append(proc_line)
         except Exception as e:
             log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s %s' %
                                  ('FlatCAMCNNJob.on_edit_code_click() -->', str(e)))
             return
 
-        self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+        self.gcode_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
-        self.app.handleTextChanged()
-        self.app.ui.show()
+        self.gcode_editor_tab.handleTextChanged()
+        self.gcode_editor_tab.t_frame.show()
+        self.app.proc_container.view.set_idle()
+
         self.app.inform.emit('[success] %s...' %
                              _('Loaded Machine Code into Code Editor'))
 
@@ -6078,8 +6274,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 m6_code = self.parse_custom_toolchange_code(self.ui.toolchange_text.get_value())
                 if m6_code is None or m6_code == '':
                     self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Cancelled. The Toolchange Custom code is enabled but it's empty."
-                    ))
+                                         _("Cancelled. The Toolchange Custom code is enabled but it's empty.")
+                                         )
                     return 'fail'
 
                 g = g.replace('M6', m6_code)
@@ -6174,7 +6370,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.shapes.clear(update=True)
 
         for tooluid_key in self.cnc_tools:
-            tooldia = float('%.4f' % float(self.cnc_tools[tooluid_key]['tooldia']))
+            tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
             gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
             # tool_uid = int(self.ui.cnc_tools_table.item(cw_row, 3).text())
 
@@ -6227,7 +6423,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             else:
                 # multiple tools usage
                 for tooluid_key in self.cnc_tools:
-                    tooldia = float('%.4f' % float(self.cnc_tools[tooluid_key]['tooldia']))
+                    tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
                     gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
                     self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
             self.shapes.redraw()
@@ -6266,7 +6462,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             for dia_key, dia_value in tooluid_value.items():
                 if dia_key == 'tooldia':
                     dia_value *= factor
-                    dia_value = float('%.4f' % dia_value)
+                    dia_value = float('%.*f' % (self.decimals, dia_value))
                     tool_dia_copy[dia_key] = dia_value
                 if dia_key == 'offset':
                     tool_dia_copy[dia_key] = dia_value
@@ -6313,5 +6509,483 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         self.cnc_tools.clear()
         self.cnc_tools = deepcopy(temp_tools_dict)
+
+
+class FlatCAMScript(FlatCAMObj):
+    """
+    Represents a TCL script object.
+    """
+    optionChanged = QtCore.pyqtSignal(str)
+    ui_type = ScriptObjectUI
+
+    def __init__(self, name):
+        FlatCAMApp.App.log.debug("Creating a FlatCAMScript object...")
+        FlatCAMObj.__init__(self, name)
+
+        self.kind = "script"
+
+        self.options.update({
+            "plot": True,
+            "type": 'Script',
+            "source_file": '',
+        })
+
+        self.units = ''
+        self.decimals = 4
+
+        self.ser_attrs = ['options', 'kind', 'source_file']
+        self.source_file = ''
+        self.script_code = ''
+
+        self.script_editor_tab = None
+
+    def set_ui(self, ui):
+        FlatCAMObj.set_ui(self, ui)
+        FlatCAMApp.App.log.debug("FlatCAMScript.set_ui()")
+
+        assert isinstance(self.ui, ScriptObjectUI), \
+            "Expected a ScriptObjectUI, got %s" % type(self.ui)
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
+        # Fill form fields only on object create
+        self.to_form()
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText(_(
+                '<span style="color:green;"><b>Basic</b></span>'
+            ))
+        else:
+            self.ui.level.setText(_(
+                '<span style="color:red;"><b>Advanced</b></span>'
+            ))
+
+        self.script_editor_tab = TextEditor(app=self.app)
+
+        # first clear previous text in text editor (if any)
+        self.script_editor_tab.code_editor.clear()
+        self.script_editor_tab.code_editor.setReadOnly(False)
+
+        self.script_editor_tab.buttonRun.show()
+
+        self.ui.autocomplete_cb.set_value(self.app.defaults['script_autocompleter'])
+        self.on_autocomplete_changed(state=self.app.defaults['script_autocompleter'])
+
+        flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
+        self.script_editor_tab.buttonOpen.clicked.disconnect()
+        self.script_editor_tab.buttonOpen.clicked.connect(lambda: self.script_editor_tab.handleOpen(filt=flt))
+        self.script_editor_tab.buttonSave.clicked.disconnect()
+        self.script_editor_tab.buttonSave.clicked.connect(lambda: self.script_editor_tab.handleSaveGCode(filt=flt))
+
+        self.script_editor_tab.buttonRun.clicked.connect(self.handle_run_code)
+
+        self.script_editor_tab.handleTextChanged()
+
+        self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
+
+        self.ser_attrs = ['options', 'kind', 'source_file']
+
+        for line in self.source_file.splitlines():
+            self.script_editor_tab.code_editor.append(line)
+
+        self.build_ui()
+
+    def build_ui(self):
+        FlatCAMObj.build_ui(self)
+        tab_here = False
+
+        # try to not add too many times a tab that it is already installed
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == self.options['name']:
+                tab_here = True
+                break
+
+        # add the tab if it is not already added
+        if tab_here is False:
+            self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
+            self.script_editor_tab.setObjectName(self.options['name'])
+
+        # Switch plot_area to CNCJob tab
+        self.app.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
+
+    def handle_run_code(self):
+        # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
+        # tries to print on a hidden widget, therefore show the dock if hidden
+        if self.app.ui.shell_dock.isHidden():
+            self.app.ui.shell_dock.show()
+
+        self.script_code = deepcopy(self.script_editor_tab.code_editor.toPlainText())
+
+        old_line = ''
+        for tcl_command_line in self.script_code.splitlines():
+            # do not process lines starting with '#' = comment and empty lines
+            if not tcl_command_line.startswith('#') and tcl_command_line != '':
+                # id FlatCAM is run in Windows then replace all the slashes with
+                # the UNIX style slash that TCL understands
+                if sys.platform == 'win32':
+                    if "open" in tcl_command_line:
+                        tcl_command_line = tcl_command_line.replace('\\', '/')
+
+                if old_line != '':
+                    new_command = old_line + tcl_command_line + '\n'
+                else:
+                    new_command = tcl_command_line
+
+                # execute the actual Tcl command
+                try:
+                    self.app.shell.open_proccessing()  # Disables input box.
+
+                    result = self.app.tcl.eval(str(new_command))
+                    if result != 'None':
+                        self.app.shell.append_output(result + '\n')
+
+                    old_line = ''
+                except tk.TclError:
+                    old_line = old_line + tcl_command_line + '\n'
+                except Exception as e:
+                    log.debug("App.handleRunCode() --> %s" % str(e))
+
+        if old_line != '':
+            # it means that the script finished with an error
+            result = self.app.tcl.eval("set errorInfo")
+            log.error("Exec command Exception: %s" % (result + '\n'))
+            self.app.shell.append_error('ERROR: ' + result + '\n')
+
+        self.app.shell.close_proccessing()
+
+    def on_autocomplete_changed(self, state):
+        if state:
+            self.script_editor_tab.code_editor.completer_enable = True
+        else:
+            self.script_editor_tab.code_editor.completer_enable = False
+
+    def to_dict(self):
+        """
+        Returns a representation of the object as a dictionary.
+        Attributes to include are listed in ``self.ser_attrs``.
+
+        :return: A dictionary-encoded copy of the object.
+        :rtype: dict
+        """
+        d = {}
+        for attr in self.ser_attrs:
+            d[attr] = getattr(self, attr)
+        return d
+
+    def from_dict(self, d):
+        """
+        Sets object's attributes from a dictionary.
+        Attributes to include are listed in ``self.ser_attrs``.
+        This method will look only for only and all the
+        attributes in ``self.ser_attrs``. They must all
+        be present. Use only for deserializing saved
+        objects.
+
+        :param d: Dictionary of attributes to set in the object.
+        :type d: dict
+        :return: None
+        """
+        for attr in self.ser_attrs:
+            setattr(self, attr, d[attr])
+
+
+class FlatCAMDocument(FlatCAMObj):
+    """
+    Represents a Document object.
+    """
+    optionChanged = QtCore.pyqtSignal(str)
+    ui_type = DocumentObjectUI
+
+    def __init__(self, name):
+        FlatCAMApp.App.log.debug("Creating a Document object...")
+        FlatCAMObj.__init__(self, name)
+
+        self.kind = "document"
+
+        self.units = ''
+        self.decimals = 4
+
+        self.ser_attrs = ['options', 'kind', 'source_file']
+        self.source_file = ''
+        self.doc_code = ''
+
+        self.font_italic = None
+        self.font_bold = None
+        self.font_underline =None
+
+        self.document_editor_tab = None
+
+        self._read_only = False
+
+    def set_ui(self, ui):
+        FlatCAMObj.set_ui(self, ui)
+        FlatCAMApp.App.log.debug("FlatCAMDocument.set_ui()")
+
+        assert isinstance(self.ui, DocumentObjectUI), \
+            "Expected a DocumentObjectUI, got %s" % type(self.ui)
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if self.units == "IN":
+            self.decimals = 4
+        else:
+            self.decimals = 2
+
+        # Fill form fields only on object create
+        self.to_form()
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText(_(
+                '<span style="color:green;"><b>Basic</b></span>'
+            ))
+        else:
+            self.ui.level.setText(_(
+                '<span style="color:red;"><b>Advanced</b></span>'
+            ))
+
+        self.document_editor_tab = TextEditor(app=self.app)
+        stylesheet = """
+                        QTextEdit {selection-background-color:%s;
+                                   selection-color:white;
+                        }
+                     """ % self.app.defaults["document_sel_color"]
+
+        self.document_editor_tab.code_editor.setStyleSheet(stylesheet)
+
+        # first clear previous text in text editor (if any)
+        self.document_editor_tab.code_editor.clear()
+        self.document_editor_tab.code_editor.setReadOnly(self._read_only)
+
+        self.document_editor_tab.buttonRun.hide()
+
+        self.ui.autocomplete_cb.set_value(self.app.defaults['document_autocompleter'])
+        self.on_autocomplete_changed(state=self.app.defaults['document_autocompleter'])
+        self.on_tab_size_change(val=self.app.defaults['document_tab_size'])
+
+        flt = "FlatCAM Docs (*.FlatDoc);;All Files (*.*)"
+
+        # ######################################################################
+        # ######################## SIGNALS #####################################
+        # ######################################################################
+        self.document_editor_tab.buttonOpen.clicked.disconnect()
+        self.document_editor_tab.buttonOpen.clicked.connect(lambda: self.document_editor_tab.handleOpen(filt=flt))
+        self.document_editor_tab.buttonSave.clicked.disconnect()
+        self.document_editor_tab.buttonSave.clicked.connect(lambda: self.document_editor_tab.handleSaveGCode(filt=flt))
+
+        self.document_editor_tab.code_editor.textChanged.connect(self.on_text_changed)
+
+        self.ui.font_type_cb.currentFontChanged.connect(self.font_family)
+        self.ui.font_size_cb.activated.connect(self.font_size)
+        self.ui.font_bold_tb.clicked.connect(self.on_bold_button)
+        self.ui.font_italic_tb.clicked.connect(self.on_italic_button)
+        self.ui.font_under_tb.clicked.connect(self.on_underline_button)
+
+        self.ui.font_color_entry.editingFinished.connect(self.on_font_color_entry)
+        self.ui.font_color_button.clicked.connect(self.on_font_color_button)
+        self.ui.sel_color_entry.editingFinished.connect(self.on_selection_color_entry)
+        self.ui.sel_color_button.clicked.connect(self.on_selection_color_button)
+
+        self.ui.al_left_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignLeft))
+        self.ui.al_center_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignCenter))
+        self.ui.al_right_tb.clicked.connect(lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignRight))
+        self.ui.al_justify_tb.clicked.connect(
+            lambda: self.document_editor_tab.code_editor.setAlignment(Qt.AlignJustify)
+        )
+
+        self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
+        self.ui.tab_size_spinner.returnPressed.connect(self.on_tab_size_change)
+        # #######################################################################
+
+        self.ui.font_color_entry.set_value(self.app.defaults['document_font_color'])
+        self.ui.font_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['document_font_color']))
+
+        self.ui.sel_color_entry.set_value(self.app.defaults['document_sel_color'])
+        self.ui.sel_color_button.setStyleSheet(
+            "background-color:%s" % self.app.defaults['document_sel_color'])
+
+        self.ui.font_size_cb.setCurrentIndex(int(self.app.defaults['document_font_size']))
+
+        self.document_editor_tab.handleTextChanged()
+        self.ser_attrs = ['options', 'kind', 'source_file']
+
+        if Qt.mightBeRichText(self.source_file):
+            self.document_editor_tab.code_editor.setHtml(self.source_file)
+        else:
+            for line in self.source_file.splitlines():
+                self.document_editor_tab.code_editor.append(line)
+
+        self.build_ui()
+
+    @property
+    def read_only(self):
+        return self._read_only
+
+    @read_only.setter
+    def read_only(self, val):
+        if val:
+            self._read_only = True
+        else:
+            self._read_only = False
+
+    def build_ui(self):
+        FlatCAMObj.build_ui(self)
+        tab_here = False
+
+        # try to not add too many times a tab that it is already installed
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == self.options['name']:
+                tab_here = True
+                break
+
+        # add the tab if it is not already added
+        if tab_here is False:
+            self.app.ui.plot_tab_area.addTab(self.document_editor_tab, '%s' % _("Document Editor"))
+            self.document_editor_tab.setObjectName(self.options['name'])
+
+        # Switch plot_area to CNCJob tab
+        self.app.ui.plot_tab_area.setCurrentWidget(self.document_editor_tab)
+
+    def on_autocomplete_changed(self, state):
+        if state:
+            self.document_editor_tab.code_editor.completer_enable = True
+        else:
+            self.document_editor_tab.code_editor.completer_enable = False
+
+    def on_tab_size_change(self, val=None):
+        try:
+            self.ui.tab_size_spinner.returnPressed.disconnect(self.on_tab_size_change)
+        except TypeError:
+            pass
+
+        if val:
+            self.ui.tab_size_spinner.set_value(val)
+
+        tab_balue = int(self.ui.tab_size_spinner.get_value())
+        self.document_editor_tab.code_editor.setTabStopWidth(tab_balue)
+        self.app.defaults['document_tab_size'] = tab_balue
+
+        self.ui.tab_size_spinner.returnPressed.connect(self.on_tab_size_change)
+
+    def on_text_changed(self):
+        self.source_file = self.document_editor_tab.code_editor.toHtml()
+        # print(self.source_file)
+
+    def font_family(self, font):
+        # self.document_editor_tab.code_editor.selectAll()
+        font.setPointSize(float(self.ui.font_size_cb.get_value()))
+        self.document_editor_tab.code_editor.setCurrentFont(font)
+        self.font_name = self.ui.font_type_cb.currentFont().family()
+
+    def font_size(self):
+        # self.document_editor_tab.code_editor.selectAll()
+        self.document_editor_tab.code_editor.setFontPointSize(float(self.ui.font_size_cb.get_value()))
+
+    def on_bold_button(self):
+        if self.ui.font_bold_tb.isChecked():
+            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Bold)
+            self.font_bold = True
+        else:
+            self.document_editor_tab.code_editor.setFontWeight(QtGui.QFont.Normal)
+            self.font_bold = False
+
+    def on_italic_button(self):
+        if self.ui.font_italic_tb.isChecked():
+            self.document_editor_tab.code_editor.setFontItalic(True)
+            self.font_italic = True
+        else:
+            self.document_editor_tab.code_editor.setFontItalic(False)
+            self.font_italic = False
+
+    def on_underline_button(self):
+        if self.ui.font_under_tb.isChecked():
+            self.document_editor_tab.code_editor.setFontUnderline(True)
+            self.font_underline = True
+        else:
+            self.document_editor_tab.code_editor.setFontUnderline(False)
+            self.font_underline = False
+
+    # Setting font colors handlers
+    def on_font_color_entry(self):
+        self.app.defaults['document_font_color'] = self.ui.font_color_entry.get_value()
+        self.ui.font_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['document_font_color']))
+
+    def on_font_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['document_font_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        font_color = c_dialog.getColor(initial=current_color)
+
+        if font_color.isValid() is False:
+            return
+
+        self.document_editor_tab.code_editor.setTextColor(font_color)
+        self.ui.font_color_button.setStyleSheet("background-color:%s" % str(font_color.name()))
+
+        new_val = str(font_color.name())
+        self.ui.font_color_entry.set_value(new_val)
+        self.app.defaults['document_font_color'] = new_val
+
+    # Setting selection colors handlers
+    def on_selection_color_entry(self):
+        self.app.defaults['document_sel_color'] = self.ui.sel_color_entry.get_value()
+        self.ui.sel_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['document_sel_color']))
+
+    def on_selection_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['document_sel_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        sel_color = c_dialog.getColor(initial=current_color)
+
+        if sel_color.isValid() is False:
+            return
+
+        p = QtGui.QPalette()
+        p.setColor(QtGui.QPalette.Highlight, sel_color)
+        p.setColor(QtGui.QPalette.HighlightedText, QtGui.QColor('white'))
+
+        self.document_editor_tab.code_editor.setPalette(p)
+
+        self.ui.sel_color_button.setStyleSheet("background-color:%s" % str(sel_color.name()))
+
+        new_val = str(sel_color.name())
+        self.ui.sel_color_entry.set_value(new_val)
+        self.app.defaults['document_sel_color'] = new_val
+
+    def to_dict(self):
+        """
+        Returns a representation of the object as a dictionary.
+        Attributes to include are listed in ``self.ser_attrs``.
+
+        :return: A dictionary-encoded copy of the object.
+        :rtype: dict
+        """
+        d = {}
+        for attr in self.ser_attrs:
+            d[attr] = getattr(self, attr)
+        return d
+
+    def from_dict(self, d):
+        """
+        Sets object's attributes from a dictionary.
+        Attributes to include are listed in ``self.ser_attrs``.
+        This method will look only for only and all the
+        attributes in ``self.ser_attrs``. They must all
+        be present. Use only for deserializing saved
+        objects.
+
+        :param d: Dictionary of attributes to set in the object.
+        :type d: dict
+        :return: None
+        """
+        for attr in self.ser_attrs:
+            setattr(self, attr, d[attr])
 
 # end of file

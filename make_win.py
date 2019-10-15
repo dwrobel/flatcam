@@ -1,4 +1,4 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
@@ -11,12 +11,12 @@
 # This is not an aid to install FlatCAM from source on     #
 # Windows platforms. It is only useful when FlatCAM is up  #
 # and running and ready to be packaged.                    #
-# ########################################################## ##
+# ##########################################################
 
-# ########################################################## ##
-# File Modified (major mod): Marius Adrian Stanciu         #
+# ##########################################################
+# File Modified: Marius Adrian Stanciu                     #
 # Date: 3/10/2019                                          #
-# ########################################################## ##
+# ##########################################################
 
 
 # Files not needed: Qt, tk.dll, tcl.dll, tk/, tcl/, vtk/,
@@ -45,6 +45,7 @@ include_files.append((os.path.join(site_dir, "svg/path"), "svg"))
 include_files.append((os.path.join(site_dir, "vispy"), "vispy"))
 include_files.append((os.path.join(site_dir, "vispy/app"), "vispy/app"))
 include_files.append((os.path.join(site_dir, "vispy/app/backends"), "vispy/app/backends"))
+# include_files.append((os.path.join(site_dir, "matplotlib"), "matplotlib"))
 include_files.append((os.path.join(site_dir, "rtree"), "rtree"))
 
 if platform.architecture()[0] == '64bit':
