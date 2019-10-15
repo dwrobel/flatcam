@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-10-15 02:33+0300\n"
-"PO-Revision-Date: 2019-10-15 08:04-0300\n"
+"PO-Revision-Date: 2019-10-15 08:10-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -7740,16 +7740,12 @@ msgid "Z coord for Toolchange"
 msgstr "Coordenada Z para troca de ferramenta"
 
 #: flatcamGUI/ObjectUI.py:1821
-#, fuzzy
-#| msgid "z_cut = depth where to cut"
 msgid "depth where to cut"
-msgstr "z_cut = profundidade de corte"
+msgstr "profundidade de corte"
 
 #: flatcamGUI/ObjectUI.py:1822
-#, fuzzy
-#| msgid "z_move = height where to travel"
 msgid "height where to travel"
-msgstr "z_move = altura para deslocamentos"
+msgstr "altura para deslocamentos"
 
 #: flatcamGUI/ObjectUI.py:1823 flatcamGUI/PreferencesUI.py:3628
 msgid "the step value for multidepth cut"
@@ -7760,10 +7756,8 @@ msgid "the value for the spindle speed"
 msgstr "velocidade do spindle"
 
 #: flatcamGUI/ObjectUI.py:1827
-#, fuzzy
-#| msgid "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
 msgid "time to dwell to allow the spindle to reach it's set RPM"
-msgstr "dwelltime = tempo de espera para o spindle atingir sua vel. RPM"
+msgstr "tempo de espera para o spindle atingir sua vel. RPM"
 
 #: flatcamGUI/ObjectUI.py:1843
 msgid "View CNC Code"
@@ -7786,68 +7780,57 @@ msgid ""
 msgstr "Abre uma caixa de diálogo para salvar o arquivo G-Code."
 
 #: flatcamGUI/ObjectUI.py:1872
-#, fuzzy
-#| msgid "Edit Object\tE"
 msgid "Script Object"
-msgstr "Editar Objeto\tE"
+msgstr "Objeto Script"
 
 #: flatcamGUI/ObjectUI.py:1891 flatcamGUI/ObjectUI.py:1950
-#, fuzzy
-#| msgid "Autocompleter Keywords"
 msgid "Auto Completer"
-msgstr "Palavras-chave do preenchimento automático"
+msgstr "Preenchimento Automático"
 
 #: flatcamGUI/ObjectUI.py:1893
 msgid "This selects if the auto completer is enabled in the Script Editor."
 msgstr ""
+"Selecionar se o preenchimento automático está ativado no Editor de Scripts."
 
 #: flatcamGUI/ObjectUI.py:1924
-#, fuzzy
-#| msgid "Geometry Object"
 msgid "Document Object"
-msgstr "Objeto Geometria"
+msgstr "Objeto Documento"
 
 #: flatcamGUI/ObjectUI.py:1952
 msgid "This selects if the auto completer is enabled in the Document Editor."
 msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1970
-#, fuzzy
-#| msgid "Box Type"
 msgid "Font Type"
-msgstr "Tipo de Caixa"
+msgstr "Tipo de Fonte"
 
 #: flatcamGUI/ObjectUI.py:1987
-#, fuzzy
-#| msgid "NB Font Size"
 msgid "Font Size"
-msgstr "Tamanho da Fonte BN"
+msgstr "Tamanho da Fonte"
 
 #: flatcamGUI/ObjectUI.py:2023
 msgid "Alignment"
-msgstr ""
+msgstr "Alinhamento"
 
 #: flatcamGUI/ObjectUI.py:2028
 msgid "Align Left"
-msgstr ""
+msgstr "Esquerda"
 
 #: flatcamGUI/ObjectUI.py:2033
 msgid "Center"
-msgstr ""
+msgstr "Centro"
 
 #: flatcamGUI/ObjectUI.py:2038
 msgid "Align Right"
-msgstr ""
+msgstr "Direita"
 
 #: flatcamGUI/ObjectUI.py:2043
 msgid "Justify"
-msgstr ""
+msgstr "Justificado"
 
 #: flatcamGUI/ObjectUI.py:2050
-#, fuzzy
-#| msgid "Film Color"
 msgid "Font Color"
-msgstr "Cor do Filme"
+msgstr "Cor da Fonte"
 
 #: flatcamGUI/ObjectUI.py:2052
 #, fuzzy
@@ -7856,10 +7839,8 @@ msgid "Set the font color for the selected text"
 msgstr "Define a cor da fonte para os textos de anotação."
 
 #: flatcamGUI/ObjectUI.py:2066
-#, fuzzy
-#| msgid "Selection"
 msgid "Selection Color"
-msgstr "Seleção"
+msgstr "Cor da Seleção"
 
 #: flatcamGUI/ObjectUI.py:2068
 #, fuzzy
