@@ -6,10 +6,14 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
 from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import *
+from FlatCAMObj import FlatCAMCNCjob
 
+from shapely.geometry import MultiPolygon, Polygon
+from shapely.ops import cascaded_union
+
+from copy import deepcopy
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -18,11 +22,13 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+log = logging.getLogger('base')
+
 
 class Properties(FlatCAMTool):
     toolName = _("Properties")
 
-    calculations_finished = pyqtSignal(float, float, float, float, object)
+    calculations_finished = QtCore.pyqtSignal(float, float, float, float, object)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -150,18 +156,18 @@ class Properties(FlatCAMTool):
 
         self.addChild(obj_name, [obj.options['name']])
 
-        def job_thread(obj):
+        def job_thread(obj_prop):
             proc = self.app.proc_container.new(_("Calculating dimensions ... Please wait."))
 
             length = 0.0
             width = 0.0
             area = 0.0
 
-            geo = obj.solid_geometry
+            geo = obj_prop.solid_geometry
             if geo:
                 # calculate physical dimensions
                 try:
-                    xmin, ymin, xmax, ymax = obj.bounds()
+                    xmin, ymin, xmax, ymax = obj_prop.bounds()
 
                     length = abs(xmax - xmin)
                     width = abs(ymax - ymin)
@@ -179,9 +185,9 @@ class Properties(FlatCAMTool):
                 xmax = []
                 ymax = []
 
-                for tool in obj.tools:
+                for tool_k in obj_prop.tools:
                     try:
-                        x0, y0, x1, y1 = cascaded_union(obj.tools[tool]['solid_geometry']).bounds
+                        x0, y0, x1, y1 = cascaded_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
                         xmin.append(x0)
                         ymin.append(y0)
                         xmax.append(x1)
@@ -207,25 +213,25 @@ class Properties(FlatCAMTool):
                     log.debug("Properties.addItems() --> %s" % str(e))
 
             area_chull = 0.0
-            if not isinstance(obj, FlatCAMCNCjob):
+            if not isinstance(obj_prop, FlatCAMCNCjob):
                 # calculate and add convex hull area
                 if geo:
                     if isinstance(geo, MultiPolygon):
                         env_obj = geo.convex_hull
                     elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
                             (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
-                        env_obj = cascaded_union(obj.solid_geometry)
+                        env_obj = cascaded_union(obj_prop.solid_geometry)
                         env_obj = env_obj.convex_hull
                     else:
-                        env_obj = cascaded_union(obj.solid_geometry)
+                        env_obj = cascaded_union(obj_prop.solid_geometry)
                         env_obj = env_obj.convex_hull
 
                     area_chull = env_obj.area
                 else:
                     try:
                         area_chull = []
-                        for tool in obj.tools:
-                            area_el = cascaded_union(obj.tools[tool]['solid_geometry']).convex_hull
+                        for tool_k in obj_prop.tools:
+                            area_el = cascaded_union(obj_prop.tools[tool_k]['solid_geometry']).convex_hull
                             area_chull.append(area_el.area)
                         area_chull = max(area_chull)
                     except Exception as e:

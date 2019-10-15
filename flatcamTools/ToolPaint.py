@@ -5,10 +5,25 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtCore import Qt
+
 from FlatCAMTool import FlatCAMTool
-from copy import copy, deepcopy
-from ObjectCollection import *
-from shapely.geometry import base
+from copy import deepcopy
+# from ObjectCollection import *
+from flatcamParsers.ParseGerber import Gerber
+from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry
+from camlib import Geometry
+from flatcamGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet
+import FlatCAMApp
+
+from shapely.geometry import base, Polygon, MultiPolygon, LinearRing
+from shapely.ops import cascaded_union
+
+import numpy as np
+from numpy import Inf
+import traceback
+import logging
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -17,6 +32,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class ToolPaint(FlatCAMTool, Gerber):
@@ -374,6 +391,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.mm = None
         self.mp = None
+        self.mr = None
 
         self.sel_rect = []
 
@@ -641,10 +659,10 @@ class ToolPaint(FlatCAMTool, Gerber):
             for tooluid_key, tooluid_value in self.paint_tools.items():
                 if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
-                    id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-                    id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                    id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
+                    id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
                     row_no = tool_id - 1
-                    self.tools_table.setItem(row_no, 0, id)  # Tool name/id
+                    self.tools_table.setItem(row_no, 0, id_item)  # Tool name/id
 
                     # Make sure that the drill diameter when in MM is with no more than 2 decimals
                     # There are no drill bits in MM with more than 2 decimals diameter
@@ -2213,7 +2231,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit('[ERROR] %s\n%s' %
                                              (_("Could not do Paint All. Try a different combination of parameters. "
-                                               "Or a different Method of paint"), str(e)))
+                                                "Or a different Method of paint"), str(e)))
                         return
 
                     pol_nr += 1
@@ -2373,7 +2391,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit('[ERROR] %s\n%s' %
                                              (_("Could not do Paint All. Try a different combination of parameters. "
-                                               "Or a different Method of paint"), str(e)))
+                                                "Or a different Method of paint"), str(e)))
                         return
 
                     pol_nr += 1

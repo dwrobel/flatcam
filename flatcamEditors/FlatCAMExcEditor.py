@@ -8,19 +8,23 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
-from shapely.geometry import LineString, LinearRing, MultiLineString
-from shapely.ops import cascaded_union
-import shapely.affinity as affinity
-
-from numpy import arctan2, Inf, array, sqrt, sign, dot
-from rtree import index as rtindex
-
-from camlib import *
+from camlib import distance, arc, FlatCAMRTreeStorage
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, SpinBoxDelegate
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, FlatCAMGeoEditor
 from flatcamParsers.ParseExcellon import Excellon
+import FlatCAMApp
 
-from copy import copy, deepcopy
+from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon, Point
+import shapely.affinity as affinity
+
+import numpy as np
+
+from rtree import index as rtindex
+
+import traceback
+import math
+import logging
+from copy import deepcopy
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -29,6 +33,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class FCDrillAdd(FCShapeTool):
@@ -3214,8 +3220,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                       _("An internal error has ocurred. See Shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
-                raise
-                # raise
+                return
 
         with self.app.proc_container.new(_("Creating Excellon.")):
 
@@ -3998,10 +4003,10 @@ class FlatCAMExcEditor(QtCore.QObject):
 
 
 def get_shapely_list_bounds(geometry_list):
-    xmin = Inf
-    ymin = Inf
-    xmax = -Inf
-    ymax = -Inf
+    xmin = np.Inf
+    ymin = np.Inf
+    xmax = -np.Inf
+    ymax = -np.Inf
 
     for gs in geometry_list:
         try:

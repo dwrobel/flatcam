@@ -1,4 +1,14 @@
-from camlib import *
+
+from camlib import Geometry
+import FlatCAMApp
+
+import shapely.affinity as affinity
+from shapely.geometry import Point, LineString
+import numpy as np
+
+import re
+import logging
+import traceback
 
 import FlatCAMTranslation as fcTranslate
 
@@ -7,6 +17,8 @@ import builtins
 
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class Excellon(Geometry):
@@ -1017,10 +1029,10 @@ class Excellon(Geometry):
 
         def bounds_rec(obj):
             if type(obj) is list:
-                minx = Inf
-                miny = Inf
-                maxx = -Inf
-                maxy = -Inf
+                minx = np.Inf
+                miny = np.Inf
+                maxx = -np.Inf
+                maxy = -np.Inf
 
                 for k in obj:
                     if type(k) is dict:

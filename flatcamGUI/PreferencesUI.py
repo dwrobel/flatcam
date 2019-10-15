@@ -8,10 +8,7 @@
 from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import *
 import platform
-import webbrowser
 import sys
-
-from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 
 import gettext
 import FlatCAMTranslation as fcTranslate

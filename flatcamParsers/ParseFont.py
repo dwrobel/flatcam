@@ -11,12 +11,11 @@
 # ######################################################################
 
 import re, os, sys, glob
-import itertools
 
 from shapely.geometry import Point, Polygon
-from shapely.affinity import translate, scale, rotate
+from shapely.affinity import translate, scale
 from shapely.geometry import MultiPolygon
-from shapely.geometry.base import BaseGeometry
+
 
 import freetype as ft
 from fontTools import ttLib

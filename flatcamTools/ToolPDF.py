@@ -5,19 +5,22 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtCore
+
 from FlatCAMTool import FlatCAMTool
-from shapely.geometry import Point, Polygon, LineString
-from shapely.ops import cascaded_union, unary_union
+import FlatCAMApp
 
-from FlatCAMObj import *
+from shapely.geometry import Point, Polygon, LineString, MultiPolygon
+from shapely.ops import unary_union
 
-import math
 from copy import copy, deepcopy
 import numpy as np
 
 import zlib
 import re
 import time
+import logging
+import traceback
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -26,6 +29,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class ToolPDF(FlatCAMTool):

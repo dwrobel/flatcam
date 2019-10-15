@@ -5,18 +5,28 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtGui, QtCore
 from FlatCAMTool import FlatCAMTool
-from copy import copy, deepcopy
-from ObjectCollection import *
-import time
+
+from flatcamGUI.GUIElements import FCSpinner, FCDoubleSpinner, RadioSet, FCCheckBox, OptionalInputSection
+from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber, FlatCAMExcellon
+import FlatCAMApp
+from copy import deepcopy
+# from ObjectCollection import *
+import numpy as np
+
+import shapely.affinity as affinity
 
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
+import logging
 
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class Panelize(FlatCAMTool):
@@ -367,14 +377,12 @@ class Panelize(FlatCAMTool):
 
         # Get source object.
         try:
-            obj = self.app.collection.get_by_name(str(name))
+            panel_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
                                  (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
-
-        panel_obj = obj
 
         if panel_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
@@ -443,6 +451,18 @@ class Panelize(FlatCAMTool):
                     rows -= 1
                     panel_lengthy = ((ymax - ymin) * rows) + (spacing_rows * (rows - 1))
 
+        if isinstance(panel_obj, FlatCAMExcellon) or isinstance(panel_obj, FlatCAMGeometry):
+            # make a copy of the panelized Excellon or Geometry tools
+            copied_tools = dict()
+            for tt, tt_val in list(panel_obj.tools.items()):
+                copied_tools[tt] = deepcopy(tt_val)
+
+        if isinstance(panel_obj, FlatCAMGerber):
+            # make a copy of the panelized Gerber apertures
+            copied_apertures = dict()
+            for tt, tt_val in list(panel_obj.apertures.items()):
+                copied_apertures[tt] = deepcopy(tt_val)
+
         def panelize_2():
             if panel_obj is not None:
                 self.app.inform.emit(_("Generating panel ... "))
@@ -452,7 +472,7 @@ class Panelize(FlatCAMTool):
                 def job_init_excellon(obj_fin, app_obj):
                     currenty = 0.0
                     self.app.progress.emit(10)
-                    obj_fin.tools = panel_obj.tools.copy()
+                    obj_fin.tools = copied_tools
                     obj_fin.drills = []
                     obj_fin.slots = []
                     obj_fin.solid_geometry = []
@@ -472,7 +492,6 @@ class Panelize(FlatCAMTool):
                         currentx = 0.0
                         for col in range(columns):
                             element += 1
-                            disp_number = 0
                             old_disp_number = 0
 
                             if panel_obj.drills:
@@ -493,7 +512,7 @@ class Panelize(FlatCAMTool):
                                     drill_nr += 1
                                     disp_number = int(np.interp(drill_nr, [0, geo_len_drills], [0, 100]))
 
-                                    if disp_number > old_disp_number and disp_number <= 100:
+                                    if old_disp_number < disp_number <= 100:
                                         self.app.proc_container.update_view_text(' %s: %d D:%d%%' %
                                                                                  (_("Copy"),
                                                                                   int(element),
@@ -520,7 +539,7 @@ class Panelize(FlatCAMTool):
                                     slot_nr += 1
                                     disp_number = int(np.interp(slot_nr, [0, geo_len_slots], [0, 100]))
 
-                                    if disp_number > old_disp_number and disp_number <= 100:
+                                    if old_disp_number < disp_number <= 100:
                                         self.app.proc_container.update_view_text(' %s: %d S:%d%%' %
                                                                                  (_("Copy"),
                                                                                   int(element),
@@ -557,12 +576,12 @@ class Panelize(FlatCAMTool):
                     # create the initial structure on which to create the panel
                     if isinstance(panel_obj, FlatCAMGeometry):
                         obj_fin.multigeo = panel_obj.multigeo
-                        obj_fin.tools = deepcopy(panel_obj.tools)
+                        obj_fin.tools = copied_tools
                         if panel_obj.multigeo is True:
                             for tool in panel_obj.tools:
                                 obj_fin.tools[tool]['solid_geometry'][:] = []
                     elif isinstance(panel_obj, FlatCAMGerber):
-                        obj_fin.apertures = deepcopy(panel_obj.apertures)
+                        obj_fin.apertures = copied_apertures
                         for ap in obj_fin.apertures:
                             obj_fin.apertures[ap]['geometry'] = list()
 
@@ -594,7 +613,6 @@ class Panelize(FlatCAMTool):
 
                         for col in range(columns):
                             element += 1
-                            disp_number = 0
                             old_disp_number = 0
 
                             if isinstance(panel_obj, FlatCAMGeometry):

@@ -6,12 +6,15 @@
 # MIT Licence                                              #
 # ##########################################################
 
-import numpy as np
 from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import QSettings
+
+import numpy as np
+
 import vispy.scene as scene
 from vispy.scene.cameras.base_camera import BaseCamera
 from vispy.color import Color
+
 import time
 
 white = Color("#ffffff")

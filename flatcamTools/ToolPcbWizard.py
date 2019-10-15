@@ -5,11 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMTool import FlatCAMTool
+from PyQt5 import QtWidgets, QtCore
 
-from flatcamGUI.GUIElements import RadioSet, FCComboBox, FCSpinner, FCButton, FCTable
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import pyqtSignal
+from FlatCAMTool import FlatCAMTool
+from flatcamGUI.GUIElements import RadioSet, FCSpinner, FCButton, FCTable
+
 import re
 import os
 from datetime import datetime
@@ -26,7 +26,7 @@ if '_' not in builtins.__dict__:
 
 class PcbWizard(FlatCAMTool):
 
-    file_loaded = pyqtSignal(str, str)
+    file_loaded = QtCore.pyqtSignal(str, str)
 
     toolName = _("PcbWizard Import Tool")
 

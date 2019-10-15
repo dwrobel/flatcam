@@ -14,6 +14,8 @@
 from flatcamGUI.PreferencesUI import *
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
+from copy import deepcopy
+from datetime import datetime
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -3696,7 +3698,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
 class BookmarkManager(QtWidgets.QWidget):
 
-    mark_rows = pyqtSignal()
+    mark_rows = QtCore.pyqtSignal()
 
     def __init__(self, app, storage, parent=None):
         super(BookmarkManager, self).__init__(parent)

@@ -5,8 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets
 from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import *
+from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, FCButton, OptionalInputSection, EvalEntry2
+from FlatCAMObj import FlatCAMCNCjob
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -271,7 +273,7 @@ class ToolTransform(FlatCAMTool):
             _("Flip the selected object(s) over the X axis.")
         )
 
-        hlay0= QtWidgets.QHBoxLayout()
+        hlay0 = QtWidgets.QHBoxLayout()
         self.transform_lay.addLayout(hlay0)
 
         hlay0.addWidget(self.flipx_button)
@@ -312,7 +314,7 @@ class ToolTransform(FlatCAMTool):
 
         self.ois_flip = OptionalInputSection(self.flip_ref_cb, [self.flip_ref_entry, self.flip_ref_button], logic=True)
 
-        hlay1= QtWidgets.QHBoxLayout()
+        hlay1 = QtWidgets.QHBoxLayout()
         self.transform_lay.addLayout(hlay1)
 
         hlay1.addWidget(self.flip_ref_label)

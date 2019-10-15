@@ -5,12 +5,21 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtGui, QtCore
 from FlatCAMTool import FlatCAMTool
-from ObjectCollection import *
-from FlatCAMApp import *
-from shapely.geometry import box
-from shapely.ops import cascaded_union, unary_union
+from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox
+from FlatCAMObj import FlatCAMGerber
 
+from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing
+from shapely.ops import cascaded_union, unary_union
+import shapely.affinity as affinity
+
+from matplotlib.backend_bases import KeyEvent as mpl_key_event
+
+from numpy import Inf
+from copy import deepcopy
+import math
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -18,6 +27,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class CutOut(FlatCAMTool):

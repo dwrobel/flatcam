@@ -11,13 +11,20 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-# from PyQt5.QtCore import QModelIndex
-from FlatCAMObj import *
-import inspect  # TODO: Remove
-import FlatCAMApp
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
-# import webbrowser
+from PyQt5.QtGui import QColor
+# from PyQt5.QtCore import QModelIndex
+
+from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon, FlatCAMCNCjob, FlatCAMDocument, FlatCAMScript
+import inspect  # TODO: Remove
+import FlatCAMApp
+
+import re
+import logging
+import collections
+from copy import deepcopy
+from numpy import Inf
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -26,6 +33,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class KeySensitiveListView(QtWidgets.QTreeView):

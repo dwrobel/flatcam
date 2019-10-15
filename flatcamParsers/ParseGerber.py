@@ -1,4 +1,19 @@
-from camlib import *
+
+from camlib import Geometry, arc, arc_angle, ApertureMacro
+import FlatCAMApp
+
+import numpy as np
+import re
+import logging
+import traceback
+from copy import deepcopy
+import sys
+
+from shapely.ops import cascaded_union
+from shapely.geometry import Polygon, MultiPolygon, LineString, Point
+import shapely.affinity as affinity
+from shapely.geometry import box as shply_box
+
 import FlatCAMTranslation as fcTranslate
 
 import gettext
@@ -6,6 +21,8 @@ import builtins
 
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class Gerber(Geometry):
@@ -253,14 +270,14 @@ class Gerber(Geometry):
             self.apertures[apid] = {"type": "R",
                                     "width": float(paramList[0]),
                                     "height": float(paramList[1]),
-                                    "size": sqrt(float(paramList[0]) ** 2 + float(paramList[1]) ** 2)}  # Hack
+                                    "size": np.sqrt(float(paramList[0]) ** 2 + float(paramList[1]) ** 2)}  # Hack
             return apid
 
         if apertureType == "O":  # Obround
             self.apertures[apid] = {"type": "O",
                                     "width": float(paramList[0]),
                                     "height": float(paramList[1]),
-                                    "size": sqrt(float(paramList[0]) ** 2 + float(paramList[1]) ** 2)}  # Hack
+                                    "size": np.sqrt(float(paramList[0]) ** 2 + float(paramList[1]) ** 2)}  # Hack
             return apid
 
         if apertureType == "P":  # Polygon (regular)
@@ -1231,15 +1248,15 @@ class Gerber(Geometry):
 
                     if quadrant_mode == 'MULTI':
                         center = [i + current_x, j + current_y]
-                        radius = sqrt(i ** 2 + j ** 2)
-                        start = arctan2(-j, -i)  # Start angle
+                        radius = np.sqrt(i ** 2 + j ** 2)
+                        start = np.arctan2(-j, -i)  # Start angle
                         # Numerical errors might prevent start == stop therefore
                         # we check ahead of time. This should result in a
                         # 360 degree arc.
                         if current_x == circular_x and current_y == circular_y:
                             stop = start
                         else:
-                            stop = arctan2(-center[1] + circular_y, -center[0] + circular_x)  # Stop angle
+                            stop = np.arctan2(-center[1] + circular_y, -center[0] + circular_x)  # Stop angle
 
                         this_arc = arc(center, radius, start, stop,
                                        arcdir[current_interpolation_mode],
@@ -1273,10 +1290,10 @@ class Gerber(Geometry):
                         valid = False
                         log.debug("I: %f  J: %f" % (i, j))
                         for center in center_candidates:
-                            radius = sqrt(i ** 2 + j ** 2)
+                            radius = np.sqrt(i ** 2 + j ** 2)
 
                             # Make sure radius to start is the same as radius to end.
-                            radius2 = sqrt((center[0] - circular_x) ** 2 + (center[1] - circular_y) ** 2)
+                            radius2 = np.sqrt((center[0] - circular_x) ** 2 + (center[1] - circular_y) ** 2)
                             if radius2 < radius * 0.95 or radius2 > radius * 1.05:
                                 continue  # Not a valid center.
 
@@ -1284,16 +1301,16 @@ class Gerber(Geometry):
                             i = center[0] - current_x
                             j = center[1] - current_y
 
-                            start = arctan2(-j, -i)  # Start angle
-                            stop = arctan2(-center[1] + circular_y, -center[0] + circular_x)  # Stop angle
+                            start = np.arctan2(-j, -i)  # Start angle
+                            stop = np.arctan2(-center[1] + circular_y, -center[0] + circular_x)  # Stop angle
                             angle = abs(arc_angle(start, stop, arcdir[current_interpolation_mode]))
                             log.debug("ARC START: %f, %f  CENTER: %f, %f  STOP: %f, %f" %
                                       (current_x, current_y, center[0], center[1], circular_x, circular_y))
                             log.debug("START Ang: %f, STOP Ang: %f, DIR: %s, ABS: %.12f <= %.12f: %s" %
-                                      (start * 180 / pi, stop * 180 / pi, arcdir[current_interpolation_mode],
-                                       angle * 180 / pi, pi / 2 * 180 / pi, angle <= (pi + 1e-6) / 2))
+                                      (start * 180 / np.pi, stop * 180 / np.pi, arcdir[current_interpolation_mode],
+                                       angle * 180 / np.pi, np.pi / 2 * 180 / np.pi, angle <= (np.pi + 1e-6) / 2))
 
-                            if angle <= (pi + 1e-6) / 2:
+                            if angle <= (np.pi + 1e-6) / 2:
                                 log.debug("########## ACCEPTING ARC ############")
                                 this_arc = arc(center, radius, start, stop,
                                                arcdir[current_interpolation_mode],
@@ -1478,8 +1495,8 @@ class Gerber(Geometry):
             n_vertices = aperture['nVertices']
             points = []
             for i in range(0, n_vertices):
-                x = loc[0] + 0.5 * diam * (cos(2 * pi * i / n_vertices))
-                y = loc[1] + 0.5 * diam * (sin(2 * pi * i / n_vertices))
+                x = loc[0] + 0.5 * diam * (np.cos(2 * np.pi * i / n_vertices))
+                y = loc[1] + 0.5 * diam * (np.sin(2 * np.pi * i / n_vertices))
                 points.append((x, y))
             ply = Polygon(points)
             if 'rotation' in aperture:
@@ -1553,10 +1570,10 @@ class Gerber(Geometry):
 
         def bounds_rec(obj):
             if type(obj) is list and type(obj) is not MultiPolygon:
-                minx = Inf
-                miny = Inf
-                maxx = -Inf
-                maxy = -Inf
+                minx = np.Inf
+                miny = np.Inf
+                maxx = -np.Inf
+                maxy = -np.Inf
 
                 for k in obj:
                     if type(k) is dict:

@@ -10,24 +10,33 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextDocument
+
+from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString, LineString, LinearRing
+from shapely.ops import cascaded_union
+import shapely.affinity as affinity
+
 import copy
+from copy import deepcopy
+from io import StringIO
+import traceback
 import inspect  # TODO: For debugging only.
 from datetime import datetime
 
 from flatcamEditors.FlatCAMTextEditor import TextEditor
-
 from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
 from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-from camlib import *
 from flatcamParsers.ParseExcellon import Excellon
 from flatcamParsers.ParseGerber import Gerber
+from camlib import Geometry, CNCjob
+import FlatCAMApp
 
-import itertools
 import tkinter as tk
-import sys
+import os, sys, itertools
+import ezdxf
+
+import math
+import numpy as np
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -66,7 +75,7 @@ class FlatCAMObj(QtCore.QObject):
     app = None
 
     # signal to plot a single object
-    plot_single_object = pyqtSignal()
+    plot_single_object = QtCore.pyqtSignal()
 
     def __init__(self, name):
         """

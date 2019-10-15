@@ -5,12 +5,23 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtCore, QtGui
 from FlatCAMTool import FlatCAMTool
-from copy import copy, deepcopy
-from ObjectCollection import *
-import time
-from shapely.geometry import base
+from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog
+from flatcamParsers.ParseGerber import Gerber
+from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber
+import FlatCAMApp
 
+from copy import deepcopy
+
+import numpy as np
+import math
+from shapely.geometry import base
+from shapely.ops import cascaded_union
+from shapely.geometry import MultiPolygon, Polygon, MultiLineString, LineString, LinearRing
+
+import logging
+import traceback
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -18,6 +29,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class NonCopperClear(FlatCAMTool, Gerber):
@@ -473,7 +486,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "Add", self.on_add_tool_by_key, icon=QtGui.QIcon("share/plus16.png"))
         self.tools_table.addContextMenu(
             "Delete", lambda:
-            self.on_tool_delete(rows_to_delete=None, all=None), icon=QtGui.QIcon("share/delete32.png"))
+            self.on_tool_delete(rows_to_delete=None, all_tools=None), icon=QtGui.QIcon("share/delete32.png"))
 
         # #############################################################################
         # ########################## VARIABLES ########################################
@@ -1040,12 +1053,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                               "New diameter value is already in the Tool Table."))
         self.build_ui()
 
-    def on_tool_delete(self, rows_to_delete=None, all=None):
+    def on_tool_delete(self, rows_to_delete=None, all_tools=None):
+        """
+        Will delete a tool in the tool table
+
+        :param rows_to_delete: which rows to delete; can be a list
+        :param all_tools: delete all tools in the tool table
+        :return:
+        """
         self.ui_disconnect()
 
         deleted_tools_list = []
 
-        if all:
+        if all_tools:
             self.paint_tools.clear()
             self.build_ui()
             return

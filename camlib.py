@@ -11,12 +11,9 @@ from PyQt5 import QtWidgets
 from io import StringIO
 
 import numpy as np
-from numpy import arctan2, Inf, array, sqrt, pi, ceil, sin, cos, dot, float32, \
-    transpose
 from numpy.linalg import solve, norm
 
-import re, sys, os, platform
-import math
+import platform
 from copy import deepcopy
 
 import traceback
@@ -26,8 +23,8 @@ from rtree import index as rtindex
 from lxml import etree as ET
 
 # See: http://toblerity.org/shapely/manual.html
-from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString
-from shapely.geometry import MultiPoint, MultiPolygon
+from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString, MultiPoint, MultiPolygon
+
 from shapely.geometry import box as shply_box
 from shapely.ops import cascaded_union, unary_union, polygonize
 import shapely.affinity as affinity
@@ -63,7 +60,6 @@ import FlatCAMApp
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
-
 
 fcTranslate.apply_language('strings')
 
@@ -336,8 +332,8 @@ class ApertureMacro:
         points = [(0, 0)]*nverts
 
         for i in range(nverts):
-            points[i] = (x + 0.5 * dia * cos(2*pi * i/nverts),
-                         y + 0.5 * dia * sin(2*pi * i/nverts))
+            points[i] = (x + 0.5 * dia * np.cos(2*np.pi * i/nverts),
+                         y + 0.5 * dia * np.sin(2*np.pi * i/nverts))
 
         poly = Polygon(points)
         poly_rotated = affinity.rotate(poly, angle, origin=(0, 0))
@@ -637,10 +633,10 @@ class Geometry(object):
 
         def bounds_rec(obj):
             if type(obj) is list:
-                minx = Inf
-                miny = Inf
-                maxx = -Inf
-                maxy = -Inf
+                minx = np.Inf
+                miny = np.Inf
+                maxx = -np.Inf
+                maxy = -np.Inf
 
                 for k in obj:
                     if type(k) is dict:
@@ -1155,7 +1151,7 @@ class Geometry(object):
             log.debug("Image import as monochrome.")
         else:
             mask_setting = (red <= mask[1]) + (green <= mask[2]) + (blue <= mask[3])
-            total = np.zeros(red.shape, dtype=float32)
+            total = np.zeros(red.shape, dtype=np.float32)
             for band in red, green, blue:
                 total += band
             total /= 3
@@ -3298,10 +3294,10 @@ class CNCjob(Geometry):
 
         def bounds_rec(obj):
             if type(obj) is list:
-                minx = Inf
-                miny = Inf
-                maxx = -Inf
-                maxy = -Inf
+                minx = np.Inf
+                miny = np.Inf
+                maxx = -np.Inf
+                maxy = -np.Inf
 
                 for k in obj:
                     if type(k) is dict:
@@ -4049,9 +4045,9 @@ class CNCjob(Geometry):
                 arcdir = [None, None, "cw", "ccw"]
                 if current['G'] in [2, 3]:  # arc
                     center = [gobj['I'] + current['X'], gobj['J'] + current['Y']]
-                    radius = sqrt(gobj['I']**2 + gobj['J']**2)
-                    start = arctan2(-gobj['J'], -gobj['I'])
-                    stop = arctan2(-center[1] + y, -center[0] + x)
+                    radius = np.sqrt(gobj['I']**2 + gobj['J']**2)
+                    start = np.arctan2(-gobj['J'], -gobj['I'])
+                    stop = np.arctan2(-center[1] + y, -center[0] + x)
                     path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle / 4))
 
             # Update current instruction
@@ -4710,10 +4706,10 @@ class CNCjob(Geometry):
 
         def bounds_rec(obj):
             if type(obj) is list:
-                minx = Inf
-                miny = Inf
-                maxx = -Inf
-                maxy = -Inf
+                minx = np.Inf
+                miny = np.Inf
+                maxx = -np.Inf
+                maxy = -np.Inf
 
                 for k in obj:
                     if type(k) is dict:
@@ -4742,15 +4738,15 @@ class CNCjob(Geometry):
 
             bounds_coords = bounds_rec(self.solid_geometry)
         else:
-            minx = Inf
-            miny = Inf
-            maxx = -Inf
-            maxy = -Inf
+            minx = np.Inf
+            miny = np.Inf
+            maxx = -np.Inf
+            maxy = -np.Inf
             for k, v in self.cnc_tools.items():
-                minx = Inf
-                miny = Inf
-                maxx = -Inf
-                maxy = -Inf
+                minx = np.Inf
+                miny = np.Inf
+                maxx = -np.Inf
+                maxy = -np.Inf
                 try:
                     for k in v['solid_geometry']:
                         minx_, miny_, maxx_, maxy_ = bounds_rec(k)
@@ -5186,10 +5182,10 @@ class CNCjob(Geometry):
 
 
 def get_bounds(geometry_list):
-    xmin = Inf
-    ymin = Inf
-    xmax = -Inf
-    ymax = -Inf
+    xmin = np.Inf
+    ymin = np.Inf
+    xmax = -np.Inf
+    ymax = -np.Inf
 
     for gs in geometry_list:
         try:
@@ -5229,33 +5225,33 @@ def arc(center, radius, start, stop, direction, steps_per_circ):
     da_sign = {"cw": -1.0, "ccw": 1.0}
     points = []
     if direction == "ccw" and stop <= start:
-        stop += 2 * pi
+        stop += 2 * np.pi
     if direction == "cw" and stop >= start:
-        stop -= 2 * pi
+        stop -= 2 * np.pi
     
     angle = abs(stop - start)
         
     # angle = stop-start
-    steps = max([int(ceil(angle / (2 * pi) * steps_per_circ)), 2])
+    steps = max([int(np.ceil(angle / (2 * np.pi) * steps_per_circ)), 2])
     delta_angle = da_sign[direction] * angle * 1.0 / steps
     for i in range(steps + 1):
         theta = start + delta_angle * i
-        points.append((center[0] + radius * cos(theta), center[1] + radius * sin(theta)))
+        points.append((center[0] + radius * np.cos(theta), center[1] + radius * np.sin(theta)))
     return points
 
 
 def arc2(p1, p2, center, direction, steps_per_circ):
-    r = sqrt((center[0] - p1[0]) ** 2 + (center[1] - p1[1]) ** 2)
-    start = arctan2(p1[1] - center[1], p1[0] - center[0])
-    stop = arctan2(p2[1] - center[1], p2[0] - center[0])
+    r = np.sqrt((center[0] - p1[0]) ** 2 + (center[1] - p1[1]) ** 2)
+    start = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+    stop = np.arctan2(p2[1] - center[1], p2[0] - center[0])
     return arc(center, r, start, stop, direction, steps_per_circ)
 
 
 def arc_angle(start, stop, direction):
     if direction == "ccw" and stop <= start:
-        stop += 2 * pi
+        stop += 2 * np.pi
     if direction == "cw" and stop >= start:
-        stop -= 2 * pi
+        stop -= 2 * np.pi
 
     angle = abs(stop - start)
     return angle
@@ -5665,12 +5661,12 @@ def three_point_circle(p1, p2, p3):
     a2 = (p2 + p3) / 2.0
 
     # Normals
-    b1 = dot((p2 - p1), array([[0, -1], [1, 0]], dtype=float32))
-    b2 = dot((p3 - p2), array([[0, 1], [-1, 0]], dtype=float32))
+    b1 = np.dot((p2 - p1), np.array([[0, -1], [1, 0]], dtype=np.float32))
+    b2 = np.dot((p3 - p2), np.array([[0, 1], [-1, 0]], dtype=np.float32))
 
     # Params
     try:
-        T = solve(transpose(array([-b1, b2])), a1 - a2)
+        T = solve(np.transpose(np.array([-b1, b2])), a1 - a2)
     except Exception as e:
         log.debug("camlib.three_point_circle() --> %s" % str(e))
         return
@@ -5685,11 +5681,11 @@ def three_point_circle(p1, p2, p3):
 
 
 def distance(pt1, pt2):
-    return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
+    return np.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
 
 def distance_euclidian(x1, y1, x2, y2):
-    return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+    return np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
 
 class FlatCAMRTree(object):

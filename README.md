@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 15.10.2019
 
 - adjusted the layout in NCC Tool
+- fixed bug in Panelization Tool for which in case of Excellon objects, the panel kept a reference to the source object which created issues when moving or disabling/enabling the plots
+- cleaned up the module imports throughout the app (the TclCommands are not yet verified)
 
 14.10.2019
 

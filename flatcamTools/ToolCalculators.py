@@ -5,8 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets
 from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import *
+from flatcamGUI.GUIElements import FCSpinner, FCDoubleSpinner, FCEntry
 import math
 
 import gettext
@@ -321,11 +322,11 @@ class ToolCalculator(FlatCAMTool):
 
     def on_calculate_inch_units(self):
         mm_val = float(self.mm_entry.get_value())
-        self.inch_entry.set_value('%.*f' % (self.decimals,(mm_val / 25.4)))
+        self.inch_entry.set_value('%.*f' % (self.decimals, (mm_val / 25.4)))
 
     def on_calculate_mm_units(self):
         inch_val = float(self.inch_entry.get_value())
-        self.mm_entry.set_value('%.*f' % (self.decimals,(inch_val * 25.4)))
+        self.mm_entry.set_value('%.*f' % (self.decimals, (inch_val * 25.4)))
 
     def on_calculate_eplate(self):
         length = float(self.pcblength_entry.get_value())

@@ -9,6 +9,8 @@
 import urllib.request
 import urllib.parse
 import urllib.error
+import webbrowser
+
 import getopt
 import random
 import simplejson as json
@@ -40,10 +42,12 @@ import vispy.scene as scene
 # #######################################
 from ObjectCollection import *
 from FlatCAMObj import *
+from camlib import to_dict, dict2obj, ET, ParseError
+
 from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
-
 from flatcamGUI.FlatCAMGUI import *
+
 from FlatCAMCommon import LoudDict
 from FlatCAMPostProc import load_postprocessors
 

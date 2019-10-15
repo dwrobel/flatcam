@@ -5,12 +5,18 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-# from copy import copy, deepcopy
-from ObjectCollection import *
-import time
+from flatcamGUI.GUIElements import FCCheckBox, FCButton
 
+from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
+from shapely.ops import cascaded_union
+
+import traceback
+from copy import deepcopy
+import time
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -18,6 +24,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class ToolSub(FlatCAMTool):
