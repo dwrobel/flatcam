@@ -261,7 +261,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         )
 
         grid2.addWidget(self.addtool_btn, 0, 0)
-        # grid2.addWidget(self.copytool_btn, 0, 1)
         grid2.addWidget(self.deltool_btn, 0, 2)
 
         self.empty_label_0 = QtWidgets.QLabel('')
@@ -269,6 +268,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         grid3 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid3)
+        grid3.setColumnStretch(0, 0)
+        grid3.setColumnStretch(1, 1)
 
         e_lab_1 = QtWidgets.QLabel('<b>%s:</b>' % _("Parameters"))
         grid3.addWidget(e_lab_1, 0, 0)

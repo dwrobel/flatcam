@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.10.2019
+
+- adjusted the layout in NCC Tool
+
 14.10.2019
 
 - modified the result highlight color in Check Rules Tool

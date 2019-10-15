@@ -21,7 +21,7 @@ import subprocess
 import ctypes
 
 import tkinter as tk
-from PyQt5 import QtPrintSupport, QtNetwork
+from PyQt5 import QtPrintSupport
 
 from contextlib import contextmanager
 import gc
