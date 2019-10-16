@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-10-15 02:33+0300\n"
-"PO-Revision-Date: 2019-10-15 15:25-0300\n"
+"PO-Revision-Date: 2019-10-16 16:51-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -8740,8 +8740,6 @@ msgid "Tolerance"
 msgstr "Tolerância"
 
 #: flatcamGUI/PreferencesUI.py:1542
-#, fuzzy
-#| msgid "Tolerance for poligon simplification."
 msgid "Tolerance for polygon simplification."
 msgstr "Tolerância para a simplificação de polígonos."
 
@@ -10189,10 +10187,8 @@ msgid "Both"
 msgstr "Ambos"
 
 #: flatcamGUI/PreferencesUI.py:4486 flatcamTools/ToolFilm.py:234
-#, fuzzy
-#| msgid "Mirror Axis:"
 msgid "Mirror axis"
-msgstr "Espelhar Eixo:"
+msgstr "Espelhar eixo"
 
 #: flatcamGUI/PreferencesUI.py:4499
 msgid "Panelize Tool Options"
@@ -10729,14 +10725,17 @@ msgstr "Mínimo tamanho de traçado aceito."
 
 #: flatcamGUI/PreferencesUI.py:5153 flatcamTools/ToolRulesCheck.py:272
 #: flatcamTools/ToolRulesCheck.py:1123 flatcamTools/ToolRulesCheck.py:1153
+#, fuzzy
 msgid "Copper to Copper clearance"
-msgstr ""
+msgstr "Espaço Cobre Cobre"
 
 #: flatcamGUI/PreferencesUI.py:5155 flatcamTools/ToolRulesCheck.py:274
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features is met."
 msgstr ""
+"Verifica se o espaço mínimo entre recursos de cobre\n"
+"é atendido."
 
 #: flatcamGUI/PreferencesUI.py:5168 flatcamGUI/PreferencesUI.py:5188
 #: flatcamGUI/PreferencesUI.py:5208 flatcamGUI/PreferencesUI.py:5228
@@ -10746,132 +10745,143 @@ msgstr ""
 #: flatcamTools/ToolRulesCheck.py:356 flatcamTools/ToolRulesCheck.py:379
 #: flatcamTools/ToolRulesCheck.py:402 flatcamTools/ToolRulesCheck.py:450
 msgid "Minimum acceptable clearance value."
-msgstr ""
+msgstr "Espaço mínimo aceitável."
 
 #: flatcamGUI/PreferencesUI.py:5173 flatcamTools/ToolRulesCheck.py:295
 #: flatcamTools/ToolRulesCheck.py:1183 flatcamTools/ToolRulesCheck.py:1189
 #: flatcamTools/ToolRulesCheck.py:1202 flatcamTools/ToolRulesCheck.py:1209
 msgid "Copper to Outline clearance"
-msgstr ""
+msgstr "Espaço Cobre Contorno"
 
 #: flatcamGUI/PreferencesUI.py:5175 flatcamTools/ToolRulesCheck.py:297
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features and the outline is met."
 msgstr ""
+"Verifica se o espaço mínimo entre recursos de cobre\n"
+"e o contorno é atendido."
 
 #: flatcamGUI/PreferencesUI.py:5193 flatcamTools/ToolRulesCheck.py:318
 msgid "Silk to Silk Clearance"
-msgstr ""
+msgstr "Espaço Silk Silk"
 
 #: flatcamGUI/PreferencesUI.py:5195 flatcamTools/ToolRulesCheck.py:320
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and silkscreen features is met."
 msgstr ""
+"Verifica se o espaço mínimo entre recursos de silkscreen\n"
+"é atendido."
 
 #: flatcamGUI/PreferencesUI.py:5213 flatcamTools/ToolRulesCheck.py:341
 #: flatcamTools/ToolRulesCheck.py:1292 flatcamTools/ToolRulesCheck.py:1298
 #: flatcamTools/ToolRulesCheck.py:1316
 msgid "Silk to Solder Mask Clearance"
-msgstr ""
+msgstr "Espaço Silk Máscara de Solda"
 
 #: flatcamGUI/PreferencesUI.py:5215 flatcamTools/ToolRulesCheck.py:343
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and soldermask features is met."
 msgstr ""
+"Verifica se o espaço mínimo entre recursos de silkscreen\n"
+"e máscara de solda é atendido."
 
 #: flatcamGUI/PreferencesUI.py:5233 flatcamTools/ToolRulesCheck.py:364
 #: flatcamTools/ToolRulesCheck.py:1346 flatcamTools/ToolRulesCheck.py:1352
 #: flatcamTools/ToolRulesCheck.py:1366 flatcamTools/ToolRulesCheck.py:1373
 msgid "Silk to Outline Clearance"
-msgstr ""
+msgstr "Espaço Silk Contorno"
 
 #: flatcamGUI/PreferencesUI.py:5235 flatcamTools/ToolRulesCheck.py:366
 msgid ""
 "This checks if the minimum clearance between silk\n"
 "features and the outline is met."
 msgstr ""
+"Verifica se o espaço mínimo entre recursos de silkscreen\n"
+"e o contorno é atendido."
 
 #: flatcamGUI/PreferencesUI.py:5253 flatcamTools/ToolRulesCheck.py:387
 #: flatcamTools/ToolRulesCheck.py:1384 flatcamTools/ToolRulesCheck.py:1411
 msgid "Minimum Solder Mask Sliver"
-msgstr ""
+msgstr "Máscara de Solda Mínima"
 
 #: flatcamGUI/PreferencesUI.py:5255 flatcamTools/ToolRulesCheck.py:389
 msgid ""
 "This checks if the minimum clearance between soldermask\n"
 "features and soldermask features is met."
 msgstr ""
+"Verifica se o espaço mínimo entre recursos de máscara de solda\n"
+"é atendido."
 
 #: flatcamGUI/PreferencesUI.py:5273 flatcamTools/ToolRulesCheck.py:410
 #: flatcamTools/ToolRulesCheck.py:1449 flatcamTools/ToolRulesCheck.py:1455
 #: flatcamTools/ToolRulesCheck.py:1471 flatcamTools/ToolRulesCheck.py:1478
 msgid "Minimum Annular Ring"
-msgstr ""
+msgstr "Anel Anular Mínimo"
 
 #: flatcamGUI/PreferencesUI.py:5275 flatcamTools/ToolRulesCheck.py:412
 msgid ""
 "This checks if the minimum copper ring left by drilling\n"
 "a hole into a pad is met."
 msgstr ""
+"Verifica se o anel de cobre mínimo deixado pela perfuração\n"
+"de um buraco em um pad é atendido."
 
 #: flatcamGUI/PreferencesUI.py:5288 flatcamTools/ToolRulesCheck.py:425
 msgid "Minimum acceptable ring value."
-msgstr ""
+msgstr "Valor mínimo do anel."
 
 #: flatcamGUI/PreferencesUI.py:5295 flatcamTools/ToolRulesCheck.py:435
 #: flatcamTools/ToolRulesCheck.py:839
-#, fuzzy
-#| msgid "Geo Tolerance"
 msgid "Hole to Hole Clearance"
-msgstr "Tolerância Geo"
+msgstr "Espaço Entre Furos"
 
 #: flatcamGUI/PreferencesUI.py:5297 flatcamTools/ToolRulesCheck.py:437
 msgid ""
 "This checks if the minimum clearance between a drill hole\n"
 "and another drill hole is met."
 msgstr ""
+"Verifica se o espaço mínimo entre furos\n"
+"é atendido."
 
 #: flatcamGUI/PreferencesUI.py:5310 flatcamTools/ToolRulesCheck.py:473
 msgid "Minimum acceptable drill size."
-msgstr ""
+msgstr "Espaço mínimo entre furos."
 
 #: flatcamGUI/PreferencesUI.py:5315 flatcamTools/ToolRulesCheck.py:458
 #: flatcamTools/ToolRulesCheck.py:813
-#, fuzzy
-#| msgid "Size"
 msgid "Hole Size"
-msgstr "Tamanho"
+msgstr "Tamanho Furo"
 
 #: flatcamGUI/PreferencesUI.py:5317 flatcamTools/ToolRulesCheck.py:460
 msgid ""
 "This checks if the drill holes\n"
 "sizes are above the threshold."
 msgstr ""
+"Verifica se os tamanhos dos furos\n"
+"estão acima do limite."
 
 #: flatcamGUI/PreferencesUI.py:5342
-#, fuzzy
-#| msgid "Film Tool Options"
 msgid "Optimal Tool Options"
-msgstr "Opções da Ferramenta de Filme"
+msgstr "Opções de Ferramentas Ideais"
 
 #: flatcamGUI/PreferencesUI.py:5348
 msgid ""
 "A tool to find the minimum distance between\n"
 "every two Gerber geometric elements"
 msgstr ""
+"Uma ferramenta para encontrar a distância mínima entre\n"
+"cada dois elementos geométricos Gerber"
 
 #: flatcamGUI/PreferencesUI.py:5363 flatcamTools/ToolOptimal.py:70
 msgid "Precision"
-msgstr ""
+msgstr "Precisão"
 
 #: flatcamGUI/PreferencesUI.py:5365
-#, fuzzy
-#| msgid "The number of digits for the integral part of the coordinates."
 msgid "Number of decimals for the distances and coordinates in this tool."
-msgstr "O número de dígitos da parte inteira das coordenadas."
+msgstr ""
+"Número de casas decimais para as distâncias e coordenadas nesta ferramenta."
 
 #: flatcamGUI/PreferencesUI.py:5379
 msgid "Excellon File associations"
@@ -11778,7 +11788,7 @@ msgstr "Distância medida no eixo Y."
 #: flatcamTools/ToolDistance.py:60 flatcamTools/ToolDistance.py:88
 #: flatcamTools/ToolDistanceMin.py:64 flatcamTools/ToolDistanceMin.py:97
 msgid "This is orientation angle of the measuring line."
-msgstr ""
+msgstr "Ângulo de orientação da linha de medição."
 
 #: flatcamTools/ToolDistance.py:62 flatcamTools/ToolDistanceMin.py:66
 msgid "DISTANCE"
