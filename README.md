@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.10.2019
+
+- small update to Romanian translation files
+
 15.10.2019
 
 - adjusted the layout in NCC Tool
