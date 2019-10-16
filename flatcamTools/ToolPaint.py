@@ -675,7 +675,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     tool_type_item = QtWidgets.QComboBox()
                     for item in self.tool_type_item_options:
                         tool_type_item.addItem(item)
-                        tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
+                        # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
                     idx = tool_type_item.findText(tooluid_value['tool_type'])
                     tool_type_item.setCurrentIndex(idx)
 

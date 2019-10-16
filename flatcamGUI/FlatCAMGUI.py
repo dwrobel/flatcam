@@ -12,8 +12,10 @@
 # ##########################################################
 
 from flatcamGUI.PreferencesUI import *
+from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
+import webbrowser
 from copy import deepcopy
 from datetime import datetime
 import gettext
@@ -684,29 +686,29 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), _("Open project"))
-        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), _("Save project"))
+        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/project_save32.png'), _("Save project"))
 
         # ########################################################################
         # ########################## Edit Toolbar# ###############################
         # ########################################################################
-        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), _("New Blank Geometry"))
-        self.newgrb_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32.png'), _("New Blank Gerber"))
-        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), _("New Blank Excellon"))
+        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_geo32.png'), _("New Blank Geometry"))
+        self.newgrb_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_grb32.png'), _("New Blank Gerber"))
+        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_exc32.png'), _("New Blank Excellon"))
         self.toolbargeo.addSeparator()
-        self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit32.png'), _("Editor"))
+        self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit_file32.png'), _("Editor"))
         self.update_obj_btn = self.toolbargeo.addAction(
-            QtGui.QIcon('share/edit_ok32_bis.png'), _("Save Object and close the Editor")
+            QtGui.QIcon('share/close_edit_file32.png'), _("Save Object and close the Editor")
         )
 
         self.toolbargeo.addSeparator()
-        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), _("&Delete"))
+        self.copy_btn = self.toolbargeo.addAction(QtGui.QIcon('share/copy_file32.png'), _("Copy"))
+        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/delete_file32.png'), _("&Delete"))
         self.toolbargeo.addSeparator()
         self.distance_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance32.png'), _("Distance Tool"))
         self.distance_min_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance_min32.png'),
                                                           _("Distance Min Tool"))
         self.origin_btn = self.toolbargeo.addAction(QtGui.QIcon('share/origin32.png'), _('Set Origin'))
         self.jmp_btn = self.toolbargeo.addAction(QtGui.QIcon('share/jump_to16.png'), _('Jump to Location'))
-
 
         # ########################################################################
         # ########################## View Toolbar# ###############################
@@ -2108,19 +2110,21 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), _("Open project"))
-        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), _("Save project"))
+        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/project_save32.png'), _("Save project"))
 
         # ## Edit Toolbar # ##
-        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), _("New Blank Geometry"))
-        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), _("New Blank Excellon"))
+        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_geo32.png'), _("New Blank Geometry"))
+        self.newgrb_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_grb32.png'), _("New Blank Gerber"))
+        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_exc32.png'), _("New Blank Excellon"))
         self.toolbargeo.addSeparator()
         self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit32.png'), _("Editor"))
         self.update_obj_btn = self.toolbargeo.addAction(
-            QtGui.QIcon('share/edit_ok32_bis.png'), _("Save Object and close the Editor")
+            QtGui.QIcon('share/close_edit_file32.png'), _("Save Object and close the Editor")
         )
 
         self.toolbargeo.addSeparator()
-        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), _("&Delete"))
+        self.copy_btn = self.toolbargeo.addAction(QtGui.QIcon('share/copy_file32.png'), _("Copy"))
+        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/delete_file32.png'), _("&Delete"))
         self.toolbargeo.addSeparator()
         self.distance_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance32.png'), _("Distance Tool"))
         self.distance_min_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance_min32.png'),

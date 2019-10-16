@@ -3196,6 +3196,7 @@ class App(QtCore.QObject):
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
+        self.ui.copy_btn.triggered.connect(self.on_copy_object)
         self.ui.delete_btn.triggered.connect(self.on_delete)
 
         self.ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))

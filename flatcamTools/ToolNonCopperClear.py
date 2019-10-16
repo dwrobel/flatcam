@@ -753,7 +753,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     tool_type_item = QtWidgets.QComboBox()
                     for item in self.tool_type_item_options:
                         tool_type_item.addItem(item)
-                        tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
+                        # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
                     idx = tool_type_item.findText(tooluid_value['tool_type'])
                     tool_type_item.setCurrentIndex(idx)
 
@@ -761,9 +761,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                     operation_type = QtWidgets.QComboBox()
                     operation_type.addItem('iso_op')
-                    operation_type.setStyleSheet('background-color: rgb(255,255,255)')
+                    # operation_type.setStyleSheet('background-color: rgb(255,255,255)')
                     operation_type.addItem('clear_op')
-                    operation_type.setStyleSheet('background-color: rgb(255,255,255)')
+                    # operation_type.setStyleSheet('background-color: rgb(255,255,255)')
                     op_idx = operation_type.findText(tooluid_value['operation'])
                     operation_type.setCurrentIndex(op_idx)
 

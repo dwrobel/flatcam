@@ -3519,21 +3519,21 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             offset_item = QtWidgets.QComboBox()
             for item in self.offset_item_options:
                 offset_item.addItem(item)
-            offset_item.setStyleSheet('background-color: rgb(255,255,255)')
+            # offset_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = offset_item.findText(tooluid_value['offset'])
             offset_item.setCurrentIndex(idx)
 
             type_item = QtWidgets.QComboBox()
             for item in self.type_item_options:
                 type_item.addItem(item)
-            type_item.setStyleSheet('background-color: rgb(255,255,255)')
+            # type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = type_item.findText(tooluid_value['type'])
             type_item.setCurrentIndex(idx)
 
             tool_type_item = QtWidgets.QComboBox()
             for item in self.tool_type_item_options:
                 tool_type_item.addItem(item)
-                tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
+                # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = tool_type_item.findText(tooluid_value['tool_type'])
             tool_type_item.setCurrentIndex(idx)
 
