@@ -738,10 +738,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint Tool"))
         self.toolbartools.addSeparator()
 
-        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), _("Panel Tool"))
+        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panelize32.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
-        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
+        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Subtract Tool"))
         self.rules_btn = self.toolbartools.addAction(QtGui.QIcon('share/rules32.png'), _("Rules Tool"))
         self.optimal_btn = self.toolbartools.addAction(QtGui.QIcon('share/open_excellon32.png'), _("Optimal Tool"))
 
@@ -1873,7 +1873,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.draw_union = self.g_editor_cmenu.addAction(QtGui.QIcon('share/union32.png'), _("Union"))
         self.draw_intersect = self.g_editor_cmenu.addAction(QtGui.QIcon('share/intersection32.png'), _("Intersection"))
-        self.draw_substract = self.g_editor_cmenu.addAction(QtGui.QIcon('share/subtract32.png'), _("Substraction"))
+        self.draw_substract = self.g_editor_cmenu.addAction(QtGui.QIcon('share/subtract32.png'), _("Subtraction"))
         self.draw_cut = self.g_editor_cmenu.addAction(QtGui.QIcon('share/cutpath32.png'), _("Cut"))
         self.draw_transform = self.g_editor_cmenu.addAction(QtGui.QIcon('share/transform.png'), _("Transformations"))
 
@@ -2154,11 +2154,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint Tool"))
         self.toolbartools.addSeparator()
 
-        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), _("Panel Tool"))
+        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panelize32.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'),
                                                       _("SolderPaste Tool"))
-        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
+        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Subtract Tool"))
 
         self.toolbartools.addSeparator()
 

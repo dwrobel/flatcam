@@ -3065,7 +3065,7 @@ class App(QtCore.QObject):
                                        separator=True)
 
         self.panelize_tool = Panelize(self)
-        self.panelize_tool.install(icon=QtGui.QIcon('share/panel16.png'))
+        self.panelize_tool.install(icon=QtGui.QIcon('share/panelize16.png'))
 
         self.film_tool = Film(self)
         self.film_tool.install(icon=QtGui.QIcon('share/film16.png'))

@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - removed the styling on the comboboxes cellWidget's in the Tool Tables
 - replaced some of the icons that did not looked Ok on the dark theme
 - added a new toolbar button for the Copy object functionality
+- changed the Panelize tool icon
+- corrected some strings
 
 14.10.2019
 
