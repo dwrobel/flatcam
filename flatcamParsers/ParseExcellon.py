@@ -1099,8 +1099,10 @@ class Excellon(Geometry):
         Scales geometry on the XY plane in the object by a given factor.
         Tool sizes, feedrates an Z-plane dimensions are untouched.
 
-        :param factor: Number by which to scale the object.
-        :type factor: float
+        :param xfactor: Number by which to scale the object.
+        :type xfactor: float
+        :param yfactor: Number by which to scale the object.
+        :type yfactor: float
         :return: None
         :rtype: NOne
         """
