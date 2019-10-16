@@ -81,11 +81,11 @@ msgstr "Tcl-Skript wird ausgeführt ..."
 #: FlatCAMApp.py:2835 ObjectCollection.py:81 flatcamTools/ToolImage.py:219
 #: flatcamTools/ToolPcbWizard.py:300 flatcamTools/ToolPcbWizard.py:323
 msgid "Open cancelled."
-msgstr "Geöffnet storniert."
+msgstr "Öffnen wurde abgebrochen."
 
 #: FlatCAMApp.py:2851
 msgid "Open Config file failed."
-msgstr "Open Config-Datei ist fehlgeschlagen."
+msgstr "Öffnen der Config-Datei ist fehlgeschlagen."
 
 #: FlatCAMApp.py:2866
 msgid "Open Script file failed."
@@ -120,7 +120,7 @@ msgstr ""
 
 #: FlatCAMApp.py:3307
 msgid "Editor is activated ..."
-msgstr "Editor ist aktiviert ..."
+msgstr "Editor wurde aktiviert ..."
 
 #: FlatCAMApp.py:3325
 msgid "Do you want to save the edited object?"
@@ -147,7 +147,7 @@ msgstr "Nein"
 #: FlatCAMApp.py:3331 FlatCAMApp.py:5009 FlatCAMApp.py:5879 FlatCAMApp.py:7005
 #: FlatCAMApp.py:8713
 msgid "Cancel"
-msgstr "Kündigen"
+msgstr "Abbrechen"
 
 #: FlatCAMApp.py:3359
 msgid "Object empty after edit."
@@ -161,15 +161,15 @@ msgstr ""
 
 #: FlatCAMApp.py:3412
 msgid "is updated, returning to App..."
-msgstr "wird aktualisiert und kehrt zur App zurück ..."
+msgstr "wurde aktualisiert..."
 
 #: FlatCAMApp.py:3808 FlatCAMApp.py:3862 FlatCAMApp.py:4871
 msgid "Could not load defaults file."
-msgstr "Standarddatei konnte nicht geladen werden."
+msgstr "Voreinstellungen konnte nicht geladen werden."
 
 #: FlatCAMApp.py:3821 FlatCAMApp.py:3871 FlatCAMApp.py:4881
 msgid "Failed to parse defaults file."
-msgstr "Fehler beim Parsen der Standarddatei."
+msgstr "Fehler beim Einlesen der Voreinstellungen."
 
 #: FlatCAMApp.py:3842 FlatCAMApp.py:3846
 msgid "Import FlatCAM Preferences"
@@ -181,7 +181,7 @@ msgstr "Import der FlatCAM-Einstellungen wurde abgebrochen."
 
 #: FlatCAMApp.py:3876
 msgid "Imported Defaults from"
-msgstr "Importierte Standardwerte aus"
+msgstr "Voreinstellungen wurden importiert von"
 
 #: FlatCAMApp.py:3896 FlatCAMApp.py:3901 flatcamGUI/FlatCAMGUI.py:3960
 msgid "Export FlatCAM Preferences"
@@ -201,15 +201,15 @@ msgid ""
 "Most likely another app is holding the file open and not accessible."
 msgstr ""
 "Berechtigung verweigert, Speichern nicht möglich.\n"
-"Wahrscheinlich hält eine andere App die Datei offen und ist nicht zugänglich."
+"Wahrscheinlich hält eine andere App die Datei offen oder ist geschützt."
 
 #: FlatCAMApp.py:3931
 msgid "Could not load preferences file."
-msgstr "Standarddatei konnte nicht geladen werden."
+msgstr "Voreinstellungen konnte nicht geladen werden."
 
 #: FlatCAMApp.py:3951
 msgid "Failed to write defaults to file."
-msgstr "Fehler beim Schreiben der Standardwerte in die Datei."
+msgstr "Fehler beim Schreiben der Voreinstellungen in die Datei."
 
 #: FlatCAMApp.py:3957
 msgid "Exported preferences to"
@@ -230,7 +230,7 @@ msgstr "Fehler beim Öffnen der letzten Projektdatei zum Schreiben."
 #: FlatCAMApp.py:4154 flatcamParsers/ParseExcellon.py:868
 #: flatcamTools/ToolSolderPaste.py:1239
 msgid "An internal error has ocurred. See shell.\n"
-msgstr "Ein interner Fehler ist aufgetreten. Siehe Shell.\n"
+msgstr "Ein interner Fehler ist aufgetreten. Siehe Konsole.\n"
 
 #: FlatCAMApp.py:4155
 #, python-brace-format
@@ -243,7 +243,7 @@ msgstr ""
 
 #: FlatCAMApp.py:4176
 msgid "Converting units to "
-msgstr "Einheiten in umrechnen "
+msgstr "Einheiten umrechnen in"
 
 #: FlatCAMApp.py:4267
 msgid ""
@@ -361,33 +361,20 @@ msgstr ""
 "Lizenziert unter der MIT-Lizenz:\n"
 "http://www.opensource.org/licenses/mit-license.php\n"
 "\n"
-"Hiermit wird jeder Person, die eine Kopie erhält, kostenlos die Erlaubnis "
-"erteilt\n"
-"dieser Software und der zugehörigen Dokumentationsdateien (die \"Software\") "
-"zu behandeln\n"
-"in der Software ohne Einschränkung, einschließlich ohne Einschränkung der "
-"Rechte\n"
-"zum Verwenden, Kopieren, Ändern, Zusammenführen, Veröffentlichen, Verteilen, "
-"Unterlizenzieren und / oder Verkaufen\n"
-"Kopien der Software zu erstellen und Personen zu gestatten, denen die "
-"Software gehört\n"
-" zu diesem Zweck eingerichtet, unter folgenden Bedingungen:\n"
-"\n"
-"Der obige Urheberrechtshinweis und dieser Genehmigungshinweis sind in "
-"enthalten\n"
-"alle Kopien oder wesentlichen Teile der Software.\n"
-"\n"
-"DIE SOFTWARE WIRD \"WIE BESEHEN\" ZUR VERFÜGUNG GESTELLT, OHNE JEGLICHE "
-"GEWÄHRLEISTUNG, AUSDRÜCKLICH ODER\n"
-"STILLSCHWEIGEND, EINSCHLIESSLICH DER GEWÄHRLEISTUNG DER MARKTGÄNGIGKEIT,\n"
-"EIGNUNG FÜR EINEN BESTIMMTEN ZWECK UND NICHTVERLETZUNG. NIEMALS WIRD DAS\n"
-"AUTOREN ODER COPYRIGHT-INHABER HAFTEN FÜR JEGLICHE ANSPRÜCHE, SCHÄDEN ODER "
-"ANDERE\n"
-"HAFTUNG, OB IM RAHMEN EINES VERTRAGS, EINES SCHWERPUNKTS ODER EINES ANDEREN "
-"SCHWERPUNKTS,\n"
-"AUS ODER IN VERBINDUNG MIT DER SOFTWARE ODER DER NUTZUNG ODER ANDEREN "
-"HANDLUNGEN IN\n"
-"DIE SOFTWARE."
+"Hiermit wird unentgeltlich jeder Person, die eine Kopie der Software und der\n"
+"zugehörigen Dokumentationen (die \"Software\") erhält, die Erlaubnis erteilt,\n"
+"sie uneingeschränkt zu nutzen, inklusive und ohne Ausnahme mit dem Recht, sie zu verwenden,\n"
+"zu kopieren, zu verändern, zusammenzufügen, zu veröffentlichen, zu verbreiten,\n"
+"zu unterlizenzieren und/oder zu verkaufen, und Personen, denen diese Software überlassen wird,\n"
+"diese Rechte zu verschaffen, unter den folgenden Bedingungen:\n"
+"\n\nDer obige Urheberrechtsvermerk und dieser Erlaubnisvermerk sind in allen Kopien oder Teilkopien\n"
+" der Software beizulegen.\n"
+"\n\nDIE SOFTWARE WIRD OHNE JEDE AUSDRÜCKLICHE ODER IMPLIZIERTE GARANTIE BEREITGESTELLT,\n"
+"EINSCHLIEẞLICH DER GARANTIE ZUR BENUTZUNG FÜR DEN VORGESEHENEN ODER EINEM BESTIMMTEN ZWECK\n"
+"SOWIE JEGLICHER RECHTSVERLETZUNG, JEDOCH NICHT DARAUF BESCHRÄNKT. IN KEINEM FALL SIND DIE\n"
+"AUTOREN ODER COPYRIGHTINHABER FÜR JEGLICHEN SCHADEN ODER SONSTIGE ANSPRÜCHE HAFTBAR ZU MACHEN,\n"
+"OB INFOLGE DER ERFÜLLUNG EINES VERTRAGES, EINES DELIKTES ODER ANDERS IM ZUSAMMENHANG MIT DER\n"
+" SOFTWARE ODER SONSTIGER VERWENDUNG DER SOFTWARE ENTSTANDEN."
 
 #: FlatCAMApp.py:4530
 msgid ""
@@ -451,7 +438,7 @@ msgstr "Email"
 #: FlatCAMApp.py:4773 FlatCAMApp.py:4781 FlatCAMApp.py:7625
 #: flatcamGUI/FlatCAMGUI.py:436
 msgid "Bookmarks Manager"
-msgstr ""
+msgstr "Lesezeichen verwalten"
 
 #: FlatCAMApp.py:4792
 msgid ""
@@ -513,7 +500,7 @@ msgid ""
 "be lost and the result may not be what was expected. \n"
 "Check the generated GCODE."
 msgstr ""
-"Fehlgeschlagen beitreten. Die Geometrieobjekte sind unterschiedlich.\n"
+"Zusammenfüge fehlgeschlagen. Die Geometrieobjekte sind unterschiedlich.\n"
 "Mindestens einer ist vom Typ MultiGeo und der andere vom Typ SingleGeo. \n"
 "Eine Möglichkeit besteht darin, von einem zum anderen zu konvertieren und "
 "erneut zu verbinden\n"
@@ -525,13 +512,13 @@ msgstr ""
 #: FlatCAMApp.py:5491
 msgid "Failed. Excellon joining works only on Excellon objects."
 msgstr ""
-"Gescheitert. Die Verbindung von Excellon funktioniert nur bei Excellon-"
+"Gescheitert. Die Zusammenfügung von Excellon funktioniert nur bei Excellon-"
 "Objekten."
 
 #: FlatCAMApp.py:5519
 msgid "Failed. Gerber joining works only on Gerber objects."
 msgstr ""
-"Gescheitert. Das Gerber-Verbinden funktioniert nur bei Gerber-Objekten."
+"Gescheitert. Das Zusammenfügen für Gerber-Objekte funktioniert nur bei Gerber-Objekten."
 
 #: FlatCAMApp.py:5549 FlatCAMApp.py:5586
 msgid "Failed. Select a Geometry Object and try again."
@@ -540,7 +527,7 @@ msgstr ""
 
 #: FlatCAMApp.py:5554 FlatCAMApp.py:5591
 msgid "Expected a FlatCAMGeometry, got"
-msgstr "Erwartete eine FlatCAMGeometry, bekam"
+msgstr "Erwartete eine FlatCAMGeometry, fand"
 
 #: FlatCAMApp.py:5568
 msgid "A Geometry object was converted to MultiGeo type."
@@ -552,7 +539,7 @@ msgstr "Ein Geometrieobjekt wurde in den SingleGeo-Typ konvertiert."
 
 #: FlatCAMApp.py:5873
 msgid "Toggle Units"
-msgstr "Einheiten umschalten"
+msgstr "Einheiten wechseln"
 
 #: FlatCAMApp.py:5875
 msgid "Change project units ..."
@@ -575,7 +562,7 @@ msgstr "Ok"
 
 #: FlatCAMApp.py:5927
 msgid "Converted units to"
-msgstr "Umgerechnete Einheiten in"
+msgstr "Einheiten wurden umgerechnet in"
 
 #: FlatCAMApp.py:5939
 msgid " Units conversion cancelled."
@@ -611,8 +598,8 @@ msgid ""
 "Are you sure you want to permanently delete\n"
 "the selected objects?"
 msgstr ""
-"Möchten Sie wirklich dauerhaft löschen?\n"
-"die ausgewählten Objekte?"
+"Möchten Sie ie ausgewählten Objekte\n"
+"wirklich dauerhaft löschen?"
 
 #: FlatCAMApp.py:7033
 msgid "Object(s) deleted"
@@ -624,7 +611,7 @@ msgstr "Gescheitert. Kein Objekt ausgewählt ..."
 
 #: FlatCAMApp.py:7039
 msgid "Save the work in Editor and try again ..."
-msgstr "Speichern Sie die Arbeit im Editor und versuchen Sie es erneut ..."
+msgstr "Speichern Sie den Editor und versuchen Sie es erneut ..."
 
 #: FlatCAMApp.py:7069
 msgid "Object deleted"
@@ -636,11 +623,11 @@ msgstr "Klicken Sie hier, um den Ursprung festzulegen ..."
 
 #: FlatCAMApp.py:7118
 msgid "Setting Origin..."
-msgstr "Ursprung einstellen ..."
+msgstr "Ursprung setzten ..."
 
 #: FlatCAMApp.py:7130
 msgid "Origin set"
-msgstr "Ursprungssatz"
+msgstr "Ursprung gesetzt"
 
 #: FlatCAMApp.py:7137
 msgid "Origin coordinates specified but incomplete."
@@ -670,7 +657,7 @@ msgstr "Falsche Koordinaten. Koordinaten im Format eingeben: X, Y"
 #: flatcamEditors/FlatCAMGrbEditor.py:4317 flatcamGUI/FlatCAMGUI.py:2757
 #: flatcamGUI/FlatCAMGUI.py:2769
 msgid "Done."
-msgstr "Gemacht."
+msgstr "Fertig."
 
 #: FlatCAMApp.py:7396 FlatCAMApp.py:7464
 msgid "No object is selected. Select an object and try again."
@@ -756,7 +743,7 @@ msgstr "Geben Sie den Winkelwert ein:"
 
 #: FlatCAMApp.py:7760
 msgid "Rotation done."
-msgstr "Fertig drehen."
+msgstr "Rotation abgeschlossen."
 
 #: FlatCAMApp.py:7763
 msgid "Rotation movement was not executed."
@@ -764,7 +751,7 @@ msgstr "Drehbewegung wurde nicht ausgeführt."
 
 #: FlatCAMApp.py:7775
 msgid "No object selected to Skew/Shear on X axis."
-msgstr "Auf der X-Achse wurde kein Objekt zum Neigen / Scheren ausgewählt."
+msgstr "Auf der X-Achse wurde kein Objekt zum Neigen / Schneiden ausgewählt."
 
 #: FlatCAMApp.py:7797
 msgid "Skew on X axis done."
@@ -772,7 +759,7 @@ msgstr "Neigung auf der X-Achse."
 
 #: FlatCAMApp.py:7808
 msgid "No object selected to Skew/Shear on Y axis."
-msgstr "Kein Objekt für Neigung / Scherung auf der Y-Achse ausgewählt."
+msgstr "Kein Objekt für Neigung / Schneiden auf der Y-Achse ausgewählt."
 
 #: FlatCAMApp.py:7830
 msgid "Skew on Y axis done."
@@ -928,7 +915,7 @@ msgstr "Projektdatei öffnen abgebrochen."
 
 #: FlatCAMApp.py:8994 FlatCAMApp.py:8997
 msgid "Open Configuration File"
-msgstr "Offene Einstellungsdatei"
+msgstr "Einstellungsdatei öffnen
 
 #: FlatCAMApp.py:9002
 msgid "Open Config cancelled."
@@ -1673,7 +1660,7 @@ msgstr "Pufferung"
 
 #: FlatCAMObj.py:901
 msgid "Done"
-msgstr "Gemacht"
+msgstr "Fertig"
 
 #: FlatCAMObj.py:942 FlatCAMObj.py:958 FlatCAMObj.py:975
 msgid "Isolating..."
@@ -10133,13 +10120,13 @@ msgid ""
 msgstr ""
 "Auswahl, welche Art von Objekt ausgeschnitten werden soll. <BR>-<B> Einfach "
 "</B>: Enthält ein einzelnes PCB-Gerber-Umrissobjekt. <BR>-<B> Panel </B>: "
-"Ein Panel-PCB-Gerber Objekt, das gemacht wird\n"
-"aus vielen einzelnen PCB-Konturen."
+"Ein Panel-PCB-Gerber Objekt, dass\n"
+"aus vielen einzelnen PCB-Konturen zusammengesetzt ist."
 
 #: flatcamGUI/PreferencesUI.py:4004 flatcamGUI/PreferencesUI.py:4274
 #: flatcamTools/ToolCutOut.py:92
 msgid "Single"
-msgstr "Einzehln"
+msgstr "Einzeln"
 
 #: flatcamGUI/PreferencesUI.py:4005 flatcamTools/ToolCutOut.py:93
 msgid "Panel"
