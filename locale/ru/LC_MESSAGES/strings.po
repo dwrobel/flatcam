@@ -984,29 +984,21 @@ msgid "Save Script source file cancelled."
 msgstr "Сохранение исходного кода файла сценария отменено."
 
 #: FlatCAMApp.py:9204
-#, fuzzy
-#| msgid "No object selected. Please select an Excellon object to export."
 msgid "No object selected. Please select an Document object to export."
-msgstr "Объект не выбран. Пожалуйста, выберите Excellon объект для экспорта."
+msgstr "Объект не выбран. Пожалуйста, выберите объект Document для экспорта."
 
 #: FlatCAMApp.py:9210
-#, fuzzy
-#| msgid "Failed. Only Excellon objects can be saved as Excellon files..."
 msgid "Failed. Only Document objects can be saved as Document files..."
 msgstr ""
-"Ошибка. Только объекты Excellon могут быть сохранены как файлы Excellon..."
+"Ошибка. Только объекты Document могут быть сохранены как файлы Document..."
 
 #: FlatCAMApp.py:9222
-#, fuzzy
-#| msgid "Save Excellon source file"
 msgid "Save Document source file"
-msgstr "Сохранить исходный файл Excellon"
+msgstr "Сохранить исходный файл Document"
 
 #: FlatCAMApp.py:9228
-#, fuzzy
-#| msgid "Save Gerber source file cancelled."
 msgid "Save Document source file cancelled."
-msgstr "Сохранение исходного кода файла Gerber отменено."
+msgstr "Сохранение исходного кода файла Document отменено."
 
 #: FlatCAMApp.py:9248
 msgid "No object selected. Please select an Excellon object to export."
@@ -1285,18 +1277,14 @@ msgid "Opening G-Code."
 msgstr "Открытие G-Code."
 
 #: FlatCAMApp.py:10894
-#, fuzzy
-#| msgid ""
-#| "Failed to create CNCJob Object. Probable not a GCode file.\n"
-#| " Attempting to create a FlatCAM CNCJob Object from G-Code file failed "
-#| "during processing"
 msgid ""
 "Failed to create CNCJob Object. Probable not a GCode file. Try to load it "
 "from File menu.\n"
 " Attempting to create a FlatCAM CNCJob Object from G-Code file failed during "
 "processing"
 msgstr ""
-"Не удалось создать объект CNCJob. Вероятно это не файл GCode.\n"
+"Не удалось создать объект CNCJob. Вероятно это не файл GCode.Попробуйте "
+"загрузить его из меню «Файл».\n"
 " Попытка создать объект FlatCAM CNCJob из файла G-кода не удалась во время "
 "обработки"
 
@@ -1938,10 +1926,8 @@ msgid "Script Editor"
 msgstr "Редактор сценариев"
 
 #: FlatCAMObj.py:6850
-#, fuzzy
-#| msgid "Geometry Editor"
 msgid "Document Editor"
-msgstr "Редактор Geometry"
+msgstr "Редактор Document"
 
 #: FlatCAMProcess.py:172
 msgid "processes running."
@@ -4137,16 +4123,12 @@ msgid "Mark"
 msgstr "Отметка"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2640
-#, fuzzy
-#| msgid "Mark the polygon areas."
 msgid "Mark the polygons that fit within limits."
-msgstr "Отметьте полигональные области."
+msgstr "Отмечает полигоны, которые вписываются в пределы."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2646
-#, fuzzy
-#| msgid "Resets all the fields."
 msgid "Delete all the marked polygons."
-msgstr "Сбрасывает все поля."
+msgstr "Удаление всех отмеченных полигонов."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2650 flatcamGUI/PreferencesUI.py:686
 msgid "Clear"
@@ -4279,10 +4261,8 @@ msgid "Done. Scale Tool completed."
 msgstr "Готово. Масштабирование выполнено."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4901
-#, fuzzy
-#| msgid "Polygon areas marked."
 msgid "Polygons marked."
-msgstr "Полигональные области отмечены."
+msgstr "Полигонов отмечено."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4904
 msgid "No polygons were marked. None fit within the limits."
@@ -4467,13 +4447,11 @@ msgstr "Создаёт новый объект Excellon."
 
 #: flatcamGUI/FlatCAMGUI.py:87
 msgid "Document\tD"
-msgstr "Документ\tD"
+msgstr "Document\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:89
-#, fuzzy
-#| msgid "Will create a new, empty Geometry Object."
 msgid "Will create a new, empty Document Object."
-msgstr "Создаёт новый объект Geometry."
+msgstr "Создаёт новый объект Document."
 
 #: flatcamGUI/FlatCAMGUI.py:92 flatcamGUI/FlatCAMGUI.py:3659
 #: flatcamTools/ToolPcbWizard.py:61 flatcamTools/ToolPcbWizard.py:68
@@ -7824,12 +7802,12 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:1924
 #| msgid "Geometry Object"
 msgid "Document Object"
-msgstr "Объект Документа"
+msgstr "Объект Document"
 
 #: flatcamGUI/ObjectUI.py:1952
 msgid "This selects if the auto completer is enabled in the Document Editor."
 msgstr ""
-"Этот параметр выбирает, включено ли автозаполнение в редакторе документов."
+"Этот параметр выбирает, включено ли автозаполнение в редакторе Document."
 
 #: flatcamGUI/ObjectUI.py:1970
 msgid "Font Type"
@@ -10940,6 +10918,8 @@ msgid ""
 "A tool to find the minimum distance between\n"
 "every two Gerber geometric elements"
 msgstr ""
+"Инструмент для поиска минимального расстояния между\n"
+"двумя элементами геометрии Gerber"
 
 #: flatcamGUI/PreferencesUI.py:5363 flatcamTools/ToolOptimal.py:70
 msgid "Precision"
@@ -11862,7 +11842,7 @@ msgstr "Это расстояние, измеренное по оси Y."
 #: flatcamTools/ToolDistance.py:60 flatcamTools/ToolDistance.py:88
 #: flatcamTools/ToolDistanceMin.py:64 flatcamTools/ToolDistanceMin.py:97
 msgid "This is orientation angle of the measuring line."
-msgstr ""
+msgstr "Это угол ориентации измерительной линии."
 
 #: flatcamTools/ToolDistance.py:62 flatcamTools/ToolDistanceMin.py:66
 msgid "DISTANCE"
@@ -11939,19 +11919,20 @@ msgstr "Перейти к средней точке"
 msgid ""
 "Select two objects and no more, to measure the distance between them ..."
 msgstr ""
+"Выберите два и не более объекта для измерения расстояние между ними ..."
 
 #: flatcamTools/ToolDistanceMin.py:200 flatcamTools/ToolDistanceMin.py:210
 #: flatcamTools/ToolDistanceMin.py:219 flatcamTools/ToolDistanceMin.py:240
 msgid "Select two objects and no more. Currently the selection has objects: "
-msgstr ""
+msgstr "Выберите два и не более объекта. В настоящее время выбрано объектов: "
 
 #: flatcamTools/ToolDistanceMin.py:284
 msgid "Objects intersects or touch at"
-msgstr ""
+msgstr "Объекты пересекаются или касаются друг друга"
 
 #: flatcamTools/ToolDistanceMin.py:290
 msgid "Jumped to the half point between the two selected objects"
-msgstr ""
+msgstr "Выполнен переход к средней точке между двумя выбранными объектами"
 
 #: flatcamTools/ToolFilm.py:28
 msgid "Film PCB"
@@ -12067,6 +12048,7 @@ msgstr "Объект Excellon"
 msgid ""
 "Remove the geometry of Excellon from the Film to create tge holes in pads."
 msgstr ""
+"Удаляет геометрию Excellon из пленки для создания отверстий в площадках."
 
 #: flatcamTools/ToolFilm.py:346
 msgid "Punch Size"
@@ -12099,6 +12081,8 @@ msgid ""
 "Using the Pad center does not work on Geometry objects. Only a Gerber object "
 "has pads."
 msgstr ""
+"Использование центра площадки не работает на объектах Geometry. Только "
+"объекты Gerber имеют площадки."
 
 #: flatcamTools/ToolFilm.py:487
 msgid "No FlatCAM object selected. Load an object for Film and retry."
@@ -12134,18 +12118,24 @@ msgid ""
 " Could not generate punched hole film because the punch hole sizeis bigger "
 "than some of the apertures in the Gerber object."
 msgstr ""
+" Не удалось создать пленку с перфорированным отверстием, поскольку размер "
+"перфорированного отверстия больше, чем некоторые отверстия в объекте Gerber."
 
 #: flatcamTools/ToolFilm.py:610
 msgid ""
 "Could not generate punched hole film because the punch hole sizeis bigger "
 "than some of the apertures in the Gerber object."
 msgstr ""
+"Не удалось создать пленку с перфорированным отверстием, поскольку размер "
+"перфорированного отверстия больше, чем некоторые отверстия в объекте Gerber."
 
 #: flatcamTools/ToolFilm.py:628
 msgid ""
 "Could not generate punched hole film because the newly created object "
 "geometry is the same as the one in the source object geometry..."
 msgstr ""
+"Не удалось создать пленку с перфорацией, поскольку геометрия вновь "
+"созданного объекта такая же, как в геометрии исходного объекта ..."
 
 #: flatcamTools/ToolFilm.py:673 flatcamTools/ToolFilm.py:677
 msgid "Export SVG negative"
@@ -12631,7 +12621,7 @@ msgstr ""
 
 #: flatcamTools/ToolOptimal.py:71
 msgid "Number of decimals kept for found distances."
-msgstr ""
+msgstr "Количество десятичных знаков, сохраненных для найденных расстояний."
 
 #: flatcamTools/ToolOptimal.py:79
 msgid "Minimum distance"
@@ -12639,19 +12629,19 @@ msgstr "Минимальная дистанция"
 
 #: flatcamTools/ToolOptimal.py:80
 msgid "Display minimum distance between copper features."
-msgstr ""
+msgstr "Отображение минимального расстояния между медными элементами."
 
 #: flatcamTools/ToolOptimal.py:84
 msgid "Determined"
-msgstr "Определенный"
+msgstr "Результат"
 
 #: flatcamTools/ToolOptimal.py:98
 msgid "Occurring"
-msgstr ""
+msgstr "Повторений"
 
 #: flatcamTools/ToolOptimal.py:99
 msgid "How many times this minimum is found."
-msgstr ""
+msgstr "Сколько раз этот минимум найден."
 
 #: flatcamTools/ToolOptimal.py:105
 msgid "Minimum points coordinates"
@@ -12659,7 +12649,7 @@ msgstr "Минимальные координаты точек"
 
 #: flatcamTools/ToolOptimal.py:106
 msgid "Coordinates for points where minimum distance was found."
-msgstr ""
+msgstr "Координаты точек, где было найдено минимальное расстояние."
 
 #: flatcamTools/ToolOptimal.py:122 flatcamTools/ToolOptimal.py:190
 msgid "Jump to selected position"
@@ -12670,6 +12660,8 @@ msgid ""
 "Select a position in the Locations text box and then\n"
 "click this button."
 msgstr ""
+"Выберите позицию местоположения в текстовом поле, а затем\n"
+"нажмите эту кнопку."
 
 #: flatcamTools/ToolOptimal.py:132
 msgid "Other distances"
@@ -12680,6 +12672,8 @@ msgid ""
 "Will display other distances in the Gerber file ordered from\n"
 "the minimum to the maximum, not including the absolute minimum."
 msgstr ""
+"Отобразит другие расстояния в файле Gerber, упорядоченные\n"
+"от минимума до максимума, не считая абсолютного минимума."
 
 #: flatcamTools/ToolOptimal.py:138
 msgid "Other distances points coordinates"
@@ -12691,6 +12685,8 @@ msgid ""
 "Other distances and the coordinates for points\n"
 "where the distance was found."
 msgstr ""
+"Другие расстояния и координаты для точек\n"
+"где расстояние было найдено."
 
 #: flatcamTools/ToolOptimal.py:152
 msgid "Gerber distances"
@@ -12710,6 +12706,9 @@ msgid ""
 "this will allow the determination of the right tool to\n"
 "use for isolation or copper clearing."
 msgstr ""
+"Рассчитывает минимальное расстояние между медными элементами.\n"
+"Это позволит определить правильный для использования инструмент\n"
+"для изоляции или очистки меди."
 
 #: flatcamTools/ToolOptimal.py:306
 msgid "Only Gerber objects can be evaluated."
@@ -12725,6 +12724,7 @@ msgid ""
 "Optimal Tool. Started to search for the minimum distance between copper "
 "features."
 msgstr ""
+"Оптимизация. Начат поиск минимального расстояния между медными элементами."
 
 #: flatcamTools/ToolOptimal.py:322
 msgid "Optimal Tool. Parsing geometry for aperture"
@@ -12732,22 +12732,25 @@ msgstr "Optimal Tool. Разбор геометрии для отверстия"
 
 #: flatcamTools/ToolOptimal.py:333
 msgid "Optimal Tool. Creating a buffer for the object geometry."
-msgstr ""
+msgstr "Оптимизация. Создание буфера для объекта геометрии."
 
 #: flatcamTools/ToolOptimal.py:343
 msgid ""
 "The Gerber object has one Polygon as geometry.\n"
 "There are no distances between geometry elements to be found."
 msgstr ""
+"Объект Gerber имеет один полигон в качестве геометрии.\n"
+"Там нет расстояния между геометрическими элементами, которые могут быть "
+"найдены."
 
 #: flatcamTools/ToolOptimal.py:348
 msgid ""
 "Optimal Tool. Finding the distances between each two elements. Iterations"
-msgstr ""
+msgstr "Оптимизация. Нахождение расстояний между двумя элементами. Повторений"
 
 #: flatcamTools/ToolOptimal.py:383
 msgid "Optimal Tool. Finding the minimum distance."
-msgstr ""
+msgstr "Оптимизация. Нахождение минимального расстояния."
 
 #: flatcamTools/ToolOptimal.py:399
 msgid "Optimal Tool. Finished successfully."
@@ -13476,7 +13479,7 @@ msgstr "Верх"
 
 #: flatcamTools/ToolRulesCheck.py:74
 msgid "The Top Gerber Copper object for which rules are checked."
-msgstr ""
+msgstr "Объект Top Gerber Copper, для которого проверяются правила."
 
 #: flatcamTools/ToolRulesCheck.py:89
 msgid "Bottom"
@@ -13628,11 +13631,14 @@ msgid ""
 "Both Silk and Solder Mask Gerber objects has to be either both Top or both "
 "Bottom."
 msgstr ""
+"Gerber объекты шелкографии или паяльной маски должны быть либо сверху, либо "
+"снизу."
 
 #: flatcamTools/ToolRulesCheck.py:1353
 msgid ""
 "One of the Silk Gerber objects or the Outline Gerber object is not valid."
 msgstr ""
+"Один из Gerber объектов шелкографии или Gerber объект контура недопустим."
 
 #: flatcamTools/ToolRulesCheck.py:1397
 msgid "TOP -> Minimum Solder Mask Sliver"
@@ -13650,6 +13656,8 @@ msgstr "Один из объектов Copper Gerber или Excellon недоп�
 msgid ""
 "Excellon object presence is mandatory for this rule but none is selected."
 msgstr ""
+"Наличие объекта Excellon обязательно для этого правила, но ни один объект не "
+"выбран."
 
 #: flatcamTools/ToolRulesCheck.py:1545 flatcamTools/ToolRulesCheck.py:1558
 #: flatcamTools/ToolRulesCheck.py:1569 flatcamTools/ToolRulesCheck.py:1582
@@ -13666,7 +13674,7 @@ msgstr "УСПЕШНО ПРОЙДЕНО"
 
 #: flatcamTools/ToolRulesCheck.py:1562 flatcamTools/ToolRulesCheck.py:1586
 msgid "Violations: There are no violations for the current rule."
-msgstr ""
+msgstr "Нарушения: нарушений по текущему правилу нет."
 
 #: flatcamTools/ToolShell.py:70 flatcamTools/ToolShell.py:72
 msgid "...proccessing..."
@@ -14129,15 +14137,16 @@ msgstr "Точка зеркалирования"
 
 #: flatcamTools/ToolTransform.py:435
 msgid "Rotate transformation can not be done for a value of 0."
-msgstr ""
+msgstr "Трансформация поворота не может быть выполнена для значения 0."
 
 #: flatcamTools/ToolTransform.py:474 flatcamTools/ToolTransform.py:497
 msgid "Scale transformation can not be done for a factor of 0 or 1."
 msgstr ""
+"Преобразование масштаба не может быть выполнено с коэффициентом 0 или 1."
 
 #: flatcamTools/ToolTransform.py:513 flatcamTools/ToolTransform.py:524
 msgid "Offset transformation can not be done for a value of 0."
-msgstr ""
+msgstr "Трансформация смещения не может быть выполнена для значения 0."
 
 #: flatcamTools/ToolTransform.py:540
 msgid "No object selected. Please Select an object to rotate!"
@@ -14173,7 +14182,7 @@ msgstr "Объекты CNCJob не могут быть зеркалировны/
 
 #: flatcamTools/ToolTransform.py:666
 msgid "Skew transformation can not be done for 0, 90 and 180 degrees."
-msgstr ""
+msgstr "Трансформация наклона не может быть сделана для 0, 90 и 180 градусов."
 
 #: flatcamTools/ToolTransform.py:671
 msgid "No object selected. Please Select an object to shear/skew!"
