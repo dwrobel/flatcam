@@ -2150,7 +2150,7 @@ msgstr "Разбор файла GCode. Количество строк"
 
 #: camlib.py:4061
 msgid "Creating Geometry from the parsed GCode file. "
-msgstr "Создание геометрии из проанализированного файла GCode."
+msgstr "Создание геометрии из проанализированного файла GCode. "
 
 #: camlib.py:4193 camlib.py:4477 camlib.py:4580 camlib.py:4627
 msgid "G91 coordinates not implemented ..."
@@ -7748,7 +7748,7 @@ msgstr "глубина резания"
 
 #: flatcamGUI/ObjectUI.py:1822
 msgid "height where to travel"
-msgstr " высота перемещения"
+msgstr "высота перемещения"
 
 #: flatcamGUI/ObjectUI.py:1823 flatcamGUI/PreferencesUI.py:3628
 msgid "the step value for multidepth cut"
@@ -9586,7 +9586,7 @@ msgstr "Z глубина распила"
 
 #: flatcamGUI/PreferencesUI.py:3627
 msgid "Z height for travel"
-msgstr "высота Z для перемещения"
+msgstr "Высота Z для перемещения"
 
 #: flatcamGUI/PreferencesUI.py:3633
 msgid "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
@@ -10784,7 +10784,7 @@ msgstr "Зазор между медными дорожками"
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features is met."
-msgstr "Проверяет, соблюдены ли минимальные зазоры между медью"
+msgstr "Проверяет, соблюдены ли минимальные зазоры между медью."
 
 #: flatcamGUI/PreferencesUI.py:5168 flatcamGUI/PreferencesUI.py:5188
 #: flatcamGUI/PreferencesUI.py:5208 flatcamGUI/PreferencesUI.py:5228
@@ -10851,7 +10851,7 @@ msgstr ""
 #: flatcamGUI/PreferencesUI.py:5253 flatcamTools/ToolRulesCheck.py:387
 #: flatcamTools/ToolRulesCheck.py:1384 flatcamTools/ToolRulesCheck.py:1411
 msgid "Minimum Solder Mask Sliver"
-msgstr "Минимально ширина паяльной маски"
+msgstr "Минимальная ширина паяльной маски"
 
 #: flatcamGUI/PreferencesUI.py:5255 flatcamTools/ToolRulesCheck.py:389
 msgid ""
@@ -12281,7 +12281,7 @@ msgstr "Нет выбранных объектов."
 
 #: flatcamTools/ToolMove.py:209
 msgid "Error when mouse left click."
-msgstr " Ошибка при щелчке левой кнопкой мыши."
+msgstr "Ошибка при щелчке левой кнопкой мыши."
 
 #: flatcamTools/ToolMove.py:257
 msgid "Move action cancelled."
@@ -12963,7 +12963,7 @@ msgstr "Рисование."
 #: flatcamTools/ToolPaint.py:1241 flatcamTools/ToolPaint.py:1245
 #: flatcamTools/ToolPaint.py:1248
 msgid "Normal painting polygon task started."
-msgstr " Началась задача нормальной отрисовки полигона."
+msgstr "Началась задача нормальной отрисовки полигона."
 
 #: flatcamTools/ToolPaint.py:1242 flatcamTools/ToolPaint.py:1640
 #: flatcamTools/ToolPaint.py:1815 flatcamTools/ToolPaint.py:2105
@@ -13487,39 +13487,40 @@ msgstr "Низ"
 
 #: flatcamTools/ToolRulesCheck.py:91
 msgid "The Bottom Gerber Copper object for which rules are checked."
-msgstr ""
+msgstr "Нижний Gerber объект меди, для которого проверяются правила."
 
 #: flatcamTools/ToolRulesCheck.py:106
 msgid "SM Top"
-msgstr ""
+msgstr "ПМ Верх"
 
 #: flatcamTools/ToolRulesCheck.py:108
 msgid "The Top Gerber Solder Mask object for which rules are checked."
 msgstr ""
+"Верхний Gerber объект паяльной маски, для которого проверяются правила."
 
 #: flatcamTools/ToolRulesCheck.py:123
 msgid "SM Bottom"
-msgstr ""
+msgstr "ПМ Низ"
 
 #: flatcamTools/ToolRulesCheck.py:125
 msgid "The Bottom Gerber Solder Mask object for which rules are checked."
-msgstr ""
+msgstr "Нижний Gerber объект паяльной маски, для которого проверяются правила."
 
 #: flatcamTools/ToolRulesCheck.py:140
 msgid "Silk Top"
-msgstr ""
+msgstr "Шелкография Верх"
 
 #: flatcamTools/ToolRulesCheck.py:142
 msgid "The Top Gerber Silkscreen object for which rules are checked."
-msgstr ""
+msgstr "Верхний Gerber объект шелкографии, для которого проверяются правила."
 
 #: flatcamTools/ToolRulesCheck.py:157
 msgid "Silk Bottom"
-msgstr ""
+msgstr "Шелкография низ"
 
 #: flatcamTools/ToolRulesCheck.py:159
 msgid "The Bottom Gerber Silkscreen object for which rules are checked."
-msgstr ""
+msgstr "Нижний Gerber объект шелкографии, для которого проверяются правила."
 
 #: flatcamTools/ToolRulesCheck.py:174
 msgid "Outline"
@@ -13528,6 +13529,7 @@ msgstr "Контур"
 #: flatcamTools/ToolRulesCheck.py:176
 msgid "The Gerber Outline (Cutout) object for which rules are checked."
 msgstr ""
+"Gerber объект контур (обрезка платы), для которого проверяются правила."
 
 #: flatcamTools/ToolRulesCheck.py:187
 msgid "Excellon Objects"
@@ -13546,6 +13548,8 @@ msgid ""
 "Excellon object for which to check rules.\n"
 "Holds the plated holes or a general Excellon file content."
 msgstr ""
+"Объект Excellon, для которого проверяются правила.\n"
+"Содержит отверстия с металлизацией или общее содержимое файла Excellon."
 
 #: flatcamTools/ToolRulesCheck.py:218
 msgid "Excellon 2"
@@ -13556,6 +13560,8 @@ msgid ""
 "Excellon object for which to check rules.\n"
 "Holds the non-plated holes."
 msgstr ""
+"Объект Excellon, для которого проверяются правила.\n"
+"Содержит отверстия без металлизации."
 
 #: flatcamTools/ToolRulesCheck.py:233
 msgid "All Rules"
@@ -13578,11 +13584,11 @@ msgstr "Значение недействительно."
 
 #: flatcamTools/ToolRulesCheck.py:1138
 msgid "TOP -> Copper to Copper clearance"
-msgstr ""
+msgstr "ВЕРХ -> Зазор между медными дорожками"
 
 #: flatcamTools/ToolRulesCheck.py:1149
 msgid "BOTTOM -> Copper to Copper clearance"
-msgstr ""
+msgstr "НИЗ -> Зазор между медными дорожками"
 
 #: flatcamTools/ToolRulesCheck.py:1154 flatcamTools/ToolRulesCheck.py:1248
 #: flatcamTools/ToolRulesCheck.py:1412
@@ -13590,41 +13596,45 @@ msgid ""
 "At least one Gerber object has to be selected for this rule but none is "
 "selected."
 msgstr ""
+"Для этого правила должен быть выбран хотя бы один объект Gerber, но ни один "
+"не выбран."
 
 #: flatcamTools/ToolRulesCheck.py:1190
 msgid ""
 "One of the copper Gerber objects or the Outline Gerber object is not valid."
-msgstr ""
+msgstr "Один из Gerber объектов меди или Gerber объект контура недопустим."
 
 #: flatcamTools/ToolRulesCheck.py:1203 flatcamTools/ToolRulesCheck.py:1367
 msgid ""
 "Outline Gerber object presence is mandatory for this rule but it is not "
 "selected."
 msgstr ""
+"Присутствие Gerber объекта контура является обязательным для этого правила, "
+"но он не выбран."
 
 #: flatcamTools/ToolRulesCheck.py:1220 flatcamTools/ToolRulesCheck.py:1247
 msgid "Silk to Silk clearance"
-msgstr ""
+msgstr "Зазор между элементами шелкографии"
 
 #: flatcamTools/ToolRulesCheck.py:1233
 msgid "TOP -> Silk to Silk clearance"
-msgstr ""
+msgstr "ВЕРХ -> Зазор между элементами шелкографии"
 
 #: flatcamTools/ToolRulesCheck.py:1243
 msgid "BOTTOM -> Silk to Silk clearance"
-msgstr ""
+msgstr "НИЗ -> Зазор между элементами шелкографии"
 
 #: flatcamTools/ToolRulesCheck.py:1299
 msgid "One or more of the Gerber objects is not valid."
-msgstr ""
+msgstr "Один или несколько объектов Gerber недопустимы."
 
 #: flatcamTools/ToolRulesCheck.py:1307
 msgid "TOP -> Silk to Solder Mask Clearance"
-msgstr ""
+msgstr "ВЕРХ -> Зазор между шелкографией и паяльной маской"
 
 #: flatcamTools/ToolRulesCheck.py:1313
 msgid "BOTTOM -> Silk to Solder Mask Clearance"
-msgstr ""
+msgstr "НИЗ -> Зазор между шелкографией и паяльной маской"
 
 #: flatcamTools/ToolRulesCheck.py:1317
 msgid ""
@@ -13642,11 +13652,11 @@ msgstr ""
 
 #: flatcamTools/ToolRulesCheck.py:1397
 msgid "TOP -> Minimum Solder Mask Sliver"
-msgstr ""
+msgstr "ВЕРХ -> Минимальная ширина паяльной маски"
 
 #: flatcamTools/ToolRulesCheck.py:1407
 msgid "BOTTOM -> Minimum Solder Mask Sliver"
-msgstr ""
+msgstr "НИЗ-> Минимальная ширина паяльной маски"
 
 #: flatcamTools/ToolRulesCheck.py:1456
 msgid "One of the Copper Gerber objects or the Excellon objects is not valid."
