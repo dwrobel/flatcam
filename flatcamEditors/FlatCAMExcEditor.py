@@ -562,7 +562,6 @@ class FCSlotArray(FCShapeTool):
                                           _("To add an Slot Array first select a tool in Tool Table"))
             return
 
-
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
@@ -1011,7 +1010,6 @@ class FCDrillResize(FCShapeTool):
                                 pass
 
                         sel_shapes_to_be_deleted.append(select_shape)
-
 
                         # a hack to make the tool_table display more drills/slots per diameter when shape(drill/slot)
                         # is added.
@@ -3090,7 +3088,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         # element[1] of the tuple is a list of coordinates (a tuple themselves)
         ordered_edited_points = sorted(zip(edited_points.keys(), edited_points.values()))
 
-
         current_tool = 0
         for tool_dia in ordered_edited_points:
             current_tool += 1
@@ -3214,7 +3211,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             except KeyError:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("There are no Tools definitions in the file. Aborting Excellon creation.")
-                )
+                                     )
             except:
                 msg = '[ERROR] %s' % \
                       _("An internal error has ocurred. See Shell.\n")
@@ -3325,7 +3322,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.pos = self.canvas.translate_coords(event_pos)
 
         if self.app.grid_status() == True:
-            self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
         else:
             self.pos = (self.pos[0], self.pos[1])
 
@@ -3560,14 +3557,14 @@ class FlatCAMExcEditor(QtCore.QObject):
             for storage in self.storage_dict:
                 for obj in self.storage_dict[storage].get_objects():
                     if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                            (sel_type is False and poly_selection.intersects(obj.geo)):
+                        (sel_type is False and poly_selection.intersects(obj.geo)):
 
-                            if obj in self.selected:
-                                # remove the shape object from the selected shapes storage
-                                self.selected.remove(obj)
-                            else:
-                                # add the shape object to the selected shapes storage
-                                self.selected.append(obj)
+                        if obj in self.selected:
+                            # remove the shape object from the selected shapes storage
+                            self.selected.remove(obj)
+                        else:
+                            # add the shape object to the selected shapes storage
+                            self.selected.append(obj)
         else:
             # clear the selection shapes storage
             self.selected = []
@@ -3883,7 +3880,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                     # self.points_edit it's only useful first time when we load the data into the storage
                     # but is still used as referecen when building tool_table in self.build_ui()
                     # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
-                    # deleting self.points_edit elements (doesn't matter who but just the number) solved the display issue.
+                    # deleting self.points_edit elements (doesn't matter who but just the number)
+                    # solved the display issue.
                     del self.points_edit[storage][0]
                 else:
                     self.storage_dict[storage].remove(del_shape)

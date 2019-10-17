@@ -2222,7 +2222,7 @@ class FCRectangle(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.draw_app.app.inform.emit( _("Click on 1st corner ..."))
+        self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
 
     def click(self, point):
         self.points.append(point)
@@ -2699,7 +2699,6 @@ class FCText(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_text.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
@@ -2722,21 +2721,19 @@ class FCText(FCShapeTool):
                 log.debug("Font geometry is empty or incorrect: %s" % str(e))
                 self.draw_app.app.inform.emit('[ERROR] %s: %s' %
                                               (_("Font not supported. Only Regular, Bold, Italic and BoldItalic are "
-                                              "supported. Error"), str(e)))
+                                                 "supported. Error"), str(e)))
                 self.text_gui.text_path = []
                 self.text_gui.hide_tool()
                 self.draw_app.select_tool('select')
                 return
         else:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("No text to add."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("No text to add."))
             return
 
         self.text_gui.text_path = []
         self.text_gui.hide_tool()
         self.complete = True
-        self.draw_app.app.inform.emit('[success]%s' %
-                                      _(" Done. Adding Text completed."))
+        self.draw_app.app.inform.emit('[success]%s' % _(" Done. Adding Text completed."))
 
     def utility_geometry(self, data=None):
         """
@@ -3054,7 +3051,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             "text": {"button": self.app.ui.geo_add_text_btn,
                      "constructor": FCText},
             "buffer": {"button": self.app.ui.geo_add_buffer_btn,
-                     "constructor": FCBuffer},
+                       "constructor": FCBuffer},
             "paint": {"button": self.app.ui.geo_add_paint_btn,
                        "constructor": FCPaint},
             "eraser": {"button": self.app.ui.geo_eraser_btn,
@@ -3062,11 +3059,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
             "move": {"button": self.app.ui.geo_move_btn,
                      "constructor": FCMove},
             "transform": {"button": self.app.ui.geo_transform_btn,
-                      "constructor": FCTransform},
+                          "constructor": FCTransform},
             "copy": {"button": self.app.ui.geo_copy_btn,
                      "constructor": FCCopy},
             "explode": {"button": self.app.ui.geo_explode_btn,
-                     "constructor": FCExplode}
+                        "constructor": FCExplode}
         }
 
         # # ## Data
@@ -3496,7 +3493,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-
         try:
             self.app.ui.draw_text.triggered.disconnect()
         except (TypeError, AttributeError):
@@ -3555,12 +3551,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 self.add_shape(subshape)
             return
 
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % type(shape)
-
-        assert shape.geo is not None, \
-            "Shape object has empty geometry (None)"
-
+        assert isinstance(shape, DrawToolShape), "Expected a DrawToolShape, got %s" % type(shape)
+        assert shape.geo is not None, "Shape object has empty geometry (None)"
         assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or \
                not isinstance(shape.geo, list), "Shape objects has empty geometry ([])"
 
@@ -4116,13 +4108,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 continue
 
             if shape in self.selected:
-                self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'] + 'FF', linewidth=2)
+                self.plot_shape(geometry=shape.geo,
+                                color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                                linewidth=2)
                 continue
 
-            self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'] + "FF")
+            self.plot_shape(geometry=shape.geo,
+                            color=self.app.defaults['global_draw_color'] + "FF")
 
         for shape in self.utility:
-            self.plot_shape(geometry=shape.geo, linewidth=1)
+            self.plot_shape(geometry=shape.geo,
+                            linewidth=1)
             continue
 
         self.shapes.redraw()
@@ -4482,7 +4478,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         results = []
         for t in selected:
             if isinstance(t.geo, Polygon) and not t.geo.is_empty:
-                results.append((t.geo.exterior).buffer(
+                results.append(t.geo.exterior.buffer(
                     buf_distance - 1e-10,
                     resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
                     join_style=join_style)
@@ -4513,22 +4509,18 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
 
         if buf_distance < 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Negative buffer value is not accepted.")
-            )
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Negative buffer value is not accepted."))
             # deselect everything
             self.selected = []
             self.replot()
             return 'fail'
 
         if len(selected) == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Nothing selected for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected for buffering."))
             return 'fail'
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Invalid distance for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance for buffering."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4540,7 +4532,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 t.geo = Polygon(t.geo)
 
             if isinstance(t.geo, Polygon) and not t.geo.is_empty:
-                results.append((t.geo).buffer(
+                results.append(t.geo.buffer(
                     -buf_distance + 1e-10,
                     resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
                     join_style=join_style)
@@ -4558,8 +4550,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(sha))
 
         self.replot()
-        self.app.inform.emit('[success] %s' %
-                             _("Interior buffer geometry created."))
+        self.app.inform.emit('[success] %s' % _("Interior buffer geometry created."))
 
     def buffer_ext(self, buf_distance, join_style):
         selected = self.get_selected()
@@ -4592,7 +4583,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 t.geo = Polygon(t.geo)
 
             if isinstance(t.geo, Polygon) and not t.geo.is_empty:
-                results.append((t.geo).buffer(
+                results.append(t.geo.buffer(
                     buf_distance,
                     resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
                     join_style=join_style)
@@ -4610,68 +4601,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(sha))
 
         self.replot()
-        self.app.inform.emit('[success] %s' %
-                             _("Exterior buffer geometry created."))
-
-    # def paint(self, tooldia, overlap, margin, method):
-    #     selected = self.get_selected()
-    #
-    #     if len(selected) == 0:
-    #         self.app.inform.emit("[WARNING] Nothing selected for painting.")
-    #         return
-    #
-    #     for param in [tooldia, overlap, margin]:
-    #         if not isinstance(param, float):
-    #             param_name = [k for k, v in locals().items() if v is param][0]
-    #             self.app.inform.emit("[WARNING] Invalid value for {}".format(param))
-    #
-    #     # Todo: Check for valid method.
-    #
-    #     # Todo: This is the 3rd implementation on painting polys... try to consolidate
-    #
-    #     results = []
-    #
-    #     def recurse(geo):
-    #         try:
-    #             for subg in geo:
-    #                 for subsubg in recurse(subg):
-    #                     yield subsubg
-    #         except TypeError:
-    #             if isinstance(geo, LinearRing):
-    #                 yield geo
-    #
-    #         raise StopIteration
-    #
-    #     for geo in selected:
-    #         print(type(geo.geo))
-    #
-    #         local_results = []
-    #         for poly in recurse(geo.geo):
-    #             if method == "seed":
-    #                 # Type(cp) == FlatCAMRTreeStorage | None
-    #                 cp = Geometry.clear_polygon2(poly.buffer(-margin),
-    #                                              tooldia, overlap=overlap)
-    #
-    #             else:
-    #                 # Type(cp) == FlatCAMRTreeStorage | None
-    #                 cp = Geometry.clear_polygon(poly.buffer(-margin),
-    #                                             tooldia, overlap=overlap)
-    #
-    #             if cp is not None:
-    #                 local_results += list(cp.get_objects())
-    #
-    #             results.append(cascaded_union(local_results))
-    #
-    #     # This is a dirty patch:
-    #     for r in results:
-    #         self.add_shape(DrawToolShape(r))
-    #
-    #     self.replot()
+        self.app.inform.emit('[success] %s' % _("Exterior buffer geometry created."))
 
     def paint(self, tooldia, overlap, margin, connect, contour, method):
 
         self.paint_tooldia = tooldia
-
         selected = self.get_selected()
 
         if len(selected) == 0:

@@ -2813,10 +2813,13 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         for tool in tools:
             if tooldia > self.tools[tool]["C"]:
-                self.app.inform.emit('[ERROR_NOTCL] %s %s: %s' % (
-                    _("Milling tool for DRILLS is larger than hole size. Cancelled.",
-                      str(tool))
-                ))
+                self.app.inform.emit(
+                    '[ERROR_NOTCL] %s %s: %s' % (
+                        _("Milling tool for DRILLS is larger than hole size. Cancelled."),
+                        _("Tool"),
+                        str(tool)
+                    )
+                )
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
