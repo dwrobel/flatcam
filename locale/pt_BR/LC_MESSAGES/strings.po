@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-10-15 02:33+0300\n"
-"PO-Revision-Date: 2019-10-17 08:52-0300\n"
+"PO-Revision-Date: 2019-10-17 14:32-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -13572,11 +13572,13 @@ msgid ""
 "Both Silk and Solder Mask Gerber objects has to be either both Top or both "
 "Bottom."
 msgstr ""
+"Os objetos Gerber de Silkscreen e da Máscara de Solda devem estar no mesmo "
+"lado: superior ou inferior."
 
 #: flatcamTools/ToolRulesCheck.py:1353
 msgid ""
 "One of the Silk Gerber objects or the Outline Gerber object is not valid."
-msgstr ""
+msgstr "Um dos objetos do Gerber não é válido: Silkscreen ou Contorno."
 
 #: flatcamTools/ToolRulesCheck.py:1397
 msgid "TOP -> Minimum Solder Mask Sliver"
@@ -13587,32 +13589,32 @@ msgid "BOTTOM -> Minimum Solder Mask Sliver"
 msgstr "BAIXO -> Máscara de Solda Mínima"
 
 #: flatcamTools/ToolRulesCheck.py:1456
-#, fuzzy
-#| msgid "Select a Geometry, Gerber or Excellon Object to edit."
 msgid "One of the Copper Gerber objects or the Excellon objects is not valid."
-msgstr "Selecione um Objeto Geometria, Gerber ou Excellon para editar."
+msgstr "Um dos objetos não é válido: Gerber Cobre ou Excellon."
 
 #: flatcamTools/ToolRulesCheck.py:1472
 msgid ""
 "Excellon object presence is mandatory for this rule but none is selected."
 msgstr ""
+"A presença de objeto Excellon é obrigatória para esta regra, mas nenhum está "
+"selecionado."
 
 #: flatcamTools/ToolRulesCheck.py:1545 flatcamTools/ToolRulesCheck.py:1558
 #: flatcamTools/ToolRulesCheck.py:1569 flatcamTools/ToolRulesCheck.py:1582
 msgid "STATUS"
-msgstr ""
+msgstr "ESTADO"
 
 #: flatcamTools/ToolRulesCheck.py:1548 flatcamTools/ToolRulesCheck.py:1572
 msgid "FAILED"
-msgstr ""
+msgstr "FALHOU"
 
 #: flatcamTools/ToolRulesCheck.py:1561 flatcamTools/ToolRulesCheck.py:1585
 msgid "PASSED"
-msgstr ""
+msgstr "PASSOU"
 
 #: flatcamTools/ToolRulesCheck.py:1562 flatcamTools/ToolRulesCheck.py:1586
 msgid "Violations: There are no violations for the current rule."
-msgstr ""
+msgstr "Violações: não há violações para a regra atual."
 
 #: flatcamTools/ToolShell.py:70 flatcamTools/ToolShell.py:72
 msgid "...proccessing..."
@@ -14029,16 +14031,12 @@ msgstr ""
 "caixa delimitadora para todos os objetos selecionados."
 
 #: flatcamTools/ToolTransform.py:97 flatcamTools/ToolTransform.py:119
-#, fuzzy
-#| msgid ""
-#| "Angle for Skew action, in degrees.\n"
-#| "Float number between -360 and 359."
 msgid ""
 "Angle for Skew action, in degrees.\n"
 "Float number between -360 and 360."
 msgstr ""
 "Ângulo de inclinação, em graus.\n"
-"Número flutuante entre -360 e 359."
+"Número flutuante entre -360 e 360."
 
 #: flatcamTools/ToolTransform.py:108 flatcamTools/ToolTransform.py:130
 msgid ""
@@ -14071,34 +14069,24 @@ msgstr ""
 "caixa delimitadora para todos os objetos selecionados.\n"
 
 #: flatcamTools/ToolTransform.py:265 flatcamTools/ToolTransform.py:271
-#, fuzzy
-#| msgid ""
-#| "Flip the selected object(s) over the X axis.\n"
-#| "Does not create a new object.\n"
-#| " "
 msgid "Flip the selected object(s) over the X axis."
-msgstr ""
-"Espelha o(s) objeto(s) selecionado(s) no eixo X.\n"
-"Não cria um novo objeto.\n"
-" "
+msgstr "Espelha o(s) objeto(s) selecionado(s) no eixo X."
 
 #: flatcamTools/ToolTransform.py:296
-#, fuzzy
-#| msgid " Mirror Ref. Point"
 msgid "Ref. Point"
-msgstr "Ponto Ref. Espelho"
+msgstr "Ponto de Referência"
 
 #: flatcamTools/ToolTransform.py:435
 msgid "Rotate transformation can not be done for a value of 0."
-msgstr ""
+msgstr "A rotação não pode ser feita para um valor 0."
 
 #: flatcamTools/ToolTransform.py:474 flatcamTools/ToolTransform.py:497
 msgid "Scale transformation can not be done for a factor of 0 or 1."
-msgstr ""
+msgstr "O redimensionamento não pode ser feito para um fator 0 ou 1."
 
 #: flatcamTools/ToolTransform.py:513 flatcamTools/ToolTransform.py:524
 msgid "Offset transformation can not be done for a value of 0."
-msgstr ""
+msgstr "O deslocamento não pode ser feito para um valor 0."
 
 #: flatcamTools/ToolTransform.py:540
 msgid "No object selected. Please Select an object to rotate!"
@@ -14135,7 +14123,7 @@ msgstr "Objetos Trabalho CNC não podem ser espelhados/invertidos."
 
 #: flatcamTools/ToolTransform.py:666
 msgid "Skew transformation can not be done for 0, 90 and 180 degrees."
-msgstr ""
+msgstr "A inclinação não pode ser feita para 0, 90 e 180 graus."
 
 #: flatcamTools/ToolTransform.py:671
 msgid "No object selected. Please Select an object to shear/skew!"
