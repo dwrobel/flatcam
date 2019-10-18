@@ -5118,7 +5118,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
 
         self.crlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.crlabel.setToolTip(
-            _("A tool to check if Gerber files fir within a set\n"
+            _("A tool to check if Gerber files are within a set\n"
               "of Manufacturing Rules.")
         )
         self.layout.addWidget(self.crlabel)

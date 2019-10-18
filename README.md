@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a bug in milling holes due of a message wrongly formatted
 - added an translator email address
 - finished the update on German translation. Part of it was corrected by Jens Karstedt
+- finished the update of the Romanian translation.
 
 16.10.2019
 

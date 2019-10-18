@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-10-16 16:49+0300\n"
-"PO-Revision-Date: 2019-10-16 17:03+0300\n"
+"POT-Creation-Date: 2019-10-18 16:12+0300\n"
+"PO-Revision-Date: 2019-10-18 17:03+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -61,12 +61,12 @@ msgstr ""
 "Tastați >help< pentru a începe\n"
 "\n"
 
-#: FlatCAMApp.py:2710 FlatCAMApp.py:8809
+#: FlatCAMApp.py:2710 FlatCAMApp.py:8817
 msgid "New Project - Not saved"
 msgstr "Proiect nou - Nu a fost salvat"
 
-#: FlatCAMApp.py:2784 FlatCAMApp.py:8867 FlatCAMApp.py:8903 FlatCAMApp.py:8943
-#: FlatCAMApp.py:9707 FlatCAMApp.py:10961 FlatCAMApp.py:11014
+#: FlatCAMApp.py:2784 FlatCAMApp.py:8875 FlatCAMApp.py:8911 FlatCAMApp.py:8951
+#: FlatCAMApp.py:9715 FlatCAMApp.py:10969 FlatCAMApp.py:11022
 msgid ""
 "Canvas initialization started.\n"
 "Canvas initialization finished in"
@@ -129,13 +129,13 @@ msgstr "Vrei sa salvezi obiectul editat?"
 msgid "Close Editor"
 msgstr "Inchide Editorul"
 
-#: FlatCAMApp.py:3334 FlatCAMApp.py:5012 FlatCAMApp.py:7612 FlatCAMApp.py:8716
+#: FlatCAMApp.py:3334 FlatCAMApp.py:5020 FlatCAMApp.py:7620 FlatCAMApp.py:8724
 #: FlatCAMTranslation.py:97 FlatCAMTranslation.py:171
 #: flatcamGUI/PreferencesUI.py:930
 msgid "Yes"
 msgstr "Da"
 
-#: FlatCAMApp.py:3335 FlatCAMApp.py:5013 FlatCAMApp.py:7613 FlatCAMApp.py:8717
+#: FlatCAMApp.py:3335 FlatCAMApp.py:5021 FlatCAMApp.py:7621 FlatCAMApp.py:8725
 #: FlatCAMTranslation.py:98 FlatCAMTranslation.py:172
 #: flatcamGUI/PreferencesUI.py:931 flatcamGUI/PreferencesUI.py:3783
 #: flatcamGUI/PreferencesUI.py:4175 flatcamTools/ToolNonCopperClear.py:184
@@ -143,8 +143,8 @@ msgstr "Da"
 msgid "No"
 msgstr "Nu"
 
-#: FlatCAMApp.py:3336 FlatCAMApp.py:5014 FlatCAMApp.py:5884 FlatCAMApp.py:7010
-#: FlatCAMApp.py:8718
+#: FlatCAMApp.py:3336 FlatCAMApp.py:5022 FlatCAMApp.py:5892 FlatCAMApp.py:7018
+#: FlatCAMApp.py:8726
 msgid "Cancel"
 msgstr "Anuleaza"
 
@@ -161,11 +161,11 @@ msgstr ""
 msgid "is updated, returning to App..."
 msgstr "este actualizat, întoarcere la aplicaţie..."
 
-#: FlatCAMApp.py:3813 FlatCAMApp.py:3867 FlatCAMApp.py:4876
+#: FlatCAMApp.py:3813 FlatCAMApp.py:3867 FlatCAMApp.py:4884
 msgid "Could not load defaults file."
 msgstr "Nu am putut incărca fişierul cu valori default."
 
-#: FlatCAMApp.py:3826 FlatCAMApp.py:3876 FlatCAMApp.py:4886
+#: FlatCAMApp.py:3826 FlatCAMApp.py:3876 FlatCAMApp.py:4894
 msgid "Failed to parse defaults file."
 msgstr "Parsarea fişierului cu valori default a eșuat."
 
@@ -189,10 +189,10 @@ msgstr "Exportă Preferințele FlatCAM"
 msgid "FlatCAM preferences export cancelled."
 msgstr "Exportul preferințelor FlatCAM este anulat."
 
-#: FlatCAMApp.py:3923 FlatCAMApp.py:9888 FlatCAMApp.py:10015
-#: FlatCAMApp.py:10157 FlatCAMApp.py:10216 FlatCAMApp.py:10333
-#: FlatCAMApp.py:10472 FlatCAMObj.py:6309
-#: flatcamEditors/FlatCAMTextEditor.py:217 flatcamGUI/FlatCAMGUI.py:3983
+#: FlatCAMApp.py:3923 FlatCAMApp.py:9896 FlatCAMApp.py:10023
+#: FlatCAMApp.py:10165 FlatCAMApp.py:10224 FlatCAMApp.py:10341
+#: FlatCAMApp.py:10480 FlatCAMObj.py:6312
+#: flatcamEditors/FlatCAMTextEditor.py:217 flatcamGUI/FlatCAMGUI.py:3984
 #: flatcamTools/ToolSolderPaste.py:1453
 msgid ""
 "Permission denied, saving not possible.\n"
@@ -299,7 +299,7 @@ msgid ""
 msgstr ""
 "[selected]{kind} creat/selectat: <span style=\"color:{color};\">{name}</span>"
 
-#: FlatCAMApp.py:4364 FlatCAMApp.py:7090 FlatCAMObj.py:265 FlatCAMObj.py:280
+#: FlatCAMApp.py:4364 FlatCAMApp.py:7098 FlatCAMObj.py:265 FlatCAMObj.py:280
 #: FlatCAMObj.py:296 FlatCAMObj.py:376 flatcamTools/ToolMove.py:220
 msgid "Plotting"
 msgstr "Se afișeaz"
@@ -324,7 +324,7 @@ msgstr "DOWNLOAD"
 msgid "Issue tracker"
 msgstr "Raportare probleme"
 
-#: FlatCAMApp.py:4494 FlatCAMApp.py:4806 flatcamGUI/FlatCAMGUI.py:3786
+#: FlatCAMApp.py:4494 FlatCAMApp.py:4814 flatcamGUI/FlatCAMGUI.py:3786
 msgid "Close"
 msgstr "Închide"
 
@@ -391,17 +391,17 @@ msgstr ""
 
 #: FlatCAMApp.py:4535
 msgid ""
-"Some of the icons used are from the following sources: <BR><div>Icons made "
-"by <a href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik"
+"Some of the icons used are from the following sources:<br><div>Icons made by "
+"<a href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik"
 "\">Freepik</a> from <a href=\"https://www.flaticon.com/\"             title="
-"\"Flaticon\">www.flaticon.com</a></div><br>Icons by <a target=\"_blank\" "
-"href=\"https://icons8.com\">Icons8</a>"
+"\"Flaticon\">www.flaticon.com</a></div>Icons by <a target=\"_blank\" href="
+"\"https://icons8.com\">Icons8</a>"
 msgstr ""
-"Unele dintre icon-uri sunt preluate din urmatoarele surse: <BR><div>Icons "
+"Unele dintre icon-uri sunt preluate din urmatoarele surse: <br><div>Icons "
 "create de <a href=\"https://www.flaticon.com/authors/freepik\" title="
 "\"Freepik\">Freepik</a> de la <a href=\"https://www.flaticon.com/"
-"\"             title=\"Flaticon\">www.flaticon.com</a></div><br>Icons create "
-"de <a target=\"_blank\" href=\"https://icons8.com\">Icons8</a>"
+"\"             title=\"Flaticon\">www.flaticon.com</a></div>Desene create de "
+"<a target=\"_blank\" href=\"https://icons8.com\">Icons8</a>"
 
 #: FlatCAMApp.py:4566
 msgid "Splash"
@@ -439,24 +439,28 @@ msgstr "Autorul Programului"
 msgid "Maintainer >= 2019"
 msgstr "Mentenanta >= 2019"
 
-#: FlatCAMApp.py:4673
+#: FlatCAMApp.py:4677
 msgid "Language"
 msgstr "Limba"
 
-#: FlatCAMApp.py:4674
+#: FlatCAMApp.py:4678
 msgid "Translator"
 msgstr "Traducător"
 
-#: FlatCAMApp.py:4675
+#: FlatCAMApp.py:4679
+msgid "Corrections"
+msgstr "Corecţii"
+
+#: FlatCAMApp.py:4680
 msgid "E-mail"
 msgstr "E-mail"
 
-#: FlatCAMApp.py:4778 FlatCAMApp.py:4786 FlatCAMApp.py:7630
+#: FlatCAMApp.py:4786 FlatCAMApp.py:4794 FlatCAMApp.py:7638
 #: flatcamGUI/FlatCAMGUI.py:440
 msgid "Bookmarks Manager"
 msgstr "Bookmarks Manager"
 
-#: FlatCAMApp.py:4797
+#: FlatCAMApp.py:4805
 msgid ""
 "This entry will resolve to another website if:\n"
 "\n"
@@ -476,11 +480,11 @@ msgstr ""
 "Dacă nu puteți obține informații despre FlatCAM beta\n"
 "utilizați linkul canalului YouTube din meniul Ajutor."
 
-#: FlatCAMApp.py:4804
+#: FlatCAMApp.py:4812
 msgid "Alternative website"
 msgstr "Site alternativ"
 
-#: FlatCAMApp.py:5007 FlatCAMTranslation.py:166
+#: FlatCAMApp.py:5015 FlatCAMTranslation.py:166
 msgid ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
@@ -488,29 +492,29 @@ msgstr ""
 "FlatCAM are fişiere/obiecte care au fost modificate. \n"
 "Dorești să Salvezi proiectul?"
 
-#: FlatCAMApp.py:5010 FlatCAMApp.py:8714 FlatCAMTranslation.py:169
+#: FlatCAMApp.py:5018 FlatCAMApp.py:8722 FlatCAMTranslation.py:169
 msgid "Save changes"
 msgstr "Salvează modificarile"
 
-#: FlatCAMApp.py:5240
+#: FlatCAMApp.py:5248
 msgid "Selected Excellon file extensions registered with FlatCAM."
 msgstr "Extensiile de fișiere Excellon selectate înregistrate cu FlatCAM."
 
-#: FlatCAMApp.py:5262
+#: FlatCAMApp.py:5270
 msgid "Selected GCode file extensions registered with FlatCAM."
 msgstr "Extensii de fișiere GCode selectate înregistrate cu FlatCAM."
 
-#: FlatCAMApp.py:5284
+#: FlatCAMApp.py:5292
 msgid "Selected Gerber file extensions registered with FlatCAM."
 msgstr "Extensii de fișiere Gerber selectate înregistrate cu FlatCAM."
 
-#: FlatCAMApp.py:5445 FlatCAMApp.py:5501 FlatCAMApp.py:5529
+#: FlatCAMApp.py:5453 FlatCAMApp.py:5509 FlatCAMApp.py:5537
 msgid "At least two objects are required for join. Objects currently selected"
 msgstr ""
 "Cel puțin două obiecte sunt necesare pentru a fi unite. Obiectele selectate "
 "în prezent"
 
-#: FlatCAMApp.py:5454
+#: FlatCAMApp.py:5462
 msgid ""
 "Failed join. The Geometry objects are of different types.\n"
 "At least one is MultiGeo type and the other is SingleGeo type. A possibility "
@@ -527,40 +531,40 @@ msgstr ""
 "informatii și rezultatul ar putea să nu fie cel dorit. \n"
 "Verifică codul G-Code generat."
 
-#: FlatCAMApp.py:5496
+#: FlatCAMApp.py:5504
 msgid "Failed. Excellon joining works only on Excellon objects."
 msgstr ""
 "Eșuat. Fuzionarea Excellon functionează doar cu obiecte de tip Excellon."
 
-#: FlatCAMApp.py:5524
+#: FlatCAMApp.py:5532
 msgid "Failed. Gerber joining works only on Gerber objects."
 msgstr "Eșuat. Fuzionarea Gerber functionează doar cu obiecte de tip Gerber ."
 
-#: FlatCAMApp.py:5554 FlatCAMApp.py:5591
+#: FlatCAMApp.py:5562 FlatCAMApp.py:5599
 msgid "Failed. Select a Geometry Object and try again."
 msgstr "Eșuat. Selectează un obiect Geometrie și încearcă din nou."
 
-#: FlatCAMApp.py:5559 FlatCAMApp.py:5596
+#: FlatCAMApp.py:5567 FlatCAMApp.py:5604
 msgid "Expected a FlatCAMGeometry, got"
 msgstr "Se astepta o Geometrie FlatCAM, s-a primit"
 
-#: FlatCAMApp.py:5573
+#: FlatCAMApp.py:5581
 msgid "A Geometry object was converted to MultiGeo type."
 msgstr "Un obiect Geometrie a fost convertit la tipul MultiGeo."
 
-#: FlatCAMApp.py:5611
+#: FlatCAMApp.py:5619
 msgid "A Geometry object was converted to SingleGeo type."
 msgstr "Un obiect Geometrie a fost convertit la tipul SingleGeo ."
 
-#: FlatCAMApp.py:5878
+#: FlatCAMApp.py:5886
 msgid "Toggle Units"
 msgstr "Comută Unitati"
 
-#: FlatCAMApp.py:5880
+#: FlatCAMApp.py:5888
 msgid "Change project units ..."
 msgstr "Schimbă unitătile de măsură ..."
 
-#: FlatCAMApp.py:5881
+#: FlatCAMApp.py:5889
 msgid ""
 "Changing the units of the project causes all geometrical properties of all "
 "objects to be scaled accordingly.\n"
@@ -570,32 +574,32 @@ msgstr ""
 "geometrice ale obiectelor sa fie scalate corespunzător.\n"
 "Continuati?"
 
-#: FlatCAMApp.py:5883 FlatCAMApp.py:6933 FlatCAMApp.py:7009 FlatCAMApp.py:9027
-#: FlatCAMApp.py:9041 FlatCAMApp.py:9389 FlatCAMApp.py:9400
+#: FlatCAMApp.py:5891 FlatCAMApp.py:6941 FlatCAMApp.py:7017 FlatCAMApp.py:9035
+#: FlatCAMApp.py:9049 FlatCAMApp.py:9397 FlatCAMApp.py:9408
 msgid "Ok"
 msgstr "Ok"
 
-#: FlatCAMApp.py:5932
+#: FlatCAMApp.py:5940
 msgid "Converted units to"
 msgstr "Unitătile au fost convertite in"
 
-#: FlatCAMApp.py:5944
+#: FlatCAMApp.py:5952
 msgid " Units conversion cancelled."
 msgstr " Conversia unitătilor este anulată."
 
-#: FlatCAMApp.py:6921 flatcamTools/ToolNonCopperClear.py:564
+#: FlatCAMApp.py:6929 flatcamTools/ToolNonCopperClear.py:564
 #: flatcamTools/ToolNonCopperClear.py:967 flatcamTools/ToolPaint.py:478
 #: flatcamTools/ToolSolderPaste.py:472 flatcamTools/ToolSolderPaste.py:799
 msgid "Please enter a tool diameter with non-zero value, in Float format."
 msgstr ""
 "Introduceti un diametru al uneltei valid: valoare ne-nula in format Real."
 
-#: FlatCAMApp.py:6926 flatcamTools/ToolNonCopperClear.py:568
+#: FlatCAMApp.py:6934 flatcamTools/ToolNonCopperClear.py:568
 #: flatcamTools/ToolPaint.py:482 flatcamTools/ToolSolderPaste.py:476
 msgid "Adding Tool cancelled"
 msgstr "Adăugarea unei unelte anulată"
 
-#: FlatCAMApp.py:6929
+#: FlatCAMApp.py:6937
 msgid ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
@@ -603,11 +607,11 @@ msgstr ""
 "Adăugarea de unelte noi functionează doar in modul Avansat.\n"
 "Pentru aceasta mergi in Preferințe -> General - Activează Modul Avansat."
 
-#: FlatCAMApp.py:7004
+#: FlatCAMApp.py:7012
 msgid "Delete objects"
 msgstr "Șterge obiectele"
 
-#: FlatCAMApp.py:7007
+#: FlatCAMApp.py:7015
 msgid ""
 "Are you sure you want to permanently delete\n"
 "the selected objects?"
@@ -615,54 +619,54 @@ msgstr ""
 "Sigur doriți să ștergeți definitiv\n"
 "obiectele selectate?"
 
-#: FlatCAMApp.py:7038
+#: FlatCAMApp.py:7046
 msgid "Object(s) deleted"
 msgstr "Obiect(ele) șters(e)"
 
-#: FlatCAMApp.py:7042
+#: FlatCAMApp.py:7050
 msgid "Failed. No object(s) selected..."
 msgstr "Eșuat. Nici-un obiect nu este selectat."
 
-#: FlatCAMApp.py:7044
+#: FlatCAMApp.py:7052
 msgid "Save the work in Editor and try again ..."
 msgstr "Salvează continutul din Editor și încearcă din nou."
 
-#: FlatCAMApp.py:7074
+#: FlatCAMApp.py:7082
 msgid "Object deleted"
 msgstr "Obiectul este șters"
 
-#: FlatCAMApp.py:7101
+#: FlatCAMApp.py:7109
 msgid "Click to set the origin ..."
 msgstr "Click pentru a seta originea..."
 
-#: FlatCAMApp.py:7123
+#: FlatCAMApp.py:7131
 msgid "Setting Origin..."
 msgstr "Setează Originea..."
 
-#: FlatCAMApp.py:7135
+#: FlatCAMApp.py:7143
 msgid "Origin set"
 msgstr "Originea a fost setată"
 
-#: FlatCAMApp.py:7142
+#: FlatCAMApp.py:7150
 msgid "Origin coordinates specified but incomplete."
 msgstr "Coordonate pentru origine specificate, dar incomplete."
 
-#: FlatCAMApp.py:7200
+#: FlatCAMApp.py:7208
 msgid "Jump to ..."
 msgstr "Sari la ..."
 
-#: FlatCAMApp.py:7201
+#: FlatCAMApp.py:7209
 msgid "Enter the coordinates in format X,Y:"
 msgstr "Introduceți coordonatele in format X,Y:"
 
-#: FlatCAMApp.py:7209
+#: FlatCAMApp.py:7217
 msgid "Wrong coordinates. Enter coordinates in format: X,Y"
 msgstr "Coordonate gresite. Introduceți coordonatele in format X,Y"
 
-#: FlatCAMApp.py:7257 flatcamEditors/FlatCAMExcEditor.py:3491
-#: flatcamEditors/FlatCAMExcEditor.py:3499
-#: flatcamEditors/FlatCAMGeoEditor.py:3909
-#: flatcamEditors/FlatCAMGeoEditor.py:3924
+#: FlatCAMApp.py:7265 flatcamEditors/FlatCAMExcEditor.py:3488
+#: flatcamEditors/FlatCAMExcEditor.py:3496
+#: flatcamEditors/FlatCAMGeoEditor.py:3901
+#: flatcamEditors/FlatCAMGeoEditor.py:3916
 #: flatcamEditors/FlatCAMGrbEditor.py:1068
 #: flatcamEditors/FlatCAMGrbEditor.py:1172
 #: flatcamEditors/FlatCAMGrbEditor.py:1446
@@ -673,29 +677,29 @@ msgstr "Coordonate gresite. Introduceți coordonatele in format X,Y"
 msgid "Done."
 msgstr "Executat."
 
-#: FlatCAMApp.py:7401 FlatCAMApp.py:7469
+#: FlatCAMApp.py:7409 FlatCAMApp.py:7477
 msgid "No object is selected. Select an object and try again."
 msgstr ""
 "Nici-un obiect nu este selectat. Selectează un obiect și incearcă din nou."
 
-#: FlatCAMApp.py:7489
+#: FlatCAMApp.py:7497
 msgid ""
 "Aborting. The current task will be gracefully closed as soon as possible..."
 msgstr "Intrerup. Taskul curent va fi închis cât mai curând posibil ..."
 
-#: FlatCAMApp.py:7495
+#: FlatCAMApp.py:7503
 msgid "The current task was gracefully closed on user request..."
 msgstr "Taskul curent a fost închis la cererea utilizatorului ..."
 
-#: FlatCAMApp.py:7512 FlatCAMApp.py:7576
+#: FlatCAMApp.py:7520 FlatCAMApp.py:7584
 msgid "Preferences"
 msgstr "Preferințe"
 
-#: FlatCAMApp.py:7572
+#: FlatCAMApp.py:7580
 msgid "Preferences edited but not saved."
 msgstr "Preferințele au fost editate dar nu au fost salvate."
 
-#: FlatCAMApp.py:7607
+#: FlatCAMApp.py:7615
 msgid ""
 "One or more values are changed.\n"
 "Do you want to save the Preferences?"
@@ -703,82 +707,82 @@ msgstr ""
 "Una sau mai multe valori au fost schimbate.\n"
 "Dorești să salvezi Preferințele?"
 
-#: FlatCAMApp.py:7609 flatcamGUI/FlatCAMGUI.py:214
+#: FlatCAMApp.py:7617 flatcamGUI/FlatCAMGUI.py:214
 #: flatcamGUI/FlatCAMGUI.py:1091
 msgid "Save Preferences"
 msgstr "Salvează Pref"
 
-#: FlatCAMApp.py:7622
+#: FlatCAMApp.py:7630
 msgid "Preferences saved."
 msgstr "Preferințele au fost salvate."
 
-#: FlatCAMApp.py:7627 FlatCAMApp.py:9615 FlatCAMApp.py:10967 FlatCAMObj.py:6067
+#: FlatCAMApp.py:7635 FlatCAMApp.py:9623 FlatCAMApp.py:10975 FlatCAMObj.py:6070
 #: flatcamTools/ToolSolderPaste.py:1329
 msgid "Code Editor"
 msgstr "Editor Cod"
 
-#: FlatCAMApp.py:7645
+#: FlatCAMApp.py:7653
 msgid "No object selected to Flip on Y axis."
 msgstr "Nu sete nici-un obiect selectat pentru oglindire pe axa Y."
 
-#: FlatCAMApp.py:7671
+#: FlatCAMApp.py:7679
 msgid "Flip on Y axis done."
 msgstr "Oglindire pe axa Y executată."
 
-#: FlatCAMApp.py:7674 FlatCAMApp.py:7717
+#: FlatCAMApp.py:7682 FlatCAMApp.py:7725
 #: flatcamEditors/FlatCAMGrbEditor.py:5756
 msgid "Flip action was not executed."
 msgstr "Acțiunea de Oglindire nu a fost executată."
 
-#: FlatCAMApp.py:7688
+#: FlatCAMApp.py:7696
 msgid "No object selected to Flip on X axis."
 msgstr "Nu este nici-un obiect selectat pentru oglindire pe axa X."
 
-#: FlatCAMApp.py:7714
+#: FlatCAMApp.py:7722
 msgid "Flip on X axis done."
 msgstr "Oglindirea pe axa X executată."
 
-#: FlatCAMApp.py:7731
+#: FlatCAMApp.py:7739
 msgid "No object selected to Rotate."
 msgstr "Nici-un obiect selectat pentru Rotaţie."
 
-#: FlatCAMApp.py:7734 FlatCAMApp.py:7782 FlatCAMApp.py:7815
+#: FlatCAMApp.py:7742 FlatCAMApp.py:7790 FlatCAMApp.py:7823
 msgid "Transform"
 msgstr "Transformare"
 
-#: FlatCAMApp.py:7734 FlatCAMApp.py:7782 FlatCAMApp.py:7815
+#: FlatCAMApp.py:7742 FlatCAMApp.py:7790 FlatCAMApp.py:7823
 msgid "Enter the Angle value:"
 msgstr "Introduceți valoaea Unghiului:"
 
-#: FlatCAMApp.py:7765
+#: FlatCAMApp.py:7773
 msgid "Rotation done."
 msgstr "Rotaţie executată."
 
-#: FlatCAMApp.py:7768
+#: FlatCAMApp.py:7776
 msgid "Rotation movement was not executed."
 msgstr "Mișcarea de rotație nu a fost executată."
 
-#: FlatCAMApp.py:7780
+#: FlatCAMApp.py:7788
 msgid "No object selected to Skew/Shear on X axis."
 msgstr "Nici-un obiect nu este selectat pentru Deformare pe axa X."
 
-#: FlatCAMApp.py:7802
+#: FlatCAMApp.py:7810
 msgid "Skew on X axis done."
 msgstr "Deformare pe axa X terminată."
 
-#: FlatCAMApp.py:7813
+#: FlatCAMApp.py:7821
 msgid "No object selected to Skew/Shear on Y axis."
 msgstr "Nici-un obiect nu este selectat pentru Deformare pe axa Y."
 
-#: FlatCAMApp.py:7835
+#: FlatCAMApp.py:7843
 msgid "Skew on Y axis done."
 msgstr "Deformare pe axa Y terminată."
 
-#: FlatCAMApp.py:8004 flatcamGUI/FlatCAMGUI.py:1421
+#: FlatCAMApp.py:8012 flatcamGUI/FlatCAMGUI.py:1421
 msgid "Grid On/Off"
 msgstr "Grid On/Off"
 
-#: FlatCAMApp.py:8017 flatcamEditors/FlatCAMGeoEditor.py:944
+#: FlatCAMApp.py:8025 flatcamEditors/FlatCAMGeoEditor.py:944
 #: flatcamEditors/FlatCAMGrbEditor.py:2495
 #: flatcamEditors/FlatCAMGrbEditor.py:5266 flatcamGUI/ObjectUI.py:1202
 #: flatcamTools/ToolDblSided.py:168 flatcamTools/ToolDblSided.py:215
@@ -788,7 +792,7 @@ msgstr "Grid On/Off"
 msgid "Add"
 msgstr "Adaugă"
 
-#: FlatCAMApp.py:8018 FlatCAMObj.py:3779
+#: FlatCAMApp.py:8026 FlatCAMObj.py:3782
 #: flatcamEditors/FlatCAMGrbEditor.py:2500
 #: flatcamEditors/FlatCAMGrbEditor.py:2643 flatcamGUI/FlatCAMGUI.py:600
 #: flatcamGUI/FlatCAMGUI.py:835 flatcamGUI/FlatCAMGUI.py:1820
@@ -799,68 +803,68 @@ msgstr "Adaugă"
 msgid "Delete"
 msgstr "Șterge"
 
-#: FlatCAMApp.py:8031
+#: FlatCAMApp.py:8039
 msgid "New Grid ..."
 msgstr "Grid nou ..."
 
-#: FlatCAMApp.py:8032
+#: FlatCAMApp.py:8040
 msgid "Enter a Grid Value:"
 msgstr "Introduceti of valoare pt Grid:"
 
-#: FlatCAMApp.py:8040 FlatCAMApp.py:8067
+#: FlatCAMApp.py:8048 FlatCAMApp.py:8075
 msgid "Please enter a grid value with non-zero value, in Float format."
 msgstr "Introduceți o valoare pentru Grila ne-nula și in format Real."
 
-#: FlatCAMApp.py:8046
+#: FlatCAMApp.py:8054
 msgid "New Grid added"
 msgstr "Grid nou"
 
-#: FlatCAMApp.py:8049
+#: FlatCAMApp.py:8057
 msgid "Grid already exists"
 msgstr "Grila există deja"
 
-#: FlatCAMApp.py:8052
+#: FlatCAMApp.py:8060
 msgid "Adding New Grid cancelled"
 msgstr "Adăugarea unei valori de Grilă a fost anulată"
 
-#: FlatCAMApp.py:8074
+#: FlatCAMApp.py:8082
 msgid " Grid Value does not exist"
 msgstr " Valoarea Grilei nu există"
 
-#: FlatCAMApp.py:8077
+#: FlatCAMApp.py:8085
 msgid "Grid Value deleted"
 msgstr "Valoarea Grila a fost stearsă"
 
-#: FlatCAMApp.py:8080
+#: FlatCAMApp.py:8088
 msgid "Delete Grid value cancelled"
 msgstr "Ștergerea unei valori de Grilă a fost anulată"
 
-#: FlatCAMApp.py:8086
+#: FlatCAMApp.py:8094
 msgid "Key Shortcut List"
 msgstr "Lista de shortcut-uri"
 
-#: FlatCAMApp.py:8120
+#: FlatCAMApp.py:8128
 msgid " No object selected to copy it's name"
 msgstr " Nici-un obiect nu este selectat pentru i se copia valoarea"
 
-#: FlatCAMApp.py:8124
+#: FlatCAMApp.py:8132
 msgid "Name copied on clipboard ..."
 msgstr "Numele a fost copiat pe Clipboard ..."
 
-#: FlatCAMApp.py:8330 flatcamEditors/FlatCAMGrbEditor.py:4232
+#: FlatCAMApp.py:8338 flatcamEditors/FlatCAMGrbEditor.py:4232
 msgid "Coordinates copied to clipboard."
 msgstr "Coordonatele au fost copiate in clipboard."
 
-#: FlatCAMApp.py:8470 FlatCAMApp.py:8474 FlatCAMApp.py:8478 FlatCAMApp.py:8482
-#: FlatCAMApp.py:8498 FlatCAMApp.py:8502 FlatCAMApp.py:8506 FlatCAMApp.py:8510
-#: FlatCAMApp.py:8550 FlatCAMApp.py:8553 FlatCAMApp.py:8556 FlatCAMApp.py:8559
+#: FlatCAMApp.py:8478 FlatCAMApp.py:8482 FlatCAMApp.py:8486 FlatCAMApp.py:8490
+#: FlatCAMApp.py:8506 FlatCAMApp.py:8510 FlatCAMApp.py:8514 FlatCAMApp.py:8518
+#: FlatCAMApp.py:8558 FlatCAMApp.py:8561 FlatCAMApp.py:8564 FlatCAMApp.py:8567
 #: ObjectCollection.py:774 ObjectCollection.py:777 ObjectCollection.py:780
 #: ObjectCollection.py:783 ObjectCollection.py:786 ObjectCollection.py:789
 #, python-brace-format
 msgid "[selected]<span style=\"color:{color};\">{name}</span> selected"
 msgstr "[selected]<span style=\"color:{color};\">{name}</span> selectat"
 
-#: FlatCAMApp.py:8711
+#: FlatCAMApp.py:8719
 msgid ""
 "There are files/objects opened in FlatCAM.\n"
 "Creating a New project will delete them.\n"
@@ -870,335 +874,335 @@ msgstr ""
 "Crearea unui nou Proiect le va șterge..\n"
 "Doriti să Salvati proiectul curentt?"
 
-#: FlatCAMApp.py:8733
+#: FlatCAMApp.py:8741
 msgid "New Project created"
 msgstr "Un nou Proiect a fost creat"
 
-#: FlatCAMApp.py:8858 FlatCAMApp.py:8862 flatcamGUI/FlatCAMGUI.py:685
+#: FlatCAMApp.py:8866 FlatCAMApp.py:8870 flatcamGUI/FlatCAMGUI.py:685
 #: flatcamGUI/FlatCAMGUI.py:2109
 msgid "Open Gerber"
 msgstr "Încarcă Gerber"
 
-#: FlatCAMApp.py:8869
+#: FlatCAMApp.py:8877
 msgid "Opening Gerber file."
 msgstr "Se incarcă un fişier Gerber."
 
-#: FlatCAMApp.py:8875
+#: FlatCAMApp.py:8883
 msgid "Open Gerber cancelled."
 msgstr "Incărcarea unui fişier Gerber este anulată."
 
-#: FlatCAMApp.py:8895 FlatCAMApp.py:8899 flatcamGUI/FlatCAMGUI.py:686
+#: FlatCAMApp.py:8903 FlatCAMApp.py:8907 flatcamGUI/FlatCAMGUI.py:686
 #: flatcamGUI/FlatCAMGUI.py:2110
 msgid "Open Excellon"
 msgstr "Încarcă Excellon"
 
-#: FlatCAMApp.py:8905
+#: FlatCAMApp.py:8913
 msgid "Opening Excellon file."
 msgstr "Se incarcă un fişier Excellon."
 
-#: FlatCAMApp.py:8911
+#: FlatCAMApp.py:8919
 msgid " Open Excellon cancelled."
 msgstr " Incărcarea unui fişier Excellon este anulată."
 
-#: FlatCAMApp.py:8934 FlatCAMApp.py:8938
+#: FlatCAMApp.py:8942 FlatCAMApp.py:8946
 msgid "Open G-Code"
 msgstr "Încarcă G-Code"
 
-#: FlatCAMApp.py:8945
+#: FlatCAMApp.py:8953
 msgid "Opening G-Code file."
 msgstr "Se incarcă un fişier G-Code."
 
-#: FlatCAMApp.py:8951
+#: FlatCAMApp.py:8959
 msgid "Open G-Code cancelled."
 msgstr "Incărcarea unui fişier G-Code este anulată."
 
-#: FlatCAMApp.py:8968 FlatCAMApp.py:8971 flatcamGUI/FlatCAMGUI.py:1427
+#: FlatCAMApp.py:8976 FlatCAMApp.py:8979 flatcamGUI/FlatCAMGUI.py:1427
 msgid "Open Project"
 msgstr "Încarcă Project"
 
-#: FlatCAMApp.py:8980
+#: FlatCAMApp.py:8988
 msgid "Open Project cancelled."
 msgstr "Incărcarea unui fişier Proiect FlatCAM este anulată."
 
-#: FlatCAMApp.py:8999 FlatCAMApp.py:9002
+#: FlatCAMApp.py:9007 FlatCAMApp.py:9010
 msgid "Open Configuration File"
 msgstr "Încarcă un fişier de Configurare"
 
-#: FlatCAMApp.py:9007
+#: FlatCAMApp.py:9015
 msgid "Open Config cancelled."
 msgstr "Incărcarea unui fişier configurare FlatCAM este anulată."
 
-#: FlatCAMApp.py:9023 FlatCAMApp.py:9385
+#: FlatCAMApp.py:9031 FlatCAMApp.py:9393
 msgid "No object selected."
 msgstr "Nici-un obiect nu este selectat."
 
-#: FlatCAMApp.py:9024 FlatCAMApp.py:9386
+#: FlatCAMApp.py:9032 FlatCAMApp.py:9394
 msgid "Please Select a Geometry object to export"
 msgstr "Selectează un obiect Geometrie pentru export"
 
-#: FlatCAMApp.py:9038
+#: FlatCAMApp.py:9046
 msgid "Only Geometry, Gerber and CNCJob objects can be used."
 msgstr "Doar obiectele Geometrie, Gerber și CNCJob pot fi folosite."
 
-#: FlatCAMApp.py:9051 FlatCAMApp.py:9055
+#: FlatCAMApp.py:9059 FlatCAMApp.py:9063
 msgid "Export SVG"
 msgstr "Exporta SVG"
 
-#: FlatCAMApp.py:9061
+#: FlatCAMApp.py:9069
 msgid " Export SVG cancelled."
 msgstr " Exportul fisierului SVG a fost anulat."
 
-#: FlatCAMApp.py:9082
+#: FlatCAMApp.py:9090
 msgid "Data must be a 3D array with last dimension 3 or 4"
 msgstr ""
 "Datele trebuie să fie organizate intr-o arie 3D cu ultima dimensiune cu "
 "valoarea 3 sau 4"
 
-#: FlatCAMApp.py:9088 FlatCAMApp.py:9092
+#: FlatCAMApp.py:9096 FlatCAMApp.py:9100
 msgid "Export PNG Image"
 msgstr "Exporta imagine PNG"
 
-#: FlatCAMApp.py:9097
+#: FlatCAMApp.py:9105
 msgid "Export PNG cancelled."
 msgstr "Exportul imagine PNG este anulat."
 
-#: FlatCAMApp.py:9121
+#: FlatCAMApp.py:9129
 msgid "No object selected. Please select an Gerber object to export."
 msgstr "Nici-un obiect selectat. Selectează un obiect Gerber pentru export."
 
-#: FlatCAMApp.py:9127 FlatCAMApp.py:9347
+#: FlatCAMApp.py:9135 FlatCAMApp.py:9355
 msgid "Failed. Only Gerber objects can be saved as Gerber files..."
 msgstr "Eșuat. Doar obiectele tip Gerber pot fi salvate ca fişiere Gerber..."
 
-#: FlatCAMApp.py:9139
+#: FlatCAMApp.py:9147
 msgid "Save Gerber source file"
 msgstr "Salvează codul sursa Gerber ca fişier"
 
-#: FlatCAMApp.py:9145
+#: FlatCAMApp.py:9153
 msgid "Save Gerber source file cancelled."
 msgstr "Salvarea codului sursa Gerber este anulată."
 
-#: FlatCAMApp.py:9165
+#: FlatCAMApp.py:9173
 msgid "No object selected. Please select an Script object to export."
 msgstr "Nici-un obiect selectat. Selectează un obiect Script pentru export."
 
-#: FlatCAMApp.py:9171
+#: FlatCAMApp.py:9179
 msgid "Failed. Only Script objects can be saved as TCL Script files..."
 msgstr ""
 "Eșuat. Doar obiectele tip Script pot fi salvate ca fişiere TCL Script..."
 
-#: FlatCAMApp.py:9183
+#: FlatCAMApp.py:9191
 msgid "Save Script source file"
 msgstr "Salvează codul sursa Script ca fişier"
 
-#: FlatCAMApp.py:9189
+#: FlatCAMApp.py:9197
 msgid "Save Script source file cancelled."
 msgstr "Salvarea codului sursa Script este anulată."
 
-#: FlatCAMApp.py:9209
+#: FlatCAMApp.py:9217
 msgid "No object selected. Please select an Document object to export."
 msgstr "Nici-un obiect selectat. Selectează un obiect Document pentru export."
 
-#: FlatCAMApp.py:9215
+#: FlatCAMApp.py:9223
 msgid "Failed. Only Document objects can be saved as Document files..."
 msgstr ""
 "Eșuat. Doar obiectele tip Document pot fi salvate ca fişiere Document ..."
 
-#: FlatCAMApp.py:9227
+#: FlatCAMApp.py:9235
 msgid "Save Document source file"
 msgstr "Salvează codul sursa Document ca fişier"
 
-#: FlatCAMApp.py:9233
+#: FlatCAMApp.py:9241
 msgid "Save Document source file cancelled."
 msgstr "Salvarea codului sursa Document este anulată."
 
-#: FlatCAMApp.py:9253
+#: FlatCAMApp.py:9261
 msgid "No object selected. Please select an Excellon object to export."
 msgstr "Nici-un obiect selectat. Selectează un obiect Excellon pentru export."
 
-#: FlatCAMApp.py:9259 FlatCAMApp.py:9303
+#: FlatCAMApp.py:9267 FlatCAMApp.py:9311
 msgid "Failed. Only Excellon objects can be saved as Excellon files..."
 msgstr ""
 "Eșuat. Doar obiectele tip Excellon pot fi salvate ca fişiere Excellon ..."
 
-#: FlatCAMApp.py:9267 FlatCAMApp.py:9271
+#: FlatCAMApp.py:9275 FlatCAMApp.py:9279
 msgid "Save Excellon source file"
 msgstr "Salvează codul sursa Excellon ca fişier"
 
-#: FlatCAMApp.py:9277
+#: FlatCAMApp.py:9285
 msgid "Saving Excellon source file cancelled."
 msgstr "Salvarea codului sursa Excellon este anulată."
 
-#: FlatCAMApp.py:9297
+#: FlatCAMApp.py:9305
 msgid "No object selected. Please Select an Excellon object to export."
 msgstr "Nici-un obiect selectat. Selectează un obiect Excellon pentru export."
 
-#: FlatCAMApp.py:9311 FlatCAMApp.py:9315
+#: FlatCAMApp.py:9319 FlatCAMApp.py:9323
 msgid "Export Excellon"
 msgstr "Exportă Excellon"
 
-#: FlatCAMApp.py:9321
+#: FlatCAMApp.py:9329
 msgid "Export Excellon cancelled."
 msgstr "Exportul fișierului Excellon a fost anulat."
 
-#: FlatCAMApp.py:9341
+#: FlatCAMApp.py:9349
 msgid "No object selected. Please Select an Gerber object to export."
 msgstr "Nici-un obiect selectat. Selectează un obiect Gerber pentru export."
 
-#: FlatCAMApp.py:9355 FlatCAMApp.py:9359
+#: FlatCAMApp.py:9363 FlatCAMApp.py:9367
 msgid "Export Gerber"
 msgstr "Exportă Gerber"
 
-#: FlatCAMApp.py:9365
+#: FlatCAMApp.py:9373
 msgid "Export Gerber cancelled."
 msgstr "Exportul fișierului Gerber a fost anulat."
 
-#: FlatCAMApp.py:9397
+#: FlatCAMApp.py:9405
 msgid "Only Geometry objects can be used."
 msgstr "Doar obiecte tip Geometrie pot fi folosite."
 
-#: FlatCAMApp.py:9411 FlatCAMApp.py:9415
+#: FlatCAMApp.py:9419 FlatCAMApp.py:9423
 msgid "Export DXF"
 msgstr "Exportă DXF"
 
-#: FlatCAMApp.py:9422
+#: FlatCAMApp.py:9430
 msgid "Export DXF cancelled."
 msgstr "Exportul fișierului DXF a fost anulat."
 
-#: FlatCAMApp.py:9442 FlatCAMApp.py:9445
+#: FlatCAMApp.py:9450 FlatCAMApp.py:9453
 msgid "Import SVG"
 msgstr "Importă SVG"
 
-#: FlatCAMApp.py:9455
+#: FlatCAMApp.py:9463
 msgid "Open SVG cancelled."
 msgstr "Incărcarea fișierului SVG a fost anulată."
 
-#: FlatCAMApp.py:9474 FlatCAMApp.py:9478
+#: FlatCAMApp.py:9482 FlatCAMApp.py:9486
 msgid "Import DXF"
 msgstr "Importa DXF"
 
-#: FlatCAMApp.py:9488
+#: FlatCAMApp.py:9496
 msgid "Open DXF cancelled."
 msgstr "Incărcarea fișierului DXF a fost anulată."
 
-#: FlatCAMApp.py:9526
+#: FlatCAMApp.py:9534
 msgid "Viewing the source code of the selected object."
 msgstr "Vizualizarea codului sursă a obiectului selectat."
 
-#: FlatCAMApp.py:9527 FlatCAMObj.py:6053
+#: FlatCAMApp.py:9535 FlatCAMObj.py:6056
 msgid "Loading..."
 msgstr "Se incarcă..."
 
-#: FlatCAMApp.py:9534
+#: FlatCAMApp.py:9542
 msgid "Select an Gerber or Excellon file to view it's source file."
 msgstr "Selectati un obiect Gerber sau Excellon pentru a-i vedea codul sursa."
 
-#: FlatCAMApp.py:9549
+#: FlatCAMApp.py:9557
 msgid "Source Editor"
 msgstr "Editor Cod Sursă"
 
-#: FlatCAMApp.py:9582 FlatCAMApp.py:9589
+#: FlatCAMApp.py:9590 FlatCAMApp.py:9597
 msgid "There is no selected object for which to see it's source file code."
 msgstr "Nici-un obiect selectat pentru a-i vedea codul sursa."
 
-#: FlatCAMApp.py:9601
+#: FlatCAMApp.py:9609
 msgid "Failed to load the source code for the selected object"
 msgstr "Codul sursă pentru obiectul selectat nu a putut fi încărcat"
 
-#: FlatCAMApp.py:9640
+#: FlatCAMApp.py:9648
 msgid "New TCL script file created in Code Editor."
 msgstr "Un nou script TCL a fost creat in Editorul de cod."
 
-#: FlatCAMApp.py:9678 FlatCAMApp.py:9680
+#: FlatCAMApp.py:9686 FlatCAMApp.py:9688
 msgid "Open TCL script"
 msgstr "Încarcă TCL script"
 
-#: FlatCAMApp.py:9685
+#: FlatCAMApp.py:9693
 msgid "Open TCL script cancelled."
 msgstr "Incărcarea fisierului TCL script anulată."
 
-#: FlatCAMApp.py:9709
+#: FlatCAMApp.py:9717
 msgid "Executing FlatCAMScript file."
 msgstr "Se executa un fisier script FlatCAM."
 
-#: FlatCAMApp.py:9716 FlatCAMApp.py:9719
+#: FlatCAMApp.py:9724 FlatCAMApp.py:9727
 msgid "Run TCL script"
 msgstr "Ruleaza TCL script"
 
-#: FlatCAMApp.py:9729
+#: FlatCAMApp.py:9737
 msgid "Run TCL script cancelled."
 msgstr "Executarea fisierului Script a fost anulată."
 
-#: FlatCAMApp.py:9745
+#: FlatCAMApp.py:9753
 msgid "TCL script file opened in Code Editor and executed."
 msgstr "Un fisier script TCL a fost deschis in Editorul de cod si executat."
 
-#: FlatCAMApp.py:9796 FlatCAMApp.py:9800
+#: FlatCAMApp.py:9804 FlatCAMApp.py:9808
 msgid "Save Project As ..."
 msgstr "Salvează Proiectul ca ..."
 
-#: FlatCAMApp.py:9797
+#: FlatCAMApp.py:9805
 #, python-brace-format
 msgid "{l_save}/Project_{date}"
 msgstr "{l_save}/Proiect_{date}"
 
-#: FlatCAMApp.py:9806
+#: FlatCAMApp.py:9814
 msgid "Save Project cancelled."
 msgstr "Salvarea Proiect anulată."
 
-#: FlatCAMApp.py:9854
+#: FlatCAMApp.py:9862
 msgid "Exporting SVG"
 msgstr "SVG in curs de export"
 
-#: FlatCAMApp.py:9896 FlatCAMApp.py:10023 FlatCAMApp.py:10166
+#: FlatCAMApp.py:9904 FlatCAMApp.py:10031 FlatCAMApp.py:10174
 msgid "SVG file exported to"
 msgstr "Fişier SVG exportat in"
 
-#: FlatCAMApp.py:9943 FlatCAMApp.py:10085 flatcamTools/ToolPanelize.py:404
+#: FlatCAMApp.py:9951 FlatCAMApp.py:10093 flatcamTools/ToolPanelize.py:404
 msgid "No object Box. Using instead"
 msgstr "Nu exista container. Se foloseşte in schimb"
 
-#: FlatCAMApp.py:10026 FlatCAMApp.py:10169
+#: FlatCAMApp.py:10034 FlatCAMApp.py:10177
 msgid "Generating Film ... Please wait."
 msgstr "Filmul se generează ... Aşteaptă."
 
-#: FlatCAMApp.py:10341
+#: FlatCAMApp.py:10349
 msgid "Excellon file exported to"
 msgstr "Fişierul Excellon exportat in"
 
-#: FlatCAMApp.py:10350
+#: FlatCAMApp.py:10358
 msgid "Exporting Excellon"
 msgstr "Excellon in curs de export"
 
-#: FlatCAMApp.py:10356 FlatCAMApp.py:10364
+#: FlatCAMApp.py:10364 FlatCAMApp.py:10372
 msgid "Could not export Excellon file."
 msgstr "Fişierul Excellon nu a fost posibil să fie exportat."
 
-#: FlatCAMApp.py:10480
+#: FlatCAMApp.py:10488
 msgid "Gerber file exported to"
 msgstr "Fişier Gerber exportat in"
 
-#: FlatCAMApp.py:10488
+#: FlatCAMApp.py:10496
 msgid "Exporting Gerber"
 msgstr "Gerber in curs de export"
 
-#: FlatCAMApp.py:10494 FlatCAMApp.py:10502
+#: FlatCAMApp.py:10502 FlatCAMApp.py:10510
 msgid "Could not export Gerber file."
 msgstr "Fişierul Gerber nu a fost posibil să fie exportat."
 
-#: FlatCAMApp.py:10547
+#: FlatCAMApp.py:10555
 msgid "DXF file exported to"
 msgstr "Fişierul DXF exportat in"
 
-#: FlatCAMApp.py:10553
+#: FlatCAMApp.py:10561
 msgid "Exporting DXF"
 msgstr "DXF in curs de export"
 
-#: FlatCAMApp.py:10559 FlatCAMApp.py:10567
+#: FlatCAMApp.py:10567 FlatCAMApp.py:10575
 msgid "Could not export DXF file."
 msgstr "Fişierul DXF nu a fost posibil să fie exportat."
 
-#: FlatCAMApp.py:10589 FlatCAMApp.py:10634 FlatCAMApp.py:10678
+#: FlatCAMApp.py:10597 FlatCAMApp.py:10642 FlatCAMApp.py:10686
 msgid ""
 "Not supported type is picked as parameter. Only Geometry and Gerber are "
 "supported"
@@ -1206,89 +1210,89 @@ msgstr ""
 "Tipul parametrului nu este compatibil. Doar obiectele tip Geometrie si "
 "Gerber sunt acceptate"
 
-#: FlatCAMApp.py:10599
+#: FlatCAMApp.py:10607
 msgid "Importing SVG"
 msgstr "SVG in curs de ia fi importat"
 
-#: FlatCAMApp.py:10611 FlatCAMApp.py:10654 FlatCAMApp.py:10699
-#: FlatCAMApp.py:10780 FlatCAMApp.py:10847 FlatCAMApp.py:10910
-#: FlatCAMApp.py:10948 flatcamTools/ToolPDF.py:224
+#: FlatCAMApp.py:10619 FlatCAMApp.py:10662 FlatCAMApp.py:10707
+#: FlatCAMApp.py:10788 FlatCAMApp.py:10855 FlatCAMApp.py:10918
+#: FlatCAMApp.py:10956 flatcamTools/ToolPDF.py:224
 msgid "Opened"
 msgstr "Încarcat"
 
-#: FlatCAMApp.py:10643
+#: FlatCAMApp.py:10651
 msgid "Importing DXF"
 msgstr "DXF in curs de a fi importat"
 
-#: FlatCAMApp.py:10686
+#: FlatCAMApp.py:10694
 msgid "Importing Image"
 msgstr "Imaginea in curs de a fi importata"
 
-#: FlatCAMApp.py:10729
+#: FlatCAMApp.py:10737
 msgid "Failed to open file"
 msgstr "Eşec in incărcarea fişierului"
 
-#: FlatCAMApp.py:10734
+#: FlatCAMApp.py:10742
 msgid "Failed to parse file"
 msgstr "Parsarea fişierului a eșuat"
 
-#: FlatCAMApp.py:10741 FlatCAMApp.py:10815 FlatCAMObj.py:4759
+#: FlatCAMApp.py:10749 FlatCAMApp.py:10823 FlatCAMObj.py:4762
 #: flatcamEditors/FlatCAMGrbEditor.py:4044 flatcamTools/ToolPcbWizard.py:436
 msgid "An internal error has occurred. See shell.\n"
 msgstr ""
 "A apărut o eroare internă. Verifică in TCL Shell pt mai multe detalii.\n"
 
-#: FlatCAMApp.py:10751
+#: FlatCAMApp.py:10759
 msgid "Object is not Gerber file or empty. Aborting object creation."
 msgstr ""
 "Obiectul nu estetip Gerber sau este gol. Se anulează crearea obiectului."
 
-#: FlatCAMApp.py:10759
+#: FlatCAMApp.py:10767
 msgid "Opening Gerber"
 msgstr "Gerber in curs de incărcare"
 
-#: FlatCAMApp.py:10770
+#: FlatCAMApp.py:10778
 msgid " Open Gerber failed. Probable not a Gerber file."
 msgstr " Incărcarea Gerber a eșuat. Probabil nu este de tip Gerber."
 
-#: FlatCAMApp.py:10805 flatcamTools/ToolPcbWizard.py:426
+#: FlatCAMApp.py:10813 flatcamTools/ToolPcbWizard.py:426
 msgid "This is not Excellon file."
 msgstr "Acesta nu este un fişier Excellon."
 
-#: FlatCAMApp.py:10809
+#: FlatCAMApp.py:10817
 msgid "Cannot open file"
 msgstr "Nu se poate incărca fişierul"
 
-#: FlatCAMApp.py:10829 flatcamTools/ToolPDF.py:274
+#: FlatCAMApp.py:10837 flatcamTools/ToolPDF.py:274
 #: flatcamTools/ToolPcbWizard.py:450
 msgid "No geometry found in file"
 msgstr "Nici-o informaţie de tip geometrie nu s-a gasit in fişierul"
 
-#: FlatCAMApp.py:10832
+#: FlatCAMApp.py:10840
 msgid "Opening Excellon."
 msgstr "Excellon in curs de incărcare."
 
-#: FlatCAMApp.py:10839
+#: FlatCAMApp.py:10847
 msgid "Open Excellon file failed. Probable not an Excellon file."
 msgstr "Incărcarea Excellon a eșuat. Probabil nu este de tip Excellon."
 
-#: FlatCAMApp.py:10870
+#: FlatCAMApp.py:10878
 msgid "Reading GCode file"
-msgstr "Se citeşte un fişier G-Code."
+msgstr "Se citeşte un fişier G-Code"
 
-#: FlatCAMApp.py:10877
+#: FlatCAMApp.py:10885
 msgid "Failed to open"
 msgstr "A eșuat incărcarea fişierului"
 
-#: FlatCAMApp.py:10885
+#: FlatCAMApp.py:10893
 msgid "This is not GCODE"
 msgstr "Acest obiect nu este de tip GCode"
 
-#: FlatCAMApp.py:10890
+#: FlatCAMApp.py:10898
 msgid "Opening G-Code."
 msgstr "G-Code in curs de incărcare."
 
-#: FlatCAMApp.py:10899
+#: FlatCAMApp.py:10907
 msgid ""
 "Failed to create CNCJob Object. Probable not a GCode file. Try to load it "
 "from File menu.\n"
@@ -1299,55 +1303,55 @@ msgstr ""
 "Încercați să-l încărcați din meniul Fișier. \n"
 "Incercarea de a crea un obiect CNCJob din G-Code a eșuat in timpul procesarii"
 
-#: FlatCAMApp.py:10924
+#: FlatCAMApp.py:10932
 msgid "Opening TCL Script..."
 msgstr "Încarcă TCL script..."
 
-#: FlatCAMApp.py:10932
+#: FlatCAMApp.py:10940
 msgid "TCL script file opened in Code Editor."
-msgstr "S-a încărcat un script TCL în Editorul Cod"
+msgstr "S-a încărcat un script TCL în Editorul Cod."
 
-#: FlatCAMApp.py:10935
+#: FlatCAMApp.py:10943
 msgid "Failed to open TCL Script."
-msgstr "Eşec in incărcarea fişierului TCL"
+msgstr "Eşec in incărcarea fişierului TCL."
 
-#: FlatCAMApp.py:10963
+#: FlatCAMApp.py:10971
 msgid "Opening FlatCAM Config file."
 msgstr "Se incarca un fişier FlatCAM de configurare."
 
-#: FlatCAMApp.py:10985
+#: FlatCAMApp.py:10993
 msgid "Failed to open config file"
 msgstr "Eşec in incărcarea fişierului de configurare"
 
-#: FlatCAMApp.py:11011
+#: FlatCAMApp.py:11019
 msgid "Loading Project ... Please Wait ..."
 msgstr "Se încarcă proiectul ... Vă rugăm să așteptați ..."
 
-#: FlatCAMApp.py:11016
+#: FlatCAMApp.py:11024
 msgid "Opening FlatCAM Project file."
 msgstr "Se incarca un fisier proiect FlatCAM."
 
-#: FlatCAMApp.py:11026 FlatCAMApp.py:11044
+#: FlatCAMApp.py:11034 FlatCAMApp.py:11052
 msgid "Failed to open project file"
 msgstr "Eşec in incărcarea fişierului proiect"
 
-#: FlatCAMApp.py:11078
+#: FlatCAMApp.py:11086
 msgid "Loading Project ... restoring"
 msgstr "Se încarcă proiectul ... se restabileste"
 
-#: FlatCAMApp.py:11087
+#: FlatCAMApp.py:11095
 msgid "Project loaded from"
 msgstr "Proiectul a fost incărcat din"
 
-#: FlatCAMApp.py:11150
+#: FlatCAMApp.py:11158
 msgid "Redrawing all objects"
-msgstr "Toate obiectele sunt reafisate."
+msgstr "Toate obiectele sunt reafisate"
 
-#: FlatCAMApp.py:11182
+#: FlatCAMApp.py:11190
 msgid "Available commands:\n"
 msgstr "Comenzi disponibile:\n"
 
-#: FlatCAMApp.py:11184
+#: FlatCAMApp.py:11192
 msgid ""
 "\n"
 "\n"
@@ -1359,51 +1363,51 @@ msgstr ""
 "Introduceți help <nume_comanda> pentru utilizare.\n"
 "Exemplu: help open_gerber"
 
-#: FlatCAMApp.py:11334
+#: FlatCAMApp.py:11342
 msgid "Shows list of commands."
 msgstr "Arata o lista de comenzi."
 
-#: FlatCAMApp.py:11396
+#: FlatCAMApp.py:11404
 msgid "Failed to load recent item list."
 msgstr "Eşec in incărcarea listei cu fişiere recente."
 
-#: FlatCAMApp.py:11404
+#: FlatCAMApp.py:11412
 msgid "Failed to parse recent item list."
 msgstr "Eşec in parsarea listei cu fişiere recente."
 
-#: FlatCAMApp.py:11415
+#: FlatCAMApp.py:11423
 msgid "Failed to load recent projects item list."
 msgstr "Eşec in incărcarea listei cu proiecte recente."
 
-#: FlatCAMApp.py:11423
+#: FlatCAMApp.py:11431
 msgid "Failed to parse recent project item list."
 msgstr "Eşec in parsarea listei cu proiecte recente."
 
-#: FlatCAMApp.py:11482
+#: FlatCAMApp.py:11490
 msgid "Clear Recent projects"
 msgstr "Sterge Proiectele recente"
 
-#: FlatCAMApp.py:11505
+#: FlatCAMApp.py:11513
 msgid "Clear Recent files"
 msgstr "Sterge fişierele recente"
 
-#: FlatCAMApp.py:11522 flatcamGUI/FlatCAMGUI.py:1108
+#: FlatCAMApp.py:11530 flatcamGUI/FlatCAMGUI.py:1108
 msgid "<b>Shortcut Key List</b>"
 msgstr "<b>Lista cu taste Shortcut</b>"
 
-#: FlatCAMApp.py:11596
+#: FlatCAMApp.py:11604
 msgid "Selected Tab - Choose an Item from Project Tab"
 msgstr "Tab-ul Selectat - Alege un obiect din Tab-ul Proiect"
 
-#: FlatCAMApp.py:11597
+#: FlatCAMApp.py:11605
 msgid "Details"
 msgstr "Detalii"
 
-#: FlatCAMApp.py:11599
+#: FlatCAMApp.py:11607
 msgid "The normal flow when working in FlatCAM is the following:"
-msgstr "Fluxul normal cand se lucreaza in FlatCAM este urmatorul\""
+msgstr "Fluxul normal cand se lucreaza in FlatCAM este urmatorul:"
 
-#: FlatCAMApp.py:11600
+#: FlatCAMApp.py:11608
 msgid ""
 "Load/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into "
 "FlatCAM using either the toolbars, key shortcuts or even dragging and "
@@ -1413,7 +1417,7 @@ msgstr ""
 "sau SVG în FlatCAM utilizând fie barele de instrumente, combinatii de taste "
 "sau chiar tragând fișierele în GUI."
 
-#: FlatCAMApp.py:11603
+#: FlatCAMApp.py:11611
 msgid ""
 "You can also load a FlatCAM project by double clicking on the project file, "
 "drag and drop of the file into the FLATCAM GUI or through the menu (or "
@@ -1423,7 +1427,7 @@ msgstr ""
 "proiectului, tragând fișierul în fereastra FLATCAM sau prin icon-urile din "
 "meniu (sau din bara de instrumente) oferite în aplicație."
 
-#: FlatCAMApp.py:11606
+#: FlatCAMApp.py:11614
 msgid ""
 "Once an object is available in the Project Tab, by selecting it and then "
 "focusing on SELECTED TAB (more simpler is to double click the object name in "
@@ -1436,7 +1440,7 @@ msgstr ""
 "proprietățile obiectului în funcție de tipul său: Gerber, Excellon, "
 "Geometrie sau obiect CNCJob."
 
-#: FlatCAMApp.py:11610
+#: FlatCAMApp.py:11618
 msgid ""
 "If the selection of the object is done on the canvas by single click "
 "instead, and the SELECTED TAB is in focus, again the object properties will "
@@ -1450,14 +1454,14 @@ msgstr ""
 "de pe ecran va aduce fila SELECTAT și o va popula chiar dacă nu a fost in "
 "focus."
 
-#: FlatCAMApp.py:11614
+#: FlatCAMApp.py:11622
 msgid ""
 "You can change the parameters in this screen and the flow direction is like "
 "this:"
 msgstr ""
 "Se pot schimba parametrii in acest ecran si directia de executive este asa:"
 
-#: FlatCAMApp.py:11615
+#: FlatCAMApp.py:11623
 msgid ""
 "Gerber/Excellon Object --> Change Parameter --> Generate Geometry --> "
 "Geometry Object --> Add tools (change param in Selected Tab) --> Generate "
@@ -1470,7 +1474,7 @@ msgstr ""
 "CNC) și / sau adăugați in fata / la final codul G-code (din nou, efectuat în "
 "fila SELECȚIONATĂ) -> Salvați codul G-code."
 
-#: FlatCAMApp.py:11619
+#: FlatCAMApp.py:11627
 msgid ""
 "A list of key shortcuts is available through an menu entry in Help --> "
 "Shortcuts List or through its own key shortcut: <b>F3</b>."
@@ -1479,25 +1483,25 @@ msgstr ""
 "meniul Ajutor -> Lista de combinatii taste sau prin propria tasta asociata: "
 "<b>F3</b>."
 
-#: FlatCAMApp.py:11680
+#: FlatCAMApp.py:11688
 msgid "Failed checking for latest version. Could not connect."
 msgstr ""
 "Verificarea pentru ultima versiune a eșuat. Nu a fost posibilă conectarea la "
 "server."
 
-#: FlatCAMApp.py:11688
+#: FlatCAMApp.py:11696
 msgid "Could not parse information about latest version."
 msgstr "Informatia cu privire la ultima versiune nu s-a putut interpreta."
 
-#: FlatCAMApp.py:11699
+#: FlatCAMApp.py:11707
 msgid "FlatCAM is up to date!"
 msgstr "FlatCAM este la ultima versiune!"
 
-#: FlatCAMApp.py:11704
+#: FlatCAMApp.py:11712
 msgid "Newer Version Available"
 msgstr "O nouă versiune este disponibila"
 
-#: FlatCAMApp.py:11705
+#: FlatCAMApp.py:11713
 msgid ""
 "There is a newer version of FlatCAM available for download:\n"
 "\n"
@@ -1505,63 +1509,63 @@ msgstr ""
 "O nouă versiune de FlatCAM este disponibilă pentru download::\n"
 "\n"
 
-#: FlatCAMApp.py:11707
+#: FlatCAMApp.py:11715
 msgid "info"
 msgstr "informaţie"
 
-#: FlatCAMApp.py:11786
+#: FlatCAMApp.py:11794
 msgid "All plots disabled."
 msgstr "Toate afişările sunt dezactivate."
 
-#: FlatCAMApp.py:11793
+#: FlatCAMApp.py:11801
 msgid "All non selected plots disabled."
 msgstr "Toate afişările care nu sunt selectate sunt dezactivate."
 
-#: FlatCAMApp.py:11800
+#: FlatCAMApp.py:11808
 msgid "All plots enabled."
 msgstr "Toate afişările sunt activate."
 
-#: FlatCAMApp.py:11807
+#: FlatCAMApp.py:11815
 msgid "Selected plots enabled..."
 msgstr "Toate afişările selectate sunt activate..."
 
-#: FlatCAMApp.py:11816
+#: FlatCAMApp.py:11824
 msgid "Selected plots disabled..."
 msgstr "Toate afişările selectate sunt dezactivate..."
 
-#: FlatCAMApp.py:11834
+#: FlatCAMApp.py:11842
 msgid "Enabling plots ..."
 msgstr "Activează Afișare ..."
 
-#: FlatCAMApp.py:11873
+#: FlatCAMApp.py:11881
 msgid "Disabling plots ..."
 msgstr "Dezactivează Afișare ..."
 
-#: FlatCAMApp.py:11895
+#: FlatCAMApp.py:11903
 msgid "Working ..."
 msgstr "Se lucrează..."
 
-#: FlatCAMApp.py:11934
+#: FlatCAMApp.py:11942
 msgid "Saving FlatCAM Project"
 msgstr "Proiectul FlatCAM este in curs de salvare"
 
-#: FlatCAMApp.py:11956 FlatCAMApp.py:11994
+#: FlatCAMApp.py:11964 FlatCAMApp.py:12002
 msgid "Project saved to"
 msgstr "Proiectul s-a salvat in"
 
-#: FlatCAMApp.py:11976
+#: FlatCAMApp.py:11984
 msgid "Failed to verify project file"
 msgstr "Eşec in incărcarea fişierului proiect"
 
-#: FlatCAMApp.py:11976 FlatCAMApp.py:11985 FlatCAMApp.py:11997
+#: FlatCAMApp.py:11984 FlatCAMApp.py:11993 FlatCAMApp.py:12005
 msgid "Retry to save it."
 msgstr "Încercați din nou pentru a-l salva."
 
-#: FlatCAMApp.py:11985 FlatCAMApp.py:11997
+#: FlatCAMApp.py:11993 FlatCAMApp.py:12005
 msgid "Failed to parse saved project file"
 msgstr "Esec in analizarea fişierului Proiect"
 
-#: FlatCAMApp.py:12218
+#: FlatCAMApp.py:12226
 msgid "The user requested a graceful exit of the current task."
 msgstr "Utilizatorul a solicitat o inchidere grațioasă a taskului curent."
 
@@ -1585,12 +1589,12 @@ msgstr "Scalare..."
 msgid "Skewing..."
 msgstr "Deformare..."
 
-#: FlatCAMObj.py:663 FlatCAMObj.py:2491 FlatCAMObj.py:3783
+#: FlatCAMObj.py:663 FlatCAMObj.py:2491 FlatCAMObj.py:3786
 #: flatcamGUI/PreferencesUI.py:990 flatcamGUI/PreferencesUI.py:2069
 msgid "Basic"
 msgstr "Baza"
 
-#: FlatCAMObj.py:685 FlatCAMObj.py:2503 FlatCAMObj.py:3803
+#: FlatCAMObj.py:685 FlatCAMObj.py:2503 FlatCAMObj.py:3806
 #: flatcamGUI/PreferencesUI.py:991
 msgid "Advanced"
 msgstr "Avansat"
@@ -1623,7 +1627,7 @@ msgstr "Se izoleaza..."
 msgid "Isolation geometry could not be generated."
 msgstr "Geometria de izolare nu a fost posibil să fie generată."
 
-#: FlatCAMObj.py:1237 FlatCAMObj.py:3466 FlatCAMObj.py:3741 FlatCAMObj.py:4017
+#: FlatCAMObj.py:1237 FlatCAMObj.py:3469 FlatCAMObj.py:3744 FlatCAMObj.py:4020
 msgid "Rough"
 msgstr "Grosier"
 
@@ -1639,18 +1643,18 @@ msgstr "Scădere Geo"
 msgid "Plotting Apertures"
 msgstr "Aperturile sunt in curs de afișare"
 
-#: FlatCAMObj.py:2318 flatcamEditors/FlatCAMExcEditor.py:2325
+#: FlatCAMObj.py:2318 flatcamEditors/FlatCAMExcEditor.py:2323
 msgid "Total Drills"
 msgstr "Nr. Tot. Op. Găurire"
 
-#: FlatCAMObj.py:2350 flatcamEditors/FlatCAMExcEditor.py:2357
+#: FlatCAMObj.py:2350 flatcamEditors/FlatCAMExcEditor.py:2355
 msgid "Total Slots"
 msgstr "Nr. Tot. Sloturi"
 
-#: FlatCAMObj.py:2557 FlatCAMObj.py:3853 FlatCAMObj.py:4151 FlatCAMObj.py:4342
-#: FlatCAMObj.py:4353 FlatCAMObj.py:4471 FlatCAMObj.py:4693 FlatCAMObj.py:4816
-#: FlatCAMObj.py:4979 FlatCAMObj.py:5498
-#: flatcamEditors/FlatCAMExcEditor.py:2432
+#: FlatCAMObj.py:2557 FlatCAMObj.py:3856 FlatCAMObj.py:4154 FlatCAMObj.py:4345
+#: FlatCAMObj.py:4356 FlatCAMObj.py:4474 FlatCAMObj.py:4696 FlatCAMObj.py:4819
+#: FlatCAMObj.py:4982 FlatCAMObj.py:5501
+#: flatcamEditors/FlatCAMExcEditor.py:2430
 #: flatcamEditors/FlatCAMGeoEditor.py:1083
 #: flatcamEditors/FlatCAMGeoEditor.py:1117
 #: flatcamEditors/FlatCAMGeoEditor.py:1138
@@ -1674,47 +1678,52 @@ msgstr "Nr. Tot. Sloturi"
 msgid "Wrong value format entered, use a number."
 msgstr "Valoare in format incorect, foloseşte un număr."
 
-#: FlatCAMObj.py:2811 FlatCAMObj.py:2903 FlatCAMObj.py:3024
+#: FlatCAMObj.py:2811 FlatCAMObj.py:2906 FlatCAMObj.py:3027
 msgid "Please select one or more tools from the list and try again."
 msgstr "Selectează una sau mai multe unelte din lista și încearcă din nou."
 
-#: FlatCAMObj.py:2817
+#: FlatCAMObj.py:2818
 msgid "Milling tool for DRILLS is larger than hole size. Cancelled."
 msgstr ""
 "Anulat. Freza pt frezarea găurilor este mai mare decat diametrul găurii."
 
-#: FlatCAMObj.py:2832 FlatCAMObj.py:2925 FlatCAMObj.py:3043
+#: FlatCAMObj.py:2819 flatcamEditors/FlatCAMGeoEditor.py:406
+#: flatcamGUI/FlatCAMGUI.py:913
+msgid "Tool"
+msgstr "Unealta"
+
+#: FlatCAMObj.py:2835 FlatCAMObj.py:2928 FlatCAMObj.py:3046
 msgid "Tool_nr"
 msgstr "Nr. Unealtă"
 
-#: FlatCAMObj.py:2832 FlatCAMObj.py:2925 FlatCAMObj.py:3043
-#: flatcamEditors/FlatCAMExcEditor.py:1506
-#: flatcamEditors/FlatCAMExcEditor.py:2940 flatcamGUI/ObjectUI.py:706
+#: FlatCAMObj.py:2835 FlatCAMObj.py:2928 FlatCAMObj.py:3046
+#: flatcamEditors/FlatCAMExcEditor.py:1504
+#: flatcamEditors/FlatCAMExcEditor.py:2938 flatcamGUI/ObjectUI.py:706
 #: flatcamTools/ToolNonCopperClear.py:120 flatcamTools/ToolPaint.py:123
 #: flatcamTools/ToolPcbWizard.py:75 flatcamTools/ToolSolderPaste.py:80
 msgid "Diameter"
 msgstr "Diametru"
 
-#: FlatCAMObj.py:2832 FlatCAMObj.py:2925 FlatCAMObj.py:3043
+#: FlatCAMObj.py:2835 FlatCAMObj.py:2928 FlatCAMObj.py:3046
 msgid "Drills_Nr"
 msgstr "Nr. gaura"
 
-#: FlatCAMObj.py:2832 FlatCAMObj.py:2925 FlatCAMObj.py:3043
+#: FlatCAMObj.py:2835 FlatCAMObj.py:2928 FlatCAMObj.py:3046
 msgid "Slots_Nr"
 msgstr "Nr. slot"
 
-#: FlatCAMObj.py:2912
+#: FlatCAMObj.py:2915
 msgid "Milling tool for SLOTS is larger than hole size. Cancelled."
 msgstr "Anulat. Freza este mai mare decat diametrul slotului de frezat."
 
-#: FlatCAMObj.py:3084 FlatCAMObj.py:5192
+#: FlatCAMObj.py:3087 FlatCAMObj.py:5195
 msgid ""
 "Wrong value format for self.defaults[\"z_pdepth\"] or self.options[\"z_pdepth"
 "\"]"
 msgstr ""
 "Valoare gresita pt self.defaults[\"z_pdepth\"] sau self.options[\"z_pdepth\"]"
 
-#: FlatCAMObj.py:3095 FlatCAMObj.py:5203
+#: FlatCAMObj.py:3098 FlatCAMObj.py:5206
 msgid ""
 "Wrong value format for self.defaults[\"feedrate_probe\"] or self."
 "options[\"feedrate_probe\"]"
@@ -1722,11 +1731,11 @@ msgstr ""
 "Valoare gresita pt self.defaults[\"feedrate_probe\"] sau self."
 "options[\"feedrate_probe\"]"
 
-#: FlatCAMObj.py:3125 FlatCAMObj.py:5078 FlatCAMObj.py:5084 FlatCAMObj.py:5238
+#: FlatCAMObj.py:3128 FlatCAMObj.py:5081 FlatCAMObj.py:5087 FlatCAMObj.py:5241
 msgid "Generating CNC Code"
 msgstr "CNC Code in curs de generare"
 
-#: FlatCAMObj.py:3151 camlib.py:2399 camlib.py:3383
+#: FlatCAMObj.py:3154 camlib.py:2399 camlib.py:3383
 msgid ""
 "The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, "
 "y) \n"
@@ -1736,15 +1745,15 @@ msgstr ""
 "in formatul (x, y) \n"
 "dar are o singură valoare in loc de doua. "
 
-#: FlatCAMObj.py:3466 FlatCAMObj.py:4393 FlatCAMObj.py:4394 FlatCAMObj.py:4403
+#: FlatCAMObj.py:3469 FlatCAMObj.py:4396 FlatCAMObj.py:4397 FlatCAMObj.py:4406
 msgid "Iso"
 msgstr "Izo"
 
-#: FlatCAMObj.py:3466
+#: FlatCAMObj.py:3469
 msgid "Finish"
 msgstr "Finisare"
 
-#: FlatCAMObj.py:3777 flatcamGUI/FlatCAMGUI.py:599 flatcamGUI/FlatCAMGUI.py:704
+#: FlatCAMObj.py:3780 flatcamGUI/FlatCAMGUI.py:599 flatcamGUI/FlatCAMGUI.py:704
 #: flatcamGUI/FlatCAMGUI.py:833 flatcamGUI/FlatCAMGUI.py:1817
 #: flatcamGUI/FlatCAMGUI.py:1915 flatcamGUI/FlatCAMGUI.py:2126
 #: flatcamGUI/FlatCAMGUI.py:2244 flatcamGUI/ObjectUI.py:1210
@@ -1754,51 +1763,51 @@ msgstr "Finisare"
 msgid "Copy"
 msgstr "Copiază"
 
-#: FlatCAMObj.py:3991
+#: FlatCAMObj.py:3994
 msgid "Please enter the desired tool diameter in Float format."
 msgstr "Introdu diametrul dorit pt unealtă in format Real."
 
-#: FlatCAMObj.py:4062
+#: FlatCAMObj.py:4065
 msgid "Tool added in Tool Table."
 msgstr "Unealtă adăugată in Tabela de Unelte."
 
-#: FlatCAMObj.py:4066
+#: FlatCAMObj.py:4069
 msgid "Default Tool added. Wrong value format entered."
 msgstr "Unealta implicita adăugată dar valoarea are un format gresit."
 
-#: FlatCAMObj.py:4099 FlatCAMObj.py:4108
+#: FlatCAMObj.py:4102 FlatCAMObj.py:4111
 msgid "Failed. Select a tool to copy."
 msgstr "Eșuat. Selectează o unealtă pt copiere."
 
-#: FlatCAMObj.py:4136
+#: FlatCAMObj.py:4139
 msgid "Tool was copied in Tool Table."
 msgstr "Unealta a fost copiata in Tabela de Unelte."
 
-#: FlatCAMObj.py:4166
+#: FlatCAMObj.py:4169
 msgid "Tool was edited in Tool Table."
 msgstr "Unealta a fost editata in Tabela de Unelte."
 
-#: FlatCAMObj.py:4195 FlatCAMObj.py:4204
+#: FlatCAMObj.py:4198 FlatCAMObj.py:4207
 msgid "Failed. Select a tool to delete."
 msgstr "Eșuat. Selectează o unealtă pentru ștergere."
 
-#: FlatCAMObj.py:4227
+#: FlatCAMObj.py:4230
 msgid "Tool was deleted in Tool Table."
 msgstr "Unealta a fost stearsa din Tabela de Unelte."
 
-#: FlatCAMObj.py:4673
+#: FlatCAMObj.py:4676
 msgid "This Geometry can't be processed because it is"
 msgstr "Acest obiect Geometrie nu poate fi procesat deoarece"
 
-#: FlatCAMObj.py:4675
+#: FlatCAMObj.py:4678
 msgid "geometry"
 msgstr "geometria"
 
-#: FlatCAMObj.py:4718
+#: FlatCAMObj.py:4721
 msgid "Failed. No tool selected in the tool table ..."
 msgstr "Eșuat. Nici-o unealtă nu este selectată in Tabela de Unelte ..."
 
-#: FlatCAMObj.py:4821 FlatCAMObj.py:4985
+#: FlatCAMObj.py:4824 FlatCAMObj.py:4988
 msgid ""
 "Tool Offset is selected in Tool Table but no value is provided.\n"
 "Add a Tool Offset or change the Offset Type."
@@ -1807,44 +1816,44 @@ msgstr ""
 "este oferita.\n"
 "Adaugă un ofset pt unealtă sau schimbă Tipul Ofset."
 
-#: FlatCAMObj.py:4886 FlatCAMObj.py:5045
+#: FlatCAMObj.py:4889 FlatCAMObj.py:5048
 msgid "G-Code parsing in progress..."
 msgstr "Analiza codului G în curs ..."
 
-#: FlatCAMObj.py:4888 FlatCAMObj.py:5047
+#: FlatCAMObj.py:4891 FlatCAMObj.py:5050
 msgid "G-Code parsing finished..."
 msgstr "Analizarea codului G s-a terminat ..."
 
-#: FlatCAMObj.py:4896
+#: FlatCAMObj.py:4899
 msgid "Finished G-Code processing"
 msgstr "Prelucrarea G-Code terminată"
 
-#: FlatCAMObj.py:4898 FlatCAMObj.py:5059
+#: FlatCAMObj.py:4901 FlatCAMObj.py:5062
 msgid "G-Code processing failed with error"
 msgstr "Procesarea G-Code a eșuat cu eroarea"
 
-#: FlatCAMObj.py:4946 flatcamTools/ToolSolderPaste.py:1212
+#: FlatCAMObj.py:4949 flatcamTools/ToolSolderPaste.py:1212
 msgid "Cancelled. Empty file, it has no geometry"
 msgstr "Anulat. Fişier gol, nu are geometrie"
 
-#: FlatCAMObj.py:5057 FlatCAMObj.py:5231
+#: FlatCAMObj.py:5060 FlatCAMObj.py:5234
 msgid "Finished G-Code processing..."
 msgstr "Prelucrarea G-Code terminată ..."
 
-#: FlatCAMObj.py:5081 FlatCAMObj.py:5087 FlatCAMObj.py:5241
+#: FlatCAMObj.py:5084 FlatCAMObj.py:5090 FlatCAMObj.py:5244
 msgid "CNCjob created"
 msgstr "CNCjob creat"
 
-#: FlatCAMObj.py:5273 FlatCAMObj.py:5283 flatcamParsers/ParseGerber.py:1666
+#: FlatCAMObj.py:5276 FlatCAMObj.py:5286 flatcamParsers/ParseGerber.py:1666
 #: flatcamParsers/ParseGerber.py:1676
 msgid "Scale factor has to be a number: integer or float."
 msgstr "Factorul de scalare trebuie să fie un număr: natural sau real."
 
-#: FlatCAMObj.py:5357
+#: FlatCAMObj.py:5360
 msgid "Geometry Scale done."
 msgstr "Scalare Geometrie executată."
 
-#: FlatCAMObj.py:5374 flatcamParsers/ParseGerber.py:1791
+#: FlatCAMObj.py:5377 flatcamParsers/ParseGerber.py:1791
 msgid ""
 "An (x,y) pair of values are needed. Probable you entered only one value in "
 "the Offset field."
@@ -1852,11 +1861,11 @@ msgstr ""
 "O pereche de valori (x,y) este necesară. Probabil că ai introdus numai o "
 "singură valoare in câmpul Offset."
 
-#: FlatCAMObj.py:5428
+#: FlatCAMObj.py:5431
 msgid "Geometry Offset done."
 msgstr "Ofset Geometrie executat."
 
-#: FlatCAMObj.py:5457
+#: FlatCAMObj.py:5460
 msgid ""
 "The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, "
 "y)\n"
@@ -1866,80 +1875,80 @@ msgstr ""
 "in formatul (x, y) \n"
 "dar are o singură valoare in loc de două."
 
-#: FlatCAMObj.py:5948 FlatCAMObj.py:6571 FlatCAMObj.py:6755
+#: FlatCAMObj.py:5951 FlatCAMObj.py:6574 FlatCAMObj.py:6758
 msgid "<span style=\"color:green;\"><b>Basic</b></span>"
 msgstr "<span style=\"color:green;\"><b>Baza</b></span>"
 
-#: FlatCAMObj.py:5954 FlatCAMObj.py:6575 FlatCAMObj.py:6759
+#: FlatCAMObj.py:5957 FlatCAMObj.py:6578 FlatCAMObj.py:6762
 msgid "<span style=\"color:red;\"><b>Advanced</b></span>"
 msgstr "<span style=\"color:red;\"><b>Avansat</b></span>"
 
-#: FlatCAMObj.py:5997
+#: FlatCAMObj.py:6000
 msgid "Plotting..."
 msgstr "Se afișeaza..."
 
-#: FlatCAMObj.py:6021 FlatCAMObj.py:6026 flatcamTools/ToolSolderPaste.py:1418
+#: FlatCAMObj.py:6024 FlatCAMObj.py:6029 flatcamTools/ToolSolderPaste.py:1418
 msgid "Export Machine Code ..."
 msgstr "Exporta CNC Cod Masina ..."
 
-#: FlatCAMObj.py:6032 flatcamTools/ToolSolderPaste.py:1422
+#: FlatCAMObj.py:6035 flatcamTools/ToolSolderPaste.py:1422
 msgid "Export Machine Code cancelled ..."
 msgstr "Exportul Codului Mașina a fost anulat ..."
 
-#: FlatCAMObj.py:6050
+#: FlatCAMObj.py:6053
 msgid "Machine Code file saved to"
 msgstr "Fişierul cu cod CNC este salvat in"
 
-#: FlatCAMObj.py:6105
+#: FlatCAMObj.py:6108
 msgid "Loaded Machine Code into Code Editor"
 msgstr "S-a încărcat Codul Masina în Editorul Cod"
 
-#: FlatCAMObj.py:6220
+#: FlatCAMObj.py:6223
 msgid "This CNCJob object can't be processed because it is a"
 msgstr "Acest obiect CNCJob nu poate fi procesat deoarece este un"
 
-#: FlatCAMObj.py:6222
+#: FlatCAMObj.py:6225
 msgid "CNCJob object"
 msgstr "Obiect CNCJob"
 
-#: FlatCAMObj.py:6274
+#: FlatCAMObj.py:6277
 msgid "G-code does not have a units code: either G20 or G21"
 msgstr "G-code nu contine codul pt unitati: G20 sau G21"
 
-#: FlatCAMObj.py:6286
+#: FlatCAMObj.py:6289
 msgid "Cancelled. The Toolchange Custom code is enabled but it's empty."
 msgstr ""
 "Anulat. Codul G-Code din Macro-ul Schimbare unealtă este activat dar nu "
 "contine nimic."
 
-#: FlatCAMObj.py:6292
+#: FlatCAMObj.py:6295
 msgid "Toolchange G-code was replaced by a custom code."
 msgstr "G-Code-ul pt schimbare unealtă a fost inlocuit cu un cod pesonalizat."
 
-#: FlatCAMObj.py:6305 flatcamEditors/FlatCAMTextEditor.py:213
+#: FlatCAMObj.py:6308 flatcamEditors/FlatCAMTextEditor.py:213
 #: flatcamTools/ToolSolderPaste.py:1449
 msgid "No such file or directory"
 msgstr "Nu exista un aşa fişier sau director"
 
-#: FlatCAMObj.py:6319 flatcamEditors/FlatCAMTextEditor.py:225
+#: FlatCAMObj.py:6322 flatcamEditors/FlatCAMTextEditor.py:225
 msgid "Saved to"
 msgstr "Salvat in"
 
-#: FlatCAMObj.py:6329 FlatCAMObj.py:6339
+#: FlatCAMObj.py:6332 FlatCAMObj.py:6342
 msgid ""
 "The used postprocessor file has to have in it's name: 'toolchange_custom'"
 msgstr ""
 "Postprocesorul folosit trebuie să aibă in numele sau: 'toolchange_custom'"
 
-#: FlatCAMObj.py:6343
+#: FlatCAMObj.py:6346
 msgid "There is no postprocessor file."
 msgstr "Nu exista nici-un fişier postprocesor."
 
-#: FlatCAMObj.py:6620
+#: FlatCAMObj.py:6623
 msgid "Script Editor"
 msgstr "Editor Script"
 
-#: FlatCAMObj.py:6859
+#: FlatCAMObj.py:6862
 msgid "Document Editor"
 msgstr "Editor Documente"
 
@@ -2204,9 +2213,9 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMExcEditor.py:182
 #: flatcamEditors/FlatCAMExcEditor.py:392
-#: flatcamEditors/FlatCAMExcEditor.py:602
-#: flatcamEditors/FlatCAMExcEditor.py:1104
-#: flatcamEditors/FlatCAMExcEditor.py:1129
+#: flatcamEditors/FlatCAMExcEditor.py:601
+#: flatcamEditors/FlatCAMExcEditor.py:1102
+#: flatcamEditors/FlatCAMExcEditor.py:1127
 #: flatcamEditors/FlatCAMGrbEditor.py:463
 #: flatcamEditors/FlatCAMGrbEditor.py:1878
 #: flatcamEditors/FlatCAMGrbEditor.py:1906
@@ -2218,7 +2227,7 @@ msgid "Click on the Drill Circular Array Start position"
 msgstr "Click pe punctul de Start al ariei de operațiuni de găurire"
 
 #: flatcamEditors/FlatCAMExcEditor.py:221
-#: flatcamEditors/FlatCAMExcEditor.py:641
+#: flatcamEditors/FlatCAMExcEditor.py:640
 #: flatcamEditors/FlatCAMGrbEditor.py:506
 msgid "The value is not Float. Check for comma instead of dot separator."
 msgstr ""
@@ -2243,8 +2252,8 @@ msgstr "Pentru a adăuga un slot mai întâi, selectați o unealtă"
 
 #: flatcamEditors/FlatCAMExcEditor.py:429
 #: flatcamEditors/FlatCAMExcEditor.py:436
-#: flatcamEditors/FlatCAMExcEditor.py:707
-#: flatcamEditors/FlatCAMExcEditor.py:714
+#: flatcamEditors/FlatCAMExcEditor.py:706
+#: flatcamEditors/FlatCAMExcEditor.py:713
 msgid "Value is missing or wrong format. Add it and retry."
 msgstr ""
 "Valoarea lipsește sau formatul greșit. Adăugați-l și încercați din nou."
@@ -2259,77 +2268,77 @@ msgstr ""
 "Pentru a adăuga o arie de sloturi, selectați mai întâi o unealtă din tabelul "
 "de unelte"
 
-#: flatcamEditors/FlatCAMExcEditor.py:619
+#: flatcamEditors/FlatCAMExcEditor.py:618
 msgid "Click on the Slot Circular Array Start position"
 msgstr "Faceți clic pe poziția de pornire a ariei circulare de slotuluri"
 
-#: flatcamEditors/FlatCAMExcEditor.py:645
+#: flatcamEditors/FlatCAMExcEditor.py:644
 #: flatcamEditors/FlatCAMGrbEditor.py:510
 msgid "The value is mistyped. Check the value."
 msgstr "Valoarea este gresită. Verifică ce ai introdus."
 
-#: flatcamEditors/FlatCAMExcEditor.py:824
+#: flatcamEditors/FlatCAMExcEditor.py:823
 msgid "Too many Slots for the selected spacing angle."
 msgstr "Prea multe sloturi pentru unghiul de distanțare selectat."
 
-#: flatcamEditors/FlatCAMExcEditor.py:847
+#: flatcamEditors/FlatCAMExcEditor.py:846
 msgid "Done. Slot Array added."
 msgstr "Terminat. S-a adăugat aria de sloturi."
 
-#: flatcamEditors/FlatCAMExcEditor.py:864
+#: flatcamEditors/FlatCAMExcEditor.py:863
 msgid "Click on the Drill(s) to resize ..."
 msgstr ""
 "Click pe operațiunile de găurire care se dorește să fie redimensionate ..."
 
-#: flatcamEditors/FlatCAMExcEditor.py:894
+#: flatcamEditors/FlatCAMExcEditor.py:893
 msgid "Resize drill(s) failed. Please enter a diameter for resize."
 msgstr ""
 "Redimensionarea operațiunilor de găurire a eșuat. Adaugă o valoare pentru "
 "dimetrul la care se face redimensionarea."
 
-#: flatcamEditors/FlatCAMExcEditor.py:984
-#: flatcamEditors/FlatCAMExcEditor.py:1054 flatcamGUI/FlatCAMGUI.py:2784
+#: flatcamEditors/FlatCAMExcEditor.py:983
+#: flatcamEditors/FlatCAMExcEditor.py:1052 flatcamGUI/FlatCAMGUI.py:2784
 #: flatcamGUI/FlatCAMGUI.py:2995 flatcamGUI/FlatCAMGUI.py:3212
 msgid "Cancelled."
 msgstr "Anulat."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1075
+#: flatcamEditors/FlatCAMExcEditor.py:1073
 msgid "Done. Drill/Slot Resize completed."
 msgstr "Executat. Redimensionarea Perforării / slotului finalizată."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1078
+#: flatcamEditors/FlatCAMExcEditor.py:1076
 msgid "Cancelled. No drills/slots selected for resize ..."
 msgstr "Anulat. Nu au fost selectate găuri / sloturi pentru redimensionare ..."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1106
+#: flatcamEditors/FlatCAMExcEditor.py:1104
 #: flatcamEditors/FlatCAMGrbEditor.py:1880
 msgid "Click on reference location ..."
 msgstr "Click pe locatia de referinţă ..."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1162
+#: flatcamEditors/FlatCAMExcEditor.py:1160
 msgid "Done. Drill(s) Move completed."
 msgstr "Executat. Operatiile de găurire au fost mutate."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1260
+#: flatcamEditors/FlatCAMExcEditor.py:1258
 msgid "Done. Drill(s) copied."
 msgstr "Executat. Operatiile de găurire au fost copiate."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1479 flatcamGUI/PreferencesUI.py:2610
+#: flatcamEditors/FlatCAMExcEditor.py:1477 flatcamGUI/PreferencesUI.py:2610
 msgid "Excellon Editor"
 msgstr "Editor Excellon"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1486
+#: flatcamEditors/FlatCAMExcEditor.py:1484
 #: flatcamEditors/FlatCAMGrbEditor.py:2381
 msgid "Name:"
 msgstr "Nume:"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1492 flatcamGUI/ObjectUI.py:686
+#: flatcamEditors/FlatCAMExcEditor.py:1490 flatcamGUI/ObjectUI.py:686
 #: flatcamGUI/ObjectUI.py:1064 flatcamTools/ToolNonCopperClear.py:109
 #: flatcamTools/ToolPaint.py:112 flatcamTools/ToolSolderPaste.py:69
 msgid "Tools Table"
 msgstr "Tabela Unelte"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1494 flatcamGUI/ObjectUI.py:688
+#: flatcamEditors/FlatCAMExcEditor.py:1492 flatcamGUI/ObjectUI.py:688
 msgid ""
 "Tools in this Excellon object\n"
 "when are used for drilling."
@@ -2337,11 +2346,11 @@ msgstr ""
 "Burghie (unelte) in acest obiect Excellon\n"
 "când se face găurire."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1514
+#: flatcamEditors/FlatCAMExcEditor.py:1512
 msgid "Add/Delete Tool"
 msgstr "Adaugă/Șterge Unealta"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1516
+#: flatcamEditors/FlatCAMExcEditor.py:1514
 msgid ""
 "Add/Delete a tool to the tool list\n"
 "for this Excellon object."
@@ -2349,21 +2358,21 @@ msgstr ""
 "Adaugă/Șterge o unealtă la lista de unelte\n"
 "pentru acest obiect Excellon."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1524 flatcamGUI/ObjectUI.py:1185
+#: flatcamEditors/FlatCAMExcEditor.py:1522 flatcamGUI/ObjectUI.py:1185
 #: flatcamTools/ToolNonCopperClear.py:225 flatcamTools/ToolPaint.py:176
 msgid "Tool Dia"
 msgstr "Dia Unealtă"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1526 flatcamGUI/ObjectUI.py:1188
+#: flatcamEditors/FlatCAMExcEditor.py:1524 flatcamGUI/ObjectUI.py:1188
 #: flatcamGUI/PreferencesUI.py:2640
 msgid "Diameter for the new tool"
 msgstr "Diametru pentru noua unealtă (burghiu, freza)"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1534
+#: flatcamEditors/FlatCAMExcEditor.py:1532
 msgid "Add Tool"
 msgstr "Adaugă Unealta"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1536
+#: flatcamEditors/FlatCAMExcEditor.py:1534
 msgid ""
 "Add a new tool to the tool list\n"
 "with the diameter specified above."
@@ -2371,11 +2380,11 @@ msgstr ""
 "Adaugă o unealtă noua la lista de unelte\n"
 "cu diametrul specificat deasupra."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1548
+#: flatcamEditors/FlatCAMExcEditor.py:1546
 msgid "Delete Tool"
 msgstr "Șterge Unealta"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1550
+#: flatcamEditors/FlatCAMExcEditor.py:1548
 msgid ""
 "Delete a tool in the tool list\n"
 "by selecting a row in the tool table."
@@ -2383,42 +2392,42 @@ msgstr ""
 "Șterge o unealtă in lista de unelte\n"
 "prin selectarea unei linii in tabela de unelte."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1568 flatcamGUI/FlatCAMGUI.py:1698
+#: flatcamEditors/FlatCAMExcEditor.py:1566 flatcamGUI/FlatCAMGUI.py:1698
 msgid "Resize Drill(s)"
 msgstr "Redimensionare operațiuni de găurire"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1570
+#: flatcamEditors/FlatCAMExcEditor.py:1568
 msgid "Resize a drill or a selection of drills."
 msgstr ""
 "Redimensionează o operaţie de găurire sau o selecţie de operațiuni de "
 "găurire."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1577
+#: flatcamEditors/FlatCAMExcEditor.py:1575
 msgid "Resize Dia"
 msgstr "Redimens. Dia"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1579
+#: flatcamEditors/FlatCAMExcEditor.py:1577
 msgid "Diameter to resize to."
 msgstr "Diametrul la care se face redimensionarea."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1587
+#: flatcamEditors/FlatCAMExcEditor.py:1585
 msgid "Resize"
 msgstr "Redimensionează"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1589
+#: flatcamEditors/FlatCAMExcEditor.py:1587
 msgid "Resize drill(s)"
 msgstr "Redimensionează op. de găurire."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1614 flatcamGUI/FlatCAMGUI.py:1697
+#: flatcamEditors/FlatCAMExcEditor.py:1612 flatcamGUI/FlatCAMGUI.py:1697
 #: flatcamGUI/FlatCAMGUI.py:1907
 msgid "Add Drill Array"
 msgstr "Adaugă o arie de op. găurire"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1616
+#: flatcamEditors/FlatCAMExcEditor.py:1614
 msgid "Add an array of drills (linear or circular array)"
 msgstr "Adaugă o arie de operațiuni de găurire (arie lineara sau circulara)."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1622
+#: flatcamEditors/FlatCAMExcEditor.py:1620
 msgid ""
 "Select the type of drills array to create.\n"
 "It can be Linear X(Y) or Circular"
@@ -2426,40 +2435,40 @@ msgstr ""
 "Selectează tipul de arii de operațiuni de găurire.\n"
 "Poate fi Liniar X(Y) sau Circular"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1625
-#: flatcamEditors/FlatCAMExcEditor.py:1827
+#: flatcamEditors/FlatCAMExcEditor.py:1623
+#: flatcamEditors/FlatCAMExcEditor.py:1825
 #: flatcamEditors/FlatCAMGrbEditor.py:2682
 msgid "Linear"
 msgstr "Liniar"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1626
-#: flatcamEditors/FlatCAMExcEditor.py:1828
+#: flatcamEditors/FlatCAMExcEditor.py:1624
+#: flatcamEditors/FlatCAMExcEditor.py:1826
 #: flatcamEditors/FlatCAMGrbEditor.py:2683 flatcamGUI/PreferencesUI.py:3719
 #: flatcamTools/ToolNonCopperClear.py:216
 msgid "Circular"
 msgstr "Circular"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1634 flatcamGUI/PreferencesUI.py:2651
+#: flatcamEditors/FlatCAMExcEditor.py:1632 flatcamGUI/PreferencesUI.py:2651
 msgid "Nr of drills"
 msgstr "Nr. op. găurire"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1635 flatcamGUI/PreferencesUI.py:2653
+#: flatcamEditors/FlatCAMExcEditor.py:1633 flatcamGUI/PreferencesUI.py:2653
 msgid "Specify how many drills to be in the array."
 msgstr "Specifica cate operațiuni de găurire să fie incluse in arie."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1652
-#: flatcamEditors/FlatCAMExcEditor.py:1699
-#: flatcamEditors/FlatCAMExcEditor.py:1763
-#: flatcamEditors/FlatCAMExcEditor.py:1854
-#: flatcamEditors/FlatCAMExcEditor.py:1901
+#: flatcamEditors/FlatCAMExcEditor.py:1650
+#: flatcamEditors/FlatCAMExcEditor.py:1697
+#: flatcamEditors/FlatCAMExcEditor.py:1761
+#: flatcamEditors/FlatCAMExcEditor.py:1852
+#: flatcamEditors/FlatCAMExcEditor.py:1899
 #: flatcamEditors/FlatCAMGrbEditor.py:1524
 #: flatcamEditors/FlatCAMGrbEditor.py:2709
 #: flatcamEditors/FlatCAMGrbEditor.py:2754 flatcamGUI/PreferencesUI.py:2761
 msgid "Direction"
 msgstr "Direcţie"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1654
-#: flatcamEditors/FlatCAMExcEditor.py:1856
+#: flatcamEditors/FlatCAMExcEditor.py:1652
+#: flatcamEditors/FlatCAMExcEditor.py:1854
 #: flatcamEditors/FlatCAMGrbEditor.py:2711 flatcamGUI/PreferencesUI.py:1752
 #: flatcamGUI/PreferencesUI.py:2669 flatcamGUI/PreferencesUI.py:2817
 msgid ""
@@ -2473,9 +2482,9 @@ msgstr ""
 "- 'Y' - pe axa verticala sau \n"
 "- 'Unghi' - un unghi particular pentru inclinatia ariei"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1661
-#: flatcamEditors/FlatCAMExcEditor.py:1772
-#: flatcamEditors/FlatCAMExcEditor.py:1863
+#: flatcamEditors/FlatCAMExcEditor.py:1659
+#: flatcamEditors/FlatCAMExcEditor.py:1770
+#: flatcamEditors/FlatCAMExcEditor.py:1861
 #: flatcamEditors/FlatCAMGrbEditor.py:2718 flatcamGUI/PreferencesUI.py:1758
 #: flatcamGUI/PreferencesUI.py:2675 flatcamGUI/PreferencesUI.py:2770
 #: flatcamGUI/PreferencesUI.py:2823 flatcamGUI/PreferencesUI.py:4479
@@ -2483,9 +2492,9 @@ msgstr ""
 msgid "X"
 msgstr "X"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1662
-#: flatcamEditors/FlatCAMExcEditor.py:1773
-#: flatcamEditors/FlatCAMExcEditor.py:1864
+#: flatcamEditors/FlatCAMExcEditor.py:1660
+#: flatcamEditors/FlatCAMExcEditor.py:1771
+#: flatcamEditors/FlatCAMExcEditor.py:1862
 #: flatcamEditors/FlatCAMGrbEditor.py:2719 flatcamGUI/PreferencesUI.py:1759
 #: flatcamGUI/PreferencesUI.py:2676 flatcamGUI/PreferencesUI.py:2771
 #: flatcamGUI/PreferencesUI.py:2824 flatcamGUI/PreferencesUI.py:4480
@@ -2493,14 +2502,14 @@ msgstr "X"
 msgid "Y"
 msgstr "Y"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1663
-#: flatcamEditors/FlatCAMExcEditor.py:1677
-#: flatcamEditors/FlatCAMExcEditor.py:1711
-#: flatcamEditors/FlatCAMExcEditor.py:1774
-#: flatcamEditors/FlatCAMExcEditor.py:1778
-#: flatcamEditors/FlatCAMExcEditor.py:1865
-#: flatcamEditors/FlatCAMExcEditor.py:1879
-#: flatcamEditors/FlatCAMExcEditor.py:1913
+#: flatcamEditors/FlatCAMExcEditor.py:1661
+#: flatcamEditors/FlatCAMExcEditor.py:1675
+#: flatcamEditors/FlatCAMExcEditor.py:1709
+#: flatcamEditors/FlatCAMExcEditor.py:1772
+#: flatcamEditors/FlatCAMExcEditor.py:1776
+#: flatcamEditors/FlatCAMExcEditor.py:1863
+#: flatcamEditors/FlatCAMExcEditor.py:1877
+#: flatcamEditors/FlatCAMExcEditor.py:1911
 #: flatcamEditors/FlatCAMGrbEditor.py:2720
 #: flatcamEditors/FlatCAMGrbEditor.py:2733
 #: flatcamEditors/FlatCAMGrbEditor.py:2769 flatcamGUI/PreferencesUI.py:1760
@@ -2513,22 +2522,22 @@ msgstr "Y"
 msgid "Angle"
 msgstr "Unghi"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1667
-#: flatcamEditors/FlatCAMExcEditor.py:1869
+#: flatcamEditors/FlatCAMExcEditor.py:1665
+#: flatcamEditors/FlatCAMExcEditor.py:1867
 #: flatcamEditors/FlatCAMGrbEditor.py:2724 flatcamGUI/PreferencesUI.py:1766
 #: flatcamGUI/PreferencesUI.py:2683 flatcamGUI/PreferencesUI.py:2831
 msgid "Pitch"
 msgstr "Pas"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1669
-#: flatcamEditors/FlatCAMExcEditor.py:1871
+#: flatcamEditors/FlatCAMExcEditor.py:1667
+#: flatcamEditors/FlatCAMExcEditor.py:1869
 #: flatcamEditors/FlatCAMGrbEditor.py:2726 flatcamGUI/PreferencesUI.py:1768
 #: flatcamGUI/PreferencesUI.py:2685 flatcamGUI/PreferencesUI.py:2833
 msgid "Pitch = Distance between elements of the array."
 msgstr "Pas = Distanta între elementele ariei."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1679
-#: flatcamEditors/FlatCAMExcEditor.py:1881
+#: flatcamEditors/FlatCAMExcEditor.py:1677
+#: flatcamEditors/FlatCAMExcEditor.py:1879
 #: flatcamEditors/FlatCAMGrbEditor.py:2735
 msgid ""
 "Angle at which the linear array is placed.\n"
@@ -2541,8 +2550,8 @@ msgstr ""
 "Val minima este: -359.99 grade.\n"
 "Val maxima este:  360.00 grade."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1700
-#: flatcamEditors/FlatCAMExcEditor.py:1902
+#: flatcamEditors/FlatCAMExcEditor.py:1698
+#: flatcamEditors/FlatCAMExcEditor.py:1900
 #: flatcamEditors/FlatCAMGrbEditor.py:2756
 msgid ""
 "Direction for circular array.Can be CW = clockwise or CCW = counter "
@@ -2551,24 +2560,24 @@ msgstr ""
 "Directia pentru aria circulară. Poate fi CW = in sensul acelor de ceasornic "
 "sau CCW = invers acelor de ceasornic."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1707
-#: flatcamEditors/FlatCAMExcEditor.py:1909
+#: flatcamEditors/FlatCAMExcEditor.py:1705
+#: flatcamEditors/FlatCAMExcEditor.py:1907
 #: flatcamEditors/FlatCAMGrbEditor.py:2764 flatcamGUI/PreferencesUI.py:1800
 #: flatcamGUI/PreferencesUI.py:2425 flatcamGUI/PreferencesUI.py:2719
 #: flatcamGUI/PreferencesUI.py:2869 flatcamGUI/PreferencesUI.py:3259
 msgid "CW"
 msgstr "Orar"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1708
-#: flatcamEditors/FlatCAMExcEditor.py:1910
+#: flatcamEditors/FlatCAMExcEditor.py:1706
+#: flatcamEditors/FlatCAMExcEditor.py:1908
 #: flatcamEditors/FlatCAMGrbEditor.py:2765 flatcamGUI/PreferencesUI.py:1801
 #: flatcamGUI/PreferencesUI.py:2426 flatcamGUI/PreferencesUI.py:2720
 #: flatcamGUI/PreferencesUI.py:2870 flatcamGUI/PreferencesUI.py:3260
 msgid "CCW"
 msgstr "Antiorar"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1712
-#: flatcamEditors/FlatCAMExcEditor.py:1914
+#: flatcamEditors/FlatCAMExcEditor.py:1710
+#: flatcamEditors/FlatCAMExcEditor.py:1912
 #: flatcamEditors/FlatCAMGrbEditor.py:2771 flatcamGUI/PreferencesUI.py:1780
 #: flatcamGUI/PreferencesUI.py:1809 flatcamGUI/PreferencesUI.py:2698
 #: flatcamGUI/PreferencesUI.py:2728 flatcamGUI/PreferencesUI.py:2848
@@ -2578,11 +2587,11 @@ msgstr ""
 "Unghiul la care fiecare element al ariei circulare este plasat fata de "
 "originea ariei."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1742
+#: flatcamEditors/FlatCAMExcEditor.py:1740
 msgid "Slot Parameters"
 msgstr "Parametrii pt slot"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1744
+#: flatcamEditors/FlatCAMExcEditor.py:1742
 msgid ""
 "Parameters for adding a slot (hole with oval shape)\n"
 "either single or as an part of an array."
@@ -2590,16 +2599,16 @@ msgstr ""
 "Parametri pentru adăugarea unui slot (gaură cu formă ovală)\n"
 "fie single sau ca parte a unei arii."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1753 flatcamGUI/PreferencesUI.py:2745
+#: flatcamEditors/FlatCAMExcEditor.py:1751 flatcamGUI/PreferencesUI.py:2745
 #: flatcamTools/ToolProperties.py:355
 msgid "Length"
 msgstr "Lungime"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1755 flatcamGUI/PreferencesUI.py:2747
+#: flatcamEditors/FlatCAMExcEditor.py:1753 flatcamGUI/PreferencesUI.py:2747
 msgid "Length = The length of the slot."
 msgstr "Lungime = Lungimea slotului."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1765 flatcamGUI/PreferencesUI.py:2763
+#: flatcamEditors/FlatCAMExcEditor.py:1763 flatcamGUI/PreferencesUI.py:2763
 msgid ""
 "Direction on which the slot is oriented:\n"
 "- 'X' - horizontal axis \n"
@@ -2611,7 +2620,7 @@ msgstr ""
 "- „Y” - axa verticală sau\n"
 "- „Unghi” - un unghi personalizat pentru înclinarea slotului"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1780 flatcamGUI/PreferencesUI.py:2779
+#: flatcamEditors/FlatCAMExcEditor.py:1778 flatcamGUI/PreferencesUI.py:2779
 msgid ""
 "Angle at which the slot is placed.\n"
 "The precision is of max 2 decimals.\n"
@@ -2623,15 +2632,15 @@ msgstr ""
 "Valoarea minimă este: -359,99 grade.\n"
 "Valoarea maximă este: 360,00 grade."
 
-#: flatcamEditors/FlatCAMExcEditor.py:1813
+#: flatcamEditors/FlatCAMExcEditor.py:1811
 msgid "Slot Array Parameters"
 msgstr "Parametri Arie sloturi"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1815
+#: flatcamEditors/FlatCAMExcEditor.py:1813
 msgid "Parameters for the array of slots (linear or circular array)"
 msgstr "Parametri pentru Aria de sloturi (arie circulară sau liniară)"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1824
+#: flatcamEditors/FlatCAMExcEditor.py:1822
 msgid ""
 "Select the type of slot array to create.\n"
 "It can be Linear X(Y) or Circular"
@@ -2639,15 +2648,15 @@ msgstr ""
 "Selectați tipul de slot pentru creare.\n"
 "Poate fi liniar X (Y) sau circular"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1836 flatcamGUI/PreferencesUI.py:2802
+#: flatcamEditors/FlatCAMExcEditor.py:1834 flatcamGUI/PreferencesUI.py:2802
 msgid "Nr of slots"
 msgstr "Nr de sloturi"
 
-#: flatcamEditors/FlatCAMExcEditor.py:1837 flatcamGUI/PreferencesUI.py:2804
+#: flatcamEditors/FlatCAMExcEditor.py:1835 flatcamGUI/PreferencesUI.py:2804
 msgid "Specify how many slots to be in the array."
 msgstr "Specificați câte sloturi trebuie să fie în arie."
 
-#: flatcamEditors/FlatCAMExcEditor.py:2444
+#: flatcamEditors/FlatCAMExcEditor.py:2442
 msgid ""
 "Tool already in the original or actual tool list.\n"
 "Save and reedit Excellon if you need to add this tool. "
@@ -2656,51 +2665,51 @@ msgstr ""
 "Salvează și reeditează obiectul Excellon dacă ai nevoie să adaugi această "
 "unealtă. "
 
-#: flatcamEditors/FlatCAMExcEditor.py:2453 flatcamGUI/FlatCAMGUI.py:3381
+#: flatcamEditors/FlatCAMExcEditor.py:2451 flatcamGUI/FlatCAMGUI.py:3381
 msgid "Added new tool with dia"
 msgstr "O nouă unealtă este adăugată cu diametrul"
 
-#: flatcamEditors/FlatCAMExcEditor.py:2487
+#: flatcamEditors/FlatCAMExcEditor.py:2485
 msgid "Select a tool in Tool Table"
 msgstr "Selectează o unealtă in Tabela de Unelte"
 
-#: flatcamEditors/FlatCAMExcEditor.py:2520
+#: flatcamEditors/FlatCAMExcEditor.py:2518
 msgid "Deleted tool with diameter"
 msgstr "Unealtă ștearsă cu diametrul"
 
-#: flatcamEditors/FlatCAMExcEditor.py:2670
+#: flatcamEditors/FlatCAMExcEditor.py:2668
 msgid "Done. Tool edit completed."
 msgstr "Terminat. Editarea uneltei a fost finalizată."
 
-#: flatcamEditors/FlatCAMExcEditor.py:3216
+#: flatcamEditors/FlatCAMExcEditor.py:3213
 msgid "There are no Tools definitions in the file. Aborting Excellon creation."
 msgstr ""
 "Nu exista definitii de unelte in fişier. Se anulează crearea de obiect "
 "Excellon."
 
-#: flatcamEditors/FlatCAMExcEditor.py:3220
+#: flatcamEditors/FlatCAMExcEditor.py:3217
 msgid "An internal error has ocurred. See Shell.\n"
 msgstr ""
 "A apărut o eroare internă. Verifică in TCL Shell pt mai multe detalii.\n"
 
-#: flatcamEditors/FlatCAMExcEditor.py:3225
+#: flatcamEditors/FlatCAMExcEditor.py:3222
 msgid "Creating Excellon."
 msgstr "In curs de creere Excellon."
 
-#: flatcamEditors/FlatCAMExcEditor.py:3239
+#: flatcamEditors/FlatCAMExcEditor.py:3236
 msgid "Excellon editing finished."
 msgstr "Editarea Excellon a fost terminată."
 
-#: flatcamEditors/FlatCAMExcEditor.py:3257
+#: flatcamEditors/FlatCAMExcEditor.py:3254
 msgid "Cancelled. There is no Tool/Drill selected"
 msgstr "Anulat. Nu este selectată nici-o unealtă sau op. de găurire"
 
-#: flatcamEditors/FlatCAMExcEditor.py:3865
+#: flatcamEditors/FlatCAMExcEditor.py:3862
 msgid "Done. Drill(s) deleted."
 msgstr "Executat. Operatiile de găurire șterse."
 
-#: flatcamEditors/FlatCAMExcEditor.py:3937
-#: flatcamEditors/FlatCAMExcEditor.py:3947
+#: flatcamEditors/FlatCAMExcEditor.py:3935
+#: flatcamEditors/FlatCAMExcEditor.py:3945
 #: flatcamEditors/FlatCAMGrbEditor.py:4700
 msgid "Click on the circular array Center position"
 msgstr "Click pe punctul de Centru al ariei circulare"
@@ -2755,7 +2764,7 @@ msgid "Full Buffer"
 msgstr "Bufer complet"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:132
-#: flatcamEditors/FlatCAMGeoEditor.py:2771 flatcamGUI/FlatCAMGUI.py:1607
+#: flatcamEditors/FlatCAMGeoEditor.py:2768 flatcamGUI/FlatCAMGUI.py:1607
 #: flatcamGUI/PreferencesUI.py:1820
 msgid "Buffer Tool"
 msgstr "Unealta Bufer"
@@ -2763,9 +2772,9 @@ msgstr "Unealta Bufer"
 #: flatcamEditors/FlatCAMGeoEditor.py:144
 #: flatcamEditors/FlatCAMGeoEditor.py:161
 #: flatcamEditors/FlatCAMGeoEditor.py:178
-#: flatcamEditors/FlatCAMGeoEditor.py:2791
-#: flatcamEditors/FlatCAMGeoEditor.py:2821
-#: flatcamEditors/FlatCAMGeoEditor.py:2851
+#: flatcamEditors/FlatCAMGeoEditor.py:2788
+#: flatcamEditors/FlatCAMGeoEditor.py:2818
+#: flatcamEditors/FlatCAMGeoEditor.py:2848
 #: flatcamEditors/FlatCAMGrbEditor.py:4753
 msgid "Buffer distance value is missing or wrong format. Add it and retry."
 msgstr ""
@@ -2783,10 +2792,6 @@ msgstr "Text"
 #: flatcamEditors/FlatCAMGeoEditor.py:348
 msgid "Text Tool"
 msgstr "Unealta Text"
-
-#: flatcamEditors/FlatCAMGeoEditor.py:406 flatcamGUI/FlatCAMGUI.py:913
-msgid "Tool"
-msgstr "Unealta"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:437 flatcamGUI/ObjectUI.py:335
 #: flatcamGUI/PreferencesUI.py:1301 flatcamGUI/PreferencesUI.py:2933
@@ -2947,9 +2952,9 @@ msgstr ""
 "și reîncearcă."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:612
-#: flatcamEditors/FlatCAMGeoEditor.py:2797
-#: flatcamEditors/FlatCAMGeoEditor.py:2827
-#: flatcamEditors/FlatCAMGeoEditor.py:2857 flatcamGUI/PreferencesUI.py:2929
+#: flatcamEditors/FlatCAMGeoEditor.py:2794
+#: flatcamEditors/FlatCAMGeoEditor.py:2824
+#: flatcamEditors/FlatCAMGeoEditor.py:2854 flatcamGUI/PreferencesUI.py:2929
 #: flatcamTools/ToolProperties.py:118 flatcamTools/ToolProperties.py:144
 msgid "Tools"
 msgstr "Unelte"
@@ -3570,7 +3575,7 @@ msgstr "Executat. Adăugarea unei forme Arc terminată."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2225
 #: flatcamEditors/FlatCAMGeoEditor.py:2279
-#: flatcamEditors/FlatCAMGeoEditor.py:2707
+#: flatcamEditors/FlatCAMGeoEditor.py:2706
 msgid "Click on 1st corner ..."
 msgstr "Click pe primul colt ..."
 
@@ -3634,7 +3639,7 @@ msgstr "Executat. Mutarea Geometriilor terminată."
 msgid "Done. Geometry(s) Copy completed."
 msgstr "Executat. Copierea Geometriilor terminată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2724
+#: flatcamEditors/FlatCAMGeoEditor.py:2723
 msgid ""
 "Font not supported. Only Regular, Bold, Italic and BoldItalic are supported. "
 "Error"
@@ -3642,98 +3647,98 @@ msgstr ""
 "Fontul nu este compatibil. Doar cele tip: Regular, Bold, Italic și "
 "BoldItalic sunt acceptate. Eroarea"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2732
+#: flatcamEditors/FlatCAMGeoEditor.py:2730
 msgid "No text to add."
 msgstr "Niciun text de adăugat."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2739
+#: flatcamEditors/FlatCAMGeoEditor.py:2736
 msgid " Done. Adding Text completed."
 msgstr " Executat. Adăugarea de Text terminată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2767
+#: flatcamEditors/FlatCAMGeoEditor.py:2764
 msgid "Create buffer geometry ..."
 msgstr "Crează o geometrie de tipe Bufer ..."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2779
-#: flatcamEditors/FlatCAMGeoEditor.py:2809
-#: flatcamEditors/FlatCAMGeoEditor.py:2839
+#: flatcamEditors/FlatCAMGeoEditor.py:2776
+#: flatcamEditors/FlatCAMGeoEditor.py:2806
+#: flatcamEditors/FlatCAMGeoEditor.py:2836
 msgid "Buffer cancelled. No shape selected."
 msgstr ""
 "Crearea de geometrie Bufer anulată. Nici-o forma geometrică nu este "
 "selectată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2804
+#: flatcamEditors/FlatCAMGeoEditor.py:2801
 #: flatcamEditors/FlatCAMGrbEditor.py:4798
 msgid "Done. Buffer Tool completed."
 msgstr "Executat. Unealta Bufer terminată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2834
+#: flatcamEditors/FlatCAMGeoEditor.py:2831
 msgid "Done. Buffer Int Tool completed."
 msgstr "Executat. Unealta Bufer Intern terminată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2864
+#: flatcamEditors/FlatCAMGeoEditor.py:2861
 msgid "Done. Buffer Ext Tool completed."
 msgstr "Executat. Unealta Bufer Extern terminată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2899
+#: flatcamEditors/FlatCAMGeoEditor.py:2896
 #: flatcamEditors/FlatCAMGrbEditor.py:2087
 msgid "Select a shape to act as deletion area ..."
 msgstr "Selectează o formă geometrică ca formă de stergere ..."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2901
-#: flatcamEditors/FlatCAMGeoEditor.py:2920
-#: flatcamEditors/FlatCAMGeoEditor.py:2926
+#: flatcamEditors/FlatCAMGeoEditor.py:2898
+#: flatcamEditors/FlatCAMGeoEditor.py:2917
+#: flatcamEditors/FlatCAMGeoEditor.py:2923
 #: flatcamEditors/FlatCAMGrbEditor.py:2089
 msgid "Click to pick-up the erase shape..."
 msgstr "Click pentru a activa forma de stergere..."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2930
+#: flatcamEditors/FlatCAMGeoEditor.py:2927
 #: flatcamEditors/FlatCAMGrbEditor.py:2146
 msgid "Click to erase ..."
 msgstr "Click pt a sterge ..."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:2960
+#: flatcamEditors/FlatCAMGeoEditor.py:2957
 #: flatcamEditors/FlatCAMGrbEditor.py:2180
 msgid "Done. Eraser tool action completed."
 msgstr "Executat. Unealta Stergere s-a terminat."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:3003
+#: flatcamEditors/FlatCAMGeoEditor.py:3000
 msgid "Create Paint geometry ..."
 msgstr "Crează o geometrie Paint ..."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:3017
+#: flatcamEditors/FlatCAMGeoEditor.py:3014
 #: flatcamEditors/FlatCAMGrbEditor.py:2331
 msgid "Shape transformations ..."
 msgstr "Transformări de forme geometrice ..."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:3638
+#: flatcamEditors/FlatCAMGeoEditor.py:3630
 msgid "Editing MultiGeo Geometry, tool"
 msgstr "Se editează Geometrie tip MultiGeo. unealta"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:3640
+#: flatcamEditors/FlatCAMGeoEditor.py:3632
 msgid "with diameter"
 msgstr "cu diametrul"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4042
+#: flatcamEditors/FlatCAMGeoEditor.py:4034
 msgid "Copy cancelled. No shape selected."
 msgstr "Copiere anulată. Nici-o forma geometrică nu este selectată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4049 flatcamGUI/FlatCAMGUI.py:3090
+#: flatcamEditors/FlatCAMGeoEditor.py:4041 flatcamGUI/FlatCAMGUI.py:3090
 #: flatcamGUI/FlatCAMGUI.py:3137 flatcamGUI/FlatCAMGUI.py:3156
 #: flatcamGUI/FlatCAMGUI.py:3291 flatcamGUI/FlatCAMGUI.py:3304
 #: flatcamGUI/FlatCAMGUI.py:3338 flatcamGUI/FlatCAMGUI.py:3400
 msgid "Click on target point."
 msgstr "Click pe punctul tinta."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4339
-#: flatcamEditors/FlatCAMGeoEditor.py:4374
+#: flatcamEditors/FlatCAMGeoEditor.py:4335
+#: flatcamEditors/FlatCAMGeoEditor.py:4370
 msgid "A selection of at least 2 geo items is required to do Intersection."
 msgstr ""
 "Cel puțin o selecţie de doua forme geometrice este necesară pentru a face o "
 "Intersecţie."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4460
-#: flatcamEditors/FlatCAMGeoEditor.py:4569
+#: flatcamEditors/FlatCAMGeoEditor.py:4456
+#: flatcamEditors/FlatCAMGeoEditor.py:4560
 msgid ""
 "Negative buffer value is not accepted. Use Buffer interior to generate an "
 "'inside' shape"
@@ -3741,59 +3746,59 @@ msgstr ""
 "O valoare de bufer negativă nu se acceptă. Foloseste Bufer Interior pentru a "
 "genera o formă geo. interioară"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4470
-#: flatcamEditors/FlatCAMGeoEditor.py:4526
-#: flatcamEditors/FlatCAMGeoEditor.py:4578
+#: flatcamEditors/FlatCAMGeoEditor.py:4466
+#: flatcamEditors/FlatCAMGeoEditor.py:4519
+#: flatcamEditors/FlatCAMGeoEditor.py:4569
 msgid "Nothing selected for buffering."
 msgstr "Nici-o forma geometrică nu este selectată pentru a face Bufer."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4475
-#: flatcamEditors/FlatCAMGeoEditor.py:4531
-#: flatcamEditors/FlatCAMGeoEditor.py:4583
+#: flatcamEditors/FlatCAMGeoEditor.py:4471
+#: flatcamEditors/FlatCAMGeoEditor.py:4523
+#: flatcamEditors/FlatCAMGeoEditor.py:4574
 msgid "Invalid distance for buffering."
 msgstr "Distanta invalida pentru a face Bufer."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4499
-#: flatcamEditors/FlatCAMGeoEditor.py:4603
+#: flatcamEditors/FlatCAMGeoEditor.py:4495
+#: flatcamEditors/FlatCAMGeoEditor.py:4594
 msgid "Failed, the result is empty. Choose a different buffer value."
 msgstr "Eșuat, rezultatul este gol. Foloseşte o valoare diferita pentru Bufer."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4510
+#: flatcamEditors/FlatCAMGeoEditor.py:4506
 msgid "Full buffer geometry created."
 msgstr "Geometrie tip Bufer Complet creată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4517
+#: flatcamEditors/FlatCAMGeoEditor.py:4512
 msgid "Negative buffer value is not accepted."
 msgstr "Valoarea bufer negativă nu este acceptată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4551
+#: flatcamEditors/FlatCAMGeoEditor.py:4543
 msgid "Failed, the result is empty. Choose a smaller buffer value."
 msgstr "Eșuat, rezultatul este gol. Foloseşte of valoare mai mica pt. Bufer."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4562
+#: flatcamEditors/FlatCAMGeoEditor.py:4553
 msgid "Interior buffer geometry created."
 msgstr "Geometrie Bufer interior creată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4614
+#: flatcamEditors/FlatCAMGeoEditor.py:4604
 msgid "Exterior buffer geometry created."
 msgstr "Geometrie Bufer Exterior creată."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4679
+#: flatcamEditors/FlatCAMGeoEditor.py:4613
 msgid "Nothing selected for painting."
 msgstr "Nici-o forma geometrică nu este selectată pentru Paint."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4686
+#: flatcamEditors/FlatCAMGeoEditor.py:4620
 msgid "Invalid value for"
 msgstr "Valoare invalida pentru"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4692
+#: flatcamEditors/FlatCAMGeoEditor.py:4626
 #, python-format
 msgid "Could not do Paint. Overlap value has to be less than 1.00 (100%%)."
 msgstr ""
 "Nu se poate face Paint. Valoarea de suprapunere trebuie să fie mai puțin de "
 "1.00 (100%%)."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4751
+#: flatcamEditors/FlatCAMGeoEditor.py:4685
 msgid ""
 "Could not do Paint. Try a different combination of parameters. Or a "
 "different method of Paint"
@@ -3801,7 +3806,7 @@ msgstr ""
 "Nu se poate face Paint. Incearcă o combinaţie diferita de parametri. Or o "
 "metoda diferita de Paint"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4765
+#: flatcamEditors/FlatCAMGeoEditor.py:4699
 msgid "Paint done."
 msgstr "Pictare executata."
 
@@ -3980,7 +3985,7 @@ msgstr "Tip"
 #: flatcamEditors/FlatCAMGrbEditor.py:2407
 #: flatcamEditors/FlatCAMGrbEditor.py:3732 flatcamGUI/ObjectUI.py:238
 msgid "Size"
-msgstr "Dimens."
+msgstr "Dimensiune"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2407
 #: flatcamEditors/FlatCAMGrbEditor.py:3732 flatcamGUI/ObjectUI.py:238
@@ -4007,7 +4012,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2417 flatcamGUI/ObjectUI.py:248
 msgid "Aperture Size:"
-msgstr "Dim. aper."
+msgstr "Dim. aper.:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2419 flatcamGUI/ObjectUI.py:250
 msgid ""
@@ -4124,7 +4129,7 @@ msgstr "Bufer"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2564
 msgid "Scale Aperture"
-msgstr "Scalează aper."
+msgstr "Scalează aper"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2566
 msgid "Scale a aperture in the aperture list"
@@ -4470,10 +4475,8 @@ msgid "Toggle Panel"
 msgstr "Comută Panel"
 
 #: flatcamGUI/FlatCAMGUI.py:62
-#, fuzzy
-#| msgid "&File"
 msgid "File"
-msgstr "&Fişiere"
+msgstr "Fişiere"
 
 #: flatcamGUI/FlatCAMGUI.py:67
 msgid "&New Project ...\tCTRL+N"
@@ -4913,7 +4916,7 @@ msgstr "Ajutor"
 msgid "Online Help\tF1"
 msgstr "Resurse online\tF1"
 
-#: flatcamGUI/FlatCAMGUI.py:437
+#: flatcamGUI/FlatCAMGUI.py:437 flatcamGUI/FlatCAMGUI.py:3969
 msgid "Bookmarks"
 msgstr "Bookmarks"
 
@@ -4995,7 +4998,7 @@ msgstr "Unealta Bufer\tB"
 
 #: flatcamGUI/FlatCAMGUI.py:500
 msgid "Paint Tool\tI"
-msgstr "Unealta Paint\t"
+msgstr "Unealta Paint\tI"
 
 #: flatcamGUI/FlatCAMGUI.py:503
 msgid "Transform Tool\tALT+R"
@@ -5376,7 +5379,7 @@ msgstr "Copiază forme geo."
 
 #: flatcamGUI/FlatCAMGUI.py:804
 msgid "Delete Shape '-'"
-msgstr "Șterge forme geo."
+msgstr "Șterge forme geo"
 
 #: flatcamGUI/FlatCAMGUI.py:806 flatcamGUI/FlatCAMGUI.py:837
 #: flatcamGUI/FlatCAMGUI.py:1878 flatcamGUI/FlatCAMGUI.py:1903
@@ -5504,7 +5507,6 @@ msgid "TOOLS"
 msgstr "Unelte"
 
 #: flatcamGUI/FlatCAMGUI.py:1035
-#| msgid "TOOLS"
 msgid "TOOLS 2"
 msgstr "UNELTE 2"
 
@@ -6242,8 +6244,8 @@ msgid "Web Link. E.g: https://your_website.org "
 msgstr "Website. De ex: https://your_website.org "
 
 #: flatcamGUI/FlatCAMGUI.py:3763
-msgid "<b>New Bookmark</b>"
-msgstr "<b>Bookmark Nou</b>"
+msgid "New Bookmark"
+msgstr "Bookmark Nou"
 
 #: flatcamGUI/FlatCAMGUI.py:3782
 msgid "Add Entry"
@@ -6263,61 +6265,35 @@ msgstr "Importă lista"
 
 #: flatcamGUI/FlatCAMGUI.py:3920
 msgid "This bookmark can not be removed"
-msgstr "Acest bookmark nu poate fi eliminat."
+msgstr "Acest bookmark nu poate fi eliminat"
 
-#: flatcamGUI/FlatCAMGUI.py:3967
-#, fuzzy, python-brace-format
-#| msgid "{l_save}/Project_{date}"
-msgid "{l_save}/FlatCAM_Bookmarks_{date}"
-msgstr "{l_save}/Proiect_{date}"
-
-#: flatcamGUI/FlatCAMGUI.py:3975
-#, fuzzy
-#| msgid "FlatCAM preferences export cancelled."
+#: flatcamGUI/FlatCAMGUI.py:3976
 msgid "FlatCAM bookmarks export cancelled."
-msgstr "Exportul preferințelor FlatCAM este anulat."
+msgstr "Exportul de bookmark-uri FlatCAM este anulat."
 
-#: flatcamGUI/FlatCAMGUI.py:3995
-#, fuzzy
-#| msgid "Could not load defaults file."
-msgid "Could not load bookamrks file."
-msgstr "Nu am putut incărca fişierul cu valori default."
-
-#: flatcamGUI/FlatCAMGUI.py:4006
-#, fuzzy
-#| msgid "Failed to write defaults to file."
-msgid "Failed to write bookmarks to file."
-msgstr "Salvarea valorilor default intr-un fişier a eșuat."
-
-#: flatcamGUI/FlatCAMGUI.py:4009
-#, fuzzy
-#| msgid "Exported preferences to"
-msgid "Exported bookmarks to"
-msgstr "Exportă Preferințele in"
-
-#: flatcamGUI/FlatCAMGUI.py:4015
-#, fuzzy
-#| msgid "Import FlatCAM Preferences"
-msgid "Import FlatCAM Bookmarks"
-msgstr "Importă Preferințele FlatCAM"
-
-#: flatcamGUI/FlatCAMGUI.py:4022
-#, fuzzy
-#| msgid "FlatCAM preferences import cancelled."
-msgid "FlatCAM bookmarks import cancelled."
-msgstr "Importul preferințelor FlatCAM a eșuat."
-
-#: flatcamGUI/FlatCAMGUI.py:4030
-#, fuzzy
-#| msgid "Could not load defaults file."
+#: flatcamGUI/FlatCAMGUI.py:3996 flatcamGUI/FlatCAMGUI.py:4031
 msgid "Could not load bookmarks file."
-msgstr "Nu am putut incărca fişierul cu valori default."
+msgstr "Nu am putut incărca fişierul cu bookmark-uri."
 
-#: flatcamGUI/FlatCAMGUI.py:4038
-#, fuzzy
-#| msgid "Imported Defaults from"
+#: flatcamGUI/FlatCAMGUI.py:4007
+msgid "Failed to write bookmarks to file."
+msgstr "Salvarea bookmark-urilor intr-un fişier a eșuat."
+
+#: flatcamGUI/FlatCAMGUI.py:4010
+msgid "Exported bookmarks to"
+msgstr "Exportă Bookmark-uri in"
+
+#: flatcamGUI/FlatCAMGUI.py:4016
+msgid "Import FlatCAM Bookmarks"
+msgstr "Importă Bookmark-uri FlatCAM"
+
+#: flatcamGUI/FlatCAMGUI.py:4023
+msgid "FlatCAM bookmarks import cancelled."
+msgstr "Importul de Bookmark-uri FlatCAM a eșuat."
+
+#: flatcamGUI/FlatCAMGUI.py:4039
 msgid "Imported Bookmarks from"
-msgstr "Valorile default au fost importate din"
+msgstr "Bookmark-uri au fost importate din"
 
 #: flatcamGUI/ObjectUI.py:32
 msgid "FlatCAM Object"
@@ -6483,6 +6459,10 @@ msgid ""
 "When the 'V-shape' is selected then the tool\n"
 "diameter will depend on the chosen cut depth."
 msgstr ""
+"Alegeți ce unealtă să utilizați pentru izolarea Gerber:\n"
+"„Circulară” sau „în formă de V”.\n"
+"Când este selectată „forma V”, atunci\n"
+"diametrul uneltei va depinde de adâncimea de tăiere aleasă."
 
 #: flatcamGUI/ObjectUI.py:294 flatcamGUI/ObjectUI.py:1258
 #: flatcamGUI/PreferencesUI.py:1478 flatcamGUI/PreferencesUI.py:3730
@@ -7824,29 +7804,23 @@ msgstr "pentru Excellon, numărul total de operațiuni găurire"
 
 #: flatcamGUI/ObjectUI.py:1816 flatcamGUI/PreferencesUI.py:3619
 msgid "X coord for Toolchange"
-msgstr "coordonata X pentru schimbarea uneltei"
+msgstr "Coordonata X pentru schimbarea uneltei"
 
 #: flatcamGUI/ObjectUI.py:1817
-#, fuzzy
-#| msgid "X coord for Toolchange"
 msgid "Y coord for Toolchange"
-msgstr "coordonata X pentru schimbarea uneltei"
+msgstr "Coordonata Y pentru schimbarea uneltei"
 
 #: flatcamGUI/ObjectUI.py:1818 flatcamGUI/PreferencesUI.py:3622
 msgid "Z coord for Toolchange"
 msgstr "coordonata Z pentru schimbarea uneltei"
 
 #: flatcamGUI/ObjectUI.py:1819
-#, fuzzy
-#| msgid "z_cut = depth where to cut"
 msgid "depth where to cut"
-msgstr "z_cut = adâncimea de tăiere"
+msgstr "adâncimea de tăiere"
 
 #: flatcamGUI/ObjectUI.py:1820
-#, fuzzy
-#| msgid "z_move = height where to travel"
 msgid "height where to travel"
-msgstr "z_move = Înălţimea deplasare"
+msgstr "Înălţimea deplasare"
 
 #: flatcamGUI/ObjectUI.py:1821 flatcamGUI/PreferencesUI.py:3625
 msgid "the step value for multidepth cut"
@@ -7857,10 +7831,8 @@ msgid "the value for the spindle speed"
 msgstr "valoarea viteza motor"
 
 #: flatcamGUI/ObjectUI.py:1825
-#, fuzzy
-#| msgid "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
 msgid "time to dwell to allow the spindle to reach it's set RPM"
-msgstr "dwelltime = durata de asteptare ca motorul să ajunga la turatia setată"
+msgstr "durata de asteptare ca motorul să ajunga la turatia setată"
 
 #: flatcamGUI/ObjectUI.py:1841
 msgid "View CNC Code"
@@ -7887,98 +7859,80 @@ msgstr ""
 "G-Code intr-un fişier."
 
 #: flatcamGUI/ObjectUI.py:1870
-#, fuzzy
-#| msgid "Edit Object\tE"
 msgid "Script Object"
-msgstr "Editare Obiect\tE"
+msgstr "Editare Script"
 
 #: flatcamGUI/ObjectUI.py:1889 flatcamGUI/ObjectUI.py:1948
-#, fuzzy
-#| msgid "Autocompleter Keywords"
 msgid "Auto Completer"
-msgstr "Cuvinte cheie pt autocomplete"
+msgstr "Autocompletare"
 
 #: flatcamGUI/ObjectUI.py:1891
 msgid "This selects if the auto completer is enabled in the Script Editor."
 msgstr ""
+"Aceasta selectează dacă completatorul automat este activat în Script Editor."
 
 #: flatcamGUI/ObjectUI.py:1922
-#, fuzzy
-#| msgid "Geometry Object"
 msgid "Document Object"
-msgstr "Obiect Geometrie"
+msgstr "Obiect document"
 
 #: flatcamGUI/ObjectUI.py:1950
 msgid "This selects if the auto completer is enabled in the Document Editor."
 msgstr ""
+"Aceasta selectează dacă completatorul automat este activat în Editorul de "
+"documente."
 
 #: flatcamGUI/ObjectUI.py:1968
-#, fuzzy
-#| msgid "Box Type"
 msgid "Font Type"
-msgstr "Tip container"
+msgstr "Tipul Font"
 
 #: flatcamGUI/ObjectUI.py:1985
-#, fuzzy
-#| msgid "NB Font Size"
 msgid "Font Size"
-msgstr "Dim. font NB"
+msgstr "Dim. Font"
 
 #: flatcamGUI/ObjectUI.py:2021
 msgid "Alignment"
-msgstr ""
+msgstr "Aliniere"
 
 #: flatcamGUI/ObjectUI.py:2026
 msgid "Align Left"
-msgstr ""
+msgstr "Aliniați la stânga"
 
 #: flatcamGUI/ObjectUI.py:2031
 msgid "Center"
-msgstr ""
+msgstr "Centru"
 
 #: flatcamGUI/ObjectUI.py:2036
 msgid "Align Right"
-msgstr ""
+msgstr "Aliniați la dreapta"
 
 #: flatcamGUI/ObjectUI.py:2041
 msgid "Justify"
-msgstr ""
+msgstr "Aliniere duala"
 
 #: flatcamGUI/ObjectUI.py:2048
-#, fuzzy
-#| msgid "Film Color"
 msgid "Font Color"
-msgstr "Film Color"
+msgstr "Culoare FOnt"
 
 #: flatcamGUI/ObjectUI.py:2050
-#, fuzzy
-#| msgid "Set the font color for the annotation texts."
 msgid "Set the font color for the selected text"
-msgstr "Setează culoarea pentru textul cu anotatii."
+msgstr "Setați culoarea fontului pentru textul selectat"
 
 #: flatcamGUI/ObjectUI.py:2064
-#, fuzzy
-#| msgid "Selection"
 msgid "Selection Color"
-msgstr "Selecţie"
+msgstr "Culoare de selecție"
 
 #: flatcamGUI/ObjectUI.py:2066
-#, fuzzy
-#| msgid "Set the line color for the 'right to left' selection box."
 msgid "Set the selection color when doing text selection."
-msgstr ""
-"Setează transparenţa conturului formei de selecţie\n"
-"când selectia se face de la dreapta la stânga."
+msgstr "Setați culoarea de selecție atunci când faceți selecția textului."
 
 #: flatcamGUI/ObjectUI.py:2080
-#, fuzzy
-#| msgid "Size"
 msgid "Tab Size"
-msgstr "Dimens."
+msgstr "Dimens. filei"
 
 #: flatcamGUI/ObjectUI.py:2082
 msgid "Set the tab size. In pixels. Default value is 80 pixels."
 msgstr ""
+"Setați dimensiunea filei. În pixeli. Valoarea implicită este de 80 pixeli."
 
 #: flatcamGUI/PlotCanvasLegacy.py:1082
 msgid ""
@@ -8183,27 +8137,23 @@ msgstr "Setări GUI"
 
 #: flatcamGUI/PreferencesUI.py:609
 msgid "Theme"
-msgstr ""
+msgstr "Temă"
 
 #: flatcamGUI/PreferencesUI.py:611
-#, fuzzy
-#| msgid ""
-#| "Select an style for FlatCAM.\n"
-#| "It will be applied at the next app start."
 msgid ""
 "Select a theme for FlatCAM.\n"
 "The application will restart after change."
 msgstr ""
-"Selectează un stil pentru FlatCAM.\n"
-"Se va aplic la următoarea pornire a aplicaţiei."
+"Selectați o temă pentru FlatCAM.\n"
+"Aplicația va reporni după modificare."
 
 #: flatcamGUI/PreferencesUI.py:615
 msgid "Light"
-msgstr ""
+msgstr "Luminos"
 
 #: flatcamGUI/PreferencesUI.py:616
 msgid "Dark"
-msgstr ""
+msgstr "Întunecat"
 
 #: flatcamGUI/PreferencesUI.py:623
 msgid "Layout"
@@ -8388,7 +8338,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:869
 msgid "Mouse Cursor"
-msgstr ""
+msgstr "Cursor de mouse"
 
 #: flatcamGUI/PreferencesUI.py:871
 msgid ""
@@ -8396,24 +8346,25 @@ msgid ""
 "- Small -> with a customizable size.\n"
 "- Big -> Infinite lines"
 msgstr ""
+"Alegeți o formă de cursor a mouse-ului.\n"
+"- Mic -> cu o dimensiune personalizabilă.\n"
+"- Mare -> Linii infinite"
 
 #: flatcamGUI/PreferencesUI.py:877
 msgid "Small"
-msgstr ""
+msgstr "Mic"
 
 #: flatcamGUI/PreferencesUI.py:878
 msgid "Big"
-msgstr ""
+msgstr "Mare"
 
 #: flatcamGUI/PreferencesUI.py:884
 msgid "Mouse Cursor Size"
-msgstr ""
+msgstr "Mărimea cursor mouse"
 
 #: flatcamGUI/PreferencesUI.py:886
-#, fuzzy
-#| msgid "The font size of the annotation text. In pixels."
 msgid "Set the size of the mouse cursor, in pixels."
-msgstr "Dimensiunea fontului pt. textul cu notatii. In pixeli."
+msgstr "Setați dimensiunea cursorului mouse-ului, în pixeli."
 
 #: flatcamGUI/PreferencesUI.py:897
 msgid "Delete object confirmation"
@@ -8702,10 +8653,8 @@ msgstr ""
 "lucru care poate reduce dimensiunea semnificativ."
 
 #: flatcamGUI/PreferencesUI.py:1152
-#, fuzzy
-#| msgid "Compression Level"
 msgid "Compression"
-msgstr "Nivel compresie"
+msgstr "Compresie"
 
 #: flatcamGUI/PreferencesUI.py:1154
 msgid ""
@@ -8720,7 +8669,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1165
 msgid "Bookmarks limit"
-msgstr ""
+msgstr "Limită nr. bookmark-uri"
 
 #: flatcamGUI/PreferencesUI.py:1167
 msgid ""
@@ -8728,6 +8677,9 @@ msgid ""
 "The number of bookmarks in the bookmark manager may be greater\n"
 "but the menu will hold only so much."
 msgstr ""
+"Numărul maxim de bookmark-uri care pot fi instalate în meniu.\n"
+"Numărul de bookmark-uri în managerul de bookmark-uri poate fi mai mare\n"
+"dar meniul va conține doar atât de mult."
 
 #: flatcamGUI/PreferencesUI.py:1187
 msgid "Gerber General"
@@ -8747,8 +8699,6 @@ msgstr ""
 "aproximarea lineara a aperturilor Gerber circulare."
 
 #: flatcamGUI/PreferencesUI.py:1232
-#, fuzzy
-#| msgid "Defaults"
 msgid "Default Values"
 msgstr "Val. Implicite"
 
@@ -8757,6 +8707,8 @@ msgid ""
 "Those values will be used as fallback values\n"
 "in case that they are not found in the Gerber file."
 msgstr ""
+"Aceste valori vor fi utilizate ca valori de baza\n"
+"în cazul în care acestea nu sunt găsite în fișierul Gerber."
 
 #: flatcamGUI/PreferencesUI.py:1243 flatcamGUI/PreferencesUI.py:1249
 #: flatcamGUI/PreferencesUI.py:1577 flatcamGUI/PreferencesUI.py:1583
@@ -8872,27 +8824,22 @@ msgid "Simplify"
 msgstr "Simplifica"
 
 #: flatcamGUI/PreferencesUI.py:1531
-#, fuzzy
-#| msgid ""
-#| "When checked all the Gerber polygons will be\n"
-#| "loaded with simplification having a set tolerance."
 msgid ""
 "When checked all the Gerber polygons will be\n"
 "loaded with simplification having a set tolerance.\n"
 "<<WARNING>>: Don't change this unless you know what you are doing !!!"
 msgstr ""
-"Cand este bifat, toate poligoanele Gerber vor fi incarcate\n"
-"simplificat cu o anumita toleranta setata mai jos."
+"Când este bifat, toate poligoanele Gerber vor fi\n"
+"încărcate simplificat cu o toleranță stabilită.\n"
+"<<AVERTISMENT>>: Nu schimbați acest lucru decât dacă știți ce faceți !!!"
 
 #: flatcamGUI/PreferencesUI.py:1538
 msgid "Tolerance"
 msgstr "Toleranta"
 
 #: flatcamGUI/PreferencesUI.py:1539
-#, fuzzy
-#| msgid "Tolerance for poligon simplification."
 msgid "Tolerance for polygon simplification."
-msgstr "Toleranta pentru simplificarea poligoanelor."
+msgstr "Toleranță pentru simplificarea poligoanelor."
 
 #: flatcamGUI/PreferencesUI.py:1561
 msgid "Gerber Export"
@@ -9000,10 +8947,8 @@ msgstr "Arie Lineară de Sloturi"
 
 #: flatcamGUI/PreferencesUI.py:1750 flatcamGUI/PreferencesUI.py:2667
 #: flatcamGUI/PreferencesUI.py:2815
-#, fuzzy
-#| msgid "Linear Dir."
 msgid "Linear Direction"
-msgstr "Dir. Lineara"
+msgstr "Direcție liniară"
 
 #: flatcamGUI/PreferencesUI.py:1790
 msgid "Circular Pad Array"
@@ -9011,10 +8956,8 @@ msgstr "Arie de Sloturi circ"
 
 #: flatcamGUI/PreferencesUI.py:1794 flatcamGUI/PreferencesUI.py:2713
 #: flatcamGUI/PreferencesUI.py:2863
-#, fuzzy
-#| msgid "Circular Dir."
 msgid "Circular Direction"
-msgstr "Directie circ."
+msgstr "Direcția circulară"
 
 #: flatcamGUI/PreferencesUI.py:1796 flatcamGUI/PreferencesUI.py:2715
 #: flatcamGUI/PreferencesUI.py:2865
@@ -9028,10 +8971,8 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1807 flatcamGUI/PreferencesUI.py:2726
 #: flatcamGUI/PreferencesUI.py:2876
-#, fuzzy
-#| msgid "Circ. Angle"
 msgid "Circular Angle"
-msgstr "Unghi circ."
+msgstr "Unghi circular"
 
 #: flatcamGUI/PreferencesUI.py:1826
 msgid "Distance at which to buffer the Gerber element."
@@ -9267,7 +9208,7 @@ msgstr "TSA"
 
 #: flatcamGUI/PreferencesUI.py:2085
 msgid "Optimization Time"
-msgstr "Durata optimiz."
+msgstr "Durata optimizare"
 
 #: flatcamGUI/PreferencesUI.py:2088
 msgid ""
@@ -10299,7 +10240,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:4381 flatcamTools/ToolFilm.py:130
 msgid "Film Adjustments"
-msgstr ""
+msgstr "Reglarea filmelor"
 
 #: flatcamGUI/PreferencesUI.py:4383 flatcamTools/ToolFilm.py:132
 msgid ""
@@ -10307,98 +10248,95 @@ msgid ""
 "types.\n"
 "This section provide the tools to compensate for the print distortions."
 msgstr ""
+"Unori imprimantele vor denatura forma de imprimare, în special tipurile "
+"Laser.\n"
+"Această secțiune oferă instrumentele pentru a compensa distorsiunile de "
+"tipărire."
 
 #: flatcamGUI/PreferencesUI.py:4390 flatcamTools/ToolFilm.py:139
-#, fuzzy
-#| msgid "Create Paint Geometry"
 msgid "Scale Film geometry"
-msgstr "Crează un obiect Geometrie tip 'Paint'"
+msgstr "Scalați geo film"
 
 #: flatcamGUI/PreferencesUI.py:4392 flatcamTools/ToolFilm.py:141
 msgid ""
 "A value greater than 1 will stretch the film\n"
 "while a value less than 1 will jolt it."
 msgstr ""
+"O valoare mai mare de 1 va întinde filmul\n"
+"în timp ce o valoare mai mică de 1 il va compacta."
 
 #: flatcamGUI/PreferencesUI.py:4402 flatcamGUI/PreferencesUI.py:4821
 #: flatcamTools/ToolFilm.py:151 flatcamTools/ToolTransform.py:147
-#, fuzzy
-#| msgid "Scale_X factor"
 msgid "X factor"
-msgstr "Factor Scal_X"
+msgstr "Factor X"
 
 #: flatcamGUI/PreferencesUI.py:4411 flatcamGUI/PreferencesUI.py:4834
 #: flatcamTools/ToolFilm.py:160 flatcamTools/ToolTransform.py:168
-#, fuzzy
-#| msgid "Scale_Y factor"
 msgid "Y factor"
-msgstr "Factor Scal_Y"
+msgstr "Factor Y"
 
 #: flatcamGUI/PreferencesUI.py:4421 flatcamTools/ToolFilm.py:172
-#, fuzzy
-#| msgid "New Blank Geometry"
 msgid "Skew Film geometry"
-msgstr "Geometrie Noua (goală)"
+msgstr "Deformeaza Geo Film"
 
 #: flatcamGUI/PreferencesUI.py:4423 flatcamTools/ToolFilm.py:174
 msgid ""
 "Positive values will skew to the right\n"
 "while negative values will skew to the left."
 msgstr ""
+"Valorile pozitive vor înclina spre dreapta\n"
+"în timp ce valorile negative vor înclina spre stânga."
 
 #: flatcamGUI/PreferencesUI.py:4433 flatcamGUI/PreferencesUI.py:4790
 #: flatcamTools/ToolFilm.py:184 flatcamTools/ToolTransform.py:97
-#, fuzzy
-#| msgid "Skew_X angle"
 msgid "X angle"
-msgstr "Unghi Deform_X"
+msgstr "Unghi X"
 
 #: flatcamGUI/PreferencesUI.py:4442 flatcamGUI/PreferencesUI.py:4804
 #: flatcamTools/ToolFilm.py:193 flatcamTools/ToolTransform.py:119
-#, fuzzy
-#| msgid "Skew_Y angle"
 msgid "Y angle"
-msgstr "Unghi Deform_Y"
+msgstr "Unghi Y"
 
 #: flatcamGUI/PreferencesUI.py:4453 flatcamTools/ToolFilm.py:204
 msgid ""
 "The reference point to be used as origin for the skew.\n"
 "It can be one of the four points of the geometry bounding box."
 msgstr ""
+"Punctul de referință care trebuie utilizat ca origine pentru Deformare.\n"
+"Poate fi unul dintre cele patru puncte ale căsuței de delimitare a "
+"geometriei."
 
 #: flatcamGUI/PreferencesUI.py:4456 flatcamTools/ToolFilm.py:207
 msgid "Bottom Left"
-msgstr ""
+msgstr "Stânga jos"
 
 #: flatcamGUI/PreferencesUI.py:4457 flatcamTools/ToolFilm.py:208
 msgid "Top Left"
-msgstr ""
+msgstr "Stânga sus"
 
 #: flatcamGUI/PreferencesUI.py:4458 flatcamTools/ToolFilm.py:209
 msgid "Bottom Right"
-msgstr ""
+msgstr "Dreapta-jos"
 
 #: flatcamGUI/PreferencesUI.py:4459 flatcamTools/ToolFilm.py:210
 msgid "Top right"
-msgstr ""
+msgstr "Dreapta-sus"
 
 #: flatcamGUI/PreferencesUI.py:4467 flatcamTools/ToolFilm.py:221
 msgid "Mirror Film geometry"
-msgstr ""
+msgstr "Oglindeste Geo Film"
 
 #: flatcamGUI/PreferencesUI.py:4469 flatcamTools/ToolFilm.py:223
 msgid "Mirror the film geometry on the selected axis or on both."
-msgstr ""
+msgstr "Oglindeste geometria filmului pe axa selectată sau pe ambele."
 
 #: flatcamGUI/PreferencesUI.py:4481 flatcamTools/ToolFilm.py:235
 msgid "Both"
 msgstr "Ambele"
 
 #: flatcamGUI/PreferencesUI.py:4483 flatcamTools/ToolFilm.py:237
-#, fuzzy
-#| msgid "Mirror Axis:"
 msgid "Mirror axis"
-msgstr "Axe oglindire:"
+msgstr "Axe oglindire"
 
 #: flatcamGUI/PreferencesUI.py:4496
 msgid "Panelize Tool Options"
@@ -10641,10 +10579,8 @@ msgstr ""
 "asupra unui obiect FlatCAM."
 
 #: flatcamGUI/PreferencesUI.py:4782
-#, fuzzy
-#| msgid "Skew X"
 msgid "Skew"
-msgstr "Deformare X"
+msgstr "Deformare"
 
 #: flatcamGUI/PreferencesUI.py:4823 flatcamTools/ToolTransform.py:149
 msgid "Factor for scaling on X axis."
@@ -10677,7 +10613,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:4868 flatcamTools/ToolTransform.py:216
 msgid "X val"
-msgstr ""
+msgstr "Val X"
 
 #: flatcamGUI/PreferencesUI.py:4870 flatcamTools/ToolTransform.py:218
 msgid "Distance to offset on X axis. In current units."
@@ -10685,7 +10621,7 @@ msgstr "Distanta la care se face ofset pe axa X. In unitatile curente."
 
 #: flatcamGUI/PreferencesUI.py:4881 flatcamTools/ToolTransform.py:237
 msgid "Y val"
-msgstr ""
+msgstr "Val Y"
 
 #: flatcamGUI/PreferencesUI.py:4883 flatcamTools/ToolTransform.py:239
 msgid "Distance to offset on Y axis. In current units."
@@ -10719,10 +10655,8 @@ msgstr ""
 "La final apasă butonul de oglindire pe axa dorită"
 
 #: flatcamGUI/PreferencesUI.py:4902
-#, fuzzy
-#| msgid "Mirror Reference"
 msgid "Mirror Reference point"
-msgstr "Referinţă Oglindire"
+msgstr "Punct referinţă Oglindire"
 
 #: flatcamGUI/PreferencesUI.py:4904
 msgid ""
@@ -10912,29 +10846,25 @@ msgstr ""
 "Geometrie."
 
 #: flatcamGUI/PreferencesUI.py:5116
-#, fuzzy
-#| msgid "Calculators Tool Options"
 msgid "Check Rules Tool Options"
-msgstr "Opțiuni Unealta Calculatoare"
+msgstr "Opțiuni Unealta Verificare Reguli"
 
 #: flatcamGUI/PreferencesUI.py:5121
 msgid ""
-"A tool to check if Gerber files fir within a set\n"
+"A tool to check if Gerber files are within a set\n"
 "of Manufacturing Rules."
 msgstr ""
+"Un instrument pentru a verifica dacă fișierele Gerber se află într-un set\n"
+"de Norme de fabricație."
 
 #: flatcamGUI/PreferencesUI.py:5131 flatcamTools/ToolRulesCheck.py:256
 #: flatcamTools/ToolRulesCheck.py:900
-#, fuzzy
-#| msgid "Aperture Size"
 msgid "Trace Size"
-msgstr "Dim. aper"
+msgstr "Dim. traseu"
 
 #: flatcamGUI/PreferencesUI.py:5133 flatcamTools/ToolRulesCheck.py:258
-#, fuzzy
-#| msgid "This sets the font size for canvas axis."
 msgid "This checks if the minimum size for traces is met."
-msgstr "Aceasta setează dimensiunea fontului pentru axele zonei de afisare."
+msgstr "Aceasta verifică dacă dimensiunea minimă a traseelor este respectată."
 
 #: flatcamGUI/PreferencesUI.py:5143 flatcamGUI/PreferencesUI.py:5163
 #: flatcamGUI/PreferencesUI.py:5183 flatcamGUI/PreferencesUI.py:5203
@@ -10946,25 +10876,25 @@ msgstr "Aceasta setează dimensiunea fontului pentru axele zonei de afisare."
 #: flatcamTools/ToolRulesCheck.py:359 flatcamTools/ToolRulesCheck.py:382
 #: flatcamTools/ToolRulesCheck.py:405 flatcamTools/ToolRulesCheck.py:428
 #: flatcamTools/ToolRulesCheck.py:453 flatcamTools/ToolRulesCheck.py:476
-#, fuzzy
-#| msgid "Mask value"
 msgid "Min value"
-msgstr "Val. masca"
+msgstr "Val. min"
 
 #: flatcamGUI/PreferencesUI.py:5145 flatcamTools/ToolRulesCheck.py:270
 msgid "Minimum acceptable trace size."
-msgstr ""
+msgstr "Dimensiunea minimă acceptabilă a traseelor."
 
 #: flatcamGUI/PreferencesUI.py:5150 flatcamTools/ToolRulesCheck.py:277
 #: flatcamTools/ToolRulesCheck.py:1128 flatcamTools/ToolRulesCheck.py:1158
 msgid "Copper to Copper clearance"
-msgstr ""
+msgstr "Distanta de la cupru până la cupru"
 
 #: flatcamGUI/PreferencesUI.py:5152 flatcamTools/ToolRulesCheck.py:279
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features is met."
 msgstr ""
+"Aceasta verifică dacă distanța minimă dintre traseele cupru\n"
+"este îndeplinita."
 
 #: flatcamGUI/PreferencesUI.py:5165 flatcamGUI/PreferencesUI.py:5185
 #: flatcamGUI/PreferencesUI.py:5205 flatcamGUI/PreferencesUI.py:5225
@@ -10974,134 +10904,145 @@ msgstr ""
 #: flatcamTools/ToolRulesCheck.py:361 flatcamTools/ToolRulesCheck.py:384
 #: flatcamTools/ToolRulesCheck.py:407 flatcamTools/ToolRulesCheck.py:455
 msgid "Minimum acceptable clearance value."
-msgstr ""
+msgstr "Valoarea minimă acceptabilă a distantei."
 
 #: flatcamGUI/PreferencesUI.py:5170 flatcamTools/ToolRulesCheck.py:300
 #: flatcamTools/ToolRulesCheck.py:1188 flatcamTools/ToolRulesCheck.py:1194
 #: flatcamTools/ToolRulesCheck.py:1207 flatcamTools/ToolRulesCheck.py:1214
 msgid "Copper to Outline clearance"
-msgstr ""
+msgstr "Distanta de la Cupru până la contur"
 
 #: flatcamGUI/PreferencesUI.py:5172 flatcamTools/ToolRulesCheck.py:302
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features and the outline is met."
 msgstr ""
+"Aceasta verifică dacă distanța minimă dintre\n"
+"traseele de cupru și conturul este îndeplinit."
 
 #: flatcamGUI/PreferencesUI.py:5190 flatcamTools/ToolRulesCheck.py:323
 msgid "Silk to Silk Clearance"
-msgstr ""
+msgstr "Distanta Silk până la Silk Clearance"
 
 #: flatcamGUI/PreferencesUI.py:5192 flatcamTools/ToolRulesCheck.py:325
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and silkscreen features is met."
 msgstr ""
+"Acest lucru verifică dacă distanța minimă între silk (anotari)\n"
+"sunt îndeplinite."
 
 #: flatcamGUI/PreferencesUI.py:5210 flatcamTools/ToolRulesCheck.py:346
 #: flatcamTools/ToolRulesCheck.py:1297 flatcamTools/ToolRulesCheck.py:1303
 #: flatcamTools/ToolRulesCheck.py:1321
 msgid "Silk to Solder Mask Clearance"
-msgstr ""
+msgstr "Distanta intre Silk (anotari) si Solder mask (masca fludor)"
 
 #: flatcamGUI/PreferencesUI.py:5212 flatcamTools/ToolRulesCheck.py:348
 msgid ""
 "This checks if the minimum clearance between silkscreen\n"
 "features and soldermask features is met."
 msgstr ""
+"Acest lucru verifică dacă distanța minimă între Silk (anotari)\n"
+"și Solder Mask (masca de fludor) este îndeplinită."
 
 #: flatcamGUI/PreferencesUI.py:5230 flatcamTools/ToolRulesCheck.py:369
 #: flatcamTools/ToolRulesCheck.py:1351 flatcamTools/ToolRulesCheck.py:1357
 #: flatcamTools/ToolRulesCheck.py:1371 flatcamTools/ToolRulesCheck.py:1378
 msgid "Silk to Outline Clearance"
-msgstr ""
+msgstr "Distanta Silk (anotari) si Contur"
 
 #: flatcamGUI/PreferencesUI.py:5232 flatcamTools/ToolRulesCheck.py:371
 msgid ""
 "This checks if the minimum clearance between silk\n"
 "features and the outline is met."
 msgstr ""
+"Acest lucru verifică dacă distanța minimă dintre Silk (anotari)\n"
+"și Contur este îndeplinită."
 
 #: flatcamGUI/PreferencesUI.py:5250 flatcamTools/ToolRulesCheck.py:392
 #: flatcamTools/ToolRulesCheck.py:1389 flatcamTools/ToolRulesCheck.py:1416
 msgid "Minimum Solder Mask Sliver"
 msgstr ""
+"Dim. minima a separatorului din Solder Mask\n"
+"(masca de fludor)"
 
 #: flatcamGUI/PreferencesUI.py:5252 flatcamTools/ToolRulesCheck.py:394
 msgid ""
 "This checks if the minimum clearance between soldermask\n"
 "features and soldermask features is met."
 msgstr ""
+"Acest lucru verifică dacă distanta minimă între\n"
+"elementele soldermask (masca de fludor) este îndeplinită."
 
 #: flatcamGUI/PreferencesUI.py:5270 flatcamTools/ToolRulesCheck.py:415
 #: flatcamTools/ToolRulesCheck.py:1454 flatcamTools/ToolRulesCheck.py:1460
 #: flatcamTools/ToolRulesCheck.py:1476 flatcamTools/ToolRulesCheck.py:1483
 msgid "Minimum Annular Ring"
-msgstr ""
+msgstr "Inel anular minim"
 
 #: flatcamGUI/PreferencesUI.py:5272 flatcamTools/ToolRulesCheck.py:417
 msgid ""
 "This checks if the minimum copper ring left by drilling\n"
 "a hole into a pad is met."
 msgstr ""
+"Acest lucru verifică dacă inelul de cupru minim rămas prin găurire\n"
+"unde se întâlnește o gaură cu pad-ul depășește valoarea minimă."
 
 #: flatcamGUI/PreferencesUI.py:5285 flatcamTools/ToolRulesCheck.py:430
 msgid "Minimum acceptable ring value."
-msgstr ""
+msgstr "Valoarea minimă acceptabilă a inelului."
 
 #: flatcamGUI/PreferencesUI.py:5292 flatcamTools/ToolRulesCheck.py:440
 #: flatcamTools/ToolRulesCheck.py:844
-#, fuzzy
-#| msgid "Geo Tolerance"
 msgid "Hole to Hole Clearance"
-msgstr "Toleranta geometrică"
+msgstr "Distanta de la Gaură la Gaură"
 
 #: flatcamGUI/PreferencesUI.py:5294 flatcamTools/ToolRulesCheck.py:442
 msgid ""
 "This checks if the minimum clearance between a drill hole\n"
 "and another drill hole is met."
 msgstr ""
+"Acest lucru verifică dacă distanța minimă dintre o gaură\n"
+"și o altă gaură este îndeplinită."
 
 #: flatcamGUI/PreferencesUI.py:5307 flatcamTools/ToolRulesCheck.py:478
 msgid "Minimum acceptable drill size."
-msgstr ""
+msgstr "Dimensiunea minimă acceptabilă a gaurii."
 
 #: flatcamGUI/PreferencesUI.py:5312 flatcamTools/ToolRulesCheck.py:463
 #: flatcamTools/ToolRulesCheck.py:818
-#, fuzzy
-#| msgid "Size"
 msgid "Hole Size"
-msgstr "Dimens."
+msgstr "Dimens. gaura"
 
 #: flatcamGUI/PreferencesUI.py:5314 flatcamTools/ToolRulesCheck.py:465
 msgid ""
 "This checks if the drill holes\n"
 "sizes are above the threshold."
 msgstr ""
+"Acest lucru verifică dacă\n"
+"dimensiunile găurilor sunt peste prag."
 
 #: flatcamGUI/PreferencesUI.py:5339
-#, fuzzy
-#| msgid "Film Tool Options"
 msgid "Optimal Tool Options"
-msgstr "Opțiuni Unealta Film"
+msgstr "Opțiuni Unealta Optim"
 
 #: flatcamGUI/PreferencesUI.py:5345
 msgid ""
 "A tool to find the minimum distance between\n"
 "every two Gerber geometric elements"
 msgstr ""
+"Un instrument pentru a găsi distanța minimă între\n"
+"la fiecare două elemente geometrice Gerber"
 
 #: flatcamGUI/PreferencesUI.py:5360 flatcamTools/ToolOptimal.py:78
 msgid "Precision"
-msgstr ""
+msgstr "Precizie"
 
 #: flatcamGUI/PreferencesUI.py:5362
-#, fuzzy
-#| msgid "The number of digits for the integral part of the coordinates."
 msgid "Number of decimals for the distances and coordinates in this tool."
 msgstr ""
-"Acest număr reprezinta numărul de digiti din partea\n"
-"intreagă a coordonatelor."
+"Numărul de zecimale pentru distanțele și coordonatele din acest instrument."
 
 #: flatcamGUI/PreferencesUI.py:5376
 msgid "Excellon File associations"
@@ -11451,7 +11392,7 @@ msgstr ""
 
 #: flatcamTools/ToolCalculators.py:271
 msgid "Calc. Tool"
-msgstr "Unealta Calc."
+msgstr "Unealta Calc"
 
 #: flatcamTools/ToolCutOut.py:36
 msgid "Cutout PCB"
@@ -12014,7 +11955,7 @@ msgstr "Distanta masurata pe axa Y."
 #: flatcamTools/ToolDistance.py:65 flatcamTools/ToolDistance.py:93
 #: flatcamTools/ToolDistanceMin.py:68 flatcamTools/ToolDistanceMin.py:101
 msgid "This is orientation angle of the measuring line."
-msgstr ""
+msgstr "Acesta este unghiul de orientare al liniei de măsurare."
 
 #: flatcamTools/ToolDistance.py:67 flatcamTools/ToolDistanceMin.py:70
 msgid "DISTANCE"
@@ -12043,69 +11984,68 @@ msgstr "Masoara: Rrezultat D(x) = {d_x} | D(y) = {d_y} | Distanta = {d_z}"
 
 #: flatcamTools/ToolDistanceMin.py:31 flatcamTools/ToolDistanceMin.py:152
 msgid "Minimum Distance Tool"
-msgstr ""
+msgstr "Unealta de distanță minimă"
 
 #: flatcamTools/ToolDistanceMin.py:53
 msgid "First object point"
-msgstr ""
+msgstr "Primul punct"
 
 #: flatcamTools/ToolDistanceMin.py:54 flatcamTools/ToolDistanceMin.py:79
 msgid ""
 "This is first object point coordinates.\n"
 "This is the start point for measuring distance."
 msgstr ""
+"Aceasta este prima coordonată a punctelor obiectului.\n"
+"Acesta este punctul de pornire pentru măsurarea distanței."
 
 #: flatcamTools/ToolDistanceMin.py:57
 msgid "Second object point"
-msgstr ""
+msgstr "Al doilea punct"
 
 #: flatcamTools/ToolDistanceMin.py:58 flatcamTools/ToolDistanceMin.py:85
 msgid ""
 "This is second object point coordinates.\n"
 "This is the end point for measuring distance."
 msgstr ""
+"Aceasta este a doua coordonata a punctelor obiectului.\n"
+"Acesta este punctul final pentru măsurarea distanței."
 
 #: flatcamTools/ToolDistanceMin.py:71 flatcamTools/ToolDistanceMin.py:106
-#, fuzzy
-#| msgid "This is the point to point Euclidian distance."
 msgid "This is the point to point Euclidean distance."
 msgstr "Distanta euclidiana de la punct la punct."
 
 #: flatcamTools/ToolDistanceMin.py:73
-#, fuzzy
-#| msgid "Point"
 msgid "Half Point"
-msgstr "Punct"
+msgstr "Punctul de mijloc"
 
 #: flatcamTools/ToolDistanceMin.py:74 flatcamTools/ToolDistanceMin.py:111
-#, fuzzy
-#| msgid "This is the point to point Euclidian distance."
 msgid "This is the middle point of the point to point Euclidean distance."
-msgstr "Distanta euclidiana de la punct la punct."
+msgstr "Acesta este punctul de mijloc al distanței euclidiană."
 
 #: flatcamTools/ToolDistanceMin.py:116
-#, fuzzy
-#| msgid "Jump to Coordinates"
 msgid "Jump to Half Point"
-msgstr "Sari la Coordonatele"
+msgstr "Sari la Punctul de Mijloc"
 
 #: flatcamTools/ToolDistanceMin.py:163
 msgid ""
 "Select two objects and no more, to measure the distance between them ..."
 msgstr ""
+"Selectați două obiecte și nu mai mult, pentru a măsura distanța dintre "
+"ele ..."
 
 #: flatcamTools/ToolDistanceMin.py:204 flatcamTools/ToolDistanceMin.py:214
 #: flatcamTools/ToolDistanceMin.py:223 flatcamTools/ToolDistanceMin.py:244
 msgid "Select two objects and no more. Currently the selection has objects: "
 msgstr ""
+"Selectați două obiecte și nu mai mult. În prezent, selecția are nr obiecte: "
 
 #: flatcamTools/ToolDistanceMin.py:288
 msgid "Objects intersects or touch at"
-msgstr ""
+msgstr "Obiectele se intersectează sau ating la"
 
 #: flatcamTools/ToolDistanceMin.py:294
 msgid "Jumped to the half point between the two selected objects"
-msgstr ""
+msgstr "A sărit la jumătatea punctului dintre cele două obiecte selectate"
 
 #: flatcamTools/ToolFilm.py:31
 msgid "Film PCB"
@@ -12181,7 +12121,7 @@ msgstr "Tip film:"
 
 #: flatcamTools/ToolFilm.py:304
 msgid "Punch drill holes"
-msgstr ""
+msgstr "Perforează găurii"
 
 #: flatcamTools/ToolFilm.py:305
 msgid ""
@@ -12189,12 +12129,14 @@ msgid ""
 "the generated film is positive. This is done to help drilling,\n"
 "when done manually."
 msgstr ""
+"Când este bifat, filmul generat va avea găuri în pad-uri când\n"
+"filmul generat este pozitiv. Acest lucru este realizat pentru a ajuta la "
+"găurire,\n"
+"când este făcută manual."
 
 #: flatcamTools/ToolFilm.py:323
-#, fuzzy
-#| msgid "View Source"
 msgid "Source"
-msgstr "Vizualiz. Sursa"
+msgstr "Sursă"
 
 #: flatcamTools/ToolFilm.py:325
 msgid ""
@@ -12202,29 +12144,32 @@ msgid ""
 "- Excellon -> an Excellon holes center will serve as reference.\n"
 "- Pad Center -> will try to use the pads center as reference."
 msgstr ""
+"Sursa de perforare poate fi:\n"
+"- Excellon -> centrul găurilor Excellon va servi ca referință.\n"
+"- Centru Pad-> va încerca să utilizeze centrul de pad-uri ca referință."
 
 #: flatcamTools/ToolFilm.py:330
 msgid "Pad center"
-msgstr ""
+msgstr "Centru Pad"
 
 #: flatcamTools/ToolFilm.py:335
-#, fuzzy
-#| msgid "Excellon Object"
 msgid "Excellon Obj"
 msgstr "Obiect Excellon"
 
 #: flatcamTools/ToolFilm.py:337
 msgid ""
-"Remove the geometry of Excellon from the Film to create tge holes in pads."
+"Remove the geometry of Excellon from the Film to create the holes in pads."
 msgstr ""
+"Îndepărtați geometria Excellon din film pentru a crea găurile din pad-uri."
 
 #: flatcamTools/ToolFilm.py:349
 msgid "Punch Size"
-msgstr ""
+msgstr "Mărimea Perforatii"
 
 #: flatcamTools/ToolFilm.py:350
 msgid "The value here will control how big is the punch hole in the pads."
 msgstr ""
+"Valoarea de aici va controla cât de mare este gaura de perforare în pad-uri."
 
 #: flatcamTools/ToolFilm.py:366
 msgid "Save Film"
@@ -12247,6 +12192,8 @@ msgid ""
 "Using the Pad center does not work on Geometry objects. Only a Gerber object "
 "has pads."
 msgstr ""
+"Utilizarea centrului Pad nu funcționează pe obiecte de Geometrie. Doar un "
+"obiect Gerber are pad-uri."
 
 #: flatcamTools/ToolFilm.py:490
 msgid "No FlatCAM object selected. Load an object for Film and retry."
@@ -12273,31 +12220,35 @@ msgid "Export SVG positive cancelled."
 msgstr "Exportul unui fişier SVG pozitiv este anulat."
 
 #: flatcamTools/ToolFilm.py:577
-#, fuzzy
-#| msgid "No FlatCAM object selected. Load an object for Film and retry."
 msgid ""
 "No Excellon object selected. Load an object for punching reference and retry."
 msgstr ""
-"Nici-un obiect FlaCAM nu este selectat. Incarcă un obiect pt Film și "
-"încearcă din nou."
+"Nici-un obiect Excellon nu este selectat. Incarcă un obiect ca referinta "
+"pentru perforare și încearcă din nou."
 
 #: flatcamTools/ToolFilm.py:601
 msgid ""
 " Could not generate punched hole film because the punch hole sizeis bigger "
 "than some of the apertures in the Gerber object."
 msgstr ""
+"Nu a putut genera un film cu găuri perforate, deoarece dimensiunea găurii de "
+"perforare este mai mare decât unele dintre aperturile din obiectul Gerber."
 
 #: flatcamTools/ToolFilm.py:613
 msgid ""
 "Could not generate punched hole film because the punch hole sizeis bigger "
 "than some of the apertures in the Gerber object."
 msgstr ""
+"Nu s-a putut genera un film cu găuri perforate, deoarece dimensiunea găurii "
+"de perforare este mai mare decât unele dintre aperturile din obiectul Gerber"
 
 #: flatcamTools/ToolFilm.py:631
 msgid ""
 "Could not generate punched hole film because the newly created object "
 "geometry is the same as the one in the source object geometry..."
 msgstr ""
+"Nu s-a putut genera Film cu găuri perforate, deoarece geometria obiectului "
+"nou creat este aceeași cu cea din geometria obiectului sursă ..."
 
 #: flatcamTools/ToolFilm.py:676 flatcamTools/ToolFilm.py:680
 msgid "Export SVG negative"
@@ -12576,7 +12527,7 @@ msgstr "Selecţie zonă"
 
 #: flatcamTools/ToolNonCopperClear.py:428 flatcamTools/ToolPaint.py:317
 msgid "Reference Object"
-msgstr "Obiect Ref."
+msgstr "Obiect Ref"
 
 #: flatcamTools/ToolNonCopperClear.py:430
 msgid "Reference:"
@@ -12584,7 +12535,7 @@ msgstr "Referinţă:"
 
 #: flatcamTools/ToolNonCopperClear.py:445 flatcamTools/ToolPaint.py:332
 msgid "Ref. Type"
-msgstr "Tip Ref."
+msgstr "Tip Ref"
 
 #: flatcamTools/ToolNonCopperClear.py:447
 msgid ""
@@ -12597,7 +12548,7 @@ msgstr ""
 
 #: flatcamTools/ToolNonCopperClear.py:456 flatcamTools/ToolPaint.py:343
 msgid "Ref. Object"
-msgstr "Obiect Ref."
+msgstr "Obiect Ref"
 
 #: flatcamTools/ToolNonCopperClear.py:458 flatcamTools/ToolPaint.py:345
 msgid "The FlatCAM object to be used as non copper clearing reference."
@@ -12610,10 +12561,8 @@ msgstr "Genereza Geometrie"
 
 #: flatcamTools/ToolNonCopperClear.py:555 flatcamTools/ToolPaint.py:469
 #: flatcamTools/ToolSolderPaste.py:463
-#, fuzzy
-#| msgid "New Tool ..."
 msgid "New Tool"
-msgstr "O noua Unealtă ..."
+msgstr "O Noua Unealtă"
 
 #: flatcamTools/ToolNonCopperClear.py:961 flatcamTools/ToolPaint.py:741
 #: flatcamTools/ToolSolderPaste.py:794
@@ -12744,22 +12693,16 @@ msgid "started."
 msgstr "a inceput."
 
 #: flatcamTools/ToolNonCopperClear.py:1892
-#, fuzzy
-#| msgid ""
-#| "There is no Painting Geometry in the file.\n"
-#| "Usually it means that the tool diameter is too big for the painted "
-#| "geometry.\n"
-#| "Change the painting parameters and try again."
 msgid ""
 "There is no NCC Geometry in the file.\n"
 "Usually it means that the tool diameter is too big for the painted "
 "geometry.\n"
 "Change the painting parameters and try again."
 msgstr ""
-"Nu exista nici-o Geometrie rezultata din 'pictare' in acest fişier.\n"
-"De obicei inseamna că diametrul uneltei este prea mare pentru elemetele "
-"geometrice.\n"
-"Schimbă parametrii de 'pictare' și încearcă din nou."
+"Nu există nicio Geometrie NCC în fișier.\n"
+"De obicei, înseamnă că diametrul uneltei este prea mare pentru geometria "
+"pictată.\n"
+"Schimbați parametrii Paint și încercați din nou."
 
 #: flatcamTools/ToolNonCopperClear.py:1902
 msgid "NCC Tool clear all done."
@@ -12797,69 +12740,63 @@ msgstr ""
 
 #: flatcamTools/ToolOptimal.py:79
 msgid "Number of decimals kept for found distances."
-msgstr ""
+msgstr "Numărul de zecimale păstrate pentru distanțele găsite."
 
 #: flatcamTools/ToolOptimal.py:87
-#, fuzzy
-#| msgid "Buffer distance"
 msgid "Minimum distance"
-msgstr "Distanta pt bufer"
+msgstr "Distanta minima"
 
 #: flatcamTools/ToolOptimal.py:88
 msgid "Display minimum distance between copper features."
-msgstr ""
+msgstr "Afișează distanța minimă între caracteristicile de cupru."
 
 #: flatcamTools/ToolOptimal.py:92
 msgid "Determined"
-msgstr ""
+msgstr "Determinat"
 
 #: flatcamTools/ToolOptimal.py:106
 msgid "Occurring"
-msgstr ""
+msgstr "Aparute"
 
 #: flatcamTools/ToolOptimal.py:107
 msgid "How many times this minimum is found."
-msgstr ""
+msgstr "De câte ori este găsit acest minim."
 
 #: flatcamTools/ToolOptimal.py:113
-#, fuzzy
-#| msgid "Jump to Coordinates"
 msgid "Minimum points coordinates"
-msgstr "Sari la Coordonatele"
+msgstr "Coordonatele punctelor minime"
 
 #: flatcamTools/ToolOptimal.py:114
 msgid "Coordinates for points where minimum distance was found."
-msgstr ""
+msgstr "Coordonate pentru puncte în care a fost găsită distanța minimă."
 
 #: flatcamTools/ToolOptimal.py:130 flatcamTools/ToolOptimal.py:198
-#, fuzzy
-#| msgid "Jump to Location\tJ"
 msgid "Jump to selected position"
-msgstr "Sari la Locaţie\tJ"
+msgstr "Salt la poziția selectată"
 
 #: flatcamTools/ToolOptimal.py:132 flatcamTools/ToolOptimal.py:200
 msgid ""
 "Select a position in the Locations text box and then\n"
 "click this button."
 msgstr ""
+"Selectați o poziție în caseta de text Locații, apoi\n"
+"faceți clic pe acest buton."
 
 #: flatcamTools/ToolOptimal.py:140
-#, fuzzy
-#| msgid "Buffer distance"
 msgid "Other distances"
-msgstr "Distanta pt bufer"
+msgstr "Alte distanțe"
 
 #: flatcamTools/ToolOptimal.py:141
 msgid ""
 "Will display other distances in the Gerber file ordered from\n"
 "the minimum to the maximum, not including the absolute minimum."
 msgstr ""
+"Va afișa alte distanțe din fișierul Gerber ordonate de la\n"
+"minim până la maxim, neincluzând minimul absolut."
 
 #: flatcamTools/ToolOptimal.py:146
-#, fuzzy
-#| msgid "This is the measuring Stop point coordinates."
 msgid "Other distances points coordinates"
-msgstr "Coordonatele punctului de Stop."
+msgstr "Coordonatele altor puncte distanțe"
 
 #: flatcamTools/ToolOptimal.py:147 flatcamTools/ToolOptimal.py:161
 #: flatcamTools/ToolOptimal.py:181
@@ -12867,22 +12804,20 @@ msgid ""
 "Other distances and the coordinates for points\n"
 "where the distance was found."
 msgstr ""
+"Alte distanțe și coordonatele pentru puncte\n"
+"unde a fost găsită distanța."
 
 #: flatcamTools/ToolOptimal.py:160
-#, fuzzy
-#| msgid "Gerber Line"
 msgid "Gerber distances"
-msgstr "Linia Gerber"
+msgstr "Distanțele Gerber"
 
 #: flatcamTools/ToolOptimal.py:180
-#, fuzzy
-#| msgid "Jump to Coordinates"
 msgid "Points coordinates"
-msgstr "Sari la Coordonatele"
+msgstr "Coordonatele punctelor"
 
 #: flatcamTools/ToolOptimal.py:208
 msgid "Find Minimum"
-msgstr ""
+msgstr "Găsiți Minim"
 
 #: flatcamTools/ToolOptimal.py:210
 msgid ""
@@ -12890,12 +12825,13 @@ msgid ""
 "this will allow the determination of the right tool to\n"
 "use for isolation or copper clearing."
 msgstr ""
+"Calculați distanța minimă între caracteristicile de cupru,\n"
+"acest lucru va permite determinarea uneltei potrivite\n"
+"pentru izolare sau curatare de cupru."
 
 #: flatcamTools/ToolOptimal.py:314
-#, fuzzy
-#| msgid "Only Geometry objects can be used."
 msgid "Only Gerber objects can be evaluated."
-msgstr "Doar obiecte tip Geometrie pot fi folosite."
+msgstr "Doar obiecte tip Gerber pot fi folosite."
 
 #: flatcamTools/ToolOptimal.py:317 flatcamTools/ToolPanelize.py:781
 #: flatcamTools/ToolRulesCheck.py:1098
@@ -12907,37 +12843,39 @@ msgid ""
 "Optimal Tool. Started to search for the minimum distance between copper "
 "features."
 msgstr ""
+"Unealta Optim. A început să caute distanța minimă între caracteristicile de "
+"cupru."
 
 #: flatcamTools/ToolOptimal.py:330
-#, fuzzy
-#| msgid "Parsing geometry for aperture"
 msgid "Optimal Tool. Parsing geometry for aperture"
-msgstr "Se analizează Geometria pt apertura"
+msgstr "Unealta Optim. Analiza geometriei pentru apertura"
 
 #: flatcamTools/ToolOptimal.py:341
 msgid "Optimal Tool. Creating a buffer for the object geometry."
 msgstr ""
+"Unealta Optim. Se creeaza o Geometrie la o distanta de geometria obiectului."
 
 #: flatcamTools/ToolOptimal.py:351
 msgid ""
 "The Gerber object has one Polygon as geometry.\n"
 "There are no distances between geometry elements to be found."
 msgstr ""
+"Obiectul Gerber are un poligon ca geometrie.\n"
+"Nu există distanțe între elementele de geometrie care sa poata fi gasite."
 
 #: flatcamTools/ToolOptimal.py:356
 msgid ""
 "Optimal Tool. Finding the distances between each two elements. Iterations"
 msgstr ""
+"Unealta Optim. Se caută distanțele dintre fiecare două elemente. Iterații"
 
 #: flatcamTools/ToolOptimal.py:391
 msgid "Optimal Tool. Finding the minimum distance."
-msgstr ""
+msgstr "Unealta Optim. Se caută distanța minimă."
 
 #: flatcamTools/ToolOptimal.py:407
-#, fuzzy
-#| msgid "Panel created successfully."
 msgid "Optimal Tool. Finished successfully."
-msgstr "Panel creat cu succes."
+msgstr "Unealta Optim. Procesul s-a terminat cu succes."
 
 #: flatcamTools/ToolPDF.py:156 flatcamTools/ToolPDF.py:160
 msgid "Open PDF"
@@ -13611,7 +13549,7 @@ msgstr "Dimensiuni"
 
 #: flatcamTools/ToolProperties.py:151
 msgid "Geo Type"
-msgstr "Tip Geo."
+msgstr "Tip Geo"
 
 #: flatcamTools/ToolProperties.py:152
 msgid "Single-Geo"
@@ -13652,142 +13590,138 @@ msgstr "Arie convexă"
 
 #: flatcamTools/ToolRulesCheck.py:33
 msgid "Check Rules"
-msgstr ""
+msgstr "Verificați regulile"
 
 #: flatcamTools/ToolRulesCheck.py:61
-#, fuzzy
-#| msgid "Open Gerber File"
 msgid "Gerber Files"
-msgstr "Încarcă un fisier Gerber"
+msgstr "Fișiere Gerber"
 
 #: flatcamTools/ToolRulesCheck.py:63
-#, fuzzy
-#| msgid "Object for which to create the film."
 msgid "Gerber objects for which to check rules."
-msgstr "Obiectul pt care se crează filmul."
+msgstr "Obiecte Gerber pentru care trebuie verificate regulile."
 
 #: flatcamTools/ToolRulesCheck.py:77
 msgid "Top"
-msgstr ""
+msgstr "Top"
 
 #: flatcamTools/ToolRulesCheck.py:79
 msgid "The Top Gerber Copper object for which rules are checked."
-msgstr ""
+msgstr "Obiectul Top Gerber cupru pentru care sunt verificate regulile."
 
 #: flatcamTools/ToolRulesCheck.py:94
 msgid "Bottom"
-msgstr ""
+msgstr "Bottom"
 
 #: flatcamTools/ToolRulesCheck.py:96
 msgid "The Bottom Gerber Copper object for which rules are checked."
-msgstr ""
+msgstr "Obiectul Bottom Gerber cupru pentru care sunt verificate regulile."
 
 #: flatcamTools/ToolRulesCheck.py:111
 msgid "SM Top"
-msgstr ""
+msgstr "SM Top"
 
 #: flatcamTools/ToolRulesCheck.py:113
 msgid "The Top Gerber Solder Mask object for which rules are checked."
 msgstr ""
+"Obiectul Top (superior) Gerber Solder Mask pentru care sunt verificate "
+"regulile."
 
 #: flatcamTools/ToolRulesCheck.py:128
 msgid "SM Bottom"
-msgstr ""
+msgstr "SM Bottom"
 
 #: flatcamTools/ToolRulesCheck.py:130
 msgid "The Bottom Gerber Solder Mask object for which rules are checked."
 msgstr ""
+"Obiectul Bottom (inferior) Gerber Solder Mask pentru care sunt verificate "
+"regulile."
 
 #: flatcamTools/ToolRulesCheck.py:145
 msgid "Silk Top"
-msgstr ""
+msgstr "Silk Top"
 
 #: flatcamTools/ToolRulesCheck.py:147
 msgid "The Top Gerber Silkscreen object for which rules are checked."
-msgstr ""
+msgstr "Obiectul Top Gerber Silkscreen pentru care sunt verificate regulile."
 
 #: flatcamTools/ToolRulesCheck.py:162
 msgid "Silk Bottom"
-msgstr ""
+msgstr "Silk Bottom"
 
 #: flatcamTools/ToolRulesCheck.py:164
 msgid "The Bottom Gerber Silkscreen object for which rules are checked."
 msgstr ""
+"Obiectul Bottom Gerber Silkscreen pentru care sunt verificate regulile."
 
 #: flatcamTools/ToolRulesCheck.py:179
-#, fuzzy
-#| msgid "lines"
 msgid "Outline"
-msgstr "linii"
+msgstr "Contur"
 
 #: flatcamTools/ToolRulesCheck.py:181
 msgid "The Gerber Outline (Cutout) object for which rules are checked."
 msgstr ""
+"Obiectul Gerber Outline (decupaj) pentru care sunt verificate regulile."
 
 #: flatcamTools/ToolRulesCheck.py:192
-#, fuzzy
-#| msgid "Excellon Object"
 msgid "Excellon Objects"
-msgstr "Obiect Excellon"
+msgstr "Obiecte Excellon"
 
 #: flatcamTools/ToolRulesCheck.py:194
-#, fuzzy
-#| msgid "Object for which to create the film."
 msgid "Excellon objects for which to check rules."
-msgstr "Obiectul pt care se crează filmul."
+msgstr "Obiecte Excellon pentru care trebuie verificate regulile."
 
 #: flatcamTools/ToolRulesCheck.py:205
-#, fuzzy
 #| msgid "Excellon"
 msgid "Excellon 1"
-msgstr "Excellon"
+msgstr "Excellon 1"
 
 #: flatcamTools/ToolRulesCheck.py:207
 msgid ""
 "Excellon object for which to check rules.\n"
 "Holds the plated holes or a general Excellon file content."
 msgstr ""
+"Obiect Excellon pentru care trebuie verificate regulile.\n"
+"Contine găurile placate sau un conținut general Excellon."
 
 #: flatcamTools/ToolRulesCheck.py:223
-#, fuzzy
 #| msgid "Excellon"
 msgid "Excellon 2"
-msgstr "Excellon"
+msgstr "Excellon 2"
 
 #: flatcamTools/ToolRulesCheck.py:225
 msgid ""
 "Excellon object for which to check rules.\n"
 "Holds the non-plated holes."
 msgstr ""
+"Obiect Excellon pentru care trebuie verificate regulile.\n"
+"Contine găurile ne-placate."
 
 #: flatcamTools/ToolRulesCheck.py:238
 msgid "All Rules"
-msgstr ""
+msgstr "Totate Regulile"
 
 #: flatcamTools/ToolRulesCheck.py:240
 msgid "This check/uncheck all the rules below."
-msgstr ""
+msgstr "Aceasta bifează/debifează toate regulile de mai jos."
 
 #: flatcamTools/ToolRulesCheck.py:490
 msgid "Run Rules Check"
-msgstr ""
+msgstr "Executați Verificarea regulilor"
 
 #: flatcamTools/ToolRulesCheck.py:1129 flatcamTools/ToolRulesCheck.py:1189
 #: flatcamTools/ToolRulesCheck.py:1226 flatcamTools/ToolRulesCheck.py:1298
 #: flatcamTools/ToolRulesCheck.py:1352 flatcamTools/ToolRulesCheck.py:1390
 #: flatcamTools/ToolRulesCheck.py:1455
 msgid "Value is not valid."
-msgstr ""
+msgstr "Valoarea nu este valabilă."
 
 #: flatcamTools/ToolRulesCheck.py:1143
-#, fuzzy
-#| msgid "Geo Tolerance"
 msgid "TOP -> Copper to Copper clearance"
-msgstr "Toleranta geometrică"
+msgstr "TOP -> Distanta de la Cupru la Cupru"
 
 #: flatcamTools/ToolRulesCheck.py:1154
 msgid "BOTTOM -> Copper to Copper clearance"
-msgstr ""
+msgstr "BOTTOM -> Distanta de la Cupru la Cupru"
 
 #: flatcamTools/ToolRulesCheck.py:1159 flatcamTools/ToolRulesCheck.py:1253
 #: flatcamTools/ToolRulesCheck.py:1417
@@ -13795,90 +13729,98 @@ msgid ""
 "At least one Gerber object has to be selected for this rule but none is "
 "selected."
 msgstr ""
+"Pentru această regulă trebuie selectat cel puțin un obiect Gerber, dar "
+"niciunul nu este selectat."
 
 #: flatcamTools/ToolRulesCheck.py:1195
 msgid ""
 "One of the copper Gerber objects or the Outline Gerber object is not valid."
 msgstr ""
+"Unul dintre obiectele Gerber din cupru sau obiectul Gerber contur nu este "
+"valid."
 
 #: flatcamTools/ToolRulesCheck.py:1208 flatcamTools/ToolRulesCheck.py:1372
 msgid ""
 "Outline Gerber object presence is mandatory for this rule but it is not "
 "selected."
 msgstr ""
+"Prezenta obiectului Gerber contur este obligatorie pentru această regulă, "
+"dar nu este selectată."
 
 #: flatcamTools/ToolRulesCheck.py:1225 flatcamTools/ToolRulesCheck.py:1252
 msgid "Silk to Silk clearance"
-msgstr ""
+msgstr "Distanta Silk la Silk"
 
 #: flatcamTools/ToolRulesCheck.py:1238
 msgid "TOP -> Silk to Silk clearance"
-msgstr ""
+msgstr "TOP -> Distanta Silk la Silk"
 
 #: flatcamTools/ToolRulesCheck.py:1248
 msgid "BOTTOM -> Silk to Silk clearance"
-msgstr ""
+msgstr "BOTTOM -> Distanta Silk la Silk"
 
 #: flatcamTools/ToolRulesCheck.py:1304
 msgid "One or more of the Gerber objects is not valid."
-msgstr ""
+msgstr "Unul sau mai multe dintre obiectele Gerber nu sunt valabile."
 
 #: flatcamTools/ToolRulesCheck.py:1312
-#, fuzzy
-#| msgid "Geo Tolerance"
 msgid "TOP -> Silk to Solder Mask Clearance"
-msgstr "Toleranta geometrică"
+msgstr "TOP -> Distanta Silk la Solder mask"
 
 #: flatcamTools/ToolRulesCheck.py:1318
 msgid "BOTTOM -> Silk to Solder Mask Clearance"
-msgstr ""
+msgstr "BOTTOM -> Distanta Silk la Solder mask"
 
 #: flatcamTools/ToolRulesCheck.py:1322
 msgid ""
 "Both Silk and Solder Mask Gerber objects has to be either both Top or both "
 "Bottom."
 msgstr ""
+"Atât obiectele Silk cat si cele Solder Mask trebuie ori ambele TOP ori "
+"ambele BOTTOM"
 
 #: flatcamTools/ToolRulesCheck.py:1358
 msgid ""
 "One of the Silk Gerber objects or the Outline Gerber object is not valid."
 msgstr ""
+"Unul dintre obiectele Silk Gerber sau obiectul Contur Gerber nu este valid."
 
 #: flatcamTools/ToolRulesCheck.py:1402
 msgid "TOP -> Minimum Solder Mask Sliver"
-msgstr ""
+msgstr "TOP -> Distanta minima intre elementele Solder Mask"
 
 #: flatcamTools/ToolRulesCheck.py:1412
 msgid "BOTTOM -> Minimum Solder Mask Sliver"
-msgstr ""
+msgstr "BOTTOM -> Distanta minima intre elementele Solder Mask"
 
 #: flatcamTools/ToolRulesCheck.py:1461
-#, fuzzy
-#| msgid "Select a Geometry, Gerber or Excellon Object to edit."
 msgid "One of the Copper Gerber objects or the Excellon objects is not valid."
-msgstr "Selectează un obiect tip Geometrie Gerber sau Excellon pentru editare."
+msgstr ""
+"Unul dintre obiectele Gerber Cupru sau obiectele Excellon nu este valabil."
 
 #: flatcamTools/ToolRulesCheck.py:1477
 msgid ""
 "Excellon object presence is mandatory for this rule but none is selected."
 msgstr ""
+"Prezența obiectului Excellon este obligatorie pentru această regulă, dar "
+"niciunul nu este selectat."
 
 #: flatcamTools/ToolRulesCheck.py:1550 flatcamTools/ToolRulesCheck.py:1563
 #: flatcamTools/ToolRulesCheck.py:1574 flatcamTools/ToolRulesCheck.py:1587
 msgid "STATUS"
-msgstr ""
+msgstr "STARE"
 
 #: flatcamTools/ToolRulesCheck.py:1553 flatcamTools/ToolRulesCheck.py:1577
 msgid "FAILED"
-msgstr ""
+msgstr "A EȘUAT"
 
 #: flatcamTools/ToolRulesCheck.py:1566 flatcamTools/ToolRulesCheck.py:1590
 msgid "PASSED"
-msgstr ""
+msgstr "A TRECUT"
 
 #: flatcamTools/ToolRulesCheck.py:1567 flatcamTools/ToolRulesCheck.py:1591
 msgid "Violations: There are no violations for the current rule."
-msgstr ""
+msgstr "Încălcări: nu există încălcări pentru regula actuală."
 
 #: flatcamTools/ToolShell.py:70 flatcamTools/ToolShell.py:72
 msgid "...proccessing..."
@@ -14178,10 +14120,6 @@ msgid "Target"
 msgstr "Tintă"
 
 #: flatcamTools/ToolSub.py:75
-#, fuzzy
-#| msgid ""
-#| "Gerber object from which to substract\n"
-#| "the substractor Gerber object."
 msgid ""
 "Gerber object from which to subtract\n"
 "the subtractor Gerber object."
@@ -14190,16 +14128,10 @@ msgstr ""
 "obiectul Gerber substractor."
 
 #: flatcamTools/ToolSub.py:87 flatcamTools/ToolSub.py:133
-#, fuzzy
-#| msgid "Substractor"
 msgid "Subtractor"
 msgstr "Substractor"
 
 #: flatcamTools/ToolSub.py:89
-#, fuzzy
-#| msgid ""
-#| "Gerber object that will be substracted\n"
-#| "from the target Gerber object."
 msgid ""
 "Gerber object that will be subtracted\n"
 "from the target Gerber object."
@@ -14212,12 +14144,6 @@ msgid "Substract Gerber"
 msgstr "Execută"
 
 #: flatcamTools/ToolSub.py:98
-#, fuzzy
-#| msgid ""
-#| "Will remove the area occupied by the substractor\n"
-#| "Gerber from the Target Gerber.\n"
-#| "Can be used to remove the overlapping silkscreen\n"
-#| "over the soldermask."
 msgid ""
 "Will remove the area occupied by the subtractor\n"
 "Gerber from the Target Gerber.\n"
@@ -14234,10 +14160,6 @@ msgid "Geometry Objects"
 msgstr "Obiecte Geometrie"
 
 #: flatcamTools/ToolSub.py:121
-#, fuzzy
-#| msgid ""
-#| "Geometry object from which to substract\n"
-#| "the substractor Geometry object."
 msgid ""
 "Geometry object from which to subtract\n"
 "the subtractor Geometry object."
@@ -14246,10 +14168,6 @@ msgstr ""
 "obiectul Geometrie substractor."
 
 #: flatcamTools/ToolSub.py:135
-#, fuzzy
-#| msgid ""
-#| "Geometry object that will be substracted\n"
-#| "from the target Geometry object."
 msgid ""
 "Geometry object that will be subtracted\n"
 "from the target Geometry object."
@@ -14258,9 +14176,6 @@ msgstr ""
 "din obiectul Geometrie tintă."
 
 #: flatcamTools/ToolSub.py:143
-#, fuzzy
-#| msgid ""
-#| "Checking this will close the paths cut by the Geometry substractor object."
 msgid ""
 "Checking this will close the paths cut by the Geometry subtractor object."
 msgstr ""
@@ -14268,16 +14183,10 @@ msgstr ""
 "Geometrie."
 
 #: flatcamTools/ToolSub.py:146
-#, fuzzy
-#| msgid "Substract Geometry"
 msgid "Subtract Geometry"
-msgstr "Execută"
+msgstr "Scadeti Geometria"
 
 #: flatcamTools/ToolSub.py:148
-#, fuzzy
-#| msgid ""
-#| "Will remove the area occupied by the substractor\n"
-#| "Geometry from the Target Geometry."
 msgid ""
 "Will remove the area occupied by the subtractor\n"
 "Geometry from the Target Geometry."
@@ -14294,8 +14203,6 @@ msgid "No Target object loaded."
 msgstr "Nu este incărcat un obiect Tintă."
 
 #: flatcamTools/ToolSub.py:267 flatcamTools/ToolSub.py:469
-#, fuzzy
-#| msgid "No Substractor object loaded."
 msgid "No Subtractor object loaded."
 msgstr "Nu este incărcat obiect Substractor (scăzător)."
 
@@ -14317,8 +14224,6 @@ msgid "Created"
 msgstr "Creat"
 
 #: flatcamTools/ToolSub.py:483
-#, fuzzy
-#| msgid "Currently, the Substractor geometry cannot be of type Multigeo."
 msgid "Currently, the Subtractor geometry cannot be of type Multigeo."
 msgstr "Momentan, obiectul substractor Geometrie nu poate fi de tip Multigeo."
 
@@ -14345,16 +14250,12 @@ msgstr ""
 "formei înconjurătoare pt toate obiectele."
 
 #: flatcamTools/ToolTransform.py:99 flatcamTools/ToolTransform.py:121
-#, fuzzy
-#| msgid ""
-#| "Angle for Skew action, in degrees.\n"
-#| "Float number between -360 and 359."
 msgid ""
 "Angle for Skew action, in degrees.\n"
 "Float number between -360 and 360."
 msgstr ""
 "Valoarea unghiului de Deformare, in grade.\n"
-"Ia valori Reale între -360 and 359 grade."
+"Ia valori Reale între -360 si 360 grade."
 
 #: flatcamTools/ToolTransform.py:110 flatcamTools/ToolTransform.py:132
 msgid ""
@@ -14387,34 +14288,24 @@ msgstr ""
 "pentru toate obiectele selectate.\n"
 
 #: flatcamTools/ToolTransform.py:267 flatcamTools/ToolTransform.py:273
-#, fuzzy
-#| msgid ""
-#| "Flip the selected object(s) over the X axis.\n"
-#| "Does not create a new object.\n"
-#| " "
 msgid "Flip the selected object(s) over the X axis."
-msgstr ""
-"Oglindește obiectele selectate pe axa X.\n"
-"Nu crează un obiect nou.\n"
-" "
+msgstr "Oglindește obiectele selectate pe axa X."
 
 #: flatcamTools/ToolTransform.py:298
-#, fuzzy
-#| msgid " Mirror Ref. Point"
 msgid "Ref. Point"
-msgstr " Pt. Ref. Oglindire"
+msgstr "Pt. Ref"
 
 #: flatcamTools/ToolTransform.py:437
 msgid "Rotate transformation can not be done for a value of 0."
-msgstr ""
+msgstr "Transformarea Rotire nu se poate face pentru o valoare de 0."
 
 #: flatcamTools/ToolTransform.py:476 flatcamTools/ToolTransform.py:499
 msgid "Scale transformation can not be done for a factor of 0 or 1."
-msgstr ""
+msgstr "Transformarea Scalare nu se poate face pentru un factor de 0 sau 1."
 
 #: flatcamTools/ToolTransform.py:515 flatcamTools/ToolTransform.py:526
 msgid "Offset transformation can not be done for a value of 0."
-msgstr ""
+msgstr "Transformarea Deplasare nu se poate face pentru o valoare de 0."
 
 #: flatcamTools/ToolTransform.py:542
 msgid "No object selected. Please Select an object to rotate!"
@@ -14452,7 +14343,7 @@ msgstr "Obiectele tip CNCJob nu pot fi Oglindite."
 
 #: flatcamTools/ToolTransform.py:668
 msgid "Skew transformation can not be done for 0, 90 and 180 degrees."
-msgstr ""
+msgstr "Transformarea Inclinare nu se poate face la 0, 90 și 180 de grade."
 
 #: flatcamTools/ToolTransform.py:673
 msgid "No object selected. Please Select an object to shear/skew!"
@@ -14563,6 +14454,16 @@ msgid "No Geometry name in args. Provide a name and try again."
 msgstr ""
 "Nici-un nume de Geometrie in argumente. Furnizați un nume și încercați din "
 "nou."
+
+#, fuzzy
+#~| msgid "{l_save}/Project_{date}"
+#~ msgid "{l_save}/FlatCAM_Bookmarks_{date}"
+#~ msgstr "{l_save}/Proiect_{date}"
+
+#, fuzzy
+#~| msgid "Could not load defaults file."
+#~ msgid "Could not load bookamrks file."
+#~ msgstr "Nu am putut incărca fişierul cu valori default."
 
 #~ msgid "Could not load factory defaults file."
 #~ msgstr ""
