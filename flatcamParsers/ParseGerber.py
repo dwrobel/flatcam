@@ -1384,7 +1384,7 @@ class Gerber(Geometry):
 
             # this treats the case when we are storing geometry as solids
 
-            if len(poly_buffer) == 0:
+            if len(poly_buffer) == 0 and len(self.solid_geometry) == 0:
                 log.error("Object is not Gerber file or empty. Aborting Object creation.")
                 return 'fail'
 

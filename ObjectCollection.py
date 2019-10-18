@@ -724,6 +724,16 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             log.error("[ERROR] Cause: %s" % str(e))
             raise
 
+    def set_all_active(self):
+        """
+        Select all objects from the project list. This triggers the
+        list_selection_changed event and call on_list_selection_changed.
+
+        :return: None
+        """
+        for name in self.get_names():
+            self.set_active(name)
+
     def set_exclusive_active(self, name):
         """
         Make the object with the name in parameters the only selected object

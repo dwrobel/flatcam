@@ -420,6 +420,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## Objects # ###################################
         # ########################################################################
         self.menuobjects = self.menu.addMenu(_('Objects'))
+        self.menuobjects.addSeparator()
+        self.menuobjects_selall = self.menuobjects.addAction(QtGui.QIcon('share/select_all.png'), _('Select All'))
+        self.menuobjects_unselall = self.menuobjects.addAction(
+            QtGui.QIcon('share/deselect_all32.png'),
+            _('Deselect All')
+        )
 
         # ########################################################################
         # ########################## Tool # ######################################
