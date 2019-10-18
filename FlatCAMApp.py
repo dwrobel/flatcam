@@ -4532,10 +4532,10 @@ class App(QtCore.QObject):
 
                 attributions_label = QtWidgets.QLabel(
                     _(
-                        'Some of the icons used are from the following sources: <BR>'
+                        'Some of the icons used are from the following sources:<br>'
                         '<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" '
                         'title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/"             '
-                        'title="Flaticon">www.flaticon.com</a></div><br>'
+                        'title="Flaticon">www.flaticon.com</a></div>'
                         'Icons by <a target="_blank" href="https://icons8.com">Icons8</a>'
                     )
                 )
@@ -4675,7 +4675,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Brasilian - Portuguese"), 1, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Carlos Stein"), 1, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "),  1, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<carlos.stein@gmail.com>"),  1, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "French"), 2, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 2, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 2)

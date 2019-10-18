@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 17.10.2019
 
 - fixed a bug in milling holes due of a message wrongly formatted
+- added an translator email address
 
 16.10.2019
 
