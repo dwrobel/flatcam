@@ -3760,7 +3760,7 @@ class BookmarkManager(QtWidgets.QWidget):
         new_vlay = QtWidgets.QVBoxLayout()
         layout.addLayout(new_vlay)
 
-        new_title_lbl = QtWidgets.QLabel(_("<b>New Bookmark</b>"))
+        new_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Bookmark"))
         new_vlay.addWidget(new_title_lbl)
 
         form0 = QtWidgets.QFormLayout()
@@ -3964,8 +3964,9 @@ class BookmarkManager(QtWidgets.QWidget):
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
         filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
-                                                             directory=_('{l_save}/FlatCAM_Bookmarks_{date}').format(
+                                                             directory='{l_save}/FlatCAM_{n}_{date}'.format(
                                                                  l_save=str(self.app.get_last_save_folder()),
+                                                                 n=_("Bookmarks"),
                                                                  date=date),
                                                              filter=filter__)
 
@@ -3992,7 +3993,7 @@ class BookmarkManager(QtWidgets.QWidget):
                 self.app.log.error("Could not load defaults file.")
                 self.app.log.error(str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not load bookamrks file."))
+                                     _("Could not load bookmarks file."))
                 return
 
             # Save update options
@@ -4025,7 +4026,7 @@ class BookmarkManager(QtWidgets.QWidget):
                 with open(filename) as f:
                     bookmarks = f.readlines()
             except IOError:
-                self.app.log.error("Could not load bookamrks file.")
+                self.app.log.error("Could not load bookmarks file.")
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Could not load bookmarks file."))
                 return

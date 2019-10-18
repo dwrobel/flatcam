@@ -334,7 +334,7 @@ class Film(FlatCAMTool):
 
         self.exc_label = QtWidgets.QLabel('%s:' % _("Excellon Obj"))
         self.exc_label.setToolTip(
-            _("Remove the geometry of Excellon from the Film to create tge holes in pads.")
+            _("Remove the geometry of Excellon from the Film to create the holes in pads.")
         )
         self.exc_combo = QtWidgets.QComboBox()
         self.exc_combo.setModel(self.app.collection)
