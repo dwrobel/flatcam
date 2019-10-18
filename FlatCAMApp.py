@@ -9063,7 +9063,7 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export SVG"),
-                directory=self.get_last_save_folder() + '/' + str(name),
+                directory=self.get_last_save_folder() + '/' + str(name) + '_svg',
                 filter=_filter)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=_filter)

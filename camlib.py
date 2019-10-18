@@ -1843,8 +1843,6 @@ class Geometry(object):
         :return: SVG Element
         """
 
-        geom = None
-
         # Make sure we see a Shapely Geometry class and not a list
         if str(type(self)) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
             flat_geo = []
@@ -1868,6 +1866,8 @@ class Geometry(object):
                 skew_ref = (xmax, ymax)
             elif skew_reference == 'bottomright':
                 skew_ref = (xmax, ymin)
+
+        geom = geom_svg
 
         if scale_factor_x:
             geom = affinity.scale(geom_svg, scale_factor_x, 1.0)

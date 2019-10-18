@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished the Objects menu by adding the ability of actions to be checked so they will show the selected status of the objects and by adding to actions to (de)select all objects
 - fixed and optimized the click selection on canvas
 - fixed Gerber parsing for very simple Gerber files that have only one Polygon but many LPC zones
+- fixed SVG export
 
 16.10.2019
 
