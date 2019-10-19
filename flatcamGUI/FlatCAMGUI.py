@@ -12,8 +12,12 @@
 # ##########################################################
 
 from flatcamGUI.PreferencesUI import *
+from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 from matplotlib.backend_bases import KeyEvent as mpl_key_event
 
+import webbrowser
+from copy import deepcopy
+from datetime import datetime
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -70,15 +74,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufilenew = self.menufile.addMenu(QtGui.QIcon('share/file16.png'), _('&New'))
         self.menufilenew.setToolTipsVisible(True)
 
-        self.menufilenewgeo = self.menufilenew.addAction(QtGui.QIcon('share/geometry16.png'), _('Geometry\tN'))
+        self.menufilenewgeo = self.menufilenew.addAction(QtGui.QIcon('share/new_file_geo16.png'), _('Geometry\tN'))
         self.menufilenewgeo.setToolTip(
             _("Will create a new, empty Geometry Object.")
         )
-        self.menufilenewgrb = self.menufilenew.addAction(QtGui.QIcon('share/flatcam_icon32.png'), _('Gerber\tB'))
+        self.menufilenewgrb = self.menufilenew.addAction(QtGui.QIcon('share/new_file_grb16.png'), _('Gerber\tB'))
         self.menufilenewgrb.setToolTip(
             _("Will create a new, empty Gerber Object.")
         )
-        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon('share/drill16.png'), _('Excellon\tL'))
+        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon('share/new_file_exc16.png'), _('Excellon\tL'))
         self.menufilenewexc.setToolTip(
             _("Will create a new, empty Excellon Object.")
         )
@@ -416,6 +420,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## Objects # ###################################
         # ########################################################################
         self.menuobjects = self.menu.addMenu(_('Objects'))
+        self.menuobjects.addSeparator()
+        self.menuobjects_selall = self.menuobjects.addAction(QtGui.QIcon('share/select_all.png'), _('Select All'))
+        self.menuobjects_unselall = self.menuobjects.addAction(
+            QtGui.QIcon('share/deselect_all32.png'),
+            _('Deselect All')
+        )
 
         # ########################################################################
         # ########################## Tool # ######################################
@@ -682,29 +692,29 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), _("Open project"))
-        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), _("Save project"))
+        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/project_save32.png'), _("Save project"))
 
         # ########################################################################
         # ########################## Edit Toolbar# ###############################
         # ########################################################################
-        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), _("New Blank Geometry"))
-        self.newgrb_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32.png'), _("New Blank Gerber"))
-        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), _("New Blank Excellon"))
+        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_geo32.png'), _("New Blank Geometry"))
+        self.newgrb_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_grb32.png'), _("New Blank Gerber"))
+        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_exc32.png'), _("New Blank Excellon"))
         self.toolbargeo.addSeparator()
-        self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit32.png'), _("Editor"))
+        self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit_file32.png'), _("Editor"))
         self.update_obj_btn = self.toolbargeo.addAction(
-            QtGui.QIcon('share/edit_ok32_bis.png'), _("Save Object and close the Editor")
+            QtGui.QIcon('share/close_edit_file32.png'), _("Save Object and close the Editor")
         )
 
         self.toolbargeo.addSeparator()
-        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), _("&Delete"))
+        self.copy_btn = self.toolbargeo.addAction(QtGui.QIcon('share/copy_file32.png'), _("Copy"))
+        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/delete_file32.png'), _("&Delete"))
         self.toolbargeo.addSeparator()
         self.distance_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance32.png'), _("Distance Tool"))
         self.distance_min_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance_min32.png'),
                                                           _("Distance Min Tool"))
         self.origin_btn = self.toolbargeo.addAction(QtGui.QIcon('share/origin32.png'), _('Set Origin'))
         self.jmp_btn = self.toolbargeo.addAction(QtGui.QIcon('share/jump_to16.png'), _('Jump to Location'))
-
 
         # ########################################################################
         # ########################## View Toolbar# ###############################
@@ -734,10 +744,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint Tool"))
         self.toolbartools.addSeparator()
 
-        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), _("Panel Tool"))
+        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panelize32.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
-        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
+        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Subtract Tool"))
         self.rules_btn = self.toolbartools.addAction(QtGui.QIcon('share/rules32.png'), _("Rules Tool"))
         self.optimal_btn = self.toolbartools.addAction(QtGui.QIcon('share/open_excellon32.png'), _("Optimal Tool"))
 
@@ -1869,7 +1879,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.draw_union = self.g_editor_cmenu.addAction(QtGui.QIcon('share/union32.png'), _("Union"))
         self.draw_intersect = self.g_editor_cmenu.addAction(QtGui.QIcon('share/intersection32.png'), _("Intersection"))
-        self.draw_substract = self.g_editor_cmenu.addAction(QtGui.QIcon('share/subtract32.png'), _("Substraction"))
+        self.draw_substract = self.g_editor_cmenu.addAction(QtGui.QIcon('share/subtract32.png'), _("Subtraction"))
         self.draw_cut = self.g_editor_cmenu.addAction(QtGui.QIcon('share/cutpath32.png'), _("Cut"))
         self.draw_transform = self.g_editor_cmenu.addAction(QtGui.QIcon('share/transform.png'), _("Transformations"))
 
@@ -2106,19 +2116,21 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
         self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), _("Open project"))
-        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), _("Save project"))
+        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/project_save32.png'), _("Save project"))
 
         # ## Edit Toolbar # ##
-        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), _("New Blank Geometry"))
-        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), _("New Blank Excellon"))
+        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_geo32.png'), _("New Blank Geometry"))
+        self.newgrb_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_grb32.png'), _("New Blank Gerber"))
+        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_exc32.png'), _("New Blank Excellon"))
         self.toolbargeo.addSeparator()
         self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit32.png'), _("Editor"))
         self.update_obj_btn = self.toolbargeo.addAction(
-            QtGui.QIcon('share/edit_ok32_bis.png'), _("Save Object and close the Editor")
+            QtGui.QIcon('share/close_edit_file32.png'), _("Save Object and close the Editor")
         )
 
         self.toolbargeo.addSeparator()
-        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), _("&Delete"))
+        self.copy_btn = self.toolbargeo.addAction(QtGui.QIcon('share/copy_file32.png'), _("Copy"))
+        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/delete_file32.png'), _("&Delete"))
         self.toolbargeo.addSeparator()
         self.distance_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance32.png'), _("Distance Tool"))
         self.distance_min_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance_min32.png'),
@@ -2148,11 +2160,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint Tool"))
         self.toolbartools.addSeparator()
 
-        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), _("Panel Tool"))
+        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panelize32.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'),
                                                       _("SolderPaste Tool"))
-        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
+        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Subtract Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -3696,7 +3708,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
 class BookmarkManager(QtWidgets.QWidget):
 
-    mark_rows = pyqtSignal()
+    mark_rows = QtCore.pyqtSignal()
 
     def __init__(self, app, storage, parent=None):
         super(BookmarkManager, self).__init__(parent)
@@ -3754,7 +3766,7 @@ class BookmarkManager(QtWidgets.QWidget):
         new_vlay = QtWidgets.QVBoxLayout()
         layout.addLayout(new_vlay)
 
-        new_title_lbl = QtWidgets.QLabel(_("<b>New Bookmark</b>"))
+        new_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Bookmark"))
         new_vlay.addWidget(new_title_lbl)
 
         form0 = QtWidgets.QFormLayout()
@@ -3958,8 +3970,9 @@ class BookmarkManager(QtWidgets.QWidget):
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
         filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
-                                                             directory=_('{l_save}/FlatCAM_Bookmarks_{date}').format(
+                                                             directory='{l_save}/FlatCAM_{n}_{date}'.format(
                                                                  l_save=str(self.app.get_last_save_folder()),
+                                                                 n=_("Bookmarks"),
                                                                  date=date),
                                                              filter=filter__)
 
@@ -3986,7 +3999,7 @@ class BookmarkManager(QtWidgets.QWidget):
                 self.app.log.error("Could not load defaults file.")
                 self.app.log.error(str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not load bookamrks file."))
+                                     _("Could not load bookmarks file."))
                 return
 
             # Save update options
@@ -4019,7 +4032,7 @@ class BookmarkManager(QtWidgets.QWidget):
                 with open(filename) as f:
                     bookmarks = f.readlines()
             except IOError:
-                self.app.log.error("Could not load bookamrks file.")
+                self.app.log.error("Could not load bookmarks file.")
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Could not load bookmarks file."))
                 return

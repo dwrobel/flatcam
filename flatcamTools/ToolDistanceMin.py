@@ -5,14 +5,16 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtCore
 from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import *
 from flatcamGUI.VisPyVisuals import *
+from flatcamGUI.GUIElements import FCEntry
 
 from shapely.ops import nearest_points
+from shapely.geometry import Point
 
-from math import sqrt
-
+import math
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -20,6 +22,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class DistanceMin(FlatCAMTool):
@@ -260,7 +264,7 @@ class DistanceMin(FlatCAMTool):
         except Exception as e:
             pass
 
-        d = sqrt(dx ** 2 + dy ** 2)
+        d = math.sqrt(dx ** 2 + dy ** 2)
         self.total_distance_entry.set_value('%.*f' % (self.decimals, abs(d)))
 
         self.h_point = (min(first_pos.x, last_pos.x) + (abs(dx) / 2), min(first_pos.y, last_pos.y) + (abs(dy) / 2))

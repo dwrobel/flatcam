@@ -1,9 +1,14 @@
+
+from PyQt5 import QtWidgets, QtCore
+
 from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import *
+from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry
+from FlatCAMObj import FlatCAMGerber, FlatCAMExcellon, FlatCAMGeometry
+
 from shapely.geometry import Point
 from shapely import affinity
-from PyQt5 import QtCore
 
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -11,6 +16,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class DblSidedTool(FlatCAMTool):

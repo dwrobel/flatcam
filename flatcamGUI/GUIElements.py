@@ -12,18 +12,14 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
-from PyQt5.QtGui import QColor, QKeySequence, QPalette, QTextCursor
+from PyQt5.QtGui import QKeySequence, QTextCursor
 
 from copy import copy
 import re
 import logging
 import html
-import webbrowser
-from copy import deepcopy
-import sys
-from datetime import datetime
 
 log = logging.getLogger('base')
 
@@ -513,7 +509,7 @@ class EvalEntry2(QtWidgets.QLineEdit):
 
 class FCSpinner(QtWidgets.QSpinBox):
 
-    returnPressed = pyqtSignal()
+    returnPressed = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(FCSpinner, self).__init__(parent)
@@ -580,7 +576,7 @@ class FCSpinner(QtWidgets.QSpinBox):
 
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
-    returnPressed = pyqtSignal()
+    returnPressed = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(FCDoubleSpinner, self).__init__(parent)
@@ -869,16 +865,16 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         if self.textCursor().block().text().startswith(" "):
             # skip the white space
             self.moveCursor(QtGui.QTextCursor.NextWord)
-        self.moveCursor(QtGui.QTextCursor.NextCharacter,QtGui.QTextCursor.KeepAnchor)
+        self.moveCursor(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
         character = self.textCursor().selectedText()
         if character == "#":
             # delete #
             self.textCursor().deletePreviousChar()
             # delete white space 
-            self.moveCursor(QtGui.QTextCursor.NextWord,QtGui.QTextCursor.KeepAnchor)
+            self.moveCursor(QtGui.QTextCursor.NextWord, QtGui.QTextCursor.KeepAnchor)
             self.textCursor().removeSelectedText()
         else:
-            self.moveCursor(QtGui.QTextCursor.PreviousCharacter,QtGui.QTextCursor.KeepAnchor)
+            self.moveCursor(QtGui.QTextCursor.PreviousCharacter, QtGui.QTextCursor.KeepAnchor)
             self.textCursor().insertText("# ")
         cursor = QtGui.QTextCursor(self.textCursor())
         cursor.setPosition(pos)
@@ -1261,7 +1257,6 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 attached = True
                 break
 
-
         # If the tab is not attached, close it's window and
         # remove the reference to it
         if not attached:
@@ -1342,8 +1337,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         can be re-attached by closing the dialog or by dragging the window into the tab bar
         """
 
-        onCloseSignal = pyqtSignal(QtWidgets.QWidget, str, QtGui.QIcon)
-        onDropSignal = pyqtSignal(str, QtCore.QPoint)
+        onCloseSignal = QtCore.pyqtSignal(QtWidgets.QWidget, str, QtGui.QIcon)
+        onDropSignal = QtCore.pyqtSignal(str, QtCore.QPoint)
 
         def __init__(self, name, contentWidget):
             QtWidgets.QMainWindow.__init__(self, None)
@@ -1384,7 +1379,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             An event filter class to detect a QMainWindow drop event
             """
 
-            onDropSignal = pyqtSignal(QtCore.QPoint)
+            onDropSignal = QtCore.pyqtSignal(QtCore.QPoint)
 
             def __init__(self):
                 QtCore.QObject.__init__(self)
@@ -1416,11 +1411,11 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                     return False
 
     class FCTabBar(QtWidgets.QTabBar):
-        onDetachTabSignal = pyqtSignal(int, QtCore.QPoint)
-        onMoveTabSignal = pyqtSignal(int, int)
-        detachedTabDropSignal = pyqtSignal(str, int, QtCore.QPoint)
+        onDetachTabSignal = QtCore.pyqtSignal(int, QtCore.QPoint)
+        onMoveTabSignal = QtCore.pyqtSignal(int, int)
+        detachedTabDropSignal = QtCore.pyqtSignal(str, int, QtCore.QPoint)
 
-        right_click = pyqtSignal(int)
+        right_click = QtCore.pyqtSignal(int)
 
         def __init__(self, parent=None):
             QtWidgets.QTabBar.__init__(self, parent)
@@ -1498,7 +1493,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
-            if (((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated and self.can_be_dragged):
+            if ((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated and self.can_be_dragged:
 
                 # Stop the move event
                 finishMoveEvent = QtGui.QMouseEvent(
@@ -1591,7 +1586,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
 
 class FCDetachableTab2(FCDetachableTab):
-    tab_closed_signal = pyqtSignal(object)
+    tab_closed_signal = QtCore.pyqtSignal(object)
 
     def __init__(self, protect=None, protect_by_name=None, parent=None):
         super(FCDetachableTab2, self).__init__(protect=protect, protect_by_name=protect_by_name, parent=parent)
@@ -1729,7 +1724,7 @@ class OptionalHideInputSection:
 
 class FCTable(QtWidgets.QTableWidget):
 
-    drag_drop_sig = pyqtSignal()
+    drag_drop_sig = QtCore.pyqtSignal()
 
     def __init__(self, drag_drop=False, protected_rows=None, parent=None):
         super(FCTable, self).__init__(parent)
@@ -2024,8 +2019,8 @@ class _ExpandableTextEdit(QTextEdit):
     Class implements edit line, which expands themselves automatically
     """
 
-    historyNext = pyqtSignal()
-    historyPrev = pyqtSignal()
+    historyNext = QtCore.pyqtSignal()
+    historyPrev = QtCore.pyqtSignal()
 
     def __init__(self, termwidget, *args):
         QTextEdit.__init__(self, *args)
@@ -2148,7 +2143,7 @@ class _ExpandableTextEdit(QTextEdit):
 
 
 class MyCompleter(QCompleter):
-    insertText = pyqtSignal(str)
+    insertText = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
         QCompleter.__init__(self)
@@ -2166,4 +2161,3 @@ class MyCompleter(QCompleter):
 
     def getSelected(self):
         return self.lastSelected
-

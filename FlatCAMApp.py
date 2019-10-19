@@ -9,6 +9,8 @@
 import urllib.request
 import urllib.parse
 import urllib.error
+import webbrowser
+
 import getopt
 import random
 import simplejson as json
@@ -21,7 +23,7 @@ import subprocess
 import ctypes
 
 import tkinter as tk
-from PyQt5 import QtPrintSupport, QtNetwork
+from PyQt5 import QtPrintSupport
 
 from contextlib import contextmanager
 import gc
@@ -40,10 +42,12 @@ import vispy.scene as scene
 # #######################################
 from ObjectCollection import *
 from FlatCAMObj import *
+from camlib import to_dict, dict2obj, ET, ParseError
+
 from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
-
 from flatcamGUI.FlatCAMGUI import *
+
 from FlatCAMCommon import LoudDict
 from FlatCAMPostProc import load_postprocessors
 
@@ -3061,7 +3065,7 @@ class App(QtCore.QObject):
                                        separator=True)
 
         self.panelize_tool = Panelize(self)
-        self.panelize_tool.install(icon=QtGui.QIcon('share/panel16.png'))
+        self.panelize_tool.install(icon=QtGui.QIcon('share/panelize16.png'))
 
         self.film_tool = Film(self)
         self.film_tool.install(icon=QtGui.QIcon('share/film16.png'))
@@ -3192,6 +3196,7 @@ class App(QtCore.QObject):
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
+        self.ui.copy_btn.triggered.connect(self.on_copy_object)
         self.ui.delete_btn.triggered.connect(self.on_delete)
 
         self.ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
@@ -3227,6 +3232,9 @@ class App(QtCore.QObject):
         :return: None
         """
         self.report_usage("object2editor()")
+
+        # disable the objects menu as it may interfere with the Editors
+        self.ui.menuobjects.setDisabled(True)
 
         edited_object = self.collection.get_active()
 
@@ -3315,6 +3323,9 @@ class App(QtCore.QObject):
         :return: None
         """
         self.report_usage("editor2object()")
+
+        # re-enable the objects menu that was disabled on entry in Editor mode
+        self.ui.menuobjects.setDisabled(False)
 
         # do not update a geometry or excellon object unless it comes out of an editor
         if self.call_source != 'app':
@@ -4527,10 +4538,10 @@ class App(QtCore.QObject):
 
                 attributions_label = QtWidgets.QLabel(
                     _(
-                        'Some of the icons used are from the following sources: <BR>'
+                        'Some of the icons used are from the following sources:<br>'
                         '<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" '
                         'title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/"             '
-                        'title="Flaticon">www.flaticon.com</a></div><br>'
+                        'title="Flaticon">www.flaticon.com</a></div>'
                         'Icons by <a target="_blank" href="https://icons8.com">Icons8</a>'
                     )
                 )
@@ -4650,6 +4661,10 @@ class App(QtCore.QObject):
                 self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@mgix"))
 
                 self.translator_grid_lay = QtWidgets.QGridLayout()
+                self.translator_grid_lay.setColumnStretch(0, 0)
+                self.translator_grid_lay.setColumnStretch(1, 0)
+                self.translator_grid_lay.setColumnStretch(2, 1)
+                self.translator_grid_lay.setColumnStretch(3, 0)
 
                 # trans_widget = QtWidgets.QWidget()
                 # trans_widget.setLayout(self.translator_grid_lay)
@@ -4667,25 +4682,29 @@ class App(QtCore.QObject):
 
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Language")), 0, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Translator")), 0, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Brasilian - Portuguese"), 1, 0)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Corrections")), 0, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 3)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "BR - Portuguese"), 1, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Carlos Stein"), 1, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "),  1, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<carlos.stein@gmail.com>"),  1, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "French"), 2, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 2, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 2, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "(Google-Translation)"), 2, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 3, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 3, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 3, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt"), 3, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 4, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Russian"), 5, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 5, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 5, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 5, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Spanish"), 6, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Translation)"), 6, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 6, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 6, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "(Google-Translation)"), 6, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 6, 3)
                 self.translator_grid_lay.setColumnStretch(0, 0)
                 self.translators_tab_layout.addStretch()
 
@@ -7922,9 +7941,12 @@ class App(QtCore.QObject):
             def add_act(name):
                 obj_for_icon = self.collection.get_by_name(name)
                 add_action = QtWidgets.QAction(parent=self.ui.menuobjects)
+                add_action.setCheckable(True)
                 add_action.setText(name)
                 add_action.setIcon(QtGui.QIcon(icon_files[obj_for_icon.kind]))
-                add_action.triggered.connect(lambda: self.collection.set_exclusive_active(name))
+                add_action.triggered.connect(
+                    lambda: self.collection.set_active(name) if add_action.isChecked() is True else
+                    self.collection.set_inactive(name))
                 self.ui.menuobjects.addAction(add_action)
 
             for name in gerber_list:
@@ -7950,6 +7972,17 @@ class App(QtCore.QObject):
             for name in doc_list:
                 add_act(name)
 
+            self.ui.menuobjects.addSeparator()
+            self.ui.menuobjects_selall = self.ui.menuobjects.addAction(
+                QtGui.QIcon('share/select_all.png'),
+                _('Select All')
+            )
+            self.ui.menuobjects_unselall = self.ui.menuobjects.addAction(
+                QtGui.QIcon('share/deselect_all32.png'),
+                _('Deselect All')
+            )
+            self.ui.menuobjects_selall.triggered.connect(lambda: self.on_objects_selection(True))
+            self.ui.menuobjects_unselall.triggered.connect(lambda: self.on_objects_selection(False))
 
         elif state == 'delete':
             for act in self.ui.menuobjects.actions():
@@ -7966,7 +7999,9 @@ class App(QtCore.QObject):
                     add_action = QtWidgets.QAction(parent=self.ui.menuobjects)
                     add_action.setText(obj.options['name'])
                     add_action.setIcon(QtGui.QIcon(icon_files[obj.kind]))
-                    add_action.triggered.connect(lambda: self.collection.set_exclusive_active(obj.options['name']))
+                    add_action.triggered.connect(
+                        lambda: self.collection.set_active(obj.options['name']) if add_action.isChecked() is True else
+                        self.collection.set_inactive(obj.options['name']))
 
                     self.ui.menuobjects.insertAction(act, add_action)
 
@@ -7983,6 +8018,39 @@ class App(QtCore.QObject):
                 except TypeError:
                     pass
             self.ui.menuobjects.clear()
+
+            self.ui.menuobjects.addSeparator()
+            self.ui.menuobjects_selall = self.ui.menuobjects.addAction(
+                QtGui.QIcon('share/select_all.png'),
+                _('Select All')
+            )
+            self.ui.menuobjects_unselall = self.ui.menuobjects.addAction(
+                QtGui.QIcon('share/deselect_all32.png'),
+                _('Deselect All')
+            )
+            self.ui.menuobjects_selall.triggered.connect(lambda: self.on_objects_selection(True))
+            self.ui.menuobjects_unselall.triggered.connect(lambda: self.on_objects_selection(False))
+
+    def on_objects_selection(self, on_off):
+        obj_list = self.collection.get_names()
+
+        if on_off is True:
+            self.collection.set_all_active()
+            for act in self.ui.menuobjects.actions():
+                try:
+                    act.setChecked(True)
+                except:
+                    pass
+            if obj_list:
+                self.inform.emit('[selected] %s' % _("All objects are selected."))
+        else:
+            self.collection.set_all_inactive()
+            for act in self.ui.menuobjects.actions():
+                try:
+                    act.setChecked(False)
+                except:
+                    pass
+            self.inform.emit('%s' % _("Objects selection is cleared."))
 
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():
@@ -8426,93 +8494,40 @@ class App(QtCore.QObject):
                         objects_under_the_click_list.append(obj.options['name'])
 
         try:
-            # If there is no element in the overlapped objects list then make everyone inactive
-            # because we selected "nothing"
-            self.collection.set_all_inactive()
-
-            # delete the possible selection box around a possible selected object
-            self.delete_selection_shape()
-
-            if not objects_under_the_click_list:
-
-                # and as a convenience move the focus to the Project tab because Selected tab is now empty but
-                # only when working on App
-                if self.call_source == 'app':
-                    if self.click_noproject is False:
-                        self.ui.notebook.setCurrentWidget(self.ui.project_tab)
-                    else:
-                        # restore auto open the Project Tab
-                        self.click_noproject = False
-
-                    # delete any text in the status bar, implicitly the last object name that was selected
-                    self.inform.emit("")
-                else:
-                    self.call_source = 'app'
-            else:
+            if objects_under_the_click_list:
+                curr_sel_obj = self.collection.get_active()
                 # case when there is only an object under the click and we toggle it
                 if len(objects_under_the_click_list) == 1:
-                    if self.collection.get_active() is None:
+                    if curr_sel_obj is None:
                         self.collection.set_active(objects_under_the_click_list[0])
-                        # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
+
+                        # create the selection box around the selected object
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
-
-                        # self.inform.emit('[selected] %s: %s selected' %
-                        #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
-                        if curr_sel_obj.kind == 'gerber':
-                            self.inform.emit(
-                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                    color='green', name=str(curr_sel_obj.options['name'])))
-                        elif curr_sel_obj.kind == 'excellon':
-                            self.inform.emit(
-                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                    color='brown', name=str(curr_sel_obj.options['name'])))
-                        elif curr_sel_obj.kind == 'cncjob':
-                            self.inform.emit(
-                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                    color='blue', name=str(curr_sel_obj.options['name'])))
-                        elif curr_sel_obj.kind == 'geometry':
-                            self.inform.emit(
-                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                    color='red', name=str(curr_sel_obj.options['name'])))
 
                     elif self.collection.get_active().options['name'] not in objects_under_the_click_list:
-                        self.collection.set_all_inactive()
+                        self.on_objects_selection(False)
                         self.delete_selection_shape()
+
                         self.collection.set_active(objects_under_the_click_list[0])
-                        # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
+
+                        # create the selection box around the selected object
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
 
-                        # self.inform.emit('[selected] %s: %s selected' %
-                        #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
-                        if curr_sel_obj.kind == 'gerber':
-                            self.inform.emit(
-                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                    color='green', name=str(curr_sel_obj.options['name'])))
-                        elif curr_sel_obj.kind == 'excellon':
-                            self.inform.emit(
-                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                    color='brown', name=str(curr_sel_obj.options['name'])))
-                        elif curr_sel_obj.kind == 'cncjob':
-                            self.inform.emit(
-                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                    color='blue', name=str(curr_sel_obj.options['name'])))
-                        elif curr_sel_obj.kind == 'geometry':
-                            self.inform.emit(
-                                _('[selected]<span style="color:{color};">{name}</span> selected').format(
-                                    color='red', name=str(curr_sel_obj.options['name'])))
+                        self.selected_message(curr_sel_obj=curr_sel_obj)
 
                     else:
-                        self.collection.set_all_inactive()
+                        self.on_objects_selection(False)
                         self.delete_selection_shape()
-                        if self.call_source == 'app':
-                            # delete any text in the status bar, implicitly the last object name that was selected
-                            self.inform.emit("")
-                        else:
+
+                        if self.call_source != 'app':
                             self.call_source = 'app'
+
+                    self.selected_message(curr_sel_obj=curr_sel_obj)
+
                 else:
                     # If there is no selected object
                     # make active the first element of the overlapped objects list
@@ -8527,9 +8542,9 @@ class App(QtCore.QObject):
                         name_sel_obj = objects_under_the_click_list[0]
                         self.collection.set_active(name_sel_obj)
                     else:
-                        name_sel_obj_idx = objects_under_the_click_list.index(name_sel_obj)
+                        sel_idx = objects_under_the_click_list.index(name_sel_obj)
                         self.collection.set_all_inactive()
-                        self.collection.set_active(objects_under_the_click_list[(name_sel_obj_idx + 1) %
+                        self.collection.set_active(objects_under_the_click_list[(sel_idx + 1) %
                                                                                 len(objects_under_the_click_list)])
 
                     curr_sel_obj = self.collection.get_active()
@@ -8539,30 +8554,44 @@ class App(QtCore.QObject):
                     if self.defaults['global_selection_shape'] is True:
                         self.draw_selection_shape(curr_sel_obj)
 
-                    # self.inform.emit('[selected] %s: %s selected' %
-                    #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
-                    if curr_sel_obj.kind == 'gerber':
-                        self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                            color='green', name=str(curr_sel_obj.options['name'])))
-                    elif curr_sel_obj.kind == 'excellon':
-                        self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                            color='brown', name=str(curr_sel_obj.options['name'])))
-                    elif curr_sel_obj.kind == 'cncjob':
-                        self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                            color='blue', name=str(curr_sel_obj.options['name'])))
-                    elif curr_sel_obj.kind == 'geometry':
-                        self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                            color='red', name=str(curr_sel_obj.options['name'])))
+                    self.selected_message(curr_sel_obj=curr_sel_obj)
 
-                    # for obj in self.collection.get_list():
-                    #     obj.plot()
-                    # curr_sel_obj.plot(color=self.FC_dark_blue, face_color=self.FC_light_blue)
+            else:
+                # deselect everything
+                self.on_objects_selection(False)
+                # delete the possible selection box around a possible selected object
+                self.delete_selection_shape()
 
-                    # TODO: on selected objects change the object colors and do not draw the selection box
-                    # self.plotcanvas.update() # this updates the canvas
+                # and as a convenience move the focus to the Project tab because Selected tab is now empty but
+                # only when working on App
+                if self.call_source == 'app':
+                    if self.click_noproject is False:
+                        self.ui.notebook.setCurrentWidget(self.ui.project_tab)
+                    else:
+                        # restore auto open the Project Tab
+                        self.click_noproject = False
+
+                    # delete any text in the status bar, implicitly the last object name that was selected
+                    # self.inform.emit("")
+                else:
+                    self.call_source = 'app'
         except Exception as e:
-            log.error("[ERROR] Something went bad. %s" % str(e))
-            return
+            log.error("[ERROR] Something went bad in App.select_objects(). %s" % str(e))
+
+    def selected_message(self, curr_sel_obj):
+        if curr_sel_obj:
+            if curr_sel_obj.kind == 'gerber':
+                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='green', name=str(curr_sel_obj.options['name'])))
+            elif curr_sel_obj.kind == 'excellon':
+                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='brown', name=str(curr_sel_obj.options['name'])))
+            elif curr_sel_obj.kind == 'cncjob':
+                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='blue', name=str(curr_sel_obj.options['name'])))
+            elif curr_sel_obj.kind == 'geometry':
+                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='red', name=str(curr_sel_obj.options['name'])))
 
     def delete_hover_shape(self):
         self.hover_shapes.clear()
@@ -8621,6 +8650,9 @@ class App(QtCore.QObject):
         :return:
         """
 
+        if sel_obj is None:
+            return
+
         pt1 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymin']))
         pt2 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymin']))
         pt3 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymax']))
@@ -8633,13 +8665,6 @@ class App(QtCore.QObject):
         else:
             sel_rect = sel_rect.buffer(-0.00393)
             sel_rect = sel_rect.buffer(0.00787)
-
-        # if color:
-        #     face = Color(color, alpha=0.2)
-        #     outline = Color(color, alpha=0.8)
-        # else:
-        #     face = Color(self.defaults['global_sel_fill'], alpha=0.2)
-        #     outline = Color(self.defaults['global_sel_line'], alpha=0.8)
 
         if color:
             face = color[:-2] + str(hex(int(0.2 * 255)))[2:]
@@ -9044,7 +9069,7 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export SVG"),
-                directory=self.get_last_save_folder() + '/' + str(name),
+                directory=self.get_last_save_folder() + '/' + str(name) + '_svg',
                 filter=_filter)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=_filter)

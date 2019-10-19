@@ -10,24 +10,33 @@
 # File modified by: Marius Stanciu                         #
 # ##########################################################
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextDocument
+
+from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString, LineString, LinearRing
+from shapely.ops import cascaded_union
+import shapely.affinity as affinity
+
 import copy
+from copy import deepcopy
+from io import StringIO
+import traceback
 import inspect  # TODO: For debugging only.
 from datetime import datetime
 
 from flatcamEditors.FlatCAMTextEditor import TextEditor
-
 from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
 from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
-from camlib import *
 from flatcamParsers.ParseExcellon import Excellon
 from flatcamParsers.ParseGerber import Gerber
+from camlib import Geometry, CNCjob
+import FlatCAMApp
 
-import itertools
 import tkinter as tk
-import sys
+import os, sys, itertools
+import ezdxf
+
+import math
+import numpy as np
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -66,7 +75,7 @@ class FlatCAMObj(QtCore.QObject):
     app = None
 
     # signal to plot a single object
-    plot_single_object = pyqtSignal()
+    plot_single_object = QtCore.pyqtSignal()
 
     def __init__(self, name):
         """
@@ -2804,10 +2813,13 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         for tool in tools:
             if tooldia > self.tools[tool]["C"]:
-                self.app.inform.emit('[ERROR_NOTCL] %s %s: %s' % (
-                    _("Milling tool for DRILLS is larger than hole size. Cancelled.",
-                      str(tool))
-                ))
+                self.app.inform.emit(
+                    '[ERROR_NOTCL] %s %s: %s' % (
+                        _("Milling tool for DRILLS is larger than hole size. Cancelled."),
+                        _("Tool"),
+                        str(tool)
+                    )
+                )
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
@@ -3510,21 +3522,21 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             offset_item = QtWidgets.QComboBox()
             for item in self.offset_item_options:
                 offset_item.addItem(item)
-            offset_item.setStyleSheet('background-color: rgb(255,255,255)')
+            # offset_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = offset_item.findText(tooluid_value['offset'])
             offset_item.setCurrentIndex(idx)
 
             type_item = QtWidgets.QComboBox()
             for item in self.type_item_options:
                 type_item.addItem(item)
-            type_item.setStyleSheet('background-color: rgb(255,255,255)')
+            # type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = type_item.findText(tooluid_value['type'])
             type_item.setCurrentIndex(idx)
 
             tool_type_item = QtWidgets.QComboBox()
             for item in self.tool_type_item_options:
                 tool_type_item.addItem(item)
-                tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
+                # tool_type_item.setStyleSheet('background-color: rgb(255,255,255)')
             idx = tool_type_item.findText(tooluid_value['tool_type'])
             tool_type_item.setCurrentIndex(idx)
 

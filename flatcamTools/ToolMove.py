@@ -5,12 +5,13 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtCore
 from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import *
 from flatcamGUI.VisPyVisuals import *
+from FlatCAMObj import FlatCAMGerber
 
 from copy import copy
-
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -19,11 +20,13 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+log = logging.getLogger('base')
+
 
 class ToolMove(FlatCAMTool):
 
     toolName = _("Move")
-    replot_signal = pyqtSignal(list)
+    replot_signal = QtCore.pyqtSignal(list)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
