@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-10-19 04:51+0300\n"
-"PO-Revision-Date: 2019-10-19 04:52+0300\n"
+"POT-Creation-Date: 2019-10-19 14:49+0300\n"
+"PO-Revision-Date: 2019-10-19 14:51+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -7823,7 +7823,7 @@ msgstr "Coordonata Y pentru schimbarea uneltei"
 
 #: flatcamGUI/ObjectUI.py:1818 flatcamGUI/PreferencesUI.py:3622
 msgid "Z coord for Toolchange"
-msgstr "coordonata Z pentru schimbarea uneltei"
+msgstr "Coordonata Z pentru schimbarea uneltei"
 
 #: flatcamGUI/ObjectUI.py:1819
 msgid "depth where to cut"
@@ -7831,7 +7831,7 @@ msgstr "adâncimea de tăiere"
 
 #: flatcamGUI/ObjectUI.py:1820
 msgid "height where to travel"
-msgstr "Înălţimea deplasare"
+msgstr "inălţimea deplasare"
 
 #: flatcamGUI/ObjectUI.py:1821 flatcamGUI/PreferencesUI.py:3625
 msgid "the step value for multidepth cut"
@@ -8124,7 +8124,7 @@ msgstr "Setează culoarea elementelor din tab-ul Proiect."
 
 #: flatcamGUI/PreferencesUI.py:533
 msgid "Proj. Dis. Items"
-msgstr "Elem. proj. dez."
+msgstr "Elem. Proi. dezactivate"
 
 #: flatcamGUI/PreferencesUI.py:535
 msgid ""
@@ -10063,7 +10063,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:4059 flatcamTools/ToolCutOut.py:154
 msgid "Convex Sh."
-msgstr "Formă Conv"
+msgstr "Formă Conv."
 
 #: flatcamGUI/PreferencesUI.py:4061 flatcamTools/ToolCutOut.py:156
 msgid ""
@@ -10113,7 +10113,7 @@ msgstr "Forma"
 
 #: flatcamGUI/PreferencesUI.py:4119
 msgid "Axis Ref"
-msgstr "Axa de ref."
+msgstr "Axa de Ref"
 
 #: flatcamGUI/PreferencesUI.py:4121 flatcamTools/ToolDblSided.py:143
 msgid ""
@@ -12242,8 +12242,8 @@ msgid ""
 " Could not generate punched hole film because the punch hole sizeis bigger "
 "than some of the apertures in the Gerber object."
 msgstr ""
-"Nu a putut genera un film cu găuri perforate, deoarece dimensiunea găurii de "
-"perforare este mai mare decât unele dintre aperturile din obiectul Gerber."
+" Nu a putut genera un film cu găuri perforate, deoarece dimensiunea găurii "
+"de perforare este mai mare decât unele dintre aperturile din obiectul Gerber."
 
 #: flatcamTools/ToolFilm.py:613
 msgid ""
@@ -12251,7 +12251,7 @@ msgid ""
 "than some of the apertures in the Gerber object."
 msgstr ""
 "Nu s-a putut genera un film cu găuri perforate, deoarece dimensiunea găurii "
-"de perforare este mai mare decât unele dintre aperturile din obiectul Gerber"
+"de perforare este mai mare decât unele dintre aperturile din obiectul Gerber."
 
 #: flatcamTools/ToolFilm.py:631
 msgid ""
@@ -12308,7 +12308,7 @@ msgid ""
 msgstr ""
 "Alege o metoda de interpretare a imaginii.\n"
 "B/W = imagine alb-negru\n"
-"Color = imagine in culori"
+"Color = imagine in culori."
 
 #: flatcamTools/ToolImage.py:89 flatcamTools/ToolImage.py:104
 #: flatcamTools/ToolImage.py:117 flatcamTools/ToolImage.py:130
@@ -13786,7 +13786,7 @@ msgid ""
 "Bottom."
 msgstr ""
 "Atât obiectele Silk cat si cele Solder Mask trebuie ori ambele TOP ori "
-"ambele BOTTOM"
+"ambele BOTTOM."
 
 #: flatcamTools/ToolRulesCheck.py:1358
 msgid ""
