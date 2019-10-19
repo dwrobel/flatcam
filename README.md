@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Gerber parsing for very simple Gerber files that have only one Polygon but many LPC zones
 - fixed SVG export
 - finished the update on French Google translation.
+- updated all translation files except Spanish
 
 16.10.2019
 
