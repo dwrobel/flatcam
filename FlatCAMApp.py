@@ -131,8 +131,8 @@ class App(QtCore.QObject):
     # ##########################################################################
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
-    version = 8.98
-    version_date = "2019/10/16"
+    version = 8.99
+    version_date = "2019/10/30"
     beta = True
     engine = '3D'
 
@@ -2545,7 +2545,7 @@ class App(QtCore.QObject):
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
         if (self.beta is False or self.beta is None) and \
-                self.ui.general_defaults_form.general_gui_group.version_check_cb.get_value() is True:
+                self.ui.general_defaults_form.general_app_group.version_check_cb.get_value() is True:
             App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
             self.thr2 = QtCore.QThread()
@@ -4483,11 +4483,8 @@ class App(QtCore.QObject):
                     "{title}<BR>"
                     "<BR>"
                     "<BR>"
-                    # "<B>{devel}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\"><B>{devel}</B></a><BR>"
-                    # "<b>{down}</B> area &nbsp;&nbsp;&nbsp;&nbsp;"
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\"><b>{down}</B></a><BR>"
-                    # "<b> {issue}</B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/issues?status=new&status=open/\">"
                     "<B>{issue}</B></a><BR>".format(
                         title=_("2D Computer-Aided Printed Circuit Board Manufacturing"),
@@ -4510,21 +4507,27 @@ class App(QtCore.QObject):
                 )
                 description_label.setOpenExternalLinks(True)
 
-                license_label = QtWidgets.QLabel(
+                lic_lbl_header = QtWidgets.QLabel(
+                    '%s:<br>%s<br>' % (
+                        _('Licensed under the MIT license'),
+                        "<a href = \"http://www.opensource.org/licenses/mit-license.php\">"
+                          "http://www.opensource.org/licenses/mit-license.php</a>"
+                    )
+                )
+                lic_lbl_header.setOpenExternalLinks(True)
+
+                lic_lbl_body = QtWidgets.QLabel(
                     _(
-                        '\n'
-                        'Licensed under the MIT license:\n'
-                        'http://www.opensource.org/licenses/mit-license.php\n\n'
                         'Permission is hereby granted, free of charge, to any person obtaining a copy\n'
                         'of this software and associated documentation files (the "Software"), to deal\n'
                         'in the Software without restriction, including without limitation the rights\n'
                         'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n'
                         'copies of the Software, and to permit persons to whom the Software is\n'
                         'furnished to do so, subject to the following conditions:\n\n'
-
+    
                         'The above copyright notice and this permission notice shall be included in\n'
                         'all copies or substantial portions of the Software.\n\n'
-
+    
                         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n'
                         'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n'
                         'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n'
@@ -4534,7 +4537,6 @@ class App(QtCore.QObject):
                         'THE SOFTWARE.'
                     )
                 )
-                license_label.setOpenExternalLinks(True)
 
                 attributions_label = QtWidgets.QLabel(
                     _(
@@ -4601,11 +4603,13 @@ class App(QtCore.QObject):
                 pal = QtGui.QPalette()
                 pal.setColor(QtGui.QPalette.Background, Qt.white)
 
-                self.prog_form_lay = QtWidgets.QFormLayout()
-                self.prog_form_lay.setHorizontalSpacing(20)
+                self.prog_grid_lay = QtWidgets.QGridLayout()
+                self.prog_grid_lay.setHorizontalSpacing(20)
+                self.prog_grid_lay.setColumnStretch(0, 0)
+                self.prog_grid_lay.setColumnStretch(2, 1)
 
                 prog_widget = QtWidgets.QWidget()
-                prog_widget.setLayout(self.prog_form_lay)
+                prog_widget.setLayout(self.prog_grid_lay)
                 prog_scroll = QtWidgets.QScrollArea()
                 prog_scroll.setWidget(prog_widget)
                 prog_scroll.setWidgetResizable(True)
@@ -4614,51 +4618,55 @@ class App(QtCore.QObject):
 
                 self.programmmers_tab_layout.addWidget(prog_scroll)
 
-                self.prog_form_lay.addRow(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")),
-                                          QtWidgets.QLabel('<b>%s</b>' % _("Status")))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Juan Pablo Caram"),
-                                          QtWidgets.QLabel('%s' % _("Program Author")))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Denis Hayrullin"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Kamil Sopko"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Marius Stanciu"),
-                                          QtWidgets.QLabel('%s' % _("Maintainer >= 2019")))
-                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Programmer")), 0, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("Status")), 0, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('<b>%s</b>' % _("E-mail")), 0, 2)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Juan Pablo Caram"), 1, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Program Author"), 1, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<>"), 1, 2)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Denis Hayrullin"), 2, 0)
 
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Alex Lazar"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Matthieu Berthomé"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Mike Evans"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Victor Benso"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Kamil Sopko"), 3, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % _("BETA Maintainer >= 2019")), 4, 1)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 4, 2)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 5, 0)
 
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Barnaby Walters"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Jørn Sandvik Nilsson"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Lei Zheng"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Marco A Quezada"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Alex Lazar"), 6, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Matthieu Berthomé"), 7, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Mike Evans"), 8, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Victor Benso"), 9, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 10, 0)
 
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Cedric Dussud"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Chris Hemingway"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Damian Wrobel"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Daniel Sallin"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Barnaby Walters"), 11, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jørn Sandvik Nilsson"), 12, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Lei Zheng"), 13, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marco A Quezada"), 14, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 12, 0)
 
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Bruno Vunderl"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Gonzalo Lopez"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Jakob Staudt"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Mike Smith"))
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Cedric Dussud"), 15, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Hemingway"), 16, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Damian Wrobel"), 17, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Daniel Sallin"), 18, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 19, 0)
 
-                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Bruno Vunderl"), 20, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Gonzalo Lopez"), 21, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jakob Staudt"), 22, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Mike Smith"), 23, 0)
 
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Lubos Medovarsky"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Steve Martina"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "Thomas Duffin"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel(''))
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 24, 0)
 
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@Idechix"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@SM"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@grbf"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@Symonty"))
-                self.prog_form_lay.addRow(QtWidgets.QLabel('%s' % "@mgix"))
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Lubos Medovarsky"), 25, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Steve Martina"), 26, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Thomas Duffin"), 27, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 28, 0)
+
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Idechix"), 29, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@SM"), 30, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@grbf"), 31, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Symonty"), 32, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@mgix"), 33, 0)
 
                 self.translator_grid_lay = QtWidgets.QGridLayout()
                 self.translator_grid_lay.setColumnStretch(0, 0)
@@ -4697,7 +4705,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 4, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 4, 3)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<marius_adrian@yahoo.com>"), 4, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Russian"), 5, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 5, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 5, 3)
@@ -4708,7 +4716,9 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.setColumnStretch(0, 0)
                 self.translators_tab_layout.addStretch()
 
-                self.license_tab_layout.addWidget(license_label)
+                self.license_tab_layout.addWidget(lic_lbl_header)
+                self.license_tab_layout.addWidget(lic_lbl_body)
+
                 self.license_tab_layout.addStretch()
 
                 self.attributions_tab_layout.addWidget(attributions_label)
@@ -9900,9 +9910,11 @@ class App(QtCore.QObject):
             # Parse the xml through a xml parser just to add line feeds
             # and to make it look more pretty for the output
             svgcode = parse_xml_string(svg_elem)
+            svgcode = svgcode.toprettyxml()
+
             try:
                 with open(filename, 'w') as fp:
-                    fp.write(svgcode.toprettyxml())
+                    fp.write(svgcode)
             except PermissionError:
                 self.inform.emit('[WARNING] %s' %
                                  _("Permission denied, saving not possible.\n"
