@@ -3233,6 +3233,9 @@ class App(QtCore.QObject):
         """
         self.report_usage("object2editor()")
 
+        # disable the objects menu as it may interfere with the Editors
+        self.ui.menuobjects.setDisabled(True)
+
         edited_object = self.collection.get_active()
 
         if isinstance(edited_object, FlatCAMGerber) or isinstance(edited_object, FlatCAMGeometry) or \
@@ -3320,6 +3323,9 @@ class App(QtCore.QObject):
         :return: None
         """
         self.report_usage("editor2object()")
+
+        # re-enable the objects menu that was disabled on entry in Editor mode
+        self.ui.menuobjects.setDisabled(False)
 
         # do not update a geometry or excellon object unless it comes out of an editor
         if self.call_source != 'app':

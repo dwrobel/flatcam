@@ -158,9 +158,9 @@ class ApertureMacro:
 
             # ## Variables
             # These are variables defined locally inside the macro. They can be
-            # numerical constant or defind in terms of previously define
+            # numerical constant or defined in terms of previously define
             # variables, which can be defined locally or in an aperture
-            # definition. All replacements ocurr here.
+            # definition. All replacements occur here.
             match = ApertureMacro.amvar_re.search(part)
             if match:
                 var = match.group(1)
