@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed a small bug in BETA status change
 - updated the About FlatCAM window
+- reverted change in tool dia being able to take only positive values in Gerber Object UI
 
 18.10.2019
 

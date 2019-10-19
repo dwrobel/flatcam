@@ -342,7 +342,7 @@ class GerberObjectUI(ObjectUI):
         )
         tdlabel.setMinimumWidth(90)
         self.iso_tool_dia_entry = FCDoubleSpinner()
-        self.iso_tool_dia_entry.set_range(0, 9999.9999)
+        self.iso_tool_dia_entry.set_range(-9999.9999, 9999.9999)
         self.iso_tool_dia_entry.set_precision(self.decimals)
         self.iso_tool_dia_entry.setSingleStep(0.1)
 
