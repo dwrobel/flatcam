@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 18.10.2019
 
 - finished the update on the Google translated Spanish translation.
+- updated the new objects icons for Gerber, Geometry and Excellon
 - RELEASE 8.98
 
 17.10.2019

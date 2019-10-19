@@ -74,15 +74,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufilenew = self.menufile.addMenu(QtGui.QIcon('share/file16.png'), _('&New'))
         self.menufilenew.setToolTipsVisible(True)
 
-        self.menufilenewgeo = self.menufilenew.addAction(QtGui.QIcon('share/geometry16.png'), _('Geometry\tN'))
+        self.menufilenewgeo = self.menufilenew.addAction(QtGui.QIcon('share/new_file_geo16.png'), _('Geometry\tN'))
         self.menufilenewgeo.setToolTip(
             _("Will create a new, empty Geometry Object.")
         )
-        self.menufilenewgrb = self.menufilenew.addAction(QtGui.QIcon('share/flatcam_icon32.png'), _('Gerber\tB'))
+        self.menufilenewgrb = self.menufilenew.addAction(QtGui.QIcon('share/new_file_grb16.png'), _('Gerber\tB'))
         self.menufilenewgrb.setToolTip(
             _("Will create a new, empty Gerber Object.")
         )
-        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon('share/drill16.png'), _('Excellon\tL'))
+        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon('share/new_file_exc16.png'), _('Excellon\tL'))
         self.menufilenewexc.setToolTip(
             _("Will create a new, empty Excellon Object.")
         )
