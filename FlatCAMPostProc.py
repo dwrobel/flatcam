@@ -9,6 +9,7 @@
 from importlib.machinery import SourceFileLoader
 import os
 from abc import ABCMeta, abstractmethod
+import math
 
 # module-root dictionary of postprocessors
 import FlatCAMApp
