@@ -13,24 +13,26 @@
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
-from camlib import *
+
+from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStorage
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.ObjectUI import LengthEntry, RadioSet
+from flatcamGUI.ObjectUI import RadioSet
+from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
+    FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog
+from flatcamParsers.ParseFont import *
+import FlatCAMApp
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon
-# from shapely.geometry import mapping
 from shapely.ops import cascaded_union, unary_union
 import shapely.affinity as affinity
 from shapely.geometry.polygon import orient
 
-from numpy import arctan2, Inf, array, sqrt, sign, dot
+import numpy as np
 from numpy.linalg import norm as numpy_norm
 
 from rtree import index as rtindex
-from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
-    FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog
-from flatcamParsers.ParseFont import *
 
+from copy import deepcopy
 # from vispy.io import read_png
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -684,8 +686,8 @@ class TransformEditorTool(FlatCAMTool):
         self.rotate_button.set_value(_("Rotate"))
         self.rotate_button.setToolTip(
             _("Rotate the selected shape(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected shapes.")
+              "The point of reference is the middle of\n"
+              "the bounding box for all selected shapes.")
         )
         self.rotate_button.setFixedWidth(60)
 
@@ -802,7 +804,7 @@ class TransformEditorTool(FlatCAMTool):
         self.scale_link_cb.setText(_("Link"))
         self.scale_link_cb.setToolTip(
             _("Scale the selected shape(s)\n"
-             "using the Scale Factor X for both axis."))
+              "using the Scale Factor X for both axis."))
         self.scale_link_cb.setFixedWidth(50)
 
         self.scale_zero_ref_cb = FCCheckBox()
@@ -1060,7 +1062,6 @@ class TransformEditorTool(FlatCAMTool):
                                  _("Transformation cancelled. No shape selected."))
             return
 
-
         self.draw_app.select_tool("select")
         self.app.ui.notebook.setTabText(2, "Tools")
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
@@ -1081,10 +1082,7 @@ class TransformEditorTool(FlatCAMTool):
                     self.app.inform.emit('[ERROR_NOTCL] %s' %
                                          _("Wrong value format entered, use a number."))
                     return
-        self.app.worker_task.emit({'fcn': self.on_rotate_action,
-                                       'params': [value]})
-        # self.on_rotate_action(value)
-        return
+        self.app.worker_task.emit({'fcn': self.on_rotate_action, 'params': [value]})
 
     def on_flipx(self):
         # self.on_flip("Y")
@@ -1205,13 +1203,9 @@ class TransformEditorTool(FlatCAMTool):
         axis = 'Y'
         point = (0, 0)
         if self.scale_zero_ref_cb.get_value():
-            self.app.worker_task.emit({'fcn': self.on_scale,
-                                       'params': [axis, xvalue, yvalue, point]})
-            # self.on_scale("Y", xvalue, yvalue, point=(0,0))
+            self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue, point]})
         else:
-            # self.on_scale("Y", xvalue, yvalue)
-            self.app.worker_task.emit({'fcn': self.on_scale,
-                                       'params': [axis, xvalue, yvalue]})
+            self.app.worker_task.emit({'fcn': self.on_scale, 'params': [axis, xvalue, yvalue]})
 
         return
 
@@ -1304,7 +1298,7 @@ class TransformEditorTool(FlatCAMTool):
 
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Rotation action was not executed"),str(e)))
+                                         (_("Rotation action was not executed"), str(e)))
                     return
 
     def on_flip(self, axis):
@@ -1664,10 +1658,10 @@ class DrawToolShape(object):
         # now it can get bounds for nested lists of objects
         def bounds_rec(shape_el):
             if type(shape_el) is list:
-                minx = Inf
-                miny = Inf
-                maxx = -Inf
-                maxy = -Inf
+                minx = np.Inf
+                miny = np.Inf
+                maxx = -np.Inf
+                maxy = -np.Inf
 
                 for k in shape_el:
                     minx_, miny_, maxx_, maxy_ = bounds_rec(k)
@@ -1904,10 +1898,10 @@ class DrawTool(object):
     def bounds(self, obj):
         def bounds_rec(o):
             if type(o) is list:
-                minx = Inf
-                miny = Inf
-                maxx = -Inf
-                maxy = -Inf
+                minx = np.Inf
+                miny = np.Inf
+                maxx = -np.Inf
+                maxy = -np.Inf
 
                 for k in o:
                     try:
@@ -1977,7 +1971,7 @@ class FCCircle(FCShapeTool):
         if len(self.points) == 1:
             p1 = self.points[0]
             p2 = data
-            radius = sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+            radius = np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
             return DrawToolUtilityShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
 
         return None
@@ -2086,36 +2080,36 @@ class FCArc(FCShapeTool):
                 p1 = self.points[1]
                 p2 = data
 
-                radius = sqrt((center[0] - p1[0]) ** 2 + (center[1] - p1[1]) ** 2)
-                startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-                stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+                radius = np.sqrt((center[0] - p1[0]) ** 2 + (center[1] - p1[1]) ** 2)
+                startangle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+                stopangle = np.arctan2(p2[1] - center[1], p2[0] - center[0])
 
                 return DrawToolUtilityShape([LineString(arc(center, radius, startangle, stopangle,
                                                             self.direction, self.steps_per_circ)),
                                              Point(center)])
 
             elif self.mode == '132':
-                p1 = array(self.points[0])
-                p3 = array(self.points[1])
-                p2 = array(data)
+                p1 = np.array(self.points[0])
+                p3 = np.array(self.points[1])
+                p2 = np.array(data)
 
                 try:
                     center, radius, t = three_point_circle(p1, p2, p3)
                 except TypeError:
                     return
 
-                direction = 'cw' if sign(t) > 0 else 'ccw'
+                direction = 'cw' if np.sign(t) > 0 else 'ccw'
 
-                startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-                stopangle = arctan2(p3[1] - center[1], p3[0] - center[0])
+                startangle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+                stopangle = np.arctan2(p3[1] - center[1], p3[0] - center[0])
 
                 return DrawToolUtilityShape([LineString(arc(center, radius, startangle, stopangle,
                                                             direction, self.steps_per_circ)),
                                              Point(center), Point(p1), Point(p3)])
 
             else:  # '12c'
-                p1 = array(self.points[0])
-                p2 = array(self.points[1])
+                p1 = np.array(self.points[0])
+                p2 = np.array(self.points[1])
 
                 # Midpoint
                 a = (p1 + p2) / 2.0
@@ -2124,7 +2118,7 @@ class FCArc(FCShapeTool):
                 c = p2 - p1
 
                 # Perpendicular vector
-                b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
+                b = np.dot(c, np.array([[0, -1], [1, 0]], dtype=np.float32))
                 b /= numpy_norm(b)
 
                 # Distance
@@ -2133,14 +2127,14 @@ class FCArc(FCShapeTool):
                 # Which side? Cross product with c.
                 # cross(M-A, B-A), where line is AB and M is test point.
                 side = (data[0] - p1[0]) * c[1] - (data[1] - p1[1]) * c[0]
-                t *= sign(side)
+                t *= np.sign(side)
 
                 # Center = a + bt
                 center = a + b * t
 
                 radius = numpy_norm(center - p1)
-                startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-                stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+                startangle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+                stopangle = np.arctan2(p2[1] - center[1], p2[0] - center[0])
 
                 return DrawToolUtilityShape([LineString(arc(center, radius, startangle, stopangle,
                                                             self.direction, self.steps_per_circ)),
@@ -2156,29 +2150,29 @@ class FCArc(FCShapeTool):
             p2 = self.points[2]
 
             radius = distance(center, p1)
-            startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-            stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+            startangle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+            stopangle = np.arctan2(p2[1] - center[1], p2[0] - center[0])
             self.geometry = DrawToolShape(LineString(arc(center, radius, startangle, stopangle,
                                                          self.direction, self.steps_per_circ)))
 
         elif self.mode == '132':
-            p1 = array(self.points[0])
-            p3 = array(self.points[1])
-            p2 = array(self.points[2])
+            p1 = np.array(self.points[0])
+            p3 = np.array(self.points[1])
+            p2 = np.array(self.points[2])
 
             center, radius, t = three_point_circle(p1, p2, p3)
-            direction = 'cw' if sign(t) > 0 else 'ccw'
+            direction = 'cw' if np.sign(t) > 0 else 'ccw'
 
-            startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-            stopangle = arctan2(p3[1] - center[1], p3[0] - center[0])
+            startangle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+            stopangle = np.arctan2(p3[1] - center[1], p3[0] - center[0])
 
             self.geometry = DrawToolShape(LineString(arc(center, radius, startangle, stopangle,
                                                          direction, self.steps_per_circ)))
 
         else:  # self.mode == '12c'
-            p1 = array(self.points[0])
-            p2 = array(self.points[1])
-            pc = array(self.points[2])
+            p1 = np.array(self.points[0])
+            p2 = np.array(self.points[1])
+            pc = np.array(self.points[2])
 
             # Midpoint
             a = (p1 + p2) / 2.0
@@ -2187,7 +2181,7 @@ class FCArc(FCShapeTool):
             c = p2 - p1
 
             # Perpendicular vector
-            b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
+            b = np.dot(c, np.array([[0, -1], [1, 0]], dtype=np.float32))
             b /= numpy_norm(b)
 
             # Distance
@@ -2196,14 +2190,14 @@ class FCArc(FCShapeTool):
             # Which side? Cross product with c.
             # cross(M-A, B-A), where line is AB and M is test point.
             side = (pc[0] - p1[0]) * c[1] - (pc[1] - p1[1]) * c[0]
-            t *= sign(side)
+            t *= np.sign(side)
 
             # Center = a + bt
             center = a + b * t
 
             radius = numpy_norm(center - p1)
-            startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-            stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+            startangle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+            stopangle = np.arctan2(p2[1] - center[1], p2[0] - center[0])
 
             self.geometry = DrawToolShape(LineString(arc(center, radius, startangle, stopangle,
                                                          self.direction, self.steps_per_circ)))
@@ -2228,7 +2222,7 @@ class FCRectangle(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.draw_app.app.inform.emit( _("Click on 1st corner ..."))
+        self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
 
     def click(self, point):
         self.points.append(point)
@@ -2705,7 +2699,6 @@ class FCText(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_text.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
@@ -2728,21 +2721,19 @@ class FCText(FCShapeTool):
                 log.debug("Font geometry is empty or incorrect: %s" % str(e))
                 self.draw_app.app.inform.emit('[ERROR] %s: %s' %
                                               (_("Font not supported. Only Regular, Bold, Italic and BoldItalic are "
-                                              "supported. Error"), str(e)))
+                                                 "supported. Error"), str(e)))
                 self.text_gui.text_path = []
                 self.text_gui.hide_tool()
                 self.draw_app.select_tool('select')
                 return
         else:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("No text to add."))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("No text to add."))
             return
 
         self.text_gui.text_path = []
         self.text_gui.hide_tool()
         self.complete = True
-        self.draw_app.app.inform.emit('[success]%s' %
-                                      _(" Done. Adding Text completed."))
+        self.draw_app.app.inform.emit('[success]%s' % _(" Done. Adding Text completed."))
 
     def utility_geometry(self, data=None):
         """
@@ -3060,7 +3051,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             "text": {"button": self.app.ui.geo_add_text_btn,
                      "constructor": FCText},
             "buffer": {"button": self.app.ui.geo_add_buffer_btn,
-                     "constructor": FCBuffer},
+                       "constructor": FCBuffer},
             "paint": {"button": self.app.ui.geo_add_paint_btn,
                        "constructor": FCPaint},
             "eraser": {"button": self.app.ui.geo_eraser_btn,
@@ -3068,11 +3059,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
             "move": {"button": self.app.ui.geo_move_btn,
                      "constructor": FCMove},
             "transform": {"button": self.app.ui.geo_transform_btn,
-                      "constructor": FCTransform},
+                          "constructor": FCTransform},
             "copy": {"button": self.app.ui.geo_copy_btn,
                      "constructor": FCCopy},
             "explode": {"button": self.app.ui.geo_explode_btn,
-                     "constructor": FCExplode}
+                        "constructor": FCExplode}
         }
 
         # # ## Data
@@ -3502,7 +3493,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-
         try:
             self.app.ui.draw_text.triggered.disconnect()
         except (TypeError, AttributeError):
@@ -3561,12 +3551,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 self.add_shape(subshape)
             return
 
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % type(shape)
-
-        assert shape.geo is not None, \
-            "Shape object has empty geometry (None)"
-
+        assert isinstance(shape, DrawToolShape), "Expected a DrawToolShape, got %s" % type(shape)
+        assert shape.geo is not None, "Shape object has empty geometry (None)"
         assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or \
                not isinstance(shape.geo, list), "Shape objects has empty geometry ([])"
 
@@ -4122,13 +4108,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 continue
 
             if shape in self.selected:
-                self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'] + 'FF', linewidth=2)
+                self.plot_shape(geometry=shape.geo,
+                                color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                                linewidth=2)
                 continue
 
-            self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'] + "FF")
+            self.plot_shape(geometry=shape.geo,
+                            color=self.app.defaults['global_draw_color'] + "FF")
 
         for shape in self.utility:
-            self.plot_shape(geometry=shape.geo, linewidth=1)
+            self.plot_shape(geometry=shape.geo,
+                            linewidth=1)
             continue
 
         self.shapes.redraw()
@@ -4237,7 +4227,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         """
 
         snap_x, snap_y = (x, y)
-        snap_distance = Inf
+        snap_distance = np.Inf
 
         # # ## Object (corner?) snap
         # # ## No need for the objects, just the coordinates
@@ -4488,7 +4478,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         results = []
         for t in selected:
             if isinstance(t.geo, Polygon) and not t.geo.is_empty:
-                results.append((t.geo.exterior).buffer(
+                results.append(t.geo.exterior.buffer(
                     buf_distance - 1e-10,
                     resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
                     join_style=join_style)
@@ -4519,22 +4509,18 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
 
         if buf_distance < 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Negative buffer value is not accepted.")
-            )
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Negative buffer value is not accepted."))
             # deselect everything
             self.selected = []
             self.replot()
             return 'fail'
 
         if len(selected) == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Nothing selected for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected for buffering."))
             return 'fail'
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Invalid distance for buffering."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Invalid distance for buffering."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4546,7 +4532,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 t.geo = Polygon(t.geo)
 
             if isinstance(t.geo, Polygon) and not t.geo.is_empty:
-                results.append((t.geo).buffer(
+                results.append(t.geo.buffer(
                     -buf_distance + 1e-10,
                     resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
                     join_style=join_style)
@@ -4564,8 +4550,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(sha))
 
         self.replot()
-        self.app.inform.emit('[success] %s' %
-                             _("Interior buffer geometry created."))
+        self.app.inform.emit('[success] %s' % _("Interior buffer geometry created."))
 
     def buffer_ext(self, buf_distance, join_style):
         selected = self.get_selected()
@@ -4598,7 +4583,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 t.geo = Polygon(t.geo)
 
             if isinstance(t.geo, Polygon) and not t.geo.is_empty:
-                results.append((t.geo).buffer(
+                results.append(t.geo.buffer(
                     buf_distance,
                     resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
                     join_style=join_style)
@@ -4616,68 +4601,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(sha))
 
         self.replot()
-        self.app.inform.emit('[success] %s' %
-                             _("Exterior buffer geometry created."))
-
-    # def paint(self, tooldia, overlap, margin, method):
-    #     selected = self.get_selected()
-    #
-    #     if len(selected) == 0:
-    #         self.app.inform.emit("[WARNING] Nothing selected for painting.")
-    #         return
-    #
-    #     for param in [tooldia, overlap, margin]:
-    #         if not isinstance(param, float):
-    #             param_name = [k for k, v in locals().items() if v is param][0]
-    #             self.app.inform.emit("[WARNING] Invalid value for {}".format(param))
-    #
-    #     # Todo: Check for valid method.
-    #
-    #     # Todo: This is the 3rd implementation on painting polys... try to consolidate
-    #
-    #     results = []
-    #
-    #     def recurse(geo):
-    #         try:
-    #             for subg in geo:
-    #                 for subsubg in recurse(subg):
-    #                     yield subsubg
-    #         except TypeError:
-    #             if isinstance(geo, LinearRing):
-    #                 yield geo
-    #
-    #         raise StopIteration
-    #
-    #     for geo in selected:
-    #         print(type(geo.geo))
-    #
-    #         local_results = []
-    #         for poly in recurse(geo.geo):
-    #             if method == "seed":
-    #                 # Type(cp) == FlatCAMRTreeStorage | None
-    #                 cp = Geometry.clear_polygon2(poly.buffer(-margin),
-    #                                              tooldia, overlap=overlap)
-    #
-    #             else:
-    #                 # Type(cp) == FlatCAMRTreeStorage | None
-    #                 cp = Geometry.clear_polygon(poly.buffer(-margin),
-    #                                             tooldia, overlap=overlap)
-    #
-    #             if cp is not None:
-    #                 local_results += list(cp.get_objects())
-    #
-    #             results.append(cascaded_union(local_results))
-    #
-    #     # This is a dirty patch:
-    #     for r in results:
-    #         self.add_shape(DrawToolShape(r))
-    #
-    #     self.replot()
+        self.app.inform.emit('[success] %s' % _("Exterior buffer geometry created."))
 
     def paint(self, tooldia, overlap, margin, connect, contour, method):
 
         self.paint_tooldia = tooldia
-
         selected = self.get_selected()
 
         if len(selected) == 0:
@@ -4814,11 +4742,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
 
 def distance(pt1, pt2):
-    return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
+    return np.sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
 
 def mag(vec):
-    return sqrt(vec[0] ** 2 + vec[1] ** 2)
+    return np.sqrt(vec[0] ** 2 + vec[1] ** 2)
 
 
 def poly2rings(poly):
@@ -4826,10 +4754,10 @@ def poly2rings(poly):
 
 
 def get_shapely_list_bounds(geometry_list):
-    xmin = Inf
-    ymin = Inf
-    xmax = -Inf
-    ymax = -Inf
+    xmin = np.Inf
+    ymin = np.Inf
+    xmax = -np.Inf
+    ymax = -np.Inf
 
     for gs in geometry_list:
         try:

@@ -5,15 +5,18 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMTool import FlatCAMTool
-from copy import copy, deepcopy
-from ObjectCollection import *
-import time
-from FlatCAMPool import *
-from os import getpid
-from shapely.ops import nearest_points
-from shapely.geometry.base import BaseGeometry
+from PyQt5 import QtWidgets
 
+from FlatCAMTool import FlatCAMTool
+from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, OptionalInputSection
+from copy import deepcopy
+
+from FlatCAMPool import *
+# from os import getpid
+from shapely.ops import nearest_points
+from shapely.geometry import MultiPolygon, Polygon
+
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -22,12 +25,14 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+log = logging.getLogger('base')
+
 
 class RulesCheck(FlatCAMTool):
 
     toolName = _("Check Rules")
 
-    tool_finished = pyqtSignal(list)
+    tool_finished = QtCore.pyqtSignal(list)
 
     def __init__(self, app):
         super(RulesCheck, self).__init__(self)

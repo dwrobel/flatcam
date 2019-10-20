@@ -9,7 +9,6 @@
 from importlib.machinery import SourceFileLoader
 import os
 from abc import ABCMeta, abstractmethod
-from datetime import datetime
 import math
 
 # module-root dictionary of postprocessors

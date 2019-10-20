@@ -8,10 +8,7 @@
 from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import *
 import platform
-import webbrowser
 import sys
-
-from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -5121,7 +5118,7 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
 
         self.crlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.crlabel.setToolTip(
-            _("A tool to check if Gerber files fir within a set\n"
+            _("A tool to check if Gerber files are within a set\n"
               "of Manufacturing Rules.")
         )
         self.layout.addWidget(self.crlabel)

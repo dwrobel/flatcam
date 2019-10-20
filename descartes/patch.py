@@ -12,14 +12,17 @@ class Polygon(object):
             self.context = context
         else:
             self.context = getattr(context, '__geo_interface__', context)
+
     @property
     def geom_type(self):
         return (getattr(self.context, 'geom_type', None)
                 or self.context['type'])
+
     @property
     def exterior(self):
         return (getattr(self.context, 'exterior', None) 
                 or self.context['coordinates'][0])
+
     @property
     def interiors(self):
         value = getattr(self.context, 'interiors', None)

@@ -11,8 +11,6 @@
 # Date: 3/10/2019                                          #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
 from flatcamGUI.GUIElements import *
 import sys
 

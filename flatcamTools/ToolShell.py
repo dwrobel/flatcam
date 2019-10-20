@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 # ##########################################################
 
-# from PyQt5.QtCore import pyqtSignal
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QVBoxLayout, QWidget

@@ -5,12 +5,18 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-# from copy import copy, deepcopy
-from ObjectCollection import *
-import time
+from flatcamGUI.GUIElements import FCCheckBox, FCButton
 
+from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString
+from shapely.ops import cascaded_union
+
+import traceback
+from copy import deepcopy
+import time
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -19,12 +25,14 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+log = logging.getLogger('base')
+
 
 class ToolSub(FlatCAMTool):
 
     job_finished = QtCore.pyqtSignal(bool)
 
-    toolName = _("Substract Tool")
+    toolName = _("Subtract Tool")
 
     def __init__(self, app):
         self.app = app
@@ -64,8 +72,8 @@ class ToolSub(FlatCAMTool):
 
         self.target_gerber_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_gerber_label.setToolTip(
-            _("Gerber object from which to substract\n"
-              "the substractor Gerber object.")
+            _("Gerber object from which to subtract\n"
+              "the subtractor Gerber object.")
         )
 
         form_layout.addRow(self.target_gerber_label, self.target_gerber_combo)
@@ -76,9 +84,9 @@ class ToolSub(FlatCAMTool):
         self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.sub_gerber_combo.setCurrentIndex(1)
 
-        self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Substractor"))
+        self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
         self.sub_gerber_label.setToolTip(
-            _("Gerber object that will be substracted\n"
+            _("Gerber object that will be subtracted\n"
               "from the target Gerber object.")
         )
         e_lab_1 = QtWidgets.QLabel('')
@@ -87,7 +95,7 @@ class ToolSub(FlatCAMTool):
 
         self.intersect_btn = FCButton(_('Substract Gerber'))
         self.intersect_btn.setToolTip(
-            _("Will remove the area occupied by the substractor\n"
+            _("Will remove the area occupied by the subtractor\n"
               "Gerber from the Target Gerber.\n"
               "Can be used to remove the overlapping silkscreen\n"
               "over the soldermask.")
@@ -110,8 +118,8 @@ class ToolSub(FlatCAMTool):
 
         self.target_geo_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_geo_label.setToolTip(
-            _("Geometry object from which to substract\n"
-              "the substractor Geometry object.")
+            _("Geometry object from which to subtract\n"
+              "the subtractor Geometry object.")
         )
 
         form_geo_layout.addRow(self.target_geo_label, self.target_geo_combo)
@@ -122,9 +130,9 @@ class ToolSub(FlatCAMTool):
         self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.sub_geo_combo.setCurrentIndex(1)
 
-        self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Substractor"))
+        self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Subtractor"))
         self.sub_geo_label.setToolTip(
-            _("Geometry object that will be substracted\n"
+            _("Geometry object that will be subtracted\n"
               "from the target Geometry object.")
         )
         e_lab_1 = QtWidgets.QLabel('')
@@ -132,12 +140,12 @@ class ToolSub(FlatCAMTool):
         form_geo_layout.addRow(self.sub_geo_label, self.sub_geo_combo)
 
         self.close_paths_cb = FCCheckBox(_("Close paths"))
-        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry subtractor object."))
         self.tools_box.addWidget(self.close_paths_cb)
 
-        self.intersect_geo_btn = FCButton(_('Substract Geometry'))
+        self.intersect_geo_btn = FCButton(_('Subtract Geometry'))
         self.intersect_geo_btn.setToolTip(
-            _("Will remove the area occupied by the substractor\n"
+            _("Will remove the area occupied by the subtractor\n"
               "Geometry from the Target Geometry.")
         )
         self.tools_box.addWidget(self.intersect_geo_btn)
@@ -256,7 +264,7 @@ class ToolSub(FlatCAMTool):
         self.sub_grb_obj_name = self.sub_gerber_combo.currentText()
         if self.sub_grb_obj_name == '':
             self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No Substractor object loaded."))
+                                 _("No Subtractor object loaded."))
             return
 
         # Get substractor object.
@@ -458,7 +466,7 @@ class ToolSub(FlatCAMTool):
         self.sub_geo_obj_name = self.sub_geo_combo.currentText()
         if self.sub_geo_obj_name == '':
             self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No Substractor object loaded."))
+                                 _("No Subtractor object loaded."))
             return
 
         # Get substractor object.
@@ -472,7 +480,7 @@ class ToolSub(FlatCAMTool):
 
         if self.sub_geo_obj.multigeo:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Currently, the Substractor geometry cannot be of type Multigeo."))
+                                 _("Currently, the Subtractor geometry cannot be of type Multigeo."))
             return
 
         # create the target_options obj

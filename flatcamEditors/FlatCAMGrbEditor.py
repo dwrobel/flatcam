@@ -8,29 +8,28 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
-from shapely.geometry import LineString, LinearRing, MultiLineString
-# from shapely.geometry import mapping
-from shapely.ops import cascaded_union, unary_union
+from shapely.geometry import LineString, LinearRing, MultiLineString, Point, Polygon, MultiPolygon
+from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
-from numpy import arctan2, Inf, array, sqrt, sign, dot
-from rtree import index as rtindex
 import threading
 import time
 from copy import copy, deepcopy
+import logging
 
-from camlib import *
+from camlib import distance, arc, three_point_circle
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, \
-    SpinBoxDelegate, EvalEntry, EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox
-from FlatCAMObj import FlatCAMGerber
-from flatcamParsers.ParseGerber import Gerber
+    EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox
 from FlatCAMTool import FlatCAMTool
+import FlatCAMApp
 
+import numpy as np
 from numpy.linalg import norm as numpy_norm
+import math
 
 # from vispy.io import read_png
 # import pngcanvas
-
+import traceback
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -38,6 +37,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class DrawToolShape(object):
@@ -147,10 +148,10 @@ class DrawTool(object):
     def bounds(obj):
         def bounds_rec(o):
             if type(o) is list:
-                minx = Inf
-                miny = Inf
-                maxx = -Inf
-                maxy = -Inf
+                minx = np.Inf
+                miny = np.Inf
+                maxx = -np.Inf
+                maxy = -np.Inf
 
                 for k in o:
                     try:
@@ -311,13 +312,13 @@ class FCPad(FCShapeTool):
                 p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
 
                 down_center = [point_x, point_y - self.half_height + self.half_width]
-                d_start_angle = math.pi
+                d_start_angle = np.pi
                 d_stop_angle = 0.0
                 down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
 
                 up_center = [point_x, point_y + self.half_height - self.half_width]
                 u_start_angle = 0.0
-                u_stop_angle = math.pi
+                u_stop_angle = np.pi
                 up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
 
                 geo.append(p1)
@@ -340,13 +341,13 @@ class FCPad(FCShapeTool):
                 p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
 
                 left_center = [point_x - self.half_width + self.half_height, point_y]
-                d_start_angle = math.pi / 2
-                d_stop_angle = 1.5 * math.pi
+                d_start_angle = np.pi / 2
+                d_stop_angle = 1.5 * np.pi
                 left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
 
                 right_center = [point_x + self.half_width - self.half_height, point_y]
-                u_start_angle = 1.5 * math.pi
-                u_stop_angle = math.pi / 2
+                u_start_angle = 1.5 * np.pi
+                u_stop_angle = np.pi / 2
                 right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
 
                 geo.append(p1)
@@ -618,13 +619,13 @@ class FCPadArray(FCShapeTool):
                 p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
 
                 down_center = [point_x, point_y - self.half_height + self.half_width]
-                d_start_angle = math.pi
+                d_start_angle = np.pi
                 d_stop_angle = 0.0
                 down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
 
                 up_center = [point_x, point_y + self.half_height - self.half_width]
                 u_start_angle = 0.0
-                u_stop_angle = math.pi
+                u_stop_angle = np.pi
                 up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
 
                 geo.append(p1)
@@ -647,13 +648,13 @@ class FCPadArray(FCShapeTool):
                 p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
 
                 left_center = [point_x - self.half_width + self.half_height, point_y]
-                d_start_angle = math.pi / 2
-                d_stop_angle = 1.5 * math.pi
+                d_start_angle = np.pi / 2
+                d_stop_angle = 1.5 * np.pi
                 left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
 
                 right_center = [point_x + self.half_width - self.half_height, point_y]
-                u_start_angle = 1.5 * math.pi
-                u_stop_angle = math.pi / 2
+                u_start_angle = 1.5 * np.pi
+                u_stop_angle = np.pi / 2
                 right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
 
                 geo.append(p1)
@@ -1296,7 +1297,7 @@ class FCTrack(FCRegion):
                 self.draw_app.bend_mode = 2
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path2.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
-                msg =  _('Track Mode 2: Reverse 45 degrees ...')
+                msg = _('Track Mode 2: Reverse 45 degrees ...')
             elif self.draw_app.bend_mode == 2:
                 self.draw_app.bend_mode = 3
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path3.png'))
@@ -1415,7 +1416,7 @@ class FCDisc(FCShapeTool):
         if len(self.points) == 1:
             p1 = self.points[0]
             p2 = data
-            radius = sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+            radius = math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
             new_geo_el['solid'] = Point(p1).buffer((radius + self.buf_val / 2), int(self.steps_per_circ / 4))
             return DrawToolUtilityShape(new_geo_el)
 
@@ -1557,9 +1558,9 @@ class FCSemiDisc(FCShapeTool):
                 p1 = self.points[1]
                 p2 = data
 
-                radius = sqrt((center[0] - p1[0]) ** 2 + (center[1] - p1[1]) ** 2) + (self.buf_val / 2)
-                startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-                stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+                radius = np.sqrt((center[0] - p1[0]) ** 2 + (center[1] - p1[1]) ** 2) + (self.buf_val / 2)
+                startangle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+                stopangle = np.arctan2(p2[1] - center[1], p2[0] - center[0])
 
                 new_geo_el['solid'] = LineString(
                     arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ))
@@ -1567,20 +1568,20 @@ class FCSemiDisc(FCShapeTool):
                 return DrawToolUtilityShape([new_geo_el, new_geo_el_pt1])
 
             elif self.mode == '132':
-                p1 = array(self.points[0])
-                p3 = array(self.points[1])
-                p2 = array(data)
+                p1 = np.array(self.points[0])
+                p3 = np.array(self.points[1])
+                p2 = np.array(data)
 
                 try:
                     center, radius, t = three_point_circle(p1, p2, p3)
                 except TypeError:
                     return
 
-                direction = 'cw' if sign(t) > 0 else 'ccw'
+                direction = 'cw' if np.sign(t) > 0 else 'ccw'
                 radius += (self.buf_val / 2)
 
-                startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-                stopangle = arctan2(p3[1] - center[1], p3[0] - center[0])
+                startangle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+                stopangle = np.arctan2(p3[1] - center[1], p3[0] - center[0])
 
                 new_geo_el['solid'] = LineString(
                     arc(center, radius, startangle, stopangle, direction, self.steps_per_circ))
@@ -1591,8 +1592,8 @@ class FCSemiDisc(FCShapeTool):
                 return DrawToolUtilityShape([new_geo_el, new_geo_el_pt2, new_geo_el_pt1, new_geo_el_pt3])
 
             else:  # '12c'
-                p1 = array(self.points[0])
-                p2 = array(self.points[1])
+                p1 = np.array(self.points[0])
+                p2 = np.array(self.points[1])
                 # Midpoint
                 a = (p1 + p2) / 2.0
 
@@ -1600,7 +1601,7 @@ class FCSemiDisc(FCShapeTool):
                 c = p2 - p1
 
                 # Perpendicular vector
-                b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
+                b = np.dot(c, np.array([[0, -1], [1, 0]], dtype=np.float32))
                 b /= numpy_norm(b)
 
                 # Distance
@@ -1609,14 +1610,14 @@ class FCSemiDisc(FCShapeTool):
                 # Which side? Cross product with c.
                 # cross(M-A, B-A), where line is AB and M is test point.
                 side = (data[0] - p1[0]) * c[1] - (data[1] - p1[1]) * c[0]
-                t *= sign(side)
+                t *= np.sign(side)
 
                 # Center = a + bt
                 center = a + b * t
 
                 radius = numpy_norm(center - p1) + (self.buf_val / 2)
-                startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-                stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+                startangle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+                stopangle = np.arctan2(p2[1] - center[1], p2[0] - center[0])
 
                 new_geo_el['solid'] = LineString(
                     arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ))
@@ -1636,8 +1637,8 @@ class FCSemiDisc(FCShapeTool):
             p2 = self.points[2]
 
             radius = distance(center, p1) + (self.buf_val / 2)
-            start_angle = arctan2(p1[1] - center[1], p1[0] - center[0])
-            stop_angle = arctan2(p2[1] - center[1], p2[0] - center[0])
+            start_angle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+            stop_angle = np.arctan2(p2[1] - center[1], p2[0] - center[0])
             new_geo_el['solid'] = Polygon(
                 arc(center, radius, start_angle, stop_angle, self.direction, self.steps_per_circ))
             new_geo_el['follow'] = Polygon(
@@ -1645,16 +1646,16 @@ class FCSemiDisc(FCShapeTool):
             self.geometry = DrawToolShape(new_geo_el)
 
         elif self.mode == '132':
-            p1 = array(self.points[0])
-            p3 = array(self.points[1])
-            p2 = array(self.points[2])
+            p1 = np.array(self.points[0])
+            p3 = np.array(self.points[1])
+            p2 = np.array(self.points[2])
 
             center, radius, t = three_point_circle(p1, p2, p3)
-            direction = 'cw' if sign(t) > 0 else 'ccw'
+            direction = 'cw' if np.sign(t) > 0 else 'ccw'
             radius += (self.buf_val / 2)
 
-            start_angle = arctan2(p1[1] - center[1], p1[0] - center[0])
-            stop_angle = arctan2(p3[1] - center[1], p3[0] - center[0])
+            start_angle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+            stop_angle = np.arctan2(p3[1] - center[1], p3[0] - center[0])
 
             new_geo_el['solid'] = Polygon(arc(center, radius, start_angle, stop_angle, direction, self.steps_per_circ))
             new_geo_el['follow'] = Polygon(
@@ -1662,9 +1663,9 @@ class FCSemiDisc(FCShapeTool):
             self.geometry = DrawToolShape(new_geo_el)
 
         else:  # self.mode == '12c'
-            p1 = array(self.points[0])
-            p2 = array(self.points[1])
-            pc = array(self.points[2])
+            p1 = np.array(self.points[0])
+            p2 = np.array(self.points[1])
+            pc = np.array(self.points[2])
 
             # Midpoint
             a = (p1 + p2) / 2.0
@@ -1673,7 +1674,7 @@ class FCSemiDisc(FCShapeTool):
             c = p2 - p1
 
             # Perpendicular vector
-            b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
+            b = np.dot(c, np.array([[0, -1], [1, 0]], dtype=np.float32))
             b /= numpy_norm(b)
 
             # Distance
@@ -1682,14 +1683,14 @@ class FCSemiDisc(FCShapeTool):
             # Which side? Cross product with c.
             # cross(M-A, B-A), where line is AB and M is test point.
             side = (pc[0] - p1[0]) * c[1] - (pc[1] - p1[1]) * c[0]
-            t *= sign(side)
+            t *= np.sign(side)
 
             # Center = a + bt
             center = a + b * t
 
             radius = numpy_norm(center - p1) + (self.buf_val / 2)
-            start_angle = arctan2(p1[1] - center[1], p1[0] - center[0])
-            stop_angle = arctan2(p2[1] - center[1], p2[0] - center[0])
+            start_angle = np.arctan2(p1[1] - center[1], p1[0] - center[0])
+            stop_angle = np.arctan2(p2[1] - center[1], p2[0] - center[0])
 
             new_geo_el['solid'] = Polygon(
                 arc(center, radius, start_angle, stop_angle, self.direction, self.steps_per_circ))
@@ -2437,9 +2438,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apertures_box.addLayout(grid1)
 
         apcode_lbl = QtWidgets.QLabel('%s:' % _('Aperture Code'))
-        apcode_lbl.setToolTip(
-        _("Code for the new aperture")
-        )
+        apcode_lbl.setToolTip(_("Code for the new aperture"))
         grid1.addWidget(apcode_lbl, 1, 0)
 
         self.apcode_entry = FCEntry()
@@ -2448,11 +2447,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         apsize_lbl = QtWidgets.QLabel('%s:' % _('Aperture Size'))
         apsize_lbl.setToolTip(
-        _("Size for the new aperture.\n"
-          "If aperture type is 'R' or 'O' then\n"
-          "this value is automatically\n"
-          "calculated as:\n"
-          "sqrt(width**2 + height**2)")
+            _("Size for the new aperture.\n"
+              "If aperture type is 'R' or 'O' then\n"
+              "this value is automatically\n"
+              "calculated as:\n"
+              "sqrt(width**2 + height**2)")
         )
         grid1.addWidget(apsize_lbl, 2, 0)
 
@@ -2462,10 +2461,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         aptype_lbl = QtWidgets.QLabel('%s:' % _('Aperture Type'))
         aptype_lbl.setToolTip(
-        _("Select the type of new aperture. Can be:\n"
-          "C = circular\n"
-          "R = rectangular\n"
-          "O = oblong")
+            _("Select the type of new aperture. Can be:\n"
+              "C = circular\n"
+              "R = rectangular\n"
+              "O = oblong")
         )
         grid1.addWidget(aptype_lbl, 3, 0)
 
@@ -2475,9 +2474,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.apdim_lbl = QtWidgets.QLabel('%s:' % _('Aperture Dim'))
         self.apdim_lbl.setToolTip(
-        _("Dimensions for the new aperture.\n"
-          "Active only for rectangular apertures (type R).\n"
-          "The format is (width, height)")
+            _("Dimensions for the new aperture.\n"
+              "Active only for rectangular apertures (type R).\n"
+              "The format is (width, height)")
         )
         grid1.addWidget(self.apdim_lbl, 4, 0)
 
@@ -2495,12 +2494,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.addaperture_btn = QtWidgets.QPushButton(_('Add'))
         self.addaperture_btn.setToolTip(
-           _( "Add a new aperture to the aperture list.")
+           _("Add a new aperture to the aperture list.")
         )
 
         self.delaperture_btn = QtWidgets.QPushButton(_('Delete'))
         self.delaperture_btn.setToolTip(
-           _( "Delete a aperture in the aperture list")
+           _("Delete a aperture in the aperture list")
         )
         hlay_ad.addWidget(self.addaperture_btn)
         hlay_ad.addWidget(self.delaperture_btn)
@@ -2677,8 +2676,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.array_type_combo = FCComboBox()
         self.array_type_combo.setToolTip(
-           _( "Select the type of pads array to create.\n"
-              "It can be Linear X(Y) or Circular")
+           _("Select the type of pads array to create.\n"
+             "It can be Linear X(Y) or Circular")
         )
         self.array_type_combo.addItem(_("Linear"))
         self.array_type_combo.addItem(_("Circular"))
@@ -2733,10 +2732,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.linear_angle_label.setToolTip(
-           _( "Angle at which the linear array is placed.\n"
-              "The precision is of max 2 decimals.\n"
-              "Min value is: -359.99 degrees.\n"
-              "Max value is:  360.00 degrees.")
+           _("Angle at which the linear array is placed.\n"
+             "The precision is of max 2 decimals.\n"
+             "Min value is: -359.99 degrees.\n"
+             "Max value is:  360.00 degrees.")
         )
         self.linear_angle_label.setMinimumWidth(100)
 
@@ -2808,9 +2807,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
             "scale": {"button": self.app.ui.aperture_scale_btn,
                       "constructor": FCScale},
             "markarea": {"button": self.app.ui.aperture_markarea_btn,
-                      "constructor": FCMarkArea},
+                         "constructor": FCMarkArea},
             "eraser": {"button": self.app.ui.aperture_eraser_btn,
-                      "constructor": FCEraser},
+                       "constructor": FCEraser},
             "copy": {"button": self.app.ui.aperture_copy_btn,
                      "constructor": FCApertureCopy},
             "transform": {"button": self.app.ui.grb_transform_btn,
@@ -3245,7 +3244,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         self.storage_dict[ap_id]['width'] = dims[0]
                         self.storage_dict[ap_id]['height'] = dims[1]
 
-                        size_val = math.sqrt((dims[0] ** 2) + (dims[1] ** 2))
+                        size_val = np.sqrt((dims[0] ** 2) + (dims[1] ** 2))
                         self.apsize_entry.set_value(size_val)
 
                     except Exception as e:
@@ -3613,7 +3612,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.grb_draw_eraser.triggered.connect(self.on_eraser)
         self.app.ui.grb_draw_transformations.triggered.connect(self.on_transform)
 
-
     def disconnect_canvas_event_handlers(self):
 
         # we restore the key and mouse control to FlatCAMApp method
@@ -3803,7 +3801,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of clear geometry
         # that fits inside the solid. otherwise we may loose the solid
         for apid in self.gerber_obj.apertures:
-            temp_solid_geometry= []
+            temp_solid_geometry = []
             if 'geometry' in self.gerber_obj.apertures[apid]:
                 # for elem in self.gerber_obj.apertures[apid]['geometry']:
                 #     if 'solid' in elem:
@@ -6032,10 +6030,10 @@ class TransformEditorTool(FlatCAMTool):
 
 
 def get_shapely_list_bounds(geometry_list):
-    xmin = Inf
-    ymin = Inf
-    xmax = -Inf
-    ymax = -Inf
+    xmin = np.Inf
+    ymin = np.Inf
+    xmax = -np.Inf
+    ymax = -np.Inf
 
     for gs in geometry_list:
         try:

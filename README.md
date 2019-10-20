@@ -9,6 +9,40 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+18.10.2019
+
+- finished the update on the Google translated Spanish translation.
+- updated the new objects icons for Gerber, Geometry and Excellon
+- small import problem fixed
+- RELEASE 8.98
+
+17.10.2019
+
+- fixed a bug in milling holes due of a message wrongly formatted
+- added an translator email address
+- finished the update on German Google translation. Part of it was corrected by Jens Karstedt
+- finished the update of the Romanian translation.
+- finished the Objects menu by adding the ability of actions to be checked so they will show the selected status of the objects and by adding to actions to (de)select all objects
+- fixed and optimized the click selection on canvas
+- fixed Gerber parsing for very simple Gerber files that have only one Polygon but many LPC zones
+- fixed SVG export; fix bug #327
+- finished the update on French Google translation.
+
+16.10.2019
+
+- small update to Romanian translation files
+
+15.10.2019
+
+- adjusted the layout in NCC Tool
+- fixed bug in Panelization Tool for which in case of Excellon objects, the panel kept a reference to the source object which created issues when moving or disabling/enabling the plots
+- cleaned up the module imports throughout the app (the TclCommands are not yet verified)
+- removed the styling on the comboboxes cellWidget's in the Tool Tables
+- replaced some of the icons that did not looked Ok on the dark theme
+- added a new toolbar button for the Copy object functionality
+- changed the Panelize tool icon
+- corrected some strings
+
 14.10.2019
 
 - modified the result highlight color in Check Rules Tool
@@ -189,7 +223,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the ToolMeasurement geometry not being displayed
 - fixed a bug in Excellon Editor that crashed the app when editing the first tool added automatically into a new black Excellon file
 - made sure that if the big mouse cursor is selected, the utility geometry in Excellon Editor has a thicker line width (2 pixels now) so it is visible over the geometry of the mouse cursor
-- fixed issue #319 where generating a CNCJob from a geometry made with NCC Tool made the app crash
+- fixed issue #319 where generating a CNCJob from a geometry made with NCC Tool made the app crash; also #328 which is the same
 - replaced in FlatCAM Tools and in FLatCAMObj.py  and in Editors all references to hardcoded decimals in string formats for tools with a variable declared in the __init__()
 - fixed a small bug that made app crash when the splash screen is disabled: it was trying to close it without being open
 

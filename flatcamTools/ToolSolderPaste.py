@@ -278,7 +278,7 @@ class SolderPaste(FlatCAMTool):
         )
 
         self.pp_combo = FCComboBox()
-        self.pp_combo.setStyleSheet('background-color: rgb(255,255,255)')
+        # self.pp_combo.setStyleSheet('background-color: rgb(255,255,255)')
         self.gcode_form_layout.addRow(pp_label, self.pp_combo)
 
         # ## Buttons

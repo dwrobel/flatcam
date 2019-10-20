@@ -5,14 +5,15 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import *
-
-from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
-    OptionalHideInputSection, OptionalInputSection
 from PyQt5 import QtGui, QtCore, QtWidgets
 
+from FlatCAMTool import FlatCAMTool
+from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
+    OptionalHideInputSection, OptionalInputSection
+
 from copy import deepcopy
+import logging
+from shapely.geometry import Polygon, MultiPolygon, Point
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -21,6 +22,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class Film(FlatCAMTool):
@@ -166,7 +169,7 @@ class Film(FlatCAMTool):
         self.ois_scale = OptionalInputSection(self.film_scale_cb, [self.film_scalex_label, self.film_scalex_entry,
                                                                    self.film_scaley_label,  self.film_scaley_entry])
         # Skew Geometry
-        self.film_skew_cb =FCCheckBox('%s' % _("Skew Film geometry"))
+        self.film_skew_cb = FCCheckBox('%s' % _("Skew Film geometry"))
         self.film_skew_cb.setToolTip(
             _("Positive values will skew to the right\n"
               "while negative values will skew to the left.")
@@ -202,9 +205,9 @@ class Film(FlatCAMTool):
               "It can be one of the four points of the geometry bounding box.")
         )
         self.film_skew_reference = RadioSet([{'label': _('Bottom Left'), 'value': 'bottomleft'},
-                                          {'label': _('Top Left'), 'value': 'topleft'},
-                                          {'label': _('Bottom Right'), 'value': 'bottomright'},
-                                          {'label': _('Top right'), 'value': 'topright'}],
+                                             {'label': _('Top Left'), 'value': 'topleft'},
+                                             {'label': _('Bottom Right'), 'value': 'bottomright'},
+                                             {'label': _('Top right'), 'value': 'topright'}],
                                             orientation='vertical',
                                             stretch=False)
 
@@ -331,7 +334,7 @@ class Film(FlatCAMTool):
 
         self.exc_label = QtWidgets.QLabel('%s:' % _("Excellon Obj"))
         self.exc_label.setToolTip(
-            _("Remove the geometry of Excellon from the Film to create tge holes in pads.")
+            _("Remove the geometry of Excellon from the Film to create the holes in pads.")
         )
         self.exc_combo = QtWidgets.QComboBox()
         self.exc_combo.setModel(self.app.collection)

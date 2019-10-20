@@ -5,10 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMTool import FlatCAMTool
-
-from flatcamGUI.GUIElements import RadioSet, FCComboBox, FCSpinner
 from PyQt5 import QtGui, QtWidgets
+
+from FlatCAMTool import FlatCAMTool
+from flatcamGUI.GUIElements import RadioSet, FCComboBox, FCSpinner
 
 import gettext
 import FlatCAMTranslation as fcTranslate
