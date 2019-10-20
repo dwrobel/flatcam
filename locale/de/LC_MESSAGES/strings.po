@@ -947,7 +947,7 @@ msgstr "Öffnen der G-Code-Datei abgebrochen."
 
 #: FlatCAMApp.py:8988 FlatCAMApp.py:8991 flatcamGUI/FlatCAMGUI.py:1433
 msgid "Open Project"
-msgstr "Offenes Projekt"
+msgstr "Projekt öffnen"
 
 #: FlatCAMApp.py:9000
 msgid "Open Project cancelled."
@@ -1177,7 +1177,7 @@ msgstr "Führen Sie das TCL-Skript aus"
 
 #: FlatCAMApp.py:9749
 msgid "Run TCL script cancelled."
-msgstr "Ausführen der TCL-Skriptdatei abgebrochen."
+msgstr "Exportieren der TCL-Skriptdatei abgebrochen."
 
 #: FlatCAMApp.py:9765
 msgid "TCL script file opened in Code Editor and executed."
@@ -4497,7 +4497,7 @@ msgstr "Speichert den Text im Editor in einer Datei."
 
 #: flatcamEditors/FlatCAMTextEditor.py:89
 msgid "Run Code"
-msgstr "Code ausführen"
+msgstr "Code exportieren"
 
 #: flatcamEditors/FlatCAMTextEditor.py:90
 msgid "Will run the TCL commands found in the text file, one by one."
@@ -4580,23 +4580,23 @@ msgstr "Öffnen"
 
 #: flatcamGUI/FlatCAMGUI.py:100
 msgid "Open &Project ..."
-msgstr "Offen &Projekt..."
+msgstr "&Projekt öffnen..."
 
 #: flatcamGUI/FlatCAMGUI.py:106 flatcamGUI/FlatCAMGUI.py:3680
 msgid "Open &Gerber ...\tCTRL+G"
-msgstr "Offen &Gerber ...\\STRG+G"
+msgstr "&Gerber öffnen...\\STRG+G"
 
 #: flatcamGUI/FlatCAMGUI.py:111 flatcamGUI/FlatCAMGUI.py:3685
 msgid "Open &Excellon ...\tCTRL+E"
-msgstr "Offen &Excellon ...\\STRG+E"
+msgstr "&Excellon öffnen...\\STRG+E"
 
 #: flatcamGUI/FlatCAMGUI.py:115 flatcamGUI/FlatCAMGUI.py:3689
 msgid "Open G-&Code ..."
-msgstr "Offen G-&Code ..."
+msgstr "G-&Code öffnen..."
 
 #: flatcamGUI/FlatCAMGUI.py:121
 msgid "Open Config ..."
-msgstr "Öffne Config ..."
+msgstr "Config öffnen..."
 
 #: flatcamGUI/FlatCAMGUI.py:125
 msgid "Recent projects"
@@ -4623,7 +4623,7 @@ msgstr "Skript öffnen ..."
 #: flatcamGUI/FlatCAMGUI.py:138 flatcamGUI/FlatCAMGUI.py:736
 #: flatcamGUI/FlatCAMGUI.py:2154 flatcamGUI/FlatCAMGUI.py:3660
 msgid "Run Script ..."
-msgstr "Skript ausführen ..."
+msgstr "Skript exportieren ..."
 
 #: flatcamGUI/FlatCAMGUI.py:140 flatcamGUI/FlatCAMGUI.py:3662
 msgid ""
@@ -4631,7 +4631,7 @@ msgid ""
 "enabling the automation of certain\n"
 "functions of FlatCAM."
 msgstr ""
-"Läuft also das geöffnete Tcl-Skript\n"
+"Das geöffnete Tcl-Skript wird ausgeführt.\n"
 "Ermöglichung der Automatisierung bestimmter\n"
 "Funktionen von FlatCAM."
 
@@ -4657,7 +4657,7 @@ msgstr "&DXF als Gerberobjekt ..."
 
 #: flatcamGUI/FlatCAMGUI.py:171
 msgid "Export"
-msgstr "Ausführen"
+msgstr "Exportieren"
 
 #: flatcamGUI/FlatCAMGUI.py:174
 msgid "Export &SVG ..."
@@ -4678,8 +4678,8 @@ msgid ""
 "information currently in FlatCAM Plot Area."
 msgstr ""
 "Exportiert ein Bild im PNG-Format,\n"
-"Das gespeicherte Bild enthält das Bild\n"
-"Informationen derzeit im FlatCAM-Plotbereich."
+"Das gespeicherte Bild enthält die\n"
+"Bildinformationen des FlatCAM-Plotbereiches."
 
 #: flatcamGUI/FlatCAMGUI.py:193
 msgid "Export &Excellon ..."
@@ -4760,7 +4760,7 @@ msgstr "Umwandlung"
 
 #: flatcamGUI/FlatCAMGUI.py:277
 msgid "&Join Geo/Gerber/Exc -> Geo"
-msgstr "Beitreten Geo/Gerber/Exc -> Geo"
+msgstr "Geo/Gerber/Exc -> Geo zusammenfassen"
 
 #: flatcamGUI/FlatCAMGUI.py:279
 msgid ""
@@ -4778,7 +4778,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:286
 msgid "Join Excellon(s) -> Excellon"
-msgstr "Beitreten Excellon(s) -> Excellon"
+msgstr "Excellon(s) -> Excellon zusammenfassen"
 
 #: flatcamGUI/FlatCAMGUI.py:288
 msgid "Merge a selection of Excellon objects into a new combo Excellon object."
@@ -4788,7 +4788,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:291
 msgid "Join Gerber(s) -> Gerber"
-msgstr "Beitreten Gerber(s) -> Gerber"
+msgstr "Gerber(s) -> Gerber zusammenfassen"
 
 #: flatcamGUI/FlatCAMGUI.py:293
 msgid "Merge a selection of Gerber objects into a new combo Gerber object."
@@ -4850,7 +4850,7 @@ msgstr "Einheiten umschalten\tQ"
 
 #: flatcamGUI/FlatCAMGUI.py:334
 msgid "&Select All\tCTRL+A"
-msgstr "Wählen Sie Alle\tSTRG+A"
+msgstr "Alles auswählen\tSTRG+A"
 
 #: flatcamGUI/FlatCAMGUI.py:338
 msgid "&Preferences\tSHIFT+P"
@@ -4886,23 +4886,23 @@ msgstr "Quelltext anzeigen\tALT+S"
 
 #: flatcamGUI/FlatCAMGUI.py:382
 msgid "&View"
-msgstr "&Blick"
+msgstr "&Ansicht"
 
 #: flatcamGUI/FlatCAMGUI.py:383
 msgid "Enable all plots\tALT+1"
-msgstr "Aktivieren Sie alle Diagramme\tALT+1"
+msgstr "Alle Diagramme aktivieren\tALT+1"
 
 #: flatcamGUI/FlatCAMGUI.py:385
 msgid "Disable all plots\tALT+2"
-msgstr "Deaktivieren Sie alle Diagramme\tALT+2"
+msgstr "Alle Diagramme deaktivieren\tALT+2"
 
 #: flatcamGUI/FlatCAMGUI.py:387
 msgid "Disable non-selected\tALT+3"
-msgstr "Deaktivieren Sie nicht ausgewählt\tALT+3"
+msgstr "Nicht ausgewählte Diagramme deaktivieren\tALT+3"
 
 #: flatcamGUI/FlatCAMGUI.py:390
 msgid "&Zoom Fit\tV"
-msgstr "Zoomen passen\tV"
+msgstr "Passed zoomen\tV"
 
 #: flatcamGUI/FlatCAMGUI.py:391
 msgid "&Zoom In\t="
@@ -5207,7 +5207,7 @@ msgstr "Raster-Symbolleiste"
 
 #: flatcamGUI/FlatCAMGUI.py:694 flatcamGUI/FlatCAMGUI.py:2118
 msgid "Open project"
-msgstr "Offenes Projekt"
+msgstr "Projekt öffnen"
 
 #: flatcamGUI/FlatCAMGUI.py:695 flatcamGUI/FlatCAMGUI.py:2119
 msgid "Save project"
@@ -5215,15 +5215,15 @@ msgstr "Projekt speichern"
 
 #: flatcamGUI/FlatCAMGUI.py:700 flatcamGUI/FlatCAMGUI.py:2122
 msgid "New Blank Geometry"
-msgstr "Neue leere Geometrie"
+msgstr "Neue Geometrie erstellen"
 
 #: flatcamGUI/FlatCAMGUI.py:701 flatcamGUI/FlatCAMGUI.py:2123
 msgid "New Blank Gerber"
-msgstr "Neue leere Gerber"
+msgstr "Neues Gerber erstellen"
 
 #: flatcamGUI/FlatCAMGUI.py:702 flatcamGUI/FlatCAMGUI.py:2124
 msgid "New Blank Excellon"
-msgstr "Neuer unbelegter Excellon"
+msgstr "Neuen Excellon erstellen"
 
 #: flatcamGUI/FlatCAMGUI.py:706 flatcamGUI/FlatCAMGUI.py:2128
 msgid "Save Object and close the Editor"
@@ -5239,26 +5239,29 @@ msgstr "&Löschen"
 msgid "Distance Tool"
 msgstr "Entfernungswerkzeug"
 
+
 #: flatcamGUI/FlatCAMGUI.py:715 flatcamGUI/FlatCAMGUI.py:2137
 msgid "Distance Min Tool"
 msgstr "Werkzeug für Mindestabstand"
 
+
 #: flatcamGUI/FlatCAMGUI.py:716 flatcamGUI/FlatCAMGUI.py:1428
 #: flatcamGUI/FlatCAMGUI.py:2138
 msgid "Set Origin"
-msgstr "Herkunft festlegen"
+msgstr "Nullpunkt festlegen"
 
 #: flatcamGUI/FlatCAMGUI.py:717 flatcamGUI/FlatCAMGUI.py:2139
 msgid "Jump to Location"
-msgstr "Zum Standort springen"
+msgstr "Zur Position springen\tJ"
+
 
 #: flatcamGUI/FlatCAMGUI.py:722 flatcamGUI/FlatCAMGUI.py:2142
 msgid "&Replot"
-msgstr "&Replotieren"
+msgstr "Neuzeichnen &R"
 
 #: flatcamGUI/FlatCAMGUI.py:723 flatcamGUI/FlatCAMGUI.py:2143
 msgid "&Clear plot"
-msgstr "&Plot klar löschen"
+msgstr "Darstellung löschen &C"
 
 #: flatcamGUI/FlatCAMGUI.py:724 flatcamGUI/FlatCAMGUI.py:1431
 #: flatcamGUI/FlatCAMGUI.py:2144
@@ -5273,7 +5276,7 @@ msgstr "Rauszoomen"
 #: flatcamGUI/FlatCAMGUI.py:726 flatcamGUI/FlatCAMGUI.py:1430
 #: flatcamGUI/FlatCAMGUI.py:1860 flatcamGUI/FlatCAMGUI.py:2146
 msgid "Zoom Fit"
-msgstr "Passenzoomen"
+msgstr "Passend zoomen"
 
 #: flatcamGUI/FlatCAMGUI.py:733 flatcamGUI/FlatCAMGUI.py:2151
 msgid "&Command Line"
@@ -5686,7 +5689,11 @@ msgstr "Auf X-Achse spiegeln"
 msgid "Flip on Y_axis"
 msgstr "Auf Y-Achse spiegeln"
 
-#: flatcamGUI/FlatCAMGUI.py:1431
+#: flatcamGUI/FlatCAMGUI.py:1421
+msgid "Select All"
+msgstr "Alles auswählenm"
+
+#: flatcamGUI/FlatCAMGUI.py:1421
 msgid "Copy Obj"
 msgstr "Objekt kopieren"
 
@@ -6521,7 +6528,7 @@ msgstr ""
 #: flatcamGUI/PreferencesUI.py:1478 flatcamGUI/PreferencesUI.py:3730
 #: flatcamTools/ToolNonCopperClear.py:235
 msgid "V-Tip Dia"
-msgstr "V-Tip-Durchm"
+msgstr "Stichelspitzen-Durchm"
 
 #: flatcamGUI/ObjectUI.py:296 flatcamGUI/ObjectUI.py:1261
 #: flatcamGUI/PreferencesUI.py:1480 flatcamGUI/PreferencesUI.py:3732
@@ -6533,7 +6540,7 @@ msgstr "Der Spitzendurchmesser für das V-Shape-Werkzeug"
 #: flatcamGUI/PreferencesUI.py:1490 flatcamGUI/PreferencesUI.py:3742
 #: flatcamTools/ToolNonCopperClear.py:245
 msgid "V-Tip Angle"
-msgstr "V-Tip-Winkel"
+msgstr "Stichel-Winkel"
 
 #: flatcamGUI/ObjectUI.py:309 flatcamGUI/ObjectUI.py:1276
 #: flatcamGUI/PreferencesUI.py:1492 flatcamGUI/PreferencesUI.py:3744
@@ -6542,7 +6549,7 @@ msgid ""
 "The tip angle for V-Shape Tool.\n"
 "In degree."
 msgstr ""
-"Der Spitzenwinkel für das V-Shape-Werkzeug.\n"
+"Der Spitzenwinkel für das Stichel-Werkzeug.\n"
 "In grad."
 
 #: flatcamGUI/ObjectUI.py:321 flatcamGUI/ObjectUI.py:749
@@ -6551,7 +6558,7 @@ msgstr ""
 #: flatcamGUI/PreferencesUI.py:3796 flatcamGUI/PreferencesUI.py:4670
 #: flatcamTools/ToolCalculators.py:110 flatcamTools/ToolNonCopperClear.py:291
 msgid "Cut Z"
-msgstr "Schnitt Z"
+msgstr "Schnitttiefe Z"
 
 #: flatcamGUI/ObjectUI.py:323 flatcamGUI/ObjectUI.py:1292
 #: flatcamGUI/PreferencesUI.py:1505 flatcamGUI/PreferencesUI.py:2969
@@ -7014,7 +7021,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:763 flatcamGUI/ObjectUI.py:1331
 #: flatcamGUI/PreferencesUI.py:2158 flatcamGUI/PreferencesUI.py:3015
 msgid "Travel Z"
-msgstr "Reise Z"
+msgstr "Bewegungshöhe Z (Travel)"
 
 #: flatcamGUI/ObjectUI.py:765 flatcamGUI/PreferencesUI.py:2160
 msgid ""
@@ -7128,7 +7135,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:870 flatcamGUI/ObjectUI.py:1468
 #: flatcamGUI/PreferencesUI.py:2231 flatcamGUI/PreferencesUI.py:3118
 msgid "Dwell"
-msgstr "Wohnen"
+msgstr "Verweilen"
 
 #: flatcamGUI/ObjectUI.py:872 flatcamGUI/ObjectUI.py:1471
 #: flatcamGUI/PreferencesUI.py:2233 flatcamGUI/PreferencesUI.py:3120
@@ -7491,8 +7498,8 @@ msgid ""
 msgstr ""
 "Verwenden Sie zum Begrenzen mehrere Durchgänge\n"
 "die Schnitttiefe in jedem Durchgang. Wille\n"
-"mehrmals schneiden, bis Schnitt Z ist\n"
-"erreicht."
+"mehrmals schneiden, bis Schnitttiefe Z\n"
+"erreicht ist."
 
 #: flatcamGUI/ObjectUI.py:1322
 msgid "Depth of each pass (positive)."
@@ -8256,7 +8263,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:690
 msgid "Hover Shape"
-msgstr "Schwebeflug-Form"
+msgstr "schwebende Form"
 
 #: flatcamGUI/PreferencesUI.py:692
 msgid ""
@@ -8500,7 +8507,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:976
 msgid "Legacy(2D)"
-msgstr "Vermächtnis (2D)"
+msgstr "Legacy (2D)"
 
 #: flatcamGUI/PreferencesUI.py:977
 msgid "OpenGL(3D)"
@@ -8508,7 +8515,7 @@ msgstr "OpenGL (3D)"
 
 #: flatcamGUI/PreferencesUI.py:984
 msgid "APP. LEVEL"
-msgstr "Bewerbungsebene"
+msgstr "Darstellung"
 
 #: flatcamGUI/PreferencesUI.py:985
 msgid ""
@@ -8641,7 +8648,7 @@ msgstr "SHIFT"
 
 #: flatcamGUI/PreferencesUI.py:1080
 msgid "Workers number"
-msgstr "Arbeiter Nummer"
+msgstr "Thread Anzahl"
 
 #: flatcamGUI/PreferencesUI.py:1082 flatcamGUI/PreferencesUI.py:1091
 msgid ""
@@ -8653,9 +8660,9 @@ msgid ""
 "After change, it will be applied at next App start."
 msgstr ""
 "Die Anzahl der für die App verfügbaren Qthreads.\n"
-"Eine größere Anzahl kann die Jobs aber schneller beenden\n"
-"Je nach Geschwindigkeit Ihres Computers kann die App erstellt werden\n"
-"reagiert nicht Kann einen Wert zwischen 2 und 16 haben.\n"
+"Eine größere Anzahl kann die Jobs, \n"
+"anhängig von der Geschwindigkeit Ihres Computers, schneller ausführen.\n"
+"Kann einen Wert zwischen 2 und 16 haben.\n"
 "Der Standardwert ist 2.\n"
 "Nach dem Ändern wird es beim nächsten Start der App angewendet."
 
@@ -8972,11 +8979,11 @@ msgstr "Neuer Blendencode"
 
 #: flatcamGUI/PreferencesUI.py:1700
 msgid "New Aperture size"
-msgstr "Neuer Öffnungsgröße"
+msgstr "Standard Blendenöffnung"
 
 #: flatcamGUI/PreferencesUI.py:1702
 msgid "Size for the new aperture"
-msgstr "Größe für die neue Blende"
+msgstr "Wert für die neue Blende"
 
 #: flatcamGUI/PreferencesUI.py:1713
 msgid "New Aperture type"
@@ -10929,7 +10936,8 @@ msgstr "Minimale akzeptable Trace-Größe."
 #: flatcamGUI/PreferencesUI.py:5150 flatcamTools/ToolRulesCheck.py:277
 #: flatcamTools/ToolRulesCheck.py:1128 flatcamTools/ToolRulesCheck.py:1158
 msgid "Copper to Copper clearance"
-msgstr "Kupfer zu Kupfer Abstand"
+msgstr "Mininalabstand Kupfer zu Kupfer"
+
 
 #: flatcamGUI/PreferencesUI.py:5152 flatcamTools/ToolRulesCheck.py:279
 msgid ""
@@ -10953,15 +10961,14 @@ msgstr "Minimaler akzeptabler Abstandswert."
 #: flatcamTools/ToolRulesCheck.py:1188 flatcamTools/ToolRulesCheck.py:1194
 #: flatcamTools/ToolRulesCheck.py:1207 flatcamTools/ToolRulesCheck.py:1214
 msgid "Copper to Outline clearance"
-msgstr "Kupfer zu Umriss Abstand"
+msgstr "Mininalabstand Kupfer zum Rahmen"
+
 
 #: flatcamGUI/PreferencesUI.py:5172 flatcamTools/ToolRulesCheck.py:302
 msgid ""
 "This checks if the minimum clearance between copper\n"
 "features and the outline is met."
-msgstr ""
-"Dies überprüft, ob der Mindestabstand zwischen Kupfer\n"
-"Spuren und der Umriss ist erfüllt."
+msgstr "Überprüft den Minimalabstand zwischen Kupfer und Rand"
 
 #: flatcamGUI/PreferencesUI.py:5190 flatcamTools/ToolRulesCheck.py:323
 msgid "Silk to Silk Clearance"
@@ -11402,7 +11409,7 @@ msgid ""
 "Calculate either the Cut Z or the effective tool diameter,\n"
 "  depending on which is desired and which is known. "
 msgstr ""
-"Berechnen Sie entweder den Schnitt Z oder den effektiven "
+"Berechnen Sie entweder die Schnitttiefe Z oder den effektiven "
 "Werkzeugdurchmesser.\n"
 " je nachdem was gewünscht wird und was bekannt ist. "
 
@@ -12907,8 +12914,7 @@ msgstr "Arbeiten..."
 msgid ""
 "Optimal Tool. Started to search for the minimum distance between copper "
 "features."
-msgstr ""
-"Optimales Werkzeug. Suche nach dem Mindestabstand zwischen Kupferelementen."
+msgstr "Optimierer. Sucht Minimalabstand zwischen Kupferbereichen."
 
 #: flatcamTools/ToolOptimal.py:330
 msgid "Optimal Tool. Parsing geometry for aperture"
