@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - updated the About FlatCAM window
 - reverted change in tool dia being able to take only positive values in Gerber Object UI
 - started to work to a new tool: Calibrate Excellon Tool
+- solved the issue #329
+
 
 18.10.2019
 

@@ -2668,6 +2668,9 @@ class App(QtCore.QObject):
         # set the value used in the Windows Title
         self.engine = self.ui.general_defaults_form.general_app_group.ge_radio.get_value()
 
+        # this holds a widget that is installed in the Plot Area when View Source option is used
+        self.source_editor_tab = None
+
         # ###############################################################################
         # ############# Save defaults to factory_defaults.FlatConfig file ###############
         # ############# It's done only once after install                 ###############
@@ -9557,8 +9560,7 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.setCurrentWidget(self.text_editor_tab)
 
     def on_view_source(self):
-        self.inform.emit('%s' %
-                         _("Viewing the source code of the selected object."))
+        self.inform.emit('%s' % _("Viewing the source code of the selected object."))
         self.proc_container.view.set_busy(_("Loading..."))
 
         try:
@@ -9569,14 +9571,13 @@ class App(QtCore.QObject):
                              _("Select an Gerber or Excellon file to view it's source file."))
             return 'fail'
 
+        flt = "All Files (*.*)"
         if obj.kind == 'gerber':
             flt = "Gerber Files (*.GBR);;All Files (*.*)"
         elif obj.kind == 'excellon':
             flt = "Excellon Files (*.DRL);;All Files (*.*)"
         elif obj.kind == 'cncjob':
             "GCode Files (*.NC);;All Files (*.*)"
-        else:
-            flt = "All Files (*.*)"
 
         self.source_editor_tab = TextEditor(app=self)
 
@@ -9598,9 +9599,16 @@ class App(QtCore.QObject):
         # Switch plot_area to CNCJob tab
         self.ui.plot_tab_area.setCurrentWidget(self.source_editor_tab)
 
-        self.source_editor_tab.buttonOpen.clicked.disconnect()
+        try:
+            self.source_editor_tab.buttonOpen.clicked.disconnect()
+        except TypeError:
+            pass
         self.source_editor_tab.buttonOpen.clicked.connect(lambda: self.source_editor_tab.handleOpen(filt=flt))
-        self.source_editor_tab.buttonSave.clicked.disconnect()
+
+        try:
+            self.source_editor_tab.buttonSave.clicked.disconnect()
+        except TypeError:
+            pass
         self.source_editor_tab.buttonSave.clicked.connect(lambda: self.source_editor_tab.handleSaveGCode(filt=flt))
 
         # then append the text from GCode to the text editor
