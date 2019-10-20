@@ -2522,6 +2522,7 @@ class App(QtCore.QObject):
         self.pdf_tool = None
         self.image_tool = None
         self.pcb_wizard_tool = None
+        self.cal_exc_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         self.install_tools()
@@ -3054,6 +3055,10 @@ class App(QtCore.QObject):
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
+        self.cal_exc_tool = ToolCalibrateExcellon(self)
+        self.cal_exc_tool.install(icon=QtGui.QIcon('share/drill16.png'), pos=self.ui.menutool,
+                                  before=self.dblsidedtool.menuAction,
+                                  separator=False)
         self.distance_tool = Distance(self)
         self.distance_tool.install(icon=QtGui.QIcon('share/distance16.png'), pos=self.ui.menuedit,
                                    before=self.ui.menueditorigin,

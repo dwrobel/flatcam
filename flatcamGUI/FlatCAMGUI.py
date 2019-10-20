@@ -379,7 +379,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## View # ######################################
         # ########################################################################
-        self.menuview = self.menu.addMenu(_('&View'))
+        self.menuview = self.menu.addMenu(_('View'))
         self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), _('Enable all plots\tALT+1'))
         self.menuviewdisableall = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
                                                           _('Disable all plots\tALT+2'))
@@ -430,7 +430,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## Tool # ######################################
         # ########################################################################
-        self.menutool = QtWidgets.QMenu(_('&Tool'))
+        self.menutool = QtWidgets.QMenu(_('Tool'))
         self.menutoolaction = self.menu.addMenu(self.menutool)
         self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), _('&Command Line\tS'))
 
@@ -2469,9 +2469,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.dblsidedtool.run(toggle=True)
                     return
 
-                # Transformation Tool
+                # Calibrate Excellon Tool
                 if key == QtCore.Qt.Key_E:
-                    self.app.transform_tool.run(toggle=True)
+                    self.app.cal_exc_tool.run(toggle=True)
                     return
 
                 # Toggle Grid lines
@@ -2519,14 +2519,19 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_view_source()
                     return
 
-                # Cutout Tool
-                if key == QtCore.Qt.Key_U:
-                    self.app.cutout_tool.run(toggle=True)
+                # Transformation Tool
+                if key == QtCore.Qt.Key_T:
+                    self.app.transform_tool.run(toggle=True)
                     return
 
                 # Substract Tool
                 if key == QtCore.Qt.Key_W:
                     self.app.sub_tool.run(toggle=True)
+                    return
+
+                # Cutout Tool
+                if key == QtCore.Qt.Key_X:
+                    self.app.cutout_tool.run(toggle=True)
                     return
 
                 # Panelize Tool
