@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+21.10.2019
+
+- the context menu for the Tabs in notebook and PlotTabArea is launched now on right mouse click on tabs themselves
+
 18.10.2019
 
 - fixed a small bug in BETA status change
@@ -16,7 +20,6 @@ CAD program, and create G-Code for Isolation routing.
 - reverted change in tool dia being able to take only positive values in Gerber Object UI
 - started to work to a new tool: Calibrate Excellon Tool
 - solved the issue #329
-
 
 18.10.2019
 

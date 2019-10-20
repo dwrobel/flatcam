@@ -1978,14 +1978,13 @@ class App(QtCore.QObject):
         # ToolBar signals
         self.connect_toolbar_signals()
 
-        # Notebook signals
-        # make the right click on the notebook tab connect to a function
-        self.ui.notebook.setupContextMenu()
-        self.ui.notebook.addContextMenu(
-            _("Detachable Tabs"), self.on_notebook_tab_rmb_click,
-            initial_checked=self.defaults["global_tabs_detachable"])
+        # Notebook and Plot Tab Area signals
+        # make the right click on the notebook tab and plot tab area tab raise a menu
+        self.ui.notebook.tabBar.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.ui.plot_tab_area.tabBar.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.on_tab_setup_context_menu()
         # activate initial state
-        self.on_notebook_tab_rmb_click(self.defaults["global_tabs_detachable"])
+        self.on_tab_rmb_click(self.defaults["global_tabs_detachable"])
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
@@ -6703,12 +6702,29 @@ class App(QtCore.QObject):
         # This will write the setting to the platform specific storage.
         del settings
 
-    def on_notebook_tab_rmb_click(self, checked):
+    def on_tab_rmb_click(self, checked):
         self.ui.notebook.set_detachable(val=checked)
         self.defaults["global_tabs_detachable"] = checked
 
         self.ui.plot_tab_area.set_detachable(val=checked)
         self.defaults["global_tabs_detachable"] = checked
+
+    def on_tab_setup_context_menu(self):
+        initial_checked = self.defaults["global_tabs_detachable"]
+        action_name = str(_("Detachable Tabs"))
+        action = QtWidgets.QAction(self)
+        action.setCheckable(True)
+        action.setText(action_name)
+        action.setChecked(initial_checked)
+
+        self.ui.notebook.tabBar.addAction(action)
+        self.ui.plot_tab_area.tabBar.addAction(action)
+
+        try:
+            action.triggered.disconnect()
+        except TypeError:
+            pass
+        action.triggered.connect(self.on_tab_rmb_click)
 
     def on_deselect_all(self):
         self.collection.set_all_inactive()
