@@ -5,12 +5,15 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from PyQt5 import QtWidgets, QtCore
+
 from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import *
 from flatcamGUI.VisPyVisuals import *
+from flatcamGUI.GUIElements import FCEntry
 
-from math import sqrt
-
+import copy
+import math
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -18,6 +21,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class Distance(FlatCAMTool):
@@ -335,7 +340,7 @@ class Distance(FlatCAMTool):
             elif len(self.points) == 2:
                 dx = self.points[1][0] - self.points[0][0]
                 dy = self.points[1][1] - self.points[0][1]
-                d = sqrt(dx ** 2 + dy ** 2)
+                d = math.sqrt(dx ** 2 + dy ** 2)
                 self.stop_entry.set_value("(%.*f, %.*f)" % (self.decimals, pos[0], self.decimals, pos[1]))
 
                 self.app.inform.emit(_("MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}").format(

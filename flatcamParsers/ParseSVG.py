@@ -23,7 +23,7 @@
 from svg.path import Line, Arc, CubicBezier, QuadraticBezier, parse_path
 from svg.path.path import Move
 from shapely.geometry import LineString
-from shapely.affinity import skew, affine_transform
+from shapely.affinity import skew, affine_transform, rotate
 import numpy as np
 
 from flatcamParsers.ParseFont import *

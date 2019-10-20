@@ -7,7 +7,7 @@
 # Modified by Marius Stanciu 09/21/2019                    #
 ############################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
 
 # needed for legacy mode

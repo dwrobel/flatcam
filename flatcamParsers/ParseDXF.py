@@ -6,6 +6,8 @@
 # ##########################################################
 
 from shapely.geometry import LineString
+from shapely.affinity import rotate
+
 import logging
 
 log = logging.getLogger('base2')

@@ -5,13 +5,19 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import *
-from shapely.geometry import Point
-from shapely import affinity
-from shapely.ops import nearest_points
-from PyQt5 import QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
+from FlatCAMTool import FlatCAMTool
+from flatcamGUI.GUIElements import OptionalHideInputSection, FCTextArea, FCEntry, FCSpinner, FCCheckBox
+from FlatCAMObj import FlatCAMGerber
+import FlatCAMApp
+
+from shapely.geometry import MultiPolygon
+from shapely.ops import nearest_points
+
+import numpy as np
+
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -20,13 +26,15 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+log = logging.getLogger('base')
+
 
 class ToolOptimal(FlatCAMTool):
 
     toolName = _("Optimal Tool")
 
-    update_text = pyqtSignal(list)
-    update_sec_distances = pyqtSignal(dict)
+    update_text = QtCore.pyqtSignal(list)
+    update_sec_distances = QtCore.pyqtSignal(dict)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
