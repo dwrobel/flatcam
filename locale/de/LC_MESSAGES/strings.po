@@ -623,7 +623,7 @@ msgid ""
 "Are you sure you want to permanently delete\n"
 "the selected objects?"
 msgstr ""
-"Möchten Sie ie ausgewählten Objekte\n"
+"Möchten Sie die ausgewählten Objekte\n"
 "wirklich dauerhaft löschen?"
 
 #: FlatCAMApp.py:7052
@@ -4623,7 +4623,7 @@ msgstr "Skript öffnen ..."
 #: flatcamGUI/FlatCAMGUI.py:138 flatcamGUI/FlatCAMGUI.py:736
 #: flatcamGUI/FlatCAMGUI.py:2154 flatcamGUI/FlatCAMGUI.py:3660
 msgid "Run Script ..."
-msgstr "Skript exportieren ..."
+msgstr "Skript ausführen ..."
 
 #: flatcamGUI/FlatCAMGUI.py:140 flatcamGUI/FlatCAMGUI.py:3662
 msgid ""
