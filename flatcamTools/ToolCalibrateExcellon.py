@@ -77,7 +77,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         grid_lay.addWidget(self.bottom_left_lbl, 3, 0)
         self.bottom_left_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
         grid_lay.addWidget(self.bottom_left_tgt_lbl, 3, 1)
-        self.bottom_left_found_lbl = QtWidgets.QLabel('%s' % _('Found'))
+        self.bottom_left_found_lbl = QtWidgets.QLabel('%s' % _('Cal. Origin'))
         grid_lay.addWidget(self.bottom_left_found_lbl, 3, 2)
 
         self.bottom_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
@@ -96,7 +96,6 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.bottom_left_coordy_found = EvalEntry()
         grid_lay.addWidget(self.bottom_left_coordy_found, 5, 2)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 6, 0)
         self.bottom_left_coordx_found.set_value(_('Set Origin'))
         self.bottom_left_coordy_found.set_value(_('Set Origin'))
         self.bottom_left_coordx_found.setDisabled(True)
@@ -104,90 +103,186 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         # BOTTOM RIGHT
         self.bottom_right_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Bottom Right'))
-        grid_lay.addWidget(self.bottom_right_lbl, 7, 0)
+        grid_lay.addWidget(self.bottom_right_lbl, 6, 0)
         self.bottom_right_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        grid_lay.addWidget(self.bottom_right_tgt_lbl, 7, 1)
-        self.bottom_right_found_lbl = QtWidgets.QLabel('%s' % _('Found'))
-        grid_lay.addWidget(self.bottom_right_found_lbl, 7, 2)
+        grid_lay.addWidget(self.bottom_right_tgt_lbl, 6, 1)
+        self.bottom_right_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
+        grid_lay.addWidget(self.bottom_right_found_lbl, 6, 2)
 
         self.bottom_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        grid_lay.addWidget(self.bottom_right_coordx_lbl, 8, 0)
+        grid_lay.addWidget(self.bottom_right_coordx_lbl, 7, 0)
         self.bottom_right_coordx_tgt = EvalEntry()
         self.bottom_right_coordx_tgt.setDisabled(True)
-        grid_lay.addWidget(self.bottom_right_coordx_tgt, 8, 1)
+        grid_lay.addWidget(self.bottom_right_coordx_tgt, 7, 1)
         self.bottom_right_coordx_found = EvalEntry()
-        grid_lay.addWidget(self.bottom_right_coordx_found, 8, 2)
+        grid_lay.addWidget(self.bottom_right_coordx_found, 7, 2)
 
         self.bottom_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        grid_lay.addWidget(self.bottom_right_coordy_lbl, 9, 0)
+        grid_lay.addWidget(self.bottom_right_coordy_lbl, 8, 0)
         self.bottom_right_coordy_tgt = EvalEntry()
         self.bottom_right_coordy_tgt.setDisabled(True)
-        grid_lay.addWidget(self.bottom_right_coordy_tgt, 9, 1)
+        grid_lay.addWidget(self.bottom_right_coordy_tgt, 8, 1)
         self.bottom_right_coordy_found = EvalEntry()
-        grid_lay.addWidget(self.bottom_right_coordy_found, 9, 2)
+        grid_lay.addWidget(self.bottom_right_coordy_found, 8, 2)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 10, 0)
 
         # TOP LEFT
         self.top_left_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Top Left'))
-        grid_lay.addWidget(self.top_left_lbl, 11, 0)
+        grid_lay.addWidget(self.top_left_lbl, 9, 0)
         self.top_left_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        grid_lay.addWidget(self.top_left_tgt_lbl, 11, 1)
-        self.top_left_found_lbl = QtWidgets.QLabel('%s' % _('Found'))
-        grid_lay.addWidget(self.top_left_found_lbl, 11, 2)
+        grid_lay.addWidget(self.top_left_tgt_lbl, 9, 1)
+        self.top_left_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
+        grid_lay.addWidget(self.top_left_found_lbl, 9, 2)
 
         self.top_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        grid_lay.addWidget(self.top_left_coordx_lbl, 12, 0)
+        grid_lay.addWidget(self.top_left_coordx_lbl, 10, 0)
         self.top_left_coordx_tgt = EvalEntry()
         self.top_left_coordx_tgt.setDisabled(True)
-        grid_lay.addWidget(self.top_left_coordx_tgt, 12, 1)
+        grid_lay.addWidget(self.top_left_coordx_tgt, 10, 1)
         self.top_left_coordx_found = EvalEntry()
-        grid_lay.addWidget(self.top_left_coordx_found, 12, 2)
+        grid_lay.addWidget(self.top_left_coordx_found, 10, 2)
 
         self.top_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        grid_lay.addWidget(self.top_left_coordy_lbl, 13, 0)
+        grid_lay.addWidget(self.top_left_coordy_lbl, 11, 0)
         self.top_left_coordy_tgt = EvalEntry()
         self.top_left_coordy_tgt.setDisabled(True)
-        grid_lay.addWidget(self.top_left_coordy_tgt, 13, 1)
+        grid_lay.addWidget(self.top_left_coordy_tgt, 11, 1)
         self.top_left_coordy_found = EvalEntry()
-        grid_lay.addWidget(self.top_left_coordy_found, 13, 2)
-
-        grid_lay.addWidget(QtWidgets.QLabel(''), 14, 0)
+        grid_lay.addWidget(self.top_left_coordy_found, 11, 2)
 
         # TOP RIGHT
         self.top_right_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Top Right'))
-        grid_lay.addWidget(self.top_right_lbl, 15, 0)
+        grid_lay.addWidget(self.top_right_lbl, 12, 0)
         self.top_right_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        grid_lay.addWidget(self.top_right_tgt_lbl, 15, 1)
-        self.top_right_found_lbl = QtWidgets.QLabel('%s' % _('Found'))
-        grid_lay.addWidget(self.top_right_found_lbl, 15, 2)
+        grid_lay.addWidget(self.top_right_tgt_lbl, 12, 1)
+        self.top_right_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
+        grid_lay.addWidget(self.top_right_found_lbl, 12, 2)
 
         self.top_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        grid_lay.addWidget(self.top_right_coordx_lbl, 16, 0)
+        grid_lay.addWidget(self.top_right_coordx_lbl, 13, 0)
         self.top_right_coordx_tgt = EvalEntry()
         self.top_right_coordx_tgt.setDisabled(True)
-        grid_lay.addWidget(self.top_right_coordx_tgt, 16, 1)
+        grid_lay.addWidget(self.top_right_coordx_tgt, 13, 1)
         self.top_right_coordx_found = EvalEntry()
-        grid_lay.addWidget(self.top_right_coordx_found, 16, 2)
+        grid_lay.addWidget(self.top_right_coordx_found, 13, 2)
 
         self.top_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        grid_lay.addWidget(self.top_right_coordy_lbl, 17, 0)
+        grid_lay.addWidget(self.top_right_coordy_lbl, 14, 0)
         self.top_right_coordy_tgt = EvalEntry()
         self.top_right_coordy_tgt.setDisabled(True)
-        grid_lay.addWidget(self.top_right_coordy_tgt, 17, 1)
+        grid_lay.addWidget(self.top_right_coordy_tgt, 14, 1)
         self.top_right_coordy_found = EvalEntry()
-        grid_lay.addWidget(self.top_right_coordy_found, 17, 2)
+        grid_lay.addWidget(self.top_right_coordy_found, 14, 2)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 18, 0)
+        step_1 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 1"))
+        step_1.setToolTip(
+            _("Pick four points by clicking inside the drill holes.\n"
+              "Those four points should be in the four squares of\n"
+              "the Excellon object.")
+        )
+        grid_lay.addWidget(step_1, 15, 0, 1, 3)
 
-        # ## Buttons
-        self.start_button = QtWidgets.QPushButton(_("Start"))
+        # ## Start Button
+        self.start_button = QtWidgets.QPushButton(_("Acquire Calibration Points"))
         self.start_button.setToolTip(
-            _("Start to collect four drill center coordinates,\n  "
-              "to be used as references. ")
+            _("Pick four points by clicking inside the drill holes.\n"
+              "Those four points should be in the four squares of\n"
+              "the Excellon object.")
         )
 
-        self.layout.addWidget(self.start_button)
+        grid_lay.addWidget(self.start_button, 16, 0, 1, 3)
+
+        step_2 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 2"))
+        step_2.setToolTip(
+            _("Generate GCode file to locate and align the PCB by using\n"
+              "the four points acquired above.")
+        )
+        grid_lay.addWidget(step_2, 17, 0, 1, 3)
+
+        # ## GCode Button
+        self.gcode_button = QtWidgets.QPushButton(_("Generate GCode"))
+        self.gcode_button.setToolTip(
+            _("Generate GCode file to locate and align the PCB by using\n"
+              "the four points acquired above.")
+        )
+
+        grid_lay.addWidget(self.gcode_button, 18, 0, 1, 3)
+
+        step_3 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 3"))
+        step_3.setToolTip(
+            _("Calculate Scale and Skew factors based on the differences (delta)\n"
+              "found when checking the PCB pattern. The differences must be filled\n"
+              "in the fields Found (Delta).")
+        )
+        grid_lay.addWidget(step_3, 19, 0, 1, 3)
+
+        # ## Factors Button
+        self.generate_factors_button = QtWidgets.QPushButton(_("Calculate Factors"))
+        self.generate_factors_button.setToolTip(
+            _("Calculate Scale and Skew factors based on the differences (delta)\n"
+              "found when checking the PCB pattern. The differences must be filled\n"
+              "in the fields Found (Delta).")
+        )
+        grid_lay.addWidget(self.generate_factors_button, 20, 0, 1, 3)
+
+        scale_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Scale"))
+        grid_lay.addWidget(scale_lbl, 21, 0, 1, 3)
+
+        self.scalex_label = QtWidgets.QLabel(_("Factor X:"))
+        self.scalex_label.setToolTip(
+            _("Factor for Scale action over X axis.")
+        )
+        self.scalex_entry = EvalEntry()
+
+        grid_lay.addWidget(self.scalex_label, 22, 0)
+        grid_lay.addWidget(self.scalex_entry, 22, 1, 1, 2)
+
+        self.scaley_label = QtWidgets.QLabel(_("Factor Y:"))
+        self.scaley_label.setToolTip(
+            _("Factor for Scale action over Y axis.")
+        )
+        self.scaley_entry = EvalEntry()
+
+        grid_lay.addWidget(self.scaley_label, 23, 0)
+        grid_lay.addWidget(self.scaley_entry, 23, 1, 1, 2)
+
+        skew_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Skew"))
+        grid_lay.addWidget(skew_lbl, 24, 0, 1, 3)
+
+        self.skewx_label = QtWidgets.QLabel(_("Angle X:"))
+        self.skewx_label.setToolTip(
+            _("Angle for Skew action, in degrees.\n"
+              "Float number between -360 and 359.")
+        )
+        self.skewx_entry = EvalEntry()
+
+        grid_lay.addWidget(self.skewx_label, 25, 0)
+        grid_lay.addWidget(self.skewx_entry, 25, 1, 1, 2)
+
+        self.skewy_label = QtWidgets.QLabel(_("Angle Y:"))
+        self.skewy_label.setToolTip(
+            _("Angle for Skew action, in degrees.\n"
+              "Float number between -360 and 359.")
+        )
+        self.skewy_entry = EvalEntry()
+
+        grid_lay.addWidget(self.skewy_label, 26, 0)
+        grid_lay.addWidget(self.skewy_entry, 26, 1, 1, 2)
+
+        step_4 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 4"))
+        step_4.setToolTip(
+            _("Generate verification GCode file adjusted with\n"
+              "the factors above.")
+        )
+        grid_lay.addWidget(step_4, 27, 0, 1, 3)
+
+        # ## GCode Button
+        self.gcode_button = QtWidgets.QPushButton(_("Generate Adjusted GCode"))
+        self.gcode_button.setToolTip(
+            _("Generate verification GCode file adjusted with\n"
+              "the factors above.")
+        )
+        grid_lay.addWidget(self.gcode_button, 28, 0, 1, 3)
 
         self.layout.addStretch()
 
