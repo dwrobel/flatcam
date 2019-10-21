@@ -9587,6 +9587,11 @@ class App(QtCore.QObject):
                              _("Select an Gerber or Excellon file to view it's source file."))
             return 'fail'
 
+        if obj is None:
+            self.inform.emit('[WARNING_NOTCL] %s' %
+                             _("Select an Gerber or Excellon file to view it's source file."))
+            return 'fail'
+
         flt = "All Files (*.*)"
         if obj.kind == 'gerber':
             flt = "Gerber Files (*.GBR);;All Files (*.*)"

@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 21.10.2019
 
 - the context menu for the Tabs in notebook and PlotTabArea is launched now on right mouse click on tabs themselves
+- fixed an error when trying to view the source file and there is no object selected
 
 18.10.2019
 
