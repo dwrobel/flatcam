@@ -2123,6 +2123,7 @@ class App(QtCore.QObject):
 
         # Object list
         self.collection.view.activated.connect(self.on_row_activated)
+        self.collection.item_selected.connect(self.on_row_selected)
 
         self.object_status_changed.connect(self.on_collection_updated)
 
@@ -7922,6 +7923,25 @@ class App(QtCore.QObject):
             if index.internalPointer().parent_item != self.collection.root_item:
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
         self.collection.on_item_activated(index)
+
+    def on_row_selected(self, obj_name):
+        # this is a special string; when received it will make all entries unchecked
+        # it mean we clicked outside of the items and deselected all
+        if obj_name =='none':
+            for act in self.ui.menuobjects.actions():
+                act.setChecked(False)
+            return
+
+        # get the name of the selected objects and add them to a list
+        name_list = list()
+        for obj in self.collection.get_selected():
+            name_list.append(obj.options['name'])
+
+        # set all actions as unchecked but the ones selected make them checked
+        for act in self.ui.menuobjects.actions():
+            act.setChecked(False)
+            if act.text() in name_list:
+                act.setChecked(True)
 
     def on_collection_updated(self, obj, state, old_name):
         """

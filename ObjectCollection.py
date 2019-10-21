@@ -219,6 +219,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         "document": "share/notes16_1.png"
     }
 
+    # will emit the name of the object that was just selected
+    item_selected = QtCore.pyqtSignal(str)
+
     root_item = None
     # app = None
 
@@ -779,6 +782,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         try:
             obj = current.indexes()[0].internalPointer().obj
+            self.item_selected.emit(obj.options['name'])
 
             if obj.kind == 'gerber':
                 self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
@@ -799,6 +803,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
                     color='darkCyan', name=str(obj.options['name'])))
         except IndexError:
+            self.item_selected.emit('none')
             # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')
             try:
