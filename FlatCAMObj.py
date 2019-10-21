@@ -3804,11 +3804,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.feedrate_probe_entry.hide()
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
         self.ui.addtool_entry.returnPressed.connect(lambda: self.on_tool_add())
+
+        self.ui.tipdia_entry.valueChanged.connect(self.update_cutz)
+        self.ui.tipangle_entry.valueChanged.connect(self.update_cutz)
 
     def set_tool_offset_visibility(self, current_row):
         if current_row is None:
@@ -4334,34 +4338,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.cutz_entry.setDisabled(False)
 
     def update_cutz(self):
-        try:
-            vdia = float(self.ui.tipdia_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                vdia = float(self.ui.tipdia_entry.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
-
-        try:
-            half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                half_vangle = float(self.ui.tipangle_entry.get_value().replace(',', '.')) / 2
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
+        vdia = float(self.ui.tipdia_entry.get_value())
+        half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
 
         row = self.ui.geo_tools_table.currentRow()
         tool_uid = int(self.ui.geo_tools_table.item(row, 5).text())
 
         tooldia = float(self.ui.geo_tools_table.item(row, 1).text())
         new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
-        new_cutz = float('%.*f' % (self.decimals, -new_cutz))   # this value has to be negative
+        new_cutz = float('%.*f' % (self.decimals, new_cutz))   # this value has to be negative
+
         self.ui.cutz_entry.set_value(new_cutz)
 
         # store the new CutZ value into storage (self.tools)
