@@ -11,6 +11,7 @@ CAD program, and create G-Code for Isolation routing.
 22.10.2019
 
 - working on the Calibrate Excellon Tool
+- finished the GUI layout for the Calibrate Excellon Tool
 
 21.10.2019
 

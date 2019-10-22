@@ -1472,18 +1472,18 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if self.app.is_legacy is False:
             def random_color():
-                color = np.random.rand(4)
-                color[3] = 1
-                return color
+                r_color = np.random.rand(4)
+                r_color[3] = 1
+                return r_color
         else:
             def random_color():
                 while True:
-                    color = np.random.rand(4)
-                    color[3] = 1
+                    r_color = np.random.rand(4)
+                    r_color[3] = 1
 
                     new_color = '#'
-                    for idx in range(len(color)):
-                        new_color += '%x' % int(color[idx] * 255)
+                    for idx in range(len(r_color)):
+                        new_color += '%x' % int(r_color[idx] * 255)
                     # do it until a valid color is generated
                     # a valid color has the # symbol, another 6 chars for the color and the last 2 chars for alpha
                     # for a total of 9 chars
@@ -2259,9 +2259,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
             self.tot_slot_cnt += slot_cnt
 
-            id = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
-            id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.tools_table.setItem(self.tool_row, 0, id)  # Tool name/id
+            exc_id = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
+            exc_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.tools_table.setItem(self.tool_row, 0, exc_id)  # Tool name/id
 
             # Make sure that the drill diameter when in MM is with no more than 2 decimals
             # There are no drill bits in MM with more than 3 decimals diameter

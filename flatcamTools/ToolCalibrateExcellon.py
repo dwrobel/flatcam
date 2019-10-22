@@ -6,11 +6,16 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore
+
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, EvalEntry
-import math
+from flatcamGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox
+
 from shapely.geometry import Point
 from shapely.geometry.base import *
+
+import math
+from datetime import datetime
+import logging
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -19,6 +24,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class ToolCalibrateExcellon(FlatCAMTool):
@@ -45,11 +52,11 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.layout.addWidget(title_label)
 
         # ## Grid Layout
-        grid_lay = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid_lay)
-        grid_lay.setColumnStretch(0, 0)
-        grid_lay.setColumnStretch(1, 1)
-        grid_lay.setColumnStretch(2, 1)
+        i_grid_lay = QtWidgets.QGridLayout()
+        self.layout.addLayout(i_grid_lay)
+        i_grid_lay.setColumnStretch(0, 0)
+        i_grid_lay.setColumnStretch(1, 1)
+        i_grid_lay.setColumnStretch(2, 1)
 
         self.exc_object_combo = QtWidgets.QComboBox()
         self.exc_object_combo.setModel(self.app.collection)
@@ -58,19 +65,64 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         self.excobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("EXCELLON"))
         self.excobj_label.setToolTip(
-            _("Excellon Object to be mirrored.")
+            _("Excellon Object to be used as a source for reference points.")
         )
 
-        grid_lay.addWidget(self.excobj_label, 0, 0)
-        grid_lay.addWidget(self.exc_object_combo, 0, 1, 1, 2)
-        grid_lay.addWidget(QtWidgets.QLabel(''), 1, 0)
+        i_grid_lay.addWidget(self.excobj_label, 0, 0)
+        i_grid_lay.addWidget(self.exc_object_combo, 0, 1, 1, 2)
+        i_grid_lay.addWidget(QtWidgets.QLabel(''), 1, 0)
+
+        self.gcode_title_label = QtWidgets.QLabel('<b>%s</b>' % _('GCode Parameters'))
+        self.gcode_title_label.setToolTip(
+            _("Parameters used when creating the GCode in this tool.")
+        )
+        i_grid_lay.addWidget(self.gcode_title_label, 1, 0, 1, 3)
+
+        # Travel Z entry
+        travelz_lbl = QtWidgets.QLabel('%s:' % _("Travel Z"))
+
+        self.travelz_entry = FCDoubleSpinner()
+        self.travelz_entry.set_range(-9999.9999, 9999.9999)
+        self.travelz_entry.set_precision(self.decimals)
+        self.travelz_entry.setSingleStep(0.1)
+
+        i_grid_lay.addWidget(travelz_lbl, 2, 0)
+        i_grid_lay.addWidget(self.travelz_entry, 2, 1, 1, 2)
+
+        # Verification Z entry
+        verz_lbl = QtWidgets.QLabel('%s:' % _("Verification Z"))
+
+        self.verz_entry = FCDoubleSpinner()
+        self.verz_entry.set_range(-9999.9999, 9999.9999)
+        self.verz_entry.set_precision(self.decimals)
+        self.verz_entry.setSingleStep(0.1)
+
+        i_grid_lay.addWidget(verz_lbl, 3, 0)
+        i_grid_lay.addWidget(self.verz_entry, 3, 1, 1, 2)
+
+        # Zero the Z of the verification tool
+        self.zeroz_cb = FCCheckBox('%s' % _("Zero Z tool"))
+        self.zeroz_cb.setToolTip(
+            _("Include a secquence to zero the height (Z)\n"
+              "of the verification tool.")
+        )
+        i_grid_lay.addWidget(self.zeroz_cb, 4, 0, 1, 3)
+
+        i_grid_lay.addWidget(QtWidgets.QLabel(''), 5, 0, 1, 3)
+
+        # ## Grid Layout
+        grid_lay = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay)
+        grid_lay.setColumnStretch(0, 0)
+        grid_lay.setColumnStretch(1, 1)
+        grid_lay.setColumnStretch(2, 1)
 
         self.points_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Calibration Points'))
         self.points_table_label.setToolTip(
             _("Contain the expected calibration points and the\n"
               "ones measured.")
         )
-        grid_lay.addWidget(self.points_table_label, 2, 0, 1, 2)
+        grid_lay.addWidget(self.points_table_label, 2, 0, 1, 3)
 
         # BOTTOM LEFT
         self.bottom_left_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Bottom Left'))
@@ -83,7 +135,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.bottom_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
         grid_lay.addWidget(self.bottom_left_coordx_lbl, 4, 0)
         self.bottom_left_coordx_tgt = EvalEntry()
-        self.bottom_left_coordx_tgt.setDisabled(True)
+        self.bottom_left_coordx_tgt.setReadOnly(True)
         grid_lay.addWidget(self.bottom_left_coordx_tgt, 4, 1)
         self.bottom_left_coordx_found = EvalEntry()
         grid_lay.addWidget(self.bottom_left_coordx_found, 4, 2)
@@ -91,7 +143,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.bottom_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
         grid_lay.addWidget(self.bottom_left_coordy_lbl, 5, 0)
         self.bottom_left_coordy_tgt = EvalEntry()
-        self.bottom_left_coordy_tgt.setDisabled(True)
+        self.bottom_left_coordy_tgt.setReadOnly(True)
         grid_lay.addWidget(self.bottom_left_coordy_tgt, 5, 1)
         self.bottom_left_coordy_found = EvalEntry()
         grid_lay.addWidget(self.bottom_left_coordy_found, 5, 2)
@@ -112,7 +164,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.bottom_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
         grid_lay.addWidget(self.bottom_right_coordx_lbl, 7, 0)
         self.bottom_right_coordx_tgt = EvalEntry()
-        self.bottom_right_coordx_tgt.setDisabled(True)
+        self.bottom_right_coordx_tgt.setReadOnly(True)
         grid_lay.addWidget(self.bottom_right_coordx_tgt, 7, 1)
         self.bottom_right_coordx_found = EvalEntry()
         grid_lay.addWidget(self.bottom_right_coordx_found, 7, 2)
@@ -120,11 +172,10 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.bottom_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
         grid_lay.addWidget(self.bottom_right_coordy_lbl, 8, 0)
         self.bottom_right_coordy_tgt = EvalEntry()
-        self.bottom_right_coordy_tgt.setDisabled(True)
+        self.bottom_right_coordy_tgt.setReadOnly(True)
         grid_lay.addWidget(self.bottom_right_coordy_tgt, 8, 1)
         self.bottom_right_coordy_found = EvalEntry()
         grid_lay.addWidget(self.bottom_right_coordy_found, 8, 2)
-
 
         # TOP LEFT
         self.top_left_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Top Left'))
@@ -137,7 +188,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.top_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
         grid_lay.addWidget(self.top_left_coordx_lbl, 10, 0)
         self.top_left_coordx_tgt = EvalEntry()
-        self.top_left_coordx_tgt.setDisabled(True)
+        self.top_left_coordx_tgt.setReadOnly(True)
         grid_lay.addWidget(self.top_left_coordx_tgt, 10, 1)
         self.top_left_coordx_found = EvalEntry()
         grid_lay.addWidget(self.top_left_coordx_found, 10, 2)
@@ -145,7 +196,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.top_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
         grid_lay.addWidget(self.top_left_coordy_lbl, 11, 0)
         self.top_left_coordy_tgt = EvalEntry()
-        self.top_left_coordy_tgt.setDisabled(True)
+        self.top_left_coordy_tgt.setReadOnly(True)
         grid_lay.addWidget(self.top_left_coordy_tgt, 11, 1)
         self.top_left_coordy_found = EvalEntry()
         grid_lay.addWidget(self.top_left_coordy_found, 11, 2)
@@ -161,7 +212,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.top_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
         grid_lay.addWidget(self.top_right_coordx_lbl, 13, 0)
         self.top_right_coordx_tgt = EvalEntry()
-        self.top_right_coordx_tgt.setDisabled(True)
+        self.top_right_coordx_tgt.setReadOnly(True)
         grid_lay.addWidget(self.top_right_coordx_tgt, 13, 1)
         self.top_right_coordx_found = EvalEntry()
         grid_lay.addWidget(self.top_right_coordx_found, 13, 2)
@@ -169,16 +220,17 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.top_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
         grid_lay.addWidget(self.top_right_coordy_lbl, 14, 0)
         self.top_right_coordy_tgt = EvalEntry()
-        self.top_right_coordy_tgt.setDisabled(True)
+        self.top_right_coordy_tgt.setReadOnly(True)
         grid_lay.addWidget(self.top_right_coordy_tgt, 14, 1)
         self.top_right_coordy_found = EvalEntry()
         grid_lay.addWidget(self.top_right_coordy_found, 14, 2)
 
+        # STEP 1 #
         step_1 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 1"))
         step_1.setToolTip(
             _("Pick four points by clicking inside the drill holes.\n"
-              "Those four points should be in the four squares of\n"
-              "the Excellon object.")
+              "Those four points should be in the four\n"
+              "(as much as possible) corners of the Excellon object.")
         )
         grid_lay.addWidget(step_1, 15, 0, 1, 3)
 
@@ -192,6 +244,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         grid_lay.addWidget(self.start_button, 16, 0, 1, 3)
 
+        # STEP 2 #
         step_2 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 2"))
         step_2.setToolTip(
             _("Generate GCode file to locate and align the PCB by using\n"
@@ -208,6 +261,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         grid_lay.addWidget(self.gcode_button, 18, 0, 1, 3)
 
+        # STEP 3 #
         step_3 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 3"))
         step_3.setToolTip(
             _("Calculate Scale and Skew factors based on the differences (delta)\n"
@@ -232,7 +286,10 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.scalex_label.setToolTip(
             _("Factor for Scale action over X axis.")
         )
-        self.scalex_entry = EvalEntry()
+        self.scalex_entry = FCDoubleSpinner()
+        self.scalex_entry.set_range(0, 9999.9999)
+        self.scalex_entry.set_precision(self.decimals)
+        self.scalex_entry.setSingleStep(0.1)
 
         grid_lay.addWidget(self.scalex_label, 22, 0)
         grid_lay.addWidget(self.scalex_entry, 22, 1, 1, 2)
@@ -241,7 +298,10 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.scaley_label.setToolTip(
             _("Factor for Scale action over Y axis.")
         )
-        self.scaley_entry = EvalEntry()
+        self.scaley_entry = FCDoubleSpinner()
+        self.scaley_entry.set_range(0, 9999.9999)
+        self.scaley_entry.set_precision(self.decimals)
+        self.scaley_entry.setSingleStep(0.1)
 
         grid_lay.addWidget(self.scaley_label, 23, 0)
         grid_lay.addWidget(self.scaley_entry, 23, 1, 1, 2)
@@ -254,7 +314,10 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        self.skewx_entry = EvalEntry()
+        self.skewx_entry = FCDoubleSpinner()
+        self.skewx_entry.set_range(-360, 360)
+        self.skewx_entry.set_precision(self.decimals)
+        self.skewx_entry.setSingleStep(0.1)
 
         grid_lay.addWidget(self.skewx_label, 25, 0)
         grid_lay.addWidget(self.skewx_entry, 25, 1, 1, 2)
@@ -264,11 +327,15 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        self.skewy_entry = EvalEntry()
+        self.skewy_entry = FCDoubleSpinner()
+        self.skewy_entry.set_range(-360, 360)
+        self.skewy_entry.set_precision(self.decimals)
+        self.skewy_entry.setSingleStep(0.1)
 
         grid_lay.addWidget(self.skewy_label, 26, 0)
         grid_lay.addWidget(self.skewy_entry, 26, 1, 1, 2)
 
+        # STEP 4 #
         step_4 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 4"))
         step_4.setToolTip(
             _("Generate verification GCode file adjusted with\n"
@@ -276,14 +343,57 @@ class ToolCalibrateExcellon(FlatCAMTool):
         )
         grid_lay.addWidget(step_4, 27, 0, 1, 3)
 
-        # ## GCode Button
-        self.gcode_button = QtWidgets.QPushButton(_("Generate Adjusted GCode"))
-        self.gcode_button.setToolTip(
+        # ## Adjusted GCode Button
+        self.adj_gcode_button = QtWidgets.QPushButton(_("Generate Adjusted GCode"))
+        self.adj_gcode_button.setToolTip(
             _("Generate verification GCode file adjusted with\n"
               "the factors above.")
         )
-        grid_lay.addWidget(self.gcode_button, 28, 0, 1, 3)
+        grid_lay.addWidget(self.adj_gcode_button, 28, 0, 1, 3)
 
+        # STEP 5 #
+        step_5 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 5"))
+        step_5.setToolTip(
+            _("Ajust the Excellon and Cutout Geometry objects\n"
+              "with the factors determined, and verified, above.")
+        )
+        grid_lay.addWidget(step_5, 29, 0, 1, 3)
+
+        self.adj_exc_object_combo = QtWidgets.QComboBox()
+        self.adj_exc_object_combo.setModel(self.app.collection)
+        self.adj_exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.adj_exc_object_combo.setCurrentIndex(1)
+
+        self.adj_excobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("EXCELLON"))
+        self.adj_excobj_label.setToolTip(
+            _("Excellon Object to be adjusted.")
+        )
+
+        grid_lay.addWidget(self.adj_excobj_label, 30, 0)
+        grid_lay.addWidget(self.adj_exc_object_combo, 30, 1, 1, 2)
+
+        self.adj_geo_object_combo = QtWidgets.QComboBox()
+        self.adj_geo_object_combo.setModel(self.app.collection)
+        self.adj_geo_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.adj_geo_object_combo.setCurrentIndex(1)
+
+        self.adj_geoobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GEOMETRY"))
+        self.adj_geoobj_label.setToolTip(
+            _("Geometry Object to be adjusted.")
+        )
+
+        grid_lay.addWidget(self.adj_geoobj_label, 31, 0)
+        grid_lay.addWidget(self.adj_geo_object_combo, 31, 1, 1, 2)
+
+        # ## Adjust Objects Button
+        self.adj_obj_button = QtWidgets.QPushButton(_("Adjust Objects"))
+        self.adj_obj_button.setToolTip(
+            _("Adjust (scale and / or skew) the objects\n"
+              "with the factors determined above.")
+        )
+        grid_lay.addWidget(self.adj_obj_button, 32, 0, 1, 3)
+
+        grid_lay.addWidget(QtWidgets.QLabel(''), 33, 0)
         self.layout.addStretch()
 
         self.mr = None
@@ -392,6 +502,23 @@ class ToolCalibrateExcellon(FlatCAMTool):
             self.top_right_coordy_tgt.set_value(self.click_points[3][1])
             self.app.inform.emit('[success] %s' % _("Done. All four points have been acquired."))
             self.disconnect_cal_events()
+
+    def generate_verification_gcode(self):
+        pass
+
+    def gcode_header(self):
+        log.debug("ToolCalibrateExcellon.gcode_header()")
+        time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+
+        gcode = '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
+                (str(self.app.version), str(self.app.version_date)) + '\n'
+
+        gcode += '(Name: ' + _('Verification GCode') + ')\n'
+
+        gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
+        gcode += '(Created on ' + time_str + ')\n' + '\n'
+
+        return gcode
 
     def disconnect_cal_events(self):
         self.app.mr = self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
