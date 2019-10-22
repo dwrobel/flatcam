@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - working on the Calibrate Excellon Tool
 - finished the GUI layout for the Calibrate Excellon Tool
+- start working on QRCode Tool - not working yet
 
 21.10.2019
 

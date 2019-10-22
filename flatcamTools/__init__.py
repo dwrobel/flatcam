@@ -26,6 +26,7 @@ from flatcamTools.ToolPcbWizard import PcbWizard
 from flatcamTools.ToolPDF import ToolPDF
 from flatcamTools.ToolProperties import Properties
 
+from flatcamTools.ToolQRCode import QRCode
 from flatcamTools.ToolRulesCheck import RulesCheck
 
 from flatcamTools.ToolShell import FCShell

@@ -755,6 +755,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), _("Calculators Tool"))
         self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
+        self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -2171,6 +2172,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'),
                                                            _("Calculators Tool"))
         self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
+        self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
 
         # ## Excellon Editor Toolbar # ##
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))

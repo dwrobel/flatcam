@@ -1,4 +1,4 @@
-from ObjectCollection import *
+from camlib import *
 from tclCommands.TclCommand import TclCommandSignaled
 
 
