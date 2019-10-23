@@ -18,7 +18,8 @@ import math
 import io
 from datetime import datetime
 import logging
-import pyqrcode
+import qrcode
+import qrcode.image.svg
 from lxml import etree as ET
 
 import gettext
@@ -93,13 +94,16 @@ class QRCode(FlatCAMTool):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
     def execute(self):
-        svg_file = io.StringIO('')
-        svg_class = pyqrcode.QRCode("FlatCAM - 2D - Computer aided PCB Manufacturing Tool")
-        svg_class.svg(svg_file, scale=4, xmldecl=False)
+        svg_file = io.BytesIO()
+        svg_file = qrcode.make("FlatCAM - 2D - Computer aided PCB Manufacturing Tool",
+                                image_factory=qrcode.image.svg.SvgFragmentImage)
 
         def obj_init(geo_obj, app_obj):
-            print(svg_file)
-            geo_obj.import_svg(svg_file)
+            units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
+            try:
+                geo_obj.import_svg(svg_file)
+            except Exception as e:
+                print(str(e))
 
         with self.app.proc_container.new("Import SVG"):
 
