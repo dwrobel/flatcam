@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - finished the GUI layout for the Calibrate Excellon Tool
 - start working on QRCode Tool - not working yet
 - start working on QRCode Tool - serching for alternatives
+- QRCode Tool - a SVG object is generated and plotted on screen having the QRCode data
+- fixed an import error in Distance Tool
 
 21.10.2019
 

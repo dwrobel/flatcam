@@ -15,8 +15,7 @@ from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString, Line
 from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
-import copy
-from copy import deepcopy
+from copy import deepcopy, copy
 from io import StringIO
 import traceback
 import inspect  # TODO: For debugging only.

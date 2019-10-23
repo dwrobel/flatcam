@@ -1027,6 +1027,7 @@ class Geometry(object):
         # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
         geos = getsvggeo(svg_root, object_type)
+
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 

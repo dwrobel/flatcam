@@ -7478,7 +7478,10 @@ class App(QtCore.QObject):
             for obj_orig in obj.solid_geometry:
                 new_elem = dict()
                 new_elem['solid'] = obj_orig
-                new_elem['follow'] = obj_orig.exterior
+                try:
+                    new_elem['follow'] = obj_orig.exterior
+                except AttributeError:
+                    pass
                 apertures[str(apid)]['geometry'].append(deepcopy(new_elem))
             apertures[str(apid)]['size'] = 0.0
             apertures[str(apid)]['type'] = 'C'
@@ -10678,7 +10681,7 @@ class App(QtCore.QObject):
         else:
             self.inform.emit('[ERROR_NOTCL] %s' %
                              _("Not supported type is picked as parameter. "
-                             "Only Geometry and Gerber are supported"))
+                               "Only Geometry and Gerber are supported"))
             return
 
         units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()

@@ -11,7 +11,7 @@ from FlatCAMTool import FlatCAMTool
 from flatcamGUI.VisPyVisuals import *
 from flatcamGUI.GUIElements import FCEntry
 
-import copy
+from copy import copy
 import math
 import logging
 import gettext
