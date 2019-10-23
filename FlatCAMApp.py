@@ -6114,7 +6114,7 @@ class App(QtCore.QObject):
                 if theme == 'white':
                     self.plotcanvas.grid._grid_color_fn['color'] = Color('dimgray').rgba
                 else:
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#FFFFFFFF').rgba
+                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#dededeff').rgba
             else:
                 self.plotcanvas.axes.grid(True)
                 try:
@@ -6126,7 +6126,7 @@ class App(QtCore.QObject):
         else:
             if self.is_legacy is False:
                 if theme == 'white':
-                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#dededeff').rgba
+                    self.plotcanvas.grid._grid_color_fn['color'] = Color('#ffffffff').rgba
                 else:
                     self.plotcanvas.grid._grid_color_fn['color'] = Color('#000000FF').rgba
             else:
