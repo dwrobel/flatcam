@@ -5,8 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMExcellon
+
+import collections
+import math
 
 
 class TclCommandMillSlots(TclCommandSignaled):

@@ -1,5 +1,9 @@
-from ObjectCollection import *
+import collections
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber, FlatCAMExcellon
+
+from shapely.geometry import Point
+import shapely.affinity as affinity
 
 
 class TclCommandAlignDrill(TclCommandSignaled):

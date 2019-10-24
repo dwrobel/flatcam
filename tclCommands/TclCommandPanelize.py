@@ -1,7 +1,13 @@
-from ObjectCollection import *
-from copy import copy,deepcopy
-
 from tclCommands.TclCommand import TclCommand
+from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon
+
+import shapely.affinity as affinity
+
+import logging
+from copy import deepcopy
+import collections
+
+log = logging.getLogger('base')
 
 
 class TclCommandPanelize(TclCommand):
@@ -64,7 +70,7 @@ class TclCommandPanelize(TclCommand):
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
             return "Could not retrieve object: %s" % name
 
         if obj is None:
@@ -74,7 +80,7 @@ class TclCommandPanelize(TclCommand):
             boxname = args['box']
             try:
                 box = self.app.collection.get_by_name(boxname)
-            except:
+            except Exception as e:
                 return "Could not retrieve object: %s" % name
         else:
             box = obj
@@ -185,8 +191,9 @@ class TclCommandPanelize(TclCommand):
                         if option is not 'name':
                             try:
                                 obj_fin.options[option] = obj.options[option]
-                            except:
-                                log.warning("Failed to copy option.", option)
+                            except Exception as e:
+                                log.warning("Failed to copy option: %s" % str(option))
+                                log.debug("TclCommandPanelize.execute().panelize2() --> %s" % str(e))
 
                     for row in range(rows):
                         currentx = 0.0
@@ -277,9 +284,9 @@ class TclCommandPanelize(TclCommand):
                 try:
                     panelize_2()
                     self.app.inform.emit("[success] Panel created successfully.")
-                except Exception as e:
+                except Exception as ee:
                     proc.done()
-                    log.debug(str(e))
+                    log.debug(str(ee))
                     return
                 proc.done()
 

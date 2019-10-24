@@ -14,13 +14,14 @@ CAD program, and create G-Code for Isolation routing.
 - QRCode Tool: added ability to add negative QRCodes (perhaps they can be isolated on copper?); added a clear area surrounding the QRCode in case it is dropped on a copper pour (region); fixed the Gerber export
 - QRCode Tool: all parameters are hard-coded for now
 - small update
+- fixed imports in all TclCommands
 
 24.10.2019
 
 - added some placeholder texts in the TextBoxes.
-- working on QRCode Tool; added the utility geometry and intial functional layout
+- working on QRCode Tool; added the utility geometry and initial functional layout
 - working on QRCode Tool; finished adding the QRCode geometry to the selected Gerber object and also finished adding the 'follow' geometry needed when exporting the Gerber object as a Gerber file in addition to the 'solid' geometry in the obj.apertures
-- working on QRCode Tool; finished offseting the geometry both in apertures and in solid_geometry; updated the source_file of the source object
+- working on QRCode Tool; finished offsetting the geometry both in apertures and in solid_geometry; updated the source_file of the source object
 
 23.10.2019
 

@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMGerber
+
+import collections
 
 
 class TclCommandFollow(TclCommandSignaled):

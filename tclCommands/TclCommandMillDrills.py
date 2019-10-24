@@ -5,9 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMExcellon
 
+import math
+import collections
 
 class TclCommandMillDrills(TclCommandSignaled):
     """
@@ -72,7 +74,7 @@ class TclCommandMillDrills(TclCommandSignaled):
 
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
             obj = None
             self.raise_tcl_error("Could not retrieve object: %s" % name)
 

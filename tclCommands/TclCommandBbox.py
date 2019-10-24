@@ -1,5 +1,9 @@
-from ObjectCollection import *
+import collections
 from tclCommands.TclCommand import TclCommand
+from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber
+
+from shapely.ops import cascaded_union
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins

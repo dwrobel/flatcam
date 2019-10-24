@@ -5,8 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
 
 
 class TclCommandGetSys(TclCommand):
@@ -54,4 +55,3 @@ class TclCommandGetSys(TclCommand):
 
         if name in self.app.defaults:
             return self.app.defaults[name]
-

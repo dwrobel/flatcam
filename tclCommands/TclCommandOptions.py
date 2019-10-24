@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+
+import collections
 
 
 class TclCommandOptions(TclCommandSignaled):

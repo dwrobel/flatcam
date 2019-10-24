@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMExcellon, FlatCAMGeometry, FlatCAMGerber
+
+import collections
 
 
 class TclCommandMirror(TclCommandSignaled):
@@ -55,7 +57,7 @@ class TclCommandMirror(TclCommandSignaled):
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
             return "Could not retrieve object: %s" % name
 
         if obj is None:
@@ -76,7 +78,7 @@ class TclCommandMirror(TclCommandSignaled):
         if 'box' in args:
             try:
                 box = self.app.collection.get_by_name(args['box'])
-            except:
+            except Exception as e:
                 return "Could not retrieve object box: %s" % args['box']
 
             if box is None:

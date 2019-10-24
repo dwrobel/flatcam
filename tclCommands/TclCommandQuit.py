@@ -5,8 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
 
 
 class TclCommandQuit(TclCommand):
@@ -51,4 +52,3 @@ class TclCommandQuit(TclCommand):
         """
 
         self.app.quit_application()
-

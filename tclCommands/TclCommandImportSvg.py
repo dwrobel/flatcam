@@ -1,5 +1,7 @@
-from camlib import *
 from tclCommands.TclCommand import TclCommandSignaled
+
+import collections
+from camlib import Geometry
 
 
 class TclCommandImportSvg(TclCommandSignaled):
@@ -78,4 +80,3 @@ class TclCommandImportSvg(TclCommandSignaled):
 
             # GUI feedback
             self.app.inform.emit("Opened: " + filename)
-

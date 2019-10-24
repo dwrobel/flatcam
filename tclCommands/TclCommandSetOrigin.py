@@ -6,10 +6,12 @@
 # ##########################################################
 
 from tclCommands.TclCommand import TclCommand
-from ObjectCollection import *
+
+import collections
 
 from camlib import get_bounds
 
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -17,6 +19,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class TclCommandSetOrigin(TclCommand):

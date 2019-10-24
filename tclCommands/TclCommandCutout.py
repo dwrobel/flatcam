@@ -1,7 +1,12 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
+import logging
+
 from shapely.ops import cascaded_union
 from shapely.geometry import LineString
+
+log = logging.getLogger('base')
 
 
 class TclCommandCutout(TclCommand):

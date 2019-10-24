@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+from FlatCAMObj import FlatCAMGeometry
+
+import collections
 
 
 class TclCommandJoinGeometry(TclCommand):

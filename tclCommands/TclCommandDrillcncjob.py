@@ -1,5 +1,8 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMExcellon
+
+import collections
+import math
 
 
 class TclCommandDrillcncjob(TclCommandSignaled):
@@ -114,7 +117,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
             try:
                 if 'drilled_dias' in args and args['drilled_dias'] != 'all':
-                    diameters = [x.strip() for x in args['drilled_dias'].split(",") if x!= '']
+                    diameters = [x.strip() for x in args['drilled_dias'].split(",") if x != '']
                     nr_diameters = len(diameters)
 
                     req_tools = set()

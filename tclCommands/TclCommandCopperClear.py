@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
+import logging
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -8,6 +10,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class TclCommandCopperClear(TclCommand):

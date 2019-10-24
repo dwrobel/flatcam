@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
 
 
 class TclCommandGeoUnion(TclCommand):
@@ -50,7 +51,7 @@ class TclCommandGeoUnion(TclCommand):
         obj_name = args['name']
 
         try:
-            obj = self.collection.get_by_name(str(obj_name))
+            obj = self.app.collection.get_by_name(str(obj_name))
         except:
             return "Could not retrieve object: %s" % obj_name
         if obj is None:

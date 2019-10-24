@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+from FlatCAMObj import FlatCAMExcellon
+
+import collections
 
 
 class TclCommandJoinExcellon(TclCommand):

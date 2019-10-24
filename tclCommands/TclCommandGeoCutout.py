@@ -1,8 +1,13 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry
+
+import logging
+import collections
 from copy import deepcopy
 from shapely.ops import cascaded_union
 from shapely.geometry import Polygon, LineString, LinearRing
+
+log = logging.getLogger('base')
 
 
 class TclCommandGeoCutout(TclCommandSignaled):

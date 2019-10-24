@@ -1,5 +1,8 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMGeometry
+
+import collections
+from copy import deepcopy
 
 
 class TclCommandCncjob(TclCommandSignaled):
