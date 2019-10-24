@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+24.10.2019
+
+- added some placeholder texts in the TextBoxes.
+- working on QRCode Tool; addded the utility geometry and intial functional layout
+
 23.10.2019
 
 - QRCode Tool - a SVG object is generated and plotted on screen having the QRCode data

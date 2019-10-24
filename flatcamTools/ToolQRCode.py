@@ -1,26 +1,28 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # File Author: Marius Adrian Stanciu (c)                   #
-# Date: 3/10/2019                                          #
+# Date: 10/24/2019                                          #
 # MIT Licence                                              #
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner
-from camlib import *
+from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCDoubleSpinner
+from flatcamParsers.ParseSVG import *
 
 from shapely.geometry import Point
 from shapely.geometry.base import *
+from shapely.ops import unary_union
+from shapely.affinity import translate
 
-import math
-import io
-from datetime import datetime
+from io import StringIO, BytesIO
+from collections import Iterable
 import logging
 import qrcode
 import qrcode.image.svg
 from lxml import etree as ET
+from copy import copy, deepcopy
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -160,20 +162,66 @@ class QRCode(FlatCAMTool):
             _("QRCode Data. Alphanumeric text to be encoded in the QRCode.")
         )
         self.text_data = FCTextArea()
-
+        self.text_data.setPlaceholderText(
+            _("Add here the text to be included in the QRData...")
+        )
         grid_lay.addWidget(self.text_label, 5, 0)
         grid_lay.addWidget(self.text_data, 6, 0, 1, 2)
+
+        # POLARITY CHOICE #
+        self.pol_label = QtWidgets.QLabel('%s:' % _("Polarity"))
+        self.pol_label.setToolTip(
+            _("Parameter that controls the error correction used for the QR Code.\n"
+              "L = maximum 7% errors can be corrected\n"
+              "M = maximum 15% errors can be corrected\n"
+              "Q = maximum 25% errors can be corrected\n"
+              "H = maximum 30% errors can be corrected.")
+        )
+        self.pol_radio = RadioSet([{'label': _('Negative'), 'value': 'neg'},
+                                   {'label': _('Positive'), 'value': 'pos'}])
+        self.error_radio.setToolTip(
+            _("Choose the type of QRCode to be created.\n"
+              "If added on a Silkscreen Gerber you may add\n"
+              "it as positive. If you add it to a Copper\n"
+              "Gerber then perhaps you can add it as positive.")
+        )
+        grid_lay.addWidget(self.pol_label, 7, 0)
+        grid_lay.addWidget(self.pol_radio, 7, 1)
+
+        # BOUNDARY THICKNESS #
+        self.boundary_label = QtWidgets.QLabel('%s:' % _("Boundary Thickness"))
+        self.boundary_label.setToolTip(
+            _("The width of the clearance around the QRCode.")
+        )
+        self.boundary_entry = FCDoubleSpinner()
+        self.boundary_entry.set_range(0.0, 9999.9999)
+        self.boundary_entry.set_precision(self.decimals)
+        self.boundary_entry.setWrapping(True)
+
+        grid_lay.addWidget(self.boundary_label, 8, 0)
+        grid_lay.addWidget(self.boundary_entry, 8, 1)
 
         # ## Create QRCode
         self.qrcode_button = QtWidgets.QPushButton(_("Create QRCode"))
         self.qrcode_button.setToolTip(
             _("Create the QRCode object.")
         )
-        grid_lay.addWidget(self.qrcode_button, 7, 0, 1, 2)
-
-        grid_lay.addWidget(QtWidgets.QLabel(''), 8, 0)
+        grid_lay.addWidget(self.qrcode_button, 9, 0, 1, 2)
+        grid_lay.addWidget(QtWidgets.QLabel(''), 10, 0)
 
         self.layout.addStretch()
+
+        self.clicked_move = 0
+
+        self.point1 = None
+        self.point2 = None
+
+        self.mm = None
+        self.mr = None
+        self.kr = None
+
+        self.shapes = self.app.move_tool.sel_shapes
+        self.qrcode_geometry = list()
 
     def run(self, toggle=True):
         self.app.report_usage("QRCode()")
@@ -212,6 +260,7 @@ class QRCode(FlatCAMTool):
         self.error_radio.set_value('M')
         self.bsize_entry.set_value(3)
         self.border_size_entry.set_value(4)
+        self.pol_radio.set_value('pos')
 
         # Signals #
         self.qrcode_button.clicked.connect(self.execute)
@@ -223,7 +272,6 @@ class QRCode(FlatCAMTool):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Cancelled. There is no QRCode Data in the text box."))
             return 'fail'
 
-        svg_file = io.BytesIO()
         error_code = {
             'L': qrcode.constants.ERROR_CORRECT_L,
             'M': qrcode.constants.ERROR_CORRECT_M,
@@ -241,28 +289,206 @@ class QRCode(FlatCAMTool):
         qr.add_data(text_data)
         qr.make()
 
+        svg_file = BytesIO()
         img = qr.make_image()
         img.save(svg_file)
 
         svg_text = StringIO(svg_file.getvalue().decode('UTF-8'))
+        svg_geometry = self.convert_svg_to_geo(svg_text, units=self.units)
+        svg_geometry = unary_union(svg_geometry).buffer(0.0000001).buffer(-0.0000001)
 
-        def obj_init(geo_obj, app_obj):
-            geo_obj.import_svg(svg_text, units=self.units)
-            geo_obj.solid_geometry = unary_union(geo_obj.solid_geometry).buffer(0.0000001)
-            geo_obj.solid_geometry = geo_obj.solid_geometry.buffer(-0.0000001)
+        self.qrcode_geometry = svg_geometry
 
-        with self.app.proc_container.new(_("Generating QRCode...")):
-            # Object creation
-            self.app.new_object('gerber', 'QRCode', obj_init, plot=True)
+        # def obj_init(geo_obj, app_obj):
+        #     geo_obj.solid_geometry = svg_geometry
+        #
+        # with self.app.proc_container.new(_("Generating QRCode...")):
+        #     # Object creation
+        #     self.app.new_object('gerber', 'QRCode', obj_init, plot=True)
 
-    def make(self):
-        pass
+        # if we have an object selected then we can safely activate the mouse events
+        self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+        self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+        self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_release)
 
-    def utility_geo(self):
-        pass
+    def make(self, pos):
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+            self.app.plotcanvas.graph_event_disconnect('key_release', self.on_key_release)
+        else:
+            self.app.plotcanvas.graph_event_disconnect(self.mm)
+            self.app.plotcanvas.graph_event_disconnect(self.mr)
+            self.app.plotcanvas.graph_event_disconnect(self.kr)
+
+        self.clicked_move = 0
+
+        # delete the utility geometry
+        self.delete_utility_geo()
+
+        # add the svg geometry to the selected Gerber object solid_geometry and in obj.apertures, apid = 0
+
+    def draw_utility_geo(self, pos):
+
+        face = '#0000FF' + str(hex(int(0.2 * 255)))[2:]
+        outline = '#0000FFAF'
+
+        offset_geo = list()
+
+        try:
+            for poly in self.qrcode_geometry:
+                offset_geo.append(translate(poly.exterior, xoff=pos[0], yoff=pos[1]))
+                for geo_int in poly.interiors:
+                    offset_geo.append(translate(geo_int, xoff=pos[0], yoff=pos[1]))
+        except TypeError:
+            offset_geo.append(translate(self.qrcode_geometry.exterior, xoff=pos[0], yoff=pos[1]))
+            for geo_int in self.qrcode_geometry.interiors:
+                offset_geo.append(translate(geo_int, xoff=pos[0], yoff=pos[1]))
+
+        for shape in offset_geo:
+            self.shapes.add(shape, color=outline, face_color=face, update=True, layer=0, tolerance=None)
+
+        if self.app.is_legacy is True:
+            self.shapes.redraw()
+
+    def delete_utility_geo(self):
+        self.shapes.clear()
+        self.shapes.redraw()
 
     def on_mouse_move(self, event):
-        pass
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+        else:
+            event_pos = (event.xdata, event.ydata)
+
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+
+        pos_canvas = self.app.plotcanvas.translate_coords((x, y))
+
+        # if GRID is active we need to get the snapped positions
+        if self.app.grid_status() == True:
+            pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+        else:
+            pos = pos_canvas
+
+        if self.point1 is None:
+            dx = pos[0]
+            dy = pos[1]
+        else:
+            dx = pos[0] - self.point1[0]
+            dy = pos[1] - self.point1[1]
+
+        # delete the utility geometry
+        self.delete_utility_geo()
+
+        self.draw_utility_geo((dx, dy))
 
     def on_mouse_release(self, event):
+        # mouse click will be accepted only if the left button is clicked
+        # this is necessary because right mouse click and middle mouse click
+        # are used for panning on the canvas
+
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+        else:
+            event_pos = (event.xdata, event.ydata)
+
+        if event.button == 1:
+            pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
+            if self.clicked_move == 0:
+
+                # if GRID is active we need to get the snapped positions
+                if self.app.grid_status() == True:
+                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                else:
+                    pos = pos_canvas
+
+                if self.point1 is None:
+                    self.point1 = pos
+                else:
+                    self.point2 = copy(self.point1)
+                    self.point1 = pos
+                self.app.inform.emit(_("Click on the Destination point ..."))
+
+            if self.clicked_move == 1:
+                self.delete_utility_geo()
+
+                # if GRID is active we need to get the snapped positions
+                if self.app.grid_status() == True:
+                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                else:
+                    pos = pos_canvas
+
+                dx = pos[0] - self.point1[0]
+                dy = pos[1] - self.point1[1]
+
+                self.make(pos=(dx, dy))
+                self.clicked_move = 0
+                return
+
+
+            self.clicked_move = 1
+
+    def on_key_release(self, event):
         pass
+
+    def convert_svg_to_geo(self, filename, object_type=None, flip=True, units='MM'):
+        """
+        Convert shapes from an SVG file into a geometry list.
+
+        :param filename: A String Stream file.
+        :param object_type: parameter passed further along. What kind the object will receive the SVG geometry
+        :param flip: Flip the vertically.
+        :type flip: bool
+        :param units: FlatCAM units
+        :return: None
+        """
+
+        # Parse into list of shapely objects
+        svg_tree = ET.parse(filename)
+        svg_root = svg_tree.getroot()
+
+        # Change origin to bottom left
+        # h = float(svg_root.get('height'))
+        # w = float(svg_root.get('width'))
+        h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
+        geos = getsvggeo(svg_root, object_type)
+
+        if flip:
+            geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
+
+        # flatten the svg geometry for the case when the QRCode SVG is added into a Gerber object
+        solid_geometry = list(self.flatten_list(geos))
+
+        geos_text = getsvgtext(svg_root, object_type, units=units)
+        if geos_text is not None:
+            geos_text_f = []
+            if flip:
+                # Change origin to bottom left
+                for i in geos_text:
+                    _, minimy, _, maximy = i.bounds
+                    h2 = (maximy - minimy) * 0.5
+                    geos_text_f.append(translate(scale(i, 1.0, -1.0, origin=(0, 0)), yoff=(h + h2)))
+            if geos_text_f:
+                solid_geometry += geos_text_f
+        return solid_geometry
+
+    def flatten_list(self, list):
+        for item in list:
+            if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
+                yield from self.flatten_list(item)
+            else:
+                yield item
+
+    def replot(self):
+        obj = self.grb_object_combo
+
+        def worker_task():
+            with self.app.proc_container.new('%s...' % _("Plotting")):
+                obj.plot()
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': []})

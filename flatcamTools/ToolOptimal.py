@@ -116,6 +116,9 @@ class ToolOptimal(FlatCAMTool):
 
         # Locations where minimum was found
         self.locations_textb = FCTextArea(parent=self)
+        self.locations_textb.setPlaceholderText(
+            _("Coordinates for points where minimum distance was found.")
+        )
         self.locations_textb.setReadOnly(True)
         stylesheet = """
                         QTextEdit { selection-background-color:blue;
@@ -164,6 +167,10 @@ class ToolOptimal(FlatCAMTool):
 
         # Other distances
         self.distances_textb = FCTextArea(parent=self)
+        self.distances_textb.setPlaceholderText(
+            _("Other distances and the coordinates for points\n"
+              "where the distance was found.")
+        )
         self.distances_textb.setReadOnly(True)
         stylesheet = """
                         QTextEdit { selection-background-color:blue;
@@ -184,6 +191,10 @@ class ToolOptimal(FlatCAMTool):
 
         # Locations where minimum was found
         self.locations_sec_textb = FCTextArea(parent=self)
+        self.locations_sec_textb.setPlaceholderText(
+            _("Other distances and the coordinates for points\n"
+              "where the distance was found.")
+        )
         self.locations_sec_textb.setReadOnly(True)
         stylesheet = """
                         QTextEdit { selection-background-color:blue;

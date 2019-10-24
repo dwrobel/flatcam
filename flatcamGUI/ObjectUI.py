@@ -1744,6 +1744,10 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(prependlabel)
 
         self.prepend_text = FCTextArea()
+        self.prepend_text.setPlaceholderText(
+            _("Type here any G-Code commands you would "
+              "like to add at the beginning of the G-Code file.")
+        )
         self.custom_box.addWidget(self.prepend_text)
 
         # Append text to GCode
@@ -1756,6 +1760,11 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(appendlabel)
 
         self.append_text = FCTextArea()
+        self.append_text.setPlaceholderText(
+            _("Type here any G-Code commands you would "
+              "like to append to the generated file. "
+              "I.e.: M2 (End of program)")
+        )
         self.custom_box.addWidget(self.append_text)
 
         self.cnc_frame = QtWidgets.QFrame()
@@ -1782,6 +1791,17 @@ class CNCObjectUI(ObjectUI):
         self.cnc_box.addWidget(self.toolchangelabel)
 
         self.toolchange_text = FCTextArea()
+        self.toolchange_text.setPlaceholderText(
+            _(
+                "Type here any G-Code commands you would "
+                "like to be executed when Toolchange event is encountered. "
+                "This will constitute a Custom Toolchange GCode, "
+                "or a Toolchange Macro. "
+                "The FlatCAM variables are surrounded by '%' symbol. \n"
+                "WARNING: it can be used only with a postprocessor file "
+                "that has 'toolchange_custom' in it's name."
+            )
+        )
         self.cnc_box.addWidget(self.toolchange_text)
 
         cnclay = QtWidgets.QHBoxLayout()

@@ -3521,6 +3521,10 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(prependlabel)
 
         self.prepend_text = FCTextArea()
+        self.prepend_text.setPlaceholderText(
+            _("Type here any G-Code commands you would "
+              "like to add at the beginning of the G-Code file.")
+        )
         self.layout.addWidget(self.prepend_text)
         self.prepend_text.setFont(font)
 
@@ -3534,6 +3538,11 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(appendlabel)
 
         self.append_text = FCTextArea()
+        self.append_text.setPlaceholderText(
+            _("Type here any G-Code commands you would "
+              "like to append to the generated file. "
+              "I.e.: M2 (End of program)")
+        )
         self.layout.addWidget(self.append_text)
         self.append_text.setFont(font)
 
@@ -3580,6 +3589,17 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         font.setPointSize(tb_fsize)
 
         self.toolchange_text = FCTextArea()
+        self.toolchange_text.setPlaceholderText(
+            _(
+                "Type here any G-Code commands you would "
+                "like to be executed when Toolchange event is encountered. "
+                "This will constitute a Custom Toolchange GCode, "
+                "or a Toolchange Macro. "
+                "The FlatCAM variables are surrounded by '%' symbol. \n"
+                "WARNING: it can be used only with a postprocessor file "
+                "that has 'toolchange_custom' in it's name."
+            )
+        )
         self.layout.addWidget(self.toolchange_text)
         self.toolchange_text.setFont(font)
 
@@ -3617,7 +3637,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.tc_variable_combo.setItemData(3, 't_drills = %s' % _("for Excellon, total number of drills"),
                                            Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(4, 'x_toolchange = %s' % _("X coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(5, 'y_toolchange = %s' % _("y_toolchange = Y coord for Toolchange"),
+        self.tc_variable_combo.setItemData(5, 'y_toolchange = %s' % _("Y coord for Toolchange"),
                                            Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(6, 'z_toolchange = %s' % _("Z coord for Toolchange"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(7, 'z_cut = %s' % _("Z depth for the cut"), Qt.ToolTipRole)
