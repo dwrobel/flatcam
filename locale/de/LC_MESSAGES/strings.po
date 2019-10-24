@@ -4497,7 +4497,7 @@ msgstr "Speichert den Text im Editor in einer Datei."
 
 #: flatcamEditors/FlatCAMTextEditor.py:89
 msgid "Run Code"
-msgstr "Code exportieren"
+msgstr "Code ausführen"
 
 #: flatcamEditors/FlatCAMTextEditor.py:90
 msgid "Will run the TCL commands found in the text file, one by one."
