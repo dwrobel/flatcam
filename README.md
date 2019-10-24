@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - QRCode Tool: all parameters are hard-coded for now
 - small update
 - fixed imports in all TclCommands
+- fixed the requirements.txt and setup_ubuntu.sh files
 
 24.10.2019
 
