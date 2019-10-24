@@ -23,6 +23,7 @@ import qrcode
 import qrcode.image.svg
 from lxml import etree as ET
 from copy import copy, deepcopy
+from numpy import Inf
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -211,10 +212,9 @@ class QRCode(FlatCAMTool):
 
         self.layout.addStretch()
 
-        self.clicked_move = 0
+        self.grb_object = None
 
-        self.point1 = None
-        self.point2 = None
+        self.origin = (0, 0)
 
         self.mm = None
         self.mr = None
@@ -222,6 +222,7 @@ class QRCode(FlatCAMTool):
 
         self.shapes = self.app.move_tool.sel_shapes
         self.qrcode_geometry = list()
+        self.qrcode_utility_geometry = list()
 
     def run(self, toggle=True):
         self.app.report_usage("QRCode()")
@@ -295,21 +296,26 @@ class QRCode(FlatCAMTool):
 
         svg_text = StringIO(svg_file.getvalue().decode('UTF-8'))
         svg_geometry = self.convert_svg_to_geo(svg_text, units=self.units)
+        self.qrcode_geometry = deepcopy(svg_geometry)
+
         svg_geometry = unary_union(svg_geometry).buffer(0.0000001).buffer(-0.0000001)
 
-        self.qrcode_geometry = svg_geometry
-
-        # def obj_init(geo_obj, app_obj):
-        #     geo_obj.solid_geometry = svg_geometry
-        #
-        # with self.app.proc_container.new(_("Generating QRCode...")):
-        #     # Object creation
-        #     self.app.new_object('gerber', 'QRCode', obj_init, plot=True)
+        self.qrcode_utility_geometry = svg_geometry
 
         # if we have an object selected then we can safely activate the mouse events
         self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
         self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
         self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_release)
+
+        selection_index = self.grb_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
+        try:
+            self.grb_object = model_index.internalPointer().obj
+        except Exception as e:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            return 'fail'
+
+        self.app.inform.emit(_("Click on the Destination point ..."))
 
     def make(self, pos):
         if self.app.is_legacy is False:
@@ -327,6 +333,52 @@ class QRCode(FlatCAMTool):
         self.delete_utility_geo()
 
         # add the svg geometry to the selected Gerber object solid_geometry and in obj.apertures, apid = 0
+        if not isinstance(self.grb_object.solid_geometry, Iterable):
+            self.grb_object.solid_geometry = list(self.grb_object.solid_geometry)
+
+        # I use the utility geometry (self.qrcode_utility_geometry) because it is already buffered
+        self.grb_object.solid_geometry += self.qrcode_utility_geometry
+
+        box_size = float(self.bsize_entry.get_value()) / 10.0
+
+        sort_apid = list()
+        new_apid = '10'
+        if self.grb_object.apertures:
+            for k, v in list(self.grb_object.apertures.items()):
+                sort_apid.append(int(k))
+            sorted_apertures = sorted(sort_apid)
+            new_apid = str(10 + len(sorted_apertures))
+
+        if new_apid not in self.grb_object.apertures:
+            self.grb_object.apertures[new_apid] = dict()
+            self.grb_object.apertures[new_apid]['geometry'] = list()
+            self.grb_object.apertures[new_apid]['type'] = 'R'
+            self.grb_object.apertures[new_apid]['height'] = box_size
+            self.grb_object.apertures[new_apid]['width'] = box_size
+            self.grb_object.apertures[new_apid]['size'] = math.sqrt(box_size ** 2 + box_size ** 2)
+
+        if self.grb_object.options['xmin'] == Inf or self.grb_object.options['xmin'] == -Inf:
+            try:
+                a, b, c, d = self.grb_object.bounds()
+                self.grb_object.options['xmin'] = a
+                self.grb_object.options['ymin'] = b
+                self.grb_object.options['xmax'] = c
+                self.grb_object.options['ymax'] = d
+            except Exception as e:
+                log.debug("QRCode.make() bounds error --> %s" % str(e))
+
+        try:
+            for geo in self.qrcode_geometry:
+                geo_elem = dict()
+                geo_elem['solid'] = geo
+                geo_elem['follow'] = geo.centroid
+                self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
+        except TypeError:
+            geo_elem = dict()
+            geo_elem['solid'] = self.qrcode_geometry
+            self.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
+        print(self.grb_object.apertures)
+        self.replot()
 
     def draw_utility_geo(self, pos):
 
@@ -336,13 +388,13 @@ class QRCode(FlatCAMTool):
         offset_geo = list()
 
         try:
-            for poly in self.qrcode_geometry:
+            for poly in self.qrcode_utility_geometry:
                 offset_geo.append(translate(poly.exterior, xoff=pos[0], yoff=pos[1]))
                 for geo_int in poly.interiors:
                     offset_geo.append(translate(geo_int, xoff=pos[0], yoff=pos[1]))
         except TypeError:
-            offset_geo.append(translate(self.qrcode_geometry.exterior, xoff=pos[0], yoff=pos[1]))
-            for geo_int in self.qrcode_geometry.interiors:
+            offset_geo.append(translate(self.qrcode_utility_geometry.exterior, xoff=pos[0], yoff=pos[1]))
+            for geo_int in self.qrcode_utility_geometry.interiors:
                 offset_geo.append(translate(geo_int, xoff=pos[0], yoff=pos[1]))
 
         for shape in offset_geo:
@@ -375,16 +427,11 @@ class QRCode(FlatCAMTool):
         else:
             pos = pos_canvas
 
-        if self.point1 is None:
-            dx = pos[0]
-            dy = pos[1]
-        else:
-            dx = pos[0] - self.point1[0]
-            dy = pos[1] - self.point1[1]
+        dx = pos[0] - self.origin[0]
+        dy = pos[1] - self.origin[1]
 
         # delete the utility geometry
         self.delete_utility_geo()
-
         self.draw_utility_geo((dx, dy))
 
     def on_mouse_release(self, event):
@@ -399,39 +446,18 @@ class QRCode(FlatCAMTool):
 
         if event.button == 1:
             pos_canvas = self.app.plotcanvas.translate_coords(event_pos)
-            if self.clicked_move == 0:
+            self.delete_utility_geo()
 
-                # if GRID is active we need to get the snapped positions
-                if self.app.grid_status() == True:
-                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                else:
-                    pos = pos_canvas
+            # if GRID is active we need to get the snapped positions
+            if self.app.grid_status() == True:
+                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+            else:
+                pos = pos_canvas
 
-                if self.point1 is None:
-                    self.point1 = pos
-                else:
-                    self.point2 = copy(self.point1)
-                    self.point1 = pos
-                self.app.inform.emit(_("Click on the Destination point ..."))
+            dx = pos[0] - self.origin[0]
+            dy = pos[1] - self.origin[1]
 
-            if self.clicked_move == 1:
-                self.delete_utility_geo()
-
-                # if GRID is active we need to get the snapped positions
-                if self.app.grid_status() == True:
-                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                else:
-                    pos = pos_canvas
-
-                dx = pos[0] - self.point1[0]
-                dy = pos[1] - self.point1[1]
-
-                self.make(pos=(dx, dy))
-                self.clicked_move = 0
-                return
-
-
-            self.clicked_move = 1
+            self.make(pos=(dx, dy))
 
     def on_key_release(self, event):
         pass
@@ -485,7 +511,7 @@ class QRCode(FlatCAMTool):
                 yield item
 
     def replot(self):
-        obj = self.grb_object_combo
+        obj = self.grb_object
 
         def worker_task():
             with self.app.proc_container.new('%s...' % _("Plotting")):

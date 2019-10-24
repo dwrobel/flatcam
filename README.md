@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - added some placeholder texts in the TextBoxes.
 - working on QRCode Tool; addded the utility geometry and intial functional layout
+- working on QRCode Tool; finished adding the QRCode geometry to the selected Gerber object and also finished adding the 'follow' geometry needed when exporting the Gerber object as a Gerber file in addition to the 'solid' geometry in the obj.apertures
 
 23.10.2019
 
