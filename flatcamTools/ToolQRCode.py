@@ -327,8 +327,6 @@ class QRCode(FlatCAMTool):
             self.app.plotcanvas.graph_event_disconnect(self.mr)
             self.app.plotcanvas.graph_event_disconnect(self.kr)
 
-        self.clicked_move = 0
-
         # delete the utility geometry
         self.delete_utility_geo()
 
@@ -337,7 +335,17 @@ class QRCode(FlatCAMTool):
             self.grb_object.solid_geometry = list(self.grb_object.solid_geometry)
 
         # I use the utility geometry (self.qrcode_utility_geometry) because it is already buffered
-        self.grb_object.solid_geometry += self.qrcode_utility_geometry
+        geo_list = self.grb_object.solid_geometry
+        if isinstance(self.grb_object.solid_geometry, MultiPolygon):
+            geo_list = list(self.grb_object.solid_geometry.geoms)
+
+        try:
+            for geo in self.qrcode_utility_geometry:
+                geo_list.append(translate(geo, xoff=pos[0], yoff=pos[1]))
+        except TypeError:
+            geo_list.append(translate(self.qrcode_utility_geometry, xoff=pos[0], yoff=pos[1]))
+
+        self.grb_object.solid_geometry = deepcopy(geo_list)
 
         box_size = float(self.bsize_entry.get_value()) / 10.0
 
@@ -347,37 +355,40 @@ class QRCode(FlatCAMTool):
             for k, v in list(self.grb_object.apertures.items()):
                 sort_apid.append(int(k))
             sorted_apertures = sorted(sort_apid)
-            new_apid = str(10 + len(sorted_apertures))
+            new_apid = str(max(sorted_apertures) + 1)
 
         if new_apid not in self.grb_object.apertures:
             self.grb_object.apertures[new_apid] = dict()
             self.grb_object.apertures[new_apid]['geometry'] = list()
             self.grb_object.apertures[new_apid]['type'] = 'R'
-            self.grb_object.apertures[new_apid]['height'] = box_size
-            self.grb_object.apertures[new_apid]['width'] = box_size
-            self.grb_object.apertures[new_apid]['size'] = math.sqrt(box_size ** 2 + box_size ** 2)
+            self.grb_object.apertures[new_apid]['height'] = deepcopy(box_size)
+            self.grb_object.apertures[new_apid]['width'] = deepcopy(box_size)
+            self.grb_object.apertures[new_apid]['size'] = deepcopy(math.sqrt(box_size ** 2 + box_size ** 2))
 
-        if self.grb_object.options['xmin'] == Inf or self.grb_object.options['xmin'] == -Inf:
-            try:
-                a, b, c, d = self.grb_object.bounds()
-                self.grb_object.options['xmin'] = a
-                self.grb_object.options['ymin'] = b
-                self.grb_object.options['xmax'] = c
-                self.grb_object.options['ymax'] = d
-            except Exception as e:
-                log.debug("QRCode.make() bounds error --> %s" % str(e))
+        try:
+            a, b, c, d = self.grb_object.bounds()
+            self.grb_object.options['xmin'] = a
+            self.grb_object.options['ymin'] = b
+            self.grb_object.options['xmax'] = c
+            self.grb_object.options['ymax'] = d
+        except Exception as e:
+            log.debug("QRCode.make() bounds error --> %s" % str(e))
 
         try:
             for geo in self.qrcode_geometry:
                 geo_elem = dict()
-                geo_elem['solid'] = geo
-                geo_elem['follow'] = geo.centroid
+                geo_elem['solid'] = translate(geo, xoff=pos[0], yoff=pos[1])
+                geo_elem['follow'] = translate(geo.centroid, xoff=pos[0], yoff=pos[1])
                 self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
         except TypeError:
             geo_elem = dict()
             geo_elem['solid'] = self.qrcode_geometry
             self.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
-        print(self.grb_object.apertures)
+
+        # update the source file with the new geometry:
+        self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'], filename=None,
+                                                             local_use=self.grb_object, use_thread=False)
+
         self.replot()
 
     def draw_utility_geo(self, pos):
