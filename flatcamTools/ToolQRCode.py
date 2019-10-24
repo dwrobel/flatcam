@@ -180,9 +180,9 @@ class QRCode(FlatCAMTool):
                                    {'label': _('Positive'), 'value': 'pos'}])
         self.pol_radio.setToolTip(
             _("Choose the type of QRCode to be created.\n"
-              "If added on a Silkscreen Gerber you may add\n"
-              "it as positive. If you add it to a Copper\n"
-              "Gerber then perhaps you can add it as positive.")
+              "If added on a Silkscreen Gerber file the QRCode may\n"
+              "be added as positive. If it is added to a Copper Gerber\n"
+              "file then perhaps the QRCode can be added as negative.")
         )
         grid_lay.addWidget(self.pol_label, 7, 0)
         grid_lay.addWidget(self.pol_radio, 7, 1)

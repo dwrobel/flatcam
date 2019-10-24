@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - QRCode Tool: added ability to add negative QRCodes (perhaps they can be isolated on copper?); added a clear area surrounding the QRCode in case it is dropped on a copper pour (region); fixed the Gerber export
 - QRCode Tool: all parameters are hard-coded for now
+- small update
 
 24.10.2019
 
