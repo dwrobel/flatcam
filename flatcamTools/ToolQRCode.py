@@ -11,19 +11,19 @@ from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCDoubleSpinner
 from flatcamParsers.ParseSVG import *
 
-from shapely.geometry import Point
 from shapely.geometry.base import *
 from shapely.ops import unary_union
 from shapely.affinity import translate
+from shapely.geometry import box
 
 from io import StringIO, BytesIO
 from collections import Iterable
 import logging
+from copy import deepcopy
+
 import qrcode
 import qrcode.image.svg
 from lxml import etree as ET
-from copy import copy, deepcopy
-from numpy import Inf
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -147,7 +147,7 @@ class QRCode(FlatCAMTool):
         self.border_size_label = QtWidgets.QLabel('%s:' % _("Border Size"))
         self.border_size_label.setToolTip(
             _("Size of the QRCode border. How many boxes thick is the border.\n"
-              "Default value is 4.")
+              "Default value is 4. The width of the clearance around the QRCode.")
         )
         self.border_size_entry = FCSpinner()
         self.border_size_entry.set_range(1, 9999)
@@ -172,15 +172,13 @@ class QRCode(FlatCAMTool):
         # POLARITY CHOICE #
         self.pol_label = QtWidgets.QLabel('%s:' % _("Polarity"))
         self.pol_label.setToolTip(
-            _("Parameter that controls the error correction used for the QR Code.\n"
-              "L = maximum 7% errors can be corrected\n"
-              "M = maximum 15% errors can be corrected\n"
-              "Q = maximum 25% errors can be corrected\n"
-              "H = maximum 30% errors can be corrected.")
+            _("Choose the polarity of the QRCode.\n"
+              "It can be drawn in a negative way (squares are clear)\n"
+              "or in a positive way (squares are opaque).")
         )
         self.pol_radio = RadioSet([{'label': _('Negative'), 'value': 'neg'},
                                    {'label': _('Positive'), 'value': 'pos'}])
-        self.error_radio.setToolTip(
+        self.pol_radio.setToolTip(
             _("Choose the type of QRCode to be created.\n"
               "If added on a Silkscreen Gerber you may add\n"
               "it as positive. If you add it to a Copper\n"
@@ -189,18 +187,20 @@ class QRCode(FlatCAMTool):
         grid_lay.addWidget(self.pol_label, 7, 0)
         grid_lay.addWidget(self.pol_radio, 7, 1)
 
-        # BOUNDARY THICKNESS #
-        self.boundary_label = QtWidgets.QLabel('%s:' % _("Boundary Thickness"))
-        self.boundary_label.setToolTip(
-            _("The width of the clearance around the QRCode.")
+        # BOUNDING BOX TYPE #
+        self.bb_label = QtWidgets.QLabel('%s:' % _("Bounding Box"))
+        self.bb_label.setToolTip(
+            _("The bounding box, meaning the empty space that surrounds\n"
+              "the QRCode geometry, can have a rounded or a square shape.")
         )
-        self.boundary_entry = FCDoubleSpinner()
-        self.boundary_entry.set_range(0.0, 9999.9999)
-        self.boundary_entry.set_precision(self.decimals)
-        self.boundary_entry.setWrapping(True)
-
-        grid_lay.addWidget(self.boundary_label, 8, 0)
-        grid_lay.addWidget(self.boundary_entry, 8, 1)
+        self.bb_radio = RadioSet([{'label': _('Rounded'), 'value': 'r'},
+                                  {'label': _('Square'), 'value': 's'}])
+        self.bb_radio.setToolTip(
+            _("The bounding box, meaning the empty space that surrounds\n"
+              "the QRCode geometry, can have a rounded or a square shape.")
+        )
+        grid_lay.addWidget(self.bb_label, 8, 0)
+        grid_lay.addWidget(self.bb_radio, 8, 1)
 
         # ## Create QRCode
         self.qrcode_button = QtWidgets.QPushButton(_("Create QRCode"))
@@ -213,6 +213,8 @@ class QRCode(FlatCAMTool):
         self.layout.addStretch()
 
         self.grb_object = None
+        self.box_poly = None
+        self.proc = None
 
         self.origin = (0, 0)
 
@@ -221,8 +223,8 @@ class QRCode(FlatCAMTool):
         self.kr = None
 
         self.shapes = self.app.move_tool.sel_shapes
-        self.qrcode_geometry = list()
-        self.qrcode_utility_geometry = list()
+        self.qrcode_geometry = MultiPolygon()
+        self.qrcode_utility_geometry = MultiPolygon()
 
     def run(self, toggle=True):
         self.app.report_usage("QRCode()")
@@ -262,73 +264,79 @@ class QRCode(FlatCAMTool):
         self.bsize_entry.set_value(3)
         self.border_size_entry.set_value(4)
         self.pol_radio.set_value('pos')
+        self.bb_radio.set_value('r')
 
         # Signals #
         self.qrcode_button.clicked.connect(self.execute)
 
     def execute(self):
-
         text_data = self.text_data.get_value()
         if text_data == '':
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Cancelled. There is no QRCode Data in the text box."))
             return 'fail'
 
-        error_code = {
-            'L': qrcode.constants.ERROR_CORRECT_L,
-            'M': qrcode.constants.ERROR_CORRECT_M,
-            'Q': qrcode.constants.ERROR_CORRECT_Q,
-            'H': qrcode.constants.ERROR_CORRECT_H
-        }[self.error_radio.get_value()]
+        # get the Gerber object on which the QRCode will be inserted
+        selection_index = self.grb_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
 
-        qr = qrcode.QRCode(
-            version=self.version_entry.get_value(),
-            error_correction=error_code,
-            box_size=self.bsize_entry.get_value(),
-            border=self.border_size_entry.get_value(),
-            image_factory=qrcode.image.svg.SvgFragmentImage
-        )
-        qr.add_data(text_data)
-        qr.make()
+        try:
+            self.grb_object = model_index.internalPointer().obj
+        except Exception as e:
+            log.debug("QRCode.execute() --> %s" % str(e))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            return 'fail'
 
-        svg_file = BytesIO()
-        img = qr.make_image()
-        img.save(svg_file)
-
-        svg_text = StringIO(svg_file.getvalue().decode('UTF-8'))
-        svg_geometry = self.convert_svg_to_geo(svg_text, units=self.units)
-        self.qrcode_geometry = deepcopy(svg_geometry)
-
-        svg_geometry = unary_union(svg_geometry).buffer(0.0000001).buffer(-0.0000001)
-
-        self.qrcode_utility_geometry = svg_geometry
-
-        # if we have an object selected then we can safely activate the mouse events
+        # we can safely activate the mouse events
         self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
         self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
         self.kr = self.app.plotcanvas.graph_event_connect('key_release', self.on_key_release)
 
-        selection_index = self.grb_object_combo.currentIndex()
-        model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
-        try:
-            self.grb_object = model_index.internalPointer().obj
-        except Exception as e:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
-            return 'fail'
+        self.proc = self.app.proc_container.new('%s...' % _("Generating QRCode geometry"))
 
-        self.app.inform.emit(_("Click on the Destination point ..."))
+        def job_thread_qr(app_obj):
+            error_code = {
+                'L': qrcode.constants.ERROR_CORRECT_L,
+                'M': qrcode.constants.ERROR_CORRECT_M,
+                'Q': qrcode.constants.ERROR_CORRECT_Q,
+                'H': qrcode.constants.ERROR_CORRECT_H
+            }[self.error_radio.get_value()]
+
+            qr = qrcode.QRCode(
+                version=self.version_entry.get_value(),
+                error_correction=error_code,
+                box_size=self.bsize_entry.get_value(),
+                border=self.border_size_entry.get_value(),
+                image_factory=qrcode.image.svg.SvgFragmentImage
+            )
+            qr.add_data(text_data)
+            qr.make()
+
+            svg_file = BytesIO()
+            img = qr.make_image()
+            img.save(svg_file)
+
+            svg_text = StringIO(svg_file.getvalue().decode('UTF-8'))
+            svg_geometry = self.convert_svg_to_geo(svg_text, units=self.units)
+            self.qrcode_geometry = deepcopy(svg_geometry)
+
+            svg_geometry = unary_union(svg_geometry).buffer(0.0000001).buffer(-0.0000001)
+            self.qrcode_utility_geometry = svg_geometry
+
+            # make a bounding box of the QRCode geometry to help drawing the utility geometry in case it is too
+            # complicated
+            try:
+                a, b, c, d = self.qrcode_utility_geometry.bounds
+                self.box_poly = box(minx=a, miny=b, maxx=c, maxy=d)
+            except Exception as e:
+                log.debug("QRCode.make() bounds error --> %s" % str(e))
+
+            app_obj.call_source = 'qrcode_tool'
+            app_obj.inform.emit(_("Click on the Destination point ..."))
+
+        self.app.worker_task.emit({'fcn': job_thread_qr, 'params': [self.app]})
 
     def make(self, pos):
-        if self.app.is_legacy is False:
-            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-            self.app.plotcanvas.graph_event_disconnect('key_release', self.on_key_release)
-        else:
-            self.app.plotcanvas.graph_event_disconnect(self.mm)
-            self.app.plotcanvas.graph_event_disconnect(self.mr)
-            self.app.plotcanvas.graph_event_disconnect(self.kr)
-
-        # delete the utility geometry
-        self.delete_utility_geo()
+        self.on_exit()
 
         # add the svg geometry to the selected Gerber object solid_geometry and in obj.apertures, apid = 0
         if not isinstance(self.grb_object.solid_geometry, Iterable):
@@ -339,11 +347,38 @@ class QRCode(FlatCAMTool):
         if isinstance(self.grb_object.solid_geometry, MultiPolygon):
             geo_list = list(self.grb_object.solid_geometry.geoms)
 
+        # this is the bounding box of the QRCode geometry
+        a, b, c, d = self.qrcode_utility_geometry.bounds
+        buff_val = self.border_size_entry.get_value() * (self.bsize_entry.get_value() / 10)
+
+        if self.bb_radio.get_value() == 'r':
+            mask_geo = box(a, b, c, d).buffer(buff_val)
+        else:
+            mask_geo = box(a, b, c, d).buffer(buff_val, join_style=2)
+
+        # update the solid geometry with the cutout (if it is the case)
+        new_solid_geometry = list()
+        offset_mask_geo = translate(mask_geo, xoff=pos[0], yoff=pos[1])
+        for poly in geo_list:
+            if poly.contains(offset_mask_geo):
+                new_solid_geometry.append(poly.difference(offset_mask_geo))
+            else:
+                if poly not in new_solid_geometry:
+                    new_solid_geometry.append(poly)
+
+        geo_list = deepcopy(list(new_solid_geometry))
+
+        # Polarity
+        if self.pol_radio.get_value() == 'pos':
+            working_geo = self.qrcode_utility_geometry
+        else:
+            working_geo = mask_geo.difference(self.qrcode_utility_geometry)
+
         try:
-            for geo in self.qrcode_utility_geometry:
+            for geo in working_geo:
                 geo_list.append(translate(geo, xoff=pos[0], yoff=pos[1]))
         except TypeError:
-            geo_list.append(translate(self.qrcode_utility_geometry, xoff=pos[0], yoff=pos[1]))
+            geo_list.append(translate(working_geo, xoff=pos[0], yoff=pos[1]))
 
         self.grb_object.solid_geometry = deepcopy(geo_list)
 
@@ -355,15 +390,36 @@ class QRCode(FlatCAMTool):
             for k, v in list(self.grb_object.apertures.items()):
                 sort_apid.append(int(k))
             sorted_apertures = sorted(sort_apid)
-            new_apid = str(max(sorted_apertures) + 1)
+            max_apid = max(sorted_apertures)
+            if max_apid >= 10:
+                new_apid = str(max_apid + 1)
+            else:
+                new_apid = '10'
 
+        # don't know if the condition is required since I already made sure above that the new_apid is a new one
         if new_apid not in self.grb_object.apertures:
             self.grb_object.apertures[new_apid] = dict()
             self.grb_object.apertures[new_apid]['geometry'] = list()
             self.grb_object.apertures[new_apid]['type'] = 'R'
-            self.grb_object.apertures[new_apid]['height'] = deepcopy(box_size)
-            self.grb_object.apertures[new_apid]['width'] = deepcopy(box_size)
+            # TODO: HACK
+            # I've artificially added 1% to the height and width because otherwise after loading the
+            # exported file, it will not be correctly reconstructed (it will be made from multiple shapes instead of
+            # one shape which show that the buffering didn't worked well). It may be the MM to INCH conversion.
+            self.grb_object.apertures[new_apid]['height'] = deepcopy(box_size * 1.01)
+            self.grb_object.apertures[new_apid]['width'] = deepcopy(box_size * 1.01)
             self.grb_object.apertures[new_apid]['size'] = deepcopy(math.sqrt(box_size ** 2 + box_size ** 2))
+
+        if '0' not in self.grb_object.apertures:
+            self.grb_object.apertures['0'] = dict()
+            self.grb_object.apertures['0']['geometry'] = list()
+            self.grb_object.apertures['0']['type'] = 'REG'
+            self.grb_object.apertures['0']['size'] = 0.0
+
+        # in case that the QRCode geometry is dropped onto a copper region (found in the '0' aperture)
+        # make sure that I place a cutout there
+        zero_elem = dict()
+        zero_elem['clear'] = offset_mask_geo
+        self.grb_object.apertures['0']['geometry'].append(deepcopy(zero_elem))
 
         try:
             a, b, c, d = self.grb_object.bounds()
@@ -383,7 +439,7 @@ class QRCode(FlatCAMTool):
         except TypeError:
             geo_elem = dict()
             geo_elem['solid'] = self.qrcode_geometry
-            self.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
+            self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
         # update the source file with the new geometry:
         self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'], filename=None,
@@ -393,29 +449,34 @@ class QRCode(FlatCAMTool):
 
     def draw_utility_geo(self, pos):
 
-        face = '#0000FF' + str(hex(int(0.2 * 255)))[2:]
+        # face = '#0000FF' + str(hex(int(0.2 * 255)))[2:]
         outline = '#0000FFAF'
 
         offset_geo = list()
 
-        try:
-            for poly in self.qrcode_utility_geometry:
-                offset_geo.append(translate(poly.exterior, xoff=pos[0], yoff=pos[1]))
-                for geo_int in poly.interiors:
+        # I use the len of self.qrcode_geometry instead of the utility one because the complexity of the polygons is
+        # better seen in this
+        if len(self.qrcode_geometry) <= 330:
+            try:
+                for poly in self.qrcode_utility_geometry:
+                    offset_geo.append(translate(poly.exterior, xoff=pos[0], yoff=pos[1]))
+                    for geo_int in poly.interiors:
+                        offset_geo.append(translate(geo_int, xoff=pos[0], yoff=pos[1]))
+            except TypeError:
+                offset_geo.append(translate(self.qrcode_utility_geometry.exterior, xoff=pos[0], yoff=pos[1]))
+                for geo_int in self.qrcode_utility_geometry.interiors:
                     offset_geo.append(translate(geo_int, xoff=pos[0], yoff=pos[1]))
-        except TypeError:
-            offset_geo.append(translate(self.qrcode_utility_geometry.exterior, xoff=pos[0], yoff=pos[1]))
-            for geo_int in self.qrcode_utility_geometry.interiors:
-                offset_geo.append(translate(geo_int, xoff=pos[0], yoff=pos[1]))
+        else:
+            offset_geo = [translate(self.box_poly, xoff=pos[0], yoff=pos[1])]
 
         for shape in offset_geo:
-            self.shapes.add(shape, color=outline, face_color=face, update=True, layer=0, tolerance=None)
+            self.shapes.add(shape, color=outline, update=True, layer=0, tolerance=None)
 
         if self.app.is_legacy is True:
             self.shapes.redraw()
 
     def delete_utility_geo(self):
-        self.shapes.clear()
+        self.shapes.clear(update=True)
         self.shapes.redraw()
 
     def on_mouse_move(self, event):
@@ -514,8 +575,8 @@ class QRCode(FlatCAMTool):
                 solid_geometry += geos_text_f
         return solid_geometry
 
-    def flatten_list(self, list):
-        for item in list:
+    def flatten_list(self, geo_list):
+        for item in geo_list:
             if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
                 yield from self.flatten_list(item)
             else:
@@ -529,3 +590,17 @@ class QRCode(FlatCAMTool):
                 obj.plot()
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
+
+    def on_exit(self):
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+            self.app.plotcanvas.graph_event_disconnect('key_release', self.on_key_release)
+        else:
+            self.app.plotcanvas.graph_event_disconnect(self.mm)
+            self.app.plotcanvas.graph_event_disconnect(self.mr)
+            self.app.plotcanvas.graph_event_disconnect(self.kr)
+
+        # delete the utility geometry
+        self.delete_utility_geo()
+        self.app.call_source = 'app'

@@ -3451,6 +3451,30 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Jump to coords
                 if key == QtCore.Qt.Key_J or key == 'J':
                     self.app.on_jump_to()
+        elif self.app.call_source == 'qrcode_tool':
+            if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
+                if key == QtCore.Qt.Key_X:
+                    self.app.abort_all_tasks()
+                    return
+
+            elif modifiers == QtCore.Qt.ControlModifier:
+                pass
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            elif modifiers == QtCore.Qt.NoModifier:
+                # Escape = Deselect All
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    self.app.qrcode_tool.on_exit()
+
+                # Grid toggle
+                if key == QtCore.Qt.Key_G:
+                    self.app.ui.grid_snap_btn.trigger()
+
+                # Jump to coords
+                if key == QtCore.Qt.Key_J:
+                    self.app.on_jump_to()
 
     def createPopupMenu(self):
         menu = super().createPopupMenu()
