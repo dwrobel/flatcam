@@ -1177,7 +1177,7 @@ msgstr "Führen Sie das TCL-Skript aus"
 
 #: FlatCAMApp.py:9749
 msgid "Run TCL script cancelled."
-msgstr "Exportieren der TCL-Skriptdatei abgebrochen."
+msgstr "Ausführen der TCL-Skriptdatei abgebrochen."
 
 #: FlatCAMApp.py:9765
 msgid "TCL script file opened in Code Editor and executed."
