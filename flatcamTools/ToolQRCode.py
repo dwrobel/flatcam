@@ -445,7 +445,7 @@ class QRCode(FlatCAMTool):
         self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'], filename=None,
                                                              local_use=self.grb_object, use_thread=False)
 
-        self.replot()
+        self.replot(obj=self.grb_object)
 
     def draw_utility_geo(self, pos):
 
@@ -582,9 +582,7 @@ class QRCode(FlatCAMTool):
             else:
                 yield item
 
-    def replot(self):
-        obj = self.grb_object
-
+    def replot(self, obj):
         def worker_task():
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 obj.plot()
