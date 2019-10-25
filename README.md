@@ -17,6 +17,9 @@ CAD program, and create G-Code for Isolation routing.
 - fixed imports in all TclCommands
 - fixed the requirements.txt and setup_ubuntu.sh files
 - QRCode Tool: change the plot method parameter
+- QRCode Tool: added ability to save the generated QRCode as SVG file or PNG file
+- QRCode Tool: added the feature to save the PNG file with transparent background
+- QRCode Tool: added GUI category in Preferences window
 
 24.10.2019
 

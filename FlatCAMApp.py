@@ -849,6 +849,17 @@ class App(QtCore.QObject):
             "tools_cr_dh": self.ui.tools2_defaults_form.tools2_checkrules_group.drill_size_cb,
             "tools_cr_dh_val": self.ui.tools2_defaults_form.tools2_checkrules_group.drill_size_entry,
 
+            # QRCode Tool
+            "tools_qrcode_version": self.ui.tools2_defaults_form.tools2_qrcode_group.version_entry,
+            "tools_qrcode_error": self.ui.tools2_defaults_form.tools2_qrcode_group.error_radio,
+            "tools_qrcode_box_size": self.ui.tools2_defaults_form.tools2_qrcode_group.bsize_entry,
+            "tools_qrcode_border_size": self.ui.tools2_defaults_form.tools2_qrcode_group.border_size_entry,
+            "tools_qrcode_qrdata": self.ui.tools2_defaults_form.tools2_qrcode_group.text_data,
+            "tools_qrcode_polarity": self.ui.tools2_defaults_form.tools2_qrcode_group.pol_radio,
+            "tools_qrcode_rounded": self.ui.tools2_defaults_form.tools2_qrcode_group.bb_radio,
+            "tools_qrcode_fill_color": self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry,
+            "tools_qrcode_back_color": self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry,
+
             # Utilities
             # File associations
             "fa_excellon": self.ui.util_defaults_form.fa_excellon_group.exc_list_text,
@@ -1308,6 +1319,17 @@ class App(QtCore.QObject):
             "tools_cr_dh": True,
             "tools_cr_dh_val": 0.011811,
 
+            # QRCode Tool
+            "tools_qrcode_version": 1,
+            "tools_qrcode_error": 'L',
+            "tools_qrcode_box_size": 3,
+            "tools_qrcode_border_size": 4,
+            "tools_qrcode_qrdata": '',
+            "tools_qrcode_polarity": 'pos',
+            "tools_qrcode_rounded": 's',
+            "tools_qrcode_fill_color": '#000000',
+            "tools_qrcode_back_color": '#FFFFFF',
+
             # Utilities
             # file associations
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
@@ -1731,6 +1753,17 @@ class App(QtCore.QObject):
         self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['tools_film_color'])[:7])
 
+        # Init the Tool QRCode colors
+        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry.set_value(
+            self.defaults['tools_qrcode_fill_color'])
+        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['tools_qrcode_fill_color'])[:7])
+
+        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.set_value(
+            self.defaults['tools_qrcode_back_color'])
+        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['tools_qrcode_back_color'])[:7])
+
         # ### End of Data ####
 
         # ##############################################
@@ -2113,10 +2146,21 @@ class App(QtCore.QObject):
             self.on_annotation_fontcolor_button)
 
         # ########## Tools related signals #############
+        # Film Tool
         self.ui.tools_defaults_form.tools_film_group.film_color_entry.editingFinished.connect(
             self.on_film_color_entry)
         self.ui.tools_defaults_form.tools_film_group.film_color_button.clicked.connect(
             self.on_film_color_button)
+
+        # QRCode Tool
+        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry.editingFinished.connect(
+            self.on_qrcode_fill_color_entry)
+        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.clicked.connect(
+            self.on_qrcode_fill_color_button)
+        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.editingFinished.connect(
+            self.on_qrcode_back_color_entry)
+        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.clicked.connect(
+            self.on_qrcode_back_color_button)
 
         # portability changed signal
         self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
@@ -6700,6 +6744,58 @@ class App(QtCore.QObject):
         new_val_sel = str(film_color.name())
         self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(new_val_sel)
         self.defaults['tools_film_color'] = new_val_sel
+
+    def on_qrcode_fill_color_entry(self):
+        self.defaults['tools_qrcode_fill_color'] = \
+            self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry.get_value()
+        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['tools_qrcode_fill_color']))
+
+    def on_qrcode_fill_color_button(self):
+        current_color = QtGui.QColor(self.defaults['tools_qrcode_fill_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        fill_color = c_dialog.getColor(initial=current_color)
+
+        if fill_color.isValid() is False:
+            return
+
+        # if new color is different then mark that the Preferences are changed
+        if fill_color != current_color:
+            self.on_preferences_edited()
+
+        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
+            "background-color:%s" % str(fill_color.name()))
+
+        new_val_sel = str(fill_color.name())
+        self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry.set_value(new_val_sel)
+        self.defaults['tools_qrcode_fill_color'] = new_val_sel
+
+    def on_qrcode_back_color_entry(self):
+        self.defaults['tools_qrcode_back_color'] = \
+            self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.get_value()
+        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['tools_qrcode_back_color']))
+
+    def on_qrcode_back_color_button(self):
+        current_color = QtGui.QColor(self.defaults['tools_qrcode_back_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        back_color = c_dialog.getColor(initial=current_color)
+
+        if back_color.isValid() is False:
+            return
+
+        # if new color is different then mark that the Preferences are changed
+        if back_color != current_color:
+            self.on_preferences_edited()
+
+        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
+            "background-color:%s" % str(back_color.name()))
+
+        new_val_sel = str(back_color.name())
+        self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.set_value(new_val_sel)
+        self.defaults['tools_qrcode_back_color'] = new_val_sel
 
     def on_splash_changed(self, state):
         settings = QSettings("Open Source", "FlatCAM")

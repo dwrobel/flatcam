@@ -46,6 +46,8 @@ class TclCommandAlignDrill(TclCommandSignaled):
             ('name', 'Name of the object (Gerber or Excellon) to mirror.'),
             ('dia', 'Tool diameter'),
             ('box', 'Name of object which act as box (cutout for example.)'),
+            ('holes', 'Tuple of tuples where each tuple it is a set of x, y coordinates. '
+                      'E.g: (x0, y0), (x1, y1), ... '),
             ('grid', 'Aligning to grid, for those, who have aligning pins'
                      'inside table in grid (-5,0),(5,0),(15,0)...'),
             ('gridoffset', 'offset of grid from 0 position.'),

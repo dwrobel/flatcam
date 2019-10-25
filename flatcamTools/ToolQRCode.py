@@ -5,10 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtCore import Qt
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCDoubleSpinner
+from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, OptionalInputSection
 from flatcamParsers.ParseSVG import *
 
 from shapely.geometry.base import *
@@ -23,6 +24,7 @@ from copy import deepcopy
 
 import qrcode
 import qrcode.image.svg
+import qrcode.image.pil
 from lxml import etree as ET
 
 import gettext
@@ -164,7 +166,7 @@ class QRCode(FlatCAMTool):
         )
         self.text_data = FCTextArea()
         self.text_data.setPlaceholderText(
-            _("Add here the text to be included in the QRData...")
+            _("Add here the text to be included in the QRCode...")
         )
         grid_lay.addWidget(self.text_label, 5, 0)
         grid_lay.addWidget(self.text_data, 6, 0, 1, 2)
@@ -202,13 +204,92 @@ class QRCode(FlatCAMTool):
         grid_lay.addWidget(self.bb_label, 8, 0)
         grid_lay.addWidget(self.bb_radio, 8, 1)
 
-        # ## Create QRCode
-        self.qrcode_button = QtWidgets.QPushButton(_("Create QRCode"))
+        # Export QRCode
+        self.export_cb = FCCheckBox(_("Export QRCode"))
+        self.export_cb.setToolTip(
+            _("Show a set of controls allowing to export the QRCode\n"
+              "to a SVG file or an PNG file.")
+        )
+        grid_lay.addWidget(self.export_cb, 9, 0, 1, 2)
+
+        # this way I can hide/show the frame
+        self.export_frame = QtWidgets.QFrame()
+        self.export_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.export_frame)
+        self.export_lay = QtWidgets.QGridLayout()
+        self.export_lay.setContentsMargins(0, 0, 0, 0)
+        self.export_frame.setLayout(self.export_lay)
+        self.export_lay.setColumnStretch(0, 0)
+        self.export_lay.setColumnStretch(1, 1)
+
+        # default is hidden
+        self.export_frame.hide()
+
+        # FILL COLOR #
+        self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill Color'))
+        self.fill_color_label.setToolTip(
+            _("Set the QRCode fill color (squares color).")
+        )
+        self.fill_color_entry = FCEntry()
+        self.fill_color_button = QtWidgets.QPushButton()
+        self.fill_color_button.setFixedSize(15, 15)
+
+        fill_lay_child = QtWidgets.QHBoxLayout()
+        fill_lay_child.setContentsMargins(0, 0, 0, 0)
+        fill_lay_child.addWidget(self.fill_color_entry)
+        fill_lay_child.addWidget(self.fill_color_button, alignment=Qt.AlignRight)
+        fill_lay_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        fill_color_widget = QtWidgets.QWidget()
+        fill_color_widget.setLayout(fill_lay_child)
+
+        self.export_lay.addWidget(self.fill_color_label, 0, 0)
+        self.export_lay.addWidget(fill_color_widget, 0, 1)
+
+        self.transparent_cb = FCCheckBox(_("Transparent back color"))
+        self.export_lay.addWidget(self.transparent_cb, 1, 0, 1, 2)
+
+        # BACK COLOR #
+        self.back_color_label = QtWidgets.QLabel('%s:' % _('Back Color'))
+        self.back_color_label.setToolTip(
+            _("Set the QRCode background color.")
+        )
+        self.back_color_entry = FCEntry()
+        self.back_color_button = QtWidgets.QPushButton()
+        self.back_color_button.setFixedSize(15, 15)
+
+        back_lay_child = QtWidgets.QHBoxLayout()
+        back_lay_child.setContentsMargins(0, 0, 0, 0)
+        back_lay_child.addWidget(self.back_color_entry)
+        back_lay_child.addWidget(self.back_color_button, alignment=Qt.AlignRight)
+        back_lay_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        back_color_widget = QtWidgets.QWidget()
+        back_color_widget.setLayout(back_lay_child)
+
+        self.export_lay.addWidget(self.back_color_label, 2, 0)
+        self.export_lay.addWidget(back_color_widget, 2, 1)
+
+        # ## Export QRCode as SVG image
+        self.export_svg_button = QtWidgets.QPushButton(_("Export QRCode SVG"))
+        self.export_svg_button.setToolTip(
+            _("Export a SVG file with the QRCode content.")
+        )
+        self.export_lay.addWidget(self.export_svg_button, 3, 0, 1, 2)
+
+        # ## Export QRCode as PNG image
+        self.export_png_button = QtWidgets.QPushButton(_("Export QRCode PNG"))
+        self.export_png_button.setToolTip(
+            _("Export a PNG image file with the QRCode content.")
+        )
+        self.export_lay.addWidget(self.export_png_button, 4, 0, 1, 2)
+
+        # ## Insert QRCode
+        self.qrcode_button = QtWidgets.QPushButton(_("Insert QRCode"))
         self.qrcode_button.setToolTip(
             _("Create the QRCode object.")
         )
-        grid_lay.addWidget(self.qrcode_button, 9, 0, 1, 2)
-        grid_lay.addWidget(QtWidgets.QLabel(''), 10, 0)
+        self.layout.addWidget(self.qrcode_button)
 
         self.layout.addStretch()
 
@@ -225,6 +306,21 @@ class QRCode(FlatCAMTool):
         self.shapes = self.app.move_tool.sel_shapes
         self.qrcode_geometry = MultiPolygon()
         self.qrcode_utility_geometry = MultiPolygon()
+
+        self.old_back_color = ''
+
+        # Signals #
+        self.qrcode_button.clicked.connect(self.execute)
+        self.export_cb.stateChanged.connect(self.on_export_frame)
+        self.export_png_button.clicked.connect(self.export_png_file)
+        self.export_svg_button.clicked.connect(self.export_svg_file)
+
+        self.fill_color_entry.editingFinished.connect(self.on_qrcode_fill_color_entry)
+        self.fill_color_button.clicked.connect(self.on_qrcode_fill_color_button)
+        self.back_color_entry.editingFinished.connect(self.on_qrcode_back_color_entry)
+        self.back_color_button.clicked.connect(self.on_qrcode_back_color_button)
+
+        self.transparent_cb.stateChanged.connect(self.on_transparent_back_color)
 
     def run(self, toggle=True):
         self.app.report_usage("QRCode()")
@@ -259,15 +355,24 @@ class QRCode(FlatCAMTool):
 
     def set_tool_ui(self):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
-        self.version_entry.set_value(1)
-        self.error_radio.set_value('M')
-        self.bsize_entry.set_value(3)
-        self.border_size_entry.set_value(4)
-        self.pol_radio.set_value('pos')
-        self.bb_radio.set_value('r')
+        self.version_entry.set_value(int(self.app.defaults["tools_qrcode_version"]))
+        self.error_radio.set_value(self.app.defaults["tools_qrcode_error"])
+        self.bsize_entry.set_value(int(self.app.defaults["tools_qrcode_box_size"]))
+        self.border_size_entry.set_value(int(self.app.defaults["tools_qrcode_border_size"]))
+        self.pol_radio.set_value(self.app.defaults["tools_qrcode_polarity"])
+        self.bb_radio.set_value(self.app.defaults["tools_qrcode_rounded"])
 
-        # Signals #
-        self.qrcode_button.clicked.connect(self.execute)
+        self.fill_color_entry.set_value(self.app.defaults['tools_qrcode_fill_color'])
+        self.fill_color_button.setStyleSheet("background-color:%s" %
+                                             str(self.app.defaults['tools_qrcode_fill_color'])[:7])
+
+        self.back_color_entry.set_value(self.app.defaults['tools_qrcode_back_color'])
+        self.back_color_button.setStyleSheet("background-color:%s" %
+                                             str(self.app.defaults['tools_qrcode_back_color'])[:7])
+
+    def on_export_frame(self, state):
+        self.export_frame.setVisible(state)
+        self.qrcode_button.setVisible(not state)
 
     def execute(self):
         text_data = self.text_data.get_value()
@@ -327,8 +432,8 @@ class QRCode(FlatCAMTool):
             try:
                 a, b, c, d = self.qrcode_utility_geometry.bounds
                 self.box_poly = box(minx=a, miny=b, maxx=c, maxy=d)
-            except Exception as e:
-                log.debug("QRCode.make() bounds error --> %s" % str(e))
+            except Exception as ee:
+                log.debug("QRCode.make() bounds error --> %s" % str(ee))
 
             app_obj.call_source = 'qrcode_tool'
             app_obj.inform.emit(_("Click on the Destination point ..."))
@@ -602,3 +707,146 @@ class QRCode(FlatCAMTool):
         # delete the utility geometry
         self.delete_utility_geo()
         self.app.call_source = 'app'
+
+    def export_png_file(self):
+        text_data = self.text_data.get_value()
+        if text_data == '':
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Cancelled. There is no QRCode Data in the text box."))
+            return 'fail'
+
+        def job_thread_qr_png(app_obj, fname):
+            error_code = {
+                'L': qrcode.constants.ERROR_CORRECT_L,
+                'M': qrcode.constants.ERROR_CORRECT_M,
+                'Q': qrcode.constants.ERROR_CORRECT_Q,
+                'H': qrcode.constants.ERROR_CORRECT_H
+            }[self.error_radio.get_value()]
+
+            qr = qrcode.QRCode(
+                version=self.version_entry.get_value(),
+                error_correction=error_code,
+                box_size=self.bsize_entry.get_value(),
+                border=self.border_size_entry.get_value(),
+                image_factory=qrcode.image.pil.PilImage
+            )
+            qr.add_data(text_data)
+            qr.make(fit=True)
+
+            img = qr.make_image(fill_color=self.fill_color_entry.get_value(),
+                                back_color=self.back_color_entry.get_value())
+            img.save(fname)
+
+            app_obj.call_source = 'qrcode_tool'
+
+        name = 'qr_code'
+
+        _filter = "PNG File (*.png);;All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export PNG"),
+                directory=self.app.get_last_save_folder() + '/' + str(name) + '_png',
+                filter=_filter)
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG"), filter=_filter)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.app.inform.emit('[WARNING_NOTCL]%s' % _(" Export PNG cancelled."))
+            return
+        else:
+            self.app.worker_task.emit({'fcn': job_thread_qr_png, 'params': [self.app, filename]})
+
+    def export_svg_file(self):
+        text_data = self.text_data.get_value()
+        if text_data == '':
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Cancelled. There is no QRCode Data in the text box."))
+            return 'fail'
+
+        def job_thread_qr_svg(app_obj, fname):
+            error_code = {
+                'L': qrcode.constants.ERROR_CORRECT_L,
+                'M': qrcode.constants.ERROR_CORRECT_M,
+                'Q': qrcode.constants.ERROR_CORRECT_Q,
+                'H': qrcode.constants.ERROR_CORRECT_H
+            }[self.error_radio.get_value()]
+
+            qr = qrcode.QRCode(
+                version=self.version_entry.get_value(),
+                error_correction=error_code,
+                box_size=self.bsize_entry.get_value(),
+                border=self.border_size_entry.get_value(),
+                image_factory=qrcode.image.svg.SvgPathImage
+            )
+            qr.add_data(text_data)
+            img = qr.make_image(fill_color=self.fill_color_entry.get_value(),
+                                back_color=self.back_color_entry.get_value())
+            img.save(fname)
+
+            app_obj.call_source = 'qrcode_tool'
+
+        name = 'qr_code'
+
+        _filter = "SVG File (*.svg);;All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export SVG"),
+                directory=self.app.get_last_save_folder() + '/' + str(name) + '_svg',
+                filter=_filter)
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=_filter)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.app.inform.emit('[WARNING_NOTCL]%s' % _(" Export SVG cancelled."))
+            return
+        else:
+            self.app.worker_task.emit({'fcn': job_thread_qr_svg, 'params': [self.app, filename]})
+
+    def on_qrcode_fill_color_entry(self):
+        color = self.fill_color_entry.get_value()
+        self.fill_color_button.setStyleSheet("background-color:%s" % str(color))
+
+    def on_qrcode_fill_color_button(self):
+        current_color = QtGui.QColor(self.fill_color_entry.get_value())
+
+        c_dialog = QtWidgets.QColorDialog()
+        fill_color = c_dialog.getColor(initial=current_color)
+
+        if fill_color.isValid() is False:
+            return
+
+        self.fill_color_button.setStyleSheet("background-color:%s" % str(fill_color.name()))
+
+        new_val_sel = str(fill_color.name())
+        self.fill_color_entry.set_value(new_val_sel)
+
+    def on_qrcode_back_color_entry(self):
+        color = self.back_color_entry.get_value()
+        self.back_color_button.setStyleSheet("background-color:%s" % str(color))
+
+    def on_qrcode_back_color_button(self):
+        current_color = QtGui.QColor(self.back_color_entry.get_value())
+
+        c_dialog = QtWidgets.QColorDialog()
+        back_color = c_dialog.getColor(initial=current_color)
+
+        if back_color.isValid() is False:
+            return
+
+        self.back_color_button.setStyleSheet("background-color:%s" % str(back_color.name()))
+
+        new_val_sel = str(back_color.name())
+        self.back_color_entry.set_value(new_val_sel)
+
+    def on_transparent_back_color(self, state):
+        if state:
+            self.back_color_entry.setDisabled(True)
+            self.back_color_button.setDisabled(True)
+            self.old_back_color = self.back_color_entry.get_value()
+            self.back_color_entry.set_value('transparent')
+        else:
+            self.back_color_entry.setDisabled(False)
+            self.back_color_button.setDisabled(False)
+            self.back_color_entry.set_value(self.old_back_color)
