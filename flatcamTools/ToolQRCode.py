@@ -562,8 +562,8 @@ class QRCode(FlatCAMTool):
         offset_geo = list()
 
         # I use the len of self.qrcode_geometry instead of the utility one because the complexity of the polygons is
-        # better seen in this
-        if len(self.qrcode_geometry) <= 330:
+        # better seen in this (bit what if the sel.qrcode_geometry is just one geo element? len will fail ...
+        if len(self.qrcode_geometry) <= self.app.defaults["tools_qrcode_sel_limit"]:
             try:
                 for poly in self.qrcode_utility_geometry:
                     offset_geo.append(translate(poly.exterior, xoff=pos[0], yoff=pos[1]))

@@ -859,6 +859,14 @@ class App(QtCore.QObject):
             "tools_qrcode_rounded": self.ui.tools2_defaults_form.tools2_qrcode_group.bb_radio,
             "tools_qrcode_fill_color": self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry,
             "tools_qrcode_back_color": self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry,
+            "tools_qrcode_sel_limit": self.ui.tools2_defaults_form.tools2_qrcode_group.sel_limit_entry,
+
+            # Copper Fill Tool
+            "tools_copperfill_clearance": self.ui.tools2_defaults_form.tools2_cfill_group.clearance_entry,
+            "tools_copperfill_margin": self.ui.tools2_defaults_form.tools2_cfill_group.margin_entry,
+            "tools_copperfill_reference": self.ui.tools2_defaults_form.tools2_cfill_group.reference_radio,
+            "tools_copperfill_box_type": self.ui.tools2_defaults_form.tools2_cfill_group.bbox_type_radio,
+            "tools_copperfill_circle_steps": self.ui.tools2_defaults_form.tools2_cfill_group.circlesteps_entry,
 
             # Utilities
             # File associations
@@ -1329,6 +1337,14 @@ class App(QtCore.QObject):
             "tools_qrcode_rounded": 's',
             "tools_qrcode_fill_color": '#000000',
             "tools_qrcode_back_color": '#FFFFFF',
+            "tools_qrcode_sel_limit": 330,
+
+            # Copper Fill Tool
+            "tools_copperfill_clearance": 0.01,
+            "tools_copperfill_margin": 0.039,
+            "tools_copperfill_reference": 'itself',
+            "tools_copperfill_box_type": 'rect',
+            "tools_copperfill_circle_steps": 128,
 
             # Utilities
             # file associations

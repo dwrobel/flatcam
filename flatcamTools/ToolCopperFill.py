@@ -247,16 +247,12 @@ class ToolCopperFill(FlatCAMTool):
 
     def set_tool_ui(self):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
-        # self.clearance_entry.set_value(float(self.app.defaults["tools_copperfill_clearance"]))
-        # self.margin_entry.set_value(float(self.app.defaults["tools_copperfill_margin"]))
-        # self.reference_radio.set_value(self.app.defaults["tools_copperfill_reference"])
-        # self.geo_steps_per_circle = int(self.app.defaults["tools_copperfill_circle_steps"])
-        # self.bbox_type_radio.set_value(self.app.defaults["tools_copperfill_box_type"])
+        self.clearance_entry.set_value(float(self.app.defaults["tools_copperfill_clearance"]))
+        self.margin_entry.set_value(float(self.app.defaults["tools_copperfill_margin"]))
+        self.reference_radio.set_value(self.app.defaults["tools_copperfill_reference"])
+        self.bbox_type_radio.set_value(self.app.defaults["tools_copperfill_box_type"])
 
-        self.clearance_entry.set_value(0.5)
-        self.margin_entry.set_value(1.0)
-        self.reference_radio.set_value('itself')
-        self.bbox_type_radio.set_value('rect')
+        self.geo_steps_per_circle = int(self.app.defaults["tools_copperfill_circle_steps"])
 
         self.area_method = False
 

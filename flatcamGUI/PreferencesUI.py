@@ -219,6 +219,9 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
         self.tools2_qrcode_group = Tools2QRCodePrefGroupUI()
         self.tools2_qrcode_group.setMinimumWidth(220)
 
+        self.tools2_cfill_group = Tools2CFillPrefGroupUI()
+        self.tools2_cfill_group.setMinimumWidth(220)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools2_checkrules_group)
         self.vlay.addWidget(self.tools2_optimal_group)
@@ -226,12 +229,10 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
         self.vlay1 = QtWidgets.QVBoxLayout()
         self.vlay1.addWidget(self.tools2_qrcode_group)
 
-
         self.vlay2 = QtWidgets.QVBoxLayout()
-
+        self.vlay2.addWidget(self.tools2_cfill_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
-
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
@@ -5562,6 +5563,115 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
 
         grid_lay.addWidget(self.back_color_label, 10, 0)
         grid_lay.addWidget(back_color_widget, 10, 1)
+
+        # Selection Limit
+        self.sel_limit_label = QtWidgets.QLabel('%s:' % _("Selection limit"))
+        self.sel_limit_label.setToolTip(
+            _("Set the number of selected geometry\n"
+              "items above which the utility geometry\n"
+              "becomes just a selection rectangle.\n"
+              "Increases the performance when moving a\n"
+              "large number of geometric elements.")
+        )
+        self.sel_limit_entry = FCSpinner()
+        self.sel_limit_entry.set_range(0, 9999)
+
+        grid_lay.addWidget(self.sel_limit_label, 11, 0)
+        grid_lay.addWidget(self.sel_limit_entry, 11, 1)
+        # self.layout.addStretch()
+
+
+class Tools2CFillPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(Tools2CFillPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Copper Fill Tool Options")))
+        self.decimals = 4
+
+        # ## Grid Layout
+        grid_lay = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay)
+        grid_lay.setColumnStretch(0, 0)
+        grid_lay.setColumnStretch(1, 1)
+
+        # ## Parameters
+        self.cflabel = QtWidgets.QLabel('<b>%s</b>' % _('Parameters'))
+        self.cflabel.setToolTip(
+            _("A tool to generate a Copper fill that can be added\n"
+              "to a selected Gerber file.")
+        )
+        grid_lay.addWidget(self.cflabel, 0, 0, 1, 2)
+
+        # CIRCLE STEPS - to be used when buffering
+        self.circle_steps_lbl = QtWidgets.QLabel('%s:' % _("Circle Steps"))
+        self.circle_steps_lbl.setToolTip(
+            _("Number of steps (lines) used to interpolate circles.")
+        )
+
+        self.circlesteps_entry = FCSpinner()
+        self.circlesteps_entry.set_range(1, 9999)
+
+        grid_lay.addWidget(self.circle_steps_lbl, 1, 0)
+        grid_lay.addWidget(self.circlesteps_entry, 1, 1)
+
+        # CLEARANCE #
+        self.clearance_label = QtWidgets.QLabel('%s:' % _("Clearance"))
+        self.clearance_label.setToolTip(
+            _("This set the distance between the copper fill components\n"
+              "(the polygon fill may be split in multiple polygons)\n"
+              "and the copper traces in the Gerber file.")
+        )
+        self.clearance_entry = FCDoubleSpinner()
+        self.clearance_entry.setMinimum(0.00001)
+        self.clearance_entry.set_precision(self.decimals)
+        self.clearance_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.clearance_label, 2, 0)
+        grid_lay.addWidget(self.clearance_entry, 2, 1)
+
+        # MARGIN #
+        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.margin_label.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.margin_entry = FCDoubleSpinner()
+        self.margin_entry.setMinimum(0.0)
+        self.margin_entry.set_precision(self.decimals)
+        self.margin_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.margin_label, 3, 0)
+        grid_lay.addWidget(self.margin_entry, 3, 1)
+
+        # Reference #
+        self.reference_radio = RadioSet([
+            {'label': _('Itself'), 'value': 'itself'},
+            {"label": _("Area Selection"), "value": "area"},
+            {'label': _("Reference Object"), 'value': 'box'}
+        ], orientation='vertical', stretch=False)
+        self.reference_label = QtWidgets.QLabel(_("Reference:"))
+        self.reference_label.setToolTip(
+            _("- 'Itself' - the copper fill extent is based on the object that is copper cleared.\n "
+              "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
+              "- 'Reference Object' - will do copper filling within the area specified by another object.")
+        )
+        grid_lay.addWidget(self.reference_label, 4, 0)
+        grid_lay.addWidget(self.reference_radio, 4, 1)
+
+        # Bounding Box Type #
+        self.bbox_type_radio = RadioSet([
+            {'label': _('Rectangular'), 'value': 'rect'},
+            {"label": _("Minimal"), "value": "min"}
+        ], stretch=False)
+        self.bbox_type_label = QtWidgets.QLabel(_("Box Type:"))
+        self.bbox_type_label.setToolTip(
+            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n "
+              "- 'Minimal' - the bounding box will be the convex hull shape.")
+        )
+        grid_lay.addWidget(self.bbox_type_label, 5, 0)
+        grid_lay.addWidget(self.bbox_type_radio, 5, 1)
+
+        self.layout.addStretch()
 
 
 class FAExcPrefGroupUI(OptionsGroupUI):
