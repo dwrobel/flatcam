@@ -2568,6 +2568,7 @@ class App(QtCore.QObject):
         self.pcb_wizard_tool = None
         self.cal_exc_tool = None
         self.qrcode_tool = None
+        self.copperfill_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         self.install_tools()
@@ -3154,6 +3155,9 @@ class App(QtCore.QObject):
         self.paint_tool.install(icon=QtGui.QIcon('share/paint16.png'), pos=self.ui.menutool,
                                 before=self.sub_tool.menuAction, separator=True)
 
+        self.copperfill_tool = ToolCopperFill(self)
+        self.copperfill_tool.install(icon=QtGui.QIcon('share/copperfill32.png'), pos=self.ui.menutool)
+
         self.qrcode_tool = QRCode(self)
         self.qrcode_tool.install(icon=QtGui.QIcon('share/qrcode32.png'), pos=self.ui.menutool)
 
@@ -3281,6 +3285,7 @@ class App(QtCore.QObject):
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
         self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
         self.ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
+        self.ui.copperfill_btn.triggered.connect(lambda: self.copperfill_tool.run(toggle=True))
 
     def object2editor(self):
         """

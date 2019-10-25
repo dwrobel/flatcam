@@ -756,6 +756,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), _("Calculators Tool"))
         self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
         self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
+        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'), _("Copper Fill Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -2191,6 +2192,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                            _("Calculators Tool"))
         self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
         self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
+        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'), _("Copper Fill Tool"))
 
         # ## Excellon Editor Toolbar # ##
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
@@ -2504,6 +2506,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Calibrate Excellon Tool
                 if key == QtCore.Qt.Key_E:
                     self.app.cal_exc_tool.run(toggle=True)
+                    return
+
+                # Copper Fill Tool
+                if key == QtCore.Qt.Key_F:
+                    self.app.copperfill_tool.run(toggle=True)
                     return
 
                 # Toggle Grid lines

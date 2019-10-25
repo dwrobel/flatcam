@@ -930,10 +930,10 @@ class Geometry(object):
             if follow:
                 geo_iso = self.follow_geometry
             else:
-                if isinstance(self.solid_geometry, list):
-                    temp_geo = cascaded_union(self.solid_geometry)
-                else:
-                    temp_geo = self.solid_geometry
+                # if isinstance(self.solid_geometry, list):
+                #     temp_geo = cascaded_union(self.solid_geometry)
+                # else:
+                #     temp_geo = self.solid_geometry
 
                 # Remember: do not make a buffer for each element in the solid_geometry because it will cut into
                 # other copper features

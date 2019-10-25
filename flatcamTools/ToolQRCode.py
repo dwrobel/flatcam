@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox, OptionalInputSection
+from flatcamGUI.GUIElements import RadioSet, FCTextArea, FCSpinner, FCEntry, FCCheckBox
 from flatcamParsers.ParseSVG import *
 
 from shapely.geometry.base import *
@@ -91,8 +91,7 @@ class QRCode(FlatCAMTool):
 
         self.qrcode_label = QtWidgets.QLabel('<b>%s</b>' % _('QRCode Parameters'))
         self.qrcode_label.setToolTip(
-            _("Contain the expected calibration points and the\n"
-              "ones measured.")
+            _("The parameters used to shape the QRCode.")
         )
         grid_lay.addWidget(self.qrcode_label, 0, 0, 1, 2)
 
@@ -445,9 +444,9 @@ class QRCode(FlatCAMTool):
     def make(self, pos):
         self.on_exit()
 
-        # add the svg geometry to the selected Gerber object solid_geometry and in obj.apertures, apid = 0
+        # make sure that the source object solid geometry is an Iterable
         if not isinstance(self.grb_object.solid_geometry, Iterable):
-            self.grb_object.solid_geometry = list(self.grb_object.solid_geometry)
+            self.grb_object.solid_geometry = [self.grb_object.solid_geometry]
 
         # I use the utility geometry (self.qrcode_utility_geometry) because it is already buffered
         geo_list = self.grb_object.solid_geometry
@@ -553,6 +552,7 @@ class QRCode(FlatCAMTool):
                                                              local_use=self.grb_object, use_thread=False)
 
         self.replot(obj=self.grb_object)
+        self.app.inform.emit('[success] %s' % _("QRCode Tool done."))
 
     def draw_utility_geo(self, pos):
 

@@ -429,12 +429,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself' -  the non copper clearing extent\n"
-              "is based on the object that is copper cleared.\n "
+            _("- 'Itself' - the non copper clearing extent is based on the object that is copper cleared.\n "
               "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
-              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
-              "- 'Reference Object' -  will do non copper clearing within the area\n"
-              "specified by another object.")
+              "- 'Reference Object' - will do non copper clearing within the area specified by another object.")
         )
         grid3.addWidget(self.reference_label, 10, 0)
         grid3.addWidget(self.reference_radio, 10, 1)
@@ -1174,8 +1171,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             try:
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
-                return "Could not retrieve object: %s" % self.obj_name
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.bound_obj_name))
+                return "Could not retrieve object: %s" % self.bound_obj_name
 
             self.clear_copper(ncc_obj=self.ncc_obj,
                               ncctooldia=self.ncc_dia_list,
@@ -1244,7 +1241,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     self.cursor_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
             else:
                 self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
-                self.app.delete_selection_shape()
 
                 if self.app.grid_status() == True:
                     curr_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
@@ -1263,6 +1259,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 return
 
         elif event.button == right_button and self.mouse_is_dragging == False:
+            self.app.delete_selection_shape()
+
             self.first_click = False
 
             if self.app.is_legacy is False:

@@ -1122,7 +1122,6 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
             else:
                 self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
-                self.app.delete_selection_shape()
 
                 curr_pos = self.app.plotcanvas.translate_coords(event_pos)
                 if self.app.grid_status() == True:
@@ -1139,6 +1138,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                 return
 
         elif event.button == right_button and self.mouse_is_dragging is False:
+            self.app.delete_selection_shape()
+
             self.first_click = False
 
             if self.app.is_legacy is False:
