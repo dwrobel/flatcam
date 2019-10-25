@@ -741,4 +741,3 @@ class ToolCopperFill(FlatCAMTool):
 
         self.app.call_source = "app"
         self.app.inform.emit('[success] %s' % _("Copper Fill Tool exit."))
-
