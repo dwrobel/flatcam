@@ -362,6 +362,8 @@ class QRCode(FlatCAMTool):
         self.pol_radio.set_value(self.app.defaults["tools_qrcode_polarity"])
         self.bb_radio.set_value(self.app.defaults["tools_qrcode_rounded"])
 
+        self.text_data.set_value(self.app.defaults["tools_qrcode_qrdata"])
+
         self.fill_color_entry.set_value(self.app.defaults['tools_qrcode_fill_color'])
         self.fill_color_button.setStyleSheet("background-color:%s" %
                                              str(self.app.defaults['tools_qrcode_fill_color'])[:7])

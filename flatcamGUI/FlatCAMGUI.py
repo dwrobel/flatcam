@@ -1256,6 +1256,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>CTRL+Q</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>CTRL+S</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1429,18 +1433,32 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("New Excellon"), _("Move Obj"), _("New Geometry"), _("Set Origin"), _("Change Units"),
                 _("Open Properties Tool"), _("Rotate by 90 degree CW"), _("Shell Toggle"),
                 _("Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"), _("Zoom Fit"),
-                _("Flip on X_axis"), _("Flip on Y_axis"), _("Zoom Out"), _("Zoom In"), _("Select All"), _("Copy Obj"),
+                _("Flip on X_axis"), _("Flip on Y_axis"), _("Zoom Out"), _("Zoom In"),
+
+                # CTRL section
+                _("Select All"), _("Copy Obj"),
                 _("Open Excellon File"), _("Open Gerber File"), _("New Project"), _("Distance Tool"),
-                _("Open Project"), _("Save Project As"), _("Toggle Plot Area"), _("Copy Obj_Name"),
+                _("Open Project"), _("PDF Import Tool"), _("Save Project As"), _("Toggle Plot Area"),
+
+                # SHIFT section
+                _("Copy Obj_Name"),
                 _("Toggle Code Editor"), _("Toggle the axis"), _("Distance Minimum Tool"), _("Open Preferences Window"),
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
-                _("Skew on Y axis"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
+                _("Skew on Y axis"),
+                # ALT section
+                _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
                 _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
-                _("Paint Area Tool"), _("PDF Import Tool"), _("Rules Check Tool"),
+                _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
                 _("View File Source"),
                 _("Cutout PCB Tool"), _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
-                _("Toggle Full Screen"), _("Abort current task (gracefully)"), _("Open Online Manual"),
+                _("Toggle Full Screen"),
+
+                # CTRL + ALT section
+                _("Abort current task (gracefully)"),
+
+                # F keys section
+                _("Open Online Manual"),
                 _("Open Online Tutorials"), _("Refresh Plots"), _("Delete Object"), _("Alternate: Delete Tool"),
                 _("(left to Key_1)Toogle Notebook Area (Left Side)"), _("En(Dis)able Obj Plot"),
                 _("Deselects all objects")
@@ -2371,27 +2389,39 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     return
 
             elif modifiers == QtCore.Qt.ControlModifier:
+                # Select All
                 if key == QtCore.Qt.Key_A:
                     self.app.on_selectall()
 
+                # Copy an FlatCAM object
                 if key == QtCore.Qt.Key_C:
                     self.app.on_copy_object()
 
+                # Open Excellon file
                 if key == QtCore.Qt.Key_E:
                     self.app.on_fileopenexcellon()
 
+                # Open Gerber file
                 if key == QtCore.Qt.Key_G:
                     self.app.on_fileopengerber()
 
+                # Create New Project
                 if key == QtCore.Qt.Key_N:
                     self.app.on_file_new_click()
 
+                # Distance Tool
                 if key == QtCore.Qt.Key_M:
                     self.app.distance_tool.run()
 
+                # Open Project
                 if key == QtCore.Qt.Key_O:
                     self.app.on_file_openproject()
 
+                # PDF Import
+                if key == QtCore.Qt.Key_Q:
+                    self.app.pdf_tool.run()
+
+                # Save Project
                 if key == QtCore.Qt.Key_S:
                     self.app.on_file_saveproject()
 
@@ -2506,9 +2536,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.paint_tool.run(toggle=True)
                     return
 
-                # Paint Tool
+                # QRCode Tool
                 if key == QtCore.Qt.Key_Q:
-                    self.app.pdf_tool.run()
+                    self.app.qrcode_tool.run()
                     return
 
                 # Rules Tool

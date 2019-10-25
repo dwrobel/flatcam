@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - QRCode Tool: added ability to save the generated QRCode as SVG file or PNG file
 - QRCode Tool: added the feature to save the PNG file with transparent background
 - QRCode Tool: added GUI category in Preferences window
+- QRCode Tool: shortcut key for this tool is now ALT+Q while PDF import Tool was relegated to CTRL+Q combo key shortcut
 
 24.10.2019
 
