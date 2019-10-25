@@ -22,6 +22,8 @@ CAD program, and create G-Code for Isolation routing.
 - QRCode Tool: added GUI category in Preferences window
 - QRCode Tool: shortcut key for this tool is now ALT+Q while PDF import Tool was relegated to CTRL+Q combo key shortcut
 - added a new FlatCAM Tool: Copper Fill Tool. It will pour copper into a Gerber filling all empty space with copper, at a clearance distance of the Gerber features
+- Copper Fill Tool: added possibility to select between a bounding box rectangular or convex hull when the reference is the geometry of the source Gerber object
+- Copper Fill Tool: cleanup on not regular tool exit
 
 24.10.2019
 

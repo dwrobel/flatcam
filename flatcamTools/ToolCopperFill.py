@@ -15,6 +15,7 @@ from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon
 import shapely.geometry.base as base
 from shapely.ops import cascaded_union, unary_union
 from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import box as box
 
 import logging
 from copy import deepcopy
@@ -138,9 +139,9 @@ class ToolCopperFill(FlatCAMTool):
               "It can be Gerber, Excellon or Geometry.")
         )
         self.box_combo_type = QtWidgets.QComboBox()
-        self.box_combo_type.addItem(_("Gerber   Reference Box Object"))
-        self.box_combo_type.addItem(_("Excellon Reference Box Object"))
-        self.box_combo_type.addItem(_("Geometry Reference Box Object"))
+        self.box_combo_type.addItem(_("Reference Gerber"))
+        self.box_combo_type.addItem(_("Reference Excellon"))
+        self.box_combo_type.addItem(_("Reference Geometry"))
 
         grid_lay.addWidget(self.box_combo_type_label, 4, 0)
         grid_lay.addWidget(self.box_combo_type, 4, 1)
@@ -161,6 +162,21 @@ class ToolCopperFill(FlatCAMTool):
         self.box_combo_label.hide()
         self.box_combo_type.hide()
         self.box_combo_type_label.hide()
+
+        # Bounding Box Type #
+        self.bbox_type_radio = RadioSet([
+            {'label': _('Rectangular'), 'value': 'rect'},
+            {"label": _("Minimal"), "value": "min"}
+        ], stretch=False)
+        self.bbox_type_label = QtWidgets.QLabel(_("Box Type:"))
+        self.bbox_type_label.setToolTip(
+            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n "
+              "- 'Minimal' - the bounding box will be the convex hull shape.")
+        )
+        grid_lay.addWidget(self.bbox_type_label, 6, 0)
+        grid_lay.addWidget(self.bbox_type_radio, 6, 1)
+        self.bbox_type_label.hide()
+        self.bbox_type_radio.hide()
 
         # ## Insert Copper Fill
         self.fill_button = QtWidgets.QPushButton(_("Insert Copper Fill"))
@@ -185,6 +201,8 @@ class ToolCopperFill(FlatCAMTool):
         self.mouse_is_dragging = False
         self.cursor_pos = (0, 0)
         self.first_click = False
+
+        self.area_method = False
 
         # Tool properties
         self.clearance_val = None
@@ -233,10 +251,14 @@ class ToolCopperFill(FlatCAMTool):
         # self.margin_entry.set_value(float(self.app.defaults["tools_copperfill_margin"]))
         # self.reference_radio.set_value(self.app.defaults["tools_copperfill_reference"])
         # self.geo_steps_per_circle = int(self.app.defaults["tools_copperfill_circle_steps"])
+        # self.bbox_type_radio.set_value(self.app.defaults["tools_copperfill_box_type"])
 
         self.clearance_entry.set_value(0.5)
         self.margin_entry.set_value(1.0)
         self.reference_radio.set_value('itself')
+        self.bbox_type_radio.set_value('rect')
+
+        self.area_method = False
 
     def on_combo_box_type(self):
         obj_type = self.box_combo_type.currentIndex()
@@ -255,7 +277,16 @@ class ToolCopperFill(FlatCAMTool):
             self.box_combo_type.show()
             self.box_combo_type_label.show()
 
+        if self.reference_radio.get_value() == "itself":
+            self.bbox_type_label.show()
+            self.bbox_type_radio.show()
+        else:
+            self.bbox_type_label.hide()
+            self.bbox_type_radio.hide()
+
     def execute(self):
+        self.app.call_source = "copperfill_tool"
+
         self.clearance_val = self.clearance_entry.get_value()
         self.margin_val = self.margin_entry.get_value()
         reference_method = self.reference_radio.get_value()
@@ -289,6 +320,8 @@ class ToolCopperFill(FlatCAMTool):
 
         elif reference_method == 'area':
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
+
+            self.area_method = True
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -363,7 +396,7 @@ class ToolCopperFill(FlatCAMTool):
 
         elif event.button == right_button and self.mouse_is_dragging == False:
             self.app.delete_selection_shape()
-
+            self.area_method = False
             self.first_click = False
 
             if self.app.is_legacy is False:
@@ -464,7 +497,6 @@ class ToolCopperFill(FlatCAMTool):
         log.debug("Copper Filling Tool started. Reading parameters.")
         self.app.inform.emit(_("Copper Filling Tool started. Reading parameters."))
 
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
         ref_selected = self.reference_radio.get_value()
         if c_val is None:
             c_val = float(self.app.defaults["tools_copperfill_clearance"])
@@ -540,14 +572,29 @@ class ToolCopperFill(FlatCAMTool):
             geo_n = working_obj.solid_geometry
 
             try:
-                if isinstance(geo_n, MultiPolygon):
-                    env_obj = geo_n.convex_hull
-                elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
-                        (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-                    env_obj = cascaded_union(geo_n)
+                if self.bbox_type_radio.get_value() == 'min':
+                    if isinstance(geo_n, MultiPolygon):
+                        env_obj = geo_n.convex_hull
+                    elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
+                            (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
+                        env_obj = cascaded_union(geo_n)
+                    else:
+                        env_obj = cascaded_union(geo_n)
+                        env_obj = env_obj.convex_hull
                 else:
-                    env_obj = cascaded_union(geo_n)
-                    env_obj = env_obj.convex_hull
+                    if isinstance(geo_n, Polygon) or \
+                            (isinstance(geo_n, list) and len(geo_n) == 1) or \
+                            (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1):
+                        env_obj = geo_n.buffer(0, join_style=base.JOIN_STYLE.mitre).exterior
+                    elif isinstance(geo_n, MultiPolygon):
+                        x0, y0, x1, y1 = geo_n.bounds
+                        geo = box(x0, y0, x1, y1)
+                        env_obj = geo.buffer(0, join_style=base.JOIN_STYLE.mitre)
+                    else:
+                        self.app.inform.emit(
+                            '[ERROR_NOTCL] %s: %s' % (_("Geometry not supported for bounding box"), type(geo_n))
+                        )
+                        return 'fail'
 
                 bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
             except Exception as e:
@@ -568,7 +615,7 @@ class ToolCopperFill(FlatCAMTool):
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise FlatCAMApp.GracefulException
-                geo_buff_list.append(poly.buffer(distance=0.0, join_style=base.JOIN_STYLE.mitre))
+                geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
 
             bounding_box = cascaded_union(geo_buff_list)
 
@@ -676,3 +723,26 @@ class ToolCopperFill(FlatCAMTool):
         self.mouse_is_dragging = False
         self.cursor_pos = (0, 0)
         self.first_click = False
+
+        # if True it means we exited from tool in the middle of area adding therefore disconnect the events
+        if self.area_method is True:
+            self.app.delete_selection_shape()
+            self.area_method = False
+
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+                self.app.plotcanvas.graph_event_disconnect(self.mm)
+
+            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                                  self.app.on_mouse_click_over_plot)
+            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+                                                                  self.app.on_mouse_move_over_plot)
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+
+        self.app.call_source = "app"
+        self.app.inform.emit('[success] %s' % _("Copper Fill Tool exit."))
+

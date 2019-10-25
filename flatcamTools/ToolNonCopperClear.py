@@ -445,9 +445,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "It can be Gerber, Excellon or Geometry.")
         )
         self.box_combo_type = QtWidgets.QComboBox()
-        self.box_combo_type.addItem(_("Gerber   Reference Box Object"))
-        self.box_combo_type.addItem(_("Excellon Reference Box Object"))
-        self.box_combo_type.addItem(_("Geometry Reference Box Object"))
+        self.box_combo_type.addItem(_("Reference Gerber"))
+        self.box_combo_type.addItem(_("Reference Excellon"))
+        self.box_combo_type.addItem(_("Reference Geometry"))
         form1.addRow(self.box_combo_type_label, self.box_combo_type)
 
         self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))

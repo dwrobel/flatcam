@@ -187,9 +187,9 @@ class DblSidedTool(FlatCAMTool):
         self.box_combo.setCurrentIndex(1)
 
         self.box_combo_type = QtWidgets.QComboBox()
-        self.box_combo_type.addItem(_("Gerber   Reference Box Object"))
-        self.box_combo_type.addItem(_("Excellon Reference Box Object"))
-        self.box_combo_type.addItem(_("Geometry Reference Box Object"))
+        self.box_combo_type.addItem(_("Reference Gerber"))
+        self.box_combo_type.addItem(_("Reference Excellon"))
+        self.box_combo_type.addItem(_("Reference Geometry"))
 
         self.point_box_container.addWidget(self.box_combo_type)
         self.point_box_container.addWidget(self.box_combo)
