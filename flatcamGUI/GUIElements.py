@@ -632,9 +632,10 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         return ret_val
 
     def validate(self, p_str, p_int):
+        text = p_str.replace(',', '.')
         try:
-            if float(p_str) < self.minimum() or float(p_str) > self.maximum():
-                return QtGui.QValidator.Intermediate, p_str, p_int
+            if float(text) < self.minimum() or float(text) > self.maximum():
+                return QtGui.QValidator.Intermediate, text, p_int
         except ValueError:
             pass
         return QtGui.QValidator.Acceptable, p_str, p_int
@@ -2161,3 +2162,19 @@ class MyCompleter(QCompleter):
 
     def getSelected(self):
         return self.lastSelected
+
+
+def rreplace(s, old, new, occurrence):
+    """
+    Credits go here:
+    https://stackoverflow.com/questions/2556108/rreplace-how-to-replace-the-last-occurrence-of-an-expression-in-a-string
+
+    :param s: string to be processed
+    :param old: old char to be replaced
+    :param new: new char to replace the old one
+    :param occurrence: how many places from end to replace the old char
+    :return: modified string
+    """
+
+    li = s.rsplit(old, occurrence)
+    return new.join(li)

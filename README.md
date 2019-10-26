@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+26.10.2019
+
+- fixed an error in the FCDoubleSpinner class when FlatCAM is run on system with locale that use the comma as decimal separator
+
 25.10.2019
 
 - QRCode Tool: added ability to add negative QRCodes (perhaps they can be isolated on copper?); added a clear area surrounding the QRCode in case it is dropped on a copper pour (region); fixed the Gerber export
