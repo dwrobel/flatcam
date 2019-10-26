@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-10-19 04:47+0300\n"
-"PO-Revision-Date: 2019-10-19 04:51+0300\n"
+"PO-Revision-Date: 2019-10-23 07:59-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.2.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -179,7 +179,7 @@ msgstr "Padrões importados de"
 
 #: FlatCAMApp.py:3907 FlatCAMApp.py:3912 flatcamGUI/FlatCAMGUI.py:3972
 msgid "Export FlatCAM Preferences"
-msgstr "Exportar preferências do FlatCAM"
+msgstr "Exportar Preferências do FlatCAM"
 
 #: FlatCAMApp.py:3920
 msgid "FlatCAM preferences export cancelled."
@@ -1407,11 +1407,11 @@ msgstr "Falha ao analisar a lista de projetos recentes."
 
 #: FlatCAMApp.py:11502
 msgid "Clear Recent projects"
-msgstr "Limpa Projetos Recentes"
+msgstr "Limpar Projetos Recentes"
 
 #: FlatCAMApp.py:11525
 msgid "Clear Recent files"
-msgstr "Limpar arquivos recentes"
+msgstr "Limpar Arquivos Recentes"
 
 #: FlatCAMApp.py:11542 flatcamGUI/FlatCAMGUI.py:1114
 msgid "<b>Shortcut Key List</b>"
@@ -6924,7 +6924,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:777 flatcamGUI/ObjectUI.py:1352
 #: flatcamGUI/PreferencesUI.py:2171 flatcamGUI/PreferencesUI.py:3030
 msgid "Tool change"
-msgstr "Troca de ferramentas"
+msgstr "Troca de Ferramentas"
 
 #: flatcamGUI/ObjectUI.py:779 flatcamGUI/PreferencesUI.py:2173
 msgid ""
@@ -6973,7 +6973,7 @@ msgstr "Altura da ferramenta após o último movimento, no final do trabalho."
 #: flatcamGUI/ObjectUI.py:824 flatcamGUI/PreferencesUI.py:2206
 #: flatcamGUI/PreferencesUI.py:5019 flatcamTools/ToolSolderPaste.py:223
 msgid "Feedrate Z"
-msgstr "Avanço Z"
+msgstr "Taxa de Avanço Z"
 
 #: flatcamGUI/ObjectUI.py:826 flatcamGUI/PreferencesUI.py:2208
 msgid ""
@@ -8071,7 +8071,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:615
 msgid "Light"
-msgstr "Luz"
+msgstr "Claro"
 
 #: flatcamGUI/PreferencesUI.py:616
 msgid "Dark"
@@ -8408,7 +8408,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1008
 msgid "Languages"
-msgstr "Idiomas"
+msgstr "Idioma"
 
 #: flatcamGUI/PreferencesUI.py:1009
 msgid "Set the language used throughout FlatCAM."
@@ -8887,7 +8887,7 @@ msgstr "Distância na qual armazenar o elemento Gerber."
 
 #: flatcamGUI/PreferencesUI.py:1836
 msgid "Scale Tool"
-msgstr "Ferra. de Escala"
+msgstr "Ferramenta de Escala"
 
 #: flatcamGUI/PreferencesUI.py:1842
 msgid "Factor to scale the Gerber element."
@@ -9118,7 +9118,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:2180 flatcamGUI/PreferencesUI.py:3042
 msgid "Toolchange Z"
-msgstr "Troca de Ferramentas"
+msgstr "Altura para a Troca"
 
 #: flatcamGUI/PreferencesUI.py:2221
 msgid "Spindle Speed"
@@ -9160,7 +9160,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:2358
 msgid "Toolchange X,Y"
-msgstr "Troca de fer. X,Y"
+msgstr "Troca de ferramenta X,Y"
 
 #: flatcamGUI/PreferencesUI.py:2360 flatcamGUI/PreferencesUI.py:3177
 msgid "Toolchange X,Y position."
@@ -9409,7 +9409,7 @@ msgstr ""
 #: flatcamGUI/PreferencesUI.py:3175 flatcamGUI/PreferencesUI.py:5000
 #: flatcamTools/ToolSolderPaste.py:206
 msgid "Toolchange X-Y"
-msgstr "Troca de ferra. X-Y"
+msgstr "Troca de ferramenta X-Y"
 
 #: flatcamGUI/PreferencesUI.py:3186
 msgid ""
@@ -9831,7 +9831,7 @@ msgstr "Diâmetro da ferramenta usada para cortar o entorno do PCB."
 
 #: flatcamGUI/PreferencesUI.py:3992 flatcamTools/ToolCutOut.py:95
 msgid "Obj kind"
-msgstr "Tipo de obj"
+msgstr "Tipo de objeto"
 
 #: flatcamGUI/PreferencesUI.py:3994 flatcamTools/ToolCutOut.py:97
 msgid ""
