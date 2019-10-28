@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - converted Gerber Editor to usage of SpinBoxes
 - working on the Calibrate Excellon Tool
 - converted Excellon Editor to usage of SpinBoxes
+- Calibrate Excellon Tool: working on self.calculate_factors() method
 
 27.10.2019
 

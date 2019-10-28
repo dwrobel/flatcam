@@ -433,6 +433,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         # ## Signals
         self.start_button.clicked.connect(self.on_start_collect_points)
         self.gcode_button.clicked.connect(self.generate_verification_gcode)
+        self.generate_factors_button.clicked.connect(self.calculate_factors)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCalibrateExcellon()")
@@ -536,7 +537,10 @@ class ToolCalibrateExcellon(FlatCAMTool):
             self.top_right_coordy_tgt.set_value(self.click_points[3][1])
             self.app.inform.emit('[success] %s' % _("Done. All four points have been acquired."))
             self.disconnect_cal_events()
-            self.app.ui.grid_snap_btn.setChecked(self.grid_status_memory)
+
+            # restore the Grid snapping if it was active before
+            if self.grid_status_memory is True:
+                self.app.ui.grid_snap_btn.trigger()
 
     def gcode_header(self):
         log.debug("ToolCalibrateExcellon.gcode_header()")
@@ -628,28 +632,59 @@ class ToolCalibrateExcellon(FlatCAMTool):
         top_left_x = float('%.*f' % (self.decimals, self.click_points[2][0]))
         top_left_y = float('%.*f' % (self.decimals, self.click_points[2][1]))
 
-        top_left_dx = float('%.*f' % (self.decimals, self.top_left_coordx_found.get_value()))
-        top_left_dy = float('%.*f' % (self.decimals, self.top_left_coordy_found.get_value()))
+        try:
+            top_left_dx = float('%.*f' % (self.decimals, self.top_left_coordx_found.get_value()))
+        except TypeError:
+            top_left_dx = top_left_x
+
+        try:
+            top_left_dy = float('%.*f' % (self.decimals, self.top_left_coordy_found.get_value()))
+        except TypeError:
+            top_left_dy = top_left_y
 
         top_right_x = float('%.*f' % (self.decimals, self.click_points[3][0]))
         top_right_y = float('%.*f' % (self.decimals, self.click_points[3][1]))
 
-        top_right_dx = float('%.*f' % (self.decimals, self.top_right_coordx_found.get_value()))
-        top_right_dy = float('%.*f' % (self.decimals, self.top_right_coordy_found.get_value()))
+        try:
+            top_right_dx = float('%.*f' % (self.decimals, self.top_right_coordx_found.get_value()))
+        except TypeError:
+            top_right_dx = top_right_x
+
+        try:
+            top_right_dy = float('%.*f' % (self.decimals, self.top_right_coordy_found.get_value()))
+        except TypeError:
+            top_right_dy = top_right_y
 
         bot_right_x = float('%.*f' % (self.decimals, self.click_points[1][0]))
         bot_right_y = float('%.*f' % (self.decimals, self.click_points[1][1]))
 
-        bot_right_dx = float('%.*f' % (self.decimals, self.bottom_right_coordx_found.get_value()))
-        bot_right_dy = float('%.*f' % (self.decimals, self.bottom_right_coordy_found.get_value()))
+        try:
+            bot_right_dx = float('%.*f' % (self.decimals, self.bottom_right_coordx_found.get_value()))
+        except TypeError:
+            bot_right_dx = bot_right_x
 
-        if top_left_dy != top_left_y:
-            scale_y = (top_left_dy - origin_y) / (top_left_y - origin_y)
+        try:
+            bot_right_dy = float('%.*f' % (self.decimals, self.bottom_right_coordy_found.get_value()))
+        except TypeError:
+            bot_right_dy = bot_right_y
+
+        if top_left_dy != float('%.*f' % (self.decimals, 0.0)):
+            # we have scale on Y
+            scale_y = (top_left_dy + top_left_y - origin_y) / (top_left_y - origin_y)
             self.scaley_entry.set_value(scale_y)
 
-        if top_right_dx != top_right_x:
-            scale_x = (top_right_dx - origin_x) / (top_right_x - origin_x)
+        if bot_right_dx != float('%.*f' % (self.decimals, 0.0)):
+            # we have scale on X
+            scale_x = (bot_right_dx + bot_right_x - origin_x) / (bot_right_x - origin_x)
             self.scalex_entry.set_value(scale_x)
+
+        if bot_right_dy != float('%.*f' % (self.decimals, 0.0)):
+            # we have skew on Y
+            dy = bot_right_dy + origin_y
+            dx = bot_right_x - origin_x
+            skew_angle_y = math.degrees(math.atan(dy / dx))
+
+            self.skewx_entry.set_value(skew_angle_y)
 
     def disconnect_cal_events(self):
         self.app.mr = self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
