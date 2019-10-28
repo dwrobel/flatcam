@@ -1697,7 +1697,8 @@ class App(QtCore.QObject):
         # Init Plot Colors
         self.ui.general_defaults_form.general_gui_group.pf_color_entry.set_value(self.defaults['global_plot_fill'])
         self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_plot_fill'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_plot_fill'])[:7])
         self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.set_value(
             int(self.defaults['global_plot_fill'][7:9], 16))
         self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(
@@ -1705,12 +1706,14 @@ class App(QtCore.QObject):
 
         self.ui.general_defaults_form.general_gui_group.pl_color_entry.set_value(self.defaults['global_plot_line'])
         self.ui.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_plot_line'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_plot_line'])[:7])
 
         # Init Left-Right Selection colors
         self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
         self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_sel_fill'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_sel_fill'])[:7])
         self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
         self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(
@@ -1718,13 +1721,15 @@ class App(QtCore.QObject):
 
         self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
         self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_sel_line'])[:7])
 
         # Init Right-Left Selection colors
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(
             self.defaults['global_alt_sel_fill'])
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_alt_sel_fill'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_alt_sel_fill'])[:7])
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
@@ -1733,52 +1738,62 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(
             self.defaults['global_alt_sel_line'])
         self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_alt_sel_line'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_alt_sel_line'])[:7])
 
         # Init Draw color and Selection Draw Color
         self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(
             self.defaults['global_draw_color'])
         self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_draw_color'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_draw_color'])[:7])
 
         self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(
             self.defaults['global_sel_draw_color'])
         self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_sel_draw_color'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_sel_draw_color'])[:7])
 
         # Init Project Items color
         self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(
             self.defaults['global_proj_item_color'])
         self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_proj_item_color'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_proj_item_color'])[:7])
 
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(
             self.defaults['global_proj_item_dis_color'])
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_proj_item_dis_color'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_proj_item_dis_color'])[:7])
 
         # Init the Annotation CNC Job color
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(
             self.defaults['cncjob_annotation_fontcolor'])
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
 
         # Init the Tool Film color
         self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(
             self.defaults['tools_film_color'])
         self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['tools_film_color'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['tools_film_color'])[:7]
+        )
 
         # Init the Tool QRCode colors
         self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry.set_value(
             self.defaults['tools_qrcode_fill_color'])
         self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['tools_qrcode_fill_color'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['tools_qrcode_fill_color'])[:7])
 
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.set_value(
             self.defaults['tools_qrcode_back_color'])
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['tools_qrcode_back_color'])[:7])
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['tools_qrcode_back_color'])[:7])
 
         # ### End of Data ####
 
@@ -6744,7 +6759,9 @@ class App(QtCore.QObject):
         self.defaults['tools_film_color'] = \
             self.ui.tools_defaults_form.tools_film_group.film_color_entry.get_value()
         self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['tools_film_color']))
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['tools_film_color'])
+        )
 
     def on_film_color_button(self):
         current_color = QtGui.QColor(self.defaults['tools_film_color'])
@@ -6760,8 +6777,9 @@ class App(QtCore.QObject):
             self.on_preferences_edited()
 
         self.ui.tools_defaults_form.tools_film_group.film_color_button.setStyleSheet(
-            "background-color:%s" % str(film_color.name()))
-
+            "background-color:%s;"
+            "border-color: dimgray" % str(film_color.name())
+        )
         new_val_sel = str(film_color.name())
         self.ui.tools_defaults_form.tools_film_group.film_color_entry.set_value(new_val_sel)
         self.defaults['tools_film_color'] = new_val_sel
@@ -6770,7 +6788,9 @@ class App(QtCore.QObject):
         self.defaults['tools_qrcode_fill_color'] = \
             self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry.get_value()
         self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['tools_qrcode_fill_color']))
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['tools_qrcode_fill_color'])
+        )
 
     def on_qrcode_fill_color_button(self):
         current_color = QtGui.QColor(self.defaults['tools_qrcode_fill_color'])
@@ -6786,7 +6806,9 @@ class App(QtCore.QObject):
             self.on_preferences_edited()
 
         self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_button.setStyleSheet(
-            "background-color:%s" % str(fill_color.name()))
+            "background-color:%s;"
+            "border-color: dimgray" % str(fill_color.name())
+        )
 
         new_val_sel = str(fill_color.name())
         self.ui.tools2_defaults_form.tools2_qrcode_group.fill_color_entry.set_value(new_val_sel)
@@ -6796,7 +6818,9 @@ class App(QtCore.QObject):
         self.defaults['tools_qrcode_back_color'] = \
             self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.get_value()
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['tools_qrcode_back_color']))
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['tools_qrcode_back_color'])
+        )
 
     def on_qrcode_back_color_button(self):
         current_color = QtGui.QColor(self.defaults['tools_qrcode_back_color'])
@@ -6812,7 +6836,9 @@ class App(QtCore.QObject):
             self.on_preferences_edited()
 
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
-            "background-color:%s" % str(back_color.name()))
+            "background-color:%s;"
+            "border-color: dimgray" % str(back_color.name())
+        )
 
         new_val_sel = str(back_color.name())
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.set_value(new_val_sel)

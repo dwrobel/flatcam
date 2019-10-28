@@ -353,11 +353,11 @@ class ToolCopperFill(FlatCAMTool):
     def on_mouse_release(self, event):
         if self.app.is_legacy is False:
             event_pos = event.pos
-            event_is_dragging = event.is_dragging
+            # event_is_dragging = event.is_dragging
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
+            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         event_pos = self.app.plotcanvas.translate_coords(event_pos)
@@ -369,12 +369,12 @@ class ToolCopperFill(FlatCAMTool):
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the filling area."))
 
                 self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
-                if self.app.grid_status() == True:
+                if self.app.grid_status() is True:
                     self.cursor_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
             else:
                 self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
 
-                if self.app.grid_status() == True:
+                if self.app.grid_status() is True:
                     curr_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
                 else:
                     curr_pos = (event_pos[0], event_pos[1])
@@ -390,7 +390,7 @@ class ToolCopperFill(FlatCAMTool):
                 self.first_click = False
                 return
 
-        elif event.button == right_button and self.mouse_is_dragging == False:
+        elif event.button == right_button and self.mouse_is_dragging is False:
             self.app.delete_selection_shape()
             self.area_method = False
             self.first_click = False
@@ -429,11 +429,11 @@ class ToolCopperFill(FlatCAMTool):
         if self.app.is_legacy is False:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
-            right_button = 2
+            # right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
             event_is_dragging = self.app.plotcanvas.is_dragging
-            right_button = 3
+            # right_button = 3
 
         curr_pos = self.app.plotcanvas.translate_coords(event_pos)
 
@@ -444,7 +444,7 @@ class ToolCopperFill(FlatCAMTool):
             self.mouse_is_dragging = False
 
         # update the cursor position
-        if self.app.grid_status() == True:
+        if self.app.grid_status() is True:
             # Update cursor
             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 

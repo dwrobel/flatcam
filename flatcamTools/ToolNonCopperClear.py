@@ -1767,7 +1767,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 # variables to display the percentage of work done
                 geo_len = len(area.geoms)
-                disp_number = 0
+
                 old_disp_number = 0
                 log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 

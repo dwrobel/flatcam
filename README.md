@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+27.10.2019
+
+- Copper Fill Tool: some PEP8 corrections
+
 26.10.2019
 
 - fixed an error in the FCDoubleSpinner class when FlatCAM is run on system with locale that use the comma as decimal separator
