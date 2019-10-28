@@ -9,7 +9,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
 from camlib import distance, arc, FlatCAMRTreeStorage
-from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, SpinBoxDelegate
+from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, RadioSet, FCSpinner
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, FlatCAMGeoEditor
 from flatcamParsers.ParseExcellon import Excellon
 import FlatCAMApp
@@ -1445,6 +1445,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app = app
         self.canvas = self.app.plotcanvas
 
+        # Number of decimals used by tools in this class
+        self.decimals = 4
+
         # ## Current application units in Upper Case
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
@@ -1518,6 +1521,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         grid1 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid1)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
 
         addtool_entry_lbl = QtWidgets.QLabel('%s:' % _('Tool Dia'))
         addtool_entry_lbl.setToolTip(
@@ -1525,8 +1530,10 @@ class FlatCAMExcEditor(QtCore.QObject):
         )
 
         hlay = QtWidgets.QHBoxLayout()
-        self.addtool_entry = FCEntry()
-        self.addtool_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
+        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry.set_precision(self.decimals)
+        self.addtool_entry.set_range(0.0000, 9999.9999)
+
         hlay.addWidget(self.addtool_entry)
 
         self.addtool_btn = QtWidgets.QPushButton(_('Add Tool'))
@@ -1579,7 +1586,10 @@ class FlatCAMExcEditor(QtCore.QObject):
         grid3.addWidget(res_entry_lbl, 0, 0)
 
         hlay2 = QtWidgets.QHBoxLayout()
-        self.resdrill_entry = LengthEntry()
+        self.resdrill_entry = FCDoubleSpinner()
+        self.resdrill_entry.set_precision(self.decimals)
+        self.resdrill_entry.set_range(0.0000, 9999.9999)
+
         hlay2.addWidget(self.resdrill_entry)
 
         self.resize_btn = QtWidgets.QPushButton(_('Resize'))
@@ -1633,7 +1643,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.drill_array_size_label.setToolTip(_("Specify how many drills to be in the array."))
         self.drill_array_size_label.setMinimumWidth(100)
 
-        self.drill_array_size_entry = LengthEntry()
+        self.drill_array_size_entry = FCSpinner()
+        self.drill_array_size_entry.set_range(1, 9999)
         self.array_form.addRow(self.drill_array_size_label, self.drill_array_size_entry)
 
         self.array_linear_frame = QtWidgets.QFrame()
@@ -1668,7 +1679,10 @@ class FlatCAMExcEditor(QtCore.QObject):
         )
         self.drill_pitch_label.setMinimumWidth(100)
 
-        self.drill_pitch_entry = LengthEntry()
+        self.drill_pitch_entry = FCDoubleSpinner()
+        self.drill_pitch_entry.set_precision(self.decimals)
+        self.drill_pitch_entry.set_range(0.0000, 9999.9999)
+
         self.linear_form.addRow(self.drill_pitch_label, self.drill_pitch_entry)
 
         # Linear Drill Array angle
@@ -1676,15 +1690,15 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_angle_label.setToolTip(
            _("Angle at which the linear array is placed.\n"
              "The precision is of max 2 decimals.\n"
-             "Min value is: -359.99 degrees.\n"
+             "Min value is: -360 degrees.\n"
              "Max value is:  360.00 degrees.")
         )
         self.linear_angle_label.setMinimumWidth(100)
 
         self.linear_angle_spinner = FCDoubleSpinner()
-        self.linear_angle_spinner.set_precision(2)
+        self.linear_angle_spinner.set_precision(self.decimals)
         self.linear_angle_spinner.setSingleStep(1.0)
-        self.linear_angle_spinner.setRange(-359.99, 360.00)
+        self.linear_angle_spinner.setRange(-360.00, 360.00)
         self.linear_form.addRow(self.linear_angle_label, self.linear_angle_spinner)
 
         self.array_circular_frame = QtWidgets.QFrame()
@@ -1710,7 +1724,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.drill_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
         self.drill_angle_label.setMinimumWidth(100)
 
-        self.drill_angle_entry = LengthEntry()
+        self.drill_angle_entry = FCDoubleSpinner()
+        self.drill_angle_entry.set_precision(self.decimals)
+        self.drill_angle_entry.setSingleStep(1.0)
+        self.drill_angle_entry.setRange(-360.00, 360.00)
+
         self.circular_form.addRow(self.drill_angle_label, self.drill_angle_entry)
 
         self.array_circular_frame.hide()
@@ -1754,7 +1772,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         )
         self.slot_length_label.setMinimumWidth(100)
 
-        self.slot_length_entry = LengthEntry()
+        self.slot_length_entry = FCDoubleSpinner()
+        self.slot_length_entry.set_precision(self.decimals)
+        self.slot_length_entry.setSingleStep(0.1)
+        self.slot_length_entry.setRange(0.0000, 9999.9999)
+
         self.slot_form.addRow(self.slot_length_label, self.slot_length_entry)
 
         # Slot direction
@@ -1777,15 +1799,15 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_angle_label.setToolTip(
            _("Angle at which the slot is placed.\n"
              "The precision is of max 2 decimals.\n"
-             "Min value is: -359.99 degrees.\n"
+             "Min value is: -360 degrees.\n"
              "Max value is:  360.00 degrees.")
         )
         self.slot_angle_label.setMinimumWidth(100)
 
         self.slot_angle_spinner = FCDoubleSpinner()
-        self.slot_angle_spinner.set_precision(2)
+        self.slot_angle_spinner.set_precision(self.decimals)
         self.slot_angle_spinner.setWrapping(True)
-        self.slot_angle_spinner.setRange(-359.99, 360.00)
+        self.slot_angle_spinner.setRange(-360.00, 360.00)
         self.slot_angle_spinner.setSingleStep(1.0)
         self.slot_form.addRow(self.slot_angle_label, self.slot_angle_spinner)
 
@@ -1835,7 +1857,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_size_label.setToolTip(_("Specify how many slots to be in the array."))
         self.slot_array_size_label.setMinimumWidth(100)
 
-        self.slot_array_size_entry = LengthEntry()
+        self.slot_array_size_entry = FCSpinner()
+        self.slot_array_size_entry.set_range(0, 9999)
+
         self.slot_array_form.addRow(self.slot_array_size_label, self.slot_array_size_entry)
 
         self.slot_array_linear_frame = QtWidgets.QFrame()
@@ -1870,7 +1894,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         )
         self.slot_array_pitch_label.setMinimumWidth(100)
 
-        self.slot_array_pitch_entry = LengthEntry()
+        self.slot_array_pitch_entry = FCDoubleSpinner()
+        self.slot_array_pitch_entry.set_precision(self.decimals)
+        self.slot_array_pitch_entry.setSingleStep(0.1)
+        self.slot_array_pitch_entry.setRange(0.0000, 9999.9999)
+
         self.slot_array_linear_form.addRow(self.slot_array_pitch_label, self.slot_array_pitch_entry)
 
         # Linear Slot Array angle
@@ -1878,15 +1906,15 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_linear_angle_label.setToolTip(
             _("Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
-              "Min value is: -359.99 degrees.\n"
+              "Min value is: -360 degrees.\n"
               "Max value is:  360.00 degrees.")
         )
         self.slot_array_linear_angle_label.setMinimumWidth(100)
 
         self.slot_array_linear_angle_spinner = FCDoubleSpinner()
-        self.slot_array_linear_angle_spinner.set_precision(2)
+        self.slot_array_linear_angle_spinner.set_precision(self.decimals)
         self.slot_array_linear_angle_spinner.setSingleStep(1.0)
-        self.slot_array_linear_angle_spinner.setRange(-359.99, 360.00)
+        self.slot_array_linear_angle_spinner.setRange(-360.00, 360.00)
         self.slot_array_linear_form.addRow(self.slot_array_linear_angle_label, self.slot_array_linear_angle_spinner)
 
         self.slot_array_circular_frame = QtWidgets.QFrame()
@@ -1912,7 +1940,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_array_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
         self.slot_array_angle_label.setMinimumWidth(100)
 
-        self.slot_array_angle_entry = LengthEntry()
+        self.slot_array_angle_entry = FCDoubleSpinner()
+        self.slot_array_angle_entry.set_precision(self.decimals)
+        self.slot_array_angle_entry.setSingleStep(1)
+        self.slot_array_angle_entry.setRange(-360.00, 360.00)
+
         self.slot_array_circular_form.addRow(self.slot_array_angle_label, self.slot_array_angle_entry)
 
         self.slot_array_linear_angle_spinner.hide()
@@ -2049,9 +2081,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.pos = None
 
         self.complete = False
-
-        # Number of decimals used by tools in this class
-        self.decimals = 4
 
         def make_callback(thetool):
             def f():

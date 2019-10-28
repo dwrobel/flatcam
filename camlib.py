@@ -2448,7 +2448,7 @@ class CNCjob(Geometry):
                 except KeyError:
                     points[drill['tool']] = [drill['point']]
 
-        #log.debug("Found %d drills." % len(points))
+        # log.debug("Found %d drills." % len(points))
 
         self.gcode = []
 
@@ -2633,7 +2633,7 @@ class CNCjob(Geometry):
                                 # Drillling! for Absolute coordinates type G90
                                 # variables to display the percentage of work done
                                 geo_len = len(node_list)
-                                disp_number = 0
+
                                 old_disp_number = 0
                                 log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 

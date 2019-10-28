@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox
+from flatcamGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection
 
 from shapely.geometry import Point
 from shapely.geometry.base import *
@@ -80,6 +80,9 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         # Travel Z entry
         travelz_lbl = QtWidgets.QLabel('%s:' % _("Travel Z"))
+        travelz_lbl.setToolTip(
+            _("Height (Z) for travelling between the points.")
+        )
 
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_range(-9999.9999, 9999.9999)
@@ -91,6 +94,9 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         # Verification Z entry
         verz_lbl = QtWidgets.QLabel('%s:' % _("Verification Z"))
+        verz_lbl.setToolTip(
+            _("Height (Z) for checking the point.")
+        )
 
         self.verz_entry = FCDoubleSpinner()
         self.verz_entry.set_range(-9999.9999, 9999.9999)
@@ -103,12 +109,29 @@ class ToolCalibrateExcellon(FlatCAMTool):
         # Zero the Z of the verification tool
         self.zeroz_cb = FCCheckBox('%s' % _("Zero Z tool"))
         self.zeroz_cb.setToolTip(
-            _("Include a secquence to zero the height (Z)\n"
+            _("Include a sequence to zero the height (Z)\n"
               "of the verification tool.")
         )
+
         i_grid_lay.addWidget(self.zeroz_cb, 4, 0, 1, 3)
 
-        i_grid_lay.addWidget(QtWidgets.QLabel(''), 5, 0, 1, 3)
+        # Toochange Z entry
+        toolchangez_lbl = QtWidgets.QLabel('%s:' % _("Toolchange Z"))
+        toolchangez_lbl.setToolTip(
+            _("Height (Z) for mounting the verification probe.")
+        )
+
+        self.toolchangez_entry = FCDoubleSpinner()
+        self.toolchangez_entry.set_range(0.0000, 9999.9999)
+        self.toolchangez_entry.set_precision(self.decimals)
+        self.toolchangez_entry.setSingleStep(0.1)
+
+        i_grid_lay.addWidget(toolchangez_lbl, 5, 0)
+        i_grid_lay.addWidget(self.toolchangez_entry, 5, 1, 1, 2)
+
+        self.z_ois = OptionalInputSection(self.zeroz_cb, [toolchangez_lbl, self.toolchangez_entry])
+
+        i_grid_lay.addWidget(QtWidgets.QLabel(''), 6, 0, 1, 3)
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -402,10 +425,14 @@ class ToolCalibrateExcellon(FlatCAMTool):
         # here store 4 points to be used for calibration
         self.click_points = list()
 
+        # store the status of the grid
+        self.grid_status_memory = None
+
         self.exc_obj = None
 
         # ## Signals
         self.start_button.clicked.connect(self.on_start_collect_points)
+        self.gcode_button.clicked.connect(self.generate_verification_gcode)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCalibrateExcellon()")
@@ -445,6 +472,13 @@ class ToolCalibrateExcellon(FlatCAMTool):
         # self.mm_entry.set_value('%.*f' % (self.decimals, 0))
 
     def on_start_collect_points(self):
+        # disengage the grid snapping since it will be hard to find the drills on grid
+        if self.app.ui.grid_snap_btn.isChecked():
+            self.grid_status_memory = True
+            self.app.ui.grid_snap_btn.trigger()
+        else:
+            self.grid_status_memory = False
+
         self.mr = self.canvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
 
         if self.app.is_legacy is False:
@@ -502,9 +536,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
             self.top_right_coordy_tgt.set_value(self.click_points[3][1])
             self.app.inform.emit('[success] %s' % _("Done. All four points have been acquired."))
             self.disconnect_cal_events()
-
-    def generate_verification_gcode(self):
-        pass
+            self.app.ui.grid_snap_btn.setChecked(self.grid_status_memory)
 
     def gcode_header(self):
         log.debug("ToolCalibrateExcellon.gcode_header()")
@@ -517,8 +549,107 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
         gcode += '(Created on ' + time_str + ')\n' + '\n'
-
+        gcode += 'G20\n' if self.units.upper() == 'IN' else 'G21\n'
+        gcode += 'G90\n'
+        gcode += 'G17\n'
+        gcode += 'G94\n\n'
         return gcode
+
+    def generate_verification_gcode(self):
+        travel_z = '%.*f' % (self.decimals, self.travelz_entry.get_value())
+        toolchange_z = '%.*f' % (self.decimals, self.toolchangez_entry.get_value())
+        verification_z = '%.*f' % (self.decimals, self.verz_entry.get_value())
+
+        if len(self.click_points) != 4:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled. Four points are needed for GCode generation."))
+            return 'fail'
+
+        gcode = self.gcode_header()
+        if self.zeroz_cb.get_value():
+            gcode += 'M5\n'
+            gcode += f'G00 Z{toolchange_z}\n'
+            gcode += 'M0\n'
+            gcode += 'G01 Z0\n'
+            gcode += 'M0\n'
+            gcode += f'G00 Z{toolchange_z}\n'
+            gcode += 'M0\n'
+
+        gcode += f'G00 Z{travel_z}\n'
+        gcode += f'G00 X{self.click_points[0][0]} Y{self.click_points[0][1]}\n'
+        gcode += f'G01 Z{verification_z}\n'
+        gcode += 'M0\n'
+
+        gcode += f'G00 Z{travel_z}\n'
+        gcode += f'G00 X{self.click_points[2][0]} Y{self.click_points[2][1]}\n'
+        gcode += f'G01 Z{verification_z}\n'
+        gcode += 'M0\n'
+
+        gcode += f'G00 Z{travel_z}\n'
+        gcode += f'G00 X{self.click_points[3][0]} Y{self.click_points[3][1]}\n'
+        gcode += f'G01 Z{verification_z}\n'
+        gcode += 'M0\n'
+
+        gcode += f'G00 Z{travel_z}\n'
+        gcode += f'G00 X{self.click_points[1][0]} Y{self.click_points[1][1]}\n'
+        gcode += f'G01 Z{verification_z}\n'
+        gcode += 'M0\n'
+
+        gcode += f'G00 Z{travel_z}\n'
+        gcode += f'G00 X0 Y0\n'
+        gcode += f'G00 Z{toolchange_z}\n'
+
+        gcode += 'M2'
+
+        _filter_ = "G-Code Files (*.nc);;All Files (*.*)"
+
+        try:
+            dir_file_to_save = self.app.get_last_save_folder() + '/' + 'ver_gcode'
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export Machine Code ..."),
+                directory=dir_file_to_save,
+                filter=_filter_
+            )
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Machine Code ..."), filter=_filter_)
+
+        filename = str(filename)
+
+        if filename == '':
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Machine Code cancelled ..."))
+            return
+
+        with open(filename, 'w') as f:
+            f.write(gcode)
+
+    def calculate_factors(self):
+        origin_x = self.click_points[0][0]
+        origin_y = self.click_points[0][1]
+
+        top_left_x = float('%.*f' % (self.decimals, self.click_points[2][0]))
+        top_left_y = float('%.*f' % (self.decimals, self.click_points[2][1]))
+
+        top_left_dx = float('%.*f' % (self.decimals, self.top_left_coordx_found.get_value()))
+        top_left_dy = float('%.*f' % (self.decimals, self.top_left_coordy_found.get_value()))
+
+        top_right_x = float('%.*f' % (self.decimals, self.click_points[3][0]))
+        top_right_y = float('%.*f' % (self.decimals, self.click_points[3][1]))
+
+        top_right_dx = float('%.*f' % (self.decimals, self.top_right_coordx_found.get_value()))
+        top_right_dy = float('%.*f' % (self.decimals, self.top_right_coordy_found.get_value()))
+
+        bot_right_x = float('%.*f' % (self.decimals, self.click_points[1][0]))
+        bot_right_y = float('%.*f' % (self.decimals, self.click_points[1][1]))
+
+        bot_right_dx = float('%.*f' % (self.decimals, self.bottom_right_coordx_found.get_value()))
+        bot_right_dy = float('%.*f' % (self.decimals, self.bottom_right_coordy_found.get_value()))
+
+        if top_left_dy != top_left_y:
+            scale_y = (top_left_dy - origin_y) / (top_left_y - origin_y)
+            self.scaley_entry.set_value(scale_y)
+
+        if top_right_dx != top_right_x:
+            scale_x = (top_right_dx - origin_x) / (top_right_x - origin_x)
+            self.scalex_entry.set_value(scale_x)
 
     def disconnect_cal_events(self):
         self.app.mr = self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)

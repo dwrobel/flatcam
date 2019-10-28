@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - in legacy2D graphic engine, adding an utility geometry no longer draw the older ones, overwriting them
 - fixed some issues in the Gerber Editor (Aperture add was double adding an aperture)
 - converted Gerber Editor to usage of SpinBoxes
+- working on the Calibrate Excellon Tool
+- converted Excellon Editor to usage of SpinBoxes
 
 27.10.2019
 
