@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - in Tools: Paint, NCC and Copper Fill, when using the Area Selection, now the selected aras will stay drawn as markers until the user click RMB
 - in legacy2D graphic engine, adding an utility geometry no longer draw the older ones, overwriting them
+- fixed some issues in the Gerber Editor (Aperture add was double adding an aperture)
+- converted Gerber Editor to usage of SpinBoxes
 
 27.10.2019
 

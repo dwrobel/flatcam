@@ -18,7 +18,7 @@ from copy import copy, deepcopy
 import logging
 
 from camlib import distance, arc, three_point_circle
-from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, \
+from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, \
     EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox
 from FlatCAMTool import FlatCAMTool
 import FlatCAMApp
@@ -2351,6 +2351,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app = app
         self.canvas = self.app.plotcanvas
+
+        # number of decimals for the tool diameters to be used in this editor
         self.decimals = 4
 
         # Current application units in Upper Case
@@ -2441,8 +2443,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         apcode_lbl.setToolTip(_("Code for the new aperture"))
         grid1.addWidget(apcode_lbl, 1, 0)
 
-        self.apcode_entry = FCEntry()
-        self.apcode_entry.setValidator(QtGui.QIntValidator(0, 999))
+        self.apcode_entry = FCSpinner()
+        self.apcode_entry.set_range(0, 999)
+        self.apcode_entry.setWrapping(True)
+
         grid1.addWidget(self.apcode_entry, 1, 1)
 
         apsize_lbl = QtWidgets.QLabel('%s:' % _('Aperture Size'))
@@ -2455,8 +2459,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         grid1.addWidget(apsize_lbl, 2, 0)
 
-        self.apsize_entry = FCEntry()
-        self.apsize_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
+        self.apsize_entry = FCDoubleSpinner()
+        self.apsize_entry.set_precision(self.decimals)
+        self.apsize_entry.set_range(0.0, 9999)
+
         grid1.addWidget(self.apsize_entry, 2, 1)
 
         aptype_lbl = QtWidgets.QLabel('%s:' % _('Aperture Type'))
@@ -2527,7 +2533,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.buffer_tools_box.addLayout(buf_form_layout)
 
         # Buffer distance
-        self.buffer_distance_entry = FCEntry()
+        self.buffer_distance_entry = FCDoubleSpinner()
+        self.buffer_distance_entry.set_precision(self.decimals)
+        self.buffer_distance_entry.set_range(-9999.9999, 9999.9999)
+
         buf_form_layout.addRow('%s:' % _("Buffer distance"), self.buffer_distance_entry)
         self.buffer_corner_lbl = QtWidgets.QLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
@@ -2576,8 +2585,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
             _("The factor by which to scale the selected aperture.\n"
               "Values can be between 0.0000 and 999.9999")
         )
-        self.scale_factor_entry = FCEntry()
-        self.scale_factor_entry.setValidator(QtGui.QDoubleValidator(0.0000, 999.9999, 4))
+        self.scale_factor_entry = FCDoubleSpinner()
+        self.scale_factor_entry.set_precision(self.decimals)
+        self.scale_factor_entry.set_range(0.0000, 9999.9999)
+
         scale_form_layout.addRow(self.scale_factor_lbl, self.scale_factor_entry)
 
         # Buttons
@@ -2693,7 +2704,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         self.pad_array_size_label.setMinimumWidth(100)
 
-        self.pad_array_size_entry = LengthEntry()
+        self.pad_array_size_entry = FCSpinner()
+        self.pad_array_size_entry.set_range(1, 9999)
+
         self.array_form.addRow(self.pad_array_size_label, self.pad_array_size_entry)
 
         self.array_linear_frame = QtWidgets.QFrame()
@@ -2727,7 +2740,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         self.pad_pitch_label.setMinimumWidth(100)
 
-        self.pad_pitch_entry = LengthEntry()
+        self.pad_pitch_entry = FCDoubleSpinner()
+        self.pad_pitch_entry.set_precision(self.decimals)
+        self.pad_pitch_entry.set_range(0.0000, 9999.9999)
+        self.pad_pitch_entry.setSingleStep(0.1)
+
         self.linear_form.addRow(self.pad_pitch_label, self.pad_pitch_entry)
 
         self.linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
@@ -2740,8 +2757,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.linear_angle_label.setMinimumWidth(100)
 
         self.linear_angle_spinner = FCDoubleSpinner()
-        self.linear_angle_spinner.set_precision(2)
-        self.linear_angle_spinner.setRange(-359.99, 360.00)
+        self.linear_angle_spinner.set_precision(self.decimals)
+        self.linear_angle_spinner.setRange(-360.00, 360.00)
         self.linear_form.addRow(self.linear_angle_label, self.linear_angle_spinner)
 
         self.array_circular_frame = QtWidgets.QFrame()
@@ -2772,7 +2789,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         self.pad_angle_label.setMinimumWidth(100)
 
-        self.pad_angle_entry = LengthEntry()
+        self.pad_angle_entry = FCDoubleSpinner()
+        self.pad_angle_entry.set_precision(self.decimals)
+        self.pad_angle_entry.set_range(-360.00, 360.00)
+        self.pad_angle_entry.setSingleStep(0.1)
+
         self.circular_form.addRow(self.pad_angle_label, self.pad_angle_entry)
 
         self.array_circular_frame.hide()
@@ -2958,8 +2979,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.aptype_cb.currentIndexChanged[str].connect(self.on_aptype_changed)
 
         self.addaperture_btn.clicked.connect(self.on_aperture_add)
-        self.apsize_entry.editingFinished.connect(self.on_aperture_add)
-        self.apdim_entry.editingFinished.connect(self.on_aperture_add)
+        self.apsize_entry.returnPressed.connect(self.on_aperture_add)
+        self.apdim_entry.returnPressed.connect(self.on_aperture_add)
 
         self.delaperture_btn.clicked.connect(self.on_aperture_delete)
         self.apertures_table.cellPressed.connect(self.on_row_selected)
@@ -2992,9 +3013,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.editor_active = False
 
         self.conversion_factor = 1
-
-        # number of decimals for the tool diameters to be used in this editor
-        self.decimals = 4
 
         self.set_ui()
         log.debug("Initialization of the FlatCAM Gerber Editor is finished ...")
@@ -3314,6 +3332,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.app.inform.emit('[WARNING_NOTCL]%s' %
                                          _(" Select an aperture in Aperture Table"))
                     return
+
                 for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
                     deleted_apcode_list.append(self.apertures_table.item(row, 1).text())
@@ -3329,7 +3348,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                 # I've added this flag_del variable because dictionary don't like
                 # having keys deleted while iterating through them
-                flag_del = []
+                flag_del = list()
                 for deleted_tool in self.tool2tooldia:
                     if self.tool2tooldia[deleted_tool] == deleted_aperture:
                         flag_del.append(deleted_tool)
@@ -3338,12 +3357,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     for aperture_to_be_deleted in flag_del:
                         # delete the tool
                         self.tool2tooldia.pop(aperture_to_be_deleted, None)
-                    flag_del = []
 
                     self.olddia_newdia.pop(deleted_aperture, None)
 
                     self.app.inform.emit('[success] %s: %s' %
                                          (_("Deleted aperture with code"), str(deleted_aperture)))
+                    flag_del.clear()
 
         self.plot_all()
         self.build_ui()
