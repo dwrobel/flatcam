@@ -2748,6 +2748,14 @@ class App(QtCore.QObject):
         # this holds a widget that is installed in the Plot Area when View Source option is used
         self.source_editor_tab = None
 
+        # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
+        # VisPy visuals
+        if self.is_legacy is False:
+            self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+        else:
+            from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
+            self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
+
         # ###############################################################################
         # ############# Save defaults to factory_defaults.FlatConfig file ###############
         # ############# It's done only once after install                 ###############

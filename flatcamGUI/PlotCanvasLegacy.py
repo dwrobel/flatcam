@@ -272,8 +272,6 @@ class PlotCanvasLegacy(QtCore.QObject):
         :return: None
         """
 
-        # self.double_click.disconnect(cid)
-
         self.canvas.mpl_disconnect(cid)
 
     def on_new_screen(self):
@@ -936,6 +934,7 @@ class ShapeCollectionLegacy:
 
         :return: None
         """
+
         path_num = 0
         local_shapes = deepcopy(self._shapes)
 
@@ -945,6 +944,10 @@ class ShapeCollectionLegacy:
             obj_type = 'utility'
 
         if self._visible:
+            # if we don't use this then when adding each new shape, the old ones will be added again, too
+            if obj_type == 'utility':
+                self.axes.patches.clear()
+
             for element in local_shapes:
                 if obj_type == 'excellon':
                     # Plot excellon (All polygons?)
@@ -1040,6 +1043,7 @@ class ShapeCollectionLegacy:
                                                  edgecolor=local_shapes[element]['color'],
                                                  alpha=local_shapes[element]['alpha'],
                                                  zorder=2)
+
                             self.axes.add_patch(patch)
                         except Exception as e:
                             log.debug("ShapeCollectionLegacy.redraw() --> %s" % str(e))

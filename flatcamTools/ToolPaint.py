@@ -1122,6 +1122,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
             else:
                 self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
+                self.app.delete_selection_shape()
 
                 curr_pos = self.app.plotcanvas.translate_coords(event_pos)
                 if self.app.grid_status() == True:
@@ -1133,14 +1134,20 @@ class ToolPaint(FlatCAMTool, Gerber):
                 pt2 = (x1, y0)
                 pt3 = (x1, y1)
                 pt4 = (x0, y1)
-                self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
+
+                new_rectangle = Polygon([pt1, pt2, pt3, pt4])
+                self.sel_rect.append(new_rectangle)
+
+                # add a temporary shape on canvas
+                self.draw_tool_selection_shape(old_coords=(x0, y0), coords=(x1, y1))
+
                 self.first_click = False
                 return
 
         elif event.button == right_button and self.mouse_is_dragging is False:
-            self.app.delete_selection_shape()
-
             self.first_click = False
+
+            self.delete_tool_selection_shape()
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)

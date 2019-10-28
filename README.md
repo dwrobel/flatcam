@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.10.2019
+
+- in Tools: Paint, NCC and Copper Fill, when using the Area Selection, now the selected aras will stay drawn as markers until the user click RMB
+- in legacy2D graphic engine, adding an utility geometry no longer draw the older ones, overwriting them
+
 27.10.2019
 
 - Copper Fill Tool: some PEP8 corrections
@@ -53,7 +58,7 @@ CAD program, and create G-Code for Isolation routing.
 - working on the Calibrate Excellon Tool
 - finished the GUI layout for the Calibrate Excellon Tool
 - start working on QRCode Tool - not working yet
-- start working on QRCode Tool - searching for alternatives
+- start working on QRCode Tool - searching for alternativess
 
 21.10.2019
 
