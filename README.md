@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+29.10.2019
+
+- a bug fix in Geometry Object
+- fixed some missing properties in Tool Calculators
+
 28.10.2019
 
 - in Tools: Paint, NCC and Copper Fill, when using the Area Selection, now the selected aras will stay drawn as markers until the user click RMB

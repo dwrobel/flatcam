@@ -329,8 +329,14 @@ class ToolCalibrateExcellon(FlatCAMTool):
         grid_lay.addWidget(self.scaley_label, 23, 0)
         grid_lay.addWidget(self.scaley_entry, 23, 1, 1, 2)
 
+        self.scale_button = QtWidgets.QPushButton(_("Scale"))
+        self.scale_button.setToolTip(
+            _("Apply Scale factors on the calibration points.")
+        )
+        grid_lay.addWidget(self.scale_button, 24, 0, 1, 3)
+
         skew_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Skew"))
-        grid_lay.addWidget(skew_lbl, 24, 0, 1, 3)
+        grid_lay.addWidget(skew_lbl, 25, 0, 1, 3)
 
         self.skewx_label = QtWidgets.QLabel(_("Angle X:"))
         self.skewx_label.setToolTip(
@@ -342,8 +348,8 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.skewx_label, 25, 0)
-        grid_lay.addWidget(self.skewx_entry, 25, 1, 1, 2)
+        grid_lay.addWidget(self.skewx_label, 26, 0)
+        grid_lay.addWidget(self.skewx_entry, 26, 1, 1, 2)
 
         self.skewy_label = QtWidgets.QLabel(_("Angle Y:"))
         self.skewy_label.setToolTip(
@@ -355,8 +361,14 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.skewy_label, 26, 0)
-        grid_lay.addWidget(self.skewy_entry, 26, 1, 1, 2)
+        grid_lay.addWidget(self.skewy_label, 27, 0)
+        grid_lay.addWidget(self.skewy_entry, 27, 1, 1, 2)
+
+        self.skew_button = QtWidgets.QPushButton(_("Skew"))
+        self.skew_button.setToolTip(
+            _("Apply Skew factors on the calibration points.")
+        )
+        grid_lay.addWidget(self.skew_button, 28, 0, 1, 3)
 
         # STEP 4 #
         step_4 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 4"))
@@ -364,7 +376,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Generate verification GCode file adjusted with\n"
               "the factors above.")
         )
-        grid_lay.addWidget(step_4, 27, 0, 1, 3)
+        grid_lay.addWidget(step_4, 29, 0, 1, 3)
 
         # ## Adjusted GCode Button
         self.adj_gcode_button = QtWidgets.QPushButton(_("Generate Adjusted GCode"))
@@ -372,7 +384,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Generate verification GCode file adjusted with\n"
               "the factors above.")
         )
-        grid_lay.addWidget(self.adj_gcode_button, 28, 0, 1, 3)
+        grid_lay.addWidget(self.adj_gcode_button, 30, 0, 1, 3)
 
         # STEP 5 #
         step_5 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 5"))
@@ -380,7 +392,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Ajust the Excellon and Cutout Geometry objects\n"
               "with the factors determined, and verified, above.")
         )
-        grid_lay.addWidget(step_5, 29, 0, 1, 3)
+        grid_lay.addWidget(step_5, 31, 0, 1, 3)
 
         self.adj_exc_object_combo = QtWidgets.QComboBox()
         self.adj_exc_object_combo.setModel(self.app.collection)
@@ -392,8 +404,8 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Excellon Object to be adjusted.")
         )
 
-        grid_lay.addWidget(self.adj_excobj_label, 30, 0)
-        grid_lay.addWidget(self.adj_exc_object_combo, 30, 1, 1, 2)
+        grid_lay.addWidget(self.adj_excobj_label, 32, 0)
+        grid_lay.addWidget(self.adj_exc_object_combo, 32, 1, 1, 2)
 
         self.adj_geo_object_combo = QtWidgets.QComboBox()
         self.adj_geo_object_combo.setModel(self.app.collection)
@@ -405,8 +417,8 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Geometry Object to be adjusted.")
         )
 
-        grid_lay.addWidget(self.adj_geoobj_label, 31, 0)
-        grid_lay.addWidget(self.adj_geo_object_combo, 31, 1, 1, 2)
+        grid_lay.addWidget(self.adj_geoobj_label, 33, 0)
+        grid_lay.addWidget(self.adj_geo_object_combo, 33, 1, 1, 2)
 
         # ## Adjust Objects Button
         self.adj_obj_button = QtWidgets.QPushButton(_("Adjust Objects"))
@@ -414,9 +426,9 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Adjust (scale and / or skew) the objects\n"
               "with the factors determined above.")
         )
-        grid_lay.addWidget(self.adj_obj_button, 32, 0, 1, 3)
+        grid_lay.addWidget(self.adj_obj_button, 34, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 33, 0)
+        grid_lay.addWidget(QtWidgets.QLabel(''), 35, 0)
         self.layout.addStretch()
 
         self.mr = None
