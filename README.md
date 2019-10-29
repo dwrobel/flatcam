@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.10.2019
+
+- converted SolderPaste Tool to usage of SpinBoxes; changed the SolderPaste Tool UI in Preferences too
+
 29.10.2019
 
 - a bug fix in Geometry Object

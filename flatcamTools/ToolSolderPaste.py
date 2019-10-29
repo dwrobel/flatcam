@@ -7,7 +7,7 @@
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMCommon import LoudDict
-from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCEntry2, FCTable, FCInputDialog
+from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCTable, FCInputDialog, FCDoubleSpinner, FCSpinner
 from FlatCAMApp import log
 from camlib import distance
 from FlatCAMObj import FlatCAMCNCjob
@@ -37,6 +37,7 @@ class SolderPaste(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
+        self.decimals = 4
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -101,7 +102,10 @@ class SolderPaste(FlatCAMTool):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new Nozzle tool to add in the Tool Table")
         )
-        self.addtool_entry = FCEntry2()
+        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry.set_range(0.0000001, 9999.9999)
+        self.addtool_entry.set_precision(self.decimals)
+        self.addtool_entry.setSingleStep(0.1)
 
         # hlay.addWidget(self.addtool_label)
         # hlay.addStretch()
@@ -161,7 +165,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_box.addLayout(self.gcode_form_layout)
 
         # Z dispense start
-        self.z_start_entry = FCEntry()
+        self.z_start_entry = FCDoubleSpinner()
+        self.z_start_entry.set_range(0.0000001, 9999.9999)
+        self.z_start_entry.set_precision(self.decimals)
+        self.z_start_entry.setSingleStep(0.1)
+
         self.z_start_label = QtWidgets.QLabel('%s:' % _("Z Dispense Start"))
         self.z_start_label.setToolTip(
             _("The height (Z) when solder paste dispensing starts.")
@@ -169,7 +177,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_start_label, self.z_start_entry)
 
         # Z dispense
-        self.z_dispense_entry = FCEntry()
+        self.z_dispense_entry = FCDoubleSpinner()
+        self.z_dispense_entry.set_range(0.0000001, 9999.9999)
+        self.z_dispense_entry.set_precision(self.decimals)
+        self.z_dispense_entry.setSingleStep(0.1)
+
         self.z_dispense_label = QtWidgets.QLabel('%s:' % _("Z Dispense"))
         self.z_dispense_label.setToolTip(
             _("The height (Z) when doing solder paste dispensing.")
@@ -177,7 +189,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_dispense_label, self.z_dispense_entry)
 
         # Z dispense stop
-        self.z_stop_entry = FCEntry()
+        self.z_stop_entry = FCDoubleSpinner()
+        self.z_stop_entry.set_range(0.0000001, 9999.9999)
+        self.z_stop_entry.set_precision(self.decimals)
+        self.z_stop_entry.setSingleStep(0.1)
+
         self.z_stop_label = QtWidgets.QLabel('%s:' % _("Z Dispense Stop"))
         self.z_stop_label.setToolTip(
             _("The height (Z) when solder paste dispensing stops.")
@@ -185,7 +201,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_stop_label, self.z_stop_entry)
 
         # Z travel
-        self.z_travel_entry = FCEntry()
+        self.z_travel_entry = FCDoubleSpinner()
+        self.z_travel_entry.set_range(0.0000001, 9999.9999)
+        self.z_travel_entry.set_precision(self.decimals)
+        self.z_travel_entry.setSingleStep(0.1)
+
         self.z_travel_label = QtWidgets.QLabel('%s:' % _("Z Travel"))
         self.z_travel_label.setToolTip(
            _("The height (Z) for travel between pads\n"
@@ -194,7 +214,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_travel_label, self.z_travel_entry)
 
         # Z toolchange location
-        self.z_toolchange_entry = FCEntry()
+        self.z_toolchange_entry = FCDoubleSpinner()
+        self.z_toolchange_entry.set_range(0.0000001, 9999.9999)
+        self.z_toolchange_entry.set_precision(self.decimals)
+        self.z_toolchange_entry.setSingleStep(0.1)
+
         self.z_toolchange_label = QtWidgets.QLabel('%s:' % _("Z Toolchange"))
         self.z_toolchange_label.setToolTip(
            _("The height (Z) for tool (nozzle) change.")
@@ -211,7 +235,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.xy_toolchange_label, self.xy_toolchange_entry)
 
         # Feedrate X-Y
-        self.frxy_entry = FCEntry()
+        self.frxy_entry = FCDoubleSpinner()
+        self.frxy_entry.set_range(0.0000001, 9999.9999)
+        self.frxy_entry.set_precision(self.decimals)
+        self.frxy_entry.setSingleStep(0.1)
+
         self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
         self.frxy_label.setToolTip(
            _("Feedrate (speed) while moving on the X-Y plane.")
@@ -219,7 +247,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.frxy_label, self.frxy_entry)
 
         # Feedrate Z
-        self.frz_entry = FCEntry()
+        self.frz_entry = FCDoubleSpinner()
+        self.frz_entry.set_range(0.0000001, 9999.9999)
+        self.frz_entry.set_precision(self.decimals)
+        self.frz_entry.setSingleStep(0.1)
+
         self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
         self.frz_label.setToolTip(
             _("Feedrate (speed) while moving vertically\n"
@@ -228,7 +260,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.frz_label, self.frz_entry)
 
         # Feedrate Z Dispense
-        self.frz_dispense_entry = FCEntry()
+        self.frz_dispense_entry = FCDoubleSpinner()
+        self.frz_dispense_entry.set_range(0.0000001, 9999.9999)
+        self.frz_dispense_entry.set_precision(self.decimals)
+        self.frz_dispense_entry.setSingleStep(0.1)
+
         self.frz_dispense_label = QtWidgets.QLabel('%s:' % _("Feedrate Z Dispense"))
         self.frz_dispense_label.setToolTip(
            _("Feedrate (speed) while moving up vertically\n"
@@ -237,7 +273,10 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.frz_dispense_label, self.frz_dispense_entry)
 
         # Spindle Speed Forward
-        self.speedfwd_entry = FCEntry()
+        self.speedfwd_entry = FCSpinner()
+        self.speedfwd_entry.set_range(0, 999999)
+        self.speedfwd_entry.setSingleStep(1000)
+
         self.speedfwd_label = QtWidgets.QLabel('%s:' % _("Spindle Speed FWD"))
         self.speedfwd_label.setToolTip(
            _("The dispenser speed while pushing solder paste\n"
@@ -246,7 +285,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.speedfwd_label, self.speedfwd_entry)
 
         # Dwell Forward
-        self.dwellfwd_entry = FCEntry()
+        self.dwellfwd_entry = FCDoubleSpinner()
+        self.dwellfwd_entry.set_range(0.0000001, 9999.9999)
+        self.dwellfwd_entry.set_precision(self.decimals)
+        self.dwellfwd_entry.setSingleStep(0.1)
+
         self.dwellfwd_label = QtWidgets.QLabel('%s:' % _("Dwell FWD"))
         self.dwellfwd_label.setToolTip(
             _("Pause after solder dispensing.")
@@ -254,7 +297,10 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.dwellfwd_label, self.dwellfwd_entry)
 
         # Spindle Speed Reverse
-        self.speedrev_entry = FCEntry()
+        self.speedrev_entry = FCSpinner()
+        self.speedrev_entry.set_range(0, 999999)
+        self.speedrev_entry.setSingleStep(1000)
+
         self.speedrev_label = QtWidgets.QLabel('%s:' % _("Spindle Speed REV"))
         self.speedrev_label.setToolTip(
            _("The dispenser speed while retracting solder paste\n"
@@ -263,7 +309,11 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.speedrev_label, self.speedrev_entry)
 
         # Dwell Reverse
-        self.dwellrev_entry = FCEntry()
+        self.dwellrev_entry = FCDoubleSpinner()
+        self.dwellrev_entry.set_range(0.0000001, 9999.9999)
+        self.dwellrev_entry.set_precision(self.decimals)
+        self.dwellrev_entry.setSingleStep(0.1)
+
         self.dwellrev_label = QtWidgets.QLabel('%s:' % _("Dwell REV"))
         self.dwellrev_label.setToolTip(
             _("Pause after solder paste dispenser retracted,\n"
@@ -416,7 +466,7 @@ class SolderPaste(FlatCAMTool):
         # ## Signals
         self.combo_context_del_action.triggered.connect(self.on_delete_object)
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        self.addtool_entry.editingFinished.connect(self.on_tool_add)
+        self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.soldergeo_btn.clicked.connect(self.on_create_geo_click)
         self.solder_gcode_btn.clicked.connect(self.on_create_gcode_click)

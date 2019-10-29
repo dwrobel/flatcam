@@ -4532,6 +4532,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
 
         # ## Spacing Columns
         self.pspacing_columns = FCDoubleSpinner()
@@ -4962,8 +4964,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         nozzletdlabel.setToolTip(
             _("Diameters of nozzle tools, separated by ','")
         )
-        self.nozzle_tool_dia_entry = FCDoubleSpinner()
-        self.nozzle_tool_dia_entry.set_precision(self.decimals)
+        self.nozzle_tool_dia_entry = FCEntry()
+
         grid0.addWidget(nozzletdlabel, 0, 0)
         grid0.addWidget(self.nozzle_tool_dia_entry, 0, 1)
 
@@ -4972,12 +4974,20 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new Nozzle tool to add in the Tool Table")
         )
-        self.addtool_entry = FCEntry()
+        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry.set_precision(self.decimals)
+        self.addtool_entry.set_range(0.0000001, 9999.9999)
+        self.addtool_entry.setSingleStep(0.1)
+
         grid0.addWidget(self.addtool_entry_lbl, 1, 0)
         grid0.addWidget(self.addtool_entry, 1, 1)
 
         # Z dispense start
-        self.z_start_entry = FCEntry()
+        self.z_start_entry = FCDoubleSpinner()
+        self.z_start_entry.set_precision(self.decimals)
+        self.z_start_entry.set_range(0.0000001, 9999.9999)
+        self.z_start_entry.setSingleStep(0.1)
+
         self.z_start_label = QtWidgets.QLabel('%s:' % _("Z Dispense Start"))
         self.z_start_label.setToolTip(
             _("The height (Z) when solder paste dispensing starts.")
@@ -4986,7 +4996,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.z_start_entry, 2, 1)
 
         # Z dispense
-        self.z_dispense_entry = FCEntry()
+        self.z_dispense_entry = FCDoubleSpinner()
+        self.z_dispense_entry.set_precision(self.decimals)
+        self.z_dispense_entry.set_range(0.0000001, 9999.9999)
+        self.z_dispense_entry.setSingleStep(0.1)
+
         self.z_dispense_label = QtWidgets.QLabel('%s:' % _("Z Dispense"))
         self.z_dispense_label.setToolTip(
             _("The height (Z) when doing solder paste dispensing.")
@@ -4995,7 +5009,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.z_dispense_entry, 3, 1)
 
         # Z dispense stop
-        self.z_stop_entry = FCEntry()
+        self.z_stop_entry = FCDoubleSpinner()
+        self.z_stop_entry.set_precision(self.decimals)
+        self.z_stop_entry.set_range(0.0000001, 9999.9999)
+        self.z_stop_entry.setSingleStep(0.1)
+
         self.z_stop_label = QtWidgets.QLabel('%s:' % _("Z Dispense Stop"))
         self.z_stop_label.setToolTip(
             _("The height (Z) when solder paste dispensing stops.")
@@ -5004,7 +5022,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.z_stop_entry, 4, 1)
 
         # Z travel
-        self.z_travel_entry = FCEntry()
+        self.z_travel_entry = FCDoubleSpinner()
+        self.z_travel_entry.set_precision(self.decimals)
+        self.z_travel_entry.set_range(0.0000001, 9999.9999)
+        self.z_travel_entry.setSingleStep(0.1)
+
         self.z_travel_label = QtWidgets.QLabel('%s:' % _("Z Travel"))
         self.z_travel_label.setToolTip(
             _("The height (Z) for travel between pads\n"
@@ -5014,7 +5036,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.z_travel_entry, 5, 1)
 
         # Z toolchange location
-        self.z_toolchange_entry = FCEntry()
+        self.z_toolchange_entry = FCDoubleSpinner()
+        self.z_toolchange_entry.set_precision(self.decimals)
+        self.z_toolchange_entry.set_range(0.0000001, 9999.9999)
+        self.z_toolchange_entry.setSingleStep(0.1)
+
         self.z_toolchange_label = QtWidgets.QLabel('%s:' % _("Z Toolchange"))
         self.z_toolchange_label.setToolTip(
             _("The height (Z) for tool (nozzle) change.")
@@ -5033,7 +5059,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.xy_toolchange_entry, 7, 1)
 
         # Feedrate X-Y
-        self.frxy_entry = FCEntry()
+        self.frxy_entry = FCDoubleSpinner()
+        self.frxy_entry.set_precision(self.decimals)
+        self.frxy_entry.set_range(0.0000001, 9999.9999)
+        self.frxy_entry.setSingleStep(0.1)
+
         self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
         self.frxy_label.setToolTip(
             _("Feedrate (speed) while moving on the X-Y plane.")
@@ -5042,7 +5072,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.frxy_entry, 8, 1)
 
         # Feedrate Z
-        self.frz_entry = FCEntry()
+        self.frz_entry = FCDoubleSpinner()
+        self.frz_entry.set_precision(self.decimals)
+        self.frz_entry.set_range(0.0000001, 9999.9999)
+        self.frz_entry.setSingleStep(0.1)
+
         self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
         self.frz_label.setToolTip(
             _("Feedrate (speed) while moving vertically\n"
@@ -5052,7 +5086,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.frz_entry, 9, 1)
 
         # Feedrate Z Dispense
-        self.frz_dispense_entry = FCEntry()
+        self.frz_dispense_entry = FCDoubleSpinner()
+        self.frz_dispense_entry.set_precision(self.decimals)
+        self.frz_dispense_entry.set_range(0.0000001, 9999.9999)
+        self.frz_dispense_entry.setSingleStep(0.1)
+
         self.frz_dispense_label = QtWidgets.QLabel('%s:' % _("Feedrate Z Dispense"))
         self.frz_dispense_label.setToolTip(
             _("Feedrate (speed) while moving up vertically\n"
@@ -5062,7 +5100,10 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.frz_dispense_entry, 10, 1)
 
         # Spindle Speed Forward
-        self.speedfwd_entry = FCEntry()
+        self.speedfwd_entry = FCSpinner()
+        self.speedfwd_entry.set_range(0, 999999)
+        self.speedfwd_entry.setSingleStep(1000)
+
         self.speedfwd_label = QtWidgets.QLabel('%s:' % _("Spindle Speed FWD"))
         self.speedfwd_label.setToolTip(
             _("The dispenser speed while pushing solder paste\n"
@@ -5072,7 +5113,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.speedfwd_entry, 11, 1)
 
         # Dwell Forward
-        self.dwellfwd_entry = FCEntry()
+        self.dwellfwd_entry = FCDoubleSpinner()
+        self.dwellfwd_entry.set_precision(self.decimals)
+        self.dwellfwd_entry.set_range(0.0000001, 9999.9999)
+        self.dwellfwd_entry.setSingleStep(0.1)
+
         self.dwellfwd_label = QtWidgets.QLabel('%s:' % _("Dwell FWD"))
         self.dwellfwd_label.setToolTip(
             _("Pause after solder dispensing.")
@@ -5081,7 +5126,10 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.dwellfwd_entry, 12, 1)
 
         # Spindle Speed Reverse
-        self.speedrev_entry = FCEntry()
+        self.speedrev_entry = FCSpinner()
+        self.speedrev_entry.set_range(0, 999999)
+        self.speedrev_entry.setSingleStep(1000)
+
         self.speedrev_label = QtWidgets.QLabel('%s:' % _("Spindle Speed REV"))
         self.speedrev_label.setToolTip(
             _("The dispenser speed while retracting solder paste\n"
@@ -5091,7 +5139,11 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.speedrev_entry, 13, 1)
 
         # Dwell Reverse
-        self.dwellrev_entry = FCEntry()
+        self.dwellrev_entry = FCDoubleSpinner()
+        self.dwellrev_entry.set_precision(self.decimals)
+        self.dwellrev_entry.set_range(0.0000001, 9999.9999)
+        self.dwellrev_entry.setSingleStep(0.1)
+
         self.dwellrev_label = QtWidgets.QLabel('%s:' % _("Dwell REV"))
         self.dwellrev_label.setToolTip(
             _("Pause after solder paste dispenser retracted,\n"
