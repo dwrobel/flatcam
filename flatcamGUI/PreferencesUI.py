@@ -4944,6 +4944,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         super(ToolsSolderpastePrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("SolderPaste Tool Options")))
+        self.decimals = 4
 
         # ## Solder Paste Dispensing
         self.solderpastelabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -4961,7 +4962,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         nozzletdlabel.setToolTip(
             _("Diameters of nozzle tools, separated by ','")
         )
-        self.nozzle_tool_dia_entry = FCEntry()
+        self.nozzle_tool_dia_entry = FCDoubleSpinner()
+        self.nozzle_tool_dia_entry.set_precision(self.decimals)
         grid0.addWidget(nozzletdlabel, 0, 0)
         grid0.addWidget(self.nozzle_tool_dia_entry, 0, 1)
 
