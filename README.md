@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 30.10.2019
 
 - converted SolderPaste Tool to usage of SpinBoxes; changed the SolderPaste Tool UI in Preferences too
+- fixed a bug in SolderPaste Tool that did not allow to view the GCode
 
 29.10.2019
 

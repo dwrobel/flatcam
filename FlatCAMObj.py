@@ -5644,6 +5644,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         FlatCAMApp.App.log.debug("Creating CNCJob object...")
 
+        self.decimals = 4
+
         CNCjob.__init__(self, units=units, kind=kind, z_move=z_move,
                         feedrate=feedrate, feedrate_rapid=feedrate_rapid, z_cut=z_cut, tooldia=tooldia,
                         spindlespeed=spindlespeed, steps_per_circle=int(self.app.defaults["cncjob_steps_per_circle"]))
@@ -5735,12 +5737,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
 
-        self.decimals = 4
-
         if self.app.is_legacy is False:
             self.text_col = self.app.plotcanvas.new_text_collection()
             self.text_col.enabled = True
             self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
+
+        self.gcode_editor_tab = None
 
     def build_ui(self):
         self.ui_disconnect()

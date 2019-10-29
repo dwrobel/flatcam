@@ -11,6 +11,7 @@ from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCTable, FCInputDialog, 
 from FlatCAMApp import log
 from camlib import distance
 from FlatCAMObj import FlatCAMCNCjob
+from flatcamEditors.FlatCAMTextEditor import TextEditor
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
@@ -37,6 +38,8 @@ class SolderPaste(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
+
+        # Number of decimals to be used for tools/nozzles in this FlatCAM Tool
         self.decimals = 4
 
         # ## Title
@@ -451,8 +454,7 @@ class SolderPaste(FlatCAMTool):
         self.units = ''
         self.name = ""
 
-        # Number of decimals to be used for tools/nozzles in this FlatCAM Tool
-        self.decimals = 4
+        self.text_editor_tab = None
 
         # this will be used in the combobox context menu, for delete entry
         self.obj_to_be_deleted_name = ''
@@ -1285,9 +1287,9 @@ class SolderPaste(FlatCAMTool):
             xmax = obj.options['xmax']
             ymax = obj.options['ymax']
         except Exception as e:
-            log.debug("FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s\n" % str(e))
+            log.debug("SolderPaste.on_create_gcode() --> %s\n" % str(e))
             msg = '[ERROR] %s' % _("An internal error has ocurred. See shell.\n")
-            msg += 'FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s' % str(e)
+            msg += 'SolderPaste.on_create_gcode() --> %s' % str(e)
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
             return
@@ -1375,14 +1377,14 @@ class SolderPaste(FlatCAMTool):
         """
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
-        # add the tab if it was closed
-        self.app.ui.plot_tab_area.addTab(self.app.ui.text_editor_tab, _("Code Editor"))
+        self.text_editor_tab = TextEditor(app=self.app)
 
-        # first clear previous text in text editor (if any)
-        self.app.ui.code_editor.clear()
+        # add the tab if it was closed
+        self.app.ui.plot_tab_area.addTab(self.text_editor_tab, _("SP GCode Editor"))
+        self.text_editor_tab.setObjectName('solderpaste_gcode_editor_tab')
 
         # Switch plot_area to CNCJob tab
-        self.app.ui.plot_tab_area.setCurrentWidget(self.app.ui.text_editor_tab)
+        self.app.ui.plot_tab_area.setCurrentWidget(self.text_editor_tab)
 
         name = self.cnc_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)
@@ -1426,17 +1428,17 @@ class SolderPaste(FlatCAMTool):
         try:
             for line in lines:
                 proc_line = str(line).strip('\n')
-                self.app.ui.code_editor.append(proc_line)
+                self.text_editor_tab.code_editor.append(proc_line)
         except Exception as e:
             log.debug('ToolSolderPaste.on_view_gcode() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s --> %s' %
                                  ('ToolSolderPaste.on_view_gcode()', str(e)))
             return
 
-        self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+        self.text_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
-        self.app.handleTextChanged()
-        self.app.ui.show()
+        self.text_editor_tab.handleTextChanged()
+        # self.app.ui.show()
 
     def on_save_gcode(self):
         """
