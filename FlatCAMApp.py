@@ -729,6 +729,7 @@ class App(QtCore.QObject):
             "tools_ncccutz": self.ui.tools_defaults_form.tools_ncc_group.cutz_entry,
             "tools_ncctipdia": self.ui.tools_defaults_form.tools_ncc_group.tipdia_entry,
             "tools_ncctipangle": self.ui.tools_defaults_form.tools_ncc_group.tipangle_entry,
+            "tools_nccnewdia": self.ui.tools_defaults_form.tools_ncc_group.newdia_entry,
 
             # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
@@ -1205,6 +1206,7 @@ class App(QtCore.QObject):
             "tools_ncccutz": -0.001968504,
             "tools_ncctipdia": 0.00393701,
             "tools_ncctipangle": 30,
+            "tools_nccnewdia": 0.0393701,
 
             # Cutout Tool
             "tools_cutouttooldia": 0.0944882,
@@ -5811,6 +5813,7 @@ class App(QtCore.QObject):
 
                       'tools_paintmargin', 'tools_painttooldia', 'tools_paintoverlap',
                       "tools_ncctools", "tools_nccoverlap", "tools_nccmargin", "tools_ncccutz", "tools_ncctipdia",
+                      "tools_nccnewdia",
                       "tools_2sided_drilldia", "tools_film_boundary",
                       "tools_cutouttooldia", 'tools_cutoutmargin', 'tools_cutoutgapsize',
                       "tools_panelize_constrainx", "tools_panelize_constrainy",

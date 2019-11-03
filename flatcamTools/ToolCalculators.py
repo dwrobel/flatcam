@@ -325,8 +325,7 @@ class ToolCalculator(FlatCAMTool):
 
         tip_diameter = float(self.tipDia_entry.get_value())
 
-        half_tip_angle = float(self.tipAngle_entry.get_value())
-        half_tip_angle /= 2
+        half_tip_angle = float(self.tipAngle_entry.get_value()) / 2.0
 
         cut_depth = float(self.cutDepth_entry.get_value())
         cut_depth = -cut_depth if cut_depth < 0 else cut_depth

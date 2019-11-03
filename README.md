@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+3.11.2019
+
+- fixed the V-shape tool diameter calculation in NCC Tool
+- in NCC Tool made the new tool dia (circular type) a parameter in Preferences
+
 30.10.2019
 
 - converted SolderPaste Tool to usage of SpinBoxes; changed the SolderPaste Tool UI in Preferences too

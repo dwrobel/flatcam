@@ -3712,6 +3712,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         super(ToolsNCCPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("NCC Tool Options")))
+        self.decimals = 4
 
         # ## Clear non-copper regions
         self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -3756,7 +3757,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.tipdialabel.setToolTip(
             _("The tip diameter for V-Shape Tool"))
         self.tipdia_entry = FCDoubleSpinner()
-        self.tipdia_entry.set_precision(4)
+        self.tipdia_entry.set_precision(self.decimals)
         self.tipdia_entry.set_range(0, 1000)
         self.tipdia_entry.setSingleStep(0.1)
 
@@ -3769,13 +3770,44 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             _("The tip angle for V-Shape Tool.\n"
               "In degree."))
         self.tipangle_entry = FCDoubleSpinner()
-        self.tipangle_entry.set_precision(4)
+        self.tipangle_entry.set_precision(self.decimals)
         self.tipangle_entry.set_range(-360, 360)
         self.tipangle_entry.setSingleStep(5)
         self.tipangle_entry.setWrapping(True)
 
         grid0.addWidget(self.tipanglelabel, 3, 0)
         grid0.addWidget(self.tipangle_entry, 3, 1)
+
+        # Cut Z entry
+        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel.setToolTip(
+           _("Depth of cut into material. Negative value.\n"
+             "In FlatCAM units.")
+        )
+        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry.set_precision(self.decimals)
+        self.cutz_entry.set_range(-9999.9999, -0.000001)
+        self.cutz_entry.setSingleStep(0.1)
+
+        self.cutz_entry.setToolTip(
+           _("Depth of cut into material. Negative value.\n"
+             "In FlatCAM units.")
+        )
+
+        grid0.addWidget(cutzlabel, 4, 0)
+        grid0.addWidget(self.cutz_entry, 4, 1)
+
+        # New Diameter
+        self.newdialabel = QtWidgets.QLabel('%s:' % _('New Tool Dia'))
+        self.newdialabel.setToolTip(
+            _("The new tool diameter (cut width) to add in the tool table."))
+        self.newdia_entry = FCDoubleSpinner()
+        self.newdia_entry.set_precision(self.decimals)
+        self.newdia_entry.set_range(0.0001, 9999.9999)
+        self.newdia_entry.setSingleStep(0.1)
+
+        grid0.addWidget(self.newdialabel, 5, 0)
+        grid0.addWidget(self.newdia_entry, 5, 1)
 
         # Milling Type Radio Button
         self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
@@ -3793,8 +3825,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "- conventional / useful when there is no backlash compensation")
         )
 
-        grid0.addWidget(self.milling_type_label, 4, 0)
-        grid0.addWidget(self.milling_type_radio, 4, 1)
+        grid0.addWidget(self.milling_type_label, 6, 0)
+        grid0.addWidget(self.milling_type_radio, 6, 1)
 
         # Tool order Radio Button
         self.ncc_order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
@@ -3814,27 +3846,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
                                           "'Reverse' --> menas that the tools will ordered from big to small\n\n"
                                           "WARNING: using rest machining will automatically set the order\n"
                                           "in reverse and disable this control."))
-        grid0.addWidget(self.ncc_order_label, 5, 0)
-        grid0.addWidget(self.ncc_order_radio, 5, 1)
-
-        # Cut Z entry
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
-        cutzlabel.setToolTip(
-           _("Depth of cut into material. Negative value.\n"
-             "In FlatCAM units.")
-        )
-        self.cutz_entry = FCDoubleSpinner()
-        self.cutz_entry.set_precision(4)
-        self.cutz_entry.set_range(-1000, -0.000001)
-        self.cutz_entry.setSingleStep(0.1)
-
-        self.cutz_entry.setToolTip(
-           _("Depth of cut into material. Negative value.\n"
-             "In FlatCAM units.")
-        )
-
-        grid0.addWidget(cutzlabel, 6, 0)
-        grid0.addWidget(self.cutz_entry, 6, 1)
+        grid0.addWidget(self.ncc_order_label, 7, 0)
+        grid0.addWidget(self.ncc_order_radio, 7, 1)
 
         # Overlap Entry
         nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
@@ -3850,25 +3863,25 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
              "due of too many paths.")
         )
         self.ncc_overlap_entry = FCDoubleSpinner()
-        self.ncc_overlap_entry.set_precision(3)
+        self.ncc_overlap_entry.set_precision(self.decimals)
         self.ncc_overlap_entry.setWrapping(True)
         self.ncc_overlap_entry.setRange(0.000, 0.999)
         self.ncc_overlap_entry.setSingleStep(0.1)
-        grid0.addWidget(nccoverlabel, 7, 0)
-        grid0.addWidget(self.ncc_overlap_entry, 7, 1)
+        grid0.addWidget(nccoverlabel, 8, 0)
+        grid0.addWidget(self.ncc_overlap_entry, 8, 1)
 
         # Margin entry
         nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
         nccmarginlabel.setToolTip(
             _("Bounding box margin.")
         )
-        grid0.addWidget(nccmarginlabel, 8, 0)
         self.ncc_margin_entry = FCDoubleSpinner()
-        self.ncc_margin_entry.set_precision(4)
+        self.ncc_margin_entry.set_precision(self.decimals)
         self.ncc_margin_entry.set_range(-10000, 10000)
         self.ncc_margin_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.ncc_margin_entry, 8, 1)
+        grid0.addWidget(nccmarginlabel, 9, 0)
+        grid0.addWidget(self.ncc_margin_entry, 9, 1)
 
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
@@ -3878,13 +3891,15 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "<B>Seed-based</B>: Outwards from seed.<BR>"
               "<B>Line-based</B>: Parallel lines.")
         )
-        grid0.addWidget(methodlabel, 9, 0)
+
         self.ncc_method_radio = RadioSet([
             {"label": _("Standard"), "value": "standard"},
             {"label": _("Seed-based"), "value": "seed"},
             {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
-        grid0.addWidget(self.ncc_method_radio, 9, 1)
+
+        grid0.addWidget(methodlabel, 10, 0)
+        grid0.addWidget(self.ncc_method_radio, 10, 1)
 
         # Connect lines
         pathconnectlabel = QtWidgets.QLabel('%s:' % _("Connect"))
@@ -3892,9 +3907,10 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        grid0.addWidget(pathconnectlabel, 10, 0)
         self.ncc_connect_cb = FCCheckBox()
-        grid0.addWidget(self.ncc_connect_cb, 10, 1)
+
+        grid0.addWidget(pathconnectlabel, 11, 0)
+        grid0.addWidget(self.ncc_connect_cb, 11, 1)
 
         # Contour Checkbox
         contourlabel = QtWidgets.QLabel('%s:' % _("Contour"))
@@ -3902,9 +3918,10 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
            _("Cut around the perimeter of the polygon\n"
              "to trim rough edges.")
         )
-        grid0.addWidget(contourlabel, 11, 0)
         self.ncc_contour_cb = FCCheckBox()
-        grid0.addWidget(self.ncc_contour_cb, 11, 1)
+
+        grid0.addWidget(contourlabel, 12, 0)
+        grid0.addWidget(self.ncc_contour_cb, 12, 1)
 
         # Rest machining CheckBox
         restlabel = QtWidgets.QLabel('%s:' % _("Rest M."))
@@ -3917,9 +3934,10 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "no more copper to clear or there are no more tools.\n"
               "If not checked, use the standard algorithm.")
         )
-        grid0.addWidget(restlabel, 12, 0)
         self.ncc_rest_cb = FCCheckBox()
-        grid0.addWidget(self.ncc_rest_cb, 12, 1)
+
+        grid0.addWidget(restlabel, 13, 0)
+        grid0.addWidget(self.ncc_rest_cb, 13, 1)
 
         # ## NCC Offset choice
         self.ncc_offset_choice_label = QtWidgets.QLabel('%s:' % _("Offset"))
@@ -3929,9 +3947,10 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "from the copper features.\n"
               "The value can be between 0 and 10 FlatCAM units.")
         )
-        grid0.addWidget(self.ncc_offset_choice_label, 13, 0)
         self.ncc_choice_offset_cb = FCCheckBox()
-        grid0.addWidget(self.ncc_choice_offset_cb, 13, 1)
+
+        grid0.addWidget(self.ncc_offset_choice_label, 14, 0)
+        grid0.addWidget(self.ncc_choice_offset_cb, 14, 1)
 
         # ## NCC Offset value
         self.ncc_offset_label = QtWidgets.QLabel('%s:' % _("Offset value"))
@@ -3939,16 +3958,16 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
               "from the copper features.\n"
-              "The value can be between 0 and 10 FlatCAM units.")
+              "The value can be between 0.0 and 9999.9 FlatCAM units.")
         )
-        grid0.addWidget(self.ncc_offset_label, 14, 0)
         self.ncc_offset_spinner = FCDoubleSpinner()
-        self.ncc_offset_spinner.set_range(0.00, 10.00)
-        self.ncc_offset_spinner.set_precision(4)
+        self.ncc_offset_spinner.set_range(0.00, 9999.9999)
+        self.ncc_offset_spinner.set_precision(self.decimals)
         self.ncc_offset_spinner.setWrapping(True)
         self.ncc_offset_spinner.setSingleStep(0.1)
 
-        grid0.addWidget(self.ncc_offset_spinner, 14, 1)
+        grid0.addWidget(self.ncc_offset_label, 15, 0)
+        grid0.addWidget(self.ncc_offset_spinner, 15, 1)
 
         # ## Reference
         self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
@@ -3963,8 +3982,9 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "- 'Reference Object' -  will do non copper clearing within the area\n"
               "specified by another object.")
         )
-        grid0.addWidget(reference_label, 15, 0)
-        grid0.addWidget(self.reference_radio, 15, 1)
+
+        grid0.addWidget(reference_label, 16, 0)
+        grid0.addWidget(self.reference_radio, 16, 1)
 
         # ## Plotting type
         self.ncc_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
@@ -3974,8 +3994,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             _("- 'Normal' -  normal plotting, done at the end of the NCC job\n"
               "- 'Progressive' - after each shape is generated it will be plotted.")
         )
-        grid0.addWidget(plotting_label, 16, 0)
-        grid0.addWidget(self.ncc_plotting_radio, 16, 1)
+        grid0.addWidget(plotting_label, 17, 0)
+        grid0.addWidget(self.ncc_plotting_radio, 17, 1)
 
         self.layout.addStretch()
 
