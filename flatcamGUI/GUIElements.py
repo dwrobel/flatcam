@@ -519,12 +519,13 @@ class FCSpinner(QtWidgets.QSpinBox):
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
-            if self.readyToEdit:
-                self.lineEdit().selectAll()
-                self.readyToEdit = False
-            else:
-                self.lineEdit().deselect()
-            return True
+            if self.isEnabled():
+                if self.readyToEdit:
+                    self.lineEdit().selectAll()
+                    self.readyToEdit = False
+                else:
+                    self.lineEdit().deselect()
+                return True
         return False
 
     def keyPressEvent(self, event):
@@ -595,12 +596,13 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
-            if self.readyToEdit:
-                self.lineEdit().selectAll()
-                self.readyToEdit = False
-            else:
-                self.lineEdit().deselect()
-            return True
+            if self.isEnabled():
+                if self.readyToEdit:
+                    self.lineEdit().selectAll()
+                    self.readyToEdit = False
+                else:
+                    self.lineEdit().deselect()
+                return True
         return False
 
     def keyPressEvent(self, event):

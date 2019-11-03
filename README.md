@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed the V-shape tool diameter calculation in NCC Tool
 - in NCC Tool made the new tool dia (circular type) a parameter in Preferences
+- fixed a small issue with clicking in a disabled FCDoubleSpinner or FCSpinner still doing a selection
 
 30.10.2019
 
