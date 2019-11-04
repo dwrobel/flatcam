@@ -35,7 +35,7 @@ class DistanceMin(FlatCAMTool):
 
         self.app = app
         self.canvas = self.app.plotcanvas
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.defaults['units'].lower()
 
         # ## Title
         title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)

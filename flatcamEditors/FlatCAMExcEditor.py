@@ -1449,7 +1449,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.decimals = 4
 
         # ## Current application units in Upper Case
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         self.exc_edit_widget = QtWidgets.QWidget()
         # ## Box for custom widgets

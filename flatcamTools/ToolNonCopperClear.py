@@ -421,7 +421,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_offset_spinner.set_precision(4)
         self.ncc_offset_spinner.setWrapping(True)
 
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        units = self.app.defaults['units'].upper()
         if units == 'MM':
             self.ncc_offset_spinner.setSingleStep(0.1)
         else:

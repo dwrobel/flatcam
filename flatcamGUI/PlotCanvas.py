@@ -120,7 +120,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         a3p_mm = np.array([(0, 0), (297, 0), (297, 420), (0, 420)])
         a3l_mm = np.array([(0, 0), (420, 0), (420, 297), (0, 297)])
 
-        if self.fcapp.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if self.fcapp.defaults['units'].upper() == 'MM':
             if self.fcapp.defaults['global_workspaceT'] == 'A4P':
                 a = a4p_mm
             elif self.fcapp.defaults['global_workspaceT'] == 'A4L':

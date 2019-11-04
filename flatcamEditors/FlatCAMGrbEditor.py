@@ -2356,7 +2356,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.decimals = 4
 
         # Current application units in Upper Case
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         self.grb_edit_widget = QtWidgets.QWidget()
         layout = QtWidgets.QVBoxLayout()
@@ -3023,7 +3023,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def set_ui(self):
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == "IN":
             self.decimals = 4

@@ -497,10 +497,6 @@ class Geometry(object):
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
 
-        # if geo_steps_per_circle is None:
-        #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
-        # self.geo_steps_per_circle = geo_steps_per_circle
-
     def plot_temp_shapes(self, element, color='red'):
 
         try:

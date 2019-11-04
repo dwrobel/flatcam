@@ -39,7 +39,7 @@ class ToolOptimal(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
         self.decimals = 4
 
         # ############################################################################
