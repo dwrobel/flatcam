@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 4.11.2019
 
 - wip
+- getting rid of all the Options GUI and related functions as it is no longer supported
 
 3.11.2019
 

@@ -978,13 +978,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.hlay1 = QtWidgets.QHBoxLayout()
         self.general_tab_lay.addLayout(self.hlay1)
 
-        self.options_combo = QtWidgets.QComboBox()
-        self.options_combo.addItem(_("APP.  DEFAULTS"))
-        self.options_combo.addItem(_("PROJ. OPTIONS "))
-        self.hlay1.addWidget(self.options_combo)
-
-        # disable this button as it may no longer be useful
-        self.options_combo.setVisible(False)
         self.hlay1.addStretch()
 
         self.general_scroll_area = QtWidgets.QScrollArea()
@@ -2021,15 +2014,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.tools_defaults_form = ToolsPreferencesUI()
         self.tools2_defaults_form = Tools2PreferencesUI()
         self.util_defaults_form = UtilPreferencesUI()
-
-        self.general_options_form = GeneralPreferencesUI()
-        self.gerber_options_form = GerberPreferencesUI()
-        self.excellon_options_form = ExcellonPreferencesUI()
-        self.geometry_options_form = GeometryPreferencesUI()
-        self.cncjob_options_form = CNCJobPreferencesUI()
-        self.tools_options_form = ToolsPreferencesUI()
-        self.tools2_options_form = Tools2PreferencesUI()
-        self.util_options_form = UtilPreferencesUI()
 
         QtWidgets.qApp.installEventFilter(self)
 
@@ -3649,8 +3633,26 @@ class FlatCAMActivityView(QtWidgets.QWidget):
     This class create and control the activity icon displayed in the App status bar
     """
 
-    def __init__(self, movie="share/active.gif", icon='share/active_static.png', parent=None):
+    def __init__(self, app, parent=None):
         super().__init__(parent=parent)
+
+        self.app = app
+
+        if self.app.defaults["global_activity_icon"] == "Ball green":
+            icon = 'share/active_2_static.png'
+            movie = "share/active_2.gif"
+        elif self.app.defaults["global_activity_icon"] == "Ball black":
+            icon = 'share/active_static.png'
+            movie = "share/active.gif"
+        elif self.app.defaults["global_activity_icon"] == "Arrow green":
+            icon = 'share/active_3_static.png'
+            movie = "share/active_3.gif"
+        elif self.app.defaults["global_activity_icon"] == "Eclipse green":
+            icon = 'share/active_4_static.png'
+            movie = "share/active_4.gif"
+        else:
+            icon = 'share/active_static.png'
+            movie = "share/active.gif"
 
         self.setMinimumWidth(200)
         self.movie_path = movie

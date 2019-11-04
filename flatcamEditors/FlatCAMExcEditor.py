@@ -2099,7 +2099,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             "corner_snap": False,
             "grid_gap_link": True
         }
-        self.app.options_read_form()
+        self.options.update(self.app.options)
 
         for option in self.options:
             if option in self.app.options:
