@@ -5101,7 +5101,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         """
         Only used for TCL Command.
         Creates a CNCJob out of this Geometry object. The actual
-        work is done by the target FlatCAMCNCjob object's
+        work is done by the target camlib.CNCjob
         `generate_from_geometry_2()` method.
 
         :param z_cut: Cut depth (negative)
@@ -5185,7 +5185,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             except ValueError:
                 # try to convert comma to decimal point. if it's still not working error message and return
                 try:
-                    job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
+                    job_obj.feedrate_probe = float(self.options["feedrate_probe"].replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit('[ERROR_NOTCL] %s' %
                                          _('Wrong value format for self.defaults["feedrate_probe"] '

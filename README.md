@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.11.2019
+
+- wip
+
 3.11.2019
 
 - fixed the V-shape tool diameter calculation in NCC Tool
@@ -27,7 +31,7 @@ CAD program, and create G-Code for Isolation routing.
 
 28.10.2019
 
-- in Tools: Paint, NCC and Copper Fill, when using the Area Selection, now the selected aras will stay drawn as markers until the user click RMB
+- in Tools: Paint, NCC and Copper Fill, when using the Area Selection, now the selected areas will stay drawn as markers until the user click RMB
 - in legacy2D graphic engine, adding an utility geometry no longer draw the older ones, overwriting them
 - fixed some issues in the Gerber Editor (Aperture add was double adding an aperture)
 - converted Gerber Editor to usage of SpinBoxes

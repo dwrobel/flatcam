@@ -4232,10 +4232,13 @@ class App(QtCore.QObject):
         }
 
         App.log.debug("Calling object constructor...")
+
+        # Object creation/instantiation
         obj = classdict[kind](name)
+
         obj.units = self.options["units"]  # TODO: The constructor should look at defaults.
 
-        # Set options from "Project options" form
+        # Update the object options from "Project options" form
         self.options_read_form()
 
         # IMPORTANT
@@ -4517,7 +4520,7 @@ class App(QtCore.QObject):
     def options_read_form(self):
         """
         Same as it's equivalent from the defaults.
-        self.options use to store the preferences per project. No longer used.
+        self.options used to store the preferences per project. No longer used.
         :return: None
         """
         for option in self.options_form_fields:
