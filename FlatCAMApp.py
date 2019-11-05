@@ -3019,15 +3019,16 @@ class App(QtCore.QObject):
             self.ui.splitter.setSizes([0, 1])
 
             if edited_object.multigeo is True:
-                edited_tools = [int(x.text()) for x in edited_object.ui.geo_tools_table.selectedItems()]
-                if len(edited_tools) > 1:
+                sel_rows = [item.row() for item in edited_object.ui.geo_tools_table.selectedItems()]
+
+                if len(sel_rows) > 1:
                     self.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Simultanoeus editing of tools geometry in a MultiGeo Geometry "
+                                     _("Simultaneous editing of tools geometry in a MultiGeo Geometry "
                                        "is not possible.\n"
                                        "Edit only one geometry at a time."))
 
                 # determine the tool dia of the selected tool
-                selected_tooldia = float(edited_object.ui.geo_tools_table.item((edited_tools[0] - 1), 1).text())
+                selected_tooldia = float(edited_object.ui.geo_tools_table.item(sel_rows[0], 1).text())
 
                 # now find the key in the edited_object.tools that has this tooldia
                 multi_tool = 1
