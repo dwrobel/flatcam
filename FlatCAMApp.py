@@ -48,7 +48,7 @@ from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
 
-from FlatCAMCommon import LoudDict
+from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB
 from FlatCAMPostProc import load_postprocessors
 
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
@@ -1655,6 +1655,7 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transform_flipx.triggered.connect(self.on_flipx)
         self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
         self.ui.menuoptions_view_source.triggered.connect(self.on_view_source)
+        self.ui.menuoptions_tools_db.triggered.connect(self.on_tools_database)
 
         self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
         self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
@@ -2262,6 +2263,12 @@ class App(QtCore.QObject):
         # install Bookmark Manager and populate bookmarks in the Help -> Bookmarks
         self.install_bookmarks()
         self.book_dialog_tab = BookmarkManager(app=self, storage=self.defaults["global_bookmarks"])
+
+        # ##################################################################################
+        # ############################## Tools Database ####################################
+        # ##################################################################################
+
+        self.tools_db_tab = ToolsDB(app=self)
 
         # ### System Font Parsing ###
         # self.f_parse = ParseFont(self)
@@ -4551,6 +4558,28 @@ class App(QtCore.QObject):
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec_()
         # response = msgbox.clickedButton()
+
+    def on_tools_database(self):
+        """
+        Adds the Tools Database in a Tab in Plot Area
+        :return:
+        """
+        for idx in range(self.ui.plot_tab_area.count()):
+            if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                # there can be only one instance of Tools Database at one time
+                return
+
+        self.tools_db_tab = ToolsDB(app=self, parent=self.ui)
+
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
+
+        # delete the absolute and relative position and messages in the infobar
+        self.ui.position_label.setText("")
+        self.ui.rel_position_label.setText("")
+
+        # Switch plot_area to preferences page
+        self.ui.plot_tab_area.setCurrentWidget(self.tools_db_tab)
 
     def on_file_savedefaults(self):
         """

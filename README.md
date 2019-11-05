@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - getting rid of all the Options GUI and related functions as it is no longer supported
 - updated the UI in Geometry UI
 - optimized the order of the defaults storage declaration and the update of the Preferences GUI from the defaults
+- started to add a Tool Database
 
 3.11.2019
 
