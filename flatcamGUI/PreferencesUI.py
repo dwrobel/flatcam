@@ -18,6 +18,12 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+settings = QtCore.QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
+
 
 class OptionsGroupUI(QtWidgets.QGroupBox):
     def __init__(self, title, parent=None):
@@ -1166,6 +1172,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_spinner], True)
 
+        # Bookmarks Limit in the Help Menu
         self.bm_limit_spinner = FCSpinner()
         self.bm_limit_label = QtWidgets.QLabel('%s:' % _('Bookmarks limit'))
         self.bm_limit_label.setToolTip(
@@ -1176,6 +1183,18 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.bm_limit_label, 18, 0)
         grid0.addWidget(self.bm_limit_spinner, 18, 1)
+
+        # Machinist settings that allow unsafe settings
+        self.machinist_cb = FCCheckBox(_("Allow Machinist Unsafe Settings"))
+        self.machinist_cb.setToolTip(
+            _("If checked, some of the application settings will be allowed\n"
+              "to have values that are usually unsafe to use.\n"
+              "Like Z travel negative values or Z Cut positive values.\n"
+              "It will applied at the next application start.\n"
+              "<<WARNING>>: Don't change this unless you know what you are doing !!!")
+        )
+
+        grid0.addWidget(self.machinist_cb, 19, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -2154,7 +2173,12 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(cutzlabel, 0, 0)
         self.cutz_entry = FCDoubleSpinner()
-        self.cutz_entry.set_range(-9999, -0.000001)
+
+        if machinist_setting == 0:
+            self.cutz_entry.set_range(-9999.9999, -0.000001)
+        else:
+            self.cutz_entry.set_range(-9999.9999, 9999.9999)
+
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.set_precision(4)
         grid2.addWidget(self.cutz_entry, 0, 1)
@@ -2168,7 +2192,11 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(travelzlabel, 1, 0)
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_precision(4)
-        self.travelz_entry.set_range(0, 999)
+
+        if machinist_setting == 0:
+            self.travelz_entry.set_range(0.0001, 9999.9999)
+        else:
+            self.travelz_entry.set_range(-9999.9999, 9999.9999)
 
         grid2.addWidget(self.travelz_entry, 1, 1)
 
@@ -2190,7 +2218,11 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(toolchangezlabel, 3, 0)
         self.toolchangez_entry = FCDoubleSpinner()
         self.toolchangez_entry.set_precision(4)
-        self.toolchangez_entry.set_range(0, 999)
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.set_range(0.0001, 9999.9999)
+        else:
+            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
 
         grid2.addWidget(self.toolchangez_entry, 3, 1)
 
@@ -2202,7 +2234,11 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         self.eendz_entry = FCDoubleSpinner()
         self.eendz_entry.set_precision(4)
-        self.eendz_entry.set_range(0, 999)
+
+        if machinist_setting == 0:
+            self.eendz_entry.set_range(0.0000, 9999.9999)
+        else:
+            self.eendz_entry.set_range(-9999.9999, 9999.9999)
 
         grid2.addWidget(endzlabel, 4, 0)
         grid2.addWidget(self.eendz_entry, 4, 1)
@@ -2975,7 +3011,12 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "below the copper surface.")
         )
         self.cutz_entry = FCDoubleSpinner()
-        self.cutz_entry.set_range(-999.999, -0.000001)
+
+        if machinist_setting == 0:
+            self.cutz_entry.set_range(-9999.9999, -0.000001)
+        else:
+            self.cutz_entry.set_range(-9999.9999, 9999.9999)
+
         self.cutz_entry.set_precision(4)
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setWrapping(True)
@@ -3023,7 +3064,12 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "moving without cutting.")
         )
         self.travelz_entry = FCDoubleSpinner()
-        self.travelz_entry.set_range(0, 99999)
+
+        if machinist_setting == 0:
+            self.travelz_entry.set_range(0.0001, 9999.9999)
+        else:
+            self.travelz_entry.set_range(-9999.9999, 9999.9999)
+
         self.travelz_entry.set_precision(4)
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setWrapping(True)
@@ -3052,7 +3098,12 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             )
         )
         self.toolchangez_entry = FCDoubleSpinner()
-        self.toolchangez_entry.set_range(0, 99999)
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.set_range(0.000, 9999.9999)
+        else:
+            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
+
         self.toolchangez_entry.set_precision(4)
         self.toolchangez_entry.setSingleStep(0.1)
         self.toolchangez_entry.setWrapping(True)
@@ -3067,7 +3118,12 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "the last move at the end of the job.")
         )
         self.gendz_entry = FCDoubleSpinner()
-        self.gendz_entry.set_range(0, 99999)
+
+        if machinist_setting == 0:
+            self.gendz_entry.set_range(0.000, 9999.9999)
+        else:
+            self.gendz_entry.set_range(-9999.9999, 9999.9999)
+
         self.gendz_entry.set_precision(4)
         self.gendz_entry.setSingleStep(0.1)
         self.gendz_entry.setWrapping(True)

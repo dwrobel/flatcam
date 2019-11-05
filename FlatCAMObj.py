@@ -4862,16 +4862,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 elif dia_cnc_dict['offset'].lower() == 'out':
                     tool_offset = tooldia_val / 2
                 elif dia_cnc_dict['offset'].lower() == 'custom':
-                    try:
-                        offset_value = float(self.ui.tool_offset_entry.get_value())
-                    except ValueError:
-                        # try to convert comma to decimal point. if it's still not working error message and return
-                        try:
-                            offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.'))
-                        except ValueError:
-                            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                                 _("Wrong value format entered, use a number."))
-                            return
+                    offset_value = float(self.ui.tool_offset_entry.get_value())
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
@@ -5075,27 +5066,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             job_obj.segx = segx
             job_obj.segy = segy
 
-            try:
-                job_obj.z_pdepth = float(self.options["z_pdepth"])
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Wrong value format for self.defaults["z_pdepth"] or '
-                                           'self.options["z_pdepth"]'))
-
-            try:
-                job_obj.feedrate_probe = float(self.options["feedrate_probe"])
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    job_obj.feedrate_probe = float(self.options["feedrate_probe"].replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Wrong value format for self.defaults["feedrate_probe"] '
-                                           'or self.options["feedrate_probe"]'))
+            job_obj.z_pdepth = float(self.options["z_pdepth"])
+            job_obj.feedrate_probe = float(self.options["feedrate_probe"])
 
             job_obj.options['xmin'] = self.options['xmin']
             job_obj.options['ymin'] = self.options['ymin']

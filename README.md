@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.11.2019
+
+- added a new setting named 'Allow Machinist Unsafe Settings' that will allow the Travel Z and Cut Z to take both positive and negative values
+
 4.11.2019
 
 - wip

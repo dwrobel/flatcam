@@ -18,7 +18,7 @@ postprocessors = {}
 
 
 class ABCPostProcRegister(ABCMeta):
-    # handles postprocessors registration on instantation
+    # handles postprocessors registration on instantiation
     def __new__(cls, clsname, bases, attrs):
         newclass = super(ABCPostProcRegister, cls).__new__(cls, clsname, bases, attrs)
         if object not in bases:

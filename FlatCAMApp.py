@@ -410,6 +410,8 @@ class App(QtCore.QObject):
             "global_compression_level": 3,
             "global_save_compressed": True,
 
+            "global_machinist_setting": False,
+
             # Global GUI Preferences
             "global_gridx": 0.0393701,
             "global_gridy": 0.0393701,
@@ -966,6 +968,7 @@ class App(QtCore.QObject):
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
 
             "global_bookmarks_limit": self.ui.general_defaults_form.general_app_group.bm_limit_spinner,
+            "global_machinist_setting": self.ui.general_defaults_form.general_app_group.machinist_cb,
 
             # General GUI Preferences
             "global_gridx": self.ui.general_defaults_form.general_gui_group.gridx_entry,
@@ -4836,6 +4839,10 @@ class App(QtCore.QObject):
                 self.ui.general_defaults_form.general_gui_set_group.textbox_font_size_spinner.get_value()
             )
             settings.setValue('toolbar_lock', self.ui.lock_action.isChecked())
+            settings.setValue(
+                'machinist',
+                1 if self.ui.general_defaults_form.general_app_group.machinist_cb.get_value() else 0
+            )
 
             # This will write the setting to the platform specific storage.
             del settings
@@ -6722,6 +6729,11 @@ class App(QtCore.QObject):
         # save the textbox font size
         tb_fsize = self.ui.general_defaults_form.general_gui_set_group.textbox_font_size_spinner.get_value()
         settings.setValue('textbox_font_size', tb_fsize)
+
+        settings.setValue(
+            'machinist',
+            1 if self.ui.general_defaults_form.general_app_group.machinist_cb.get_value() else 0
+        )
 
         # This will write the setting to the platform specific storage.
         del settings

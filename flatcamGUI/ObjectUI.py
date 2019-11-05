@@ -22,6 +22,12 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+settings = QtCore.QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
+
 
 class ObjectUI(QtWidgets.QWidget):
     """
@@ -754,7 +760,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(cutzlabel, 0, 0)
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.setRange(-9999.9999, -0.000001)
+
+        if machinist_setting == 0:
+            self.cutz_entry.setRange(-9999.9999, -0.000001)
+        else:
+            self.cutz_entry.setRange(-9999.9999, 9999.9999)
+
         self.cutz_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.cutz_entry, 0, 1)
@@ -768,7 +779,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(travelzlabel, 1, 0)
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_precision(self.decimals)
-        self.travelz_entry.setRange(0.0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.travelz_entry.setRange(0.00001, 9999.9999)
+        else:
+            self.travelz_entry.setRange(-9999.9999, 9999.9999)
+
         self.travelz_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.travelz_entry, 1, 1)
@@ -790,7 +806,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(toolchzlabel, 3, 0)
         self.toolchangez_entry = FCDoubleSpinner()
         self.toolchangez_entry.set_precision(self.decimals)
-        self.toolchangez_entry.setRange(0.0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.setRange(0.0, 9999.9999)
+        else:
+            self.toolchangez_entry.setRange(-9999.9999, 9999.9999)
+
         self.toolchangez_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.toolchangez_entry, 3, 1)
@@ -815,7 +836,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(self.eendz_label, 5, 0)
         self.eendz_entry = FCDoubleSpinner()
         self.eendz_entry.set_precision(self.decimals)
-        self.eendz_entry.setRange(0.0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.eendz_entry.setRange(0.0, 9999.9999)
+        else:
+            self.eendz_entry.setRange(-9999.9999, 9999.9999)
+
         self.eendz_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.eendz_entry, 5, 1)
@@ -1166,7 +1192,6 @@ class GeometryObjectUI(ObjectUI):
         self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
         self.grid1.addWidget(self.tool_offset_entry, 0, 1, 1, 2)
 
-
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool")
@@ -1279,7 +1304,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.setRange(-9999.9999, -0.00001)
+
+        if machinist_setting == 0:
+            self.cutz_entry.setRange(-9999.9999, -0.00001)
+        else:
+            self.cutz_entry.setRange(-9999.9999, 9999.9999)
+
         self.cutz_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(cutzlabel, 3, 0)
@@ -1319,7 +1349,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_precision(self.decimals)
-        self.travelz_entry.setRange(0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.travelz_entry.setRange(0.00001, 9999.9999)
+        else:
+            self.travelz_entry.setRange(-9999.9999, 9999.9999)
+
         self.travelz_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(travelzlabel, 5, 0)
@@ -1342,7 +1377,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.toolchangez_entry = FCDoubleSpinner()
         self.toolchangez_entry.set_precision(self.decimals)
-        self.toolchangez_entry.setRange(0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.setRange(0, 9999.9999)
+        else:
+            self.toolchangez_entry.setRange(-9999.9999, 9999.9999)
+
         self.toolchangez_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.toolchangeg_cb, 6, 0, 1, 2)
@@ -1369,7 +1409,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.gendz_entry = FCDoubleSpinner()
         self.gendz_entry.set_precision(self.decimals)
-        self.gendz_entry.setRange(0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.gendz_entry.setRange(0, 9999.9999)
+        else:
+            self.gendz_entry.setRange(-9999.9999, 9999.9999)
+
         self.gendz_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.endzlabel, 9, 0)

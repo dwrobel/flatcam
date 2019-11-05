@@ -12,7 +12,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot, QSettings
 from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
 from PyQt5.QtGui import QKeySequence, QTextCursor
 
