@@ -949,6 +949,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## PREFERENCES AREA Tab # ######################
         # ########################################################################
         self.preferences_tab = QtWidgets.QWidget()
+        self.preferences_tab.setObjectName("preferences_tab")
         self.pref_tab_layout = QtWidgets.QVBoxLayout(self.preferences_tab)
         self.pref_tab_layout.setContentsMargins(2, 2, 2, 2)
 
@@ -2400,6 +2401,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Save Project
                 if key == QtCore.Qt.Key_S:
+                    widget_name = self.plot_tab_area.currentWidget().objectName()
+                    if widget_name == 'preferences_tab':
+                        self.app.on_save_button()
+                        return
                     self.app.on_file_saveproject()
 
                 # Toggle Plot Area
@@ -2739,7 +2744,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                         messagebox.exec_()
                     return
-
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
@@ -2829,10 +2833,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Space or key == 'Space':
                     self.app.geo_editor.transform_tool.on_rotate_key()
 
+                # Zoom Out
                 if key == QtCore.Qt.Key_Minus or key == '-':
                     self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
+                # Zoom In
                 if key == QtCore.Qt.Key_Equal or key == '=':
                     self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
