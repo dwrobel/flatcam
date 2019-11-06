@@ -6709,7 +6709,14 @@ class App(QtCore.QObject):
 
     def on_save_button(self):
         log.debug("App.on_save_button() --> Saving preferences to file.")
+
+        # Preferences saved, update flag
         self.preferences_changed_flag = False
+
+        # Preferences save, update the color of the Preferences Tab text
+        for idx in range(self.ui.plot_tab_area.count()):
+            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
 
         self.save_defaults(silent=False)
         # load the defaults so they are updated into the app
@@ -7414,6 +7421,11 @@ class App(QtCore.QObject):
     def on_preferences_edited(self):
         self.inform.emit('[WARNING_NOTCL] %s' %
                          _("Preferences edited but not saved."))
+
+        for idx in range(self.ui.plot_tab_area.count()):
+            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+
         self.preferences_changed_flag = True
 
     def on_plot_area_tab_closed(self, title):

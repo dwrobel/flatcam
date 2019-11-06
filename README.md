@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - the "CRTL+S" key combo when the Preferences Tab is in focus will save the Preferences instead of saving the Project
 - fixed bug in the Paint Tool that did not allow choosing a Paint Method that was not Standard
 - made sure that in the FlatCAMGeometry.merge() all the source data is deepcopy-ed in the final object
+- the font color of the Preferences tab will change to red if settings are not saved and it will revert to default when saved
+- fixed issue #333. The Geometry Editor Paint tool was not working and using it resulted in an error
 
 5.11.2019
 

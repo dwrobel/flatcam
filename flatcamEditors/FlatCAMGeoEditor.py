@@ -4664,17 +4664,16 @@ class FlatCAMGeoEditor(QtCore.QObject):
                         poly_buf = Polygon(geo_obj).buffer(-margin)
 
                     if method == "seed":
-                        cp = Geometry.clear_polygon2(poly_buf,
-                                                     tooldia, self.app.defaults["geometry_circle_steps"],
+                        cp = Geometry.clear_polygon2(self, polygon_to_clear=poly_buf, tooldia=tooldia,
+                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=overlap, contour=contour, connect=connect)
                     elif method == "lines":
-                        cp = Geometry.clear_polygon3(poly_buf,
-                                                     tooldia, self.app.defaults["geometry_circle_steps"],
+                        cp = Geometry.clear_polygon3(self, polygon=poly_buf, tooldia=tooldia,
+                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=overlap, contour=contour, connect=connect)
-
                     else:
-                        cp = Geometry.clear_polygon(poly_buf,
-                                                    tooldia, self.app.defaults["geometry_circle_steps"],
+                        cp = Geometry.clear_polygon(self, polygon=poly_buf, tooldia=tooldia,
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                     overlap=overlap, contour=contour, connect=connect)
 
                     if cp is not None:
