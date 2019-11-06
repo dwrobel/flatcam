@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 6.11.2019
 
 - the "CRTL+S" key combo when the Preferences Tab is in focus will save the Preferences instead of saving the Project
+- fixed bug in the Paint Tool that did not allow choosing a Paint Method that was not Standard
+- made sure that in the FlatCAMGeometry.merge() all the source data is deepcopy-ed in the final object
 
 5.11.2019
 

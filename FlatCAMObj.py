@@ -5529,7 +5529,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             for option in geo.options:
                 if option is not 'name':
                     try:
-                        geo_final.options[option] = geo.options[option]
+                        geo_final.options[option] = deepcopy(geo.options[option])
                     except Exception as e:
                         log.warning("Failed to copy option %s. Error: %s" % (str(option), str(e)))
 
@@ -5542,7 +5542,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if multigeo is None or multigeo is False:
                     geo_final.multigeo = False
                     try:
-                        geo_final.solid_geometry.append(geo.solid_geometry)
+                        geo_final.solid_geometry.append(deepcopy(geo.solid_geometry))
                     except Exception as e:
                         log.debug("FlatCAMGeometry.merge() --> %s" % str(e))
                 else:
