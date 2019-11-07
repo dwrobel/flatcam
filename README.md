@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.11.2019
+
+- added the '.ngc' fiel extension to the GCode Save file dialog filter
+
 6.11.2019
 
 - the "CRTL+S" key combo when the Preferences Tab is in focus will save the Preferences instead of saving the Project

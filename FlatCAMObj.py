@@ -5979,8 +5979,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             _filter_ = "HPGL Files (*.plt);;" \
                        "All Files (*.*)"
         else:
-            _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.cnc);;" \
-                       "G-Code Files (*.g-code);;All Files (*.*)"
+            _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.ngc);;" \
+                       "G-Code Files (*.cnc);;G-Code Files (*.g-code);;All Files (*.*)"
 
         try:
             dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
