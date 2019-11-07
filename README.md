@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 7.11.2019
 
 - added the '.ngc' fiel extension to the GCode Save file dialog filter
+- made the 'M2' Gcode command footer optional, default is False (can be set using the TclCommand: set_sys cncjob_footer True)
+- added a setting in Preferences to force the GCode output to have the Windows line-endings even for non-Windows OS's
 
 6.11.2019
 

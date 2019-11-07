@@ -3458,18 +3458,15 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(QtWidgets.QLabel(''), 1, 2)
 
         # Display Annotation
-        self.annotation_label = QtWidgets.QLabel('%s:' % _("Display Annotation"))
-        self.annotation_label.setToolTip(
+        self.annotation_cb = FCCheckBox(_("Display Annotation"))
+        self.annotation_cb.setToolTip(
             _("This selects if to display text annotation on the plot.\n"
               "When checked it will display numbers in order for each end\n"
               "of a travel line."
               )
         )
-        self.annotation_cb = FCCheckBox()
 
-        grid0.addWidget(self.annotation_label, 2, 0)
-        grid0.addWidget(self.annotation_cb, 2, 1)
-        grid0.addWidget(QtWidgets.QLabel(''), 2, 2)
+        grid0.addWidget(self.annotation_cb, 2, 0, 1, 3)
 
         # ###################################################################
         # Number of circle steps for circular aperture linear approximation #
@@ -3546,6 +3543,15 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         # hidden for the time being, until implemented
         coords_type_label.hide()
         self.coords_type_radio.hide()
+
+        # Line Endings
+        self.line_ending_cb = FCCheckBox(_("Force Windows style line-ending"))
+        self.line_ending_cb.setToolTip(
+            _("When checked will force a Windows style line-ending\n"
+              "(\\r\\n) on non-Windows OS's.")
+        )
+
+        grid0.addWidget(self.line_ending_cb, 9, 0, 1, 3)
 
         self.layout.addStretch()
 
