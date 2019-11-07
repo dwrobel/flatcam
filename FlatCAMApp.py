@@ -828,7 +828,7 @@ class App(QtCore.QObject):
             # file associations
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
             "fa_gcode": 'cnc, din, dnc, ecs, eia, fan, fgc, fnc, gc, gcd, gcode, h, hnc, i, min, mpf, mpr, nc, ncc, '
-                        'ncg, ncp, out, plt, ply, rol, sbp, tap, xpi',
+                        'ncg, ncp, ngc, out, plt, ply, rol, sbp, tap, xpi',
             "fa_gerber": 'art, bot, bsm, cmp, crc, crs, dim, g4, gb0, gb1, gb2, gb3, gb5, gb6, gb7, gb8, gb9, gbd, '
                          'gbl, gbo, gbp, gbr, gbs, gdo, ger, gko, gm1, gm2, gm3, grb, gtl, gto, gtp, gts, ly15, ly2, '
                          'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
@@ -2378,8 +2378,8 @@ class App(QtCore.QObject):
         self.exc_list = ['drd', 'drl', 'exc', 'ncd', 'tap', 'txt', 'xln']
 
         self.gcode_list = ['cnc', 'din', 'dnc', 'ecs', 'eia', 'fan', 'fgc', 'fnc', 'gc', 'gcd', 'gcode', 'h', 'hnc',
-                           'i', 'min', 'mpf', 'mpr', 'nc', 'ncc', 'ncg', 'ncp', 'out', 'plt', 'ply', 'rol', 'sbp',
-                           'tap', 'xpi']
+                           'i', 'min', 'mpf', 'mpr', 'nc', 'ncc', 'ncg', 'ngc', 'ncp', 'out', 'plt', 'ply', 'rol',
+                           'sbp', 'tap', 'xpi']
         self.svg_list = ['svg']
         self.dxf_list = ['dxf']
         self.pdf_list = ['pdf']
