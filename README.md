@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.11.2019
+
+- updated the make file for freezed executable
+
 7.11.2019
 
 - added the '.ngc' file extension to the GCode Save file dialog filter

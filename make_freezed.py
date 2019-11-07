@@ -89,7 +89,19 @@ else:
 
 print("INCLUDE_FILES", include_files)
 
+
+def getTargetName():
+    my_OS = platform.system()
+    if my_OS == 'Linux':
+        return "FlatCAM"
+    elif my_OS == 'Windows':
+        return "FlatCAM.exe"
+    else:
+        return "FlatCAM.dmg"
+
+
 # execfile('clean.py')
+exe = Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base, targetName=getTargetName())
 
 setup(
     name="FlatCAM",
@@ -97,5 +109,5 @@ setup(
     version="8.9",
     description="FlatCAM: 2D Computer Aided PCB Manufacturing",
     options=dict(build_exe=buildOptions),
-    executables=[Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base)]
+    executables=[exe]
 )
