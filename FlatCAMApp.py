@@ -325,6 +325,16 @@ class App(QtCore.QObject):
             os.makedirs(self.postprocessorpaths)
             App.log.debug('Created postprocessors folder: ' + self.postprocessorpaths)
 
+        # create tools_db.FlatConfig file if there is none
+        try:
+            f = open(self.data_path + '/tools_db.FlatConfig')
+            f.close()
+        except IOError:
+            App.log.debug('Creating empty tool_db.FlatConfig')
+            f = open(self.data_path + '/tools_db.FlatConfig', 'w')
+            json.dump({}, f)
+            f.close()
+
         # create current_defaults.FlatConfig file if there is none
         try:
             f = open(self.data_path + '/current_defaults.FlatConfig')
@@ -2274,7 +2284,7 @@ class App(QtCore.QObject):
         # ############################## Tools Database ####################################
         # ##################################################################################
 
-        self.tools_db_tab = ToolsDB(app=self)
+        self.tools_db_tab = None
 
         # ### System Font Parsing ###
         # self.f_parse = ParseFont(self)
@@ -2369,6 +2379,9 @@ class App(QtCore.QObject):
 
         # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
         self.preferences_changed_flag = False
+
+        # if Tools DB are changed/edited in the Edit -> Tools Database tab the value will be set to True
+        self.tools_db_changed_flag = False
 
         self.grb_list = ['art', 'bot', 'bsm', 'cmp', 'crc', 'crs', 'dim', 'g4', 'gb0', 'gb1', 'gb2', 'gb3', 'gb5',
                          'gb6', 'gb7', 'gb8', 'gb9', 'gbd', 'gbl', 'gbo', 'gbp', 'gbr', 'gbs', 'gdo', 'ger', 'gko',
@@ -4565,28 +4578,6 @@ class App(QtCore.QObject):
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec_()
         # response = msgbox.clickedButton()
-
-    def on_tools_database(self):
-        """
-        Adds the Tools Database in a Tab in Plot Area
-        :return:
-        """
-        for idx in range(self.ui.plot_tab_area.count()):
-            if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
-                # there can be only one instance of Tools Database at one time
-                return
-
-        self.tools_db_tab = ToolsDB(app=self, parent=self.ui)
-
-        # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
-
-        # delete the absolute and relative position and messages in the infobar
-        self.ui.position_label.setText("")
-        self.ui.rel_position_label.setText("")
-
-        # Switch plot_area to preferences page
-        self.ui.plot_tab_area.setCurrentWidget(self.tools_db_tab)
 
     def on_file_savedefaults(self):
         """
@@ -7362,6 +7353,12 @@ class App(QtCore.QObject):
                 self.draw_selection_shape(curr_sel_obj)
 
     def on_preferences(self):
+        """
+        Adds the Preferences in a Tab in Plot Area
+
+        :return:
+        """
+
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.preferences_tab, _("Preferences"))
 
@@ -7431,6 +7428,66 @@ class App(QtCore.QObject):
 
         self.preferences_changed_flag = True
 
+    def on_tools_database(self):
+        """
+        Adds the Tools Database in a Tab in Plot Area
+        :return:
+        """
+        for idx in range(self.ui.plot_tab_area.count()):
+            if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                # there can be only one instance of Tools Database at one time
+                return
+
+        self.tools_db_tab = ToolsDB(
+            app=self,
+            parent=self.ui,
+            callback_on_edited=self.on_tools_db_edited,
+            callback_on_tool_request=self.on_geometry_tool_add_from_db_executed
+        )
+
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.tools_db_tab, _("Tools Database"))
+        self.tools_db_tab.setObjectName("database_tab")
+
+        # delete the absolute and relative position and messages in the infobar
+        self.ui.position_label.setText("")
+        self.ui.rel_position_label.setText("")
+
+        # Switch plot_area to preferences page
+        self.ui.plot_tab_area.setCurrentWidget(self.tools_db_tab)
+
+        # detect changes in the Tools in Tools DB, connect signals from table widget in tab
+        self.tools_db_tab.ui_connect()
+
+    def on_tools_db_edited(self):
+        self.inform.emit('[WARNING_NOTCL] %s' % _("Tools in Tools Database edited but not saved."))
+
+        for idx in range(self.ui.plot_tab_area.count()):
+            if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+
+        self.tools_db_changed_flag = True
+
+    def on_geometry_tool_add_from_db_executed(self, tool):
+        """
+        Here add the tool from DB  in the selected geometry object
+        :return:
+        """
+        tool_from_db = deepcopy(tool)
+
+        obj = self.collection.get_active()
+        if isinstance(obj, FlatCAMGeometry):
+            obj.on_tool_from_db_inserted(tool=tool_from_db)
+
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                    wdg = self.ui.plot_tab_area.widget(idx)
+                    wdg.deleteLater()
+                    self.ui.plot_tab_area.removeTab(idx)
+            self.inform.emit('[success] %s' % _("Tool from DB added in Tool Table."))
+        else:
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Adding tool from DB is not allowed for this object."))
+
     def on_plot_area_tab_closed(self, title):
         if title == _("Preferences"):
             # disconnect
@@ -7477,11 +7534,36 @@ class App(QtCore.QObject):
 
                 if response == bt_yes:
                     self.on_save_button()
-                    self.inform.emit('[success] %s' %
-                                     _("Preferences saved."))
+                    self.inform.emit('[success] %s' % _("Preferences saved."))
                 else:
                     self.preferences_changed_flag = False
                     return
+
+        if title == _("Tools Database"):
+            # disconnect the signals from the table widget in tab
+            self.tools_db_tab.ui_disconnect()
+
+            if self.tools_db_changed_flag is True:
+                msgbox = QtWidgets.QMessageBox()
+                msgbox.setText(_("One or more Tools are edited.\n"
+                                 "Do you want to update the Tools Database?"))
+                msgbox.setWindowTitle(_("Save Tools Database"))
+                msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+
+                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+                bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+
+                msgbox.setDefaultButton(bt_yes)
+                msgbox.exec_()
+                response = msgbox.clickedButton()
+
+                if response == bt_yes:
+                    self.tools_db_tab.on_save_tools_db()
+                    self.inform.emit('[success] %s' % "Tools DB saved to file.")
+                else:
+                    self.tools_db_changed_flag = False
+                    return
+            self.tools_db_tab.deleteLater()
 
         if title == _("Code Editor"):
             self.toggle_codeeditor = False
@@ -10859,21 +10941,27 @@ class App(QtCore.QObject):
                                                        _("Opening FlatCAM Config file.")),
                                     alignment=Qt.AlignBottom | Qt.AlignLeft,
                                     color=QtGui.QColor("gray"))
-        # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.text_editor_tab, _("Code Editor"))
-        # first clear previous text in text editor (if any)
-        self.ui.text_editor_tab.code_editor.clear()
+        # # add the tab if it was closed
+        # self.ui.plot_tab_area.addTab(self.ui.text_editor_tab, _("Code Editor"))
+        # # first clear previous text in text editor (if any)
+        # self.ui.text_editor_tab.code_editor.clear()
+        #
+        # # Switch plot_area to CNCJob tab
+        # self.ui.plot_tab_area.setCurrentWidget(self.ui.text_editor_tab)
 
-        # Switch plot_area to CNCJob tab
-        self.ui.plot_tab_area.setCurrentWidget(self.ui.text_editor_tab)
+        # close the Code editor if already open
+        if self.toggle_codeeditor:
+            self.on_toggle_code_editor()
+
+        self.on_toggle_code_editor()
 
         try:
             if filename:
                 f = QtCore.QFile(filename)
                 if f.open(QtCore.QIODevice.ReadOnly):
                     stream = QtCore.QTextStream(f)
-                    gcode_edited = stream.readAll()
-                    self.ui.text_editor_tab.code_editor.setPlainText(gcode_edited)
+                    code_edited = stream.readAll()
+                    self.text_editor_tab.code_editor.setPlainText(code_edited)
                     f.close()
         except IOError:
             App.log.error("Failed to open config file: %s" % filename)

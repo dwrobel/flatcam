@@ -376,9 +376,9 @@ class FCEntry(QtWidgets.QLineEdit):
     def get_value(self):
         return str(self.text())
 
-    def set_value(self, val):
+    def set_value(self, val, decimals=4):
         if type(val) is float:
-            self.setText('%.4f' % val)
+            self.setText('%.*f' % (decimals, val))
         else:
             self.setText(str(val))
 

@@ -363,7 +363,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.menuoptions_view_source = self.menuoptions.addAction(QtGui.QIcon('share/source32.png'),
                                                                   _("View source\tALT+S"))
-        self.menuoptions_tools_db = self.menuoptions.addAction(QtGui.QIcon('share/database32.png'), _("Tools DataBase"))
+        self.menuoptions_tools_db = self.menuoptions.addAction(QtGui.QIcon('share/database32.png'),
+                                                               _("Tools DataBase\tCTRL+D"))
         # Separator
         self.menuoptions.addSeparator()
 
@@ -1222,6 +1223,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>CTRL+D</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>CTRL+E</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1422,7 +1427,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Flip on X_axis"), _("Flip on Y_axis"), _("Zoom Out"), _("Zoom In"),
 
                 # CTRL section
-                _("Select All"), _("Copy Obj"),
+                _("Select All"), _("Copy Obj"), _("Open Tools Database"),
                 _("Open Excellon File"), _("Open Gerber File"), _("New Project"), _("Distance Tool"),
                 _("Open Project"), _("PDF Import Tool"), _("Save Project As"), _("Toggle Plot Area"),
 
@@ -2375,6 +2380,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_C:
                     self.app.on_copy_object()
 
+                # Copy an FlatCAM object
+                if key == QtCore.Qt.Key_D:
+                    self.app.on_tools_database()
+
                 # Open Excellon file
                 if key == QtCore.Qt.Key_E:
                     self.app.on_fileopenexcellon()
@@ -2405,6 +2414,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if widget_name == 'preferences_tab':
                         self.app.on_save_button()
                         return
+
+                    if widget_name == 'database_tab':
+                        # Tools DB saved, update flag
+                        self.app.tools_db_changed_flag = False
+                        self.app.tools_db_tab.on_save_tools_db()
+                        return
+
                     self.app.on_file_saveproject()
 
                 # Toggle Plot Area

@@ -3677,7 +3677,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.ui.geo_tools_table.setupContextMenu()
         self.ui.geo_tools_table.addContextMenu(
-            _("Add from Tool DB"), self.on_tool_add_from_db, icon=QtGui.QIcon("share/plus16.png"))
+            _("Add from Tool DB"), self.on_tool_add_from_db_clicked, icon=QtGui.QIcon("share/plus16.png"))
         self.ui.geo_tools_table.addContextMenu(
             _("Copy"), self.on_tool_copy, icon=QtGui.QIcon("share/copy16.png"))
         self.ui.geo_tools_table.addContextMenu(
@@ -3715,6 +3715,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.ui.tipdia_entry.valueChanged.connect(self.update_cutz)
         self.ui.tipangle_entry.valueChanged.connect(self.update_cutz)
+
+        self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
 
     def set_tool_offset_visibility(self, current_row):
         if current_row is None:
@@ -3967,8 +3969,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ser_attrs.append('tools')
 
         if change_message is False:
-            self.app.inform.emit('[success] %s' %
-                                 _("Tool added in Tool Table."))
+            self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
         else:
             change_message = False
             self.app.inform.emit('[WARNING_NOTCL] %s' %
@@ -3979,8 +3980,72 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if self.ui.geo_tools_table.rowCount() != 0:
             self.ui.geo_param_frame.setDisabled(False)
 
-    def on_tool_add_from_db(self):
-        pass
+    def on_tool_add_from_db_clicked(self):
+        """
+        Called when the user wants to add a new tool from Tools Database. It will create the Tools Database object
+        and display the Tools Database tab in the form needed for the Tool adding
+        :return: None
+        """
+        self.app.on_tools_database()
+        self.app.tools_db_tab.buttons_frame.hide()
+        self.app.tools_db_tab.add_tool_from_db.show()
+
+    def on_tool_from_db_inserted(self, tool):
+        """
+        Called from the Tools DB object through a App method when adding a tool from Tools Database
+        :param tool: a dict with the tool data
+        :return: None
+        """
+
+        self.ui_disconnect()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        tooldia = float(tool['tooldia'])
+
+        # construct a list of all 'tooluid' in the self.tools
+        tool_uid_list = []
+        for tooluid_key in self.tools:
+            tool_uid_item = int(tooluid_key)
+            tool_uid_list.append(tool_uid_item)
+
+        # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
+        if not tool_uid_list:
+            max_uid = 0
+        else:
+            max_uid = max(tool_uid_list)
+        self.tooluid = max_uid + 1
+
+        tooldia = float('%.*f' % (self.decimals, tooldia))
+
+        self.tools.update({
+            self.tooluid: {
+                'tooldia': tooldia,
+                'offset': tool['offset'],
+                'offset_value': float(tool['offset_value']),
+                'type': tool['type'],
+                'tool_type': tool['tool_type'],
+                'data': deepcopy(tool['data']),
+                'solid_geometry': self.solid_geometry
+            }
+        })
+
+        self.tools[self.tooluid]['data']['name'] = self.options['name']
+
+        self.ui.tool_offset_entry.hide()
+        self.ui.tool_offset_lbl.hide()
+
+        # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
+        try:
+            self.ser_attrs.remove('tools')
+        except TypeError:
+            pass
+        self.ser_attrs.append('tools')
+
+        self.build_ui()
+
+        # if there is no tool left in the Tools Table, enable the parameters GUI
+        if self.ui.geo_tools_table.rowCount() != 0:
+            self.ui.geo_param_frame.setDisabled(False)
 
     def on_tool_copy(self, all=None):
         self.ui_disconnect()

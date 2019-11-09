@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.11.2019
+
+- fixed a new bug that did not allow to open the FlatCAM Preferences files by doubleclick in Windows
+- added a new feature: Tools Database for Geometry objects; resolved issue #308
+
 8.11.2019
 
 - updated the make file for freezed executable

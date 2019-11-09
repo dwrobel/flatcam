@@ -12,10 +12,13 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from flatcamGUI.GUIElements import FCTable, FCEntry, FCButton, FCSpinner, FCDoubleSpinner, FCComboBox, FCCheckBox
+from flatcamGUI.GUIElements import FCTable, FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox
+from camlib import to_dict
 
 import sys
 import webbrowser
+import json
+
 from copy import deepcopy
 from datetime import datetime
 import gettext
@@ -174,7 +177,7 @@ class BookmarkManager(QtWidgets.QWidget):
         remove_entry_btn = FCButton(_("Remove Entry"))
         export_list_btn = FCButton(_("Export List"))
         import_list_btn = FCButton(_("Import List"))
-        closebtn = QtWidgets.QPushButton(_("Close"))
+        # closebtn = QtWidgets.QPushButton(_("Close"))
 
         # button_hlay.addStretch()
         button_hlay.addWidget(add_entry_btn)
@@ -354,7 +357,7 @@ class BookmarkManager(QtWidgets.QWidget):
         date = date.replace(' ', '_')
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
+        filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Bookmarks"),
                                                              directory='{l_save}/FlatCAM_{n}_{date}'.format(
                                                                  l_save=str(self.app.get_last_save_folder()),
                                                                  n=_("Bookmarks"),
@@ -383,51 +386,44 @@ class BookmarkManager(QtWidgets.QWidget):
                 e = sys.exc_info()[0]
                 self.app.log.error("Could not load defaults file.")
                 self.app.log.error(str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not load bookmarks file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load bookmarks file."))
                 return
 
-            # Save update options
+            # Save Bookmarks to a file
             try:
                 with open(filename, "w") as f:
                     for title, link in self.bm_dict.items():
                         line2write = str(title) + ':' + str(link) + '\n'
                         f.write(line2write)
             except:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Failed to write bookmarks to file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write bookmarks to file."))
                 return
-        self.app.inform.emit('[success] %s: %s' %
-                             (_("Exported bookmarks to"), filename))
+        self.app.inform.emit('[success] %s: %s' % (_("Exported bookmarks to"), filename))
 
     def on_import_bookmarks(self):
         self.app.log.debug("on_import_bookmarks()")
 
         filter_ = "Text File (*.txt);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Bookmarks"),
-                                                             filter=filter_)
+        filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Bookmarks"), filter=filter_)
 
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("FlatCAM bookmarks import cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM bookmarks import cancelled."))
         else:
             try:
                 with open(filename) as f:
                     bookmarks = f.readlines()
             except IOError:
                 self.app.log.error("Could not load bookmarks file.")
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not load bookmarks file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load bookmarks file."))
                 return
 
             for line in bookmarks:
                 proc_line = line.replace(' ', '').partition(':')
                 self.on_add_entry(title=proc_line[0], link=proc_line[2])
 
-            self.app.inform.emit('[success] %s: %s' %
-                                 (_("Imported Bookmarks from"), filename))
+            self.app.inform.emit('[success] %s: %s' % (_("Imported Bookmarks from"), filename))
 
     def mark_table_rows_for_actions(self):
         for row in range(self.table_widget.rowCount()):
@@ -468,11 +464,35 @@ class ToolsDB(QtWidgets.QWidget):
 
     mark_tools_rows = QtCore.pyqtSignal()
 
-    def __init__(self, app, parent=None):
+    def __init__(self, app, callback_on_edited, callback_on_tool_request, parent=None):
         super(ToolsDB, self).__init__(parent)
 
         self.app = app
         self.decimals = 4
+        self.callback_app = callback_on_edited
+
+        self.on_tool_request = callback_on_tool_request
+
+        self.offset_item_options = ["Path", "In", "Out", "Custom"]
+        self.type_item_options = [_("Iso"), _("Rough"), _("Finish")]
+        self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+
+        '''
+        dict to hold all the tools in the Tools DB
+        format:
+        {
+            tool_id: {
+                'name': 'new_tool'
+                'tooldia': self.app.defaults["geometry_cnctooldia"]
+                'offset': 'Path'
+                'offset_value': 0.0
+                'type':  _('Rough'),
+                'tool_type': 'C1'
+                'data': dict()
+            }
+        }
+        '''
+        self.db_tool_dict = dict()
 
         # layouts
         layout = QtWidgets.QVBoxLayout()
@@ -485,31 +505,35 @@ class ToolsDB(QtWidgets.QWidget):
         self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         table_hlay.addWidget(self.table_widget)
 
-        self.table_widget.setColumnCount(21)
+        self.table_widget.setColumnCount(26)
         # self.table_widget.setColumnWidth(0, 20)
         self.table_widget.setHorizontalHeaderLabels(
             [
                 '#',
-                _("Tool Diameter"),
+                _("Tool Name"),
+                _("Tool Dia"),
+                _("Tool Offset"),
+                _("Custom Offset"),
                 _("Tool Type"),
                 _("Tool Shape"),
                 _("Cut Z"),
-                _("V-Tip Diameter"),
-                _("V-Tip Angle"),
+                _("MultiDepth"),
+                _("DPP"),
+                _("V-Dia"),
+                _("V-Angle"),
                 _("Travel Z"),
-                _("Feedrate"),
-                _("Feedrate Z"),
-                _("Feedrate Rapids"),
+                _("FR"),
+                _("FR Z"),
+                _("FR Rapids"),
                 _("Spindle Speed"),
                 _("Dwell"),
                 _("Dwelltime"),
-                _("MultiDepth"),
                 _("Postprocessor"),
-                _("Probe Z"),
-                _("Probe Feedrate"),
                 _("ExtraCut"),
                 _("Toolchange"),
+                _("Toolchange XY"),
                 _("Toolchange Z"),
+                _("Start Z"),
                 _("End Z"),
             ]
         )
@@ -526,133 +550,86 @@ class ToolsDB(QtWidgets.QWidget):
         layout.addLayout(new_vlay)
 
         new_tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
-        new_vlay.addWidget(new_tool_lbl)
+        new_vlay.addWidget(new_tool_lbl, alignment=QtCore.Qt.AlignBottom)
 
-        form0 = QtWidgets.QFormLayout()
-        new_vlay.addLayout(form0)
+        self.buttons_frame = QtWidgets.QFrame()
+        self.buttons_frame.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.buttons_frame)
+        self.buttons_box = QtWidgets.QHBoxLayout()
+        self.buttons_box.setContentsMargins(0, 0, 0, 0)
+        self.buttons_frame.setLayout(self.buttons_box)
+        self.buttons_frame.show()
 
-        diameter_lbl = QtWidgets.QLabel('%s:' % _("Diameter"))
-        self.dia_entry = FCDoubleSpinner()
-        self.dia_entry.set_precision(self.decimals)
-        self.dia_entry.set_range(0.000001, 9999.9999)
-        form0.addRow(diameter_lbl, self.dia_entry)
-
-        link_lbl = QtWidgets.QLabel('%s:' % _("Web Link"))
-        self.link_entry = FCEntry()
-        self.link_entry.set_value('http://')
-        form0.addRow(link_lbl, self.link_entry)
-
-        # Buttons Layout
-        button_hlay = QtWidgets.QHBoxLayout()
-        layout.addLayout(button_hlay)
-
-        add_entry_btn = FCButton(_("Add Tool"))
-        remove_entry_btn = FCButton(_("Remove Tool"))
-        export_list_btn = FCButton(_("Export List"))
-        import_list_btn = FCButton(_("Import List"))
-        closebtn = QtWidgets.QPushButton(_("Close"))
+        add_entry_btn = FCButton(_("Add Tool to Tools DB"))
+        remove_entry_btn = FCButton(_("Remove Tool from Tools DB"))
+        export_db_btn = FCButton(_("Export Tool DB"))
+        import_db_btn = FCButton(_("Import Tool DB"))
 
         # button_hlay.addStretch()
-        button_hlay.addWidget(add_entry_btn)
-        button_hlay.addWidget(remove_entry_btn)
+        self.buttons_box.addWidget(add_entry_btn)
+        self.buttons_box.addWidget(remove_entry_btn)
 
-        button_hlay.addWidget(export_list_btn)
-        button_hlay.addWidget(import_list_btn)
-        # button_hlay.addWidget(closebtn)
+        self.buttons_box.addWidget(export_db_btn)
+        self.buttons_box.addWidget(import_db_btn)
+        # self.buttons_box.addWidget(closebtn)
+
+        self.add_tool_from_db = FCButton(_("Add Tool from Tools DB"))
+        self.add_tool_from_db.hide()
+
+        hlay = QtWidgets.QHBoxLayout()
+        layout.addLayout(hlay)
+        hlay.addWidget(self.add_tool_from_db)
+        hlay.addStretch()
+
         # ##############################################################################
         # ######################## SIGNALS #############################################
         # ##############################################################################
 
         add_entry_btn.clicked.connect(self.on_add_entry)
         remove_entry_btn.clicked.connect(self.on_remove_entry)
-        export_list_btn.clicked.connect(self.on_export_bookmarks)
-        import_list_btn.clicked.connect(self.on_import_bookmarks)
-        self.dia_entry.returnPressed.connect(self.on_add_entry)
-        self.link_entry.returnPressed.connect(self.on_add_entry)
+        export_db_btn.clicked.connect(self.on_export_tools_db_file)
+        import_db_btn.clicked.connect(self.on_import_tools_db_file)
         # closebtn.clicked.connect(self.accept)
 
-        self.bm_dict = {
-            1: 'tool'
-        }
+        self.add_tool_from_db.clicked.connect(self.on_tool_requested_from_app)
 
-        self.build_bm_ui()
+        self.setup_db_ui()
 
-    def build_bm_ui(self):
+    def setup_db_ui(self):
+        filename = self.app.data_path + '/tools_db.FlatConfig'
 
-        self.table_widget.setRowCount(len(self.bm_dict))
+        # load the database tools from the file
+        try:
+            with open(filename) as f:
+                tools = f.read()
+        except IOError:
+            self.app.log.error("Could not load tools DB file.")
+            self.app.inform.emit('[ERROR] %s' % _("Could not load Tools DB file."))
+            return
+
+        try:
+            self.db_tool_dict = json.loads(tools)
+        except:
+            e = sys.exc_info()[0]
+            self.app.log.error(str(e))
+            self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
+            return
+
+        self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+
+        self.build_db_ui()
+
+    def build_db_ui(self):
+        self.ui_disconnect()
+        self.table_widget.setRowCount(len(self.db_tool_dict))
 
         nr_crt = 0
-        sorted_bookmarks = sorted(list(self.bm_dict.items()), key=lambda x: int(x[0]))
-        for k, v in sorted_bookmarks:
+        for toolid, dict_val in self.db_tool_dict.items():
             row = nr_crt
             nr_crt += 1
 
-            id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
-            id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.table_widget.setItem(row, 0, id_item)  # Tool name/id
-
-            dia_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 1, dia_item)
-
-            tt_item = FCComboBox()
-            self.table_widget.setCellWidget(row, 2, tt_item)
-
-            tshape_item = FCComboBox()
-            self.table_widget.setCellWidget(row, 3, tshape_item)
-
-            cutz_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 4, cutz_item)
-
-            vtip_dia_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 5, vtip_dia_item)
-
-            vtip_angle_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 6, vtip_angle_item)
-
-            travelz_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 7, travelz_item)
-
-            fr_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 8, fr_item)
-
-            frz_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 9, frz_item)
-
-            frrapids_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 10, frrapids_item)
-
-            spindlespeed_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 11, spindlespeed_item)
-
-            dwell_item = FCCheckBox()
-            self.table_widget.setCellWidget(row, 12, dwell_item)
-
-            dwelltime_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 13, dwelltime_item)
-
-            multidepth_item = FCCheckBox()
-            self.table_widget.setCellWidget(row, 14, multidepth_item)
-
-            pp_item = FCComboBox()
-            self.table_widget.setCellWidget(row, 15, pp_item)
-
-            probez_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 16, probez_item)
-
-            probefeedrate_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 17, probefeedrate_item)
-
-            ecut_item = FCCheckBox()
-            self.table_widget.setCellWidget(row, 18, ecut_item)
-
-            toolchange_item = FCCheckBox()
-            self.table_widget.setCellWidget(row, 19, toolchange_item)
-
-            toolchangez_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 20, toolchangez_item)
-
-            endz_item = FCDoubleSpinner()
-            self.table_widget.setCellWidget(row, 21, endz_item)
+            t_name = dict_val['name']
+            self.add_tool_table_line(row, name=t_name, widget=self.table_widget, tooldict=dict_val)
 
             vertical_header = self.table_widget.verticalHeader()
             vertical_header.hide()
@@ -661,143 +638,277 @@ class ToolsDB(QtWidgets.QWidget):
             horizontal_header.setMinimumSectionSize(10)
             horizontal_header.setDefaultSectionSize(70)
 
-            self.table_widget.setSizeAdjustPolicy(
-                QtWidgets.QAbstractScrollArea.AdjustToContents)
-            for x in range(1, 21):
-                self.table_widget.resizeColumnsToContents()
+            self.table_widget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+            for x in range(27):
+                self.table_widget.resizeColumnToContents(x)
 
             horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-            horizontal_header.setSectionResizeMode(13, QtWidgets.QHeaderView.Fixed)
-            horizontal_header.setSectionResizeMode(15, QtWidgets.QHeaderView.Fixed)
-            horizontal_header.setSectionResizeMode(19, QtWidgets.QHeaderView.Fixed)
-            horizontal_header.setSectionResizeMode(20, QtWidgets.QHeaderView.Fixed)
+            # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+            # horizontal_header.setSectionResizeMode(13, QtWidgets.QHeaderView.Fixed)
 
             horizontal_header.resizeSection(0, 20)
             # horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
             # horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
 
-    def on_add_entry(self, **kwargs):
+        self.ui_connect()
+
+    def add_tool_table_line(self, row, name, widget, tooldict):
+        data = tooldict['data']
+
+        nr_crt = row + 1
+        id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
+        id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        widget.setItem(row, 0, id_item)  # Tool name/id
+
+        tool_name_item = QtWidgets.QTableWidgetItem(name)
+        widget.setItem(row, 1, tool_name_item)
+
+        dia_item = FCDoubleSpinner()
+        dia_item.set_precision(self.decimals)
+        dia_item.setSingleStep(0.1)
+        dia_item.set_range(0.0, 9999.9999)
+        dia_item.set_value(float(tooldict['tooldia']))
+        widget.setCellWidget(row, 2, dia_item)
+
+        tool_offset_item = FCComboBox()
+        for item in self.offset_item_options:
+            tool_offset_item.addItem(item)
+        tool_offset_item.set_value(tooldict['offset'])
+        widget.setCellWidget(row, 3, tool_offset_item)
+
+        c_offset_item = FCDoubleSpinner()
+        c_offset_item.set_precision(self.decimals)
+        c_offset_item.setSingleStep(0.1)
+        c_offset_item.set_range(-9999.9999, 9999.9999)
+        c_offset_item.set_value(float(tooldict['offset_value']))
+        widget.setCellWidget(row, 4, c_offset_item)
+
+        tt_item = FCComboBox()
+        for item in self.type_item_options:
+            tt_item.addItem(item)
+        tt_item.set_value(tooldict['type'])
+        widget.setCellWidget(row, 5, tt_item)
+
+        tshape_item = FCComboBox()
+        for item in self.tool_type_item_options:
+            tshape_item.addItem(item)
+        tshape_item.set_value(tooldict['tool_type'])
+        widget.setCellWidget(row, 6, tshape_item)
+
+        cutz_item = FCDoubleSpinner()
+        cutz_item.set_precision(self.decimals)
+        cutz_item.setSingleStep(0.1)
+        if self.app.defaults['global_machinist_setting']:
+            cutz_item.set_range(-9999.9999, 9999.9999)
+        else:
+            cutz_item.set_range(-9999.9999, -0.0000)
+
+        cutz_item.set_value(float(data['cutz']))
+        widget.setCellWidget(row, 7, cutz_item)
+
+        multidepth_item = FCCheckBox()
+        multidepth_item.set_value(data['multidepth'])
+        widget.setCellWidget(row, 8, multidepth_item)
+
+        depth_per_pass_item = FCDoubleSpinner()
+        depth_per_pass_item.set_precision(self.decimals)
+        depth_per_pass_item.setSingleStep(0.1)
+        depth_per_pass_item.set_range(0.0, 9999.9999)
+        depth_per_pass_item.set_value(float(data['depthperpass']))
+        widget.setCellWidget(row, 9, depth_per_pass_item)
+
+        vtip_dia_item = FCDoubleSpinner()
+        vtip_dia_item.set_precision(self.decimals)
+        vtip_dia_item.setSingleStep(0.1)
+        vtip_dia_item.set_range(0.0, 9999.9999)
+        vtip_dia_item.set_value(float(data['vtipdia']))
+        widget.setCellWidget(row, 10, vtip_dia_item)
+
+        vtip_angle_item = FCDoubleSpinner()
+        vtip_angle_item.set_precision(self.decimals)
+        vtip_angle_item.setSingleStep(0.1)
+        vtip_angle_item.set_range(-360.0, 360.0)
+        vtip_angle_item.set_value(float(data['vtipangle']))
+        widget.setCellWidget(row, 11, vtip_angle_item)
+
+        travelz_item = FCDoubleSpinner()
+        travelz_item.set_precision(self.decimals)
+        travelz_item.setSingleStep(0.1)
+        if self.app.defaults['global_machinist_setting']:
+            travelz_item.set_range(-9999.9999, 9999.9999)
+        else:
+            travelz_item.set_range(0.0000, 9999.9999)
+
+        travelz_item.set_value(float(data['travelz']))
+        widget.setCellWidget(row, 12, travelz_item)
+
+        fr_item = FCDoubleSpinner()
+        fr_item.set_precision(self.decimals)
+        fr_item.set_range(0.0, 9999.9999)
+        fr_item.set_value(float(data['feedrate']))
+        widget.setCellWidget(row, 13, fr_item)
+
+        frz_item = FCDoubleSpinner()
+        frz_item.set_precision(self.decimals)
+        frz_item.set_range(0.0, 9999.9999)
+        frz_item.set_value(float(data['feedrate_z']))
+        widget.setCellWidget(row, 14, frz_item)
+
+        frrapids_item = FCDoubleSpinner()
+        frrapids_item.set_precision(self.decimals)
+        frrapids_item.set_range(0.0, 9999.9999)
+        frrapids_item.set_value(float(data['feedrate_rapid']))
+        widget.setCellWidget(row, 15, frrapids_item)
+
+        spindlespeed_item = QtWidgets.QTableWidgetItem(str(data['spindlespeed']) if data['spindlespeed'] else '')
+        widget.setItem(row, 16, spindlespeed_item)
+
+        dwell_item = FCCheckBox()
+        dwell_item.set_value(data['dwell'])
+        widget.setCellWidget(row, 17, dwell_item)
+
+        dwelltime_item = FCDoubleSpinner()
+        dwelltime_item.set_precision(self.decimals)
+        dwelltime_item.set_range(0.0, 9999.9999)
+        dwelltime_item.set_value(float(data['dwelltime']))
+        widget.setCellWidget(row, 18, dwelltime_item)
+
+        pp_item = FCComboBox()
+        for item in self.app.postprocessors:
+            pp_item.addItem(item)
+        pp_item.set_value(data['ppname_g'])
+        widget.setCellWidget(row, 19, pp_item)
+
+        ecut_item = FCCheckBox()
+        ecut_item.set_value(data['extracut'])
+        widget.setCellWidget(row, 20, ecut_item)
+
+        toolchange_item = FCCheckBox()
+        toolchange_item.set_value(data['toolchange'])
+        widget.setCellWidget(row, 21, toolchange_item)
+
+        toolchangexy_item = QtWidgets.QTableWidgetItem(str(data['toolchangexy']) if data['toolchangexy'] else '')
+        widget.setItem(row, 22, toolchangexy_item)
+
+        toolchangez_item = FCDoubleSpinner()
+        toolchangez_item.set_precision(self.decimals)
+        toolchangez_item.setSingleStep(0.1)
+        if self.app.defaults['global_machinist_setting']:
+            toolchangez_item.set_range(-9999.9999, 9999.9999)
+        else:
+            toolchangez_item.set_range(0.0000, 9999.9999)
+
+        toolchangez_item.set_value(float(data['toolchangez']))
+        widget.setCellWidget(row, 23, toolchangez_item)
+
+        startz_item = QtWidgets.QTableWidgetItem(str(data['startz']) if data['startz'] else '')
+        widget.setItem(row, 24, startz_item)
+
+        endz_item = FCDoubleSpinner()
+        endz_item.set_precision(self.decimals)
+        endz_item.setSingleStep(0.1)
+        if self.app.defaults['global_machinist_setting']:
+            endz_item.set_range(-9999.9999, 9999.9999)
+        else:
+            endz_item.set_range(0.0000, 9999.9999)
+
+        endz_item.set_value(float(data['endz']))
+        widget.setCellWidget(row, 25, endz_item)
+
+    def on_add_entry(self):
         """
-        Add a entry in the Bookmark Table and in the menu actions
+        Add a tool in the DB Tool Table
         :return: None
         """
-        if 'title' in kwargs:
-            title = kwargs['title']
-        else:
-            title = self.title_entry.get_value()
-        if title == '':
-            self.app.inform.emit(f'[ERROR_NOTCL] {_("Title entry is empty.")}')
-            return 'fail'
+        new_toolid = len(self.db_tool_dict) + 1
 
-        if 'link' is kwargs:
-            link = kwargs['link']
-        else:
-            link = self.link_entry.get_value()
+        dict_elem = dict()
+        default_data = dict()
 
-        if link == 'http://':
-            self.app.inform.emit(f'[ERROR_NOTCL] {_("Web link entry is empty.")}')
-            return 'fail'
+        default_data.update({
+            "cutz": float(self.app.defaults["geometry_cutz"]),
+            "multidepth": self.app.defaults["geometry_multidepth"],
+            "depthperpass": float(self.app.defaults["geometry_depthperpass"]),
+            "vtipdia": float(self.app.defaults["geometry_vtipdia"]),
+            "vtipangle": float(self.app.defaults["geometry_vtipangle"]),
+            "travelz": float(self.app.defaults["geometry_travelz"]),
+            "feedrate": float(self.app.defaults["geometry_feedrate"]),
+            "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
+            "feedrate_rapid": float(self.app.defaults["geometry_feedrate_rapid"]),
+            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
+            "dwell": self.app.defaults["geometry_dwell"],
+            "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
+            "ppname_g": self.app.defaults["geometry_ppname_g"],
+            "extracut": self.app.defaults["geometry_extracut"],
+            "toolchange": self.app.defaults["geometry_toolchange"],
+            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
+            "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
+            "startz": self.app.defaults["geometry_startz"],
+            "endz": float(self.app.defaults["geometry_endz"])
+        })
 
-        # if 'http' not in link or 'https' not in link:
-        #     link = 'http://' + link
+        dict_elem['name'] = 'new_tool'
+        dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
+        dict_elem['offset'] = 'Path'
+        dict_elem['offset_value'] = 0.0
+        dict_elem['type'] = _('Rough')
+        dict_elem['tool_type'] = 'C1'
 
-        for bookmark in self.bm_dict.values():
-            if title == bookmark[0] or link == bookmark[1]:
-                self.app.inform.emit(f'[ERROR_NOTCL] {_("Either the Title or the Weblink already in the table.")}')
-                return 'fail'
+        dict_elem['data'] = default_data
 
-        # for some reason if the last char in the weblink is a slash it does not make the link clickable
-        # so I remove it
-        if link[-1] == '/':
-            link = link[:-1]
-        # add the new entry to storage
-        new_entry = len(self.bm_dict) + 1
-        self.bm_dict[str(new_entry)] = [title, link]
+        self.db_tool_dict.update(
+            {
+                new_toolid: deepcopy(dict_elem)
+            }
+        )
 
-        # add the link to the menu but only if it is within the set limit
-        bm_limit = int(self.app.defaults["global_bookmarks_limit"])
-        if len(self.bm_dict) < bm_limit:
-            act = QtWidgets.QAction(parent=self.app.ui.menuhelp_bookmarks)
-            act.setText(title)
-            act.setIcon(QtGui.QIcon('share/link16.png'))
-            act.triggered.connect(lambda: webbrowser.open(link))
-            self.app.ui.menuhelp_bookmarks.insertAction(self.app.ui.menuhelp_bookmarks_manager, act)
+        self.app.inform.emit(f'[success] {_("Tool added to DB.")}')
 
-        self.app.inform.emit(f'[success] {_("Bookmark added.")}')
-
-        # add the new entry to the bookmark manager table
-        self.build_bm_ui()
+        # add the new entry to the Tools DB table
+        self.build_db_ui()
+        self.callback_on_edited()
 
     def on_remove_entry(self):
         """
-        Remove an Entry in the Bookmark table and from the menu actions
+        Remove a Tool in the Tools DB table
         :return:
         """
         index_list = []
         for model_index in self.table_widget.selectionModel().selectedRows():
             index = QtCore.QPersistentModelIndex(model_index)
             index_list.append(index)
-            title_to_remove = self.table_widget.item(model_index.row(), 1).text()
+            toolname_to_remove = self.table_widget.item(model_index.row(), 0).text()
 
-            if title_to_remove == 'FlatCAM' or title_to_remove == 'Backup Site':
-                self.app.inform.emit('[WARNING_NOTCL] %s.' % _("This bookmark can not be removed"))
-                self.build_bm_ui()
-                return
-            else:
-                for k, bookmark in list(self.bm_dict.items()):
-                    if title_to_remove == bookmark[0]:
-                        # remove from the storage
-                        self.bm_dict.pop(k, None)
+            for toolid, dict_val in list(self.db_tool_dict.items()):
+                if int(toolname_to_remove) == int(toolid):
+                    # remove from the storage
+                    self.db_tool_dict.pop(toolid, None)
 
-                        for act in self.app.ui.menuhelp_bookmarks.actions():
-                            if act.text() == title_to_remove:
-                                # disconnect the signal
-                                try:
-                                    act.triggered.disconnect()
-                                except TypeError:
-                                    pass
-                                # remove the action from the menu
-                                self.app.ui.menuhelp_bookmarks.removeAction(act)
+        self.app.inform.emit(f'[success] {_("Tool removed from Tools DB.")}')
 
-        # house keeping: it pays to have keys increased by one
-        new_key = 0
-        new_dict = dict()
-        for k, v in self.bm_dict.items():
-            # we start with key 1 so we can use the len(self.bm_dict)
-            # when adding bookmarks (keys in bm_dict)
-            new_key += 1
-            new_dict[str(new_key)] = v
+        self.build_db_ui()
+        self.callback_on_edited()
 
-        self.bm_dict = deepcopy(new_dict)
-        new_dict.clear()
-
-        self.app.inform.emit(f'[success] {_("Bookmark removed.")}')
-
-        # for index in index_list:
-        #     self.table_widget.model().removeRow(index.row())
-        self.build_bm_ui()
-
-    def on_export_bookmarks(self):
-        self.app.report_usage("on_export_bookmarks")
-        self.app.log.debug("on_export_bookmarks()")
+    def on_export_tools_db_file(self):
+        self.app.report_usage("on_export_tools_db_file")
+        self.app.log.debug("on_export_tools_db_file()")
 
         date = str(datetime.today()).rpartition('.')[0]
         date = ''.join(c for c in date if c not in ':-')
         date = date.replace(' ', '_')
 
         filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
+        filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Tools Database"),
                                                              directory='{l_save}/FlatCAM_{n}_{date}'.format(
                                                                  l_save=str(self.app.get_last_save_folder()),
-                                                                 n=_("Bookmarks"),
+                                                                 n=_("Tools_Database"),
                                                                  date=date),
                                                              filter=filter__)
 
         filename = str(filename)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM bookmarks export cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM Tools DB export cancelled."))
             return
         else:
             try:
@@ -809,79 +920,259 @@ class ToolsDB(QtWidgets.QWidget):
                                        "Most likely another app is holding the file open and not accessible."))
                 return
             except IOError:
-                self.app.log.debug('Creating a new bookmarks file ...')
+                self.app.log.debug('Creating a new Tools DB file ...')
                 f = open(filename, 'w')
                 f.close()
             except:
                 e = sys.exc_info()[0]
-                self.app.log.error("Could not load defaults file.")
+                self.app.log.error("Could not load Tools DB file.")
                 self.app.log.error(str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not load bookmarks file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load Tools DB file."))
                 return
 
             # Save update options
             try:
-                with open(filename, "w") as f:
-                    for title, link in self.bm_dict.items():
-                        line2write = str(title) + ':' + str(link) + '\n'
-                        f.write(line2write)
+                # Save Tools DB in a file
+                try:
+                    with open(filename, "w") as f:
+                        json.dump(self.db_tool_dict, f, default=to_dict, indent=2)
+                except Exception as e:
+                    self.app.log.debug("App.on_save_tools_db() --> %s" % str(e))
+                    self.inform.emit(f'[ERROR_NOTCL] {_("Failed to write Tools DB to file.")}')
+                    return
             except:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Failed to write bookmarks to file."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
                 return
-        self.app.inform.emit('[success] %s: %s' %
-                             (_("Exported bookmarks to"), filename))
 
-    def on_import_bookmarks(self):
-        self.app.log.debug("on_import_bookmarks()")
+        self.app.inform.emit('[success] %s: %s' % (_("Exported Tools DB to"), filename))
 
-        filter_ = "Text File (*.txt);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Bookmarks"),
-                                                             filter=filter_)
+    def on_import_tools_db_file(self):
+        self.app.report_usage("on_import_tools_db_file")
+        self.app.log.debug("on_import_tools_db_file()")
 
-        filename = str(filename)
+        filter__ = "Text File (*.TXT);;All Files (*.*)"
+        filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Tools DB"), filter=filter__)
 
         if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("FlatCAM bookmarks import cancelled."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM Tools DB import cancelled."))
         else:
             try:
                 with open(filename) as f:
-                    bookmarks = f.readlines()
+                    tools_in_db = f.read()
             except IOError:
-                self.app.log.error("Could not load bookmarks file.")
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not load bookmarks file."))
+                self.app.log.error("Could not load Tools DB file.")
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Could not load Tools DB file."))
                 return
 
-            for line in bookmarks:
-                proc_line = line.replace(' ', '').partition(':')
-                self.on_add_entry(title=proc_line[0], link=proc_line[2])
+            try:
+                self.db_tool_dict = json.loads(tools_in_db)
+            except:
+                e = sys.exc_info()[0]
+                self.app.log.error(str(e))
+                self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
+                return
 
-            self.app.inform.emit('[success] %s: %s' %
-                                 (_("Imported Bookmarks from"), filename))
+            self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
+            self.build_db_ui()
+            self.callback_on_edited()
 
-    def rebuild_actions(self):
-        # rebuild the storage to reflect the order of the lines
-        self.bm_dict.clear()
+    def on_save_tools_db(self, silent=False):
+        self.app.log.debug("ToolsDB.on_save_button() --> Saving Tools Database to file.")
+
+        filename = self.app.data_path + "/tools_db.FlatConfig"
+
+        # Preferences save, update the color of the Tools DB Tab text
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.app.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+
+                # Save Tools DB in a file
+                try:
+                    f = open(filename, "w")
+                    json.dump(self.db_tool_dict, f, default=to_dict, indent=2)
+                    f.close()
+                except Exception as e:
+                    self.app.log.debug("ToolsDB.on_save_tools_db() --> %s" % str(e))
+                    self.app.inform.emit(f'[ERROR_NOTCL] {_("Failed to write Tools DB to file.")}')
+                    return
+
+                if not silent:
+                    self.app.inform.emit('[success] %s: %s' % (_("Exported Tools DB to"), filename))
+
+    def ui_connect(self):
+        try:
+            try:
+                self.table_widget.itemChanged.disconnect(self.callback_on_edited)
+            except (TypeError, AttributeError):
+                pass
+            self.table_widget.itemChanged.connect(self.callback_on_edited)
+        except AttributeError:
+            pass
+
         for row in range(self.table_widget.rowCount()):
-            title = self.table_widget.item(row, 1).text()
-            wlink = self.table_widget.cellWidget(row, 2).toPlainText()
+            for col in range(self.table_widget.columnCount()):
+                # ComboBox
+                try:
+                    try:
+                        self.table_widget.cellWidget(row, col).currentIndexChanged.disconnect(self.callback_on_edited)
+                    except (TypeError, AttributeError):
+                        pass
+                    self.table_widget.cellWidget(row, col).currentIndexChanged.connect(self.callback_on_edited)
+                except AttributeError:
+                    pass
 
-            entry = int(row) + 1
-            self.bm_dict.update(
+                # CheckBox
+                try:
+                    try:
+                        self.table_widget.cellWidget(row, col).toggled.disconnect(self.callback_on_edited)
+                    except (TypeError, AttributeError):
+                        pass
+                    self.table_widget.cellWidget(row, col).toggled.connect(self.callback_on_edited)
+                except AttributeError:
+                    pass
+
+                # SpinBox, DoubleSpinBox
+                try:
+                    try:
+                        self.table_widget.cellWidget(row, col).valueChanged.disconnect(self.callback_on_edited)
+                    except (TypeError, AttributeError):
+                        pass
+                    self.table_widget.cellWidget(row, col).valueChanged.connect(self.callback_on_edited)
+                except AttributeError:
+                    pass
+
+    def ui_disconnect(self):
+        try:
+            self.table_widget.itemChanged.disconnect(self.callback_on_edited)
+        except (TypeError, AttributeError):
+            pass
+
+        for row in range(self.table_widget.rowCount()):
+            for col in range(self.table_widget.columnCount()):
+                # ComboBox
+                try:
+                    self.table_widget.cellWidget(row, col).currentIndexChanged.disconnect(self.callback_on_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                # CheckBox
+                try:
+                    self.table_widget.cellWidget(row, col).toggled.disconnect(self.callback_on_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                # SpinBox, DoubleSpinBox
+                try:
+                    self.table_widget.cellWidget(row, col).valueChanged.disconnect(self.callback_on_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+    def callback_on_edited(self):
+
+        # update the dictionary storage self.db_tool_dict
+        self.db_tool_dict.clear()
+        dict_elem = dict()
+        default_data = dict()
+
+        for row in range(self.table_widget.rowCount()):
+            new_toolid = row + 1
+            for col in range(self.table_widget.columnCount()):
+                column_header_text = self.table_widget.horizontalHeaderItem(col).text()
+                if column_header_text == 'Tool Name':
+                    dict_elem['name'] = self.table_widget.item(row, col).text()
+                elif column_header_text == 'Tool Dia':
+                    dict_elem['tooldia'] = self.table_widget.cellWidget(row, col).get_value()
+                elif column_header_text == 'Tool Offset':
+                    dict_elem['offset'] = self.table_widget.cellWidget(row, col).get_value()
+                elif column_header_text == 'Custom Offset':
+                    dict_elem['offset_value'] = self.table_widget.cellWidget(row, col).get_value()
+                elif column_header_text == 'Tool Type':
+                    dict_elem['type'] = self.table_widget.cellWidget(row, col).get_value()
+                elif column_header_text == 'Tool Shape':
+                    dict_elem['tool_type'] = self.table_widget.cellWidget(row, col).get_value()
+                else:
+
+                    if column_header_text == 'Cut Z':
+                        default_data['cutz'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'MultiDepth':
+                        default_data['multidepth'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'DPP':
+                        default_data['depthperpass'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'V-Dia':
+                        default_data['vtipdia'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'V-Angle':
+                        default_data['vtipangle'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'Travel Z':
+                        default_data['travelz'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'FR':
+                        default_data['feedrate'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'FR Z':
+                        default_data['feedrate_z'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'FR Rapids':
+                        default_data['feedrate_rapid'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'Spindle Speed':
+                        default_data['spindlespeed'] = float(self.table_widget.item(row, col).text()) \
+                            if self.table_widget.item(row, col).text() is not '' else None
+                    elif column_header_text == 'Dwell':
+                        default_data['dwell'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'Dwelltime':
+                        default_data['dwelltime'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'Postprocessor':
+                        default_data['ppname_g'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'ExtraCut':
+                        default_data['extracut'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'Toolchange':
+                        default_data['toolchange'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'Toolchange XY':
+                        default_data['toolchangexy'] = self.table_widget.item(row, col).text()
+                    elif column_header_text == 'Toolchange Z':
+                        default_data['toolchangez'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == 'Start Z':
+                        default_data['startz'] = float(self.table_widget.item(row, col).text()) \
+                            if self.table_widget.item(row, col).text() is not '' else None
+                    elif column_header_text == 'End Z':
+                        default_data['endz'] = self.table_widget.cellWidget(row, col).get_value()
+
+            dict_elem['data'] = default_data
+            self.db_tool_dict.update(
                 {
-                    str(entry): [title, wlink]
+                    new_toolid: deepcopy(dict_elem)
                 }
             )
 
-        self.app.install_bookmarks(book_dict=self.bm_dict)
+        self.callback_app()
 
-    # def accept(self):
-    #     self.rebuild_actions()
-    #     super().accept()
+    def on_tool_requested_from_app(self):
+        if not self.table_widget.selectionModel().selectedRows():
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("No Tool/row selected in the Tools Database table"))
+            return
+        elif len(self.table_widget.selectionModel().selectedRows()) > 1:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' %
+                                 _("Only one tool can be selected in the Tools Database table"))
+            return
+
+        # only one model in list since the conditions above assure this
+        model_index = self.table_widget.selectionModel().selectedRows()[0]
+        selected_row = model_index.row()
+        tool_uid = selected_row + 1
+        for key in self.db_tool_dict.keys():
+            if str(key) == str(tool_uid):
+                selected_tool = self.db_tool_dict[key]
+                self.on_tool_request(tool=selected_tool)
+
+    def resize_new_tool_table_widget(self, min_size, max_size):
+        """
+        Resize the table widget responsible for adding new tool in the Tool Database
+
+        :param min_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
+        :param max_size: passed by rangeChanged signal or the self.new_tool_table_widget.horizontalScrollBar()
+        :return:
+        """
+        t_height = self.t_height
+        if max_size > min_size:
+            t_height = self.t_height + self.new_tool_table_widget.verticalScrollBar().height()
+
+        self.new_tool_table_widget.setMaximumHeight(t_height)
 
     def closeEvent(self, QCloseEvent):
-        self.rebuild_actions()
         super().closeEvent(QCloseEvent)
