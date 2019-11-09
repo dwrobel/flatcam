@@ -7,7 +7,7 @@
 # ########################################################## ##
 
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from io import StringIO
 
 import numpy as np
@@ -496,10 +496,6 @@ class Geometry(object):
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
-
-        # if geo_steps_per_circle is None:
-        #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
-        # self.geo_steps_per_circle = geo_steps_per_circle
 
     def plot_temp_shapes(self, element, color='red'):
 
@@ -2147,6 +2143,12 @@ class CNCjob(Geometry):
         "excellon_optimization_type": "B",
     }
 
+    settings = QtCore.QSettings("Open Source", "FlatCAM")
+    if settings.contains("machinist"):
+        machinist_setting = settings.value('machinist', type=int)
+    else:
+        machinist_setting = 0
+
     def __init__(self,
                  units="in", kind="generic", tooldia=0.0,
                  z_cut=-0.002, z_move=0.1,
@@ -2372,21 +2374,21 @@ class CNCjob(Geometry):
         self.exc_drills = deepcopy(exobj.drills)
         self.exc_tools = deepcopy(exobj.tools)
 
-        if drillz > 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Cut Z parameter has positive value. "
-                                   "It is the depth value to drill into material.\n"
-                                   "The Cut Z parameter needs to have a negative value, assuming it is a typo "
-                                   "therefore the app will convert the value to negative. "
-                                   "Check the resulting CNC code (Gcode etc)."))
-            self.z_cut = -drillz
-        elif drillz == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                  exobj.options['name']))
-            return 'fail'
-        else:
-            self.z_cut = drillz
+        self.z_cut = drillz
+        if self.machinist_setting == 0:
+            if drillz > 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Cut Z parameter has positive value. "
+                                       "It is the depth value to drill into material.\n"
+                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                       "therefore the app will convert the value to negative. "
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_cut = -drillz
+            elif drillz == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                      exobj.options['name']))
+                return 'fail'
 
         self.z_toolchange = toolchangez
 
@@ -2516,8 +2518,7 @@ class CNCjob(Geometry):
         measured_up_to_zero_distance = 0.0
         measured_lift_distance = 0.0
 
-        self.app.inform.emit('%s...' %
-                             _("Starting G-Code"))
+        self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
@@ -2671,8 +2672,7 @@ class CNCjob(Geometry):
                                         old_disp_number = disp_number
 
                             else:
-                                self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                                     _('G91 coordinates not implemented'))
+                                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                                 return 'fail'
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
@@ -2818,8 +2818,7 @@ class CNCjob(Geometry):
                                         old_disp_number = disp_number
 
                             else:
-                                self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                                     _('G91 coordinates not implemented'))
+                                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                                 return 'fail'
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
@@ -2924,8 +2923,7 @@ class CNCjob(Geometry):
                                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                     old_disp_number = disp_number
                         else:
-                            self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                                 _('G91 coordinates not implemented'))
+                            self.app.inform.emit('[ERROR_NOTCL] %s...' %  _('G91 coordinates not implemented'))
                             return 'fail'
                     else:
                         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
@@ -3002,10 +3000,10 @@ class CNCjob(Geometry):
 
         self.tooldia = float(tooldia) if tooldia else None
         self.z_cut = float(z_cut) if z_cut else None
-        self.z_move = float(z_move) if z_move else None
+        self.z_move = float(z_move) if z_move is not None else None
 
         self.feedrate = float(feedrate) if feedrate else None
-        self.z_feedrate = float(feedrate_z) if feedrate_z else None
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
         self.spindlespeed = int(spindlespeed) if spindlespeed else None
@@ -3013,13 +3011,13 @@ class CNCjob(Geometry):
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime else None
 
-        self.startz = float(startz) if startz else None
-        self.z_end = float(endz) if endz else None
+        self.startz = float(startz) if startz is not None else None
+        self.z_end = float(endz) if endz is not None else None
 
         self.z_depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
 
-        self.z_toolchange = float(toolchangez) if toolchangez else None
+        self.z_toolchange = float(toolchangez) if toolchangez is not None else None
 
         # it servers in the postprocessor file
         self.tool = tool_no
@@ -3044,45 +3042,46 @@ class CNCjob(Geometry):
         if self.z_cut is None:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                 "other parameters."))
+                                   "other parameters."))
             return 'fail'
 
-        if self.z_cut > 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Cut Z parameter has positive value. "
-                                 "It is the depth value to cut into material.\n"
-                                 "The Cut Z parameter needs to have a negative value, assuming it is a typo "
-                                 "therefore the app will convert the value to negative."
-                                 "Check the resulting CNC code (Gcode etc)."))
-            self.z_cut = -self.z_cut
-        elif self.z_cut == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                  self.options['name']))
-            return 'fail'
+        if self.machinist_setting == 0:
+            if self.z_cut > 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Cut Z parameter has positive value. "
+                                       "It is the depth value to cut into material.\n"
+                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                       "therefore the app will convert the value to negative."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_cut = -self.z_cut
+            elif self.z_cut == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                      self.options['name']))
+                return 'fail'
+
+            if self.z_move is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Travel Z parameter is None or zero."))
+                return 'fail'
+
+            if self.z_move < 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Travel Z parameter has negative value. "
+                                     "It is the height value to travel between cuts.\n"
+                                     "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                     "therefore the app will convert the value to positive."
+                                     "Check the resulting CNC code (Gcode etc)."))
+                self.z_move = -self.z_move
+            elif self.z_move == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
+                                      self.options['name']))
+                return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
         if abs(self.z_cut) < self.z_depthpercut:
             self.z_depthpercut = abs(self.z_cut)
-
-        if self.z_move is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Travel Z parameter is None or zero."))
-            return 'fail'
-
-        if self.z_move < 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Travel Z parameter has negative value. "
-                                 "It is the height value to travel between cuts.\n"
-                                 "The Z Travel parameter needs to have a positive value, assuming it is a typo "
-                                 "therefore the app will convert the value to positive."
-                                 "Check the resulting CNC code (Gcode etc)."))
-            self.z_move = -self.z_move
-        elif self.z_move == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
-                                  self.options['name']))
-            return 'fail'
 
         # ## Index first and last points in paths
         # What points to index.
@@ -3356,11 +3355,11 @@ class CNCjob(Geometry):
         except ValueError:
             self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia else None
 
-        self.z_cut = float(z_cut) if z_cut else None
-        self.z_move = float(z_move) if z_move else None
+        self.z_cut = float(z_cut) if z_cut is not None else None
+        self.z_move = float(z_move) if z_move is not None else None
 
         self.feedrate = float(feedrate) if feedrate else None
-        self.z_feedrate = float(feedrate_z) if feedrate_z else None
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
         self.spindlespeed = int(spindlespeed) if spindlespeed else None
@@ -3368,11 +3367,11 @@ class CNCjob(Geometry):
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime else None
 
-        self.startz = float(startz) if startz else None
-        self.z_end = float(endz) if endz else None
+        self.startz = float(startz) if startz is not None else None
+        self.z_end = float(endz) if endz is not None else None
         self.z_depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
-        self.z_toolchange = float(toolchangez) if toolchangez else None
+        self.z_toolchange = float(toolchangez) if toolchangez is not None else None
 
         try:
             if toolchangexy == '':
@@ -3391,44 +3390,45 @@ class CNCjob(Geometry):
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
-        if self.z_cut is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                   "other parameters."))
-            return 'fail'
+        if self.machinist_setting == 0:
+            if self.z_cut is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                       "other parameters."))
+                return 'fail'
 
-        if self.z_cut > 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Cut Z parameter has positive value. "
-                                   "It is the depth value to cut into material.\n"
-                                   "The Cut Z parameter needs to have a negative value, assuming it is a typo "
-                                   "therefore the app will convert the value to negative."
-                                   "Check the resulting CNC code (Gcode etc)."))
-            self.z_cut = -self.z_cut
-        elif self.z_cut == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                  geometry.options['name']))
-            return 'fail'
+            if self.z_cut > 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Cut Z parameter has positive value. "
+                                       "It is the depth value to cut into material.\n"
+                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                       "therefore the app will convert the value to negative."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_cut = -self.z_cut
+            elif self.z_cut == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                      geometry.options['name']))
+                return 'fail'
 
-        if self.z_move is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Travel Z parameter is None or zero."))
-            return 'fail'
+            if self.z_move is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Travel Z parameter is None or zero."))
+                return 'fail'
 
-        if self.z_move < 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Travel Z parameter has negative value. "
-                                   "It is the height value to travel between cuts.\n"
-                                   "The Z Travel parameter needs to have a positive value, assuming it is a typo "
-                                   "therefore the app will convert the value to positive."
-                                   "Check the resulting CNC code (Gcode etc)."))
-            self.z_move = -self.z_move
-        elif self.z_move == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Z Travel parameter is zero. "
-                                   "This is dangerous, skipping file"), self.options['name']))
-            return 'fail'
+            if self.z_move < 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Travel Z parameter has negative value. "
+                                       "It is the height value to travel between cuts.\n"
+                                       "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                       "therefore the app will convert the value to positive."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_move = -self.z_move
+            elif self.z_move == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Z Travel parameter is zero. "
+                                       "This is dangerous, skipping file"), self.options['name']))
+                return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
         if abs(self.z_cut) < self.z_depthpercut:
@@ -3590,12 +3590,9 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.spindle_stop_code)
         self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
         self.gcode += self.doformat(p.end_code, x=0, y=0)
-        self.app.inform.emit('%s... %s %s' %
-                             (_("Finished G-Code generation"),
-                              str(path_count),
-                             _(" paths traced.")
-                              )
-                             )
+        self.app.inform.emit(
+            '%s... %s %s' % (_("Finished G-Code generation"), str(path_count), _(" paths traced."))
+        )
 
         return self.gcode
 

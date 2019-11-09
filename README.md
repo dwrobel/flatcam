@@ -9,9 +9,43 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.11.2019
+
+- fixed a new bug that did not allow to open the FlatCAM Preferences files by doubleclick in Windows
+- added a new feature: Tools Database for Geometry objects; resolved issue #308
+- added tooltips for the Tools Database table headers and buttons
+
+
+8.11.2019
+
+- updated the make file for freezed executable
+
+7.11.2019
+
+- added the '.ngc' file extension to the GCode Save file dialog filter
+- made the 'M2' Gcode command footer optional, default is False (can be set using the TclCommand: set_sys cncjob_footer True)
+- added a setting in Preferences to force the GCode output to have the Windows line-endings even for non-Windows OS's
+
+6.11.2019
+
+- the "CRTL+S" key combo when the Preferences Tab is in focus will save the Preferences instead of saving the Project
+- fixed bug in the Paint Tool that did not allow choosing a Paint Method that was not Standard
+- made sure that in the FlatCAMGeometry.merge() all the source data is deepcopy-ed in the final object
+- the font color of the Preferences tab will change to red if settings are not saved and it will revert to default when saved
+- fixed issue #333. The Geometry Editor Paint tool was not working and using it resulted in an error
+
+5.11.2019
+
+- added a new setting named 'Allow Machinist Unsafe Settings' that will allow the Travel Z and Cut Z to take both positive and negative values
+- fixed some issues when editing a multigeo geometry
+
 4.11.2019
 
 - wip
+- getting rid of all the Options GUI and related functions as it is no longer supported
+- updated the UI in Geometry UI
+- optimized the order of the defaults storage declaration and the update of the Preferences GUI from the defaults
+- started to add a Tool Database
 
 3.11.2019
 

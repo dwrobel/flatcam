@@ -22,6 +22,12 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+settings = QtCore.QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
+
 
 class ObjectUI(QtWidgets.QWidget):
     """
@@ -385,7 +391,7 @@ class GerberObjectUI(ObjectUI):
               "- conventional / useful when there is no backlash compensation")
         )
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conv.'), 'value': 'cv'}])
+                                            {'label': _('Conventional'), 'value': 'cv'}])
         grid1.addWidget(self.milling_type_label, 7, 0)
         grid1.addWidget(self.milling_type_radio, 7, 1, 1, 2)
 
@@ -754,7 +760,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(cutzlabel, 0, 0)
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.setRange(-9999.9999, -0.000001)
+
+        if machinist_setting == 0:
+            self.cutz_entry.setRange(-9999.9999, -0.000001)
+        else:
+            self.cutz_entry.setRange(-9999.9999, 9999.9999)
+
         self.cutz_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.cutz_entry, 0, 1)
@@ -768,7 +779,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(travelzlabel, 1, 0)
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_precision(self.decimals)
-        self.travelz_entry.setRange(0.0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.travelz_entry.setRange(0.00001, 9999.9999)
+        else:
+            self.travelz_entry.setRange(-9999.9999, 9999.9999)
+
         self.travelz_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.travelz_entry, 1, 1)
@@ -790,7 +806,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(toolchzlabel, 3, 0)
         self.toolchangez_entry = FCDoubleSpinner()
         self.toolchangez_entry.set_precision(self.decimals)
-        self.toolchangez_entry.setRange(0.0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.setRange(0.0, 9999.9999)
+        else:
+            self.toolchangez_entry.setRange(-9999.9999, 9999.9999)
+
         self.toolchangez_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.toolchangez_entry, 3, 1)
@@ -815,7 +836,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(self.eendz_label, 5, 0)
         self.eendz_entry = FCDoubleSpinner()
         self.eendz_entry.set_precision(self.decimals)
-        self.eendz_entry.setRange(0.0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.eendz_entry.setRange(0.0, 9999.9999)
+        else:
+            self.eendz_entry.setRange(-9999.9999, 9999.9999)
+
         self.eendz_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.eendz_entry, 5, 1)
@@ -934,12 +960,11 @@ class ExcellonObjectUI(ObjectUI):
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)
 
-        choose_tools_label = QtWidgets.QLabel(
-            _("Select from the Tools Table above\n"
-              "the hole dias that are to be drilled.\n"
-              "Use the # column to make the selection.")
-        )
-        grid2.addWidget(choose_tools_label, 0, 0, 1, 3)
+        # choose_tools_label = QtWidgets.QLabel(
+        #     _("Select from the Tools Table above the hole dias to be\n"
+        #       "drilled. Use the # column to make the selection.")
+        # )
+        # grid2.addWidget(choose_tools_label, 0, 0, 1, 3)
 
         # ### Choose what to use for Gcode creation: Drills, Slots or Both
         gcode_type_label = QtWidgets.QLabel('<b>%s</b>' % _('Gcode'))
@@ -967,16 +992,11 @@ class ExcellonObjectUI(ObjectUI):
         # ### Milling Holes Drills ####
         self.mill_hole_label = QtWidgets.QLabel('<b>%s</b>' % _('Mill Holes'))
         self.mill_hole_label.setToolTip(
-            _("Create Geometry for milling holes.")
+            _("Create Geometry for milling holes.\n"
+              "Select from the Tools Table above the hole dias to be\n"
+              "milled. Use the # column to make the selection.")
         )
         grid2.addWidget(self.mill_hole_label, 3, 0, 1, 3)
-
-        self.choose_tools_label2 = QtWidgets.QLabel(
-            _("Select from the Tools Table above\n"
-              "the hole dias that are to be milled.\n"
-              "Use the # column to make the selection.")
-        )
-        grid2.addWidget(self.choose_tools_label2, 4, 0, 1, 3)
 
         self.tdlabel = QtWidgets.QLabel('%s:' % _('Drill Tool dia'))
         self.tdlabel.setToolTip(
@@ -993,9 +1013,9 @@ class ExcellonObjectUI(ObjectUI):
               "for milling DRILLS toolpaths.")
         )
 
-        grid2.addWidget(self.tdlabel, 5, 0)
-        grid2.addWidget(self.tooldia_entry, 5, 1)
-        grid2.addWidget(self.generate_milling_button, 5, 2)
+        grid2.addWidget(self.tdlabel, 4, 0)
+        grid2.addWidget(self.tooldia_entry, 4, 1)
+        grid2.addWidget(self.generate_milling_button, 4, 2)
 
         self.stdlabel = QtWidgets.QLabel('%s:' % _('Slot Tool dia'))
         self.stdlabel.setToolTip(
@@ -1014,9 +1034,9 @@ class ExcellonObjectUI(ObjectUI):
               "for milling SLOTS toolpaths.")
         )
 
-        grid2.addWidget(self.stdlabel, 6, 0)
-        grid2.addWidget(self.slot_tooldia_entry, 6, 1)
-        grid2.addWidget(self.generate_milling_slots_button, 6, 2)
+        grid2.addWidget(self.stdlabel, 5, 0)
+        grid2.addWidget(self.slot_tooldia_entry, 5, 1)
+        grid2.addWidget(self.generate_milling_slots_button, 5, 2)
 
     def hide_drills(self, state=True):
         if state is True:
@@ -1152,6 +1172,8 @@ class GeometryObjectUI(ObjectUI):
         # Tool Offset
         self.grid1 = QtWidgets.QGridLayout()
         self.geo_tools_box.addLayout(self.grid1)
+        self.grid1.setColumnStretch(0, 0)
+        self.grid1.setColumnStretch(1, 1)
 
         self.tool_offset_lbl = QtWidgets.QLabel('%s:' % _('Tool Offset'))
         self.tool_offset_lbl.setToolTip(
@@ -1162,70 +1184,57 @@ class GeometryObjectUI(ObjectUI):
                 "cut and negative for 'inside' cut."
             )
         )
-        self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
         self.tool_offset_entry = FCDoubleSpinner()
         self.tool_offset_entry.set_precision(self.decimals)
         self.tool_offset_entry.setRange(-9999.9999, 9999.9999)
         self.tool_offset_entry.setSingleStep(0.1)
 
-        spacer_lbl = QtWidgets.QLabel(" ")
-        spacer_lbl.setMinimumWidth(80)
+        self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
+        self.grid1.addWidget(self.tool_offset_entry, 0, 1, 1, 2)
 
-        self.grid1.addWidget(self.tool_offset_entry, 0, 1)
-        self.grid1.addWidget(spacer_lbl, 0, 2)
-
-        # ### Add a new Tool ####
-        hlay = QtWidgets.QHBoxLayout()
-        self.geo_tools_box.addLayout(hlay)
-
-        # self.addtool_label = QtWidgets.QLabel('<b>Tool</b>')
-        # self.addtool_label.setToolTip(
-        #     "Add/Copy/Delete a tool to the tool list."
-        # )
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
-            _(
-                "Diameter for the new tool"
-            )
+            _("Diameter for the new tool")
         )
         self.addtool_entry = FCDoubleSpinner()
         self.addtool_entry.set_precision(self.decimals)
         self.addtool_entry.setRange(0.00001, 9999.9999)
         self.addtool_entry.setSingleStep(0.1)
 
-        hlay.addWidget(self.addtool_entry_lbl)
-        hlay.addWidget(self.addtool_entry)
+        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
+        self.addtool_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "with the specified diameter.")
+        )
+
+        self.grid1.addWidget(self.addtool_entry_lbl, 1, 0)
+        self.grid1.addWidget(self.addtool_entry, 1, 1)
+        self.grid1.addWidget(self.addtool_btn, 1, 2)
+
+        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add Tool from DataBase'))
+        self.addtool_from_db_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "from the Tool DataBase.")
+        )
+        self.grid1.addWidget(self.addtool_from_db_btn, 2, 0, 1, 3)
 
         grid2 = QtWidgets.QGridLayout()
         self.geo_tools_box.addLayout(grid2)
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
-        self.addtool_btn.setToolTip(
-            _(
-                "Add a new tool to the Tool Table\n"
-                "with the diameter specified above."
-            )
-        )
-
         self.copytool_btn = QtWidgets.QPushButton(_('Copy'))
         self.copytool_btn.setToolTip(
-            _(
-                "Copy a selection of tools in the Tool Table\n"
-                "by first selecting a row in the Tool Table."
-            )
+            _("Copy a selection of tools in the Tool Table\n"
+              "by first selecting a row in the Tool Table.")
         )
 
         self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
         self.deltool_btn.setToolTip(
-            _(
-                "Delete a selection of tools in the Tool Table\n"
-                "by first selecting a row in the Tool Table."
-            )
+            _("Delete a selection of tools in the Tool Table\n"
+              "by first selecting a row in the Tool Table.")
         )
 
-        grid2.addWidget(self.addtool_btn, 0, 0)
-        grid2.addWidget(self.copytool_btn, 0, 1)
-        grid2.addWidget(self.deltool_btn, 0, 2)
+        grid2.addWidget(self.copytool_btn, 0, 0)
+        grid2.addWidget(self.deltool_btn, 0, 1)
 
         self.empty_label = QtWidgets.QLabel('')
         self.geo_tools_box.addWidget(self.empty_label)
@@ -1295,7 +1304,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.setRange(-9999.9999, -0.00001)
+
+        if machinist_setting == 0:
+            self.cutz_entry.setRange(-9999.9999, -0.00001)
+        else:
+            self.cutz_entry.setRange(-9999.9999, 9999.9999)
+
         self.cutz_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(cutzlabel, 3, 0)
@@ -1335,7 +1349,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_precision(self.decimals)
-        self.travelz_entry.setRange(0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.travelz_entry.setRange(0.00001, 9999.9999)
+        else:
+            self.travelz_entry.setRange(-9999.9999, 9999.9999)
+
         self.travelz_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(travelzlabel, 5, 0)
@@ -1358,7 +1377,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.toolchangez_entry = FCDoubleSpinner()
         self.toolchangez_entry.set_precision(self.decimals)
-        self.toolchangez_entry.setRange(0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.setRange(0, 9999.9999)
+        else:
+            self.toolchangez_entry.setRange(-9999.9999, 9999.9999)
+
         self.toolchangez_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.toolchangeg_cb, 6, 0, 1, 2)
@@ -1385,7 +1409,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.gendz_entry = FCDoubleSpinner()
         self.gendz_entry.set_precision(self.decimals)
-        self.gendz_entry.setRange(0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.gendz_entry.setRange(0, 9999.9999)
+        else:
+            self.gendz_entry.setRange(-9999.9999, 9999.9999)
+
         self.gendz_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.endzlabel, 9, 0)

@@ -1281,21 +1281,14 @@ class ToolPaint(FlatCAMTool, Gerber):
                     obj.solid_geometry = obj.solid_geometry.buffer(0)
 
         poly = self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)
-        paint_method = method if method is None else self.paintmethod_combo.get_value()
+
+        paint_method = method if method is not None else self.paintmethod_combo.get_value()
 
         if margin is not None:
             paint_margin = margin
         else:
-            try:
-                paint_margin = float(self.paintmargin_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            paint_margin = float(self.paintmargin_entry.get_value())
+
         # determine if to use the progressive plotting
         if self.app.defaults["tools_paint_plotting"] == 'progressive':
             prog_plot = True
@@ -1558,21 +1551,12 @@ class ToolPaint(FlatCAMTool, Gerber):
         Usage of the different one is related to when this function is called from a TcL command.
         :return:
         """
-        paint_method = method if method is None else self.paintmethod_combo.get_value()
+        paint_method = method if method is not None else self.paintmethod_combo.get_value()
 
         if margin is not None:
             paint_margin = margin
         else:
-            try:
-                paint_margin = float(self.paintmargin_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            paint_margin = float(self.paintmargin_entry.get_value())
 
         # determine if to use the progressive plotting
         if self.app.defaults["tools_paint_plotting"] == 'progressive':
@@ -2035,7 +2019,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         Usage of the different one is related to when this function is called from a TcL command.
         :return:
         """
-        paint_method = method if method is None else self.paintmethod_combo.get_value()
+        paint_method = method if method is not None else self.paintmethod_combo.get_value()
 
         if margin is not None:
             paint_margin = margin

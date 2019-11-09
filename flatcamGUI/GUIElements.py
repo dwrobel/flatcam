@@ -12,7 +12,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot, QSettings
 from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
 from PyQt5.QtGui import QKeySequence, QTextCursor
 
@@ -376,9 +376,9 @@ class FCEntry(QtWidgets.QLineEdit):
     def get_value(self):
         return str(self.text())
 
-    def set_value(self, val):
+    def set_value(self, val, decimals=4):
         if type(val) is float:
-            self.setText('%.4f' % val)
+            self.setText('%.*f' % (decimals, val))
         else:
             self.setText(str(val))
 

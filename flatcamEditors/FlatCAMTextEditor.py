@@ -193,12 +193,12 @@ class TextEditor(QtWidgets.QWidget):
 
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
-                caption=_("Export G-Code ..."),
+                caption=_("Export Code ..."),
                 directory=self.app.defaults["global_last_folder"] + '/' + str(obj_name),
                 filter=_filter_
             )[0])
         except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export G-Code ..."), filter=_filter_)[0])
+            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Code ..."), filter=_filter_)[0])
 
         if filename == "":
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Code cancelled."))

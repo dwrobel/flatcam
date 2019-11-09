@@ -1449,7 +1449,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.decimals = 4
 
         # ## Current application units in Upper Case
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         self.exc_edit_widget = QtWidgets.QWidget()
         # ## Box for custom widgets
@@ -2099,7 +2099,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             "corner_snap": False,
             "grid_gap_link": True
         }
-        self.app.options_read_form()
+        self.options.update(self.app.options)
 
         for option in self.options:
             if option in self.app.options:
