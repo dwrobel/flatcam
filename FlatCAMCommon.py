@@ -538,9 +538,107 @@ class ToolsDB(QtWidgets.QWidget):
             ]
         )
         self.table_widget.horizontalHeaderItem(0).setToolTip(
-            _("Index.\n"
-              "The rows in gray color will populate the Bookmarks menu.\n"
-              "The number of gray colored rows is set in Preferences."))
+            _("Tool Index."))
+        self.table_widget.horizontalHeaderItem(1).setToolTip(
+            _("Tool name.\n"
+              "This is not used in the app, it's function\n"
+              "is to serve as a note for the user."))
+        self.table_widget.horizontalHeaderItem(2).setToolTip(
+            _("Tool Diameter."))
+        self.table_widget.horizontalHeaderItem(3).setToolTip(
+            _("Tool Offset.\n"
+              "Can be of a few types:\n"
+              "Path = zero offset\n"
+              "In = offset inside by half of tool diameter\n"
+              "Out = offset outside by half of tool diameter\n"
+              "Custom = custom offset using the Custom Offset value"))
+        self.table_widget.horizontalHeaderItem(4).setToolTip(
+            _("Custom Offset.\n"
+              "A value to be used as offset from the current path."))
+        self.table_widget.horizontalHeaderItem(5).setToolTip(
+            _("Tool Type.\n"
+              "Can be:\n"
+              "Iso = isolation cut\n"
+              "Rough = rough cut, low feedrate, multiple passes\n"
+              "Finish = finishing cut, high feedrate"))
+        self.table_widget.horizontalHeaderItem(6).setToolTip(
+            _("Tool Shape. \n"
+              "Can be:\n"
+              "C1 ... C4 = circular tool with x flutes\n"
+              "B = ball tip milling tool\n"
+              "V = v-shape milling tool"))
+        self.table_widget.horizontalHeaderItem(7).setToolTip(
+            _("Cutting Depth.\n"
+              "The depth at which to cut into material."))
+        self.table_widget.horizontalHeaderItem(8).setToolTip(
+            _("Multi Depth.\n"
+              "Selecting this will allow cutting in multiple passes,\n"
+              "each pass adding a DPP parameter depth."))
+        self.table_widget.horizontalHeaderItem(9).setToolTip(
+            _("DPP. Depth per Pass.\n"
+              "The value used to cut into material on each pass."))
+        self.table_widget.horizontalHeaderItem(10).setToolTip(
+            _("V-Dia.\n"
+              "Diameter of the tip for V-Shape Tools."))
+        self.table_widget.horizontalHeaderItem(11).setToolTip(
+            _("V-Agle.\n"
+              "Angle at the tip for the V-Shape Tools."))
+        self.table_widget.horizontalHeaderItem(12).setToolTip(
+            _("Clearance Height.\n"
+              "Height at which the milling bit will travel between cuts,\n"
+              "above the surface of the material, avoiding all fixtures."))
+        self.table_widget.horizontalHeaderItem(13).setToolTip(
+            _("FR. Feedrate\n"
+              "The speed on XY plane used while cutting into material."))
+        self.table_widget.horizontalHeaderItem(14).setToolTip(
+            _("FR Z. Feedrate Z\n"
+              "The speed on Z plane."))
+        self.table_widget.horizontalHeaderItem(15).setToolTip(
+            _("FR Rapids. Feedrate Rapids\n"
+              "Speed used while moving as fast as possible.\n"
+              "This is used only by some devices that can't use\n"
+              "the G0 g-code command. Mostly 3D printers."))
+        self.table_widget.horizontalHeaderItem(16).setToolTip(
+            _("Spindle Speed.\n"
+              "If it's left empty it will not be used.\n"
+              "The speed of the spindle in RPM."))
+        self.table_widget.horizontalHeaderItem(17).setToolTip(
+            _("Dwell.\n"
+              "Check this if a delay is needed to allow\n"
+              "the spindle motor to reach it's set speed."))
+        self.table_widget.horizontalHeaderItem(18).setToolTip(
+            _("Dwell Time.\n"
+              "A delay used to allow the motor spindle reach it's set speed."))
+        self.table_widget.horizontalHeaderItem(19).setToolTip(
+            _("Postprocessor.\n"
+              "A selection of files that will alter the generated G-code\n"
+              "to fit for a number of use cases."))
+        self.table_widget.horizontalHeaderItem(20).setToolTip(
+            _("Extra Cut.\n"
+              "If checked, after a isolation is finished an extra cut\n"
+              "will be added where the start and end of isolation meet\n"
+              "such as that this point is covered by this extra cut to\n"
+              "ensure a complete isolation."))
+        self.table_widget.horizontalHeaderItem(21).setToolTip(
+            _("Toolchange.\n"
+              "It will create a toolchange event.\n"
+              "The kind of toolchange is determined by\n"
+              "the postprocessor file."))
+        self.table_widget.horizontalHeaderItem(22).setToolTip(
+            _("Toolchange XY.\n"
+              "A set of coordinates in the format (x, y).\n"
+              "Will determine the cartesian position of the point\n"
+              "where the tool change event take place."))
+        self.table_widget.horizontalHeaderItem(23).setToolTip(
+            _("Toolchange Z.\n"
+              "The position on Z plane where the tool change event take place."))
+        self.table_widget.horizontalHeaderItem(24).setToolTip(
+            _("Start Z.\n"
+              "If it's left empty it will not be used.\n"
+              "A position on Z plane to move immediately after job start."))
+        self.table_widget.horizontalHeaderItem(25).setToolTip(
+            _("End Z.\n"
+              "A position on Z plane to move immediately after job stop."))
 
         # pal = QtGui.QPalette()
         # pal.setColor(QtGui.QPalette.Background, Qt.white)
@@ -561,10 +659,22 @@ class ToolsDB(QtWidgets.QWidget):
         self.buttons_frame.show()
 
         add_entry_btn = FCButton(_("Add Tool to Tools DB"))
+        add_entry_btn.setToolTip(
+            _("Add a new tool in the Tools Database.\n"
+              "You can edit it after it is added.")
+        )
         remove_entry_btn = FCButton(_("Remove Tool from Tools DB"))
+        remove_entry_btn.setToolTip(
+            _("Remove a selection of tools in the Tools Database.")
+        )
         export_db_btn = FCButton(_("Export Tool DB"))
+        export_db_btn.setToolTip(
+            _("Save the Tools Database to a custom text file.")
+        )
         import_db_btn = FCButton(_("Import Tool DB"))
-
+        import_db_btn.setToolTip(
+            _("Load the Tools Database information's from a custom text file.")
+        )
         # button_hlay.addStretch()
         self.buttons_box.addWidget(add_entry_btn)
         self.buttons_box.addWidget(remove_entry_btn)
@@ -574,6 +684,11 @@ class ToolsDB(QtWidgets.QWidget):
         # self.buttons_box.addWidget(closebtn)
 
         self.add_tool_from_db = FCButton(_("Add Tool from Tools DB"))
+        add_entry_btn.setToolTip(
+            _("Add a new tool in the Tools Table of the\n"
+              "active Geometry object after selecting a tool\n"
+              "in the Tools Database.")
+        )
         self.add_tool_from_db.hide()
 
         hlay = QtWidgets.QHBoxLayout()

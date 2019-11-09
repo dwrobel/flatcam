@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed a new bug that did not allow to open the FlatCAM Preferences files by doubleclick in Windows
 - added a new feature: Tools Database for Geometry objects; resolved issue #308
+- added tooltips for the Tools Database table headers and buttons
+
 
 8.11.2019
 
