@@ -14,7 +14,7 @@ from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon
 
 import shapely.geometry.base as base
 from shapely.ops import cascaded_union, unary_union
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon, MultiPolygon, Point
 from shapely.geometry import box as box
 
 import logging
@@ -98,7 +98,7 @@ class ToolCopperThieving(FlatCAMTool):
               "and the copper traces in the Gerber file.")
         )
         self.clearance_entry = FCDoubleSpinner()
-        self.clearance_entry.setMinimum(0.00001)
+        self.clearance_entry.set_range(0.00001, 9999.9999)
         self.clearance_entry.set_precision(self.decimals)
         self.clearance_entry.setSingleStep(0.1)
 
@@ -111,7 +111,7 @@ class ToolCopperThieving(FlatCAMTool):
             _("Bounding box margin.")
         )
         self.margin_entry = FCDoubleSpinner()
-        self.margin_entry.setMinimum(0.0)
+        self.margin_entry.set_range(0.0, 9999.9999)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
@@ -200,6 +200,126 @@ class ToolCopperThieving(FlatCAMTool):
         grid_lay.addWidget(self.fill_type_label, 8, 0)
         grid_lay.addWidget(self.fill_type_radio, 8, 1)
 
+        # DOTS FRAME
+        self.dots_frame = QtWidgets.QFrame()
+        self.dots_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.dots_frame)
+        dots_grid = QtWidgets.QGridLayout()
+        dots_grid.setColumnStretch(0, 0)
+        dots_grid.setColumnStretch(1, 1)
+        dots_grid.setContentsMargins(0, 0, 0, 0)
+        self.dots_frame.setLayout(dots_grid)
+        self.dots_frame.hide()
+
+        self.dots_label = QtWidgets.QLabel('<b>%s</b>:' % _("Dots Grid Parameters"))
+        dots_grid.addWidget(self.dots_label, 0, 0, 1, 2)
+
+        # Dot diameter #
+        self.dotdia_label = QtWidgets.QLabel('%s:' % _("Dia"))
+        self.dotdia_label.setToolTip(
+            _("Dot diameter in Dots Grid.")
+        )
+        self.dot_dia_entry = FCDoubleSpinner()
+        self.dot_dia_entry.set_range(0.0, 9999.9999)
+        self.dot_dia_entry.set_precision(self.decimals)
+        self.dot_dia_entry.setSingleStep(0.1)
+
+        dots_grid.addWidget(self.dotdia_label, 1, 0)
+        dots_grid.addWidget(self.dot_dia_entry, 1, 1)
+
+        # Dot spacing #
+        self.dotspacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
+        self.dotspacing_label.setToolTip(
+            _("Distance between each two dots in Dots Grid.")
+        )
+        self.dot_spacing_entry = FCDoubleSpinner()
+        self.dot_spacing_entry.set_range(0.0, 9999.9999)
+        self.dot_spacing_entry.set_precision(self.decimals)
+        self.dot_spacing_entry.setSingleStep(0.1)
+
+        dots_grid.addWidget(self.dotspacing_label, 2, 0)
+        dots_grid.addWidget(self.dot_spacing_entry, 2, 1)
+
+        # SQUARES FRAME
+        self.squares_frame = QtWidgets.QFrame()
+        self.squares_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.squares_frame)
+        squares_grid = QtWidgets.QGridLayout()
+        squares_grid.setColumnStretch(0, 0)
+        squares_grid.setColumnStretch(1, 1)
+        squares_grid.setContentsMargins(0, 0, 0, 0)
+        self.squares_frame.setLayout(squares_grid)
+        self.squares_frame.hide()
+
+        self.squares_label = QtWidgets.QLabel('<b>%s</b>:' % _("Squares Grid Parameters"))
+        squares_grid.addWidget(self.squares_label, 0, 0, 1, 2)
+
+        # Square Size #
+        self.square_size_label = QtWidgets.QLabel('%s:' % _("Size"))
+        self.square_size_label.setToolTip(
+            _("Square side size in Squares Grid.")
+        )
+        self.square_size_entry = FCDoubleSpinner()
+        self.square_size_entry.set_range(0.0, 9999.9999)
+        self.square_size_entry.set_precision(self.decimals)
+        self.square_size_entry.setSingleStep(0.1)
+
+        squares_grid.addWidget(self.square_size_label, 1, 0)
+        squares_grid.addWidget(self.square_size_entry, 1, 1)
+
+        # Squares spacing #
+        self.squares_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
+        self.squares_spacing_label.setToolTip(
+            _("Distance between each two squares in Squares Grid.")
+        )
+        self.squares_spacing_entry = FCDoubleSpinner()
+        self.squares_spacing_entry.set_range(0.0, 9999.9999)
+        self.squares_spacing_entry.set_precision(self.decimals)
+        self.squares_spacing_entry.setSingleStep(0.1)
+
+        squares_grid.addWidget(self.squares_spacing_label, 2, 0)
+        squares_grid.addWidget(self.squares_spacing_entry, 2, 1)
+
+        # LINES FRAME
+        self.lines_frame = QtWidgets.QFrame()
+        self.lines_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.lines_frame)
+        lines_grid = QtWidgets.QGridLayout()
+        lines_grid.setColumnStretch(0, 0)
+        lines_grid.setColumnStretch(1, 1)
+        lines_grid.setContentsMargins(0, 0, 0, 0)
+        self.lines_frame.setLayout(lines_grid)
+        self.lines_frame.hide()
+
+        self.lines_label = QtWidgets.QLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
+        lines_grid.addWidget(self.lines_label, 0, 0, 1, 2)
+
+        # Square Size #
+        self.line_size_label = QtWidgets.QLabel('%s:' % _("Size"))
+        self.line_size_label.setToolTip(
+            _("Line thickness size in Lines Grid.")
+        )
+        self.line_size_entry = FCDoubleSpinner()
+        self.line_size_entry.set_range(0.0, 9999.9999)
+        self.line_size_entry.set_precision(self.decimals)
+        self.line_size_entry.setSingleStep(0.1)
+
+        lines_grid.addWidget(self.line_size_label, 1, 0)
+        lines_grid.addWidget(self.line_size_entry, 1, 1)
+
+        # Lines spacing #
+        self.lines_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
+        self.lines_spacing_label.setToolTip(
+            _("Distance between each two lines in Lines Grid.")
+        )
+        self.lines_spacing_entry = FCDoubleSpinner()
+        self.lines_spacing_entry.set_range(0.0, 9999.9999)
+        self.lines_spacing_entry.set_precision(self.decimals)
+        self.lines_spacing_entry.setSingleStep(0.1)
+
+        lines_grid.addWidget(self.lines_spacing_label, 2, 0)
+        lines_grid.addWidget(self.lines_spacing_entry, 2, 1)
+
         # ## Insert Copper Thieving
         self.fill_button = QtWidgets.QPushButton(_("Insert Copper thieving"))
         self.fill_button.setToolTip(
@@ -235,6 +355,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.fill_button.clicked.connect(self.execute)
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
+        self.fill_type_radio.activated_custom.connect(self.on_thieving_type)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCopperThieving()")
@@ -276,6 +397,13 @@ class ToolCopperThieving(FlatCAMTool):
         self.fill_type_radio.set_value(self.app.defaults["tools_copper_thieving_fill_type"])
         self.geo_steps_per_circle = int(self.app.defaults["tools_copper_thieving_circle_steps"])
 
+        self.dot_dia_entry.set_value(self.app.defaults["tools_copper_thieving_dots_dia"])
+        self.dot_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_dots_spacing"])
+        self.square_size_entry.set_value(self.app.defaults["tools_copper_thieving_squares_size"])
+        self.squares_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_squares_spacing"])
+        self.line_size_entry.set_value(self.app.defaults["tools_copper_thieving_lines_size"])
+        self.lines_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_lines_spacing"])
+
         self.area_method = False
 
     def on_combo_box_type(self):
@@ -301,6 +429,24 @@ class ToolCopperThieving(FlatCAMTool):
         else:
             self.bbox_type_label.hide()
             self.bbox_type_radio.hide()
+
+    def on_thieving_type(self, choice):
+        if choice == 'solid':
+            self.dots_frame.hide()
+            self.squares_frame.hide()
+            self.lines_frame.hide()
+        elif choice == 'dot':
+            self.dots_frame.show()
+            self.squares_frame.hide()
+            self.lines_frame.hide()
+        elif choice == 'square':
+            self.dots_frame.hide()
+            self.squares_frame.show()
+            self.lines_frame.hide()
+        else:
+            self.dots_frame.hide()
+            self.squares_frame.hide()
+            self.lines_frame.show()
 
     def execute(self):
         self.app.call_source = "copper_thieving_tool"
@@ -330,8 +476,8 @@ class ToolCopperThieving(FlatCAMTool):
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(e)))
                 return "Could not retrieve object: %s" % self.obj_name
 
-            self.on_copper_fill(
-                fill_obj=self.grb_object,
+            self.on_copper_thieving(
+                thieving_obj=self.grb_object,
                 c_val=self.clearance_val,
                 margin=self.margin_val
             )
@@ -363,8 +509,8 @@ class ToolCopperThieving(FlatCAMTool):
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), bound_obj_name))
                 return "Could not retrieve object: %s. Error: %s" % (bound_obj_name, str(e))
 
-            self.on_copper_fill(
-                fill_obj=self.grb_object,
+            self.on_copper_thieving(
+                thieving_obj=self.grb_object,
                 ref_obj=self.ref_obj,
                 c_val=self.clearance_val,
                 margin=self.margin_val
@@ -445,8 +591,8 @@ class ToolCopperThieving(FlatCAMTool):
             if not isinstance(self.sel_rect, Iterable):
                 self.sel_rect = [self.sel_rect]
 
-            self.on_copper_fill(
-                fill_obj=self.grb_object,
+            self.on_copper_thieving(
+                thieving_obj=self.grb_object,
                 ref_obj=self.sel_rect,
                 c_val=self.clearance_val,
                 margin=self.margin_val
@@ -497,10 +643,10 @@ class ToolCopperThieving(FlatCAMTool):
             self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
                                                  coords=(curr_pos[0], curr_pos[1]))
 
-    def on_copper_fill(self, fill_obj, ref_obj=None, c_val=None, margin=None, run_threaded=True):
+    def on_copper_thieving(self, thieving_obj, ref_obj=None, c_val=None, margin=None, run_threaded=True):
         """
 
-        :param fill_obj:
+        :param thieving_obj:
         :param ref_obj:
         :param c_val:
         :param margin:
@@ -526,6 +672,14 @@ class ToolCopperThieving(FlatCAMTool):
             c_val = float(self.app.defaults["tools_copperfill_clearance"])
         if margin is None:
             margin = float(self.app.defaults["tools_copperfill_margin"])
+
+        fill_type = self.fill_type_radio.get_value()
+        dot_dia = self.dot_dia_entry.get_value()
+        dot_spacing = self.dot_spacing_entry.get_value()
+        square_size = self.square_size_entry.get_value()
+        square_spacing = self.squares_spacing_entry.get_value()
+        line_size = self.line_size_entry.get_value()
+        line_spacing = self.lines_spacing_entry.get_value()
 
         # make sure that the source object solid geometry is an Iterable
         if not isinstance(self.grb_object.solid_geometry, Iterable):
@@ -584,11 +738,11 @@ class ToolCopperThieving(FlatCAMTool):
 
         try:
             if ref_obj is None or ref_obj == 'itself':
-                working_obj = fill_obj
+                working_obj = thieving_obj
             else:
                 working_obj = ref_obj
         except Exception as e:
-            log.debug("ToolCopperThieving.on_copper_fill() --> %s" % str(e))
+            log.debug("ToolCopperThieving.on_copper_thieving() --> %s" % str(e))
             return 'fail'
 
         bounding_box = None
@@ -622,7 +776,7 @@ class ToolCopperThieving(FlatCAMTool):
 
                 bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
             except Exception as e:
-                log.debug("ToolCopperFIll.on_copper_fill()  'itself'  --> %s" % str(e))
+                log.debug("ToolCopperFIll.on_copper_thieving()  'itself'  --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
                 return 'fail'
 
@@ -631,7 +785,7 @@ class ToolCopperThieving(FlatCAMTool):
             try:
                 __ = iter(geo_n)
             except Exception as e:
-                log.debug("ToolCopperFIll.on_copper_fill() 'area' --> %s" % str(e))
+                log.debug("ToolCopperFIll.on_copper_thieving() 'area' --> %s" % str(e))
                 geo_n = [geo_n]
 
             geo_buff_list = []
@@ -650,7 +804,7 @@ class ToolCopperThieving(FlatCAMTool):
                 try:
                     __ = iter(geo_n)
                 except Exception as e:
-                    log.debug("ToolCopperFIll.on_copper_fill() 'box' --> %s" % str(e))
+                    log.debug("ToolCopperFIll.on_copper_thieving() 'box' --> %s" % str(e))
                     geo_n = [geo_n]
 
                 geo_buff_list = []
@@ -672,7 +826,20 @@ class ToolCopperThieving(FlatCAMTool):
         log.debug("Copper Thieving Tool. Finished creating areas to fill with copper.")
 
         self.app.inform.emit(_("Copper Thieving Tool. Appending new geometry and buffering."))
-        new_solid_geometry = bounding_box.difference(clearance_geometry)
+
+        # #########################################################################################
+        # ########## Generate filling geometry. ###################################################
+        # #########################################################################################
+
+        if fill_type == 'solid':
+            new_solid_geometry = bounding_box.difference(clearance_geometry)
+        elif fill_type == 'dots':
+            dot_geo = Point((0, 0)).buffer(dot_dia / 2.0)
+            try:
+                for bb in bounding_box:
+                    pass
+            except TypeError:
+                pass
 
         geo_list = self.grb_object.solid_geometry
         if isinstance(self.grb_object.solid_geometry, MultiPolygon):

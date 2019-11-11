@@ -2515,7 +2515,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Copper Thieving Tool
                 if key == QtCore.Qt.Key_F:
-                    self.app.copperfill_tool.run(toggle=True)
+                    self.app.copper_thieving_tool.run(toggle=True)
                     return
 
                 # Toggle Grid lines

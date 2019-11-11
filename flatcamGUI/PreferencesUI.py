@@ -5830,6 +5830,93 @@ class Tools2CFillPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.fill_type_label, 7, 0)
         grid_lay.addWidget(self.fill_type_radio, 7, 1)
 
+        self.dots_label = QtWidgets.QLabel('<b>%s</b>:' % _("Dots Grid Parameters"))
+        grid_lay.addWidget(self.dots_label, 8, 0, 1, 2)
+
+        # Dot diameter #
+        self.dotdia_label = QtWidgets.QLabel('%s:' % _("Dia"))
+        self.dotdia_label.setToolTip(
+            _("Dot diameter in Dots Grid.")
+        )
+        self.dot_dia_entry = FCDoubleSpinner()
+        self.dot_dia_entry.set_range(0.0, 9999.9999)
+        self.dot_dia_entry.set_precision(self.decimals)
+        self.dot_dia_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.dotdia_label, 9, 0)
+        grid_lay.addWidget(self.dot_dia_entry, 9, 1)
+
+        # Dot spacing #
+        self.dotspacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
+        self.dotspacing_label.setToolTip(
+            _("Distance between each two dots in Dots Grid.")
+        )
+        self.dot_spacing_entry = FCDoubleSpinner()
+        self.dot_spacing_entry.set_range(0.0, 9999.9999)
+        self.dot_spacing_entry.set_precision(self.decimals)
+        self.dot_spacing_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.dotspacing_label, 10, 0)
+        grid_lay.addWidget(self.dot_spacing_entry, 10, 1)
+
+        self.squares_label = QtWidgets.QLabel('<b>%s</b>:' % _("Squares Grid Parameters"))
+        grid_lay.addWidget(self.squares_label, 11, 0, 1, 2)
+
+        # Square Size #
+        self.square_size_label = QtWidgets.QLabel('%s:' % _("Size"))
+        self.square_size_label.setToolTip(
+            _("Square side size in Squares Grid.")
+        )
+        self.square_size_entry = FCDoubleSpinner()
+        self.square_size_entry.set_range(0.0, 9999.9999)
+        self.square_size_entry.set_precision(self.decimals)
+        self.square_size_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.square_size_label, 12, 0)
+        grid_lay.addWidget(self.square_size_entry, 12, 1)
+
+        # Squares spacing #
+        self.squares_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
+        self.squares_spacing_label.setToolTip(
+            _("Distance between each two squares in Squares Grid.")
+        )
+        self.squares_spacing_entry = FCDoubleSpinner()
+        self.squares_spacing_entry.set_range(0.0, 9999.9999)
+        self.squares_spacing_entry.set_precision(self.decimals)
+        self.squares_spacing_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.squares_spacing_label, 13, 0)
+        grid_lay.addWidget(self.squares_spacing_entry, 13, 1)
+
+        self.lines_label = QtWidgets.QLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
+        grid_lay.addWidget(self.lines_label, 14, 0, 1, 2)
+
+        # Square Size #
+        self.line_size_label = QtWidgets.QLabel('%s:' % _("Size"))
+        self.line_size_label.setToolTip(
+            _("Line thickness size in Lines Grid.")
+        )
+        self.line_size_entry = FCDoubleSpinner()
+        self.line_size_entry.set_range(0.0, 9999.9999)
+        self.line_size_entry.set_precision(self.decimals)
+        self.line_size_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.line_size_label, 15, 0)
+        grid_lay.addWidget(self.line_size_entry, 15, 1)
+
+        # Lines spacing #
+        self.lines_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
+        self.lines_spacing_label.setToolTip(
+            _("Distance between each two lines in Lines Grid.")
+        )
+        self.lines_spacing_entry = FCDoubleSpinner()
+        self.lines_spacing_entry.set_range(0.0, 9999.9999)
+        self.lines_spacing_entry.set_precision(self.decimals)
+        self.lines_spacing_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.lines_spacing_label, 16, 0)
+        grid_lay.addWidget(self.lines_spacing_entry, 16, 1)
+
         self.layout.addStretch()
 
 

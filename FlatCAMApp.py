@@ -834,6 +834,12 @@ class App(QtCore.QObject):
             "tools_copper_thieving_box_type": 'rect',
             "tools_copper_thieving_circle_steps": 128,
             "tools_copper_thieving_fill_type": 'solid',
+            "tools_copper_thieving_dots_dia": 0.0393701,
+            "tools_copper_thieving_dots_spacing": 0.0787402,
+            "tools_copper_thieving_squares_size": 0.0393701,
+            "tools_copper_thieving_squares_spacing": 0.0787402,
+            "tools_copper_thieving_lines_size": 0.01,
+            "tools_copper_thieving_lines_spacing": 0.0787402,
 
             # Utilities
             # file associations
@@ -1371,6 +1377,13 @@ class App(QtCore.QObject):
             "tools_copper_thieving_box_type": self.ui.tools2_defaults_form.tools2_cfill_group.bbox_type_radio,
             "tools_copper_thieving_circle_steps": self.ui.tools2_defaults_form.tools2_cfill_group.circlesteps_entry,
             "tools_copper_thieving_fill_type": self.ui.tools2_defaults_form.tools2_cfill_group.fill_type_radio,
+            "tools_copper_thieving_dots_dia": self.ui.tools2_defaults_form.tools2_cfill_group.dot_dia_entry,
+            "tools_copper_thieving_dots_spacing": self.ui.tools2_defaults_form.tools2_cfill_group.dot_spacing_entry,
+            "tools_copper_thieving_squares_size": self.ui.tools2_defaults_form.tools2_cfill_group.square_size_entry,
+            "tools_copper_thieving_squares_spacing":
+                self.ui.tools2_defaults_form.tools2_cfill_group.squares_spacing_entry,
+            "tools_copper_thieving_lines_size": self.ui.tools2_defaults_form.tools2_cfill_group.line_size_entry,
+            "tools_copper_thieving_lines_spacing": self.ui.tools2_defaults_form.tools2_cfill_group.lines_spacing_entry,
 
             # Utilities
             # File associations

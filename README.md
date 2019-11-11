@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - renamed the Copper Fill Tool to Copper Thieving Tool as this is a more appropriate name; started to add ability for more types of copper thieving besides solid
 - fixed some issues recently introduced in ParseSVG
 - updated POT file
+- fixed GUI in 2Sided Tool
+- extending the Copper Thieving Tool - wip
 
 9.11.2019
 

@@ -45,6 +45,8 @@ class DblSidedTool(FlatCAMTool):
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_lay)
+        grid_lay.setColumnStretch(0, 1)
+        grid_lay.setColumnStretch(1, 0)
 
         # ## Gerber Object to mirror
         self.gerber_object_combo = QtWidgets.QComboBox()
@@ -53,9 +55,7 @@ class DblSidedTool(FlatCAMTool):
         self.gerber_object_combo.setCurrentIndex(1)
 
         self.botlay_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
-        self.botlay_label.setToolTip(
-            "Gerber  to be mirrored."
-        )
+        self.botlay_label.setToolTip('%s.' % _("Gerber  to be mirrored"))
 
         self.mirror_gerber_button = QtWidgets.QPushButton(_("Mirror"))
         self.mirror_gerber_button.setToolTip(
@@ -77,9 +77,7 @@ class DblSidedTool(FlatCAMTool):
         self.exc_object_combo.setCurrentIndex(1)
 
         self.excobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("EXCELLON"))
-        self.excobj_label.setToolTip(
-            _("Excellon Object to be mirrored.")
-        )
+        self.excobj_label.setToolTip(_("Excellon Object to be mirrored."))
 
         self.mirror_exc_button = QtWidgets.QPushButton(_("Mirror"))
         self.mirror_exc_button.setToolTip(
@@ -126,9 +124,8 @@ class DblSidedTool(FlatCAMTool):
         self.mirror_axis = RadioSet([{'label': 'X', 'value': 'X'},
                                      {'label': 'Y', 'value': 'Y'}])
         self.mirax_label = QtWidgets.QLabel(_("Mirror Axis:"))
-        self.mirax_label.setToolTip(
-            _("Mirror vertically (X) or horizontally (Y).")
-        )
+        self.mirax_label.setToolTip(_("Mirror vertically (X) or horizontally (Y)."))
+
         # grid_lay.addRow("Mirror Axis:", self.mirror_axis)
         self.empty_lb1 = QtWidgets.QLabel("")
         grid_lay1.addWidget(self.empty_lb1, 6, 0)
@@ -154,6 +151,8 @@ class DblSidedTool(FlatCAMTool):
         # ## Grid Layout
         grid_lay2 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_lay2)
+        grid_lay2.setColumnStretch(0, 1)
+        grid_lay2.setColumnStretch(1, 0)
 
         # ## Point/Box
         self.point_box_container = QtWidgets.QVBoxLayout()
