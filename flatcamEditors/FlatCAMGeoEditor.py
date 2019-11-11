@@ -1297,8 +1297,7 @@ class TransformEditorTool(FlatCAMTool):
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Rotation action was not executed"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Rotation action was not executed"), str(e)))
                     return
 
     def on_flip(self, axis):
@@ -1358,8 +1357,7 @@ class TransformEditorTool(FlatCAMTool):
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Flip action was not executed"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Flip action was not executed"), str(e)))
                     return
 
     def on_skew(self, axis, num):
@@ -1405,8 +1403,7 @@ class TransformEditorTool(FlatCAMTool):
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Skew action was not executed"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Skew action was not executed"), str(e)))
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -1462,8 +1459,7 @@ class TransformEditorTool(FlatCAMTool):
                                              _('Scale on the Y axis done'))
                     self.app.progress.emit(100)
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Scale action was not executed"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Scale action was not executed"), str(e)))
                     return
 
     def on_offset(self, axis, num):
@@ -1496,8 +1492,7 @@ class TransformEditorTool(FlatCAMTool):
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Offset action was not executed"), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Offset action was not executed"), str(e)))
                     return
 
     def on_rotate_key(self):
@@ -1815,7 +1810,7 @@ class DrawToolShape(object):
 
         try:
             xfactor = float(xfactor)
-        except:
+        except Exception:
             log.debug("DrawToolShape.offset() --> Scale factor has to be a number: integer or float.")
             return
 
@@ -1824,7 +1819,7 @@ class DrawToolShape(object):
         else:
             try:
                 yfactor = float(yfactor)
-            except:
+            except Exception:
                 log.debug("DrawToolShape.offset() --> Scale factor has to be a number: integer or float.")
                 return
 
@@ -1946,7 +1941,7 @@ class FCCircle(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle_geo.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -1979,7 +1974,7 @@ class FCCircle(FCShapeTool):
     def make(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         p1 = self.points[0]
@@ -1998,7 +1993,7 @@ class FCArc(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_arc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2217,7 +2212,7 @@ class FCRectangle(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2248,7 +2243,7 @@ class FCRectangle(FCShapeTool):
     def make(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         p1 = self.points[0]
@@ -2271,7 +2266,7 @@ class FCPolygon(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2304,7 +2299,7 @@ class FCPolygon(FCShapeTool):
     def make(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         # self.geometry = LinearRing(self.points)
@@ -2334,7 +2329,7 @@ class FCPath(FCPolygon):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2748,7 +2743,7 @@ class FCText(FCShapeTool):
 
         try:
             return DrawToolUtilityShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
-        except:
+        except Exception:
             return
 
 

@@ -3986,6 +3986,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         and display the Tools Database tab in the form needed for the Tool adding
         :return: None
         """
+
+        # if the Tools Database is already opened focus on it
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                self.app.ui.plot_tab_area.setCurrentWidget(self.app.tools_db_tab)
+                break
         self.app.on_tools_database()
         self.app.tools_db_tab.buttons_frame.hide()
         self.app.tools_db_tab.add_tool_from_db.show()

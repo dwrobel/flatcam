@@ -80,7 +80,7 @@ class TclCommandPanelize(TclCommand):
             boxname = args['box']
             try:
                 box = self.app.collection.get_by_name(boxname)
-            except Exception as e:
+            except Exception:
                 return "Could not retrieve object: %s" % name
         else:
             box = obj

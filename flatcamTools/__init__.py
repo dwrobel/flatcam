@@ -29,7 +29,7 @@ from flatcamTools.ToolProperties import Properties
 from flatcamTools.ToolQRCode import QRCode
 from flatcamTools.ToolRulesCheck import RulesCheck
 
-from flatcamTools.ToolCopperFill import ToolCopperFill
+from flatcamTools.ToolCopperThieving import ToolCopperThieving
 
 from flatcamTools.ToolShell import FCShell
 from flatcamTools.ToolSolderPaste import SolderPaste

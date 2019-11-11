@@ -112,10 +112,10 @@ class QRCode(FlatCAMTool):
         self.error_label = QtWidgets.QLabel('%s:' % _("Error correction"))
         self.error_label.setToolTip(
             _("Parameter that controls the error correction used for the QR Code.\n"
-              "L = maximum 7% errors can be corrected\n"
-              "M = maximum 15% errors can be corrected\n"
-              "Q = maximum 25% errors can be corrected\n"
-              "H = maximum 30% errors can be corrected.")
+              "L = maximum 7%% errors can be corrected\n"
+              "M = maximum 15%% errors can be corrected\n"
+              "Q = maximum 25%% errors can be corrected\n"
+              "H = maximum 30%% errors can be corrected.")
         )
         self.error_radio = RadioSet([{'label': 'L', 'value': 'L'},
                                      {'label': 'M', 'value': 'M'},
@@ -123,10 +123,10 @@ class QRCode(FlatCAMTool):
                                      {'label': 'H', 'value': 'H'}])
         self.error_radio.setToolTip(
             _("Parameter that controls the error correction used for the QR Code.\n"
-              "L = maximum 7% errors can be corrected\n"
-              "M = maximum 15% errors can be corrected\n"
-              "Q = maximum 25% errors can be corrected\n"
-              "H = maximum 30% errors can be corrected.")
+              "L = maximum 7%% errors can be corrected\n"
+              "M = maximum 15%% errors can be corrected\n"
+              "Q = maximum 25%% errors can be corrected\n"
+              "H = maximum 30%% errors can be corrected.")
         )
         grid_lay.addWidget(self.error_label, 2, 0)
         grid_lay.addWidget(self.error_radio, 2, 1)

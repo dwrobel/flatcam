@@ -1014,6 +1014,8 @@ class Geometry(object):
         :return: None
         """
 
+        log.debug("camlib.Geometry.import_svg()")
+
         # Parse into list of shapely objects
         svg_tree = ET.parse(filename)
         svg_root = svg_tree.getroot()
@@ -1022,8 +1024,8 @@ class Geometry(object):
         # h = float(svg_root.get('height'))
         # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
-        geos = getsvggeo(svg_root, object_type)
 
+        geos = getsvggeo(svg_root, object_type)
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 
@@ -1134,12 +1136,12 @@ class Geometry(object):
 
             try:
                 green = src.read(2)
-            except Exception as e:
+            except Exception:
                 pass
 
             try:
                 blue = src.read(3)
-            except Exception as e:
+            except Exception:
                 pass
 
         if mode == 'black':
@@ -2289,7 +2291,7 @@ class CNCjob(Geometry):
         try:
             returnvalue = fun(attributes)
             return returnvalue
-        except Exception as e:
+        except Exception:
             self.app.log.error('Exception occurred within a postprocessor: ' + traceback.format_exc())
             return ''
 
@@ -5192,7 +5194,7 @@ def get_bounds(geometry_list):
             ymin = min([ymin, gymin])
             xmax = max([xmax, gxmax])
             ymax = max([ymax, gymax])
-        except:
+        except Exception:
             log.warning("DEVELOPMENT: Tried to get bounds of empty geometry.")
 
     return [xmin, ymin, xmax, ymax]

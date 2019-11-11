@@ -33,9 +33,9 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolCopperFill(FlatCAMTool):
+class ToolCopperThieving(FlatCAMTool):
 
-    toolName = _("Copper Fill Tool")
+    toolName = _("Copper Thieving Tool")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -71,7 +71,7 @@ class ToolCopperFill(FlatCAMTool):
 
         self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grbobj_label.setToolTip(
-            _("Gerber Object to which will be added a copper fill.")
+            _("Gerber Object to which will be added a copper thieving.")
         )
 
         i_grid_lay.addWidget(self.grbobj_label, 0, 0)
@@ -93,7 +93,7 @@ class ToolCopperFill(FlatCAMTool):
         # CLEARANCE #
         self.clearance_label = QtWidgets.QLabel('%s:' % _("Clearance"))
         self.clearance_label.setToolTip(
-            _("This set the distance between the copper fill components\n"
+            _("This set the distance between the copper thieving components\n"
               "(the polygon fill may be split in multiple polygons)\n"
               "and the copper traces in the Gerber file.")
         )
@@ -126,16 +126,16 @@ class ToolCopperFill(FlatCAMTool):
         ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself' - the copper fill extent is based on the object that is copper cleared.\n "
+            _("- 'Itself' - the copper thieving extent is based on the object that is copper cleared.\n "
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
-              "- 'Reference Object' - will do copper filling within the area specified by another object.")
+              "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
         grid_lay.addWidget(self.reference_label, 3, 0)
         grid_lay.addWidget(self.reference_radio, 3, 1)
 
         self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.box_combo_type_label.setToolTip(
-            _("The type of FlatCAM object to be used as copper filling reference.\n"
+            _("The type of FlatCAM object to be used as copper thieving reference.\n"
               "It can be Gerber, Excellon or Geometry.")
         )
         self.box_combo_type = QtWidgets.QComboBox()
@@ -178,8 +178,30 @@ class ToolCopperFill(FlatCAMTool):
         self.bbox_type_label.hide()
         self.bbox_type_radio.hide()
 
-        # ## Insert Copper Fill
-        self.fill_button = QtWidgets.QPushButton(_("Insert Copper Fill"))
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line, 7, 0, 1, 2)
+
+        # Fill Type
+        self.fill_type_radio = RadioSet([
+            {'label': _('Solid'), 'value': 'solid'},
+            {"label": _("Dots Grid"), "value": "dot"},
+            {"label": _("Squares Grid"), "value": "square"},
+            {"label": _("Lines Grid"), "value": "line"}
+        ], orientation='vertical', stretch=False)
+        self.fill_type_label = QtWidgets.QLabel(_("Fill Type:"))
+        self.fill_type_label.setToolTip(
+            _("- 'Solid' - copper thieving will be a solid polygon.\n "
+              "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
+              "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
+              "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")
+        )
+        grid_lay.addWidget(self.fill_type_label, 8, 0)
+        grid_lay.addWidget(self.fill_type_radio, 8, 1)
+
+        # ## Insert Copper Thieving
+        self.fill_button = QtWidgets.QPushButton(_("Insert Copper thieving"))
         self.fill_button.setToolTip(
             _("Will add a polygon (may be split in multiple parts)\n"
               "that will surround the actual Gerber traces at a certain distance.")
@@ -188,7 +210,7 @@ class ToolCopperFill(FlatCAMTool):
 
         self.layout.addStretch()
 
-        # Objects involved in Copper filling
+        # Objects involved in Copper thieving
         self.grb_object = None
         self.ref_obj = None
         self.sel_rect = list()
@@ -215,7 +237,7 @@ class ToolCopperFill(FlatCAMTool):
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolCopperFill()")
+        self.app.report_usage("ToolCopperThieving()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -240,19 +262,19 @@ class ToolCopperFill(FlatCAMTool):
 
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Copper Fill Tool"))
+        self.app.ui.notebook.setTabText(2, _("Copper Thieving Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+F', **kwargs)
 
     def set_tool_ui(self):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
-        self.clearance_entry.set_value(float(self.app.defaults["tools_copperfill_clearance"]))
-        self.margin_entry.set_value(float(self.app.defaults["tools_copperfill_margin"]))
-        self.reference_radio.set_value(self.app.defaults["tools_copperfill_reference"])
-        self.bbox_type_radio.set_value(self.app.defaults["tools_copperfill_box_type"])
-
-        self.geo_steps_per_circle = int(self.app.defaults["tools_copperfill_circle_steps"])
+        self.clearance_entry.set_value(float(self.app.defaults["tools_copper_thieving_clearance"]))
+        self.margin_entry.set_value(float(self.app.defaults["tools_copper_thieving_margin"]))
+        self.reference_radio.set_value(self.app.defaults["tools_copper_thieving_reference"])
+        self.bbox_type_radio.set_value(self.app.defaults["tools_copper_thieving_box_type"])
+        self.fill_type_radio.set_value(self.app.defaults["tools_copper_thieving_fill_type"])
+        self.geo_steps_per_circle = int(self.app.defaults["tools_copper_thieving_circle_steps"])
 
         self.area_method = False
 
@@ -281,20 +303,20 @@ class ToolCopperFill(FlatCAMTool):
             self.bbox_type_radio.hide()
 
     def execute(self):
-        self.app.call_source = "copperfill_tool"
+        self.app.call_source = "copper_thieving_tool"
 
         self.clearance_val = self.clearance_entry.get_value()
         self.margin_val = self.margin_entry.get_value()
         reference_method = self.reference_radio.get_value()
 
-        # get the Gerber object on which the Copper fill will be inserted
+        # get the Gerber object on which the Copper thieving will be inserted
         selection_index = self.grb_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
 
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCopperFill.execute() --> %s" % str(e))
+            log.debug("ToolCopperThieving.execute() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return 'fail'
 
@@ -487,17 +509,17 @@ class ToolCopperFill(FlatCAMTool):
         """
 
         if run_threaded:
-            proc = self.app.proc_container.new('%s ...' % _("Copper filling"))
+            proc = self.app.proc_container.new('%s ...' % _("Copper thieving"))
         else:
-            self.app.proc_container.view.set_busy('%s ...' % _("Copper filling"))
+            self.app.proc_container.view.set_busy('%s ...' % _("Copper thieving"))
             QtWidgets.QApplication.processEvents()
 
         # #####################################################################
         # ####### Read the parameters #########################################
         # #####################################################################
 
-        log.debug("Copper Filling Tool started. Reading parameters.")
-        self.app.inform.emit(_("Copper Filling Tool started. Reading parameters."))
+        log.debug("Copper Thieving Tool started. Reading parameters.")
+        self.app.inform.emit(_("Copper Thieving Tool started. Reading parameters."))
 
         ref_selected = self.reference_radio.get_value()
         if c_val is None:
@@ -512,8 +534,8 @@ class ToolCopperFill(FlatCAMTool):
         # #########################################################################################
         # Prepare isolation polygon. This will create the clearance over the Gerber features ######
         # #########################################################################################
-        log.debug("Copper Filling Tool. Preparing isolation polygons.")
-        self.app.inform.emit(_("Copper Filling Tool. Preparing isolation polygons."))
+        log.debug("Copper Thieving Tool. Preparing isolation polygons.")
+        self.app.inform.emit(_("Copper Thieving Tool. Preparing isolation polygons."))
 
         # variables to display the percentage of work done
         geo_len = 0
@@ -557,8 +579,8 @@ class ToolCopperFill(FlatCAMTool):
         # #########################################################################################
         # Prepare the area to fill with copper. ###################################################
         # #########################################################################################
-        log.debug("Copper Filling Tool. Preparing areas to fill with copper.")
-        self.app.inform.emit(_("Copper Filling Tool. Preparing areas to fill with copper."))
+        log.debug("Copper Thieving Tool. Preparing areas to fill with copper.")
+        self.app.inform.emit(_("Copper Thieving Tool. Preparing areas to fill with copper."))
 
         try:
             if ref_obj is None or ref_obj == 'itself':
@@ -566,7 +588,7 @@ class ToolCopperFill(FlatCAMTool):
             else:
                 working_obj = ref_obj
         except Exception as e:
-            log.debug("ToolCopperFIll.on_copper_fill() --> %s" % str(e))
+            log.debug("ToolCopperThieving.on_copper_fill() --> %s" % str(e))
             return 'fail'
 
         bounding_box = None
@@ -647,9 +669,9 @@ class ToolCopperFill(FlatCAMTool):
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
                 return 'fail'
 
-        log.debug("Copper Filling Tool. Finished creating areas to fill with copper.")
+        log.debug("Copper Thieving Tool. Finished creating areas to fill with copper.")
 
-        self.app.inform.emit(_("Copper Filling Tool. Appending new geometry and buffering."))
+        self.app.inform.emit(_("Copper Thieving Tool. Appending new geometry and buffering."))
         new_solid_geometry = bounding_box.difference(clearance_geometry)
 
         geo_list = self.grb_object.solid_geometry
@@ -689,7 +711,7 @@ class ToolCopperFill(FlatCAMTool):
                                                              local_use=self.grb_object, use_thread=False)
 
         self.on_exit()
-        self.app.inform.emit('[success] %s' % _("Copper Fill Tool done."))
+        self.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
 
     def replot(self, obj):
         def worker_task():
@@ -710,7 +732,7 @@ class ToolCopperFill(FlatCAMTool):
             self.grb_object.options['xmax'] = c
             self.grb_object.options['ymax'] = d
         except Exception as e:
-            log.debug("ToolCopperFill.on_exit() bounds error --> %s" % str(e))
+            log.debug("ToolCopperThieving.on_exit() bounds error --> %s" % str(e))
 
         # reset the variables
         self.grb_object = None
@@ -746,4 +768,4 @@ class ToolCopperFill(FlatCAMTool):
                                                                   self.app.on_mouse_click_release_over_plot)
 
         self.app.call_source = "app"
-        self.app.inform.emit('[success] %s' % _("Copper Fill Tool exit."))
+        self.app.inform.emit('[success] %s' % _("Copper Thieving Tool exit."))

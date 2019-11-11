@@ -125,7 +125,7 @@ def path2shapely(path, object_type, res=1.0):
 
     rings = MultiLineString(rings)
     if len(rings) > 0:
-        if len(rings) == 1:
+        if len(rings) == 1 and not isinstance(rings, MultiLineString):
             # Polygons are closed and require more than 2 points
             if Point(rings[0][0]).almost_equals(Point(rings[0][-1])) and len(rings[0]) > 2:
                 geo_element = Polygon(rings[0])
@@ -134,7 +134,7 @@ def path2shapely(path, object_type, res=1.0):
         else:
             try:
                 geo_element = Polygon(rings[0], rings[1:])
-            except Exception as e:
+            except Exception:
                 coords = list()
                 for line in rings:
                     coords.append(line.coords[0])

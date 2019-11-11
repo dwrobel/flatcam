@@ -5568,10 +5568,10 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         self.error_label = QtWidgets.QLabel('%s:' % _("Error correction"))
         self.error_label.setToolTip(
             _("Parameter that controls the error correction used for the QR Code.\n"
-              "L = maximum 7% errors can be corrected\n"
-              "M = maximum 15% errors can be corrected\n"
-              "Q = maximum 25% errors can be corrected\n"
-              "H = maximum 30% errors can be corrected.")
+              "L = maximum 7%% errors can be corrected\n"
+              "M = maximum 15%% errors can be corrected\n"
+              "Q = maximum 25%% errors can be corrected\n"
+              "H = maximum 30%% errors can be corrected.")
         )
         self.error_radio = RadioSet([{'label': 'L', 'value': 'L'},
                                      {'label': 'M', 'value': 'M'},
@@ -5579,10 +5579,10 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
                                      {'label': 'H', 'value': 'H'}])
         self.error_radio.setToolTip(
             _("Parameter that controls the error correction used for the QR Code.\n"
-              "L = maximum 7% errors can be corrected\n"
-              "M = maximum 15% errors can be corrected\n"
-              "Q = maximum 25% errors can be corrected\n"
-              "H = maximum 30% errors can be corrected.")
+              "L = maximum 7%% errors can be corrected\n"
+              "M = maximum 15%% errors can be corrected\n"
+              "Q = maximum 25%% errors can be corrected\n"
+              "H = maximum 30%% errors can be corrected.")
         )
         grid_lay.addWidget(self.error_label, 2, 0)
         grid_lay.addWidget(self.error_radio, 2, 1)
@@ -5722,7 +5722,7 @@ class Tools2CFillPrefGroupUI(OptionsGroupUI):
 
         super(Tools2CFillPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str(_("Copper Fill Tool Options")))
+        self.setTitle(str(_("Copper Thieving Tool Options")))
         self.decimals = 4
 
         # ## Grid Layout
@@ -5734,7 +5734,7 @@ class Tools2CFillPrefGroupUI(OptionsGroupUI):
         # ## Parameters
         self.cflabel = QtWidgets.QLabel('<b>%s</b>' % _('Parameters'))
         self.cflabel.setToolTip(
-            _("A tool to generate a Copper fill that can be added\n"
+            _("A tool to generate a Copper Thieving that can be added\n"
               "to a selected Gerber file.")
         )
         grid_lay.addWidget(self.cflabel, 0, 0, 1, 2)
@@ -5754,7 +5754,7 @@ class Tools2CFillPrefGroupUI(OptionsGroupUI):
         # CLEARANCE #
         self.clearance_label = QtWidgets.QLabel('%s:' % _("Clearance"))
         self.clearance_label.setToolTip(
-            _("This set the distance between the copper fill components\n"
+            _("This set the distance between the copper Thieving components\n"
               "(the polygon fill may be split in multiple polygons)\n"
               "and the copper traces in the Gerber file.")
         )
@@ -5787,9 +5787,9 @@ class Tools2CFillPrefGroupUI(OptionsGroupUI):
         ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself' - the copper fill extent is based on the object that is copper cleared.\n "
+            _("- 'Itself' - the copper Thieving extent is based on the object that is copper cleared.\n "
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
-              "- 'Reference Object' - will do copper filling within the area specified by another object.")
+              "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
         grid_lay.addWidget(self.reference_label, 4, 0)
         grid_lay.addWidget(self.reference_radio, 4, 1)
@@ -5806,6 +5806,29 @@ class Tools2CFillPrefGroupUI(OptionsGroupUI):
         )
         grid_lay.addWidget(self.bbox_type_label, 5, 0)
         grid_lay.addWidget(self.bbox_type_radio, 5, 1)
+
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line, 6, 0, 1, 2)
+
+        # Fill Type
+        self.fill_type_radio = RadioSet([
+            {'label': _('Solid'), 'value': 'solid'},
+            {"label": _("Dots Grid"), "value": "dot"},
+            {"label": _("Squares Grid"), "value": "square"},
+            {"label": _("Lines Grid"), "value": "line"}
+        ], orientation='vertical', stretch=False)
+        self.fill_type_label = QtWidgets.QLabel(_("Fill Type:"))
+        self.fill_type_label.setToolTip(
+            _("- 'Solid' - copper thieving will be a solid polygon.\n "
+              "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
+              "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
+              "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")
+        )
+        grid_lay.addWidget(self.fill_type_label, 7, 0)
+        grid_lay.addWidget(self.fill_type_radio, 7, 1)
 
         self.layout.addStretch()
 

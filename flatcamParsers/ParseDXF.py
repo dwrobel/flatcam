@@ -241,7 +241,7 @@ def dxfsolid2shapely(solid):
     try:
         corner_list.append(solid[iterator])
         iterator += 1
-    except:
+    except Exception:
         return Polygon(corner_list)
 
 
@@ -265,7 +265,7 @@ def dxftrace2shapely(trace):
     try:
         corner_list.append(trace[iterator])
         iterator += 1
-    except:
+    except Exception:
         return Polygon(corner_list)
 
 

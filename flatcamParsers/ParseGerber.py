@@ -258,7 +258,7 @@ class Gerber(Geometry):
 
         try:  # Could be empty for aperture macros
             paramList = apParameters.split('X')
-        except:
+        except Exception:
             paramList = None
 
         if apertureType == "C":  # Circle, example: %ADD11C,0.1*%
@@ -867,7 +867,7 @@ class Gerber(Geometry):
                     # if match.group(1) is None and match.group(2) is None and match.group(3) is None:
                     #     try:
                     #         current_operation_code = int(match.group(4))
-                    #     except:
+                    #     except Exception:
                     #         pass  # A line with just * will match too.
                     #     continue
                     # NOTE: Letting it continue allows it to react to the
@@ -1082,7 +1082,7 @@ class Gerber(Geometry):
                                             geo_dict['clear'] = geo_s
                                         else:
                                             geo_dict['solid'] = geo_s
-                                except:
+                                except Exception:
                                     if self.app.defaults['gerber_simplification']:
                                         poly_buffer.append(geo_s.simplify(s_tol))
                                     else:
@@ -1434,7 +1434,7 @@ class Gerber(Geometry):
                 #     for poly in new_poly:
                 #         try:
                 #             self.solid_geometry = self.solid_geometry.union(poly)
-                #         except:
+                #         except Exception:
                 #             pass
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
@@ -1661,7 +1661,7 @@ class Gerber(Geometry):
 
         try:
             xfactor = float(xfactor)
-        except:
+        except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Scale factor has to be a number: integer or float."))
             return
@@ -1671,7 +1671,7 @@ class Gerber(Geometry):
         else:
             try:
                 yfactor = float(yfactor)
-            except:
+            except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Scale factor has to be a number: integer or float."))
                 return

@@ -63,7 +63,7 @@ class FCDrillAdd(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_drill.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -105,7 +105,7 @@ class FCDrillAdd(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
@@ -888,7 +888,7 @@ class FCDrillResize(FCShapeTool):
 
         try:
             new_dia = self.draw_app.resdrill_entry.get_value()
-        except:
+        except Exception:
             self.draw_app.app.inform.emit('[ERROR_NOTCL] %s' %
                                           _("Resize drill(s) failed. Please enter a diameter for resize."))
             return
@@ -3241,7 +3241,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("There are no Tools definitions in the file. Aborting Excellon creation.")
                                      )
-            except:
+            except Exception:
                 msg = '[ERROR] %s' % \
                       _("An internal error has ocurred. See Shell.\n")
                 msg += traceback.format_exc()

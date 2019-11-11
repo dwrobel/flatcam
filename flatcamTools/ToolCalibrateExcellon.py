@@ -423,7 +423,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         # ## Adjust Objects Button
         self.adj_obj_button = QtWidgets.QPushButton(_("Adjust Objects"))
         self.adj_obj_button.setToolTip(
-            _("Adjust (scale and / or skew) the objects\n"
+            _("Adjust (scale and/or skew) the objects\n"
               "with the factors determined above.")
         )
         grid_lay.addWidget(self.adj_obj_button, 34, 0, 1, 3)

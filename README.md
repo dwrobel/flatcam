@@ -9,6 +9,15 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.11.2019
+
+- in Tools Database added a contextual menu to add/copy/delete tool; CTRL+C, DEL keys work too; key T for adding a tool is now only partially working
+- in Tools Database made the status bar messages show when adding/copying/deleting tools in DB
+- changed all Except statements that were single to except Exception as recommended in some PEP
+- renamed the Copper Fill Tool to Copper Thieving Tool as this is a more appropriate name; started to add ability for more types of copper thieving besides solid
+- fixed some issues recently introduced in ParseSVG
+- updated POT file
+
 9.11.2019
 
 - fixed a new bug that did not allow to open the FlatCAM Preferences files by doubleclick in Windows
@@ -18,7 +27,7 @@ CAD program, and create G-Code for Isolation routing.
 
 8.11.2019
 
-- updated the make file for freezed executable
+- updated the make file for frozen executable
 
 7.11.2019
 
@@ -117,7 +126,7 @@ CAD program, and create G-Code for Isolation routing.
 - working on the Calibrate Excellon Tool
 - finished the GUI layout for the Calibrate Excellon Tool
 - start working on QRCode Tool - not working yet
-- start working on QRCode Tool - searching for alternativess
+- start working on QRCode Tool - searching for alternatives
 
 21.10.2019
 

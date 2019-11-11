@@ -199,7 +199,7 @@ class LengthEntry(QtWidgets.QLineEdit):
         except KeyError:
             value = raw
             return float(eval(value))
-        except:
+        except Exception:
             log.warning("Could not parse value in entry: %s" % str(raw))
             return None
 

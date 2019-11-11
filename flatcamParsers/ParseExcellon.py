@@ -250,7 +250,7 @@ class Excellon(Geometry):
 
         try:
             self.parse_lines(estr)
-        except:
+        except Exception:
             return "fail"
 
     def parse_lines(self, elines):
@@ -412,7 +412,7 @@ class Excellon(Geometry):
                                 name = str(int(match.group(1)))
                                 try:
                                     diam = float(match.group(2))
-                                except:
+                                except Exception:
                                     # it's possible that tool definition has only tool number and no diameter info
                                     # (those could be in another file like PCB Wizard do)
                                     # then match.group(2) = None and float(None) will create the exception
@@ -476,7 +476,7 @@ class Excellon(Geometry):
                                 slot_current_x = slot_start_x
                             except TypeError:
                                 slot_start_x = slot_current_x
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -484,7 +484,7 @@ class Excellon(Geometry):
                                 slot_current_y = slot_start_y
                             except TypeError:
                                 slot_start_y = slot_current_y
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -492,7 +492,7 @@ class Excellon(Geometry):
                                 slot_current_x = slot_stop_x
                             except TypeError:
                                 slot_stop_x = slot_current_x
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -500,7 +500,7 @@ class Excellon(Geometry):
                                 slot_current_y = slot_stop_y
                             except TypeError:
                                 slot_stop_y = slot_current_y
-                            except:
+                            except Exception:
                                 return
 
                             if (slot_start_x is None or slot_start_y is None or
@@ -546,7 +546,7 @@ class Excellon(Geometry):
                                 slot_current_x = slot_start_x
                             except TypeError:
                                 slot_start_x = slot_current_x
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -554,7 +554,7 @@ class Excellon(Geometry):
                                 slot_current_y = slot_start_y
                             except TypeError:
                                 slot_start_y = slot_current_y
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -562,7 +562,7 @@ class Excellon(Geometry):
                                 slot_current_x = slot_stop_x
                             except TypeError:
                                 slot_stop_x = slot_current_x
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -570,7 +570,7 @@ class Excellon(Geometry):
                                 slot_current_y = slot_stop_y
                             except TypeError:
                                 slot_stop_y = slot_current_y
-                            except:
+                            except Exception:
                                 return
 
                             if (slot_start_x is None or slot_start_y is None or
@@ -619,7 +619,7 @@ class Excellon(Geometry):
                         except TypeError:
                             x = current_x
                             repeating_x = 0
-                        except:
+                        except Exception:
                             return
 
                         try:
@@ -629,7 +629,7 @@ class Excellon(Geometry):
                         except TypeError:
                             y = current_y
                             repeating_y = 0
-                        except:
+                        except Exception:
                             return
 
                         if x is None or y is None:

@@ -382,7 +382,7 @@ class BookmarkManager(QtWidgets.QWidget):
                 self.app.log.debug('Creating a new bookmarks file ...')
                 f = open(filename, 'w')
                 f.close()
-            except:
+            except Exception:
                 e = sys.exc_info()[0]
                 self.app.log.error("Could not load defaults file.")
                 self.app.log.error(str(e))
@@ -395,7 +395,7 @@ class BookmarkManager(QtWidgets.QWidget):
                     for title, link in self.bm_dict.items():
                         line2write = str(title) + ':' + str(link) + '\n'
                         f.write(line2write)
-            except:
+            except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write bookmarks to file."))
                 return
         self.app.inform.emit('[success] %s: %s' % (_("Exported bookmarks to"), filename))
@@ -647,8 +647,8 @@ class ToolsDB(QtWidgets.QWidget):
         new_vlay = QtWidgets.QVBoxLayout()
         layout.addLayout(new_vlay)
 
-        new_tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
-        new_vlay.addWidget(new_tool_lbl, alignment=QtCore.Qt.AlignBottom)
+        # new_tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
+        # new_vlay.addWidget(new_tool_lbl, alignment=QtCore.Qt.AlignBottom)
 
         self.buttons_frame = QtWidgets.QFrame()
         self.buttons_frame.setContentsMargins(0, 0, 0, 0)
@@ -700,8 +700,8 @@ class ToolsDB(QtWidgets.QWidget):
         # ######################## SIGNALS #############################################
         # ##############################################################################
 
-        add_entry_btn.clicked.connect(self.on_add_entry)
-        remove_entry_btn.clicked.connect(self.on_remove_entry)
+        add_entry_btn.clicked.connect(self.on_tool_add)
+        remove_entry_btn.clicked.connect(self.on_tool_delete)
         export_db_btn.clicked.connect(self.on_export_tools_db_file)
         import_db_btn.clicked.connect(self.on_import_tools_db_file)
         # closebtn.clicked.connect(self.accept)
@@ -724,7 +724,7 @@ class ToolsDB(QtWidgets.QWidget):
 
         try:
             self.db_tool_dict = json.loads(tools)
-        except:
+        except Exception:
             e = sys.exc_info()[0]
             self.app.log.error(str(e))
             self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
@@ -733,6 +733,14 @@ class ToolsDB(QtWidgets.QWidget):
         self.app.inform.emit('[success] %s: %s' % (_("Loaded FlatCAM Tools DB from"), filename))
 
         self.build_db_ui()
+
+        self.table_widget.setupContextMenu()
+        self.table_widget.addContextMenu(
+            _("Add to DB"), self.on_tool_add, icon=QtGui.QIcon("share/plus16.png"))
+        self.table_widget.addContextMenu(
+            _("Copy from DB"), self.on_tool_copy, icon=QtGui.QIcon("share/copy16.png"))
+        self.table_widget.addContextMenu(
+            _("Delete from DB"), self.on_tool_delete, icon=QtGui.QIcon("share/delete32.png"))
 
     def build_db_ui(self):
         self.ui_disconnect()
@@ -772,7 +780,8 @@ class ToolsDB(QtWidgets.QWidget):
 
         nr_crt = row + 1
         id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
-        id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        # id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        id_item.setFlags(id_item.flags() & ~QtCore.Qt.ItemIsEditable)
         widget.setItem(row, 0, id_item)  # Tool name/id
 
         tool_name_item = QtWidgets.QTableWidgetItem(name)
@@ -930,7 +939,7 @@ class ToolsDB(QtWidgets.QWidget):
         endz_item.set_value(float(data['endz']))
         widget.setCellWidget(row, 25, endz_item)
 
-    def on_add_entry(self):
+    def on_tool_add(self):
         """
         Add a tool in the DB Tool Table
         :return: None
@@ -977,21 +986,39 @@ class ToolsDB(QtWidgets.QWidget):
             }
         )
 
-        self.app.inform.emit(f'[success] {_("Tool added to DB.")}')
-
         # add the new entry to the Tools DB table
         self.build_db_ui()
         self.callback_on_edited()
+        self.app.inform.emit(f'[success] {_("Tool added to DB.")}')
 
-    def on_remove_entry(self):
+    def on_tool_copy(self):
         """
-        Remove a Tool in the Tools DB table
+        Copy a selection of Tools in the Tools DB table
         :return:
         """
-        index_list = []
+        new_tool_id = self.table_widget.rowCount() + 1
         for model_index in self.table_widget.selectionModel().selectedRows():
-            index = QtCore.QPersistentModelIndex(model_index)
-            index_list.append(index)
+            # index = QtCore.QPersistentModelIndex(model_index)
+            old_tool_id = self.table_widget.item(model_index.row(), 0).text()
+            new_tool_id += 1
+
+            for toolid, dict_val in list(self.db_tool_dict.items()):
+                if int(old_tool_id) == int(toolid):
+                    self.db_tool_dict.update({
+                        new_tool_id: deepcopy(dict_val)
+                    })
+
+        self.build_db_ui()
+        self.callback_on_edited()
+        self.app.inform.emit(f'[success] {_("Tool copied from Tools DB.")}')
+
+    def on_tool_delete(self):
+        """
+        Delete a selection of Tools in the Tools DB table
+        :return:
+        """
+        for model_index in self.table_widget.selectionModel().selectedRows():
+            # index = QtCore.QPersistentModelIndex(model_index)
             toolname_to_remove = self.table_widget.item(model_index.row(), 0).text()
 
             for toolid, dict_val in list(self.db_tool_dict.items()):
@@ -999,10 +1026,9 @@ class ToolsDB(QtWidgets.QWidget):
                     # remove from the storage
                     self.db_tool_dict.pop(toolid, None)
 
-        self.app.inform.emit(f'[success] {_("Tool removed from Tools DB.")}')
-
         self.build_db_ui()
         self.callback_on_edited()
+        self.app.inform.emit(f'[success] {_("Tool removed from Tools DB.")}')
 
     def on_export_tools_db_file(self):
         self.app.report_usage("on_export_tools_db_file")
@@ -1038,7 +1064,7 @@ class ToolsDB(QtWidgets.QWidget):
                 self.app.log.debug('Creating a new Tools DB file ...')
                 f = open(filename, 'w')
                 f.close()
-            except:
+            except Exception:
                 e = sys.exc_info()[0]
                 self.app.log.error("Could not load Tools DB file.")
                 self.app.log.error(str(e))
@@ -1055,7 +1081,7 @@ class ToolsDB(QtWidgets.QWidget):
                     self.app.log.debug("App.on_save_tools_db() --> %s" % str(e))
                     self.inform.emit(f'[ERROR_NOTCL] {_("Failed to write Tools DB to file.")}')
                     return
-            except:
+            except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
                 return
 
@@ -1081,7 +1107,7 @@ class ToolsDB(QtWidgets.QWidget):
 
             try:
                 self.db_tool_dict = json.loads(tools_in_db)
-            except:
+            except Exception:
                 e = sys.exc_info()[0]
                 self.app.log.error(str(e))
                 self.app.inform.emit('[ERROR] %s' % _("Failed to parse Tools DB file."))
@@ -1112,7 +1138,7 @@ class ToolsDB(QtWidgets.QWidget):
                     return
 
                 if not silent:
-                    self.app.inform.emit('[success] %s: %s' % (_("Exported Tools DB to"), filename))
+                    self.app.inform.emit('[success] %s' % _("Saved Tools DB."))
 
     def ui_connect(self):
         try:
@@ -1206,7 +1232,6 @@ class ToolsDB(QtWidgets.QWidget):
                 elif column_header_text == 'Tool Shape':
                     dict_elem['tool_type'] = self.table_widget.cellWidget(row, col).get_value()
                 else:
-
                     if column_header_text == 'Cut Z':
                         default_data['cutz'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == 'MultiDepth':
@@ -1261,19 +1286,15 @@ class ToolsDB(QtWidgets.QWidget):
         if not self.table_widget.selectionModel().selectedRows():
             self.app.inform.emit('[WARNING_NOTCL] %s...' % _("No Tool/row selected in the Tools Database table"))
             return
-        elif len(self.table_widget.selectionModel().selectedRows()) > 1:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Only one tool can be selected in the Tools Database table"))
-            return
 
-        # only one model in list since the conditions above assure this
-        model_index = self.table_widget.selectionModel().selectedRows()[0]
-        selected_row = model_index.row()
-        tool_uid = selected_row + 1
-        for key in self.db_tool_dict.keys():
-            if str(key) == str(tool_uid):
-                selected_tool = self.db_tool_dict[key]
-                self.on_tool_request(tool=selected_tool)
+        model_index_list = self.table_widget.selectionModel().selectedRows()
+        for model_index in model_index_list:
+            selected_row = model_index.row()
+            tool_uid = selected_row + 1
+            for key in self.db_tool_dict.keys():
+                if str(key) == str(tool_uid):
+                    selected_tool = self.db_tool_dict[key]
+                    self.on_tool_request(tool=selected_tool)
 
     def resize_new_tool_table_widget(self, min_size, max_size):
         """

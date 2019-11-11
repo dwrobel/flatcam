@@ -748,7 +748,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), _("Calculators Tool"))
         self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
         self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
-        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'), _("Copper Fill Tool"))
+        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'),
+                                                          _("Copper Thieving Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -2173,7 +2174,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                            _("Calculators Tool"))
         self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
         self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
-        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'), _("Copper Fill Tool"))
+        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'),
+                                                          _("Copper Thieving Tool"))
 
         # ## Excellon Editor Toolbar # ##
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
@@ -2378,6 +2380,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Copy an FlatCAM object
                 if key == QtCore.Qt.Key_C:
+                    widget_name = self.plot_tab_area.currentWidget().objectName()
+                    if widget_name == 'database_tab':
+                        # Tools DB saved, update flag
+                        self.app.tools_db_changed_flag = True
+                        self.app.tools_db_tab.on_tool_copy()
+                        return
+
                     self.app.on_copy_object()
 
                 # Copy an FlatCAM object
@@ -2504,7 +2513,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.cal_exc_tool.run(toggle=True)
                     return
 
-                # Copper Fill Tool
+                # Copper Thieving Tool
                 if key == QtCore.Qt.Key_F:
                     self.app.copperfill_tool.run(toggle=True)
                     return
@@ -2611,6 +2620,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # It's meant to make a difference between delete objects and delete tools in
                 # Geometry Selected tool table
                 if key == QtCore.Qt.Key_Delete and matplotlib_key_flag is False:
+                    widget_name = self.plot_tab_area.currentWidget().objectName()
+                    if widget_name == 'database_tab':
+                        # Tools DB saved, update flag
+                        self.app.tools_db_changed_flag = True
+                        self.app.tools_db_tab.on_tool_delete()
+                        return
+
                     self.app.on_delete_keypress()
 
                 # Delete from canvas
@@ -2703,6 +2719,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Add a Tool from shortcut
                 if key == QtCore.Qt.Key_T:
+                    widget_name = self.plot_tab_area.currentWidget().objectName()
+                    if widget_name == 'database_tab':
+                        # Tools DB saved, update flag
+                        self.app.tools_db_changed_flag = True
+                        self.app.tools_db_tab.on_tool_add()
+                        return
+
                     self.app.on_tool_add_keypress()
 
                 # Zoom Fit
@@ -3509,7 +3532,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Jump to coords
                 if key == QtCore.Qt.Key_J:
                     self.app.on_jump_to()
-        elif self.app.call_source == 'copperfill_tool':
+        elif self.app.call_source == 'copper_thieving_tool':
             if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
                 if key == QtCore.Qt.Key_X:
                     self.app.abort_all_tasks()

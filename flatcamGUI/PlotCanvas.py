@@ -161,7 +161,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.r_line.parent = None
             self.t_line.parent = None
             self.l_line.parent = None
-        except Exception as e:
+        except Exception:
             pass
 
     # redraw the workspace lines on the plot by readding them to the parent view.scene
@@ -171,7 +171,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.r_line.parent = self.view.scene
             self.t_line.parent = self.view.scene
             self.l_line.parent = self.view.scene
-        except Exception as e:
+        except Exception:
             pass
 
     def graph_event_connect(self, event_name, callback):

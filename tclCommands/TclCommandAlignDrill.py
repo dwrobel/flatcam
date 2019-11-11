@@ -81,7 +81,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception:
             return "Could not retrieve object: %s" % name
 
         if obj is None:
@@ -179,7 +179,7 @@ class TclCommandAlignDrill(TclCommandSignaled):
         if 'box' in args:
             try:
                 box = self.app.collection.get_by_name(args['box'])
-            except:
+            except Exception:
                 return "Could not retrieve object box: %s" % args['box']
 
             if box is None:

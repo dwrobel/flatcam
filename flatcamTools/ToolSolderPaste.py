@@ -557,7 +557,7 @@ class SolderPaste(FlatCAMTool):
 
         try:
             dias = [float(eval(dia)) for dia in self.app.defaults["tools_solderpaste_tools"].split(",") if dia != '']
-        except:
+        except Exception:
             log.error("At least one Nozzle tool diameter needed. "
                       "Verify in Edit -> Preferences -> TOOLS -> Solder Paste Tools.")
             return
@@ -675,7 +675,7 @@ class SolderPaste(FlatCAMTool):
         if row is None:
             try:
                 current_row = self.tools_table.currentRow()
-            except:
+            except Exception:
                 current_row = 0
         else:
             current_row = row
