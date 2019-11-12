@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+12.11.2019
+
+- added two new postprocessor files for ISEL CNC and for BERTA CNC
+- clicking on a FCTable GUI element empty space will also clear the focus now
+
 11.11.2019
 
 - in Tools Database added a contextual menu to add/copy/delete tool; CTRL+C, DEL keys work too; key T for adding a tool is now only partially working
@@ -25,7 +30,6 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a new bug that did not allow to open the FlatCAM Preferences files by doubleclick in Windows
 - added a new feature: Tools Database for Geometry objects; resolved issue #308
 - added tooltips for the Tools Database table headers and buttons
-
 
 8.11.2019
 

@@ -1776,8 +1776,9 @@ class FCTable(QtWidgets.QTableWidget):
 
     # if user is clicking an blank area inside the QTableWidget it will deselect currently selected rows
     def mousePressEvent(self, event):
-        if self.itemAt(event.pos()) is None:
+        if not self.itemAt(event.pos()):
             self.clearSelection()
+            self.clearFocus()
         else:
             QtWidgets.QTableWidget.mousePressEvent(self, event)
 

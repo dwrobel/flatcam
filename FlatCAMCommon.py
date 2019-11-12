@@ -781,7 +781,8 @@ class ToolsDB(QtWidgets.QWidget):
         nr_crt = row + 1
         id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
         # id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-        id_item.setFlags(id_item.flags() & ~QtCore.Qt.ItemIsEditable)
+        flags = id_item.flags() & ~QtCore.Qt.ItemIsEditable
+        id_item.setFlags(flags)
         widget.setItem(row, 0, id_item)  # Tool name/id
 
         tool_name_item = QtWidgets.QTableWidgetItem(name)
