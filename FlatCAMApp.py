@@ -9584,7 +9584,7 @@ class App(QtCore.QObject):
         elif obj.kind == 'cncjob':
             "GCode Files (*.NC);;All Files (*.*)"
 
-        self.source_editor_tab = TextEditor(app=self)
+        self.source_editor_tab = TextEditor(app=self, plain_text=True)
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.source_editor_tab, '%s' % _("Source Editor"))
@@ -9639,10 +9639,11 @@ class App(QtCore.QObject):
 
         self.source_editor_tab.t_frame.hide()
         try:
-            for line in file:
-                QtWidgets.QApplication.processEvents()
-                proc_line = str(line).strip('\n')
-                self.source_editor_tab.code_editor.append(proc_line)
+            self.source_editor_tab.code_editor.setPlainText(file.getvalue())
+            # for line in file:
+            #     QtWidgets.QApplication.processEvents()
+            #     proc_line = str(line).strip('\n')
+            #     self.source_editor_tab.code_editor.append(proc_line)
         except Exception as e:
             log.debug('App.on_view_source() -->%s' % str(e))
             self.inform.emit('[ERROR] %s: %s' % (_('Failed to load the source code for the selected object'), str(e)))

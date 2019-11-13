@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - trying to improve the performance of View CNC Code command by using QPlainTextEdit; made the mods for it
 - when using the Find function in the TextEditor and the result reach the bottom of the document, the next find will be the first in the document (before it defaulted to the beginning of the document)
+- finished improving the show of text files in FlatCAM (CNC Code, Source files)
 
 12.11.2019
 

@@ -6122,11 +6122,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.gcode_editor_tab.t_frame.hide()
         # then append the text from GCode to the text editor
         try:
-            for line in self.app.gcode_edited:
-                QtWidgets.QApplication.processEvents()
-
-                proc_line = str(line).strip('\n')
-                self.gcode_editor_tab.code_editor.append(proc_line)
+            self.gcode_editor_tab.code_editor.setPlainText(self.app.gcode_edited.getvalue())
+            # for line in self.app.gcode_edited:
+            #     QtWidgets.QApplication.processEvents()
+            #
+            #     proc_line = str(line).strip('\n')
+            #     self.gcode_editor_tab.code_editor.append(proc_line)
         except Exception as e:
             log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
             self.app.inform.emit('[ERROR] %s %s' % ('FlatCAMCNNJob.on_edit_code_click() -->', str(e)))
