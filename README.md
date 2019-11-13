@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.11.2019
+
+- trying to improve the performance of View CNC Code command by using QPlainTextEdit; made the mods for it
+- when using the Find function in the TextEditor and the result reach the bottom of the document, the next find will be the first in the document (before it defaulted to the beginning of the document)
+
 12.11.2019
 
 - added two new postprocessor files for ISEL CNC and for BERTA CNC

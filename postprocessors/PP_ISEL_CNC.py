@@ -9,7 +9,7 @@
 from FlatCAMPostProc import *
 
 
-class default(FlatCAMPostProc):
+class PP_ISEL_CNC(FlatCAMPostProc):
 
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'

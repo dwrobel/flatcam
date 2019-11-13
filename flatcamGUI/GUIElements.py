@@ -884,6 +884,178 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         self.setTextCursor(cursor)
 
 
+class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.completer = MyCompleter()
+
+        self.model = QtCore.QStringListModel()
+        self.completer.setModel(self.model)
+        self.set_model_data(keyword_list=[])
+        self.completer.insertText.connect(self.insertCompletion)
+
+        self.completer_enable = False
+
+    def append(self, text):
+        """
+        Added this to make this subclass compatible with FCTextAreaExtended
+        :param text: string
+        :return:
+        """
+        self.appendPlainText(text)
+
+    def set_model_data(self, keyword_list):
+        self.model.setStringList(keyword_list)
+
+    def insertCompletion(self, completion):
+        tc = self.textCursor()
+        extra = (len(completion) - len(self.completer.completionPrefix()))
+
+        # don't insert if the word is finished but add a space instead
+        if extra == 0:
+            tc.insertText(' ')
+            self.completer.popup().hide()
+            return
+
+        tc.movePosition(QTextCursor.Left)
+        tc.movePosition(QTextCursor.EndOfWord)
+        tc.insertText(completion[-extra:])
+        # add a space after inserting the word
+        tc.insertText(' ')
+        self.setTextCursor(tc)
+        self.completer.popup().hide()
+
+    def focusInEvent(self, event):
+        if self.completer:
+            self.completer.setWidget(self)
+        QtWidgets.QPlainTextEdit.focusInEvent(self, event)
+
+    def set_value(self, val):
+        self.setPlainText(val)
+
+    def get_value(self):
+        self.toPlainText()
+
+    def insertFromMimeData(self, data):
+        """
+        Reimplemented such that when SHIFT is pressed and doing click Paste in the contextual menu, the '\' symbol
+        is replaced with the '/' symbol. That's because of the difference in path separators in Windows and TCL
+        :param data:
+        :return:
+        """
+        modifier = QtWidgets.QApplication.keyboardModifiers()
+        if modifier == Qt.ShiftModifier:
+            text = data.text()
+            text = text.replace('\\', '/')
+            self.insertPlainText(text)
+        else:
+            self.insertPlainText(data.text())
+
+    def keyPressEvent(self, event):
+        """
+        Reimplemented so the CTRL + SHIFT + V shortcut key combo will paste the text but replacing '\' with '/'
+        :param event:
+        :return:
+        """
+        key = event.key()
+        modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if modifier & Qt.ControlModifier and modifier & Qt.ShiftModifier:
+            if key == QtCore.Qt.Key_V:
+                clipboard = QtWidgets.QApplication.clipboard()
+                clip_text = clipboard.text()
+                clip_text = clip_text.replace('\\', '/')
+                self.insertPlainText(clip_text)
+
+        if modifier & Qt.ControlModifier and key == Qt.Key_Slash:
+            self.comment()
+
+        tc = self.textCursor()
+        if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
+            self.completer.insertText.emit(self.completer.getSelected())
+            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            return
+        elif key == Qt.Key_BraceLeft:
+            tc.insertText('{}')
+            self.moveCursor(QtGui.QTextCursor.Left)
+        elif key == Qt.Key_BracketLeft:
+            tc.insertText('[]')
+            self.moveCursor(QtGui.QTextCursor.Left)
+        elif key == Qt.Key_ParenLeft:
+            tc.insertText('()')
+            self.moveCursor(QtGui.QTextCursor.Left)
+
+        elif key == Qt.Key_BraceRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == '}':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText('}')
+        elif key == Qt.Key_BracketRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == ']':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText(']')
+        elif key == Qt.Key_ParenRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == ')':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText(')')
+        else:
+            super(FCPlainTextAreaExtended, self).keyPressEvent(event)
+
+        if self.completer_enable:
+            tc.select(QTextCursor.WordUnderCursor)
+            cr = self.cursorRect()
+
+            if len(tc.selectedText()) > 0:
+                self.completer.setCompletionPrefix(tc.selectedText())
+                popup = self.completer.popup()
+                popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
+
+                cr.setWidth(self.completer.popup().sizeHintForColumn(0)
+                            + self.completer.popup().verticalScrollBar().sizeHint().width())
+                self.completer.complete(cr)
+            else:
+                self.completer.popup().hide()
+
+    def comment(self):
+        """
+        Got it from here:
+        https://stackoverflow.com/questions/49898820/how-to-get-text-next-to-cursor-in-qtextedit-in-pyqt4
+        :return:
+        """
+        pos = self.textCursor().position()
+        self.moveCursor(QtGui.QTextCursor.StartOfLine)
+        line_text = self.textCursor().block().text()
+        if self.textCursor().block().text().startswith(" "):
+            # skip the white space
+            self.moveCursor(QtGui.QTextCursor.NextWord)
+        self.moveCursor(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+        character = self.textCursor().selectedText()
+        if character == "#":
+            # delete #
+            self.textCursor().deletePreviousChar()
+            # delete white space
+            self.moveCursor(QtGui.QTextCursor.NextWord, QtGui.QTextCursor.KeepAnchor)
+            self.textCursor().removeSelectedText()
+        else:
+            self.moveCursor(QtGui.QTextCursor.PreviousCharacter, QtGui.QTextCursor.KeepAnchor)
+            self.textCursor().insertText("# ")
+        cursor = QtGui.QTextCursor(self.textCursor())
+        cursor.setPosition(pos)
+        self.setTextCursor(cursor)
+
+
 class FCComboBox(QtWidgets.QComboBox):
 
     def __init__(self, parent=None, callback=None):

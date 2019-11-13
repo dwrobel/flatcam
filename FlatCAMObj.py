@@ -6099,7 +6099,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             self.app.gcode_edited = gco
 
-        self.gcode_editor_tab = TextEditor(app=self.app)
+        self.gcode_editor_tab = TextEditor(app=self.app, plain_text=True)
 
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.gcode_editor_tab, '%s' % _("Code Editor"))
@@ -6129,8 +6129,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.gcode_editor_tab.code_editor.append(proc_line)
         except Exception as e:
             log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
-            self.app.inform.emit('[ERROR] %s %s' %
-                                 ('FlatCAMCNNJob.on_edit_code_click() -->', str(e)))
+            self.app.inform.emit('[ERROR] %s %s' % ('FlatCAMCNNJob.on_edit_code_click() -->', str(e)))
             return
 
         self.gcode_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
@@ -6328,8 +6327,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
             # if it did not find 'G20' and it did not find 'G21' then there is an error and return
             if g_idx == -1:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("G-code does not have a units code: either G20 or G21"))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("G-code does not have a units code: either G20 or G21"))
                 return
 
             footer = self.app.defaults['cncjob_footer']

@@ -19,7 +19,7 @@ if '_' not in builtins.__dict__:
 
 class TextEditor(QtWidgets.QWidget):
 
-    def __init__(self, app, text=None):
+    def __init__(self, app, text=None, plain_text=None):
         super().__init__()
 
         self.app = app
@@ -39,12 +39,20 @@ class TextEditor(QtWidgets.QWidget):
         self.work_editor_layout.setContentsMargins(2, 2, 2, 2)
         self.t_frame.setLayout(self.work_editor_layout)
 
-        self.code_editor = FCTextAreaExtended()
-        stylesheet = """
-                        QTextEdit { selection-background-color:yellow;
-                                    selection-color:black;
-                        }
-                     """
+        if plain_text:
+            self.code_editor = FCPlainTextAreaExtended()
+            stylesheet = """
+                            QPlainTextEdit { selection-background-color:yellow;
+                                             selection-color:black;
+                            }
+                         """
+        else:
+            self.code_editor = FCTextAreaExtended()
+            stylesheet = """
+                            QTextEdit { selection-background-color:yellow;
+                                        selection-color:black;
+                            }
+                         """
 
         self.code_editor.setStyleSheet(stylesheet)
 
@@ -233,6 +241,7 @@ class TextEditor(QtWidgets.QWidget):
         r = self.code_editor.find(str(text_to_be_found), flags)
         if r is False:
             self.code_editor.moveCursor(QtGui.QTextCursor.Start)
+            r = self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
         self.app.report_usage("handleReplaceGCode()")
