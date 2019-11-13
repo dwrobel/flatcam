@@ -1607,7 +1607,7 @@ class Gerber(Geometry):
         """
         Converts the units of the object to ``units`` by scaling all
         the geometry appropriately. This call ``scale()``. Don't call
-        it again in descendents.
+        it again in descendants.
 
         :param units: "IN" or "MM"
         :type units: str

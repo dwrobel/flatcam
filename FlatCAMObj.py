@@ -1426,8 +1426,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         factor = Gerber.convert_units(self, units)
 
-        self.options['isotooldia'] = float(self.options['isotooldia']) * factor
-        self.options['bboxmargin'] = float(self.options['bboxmargin']) * factor
+        # self.options['isotooldia'] = float(self.options['isotooldia']) * factor
+        # self.options['bboxmargin'] = float(self.options['bboxmargin']) * factor
 
     def plot(self, **kwargs):
         """
@@ -3139,6 +3139,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         log.debug("FlatCAMObj.FlatCAMExcellon.convert_units()")
 
         factor = Excellon.convert_units(self, units)
+
         self.options['drillz'] = float(self.options['drillz']) * factor
         self.options['travelz'] = float(self.options['travelz']) * factor
         self.options['feedrate'] = float(self.options['feedrate']) * factor
