@@ -225,7 +225,7 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
         self.tools2_qrcode_group = Tools2QRCodePrefGroupUI()
         self.tools2_qrcode_group.setMinimumWidth(220)
 
-        self.tools2_cfill_group = Tools2CFillPrefGroupUI()
+        self.tools2_cfill_group = Tools2CThievingPrefGroupUI()
         self.tools2_cfill_group.setMinimumWidth(220)
 
         self.vlay = QtWidgets.QVBoxLayout()
@@ -5717,10 +5717,10 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
         # self.layout.addStretch()
 
 
-class Tools2CFillPrefGroupUI(OptionsGroupUI):
+class Tools2CThievingPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
 
-        super(Tools2CFillPrefGroupUI, self).__init__(self)
+        super(Tools2CThievingPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Copper Thieving Tool Options")))
         self.decimals = 4

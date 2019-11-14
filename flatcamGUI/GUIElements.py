@@ -2339,6 +2339,137 @@ class MyCompleter(QCompleter):
         return self.lastSelected
 
 
+class LNTextEdit(QtWidgets.QFrame):
+    textChanged = QtCore.pyqtSignal()
+
+    class NumberBar(QtWidgets.QWidget):
+
+        def __init__(self, edit):
+            QtWidgets.QWidget.__init__(self, edit)
+
+            self.edit = edit
+            self.adjustWidth(1)
+
+        def paintEvent(self, event):
+            self.edit.numberbarPaint(self, event)
+            QtWidgets.QWidget.paintEvent(self, event)
+
+        def adjustWidth(self, count):
+            width = self.fontMetrics().width(str(count))
+            if self.width() != width:
+                self.setFixedWidth(width)
+
+        def updateContents(self, rect, scroll):
+            if scroll:
+                self.scroll(0, scroll)
+            else:
+                # It would be nice to do
+                # self.update(0, rect.y(), self.width(), rect.height())
+                # But we can't because it will not remove the bold on the
+                # current line if word wrap is enabled and a new block is
+                # selected.
+                self.update()
+
+    class PlainTextEdit(QtWidgets.QPlainTextEdit):
+        """
+        TextEdit with line numbers and highlight
+        From here: https://nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
+        """
+
+        def __init__(self, *args):
+            QtWidgets.QPlainTextEdit.__init__(self, *args)
+
+            #self.setFrameStyle(QFrame.NoFrame)
+
+            self.setFrameStyle(QtWidgets.QFrame.NoFrame)
+            self.highlight()
+            #self.setLineWrapMode(QPlainTextEdit.NoWrap)
+
+            self.cursorPositionChanged.connect(self.highlight)
+
+        def highlight(self):
+            hi_selection = QTextEdit.ExtraSelection()
+
+            hi_selection.format.setBackground(self.palette().alternateBase())
+            hi_selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
+            hi_selection.cursor = self.textCursor()
+            hi_selection.cursor.clearSelection()
+
+            self.setExtraSelections([hi_selection])
+
+        def numberbarPaint(self, number_bar, event):
+            font_metrics = self.fontMetrics()
+            current_line = self.document().findBlock(self.textCursor().position()).blockNumber() + 1
+
+            block = self.firstVisibleBlock()
+            line_count = block.blockNumber()
+            painter = QtGui.QPainter(number_bar)
+            painter.fillRect(event.rect(), self.palette().base())
+
+            # Iterate over all visible text blocks in the document.
+            while block.isValid():
+                line_count += 1
+                block_top = self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
+
+                # Check if the position of the block is out side of the visible
+                # area.
+                if not block.isVisible() or block_top >= event.rect().bottom():
+                    break
+
+                # We want the line number for the selected line to be bold.
+                if line_count == current_line:
+                    font = painter.font()
+                    font.setBold(True)
+                    painter.setFont(font)
+                else:
+                    font = painter.font()
+                    font.setBold(False)
+                    painter.setFont(font)
+
+                # Draw the line number right justified at the position of the line.
+                paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
+                painter.drawText(paint_rect, Qt.AlignRight, str(line_count))
+
+                block = block.next()
+
+            painter.end()
+
+    def __init__(self, *args):
+        QtWidgets.QFrame.__init__(self, *args)
+
+        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Sunken)
+
+        self.edit = self.PlainTextEdit()
+        self.number_bar = self.NumberBar(self.edit)
+
+        hbox = QtWidgets.QHBoxLayout(self)
+        hbox.setSpacing(0)
+        hbox.setContentsMargins(0, 0, 0, 0)
+        hbox.addWidget(self.number_bar)
+        hbox.addWidget(self.edit)
+
+        self.edit.blockCountChanged.connect(self.number_bar.adjustWidth)
+        self.edit.updateRequest.connect(self.number_bar.updateContents)
+
+    def set_model_data(self, kwd):
+        pass
+
+    def getText(self):
+        return str(self.edit.toPlainText())
+
+    def setText(self, text):
+        self.edit.setPlainText(text)
+
+    def isModified(self):
+        return self.edit.document().isModified()
+
+    def setModified(self, modified):
+        self.edit.document().setModified(modified)
+
+    def setLineWrapMode(self, mode):
+        self.edit.setLineWrapMode(mode)
+
+
 def rreplace(s, old, new, occurrence):
     """
     Credits go here:

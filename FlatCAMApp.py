@@ -1417,7 +1417,24 @@ class App(QtCore.QObject):
         # ########################## LOAD POSTPROCESSORS ##############################
         # #############################################################################
 
+        # a dictionary that have as keys the name of the postprocessor files and the value is the class from
+        # the postprocessor file
         self.postprocessors = load_postprocessors(self)
+
+        # make sure that always the 'default' postprocessor is the first item in the dictionary
+        if 'default' in self.postprocessors.keys():
+            new_ppp_dict = dict()
+
+            # add the 'default' name first in the dict after removing from the postprocessor's dictionary
+            default_pp = self.postprocessors.pop('default')
+            new_ppp_dict['default'] = default_pp
+
+            # then add the rest of the keys
+            for name, val_class in self.postprocessors.items():
+                new_ppp_dict[name] = val_class
+
+            # and now put back the ordered dict with 'default' key first
+            self.postprocessors = new_ppp_dict
 
         for name in list(self.postprocessors.keys()):
             # 'Paste' postprocessors are to be used only in the Solder Paste Dispensing Tool

@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.11.2019
+
+- made sure that the 'default' postprocessor file is always loaded first such that this name is always first in the GUI comboboxes
+- added a class in GUIElements for a TextEdit box with line numbers and highlight
+
 13.11.2019
 
 - trying to improve the performance of View CNC Code command by using QPlainTextEdit; made the mods for it
