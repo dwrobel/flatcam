@@ -1442,7 +1442,7 @@ class SolderPaste(FlatCAMTool):
 
     def on_save_gcode(self):
         """
-        Save sodlerpaste dispensing GCode to a file on HDD.
+        Save solderpaste dispensing GCode to a file on HDD.
 
         :return:
         """
@@ -1457,7 +1457,7 @@ class SolderPaste(FlatCAMTool):
             return
 
         _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.cnc);;" \
-                   "G-Code Files (*.g-code);;All Files (*.*)"
+                   "G-Code Files (*.g-code);;All Files (*.*);;G-Code Files (*.gcode);;G-Code Files (*.ngc)"
 
         try:
             dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
