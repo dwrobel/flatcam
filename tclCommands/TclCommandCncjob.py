@@ -63,7 +63,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('feedrate', 'Moving speed on X-Y plane when cutting.'),
             ('feedrate_z', 'Moving speed on Z plane when cutting.'),
             ('feedrate_rapid', 'Rapid moving at speed when cutting.'),
-            ('multidepth', 'Use or not multidepth cnccut. (True or False)'),
+            ('multidepth', 'Use or not multidepth cnc cut. (True or False)'),
             ('extracut', 'Use or not an extra cnccut over the first point in path,in the job end (example: True)'),
             ('depthperpass', 'Height of one layer for multidepth.'),
             ('toolchange', 'Enable tool changes (example: True).'),
