@@ -542,6 +542,7 @@ class FCSpinner(QtWidgets.QSpinBox):
 
     def on_edit_finished(self):
         self.clearFocus()
+        self.returnPressed.emit()
 
     # def mousePressEvent(self, e, parent=None):
     #     super(FCSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -593,6 +594,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     def on_edit_finished(self):
         self.clearFocus()
+        self.returnPressed.emit()
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:

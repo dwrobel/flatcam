@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 15.11.2019
 
 - added all the recognized extensions to the save dialog filters; latest extension used will be preselected next time a save operation occur
+- fixed issue #335. The FCDoubleSPinBox (and FCSpinBox) value was not used when the user entered data but just hovered away the mouse expecting the data to be already confirmed
 
 14.11.2019
 
