@@ -498,6 +498,24 @@ class App(QtCore.QObject):
             "gerber_use_buffer_for_union": True,
             "gerber_def_units": 'IN',
             "gerber_def_zeros": 'L',
+            "gerber_save_filters": "Gerber File (*.gbr);;Gerber File (*.bot);;Gerber File (*.bsm);;"
+                                   "Gerber File (*.cmp);;Gerber File (*.crc);;Gerber File (*.crs);;"
+                                   "Gerber File (*.gb0);;Gerber File (*.gb1);;Gerber File (*.gb2);;"
+                                   "Gerber File (*.gb3);;Gerber File (*.gb4);;Gerber File (*.gb5);;"
+                                   "Gerber File (*.gb6);;Gerber File (*.gb7);;Gerber File (*.gb8);;"
+                                   "Gerber File (*.gb9);;Gerber File (*.gbd);;Gerber File (*.gbl);;"
+                                   "Gerber File (*.gbo);;Gerber File (*.gbp);;Gerber File (*.gbs);;"
+                                   "Gerber File (*.gdo);;Gerber File (*.ger);;Gerber File (*.gko);;"
+                                   "Gerber File (*.gm1);;Gerber File (*.gm2);;Gerber File (*.gm3);;"
+                                   "Gerber File (*.grb);;Gerber File (*.gtl);;Gerber File (*.gto);;"
+                                   "Gerber File (*.gtp);;Gerber File (*.gts);;Gerber File (*.ly15);;"
+                                   "Gerber File (*.ly2);;Gerber File (*.mil);;Gerber File (*.pho);;"
+                                   "Gerber File (*.plc);;Gerber File (*.pls);;Gerber File (*.smb);;"
+                                   "Gerber File (*.smt);;Gerber File (*.sol);;Gerber File (*.spb);;"
+                                   "Gerber File (*.spt);;Gerber File (*.ssb);;Gerber File (*.sst);;"
+                                   "Gerber File (*.stc);;Gerber File (*.sts);;Gerber File (*.top);;"
+                                   "Gerber File (*.tsm);;Gerber File (*.art)"
+                                   "All Files (*.*)",
 
             # Gerber Options
             "gerber_isotooldia": 0.00787402,
@@ -558,6 +576,9 @@ class App(QtCore.QObject):
             "excellon_update": True,
             "excellon_optimization_type": 'B',
             "excellon_search_time": 3,
+            "excellon_save_filters": "Excellon File (*.txt);;Excellon File (*.drd);;Excellon File (*.drl);;"
+                                     "Excellon File (*.exc);;Excellon File (*.ncd);;Excellon File (*.tap);;"
+                                     "Excellon File (*.xln);;All Files (*.*)",
 
             # Excellon Options
             "excellon_drillz": -0.0590551,
@@ -663,6 +684,16 @@ class App(QtCore.QObject):
             "cncjob_steps_per_circle": 128,
             "cncjob_footer": False,
             "cncjob_line_ending": False,
+            "cncjob_save_filters": "G-Code Files (*.nc);;G-Code Files (*.din);;G-Code Files (*.dnc);;"
+                                   "G-Code Files (*.ecs);;G-Code Files (*.eia);;G-Code Files (*.fan);;"
+                                   "G-Code Files (*.fgc);;G-Code Files (*.fnc);;G-Code Files (*.gc);;"
+                                   "G-Code Files (*.gcd);;G-Code Files (*.gcode);;G-Code Files (*.h);;"
+                                   "G-Code Files (*.hnc);;G-Code Files (*.i);;G-Code Files (*.min);;"
+                                   "G-Code Files (*.mpf);;G-Code Files (*.mpr);;G-Code Files (*.cnc);;"
+                                   "G-Code Files (*.ncc);;G-Code Files (*.ncg);;G-Code Files (*.ncp);;"
+                                   "G-Code Files (*.ngc);;G-Code Files (*.out);;G-Code Files (*.ply);;"
+                                   "G-Code Files (*.sbp);;G-Code Files (*.tap);;G-Code Files (*.xpi);;"
+                                   "All Files (*.*)",
 
             # CNC Job Options
             "cncjob_prepend": "",
@@ -846,7 +877,7 @@ class App(QtCore.QObject):
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
             "fa_gcode": 'cnc, din, dnc, ecs, eia, fan, fgc, fnc, gc, gcd, gcode, h, hnc, i, min, mpf, mpr, nc, ncc, '
                         'ncg, ncp, ngc, out, plt, ply, rol, sbp, tap, xpi',
-            "fa_gerber": 'art, bot, bsm, cmp, crc, crs, dim, g4, gb0, gb1, gb2, gb3, gb5, gb6, gb7, gb8, gb9, gbd, '
+            "fa_gerber": 'art, bot, bsm, cmp, crc, crs, dim, gb0, gb1, gb2, gb3, gb4, gb5, gb6, gb7, gb8, gb9, gbd, '
                          'gbl, gbo, gbp, gbr, gbs, gdo, ger, gko, gm1, gm2, gm3, grb, gtl, gto, gtp, gts, ly15, ly2, '
                          'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
             # Keyword list
@@ -9357,7 +9388,7 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        _filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
+        _filter = self.defaults["excellon_save_filters"]
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export Excellon"),
@@ -9373,6 +9404,9 @@ class App(QtCore.QObject):
                              _("Export Excellon cancelled."))
             return
         else:
+            used_extension = filename.rpartition('.')[2]
+            obj.update_filters(last_ext=used_extension, filter_string='excellon_save_filters')
+
             self.export_excellon(name, filename)
             if self.defaults["global_open_style"] is False:
                 self.file_opened.emit("Excellon", filename)
@@ -9401,7 +9435,7 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        _filter_ = "Gerber File (*.GBR);;All Files (*.*)"
+        _filter_ = self.defaults['gerber_save_filters']
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export Gerber"),
@@ -9417,6 +9451,9 @@ class App(QtCore.QObject):
                              _("Export Gerber cancelled."))
             return
         else:
+            used_extension = filename.rpartition('.')[2]
+            obj.update_filters(last_ext=used_extension, filter_string='gerber_save_filters')
+
             self.export_gerber(name, filename)
             if self.defaults["global_open_style"] is False:
                 self.file_opened.emit("Gerber", filename)

@@ -412,6 +412,43 @@ class FlatCAMObj(QtCore.QObject):
             key = self.mark_shapes[apid].add(tolerance=self.drawing_tolerance, **kwargs)
         return key
 
+    def update_filters(self, last_ext, filter_string):
+        """
+        Will modify the filter string that is used when saving a file (a list of file extensions) to have the last
+        used file extension as the first one in the special string
+
+        :param last_ext: the file extension that was last used to save a file
+        :param filter_string: a key in self.app.defaults that holds a string with the filter from QFileDialog
+        used when saving a file
+        :return: None
+        """
+
+        filters = copy(self.app.defaults[filter_string])
+        filter_list = filters.split(';;')
+        filter_list_enum_1 = enumerate(filter_list)
+
+        # search for the last element in the filters which should always be "All Files (*.*)"
+        last_elem = ''
+        for elem in list(filter_list_enum_1):
+            if '(*.*)' in elem[1]:
+                last_elem = filter_list.pop(elem[0])
+
+        filter_list_enum = enumerate(filter_list)
+        for elem in list(filter_list_enum):
+            if '.' + last_ext in elem[1]:
+                used_ext = filter_list.pop(elem[0])
+
+                # sort the extensions back
+                filter_list.sort(key=lambda x: x.rpartition('.')[2])
+
+                # add as a first element the last used extension
+                filter_list.insert(0, used_ext)
+                # add back the element that should always be the last (All Files)
+                filter_list.append(last_elem)
+
+                self.app.defaults[filter_string] = ';;'.join(filter_list)
+                return
+
     @staticmethod
     def poly2rings(poly):
         return [poly.exterior] + [interior for interior in poly.interiors]
@@ -6043,16 +6080,15 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         self.read_form()
         name = self.app.collection.get_active().options['name']
+        save_gcode = False
 
         if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name:
-            _filter_ = "RML1 Files (*.rol);;" \
-                       "All Files (*.*)"
+            _filter_ = "RML1 Files (*.rol);;All Files (*.*)"
         elif 'hpgl' in self.pp_geometry_name:
-            _filter_ = "HPGL Files (*.plt);;" \
-                       "All Files (*.*)"
+            _filter_ = "HPGL Files (*.plt);;All Files (*.*)"
         else:
-            _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.ngc);;" \
-                       "G-Code Files (*.cnc);;G-Code Files (*.g-code);;All Files (*.*)"
+            save_gcode = True
+            _filter_ = self.app.defaults['cncjob_save_filters']
 
         try:
             dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
@@ -6067,9 +6103,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         filename = str(filename)
 
         if filename == '':
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Export Machine Code cancelled ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Machine Code cancelled ..."))
             return
+        else:
+            if save_gcode is True:
+                used_extension = filename.rpartition('.')[2]
+                self.update_filters(last_ext=used_extension, filter_string='cncjob_save_filters')
 
         new_name = os.path.split(str(filename))[1].rpartition('.')[0]
         self.ui.name_entry.set_value(new_name)

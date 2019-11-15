@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.11.2019
+
+- added all the recognized extensions to the save dialog filters; latest extension used will be preselected next time a save operation occur
+
 14.11.2019
 
 - made sure that the 'default' postprocessor file is always loaded first such that this name is always first in the GUI comboboxes
