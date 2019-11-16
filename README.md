@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.11.2019
+
+- optimized the storage of the Gerber mark shapes by making them one layer only
+- optimized the Distance Tool such that the distance utility geometry will be shown even when the mark shapes are plotted.
+
 16.11.2019
 
 - fixed issue #341 that affected both postprocessors that have inlined feedrate: marlin and repetier. THe used feedrate was the Feedrate X-Y and instead had to be Feedrate Z.

@@ -194,6 +194,12 @@ class Distance(FlatCAMTool):
         self.distance_y_entry.set_value('0.0')
         self.angle_entry.set_value('0.0')
         self.total_distance_entry.set_value('0.0')
+
+        # this is a hack; seems that triggering the grid will make the visuals better
+        # trigger it twice to return to the original state
+        self.app.ui.grid_snap_btn.trigger()
+        self.app.ui.grid_snap_btn.trigger()
+
         log.debug("Distance Tool --> tool initialized")
 
     def activate_measure_tool(self):

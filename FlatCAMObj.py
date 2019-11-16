@@ -409,7 +409,7 @@ class FlatCAMObj(QtCore.QObject):
         if self.deleted:
             raise ObjectDeleted()
         else:
-            key = self.mark_shapes[apid].add(tolerance=self.drawing_tolerance, **kwargs)
+            key = self.mark_shapes[apid].add(tolerance=self.drawing_tolerance, layer=0, **kwargs)
         return key
 
     def update_filters(self, last_ext, filter_string):
@@ -1413,7 +1413,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # add the shapes storage for marking apertures
             if self.app.is_legacy is False:
                 for ap_code in self.apertures:
-                    self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
+                    self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=1)
             else:
                 for ap_code in self.apertures:
                     self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
@@ -1675,7 +1675,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.ui.apertures_table.cellWidget(cw_row, 5).isChecked():
             self.marked_rows.append(True)
             # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-            self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'FF',
+            self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AF',
                                marked_aperture=aperture, visible=True, run_thread=True)
             # self.mark_shapes[aperture].redraw()
         else:
@@ -1713,7 +1713,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if mark_all:
             for aperture in self.apertures:
                 # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                self.plot_aperture(color=self.app.defaults['global_sel_draw_color'] + 'AF',
                                    marked_aperture=aperture, visible=True)
             # HACK: enable/disable the grid for a better look
             self.app.ui.grid_snap_btn.trigger()
