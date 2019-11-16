@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.11.2019
+
+- fixed issue #341 that affected both postprocessors that have inlined feedrate: marlin and repetier. THe used feedrate was the Feedrate X-Y and instead had to be Feedrate Z.
+
 15.11.2019
 
 - added all the recognized extensions to the save dialog filters; latest extension used will be preselected next time a save operation occur

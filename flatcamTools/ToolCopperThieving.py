@@ -817,7 +817,7 @@ class ToolCopperThieving(FlatCAMTool):
                 bounding_box = cascaded_union(geo_buff_list)
             elif isinstance(working_obj, FlatCAMGerber):
                 geo_n = cascaded_union(geo_n).convex_hull
-                bounding_box = cascaded_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
+                bounding_box = cascaded_union(thieving_obj.solid_geometry).convex_hull.intersection(geo_n)
                 bounding_box = bounding_box.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))

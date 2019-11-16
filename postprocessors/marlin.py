@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMPostProc import *
 
@@ -78,7 +78,7 @@ class marlin(FlatCAMPostProc):
         return 'G0 Z' + self.coordinate_format%(p.coords_decimals, p.z_move) + " " + self.feedrate_rapid_code(p)
 
     def down_code(self, p):
-        return 'G1 Z' + self.coordinate_format%(p.coords_decimals, p.z_cut) + " " + self.end_feedrate_code(p)
+        return 'G1 Z' + self.coordinate_format%(p.coords_decimals, p.z_cut) + " " + self.inline_z_feedrate_code(p)
 
     def toolchange_code(self, p):
         z_toolchange = p.z_toolchange
@@ -175,7 +175,7 @@ M0""".format(z_toolchange=self.coordinate_format%(p.coords_decimals, z_toolchang
         return ('G0 ' + self.position_code(p)).format(**p) + " " + self.feedrate_rapid_code(p)
 
     def linear_code(self, p):
-        return ('G1 ' + self.position_code(p)).format(**p) + " " + self.end_feedrate_code(p)
+        return ('G1 ' + self.position_code(p)).format(**p) + " " + self.inline_feedrate_code(p)
 
     def end_code(self, p):
         coords_xy = p['xy_toolchange']
@@ -189,8 +189,11 @@ M0""".format(z_toolchange=self.coordinate_format%(p.coords_decimals, z_toolchang
     def feedrate_code(self, p):
         return 'G1 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
 
-    def end_feedrate_code(self, p):
+    def inline_feedrate_code(self, p):
         return 'F' + self.feedrate_format %(p.fr_decimals, p.feedrate)
+
+    def inline_z_feedrate_code(self, p):
+        return 'F' + self.feedrate_format %(p.fr_decimals, p.z_feedrate)
 
     def z_feedrate_code(self, p):
         return 'G1 F' + str(self.feedrate_format %(p.fr_decimals, p.z_feedrate))
