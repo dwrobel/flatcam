@@ -74,8 +74,7 @@ if platform.architecture()[0] == '64bit':
         excludes=['scipy','pytz'],
         # packages=['OpenGL','numpy','vispy','ortools','google']
         # packages=['numpy','google', 'rasterio'] # works for Python 3.7
-        packages = ['opengl', 'numpy', 'google', 'rasterio'] # works for Python 3.6.5 and Python 3.7.1
-
+        packages=['opengl', 'numpy', 'google', 'rasterio'],   # works for Python 3.6.5 and Python 3.7.1
     )
 else:
     buildOptions = dict(
@@ -83,9 +82,11 @@ else:
         excludes=['scipy', 'pytz'],
         # packages=['OpenGL','numpy','vispy','ortools','google']
         # packages=['numpy', 'rasterio']  # works for Python 3.7
-        packages = ['opengl', 'numpy', 'rasterio'] # works for Python 3.6.5 and Python 3.7.1
-
+        packages=['opengl', 'numpy', 'rasterio'],   # works for Python 3.6.5 and Python 3.7.1
     )
+
+if sys.platform == "win32":
+    buildOptions["include_msvcr"] = True
 
 print("INCLUDE_FILES", include_files)
 

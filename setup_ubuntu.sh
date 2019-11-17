@@ -1,34 +1,5 @@
-#!/bin/sh
-apt-get install python3-pip
-apt-get install python3-pyqt5
-apt-get install python3-pyqt5.qtopengl
-apt-get install libpng-dev
-apt-get install libfreetype6 libfreetype6-dev
-apt-get install python3-dev
-apt-get install python3-simplejson
-apt-get install python3-numpy python3-scipy
-apt-get install libgeos-dev
-apt-get install python3-shapely
-apt-get install python3-rtree
-apt-get install python3-tk
-apt-get install libspatialindex-dev
-apt-get install python3-gdal
-apt-get install python3-lxml
-pip3 install --upgrade cycler
-pip3 install --upgrade python-dateutil
-pip3 install --upgrade kiwisolver
-pip3 install --upgrade dill
-pip3 install --upgrade Shapely
-pip3 install --upgrade vispy
-pip3 install --upgrade rtree
-pip3 install --upgrade pyopengl
-pip3 install --upgrade setuptools
-pip3 install --upgrade svg.path
-pip3 install --upgrade ortools
-pip3 install --upgrade freetype-py
-pip3 install --upgrade fontTools
-pip3 install --upgrade rasterio
-pip3 install --upgrade lxml
-pip3 install --upgrade ezdxf
-pip3 install --upgrade matplotlib
-pip3 install --upgrade qrcode
+#!/bin/bash
+sudo apt install --reinstall libpng-dev libfreetype6 libfreetype6-dev libgeos-dev libspatialindex-dev
+sudo apt install --reinstall python3-dev python3-pyqt5 python3-pyqt5.qtopengl python3-gdal python3-simplejson python3-pip python3-tk
+
+sudo python3 -m pip install --upgrade pip numpy scipy shapely rtree tk lxml cycler python-dateutil kiwisolver dill vispy pyopengl setuptools svg.path ortools freetype-py fontTools rasterio ezdxf matplotlib qrcode

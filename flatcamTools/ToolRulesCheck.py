@@ -1160,7 +1160,7 @@ class RulesCheck(FlatCAMTool):
                     return
 
             # RULE: Check Copper to Outline Clearance
-            if self.clearance_copper2ol_cb.get_value():
+            if self.clearance_copper2ol_cb.get_value() and self.out_cb.get_value():
                 top_dict = dict()
                 bottom_dict = dict()
                 outline_dict = dict()

@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - optimized the storage of the Gerber mark shapes by making them one layer only
 - optimized the Distance Tool such that the distance utility geometry will be shown even when the mark shapes are plotted.
+- updated the make_freezed.py file to make sure that all the required files are included
+- updated the setup_ubuntu.sh to include the sudo command (courtesy of Krishna Torque on bitbucket)
 
 16.11.2019
 
