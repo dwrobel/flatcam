@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - working on the Lines option in Copper Thieving Tool
 - finished the Lines option in the Copper Thieving Tool; still have to add threading to maximize performance
 - finished Copper Thieving Tool improvements
+- working on the Calibrate Excellon Tool - remade the UI
 
 17.11.2019
 

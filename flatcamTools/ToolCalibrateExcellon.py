@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection
+from flatcamGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCTable
 
 from shapely.geometry import Point
 from shapely.geometry.base import *
@@ -145,108 +145,249 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Contain the expected calibration points and the\n"
               "ones measured.")
         )
-        grid_lay.addWidget(self.points_table_label, 2, 0, 1, 3)
+        grid_lay.addWidget(self.points_table_label, 1, 0, 1, 3)
+
+        self.points_table = FCTable()
+        self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        # self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        grid_lay.addWidget(self.points_table, 2, 0, 9, 3)
+
+        self.points_table.setColumnCount(4)
+        self.points_table.setHorizontalHeaderLabels(
+            [
+                '#',
+                _("Name"),
+                _("Target"),
+                _("Found Delta")
+            ]
+        )
+        self.points_table.setRowCount(8)
+        row = 0
 
         # BOTTOM LEFT
-        self.bottom_left_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Bottom Left'))
-        grid_lay.addWidget(self.bottom_left_lbl, 3, 0)
-        self.bottom_left_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        grid_lay.addWidget(self.bottom_left_tgt_lbl, 3, 1)
-        self.bottom_left_found_lbl = QtWidgets.QLabel('%s' % _('Cal. Origin'))
-        grid_lay.addWidget(self.bottom_left_found_lbl, 3, 2)
+        id_item_1 = QtWidgets.QTableWidgetItem('%d' % 1)
+        flags = QtCore.Qt.ItemIsEnabled
+        id_item_1.setFlags(flags)
+        self.points_table.setItem(row, 0, id_item_1)  # Tool name/id
 
-        self.bottom_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        grid_lay.addWidget(self.bottom_left_coordx_lbl, 4, 0)
+        self.bottom_left_coordx_lbl = QtWidgets.QLabel('%s' % _('Bot Left X'))
+        self.points_table.setCellWidget(row, 1, self.bottom_left_coordx_lbl)
         self.bottom_left_coordx_tgt = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.bottom_left_coordx_tgt)
         self.bottom_left_coordx_tgt.setReadOnly(True)
-        grid_lay.addWidget(self.bottom_left_coordx_tgt, 4, 1)
         self.bottom_left_coordx_found = EvalEntry()
-        grid_lay.addWidget(self.bottom_left_coordx_found, 4, 2)
+        self.points_table.setCellWidget(row, 3, self.bottom_left_coordx_found)
+        row += 1
 
-        self.bottom_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        grid_lay.addWidget(self.bottom_left_coordy_lbl, 5, 0)
+        self.bottom_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Bot Left Y'))
+        self.points_table.setCellWidget(row, 1, self.bottom_left_coordy_lbl)
         self.bottom_left_coordy_tgt = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.bottom_left_coordy_tgt)
         self.bottom_left_coordy_tgt.setReadOnly(True)
-        grid_lay.addWidget(self.bottom_left_coordy_tgt, 5, 1)
         self.bottom_left_coordy_found = EvalEntry()
-        grid_lay.addWidget(self.bottom_left_coordy_found, 5, 2)
+        self.points_table.setCellWidget(row, 3, self.bottom_left_coordy_found)
 
-        self.bottom_left_coordx_found.set_value(_('Set Origin'))
-        self.bottom_left_coordy_found.set_value(_('Set Origin'))
+        self.bottom_left_coordx_found.set_value(_("Origin"))
+        self.bottom_left_coordy_found.set_value(_("Origin"))
         self.bottom_left_coordx_found.setDisabled(True)
         self.bottom_left_coordy_found.setDisabled(True)
+        row += 1
 
         # BOTTOM RIGHT
-        self.bottom_right_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Bottom Right'))
-        grid_lay.addWidget(self.bottom_right_lbl, 6, 0)
-        self.bottom_right_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        grid_lay.addWidget(self.bottom_right_tgt_lbl, 6, 1)
-        self.bottom_right_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
-        grid_lay.addWidget(self.bottom_right_found_lbl, 6, 2)
+        id_item_2 = QtWidgets.QTableWidgetItem('%d' % 2)
+        flags = QtCore.Qt.ItemIsEnabled
+        id_item_2.setFlags(flags)
+        self.points_table.setItem(row, 0, id_item_2)  # Tool name/id
 
-        self.bottom_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        grid_lay.addWidget(self.bottom_right_coordx_lbl, 7, 0)
+        self.bottom_right_coordx_lbl = QtWidgets.QLabel('%s' % _('Bot Right X'))
+        self.points_table.setCellWidget(row, 1, self.bottom_right_coordx_lbl)
         self.bottom_right_coordx_tgt = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.bottom_right_coordx_tgt)
         self.bottom_right_coordx_tgt.setReadOnly(True)
-        grid_lay.addWidget(self.bottom_right_coordx_tgt, 7, 1)
         self.bottom_right_coordx_found = EvalEntry()
-        grid_lay.addWidget(self.bottom_right_coordx_found, 7, 2)
+        self.points_table.setCellWidget(row, 3, self.bottom_right_coordx_found)
 
-        self.bottom_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        grid_lay.addWidget(self.bottom_right_coordy_lbl, 8, 0)
+        row += 1
+
+        self.bottom_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Bot Right Y'))
+        self.points_table.setCellWidget(row, 1, self.bottom_right_coordy_lbl)
         self.bottom_right_coordy_tgt = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.bottom_right_coordy_tgt)
         self.bottom_right_coordy_tgt.setReadOnly(True)
-        grid_lay.addWidget(self.bottom_right_coordy_tgt, 8, 1)
         self.bottom_right_coordy_found = EvalEntry()
-        grid_lay.addWidget(self.bottom_right_coordy_found, 8, 2)
+        self.points_table.setCellWidget(row, 3, self.bottom_right_coordy_found)
+        row += 1
 
         # TOP LEFT
-        self.top_left_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Top Left'))
-        grid_lay.addWidget(self.top_left_lbl, 9, 0)
-        self.top_left_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        grid_lay.addWidget(self.top_left_tgt_lbl, 9, 1)
-        self.top_left_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
-        grid_lay.addWidget(self.top_left_found_lbl, 9, 2)
+        id_item_3 = QtWidgets.QTableWidgetItem('%d' % 3)
+        flags = QtCore.Qt.ItemIsEnabled
+        id_item_3.setFlags(flags)
+        self.points_table.setItem(row, 0, id_item_3)  # Tool name/id
 
-        self.top_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        grid_lay.addWidget(self.top_left_coordx_lbl, 10, 0)
+        self.top_left_coordx_lbl = QtWidgets.QLabel('%s' % _('Top Left X'))
+        self.points_table.setCellWidget(row, 1, self.top_left_coordx_lbl)
         self.top_left_coordx_tgt = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.top_left_coordx_tgt)
         self.top_left_coordx_tgt.setReadOnly(True)
-        grid_lay.addWidget(self.top_left_coordx_tgt, 10, 1)
         self.top_left_coordx_found = EvalEntry()
-        grid_lay.addWidget(self.top_left_coordx_found, 10, 2)
+        self.points_table.setCellWidget(row, 3, self.top_left_coordx_found)
+        row += 1
 
-        self.top_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        grid_lay.addWidget(self.top_left_coordy_lbl, 11, 0)
+        self.top_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Top Left Y'))
+        self.points_table.setCellWidget(row, 1, self.top_left_coordy_lbl)
         self.top_left_coordy_tgt = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.top_left_coordy_tgt)
         self.top_left_coordy_tgt.setReadOnly(True)
-        grid_lay.addWidget(self.top_left_coordy_tgt, 11, 1)
         self.top_left_coordy_found = EvalEntry()
-        grid_lay.addWidget(self.top_left_coordy_found, 11, 2)
+        self.points_table.setCellWidget(row, 3, self.top_left_coordy_found)
+        row += 1
 
         # TOP RIGHT
-        self.top_right_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Top Right'))
-        grid_lay.addWidget(self.top_right_lbl, 12, 0)
-        self.top_right_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        grid_lay.addWidget(self.top_right_tgt_lbl, 12, 1)
-        self.top_right_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
-        grid_lay.addWidget(self.top_right_found_lbl, 12, 2)
+        id_item_4 = QtWidgets.QTableWidgetItem('%d' % 4)
+        flags = QtCore.Qt.ItemIsEnabled
+        id_item_4.setFlags(flags)
+        self.points_table.setItem(row, 0, id_item_4)  # Tool name/id
 
-        self.top_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        grid_lay.addWidget(self.top_right_coordx_lbl, 13, 0)
+        self.top_right_coordx_lbl = QtWidgets.QLabel('%s' % _('Top Right X'))
+        self.points_table.setCellWidget(row, 1, self.top_right_coordx_lbl)
         self.top_right_coordx_tgt = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.top_right_coordx_tgt)
         self.top_right_coordx_tgt.setReadOnly(True)
-        grid_lay.addWidget(self.top_right_coordx_tgt, 13, 1)
         self.top_right_coordx_found = EvalEntry()
-        grid_lay.addWidget(self.top_right_coordx_found, 13, 2)
+        self.points_table.setCellWidget(row, 3, self.top_right_coordx_found)
+        row += 1
 
-        self.top_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        grid_lay.addWidget(self.top_right_coordy_lbl, 14, 0)
+        self.top_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Top Right Y'))
+        self.points_table.setCellWidget(row, 1, self.top_right_coordy_lbl)
         self.top_right_coordy_tgt = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.top_right_coordy_tgt)
         self.top_right_coordy_tgt.setReadOnly(True)
-        grid_lay.addWidget(self.top_right_coordy_tgt, 14, 1)
         self.top_right_coordy_found = EvalEntry()
-        grid_lay.addWidget(self.top_right_coordy_found, 14, 2)
+        self.points_table.setCellWidget(row, 3, self.top_right_coordy_found)
+
+        vertical_header = self.points_table.verticalHeader()
+        vertical_header.hide()
+        self.points_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        horizontal_header = self.points_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+
+        self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        # for x in range(4):
+        #     self.points_table.resizeColumnToContents(x)
+        self.points_table.resizeColumnsToContents()
+        self.points_table.resizeRowsToContents()
+
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
+
+        self.points_table.setMinimumHeight(self.points_table.getHeight() + 2)
+        self.points_table.setMaximumHeight(self.points_table.getHeight() + 3)
+
+        # # BOTTOM LEFT
+        # self.bottom_left_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Bottom Left'))
+        # grid_lay.addWidget(self.bottom_left_lbl, 3, 0)
+        # self.bottom_left_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
+        # grid_lay.addWidget(self.bottom_left_tgt_lbl, 3, 1)
+        # self.bottom_left_found_lbl = QtWidgets.QLabel('%s' % _('Cal. Origin'))
+        # grid_lay.addWidget(self.bottom_left_found_lbl, 3, 2)
+        #
+        # self.bottom_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
+        # grid_lay.addWidget(self.bottom_left_coordx_lbl, 4, 0)
+        # self.bottom_left_coordx_tgt = EvalEntry()
+        # self.bottom_left_coordx_tgt.setReadOnly(True)
+        # grid_lay.addWidget(self.bottom_left_coordx_tgt, 4, 1)
+        # self.bottom_left_coordx_found = EvalEntry()
+        # grid_lay.addWidget(self.bottom_left_coordx_found, 4, 2)
+        #
+        # self.bottom_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
+        # grid_lay.addWidget(self.bottom_left_coordy_lbl, 5, 0)
+        # self.bottom_left_coordy_tgt = EvalEntry()
+        # self.bottom_left_coordy_tgt.setReadOnly(True)
+        # grid_lay.addWidget(self.bottom_left_coordy_tgt, 5, 1)
+        # self.bottom_left_coordy_found = EvalEntry()
+        # grid_lay.addWidget(self.bottom_left_coordy_found, 5, 2)
+        #
+        # self.bottom_left_coordx_found.set_value(_('Set Origin'))
+        # self.bottom_left_coordy_found.set_value(_('Set Origin'))
+        # self.bottom_left_coordx_found.setDisabled(True)
+        # self.bottom_left_coordy_found.setDisabled(True)
+        #
+        # # BOTTOM RIGHT
+        # self.bottom_right_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Bottom Right'))
+        # grid_lay.addWidget(self.bottom_right_lbl, 6, 0)
+        # self.bottom_right_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
+        # grid_lay.addWidget(self.bottom_right_tgt_lbl, 6, 1)
+        # self.bottom_right_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
+        # grid_lay.addWidget(self.bottom_right_found_lbl, 6, 2)
+        #
+        # self.bottom_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
+        # grid_lay.addWidget(self.bottom_right_coordx_lbl, 7, 0)
+        # self.bottom_right_coordx_tgt = EvalEntry()
+        # self.bottom_right_coordx_tgt.setReadOnly(True)
+        # grid_lay.addWidget(self.bottom_right_coordx_tgt, 7, 1)
+        # self.bottom_right_coordx_found = EvalEntry()
+        # grid_lay.addWidget(self.bottom_right_coordx_found, 7, 2)
+        #
+        # self.bottom_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
+        # grid_lay.addWidget(self.bottom_right_coordy_lbl, 8, 0)
+        # self.bottom_right_coordy_tgt = EvalEntry()
+        # self.bottom_right_coordy_tgt.setReadOnly(True)
+        # grid_lay.addWidget(self.bottom_right_coordy_tgt, 8, 1)
+        # self.bottom_right_coordy_found = EvalEntry()
+        # grid_lay.addWidget(self.bottom_right_coordy_found, 8, 2)
+        #
+        # # TOP LEFT
+        # self.top_left_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Top Left'))
+        # grid_lay.addWidget(self.top_left_lbl, 9, 0)
+        # self.top_left_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
+        # grid_lay.addWidget(self.top_left_tgt_lbl, 9, 1)
+        # self.top_left_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
+        # grid_lay.addWidget(self.top_left_found_lbl, 9, 2)
+        #
+        # self.top_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
+        # grid_lay.addWidget(self.top_left_coordx_lbl, 10, 0)
+        # self.top_left_coordx_tgt = EvalEntry()
+        # self.top_left_coordx_tgt.setReadOnly(True)
+        # grid_lay.addWidget(self.top_left_coordx_tgt, 10, 1)
+        # self.top_left_coordx_found = EvalEntry()
+        # grid_lay.addWidget(self.top_left_coordx_found, 10, 2)
+        #
+        # self.top_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
+        # grid_lay.addWidget(self.top_left_coordy_lbl, 11, 0)
+        # self.top_left_coordy_tgt = EvalEntry()
+        # self.top_left_coordy_tgt.setReadOnly(True)
+        # grid_lay.addWidget(self.top_left_coordy_tgt, 11, 1)
+        # self.top_left_coordy_found = EvalEntry()
+        # grid_lay.addWidget(self.top_left_coordy_found, 11, 2)
+        #
+        # # TOP RIGHT
+        # self.top_right_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Top Right'))
+        # grid_lay.addWidget(self.top_right_lbl, 12, 0)
+        # self.top_right_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
+        # grid_lay.addWidget(self.top_right_tgt_lbl, 12, 1)
+        # self.top_right_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
+        # grid_lay.addWidget(self.top_right_found_lbl, 12, 2)
+        #
+        # self.top_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
+        # grid_lay.addWidget(self.top_right_coordx_lbl, 13, 0)
+        # self.top_right_coordx_tgt = EvalEntry()
+        # self.top_right_coordx_tgt.setReadOnly(True)
+        # grid_lay.addWidget(self.top_right_coordx_tgt, 13, 1)
+        # self.top_right_coordx_found = EvalEntry()
+        # grid_lay.addWidget(self.top_right_coordx_found, 13, 2)
+        #
+        # self.top_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
+        # grid_lay.addWidget(self.top_right_coordy_lbl, 14, 0)
+        # self.top_right_coordy_tgt = EvalEntry()
+        # self.top_right_coordy_tgt.setReadOnly(True)
+        # grid_lay.addWidget(self.top_right_coordy_tgt, 14, 1)
+        # self.top_right_coordy_found = EvalEntry()
+        # grid_lay.addWidget(self.top_right_coordy_found, 14, 2)
 
         # STEP 1 #
         step_1 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 1"))
@@ -503,7 +644,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         model_index = self.app.collection.index(selection_index, 0, self.exc_object_combo.rootModelIndex())
         try:
             self.exc_obj = model_index.internalPointer().obj
-        except Exception as e:
+        except Exception:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Excellon object loaded ..."))
             return
 
