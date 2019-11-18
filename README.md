@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished the Dots and Squares options in the Copper Thieving Tool
 - working on the Lines option in Copper Thieving Tool
 - finished the Lines option in the Copper Thieving Tool; still have to add threading to maximize performance
+- finished Copper Thieving Tool improvements
 
 17.11.2019
 

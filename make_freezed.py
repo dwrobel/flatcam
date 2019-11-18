@@ -25,7 +25,10 @@
 #   scipy.sparse.sparsetools._csr.pyd, scipy.sparse.sparsetools._csc.pyd,
 #   scipy.sparse.sparsetools._coo.pyd
 
-import os, site, sys, platform
+import os
+import site
+import sys
+import platform
 from cx_Freeze import setup, Executable
 
 # this is done to solve the tkinter not being found
@@ -71,7 +74,7 @@ if sys.platform == "win32":
 if platform.architecture()[0] == '64bit':
     buildOptions = dict(
         include_files=include_files,
-        excludes=['scipy','pytz'],
+        excludes=['scipy', 'pytz'],
         # packages=['OpenGL','numpy','vispy','ortools','google']
         # packages=['numpy','google', 'rasterio'] # works for Python 3.7
         packages=['opengl', 'numpy', 'google', 'rasterio'],   # works for Python 3.6.5 and Python 3.7.1
@@ -101,7 +104,6 @@ def getTargetName():
         return "FlatCAM.dmg"
 
 
-# execfile('clean.py')
 exe = Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base, targetName=getTargetName())
 
 setup(
