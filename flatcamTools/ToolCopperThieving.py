@@ -14,7 +14,7 @@ from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon
 
 import shapely.geometry.base as base
 from shapely.ops import cascaded_union, unary_union
-from shapely.geometry import Polygon, MultiPolygon, Point
+from shapely.geometry import Polygon, MultiPolygon, Point, LineString
 from shapely.geometry import box as box
 import shapely.affinity as affinity
 
@@ -899,6 +899,7 @@ class ToolCopperThieving(FlatCAMTool):
         if fill_type == 'line':
             half_thick_line = line_size / 2.0
 
+            # create a thick polygon-line that surrounds the copper features
             outline_geometry = []
             try:
                 for pol in self.grb_object.solid_geometry:
@@ -907,7 +908,7 @@ class ToolCopperThieving(FlatCAMTool):
                         raise FlatCAMApp.GracefulException
 
                     outline_geometry.append(
-                        pol.buffer(c_val+half_thick_line, int(int(self.geo_steps_per_circle) / 4)).exterior
+                        pol.buffer(c_val+half_thick_line, int(int(self.geo_steps_per_circle) / 4))
                     )
 
                     pol_nr += 1
@@ -923,29 +924,63 @@ class ToolCopperThieving(FlatCAMTool):
                 outline_geometry.append(
                     self.grb_object.solid_geometry.buffer(
                         c_val+half_thick_line,
-                        int(int(self.geo_steps_per_circle) / 4).exterior
+                        int(int(self.geo_steps_per_circle) / 4)
                     )
                 )
 
             self.app.proc_container.update_view_text(' %s' % _("Buffering"))
-            t = list()
-            for l in outline_geometry:
-                t.append(l.buffer(half_thick_line, resolution=int(int(self.geo_steps_per_circle) / 4)))
-            outline_geometry = unary_union(t)
+            outline_geometry = unary_union(outline_geometry)
 
+            outline_line = list()
             try:
-                _it = iter(new_solid_geometry)
+                for geo_o in outline_geometry:
+                    outline_line.append(
+                        geo_o.exterior.buffer(
+                            half_thick_line, resolution=int(int(self.geo_steps_per_circle) / 4)
+                        )
+                    )
             except TypeError:
-                new_solid_geometry = [new_solid_geometry]
+                outline_line.append(
+                    outline_geometry.exterior.buffer(
+                        half_thick_line, resolution=int(int(self.geo_steps_per_circle) / 4)
+                    )
+                )
 
-            # thieving_outlines = list()
-            # for geo_t in new_solid_geometry:
-            #     for interior in geo_t.interiors:
-            #         thieving_geo = interior.buffer(distance=half_thick_line)
-            #
-            #         if thieving_geo.is_valid:
-            #             thieving_outlines.append(thieving_geo)
-            new_solid_geometry = outline_geometry
+            outline_geometry = unary_union(outline_line)
+
+            # create a polygon-line that surrounds in the inside the bounding box polygon of the target Gerber
+            box_outline_geo = box(x0, y0, x1, y1).buffer(-half_thick_line)
+            box_outline_geo_exterior = box_outline_geo.exterior
+            box_outline_geometry = box_outline_geo_exterior.buffer(
+                half_thick_line,
+                resolution=int(int(self.geo_steps_per_circle) / 4)
+            )
+
+            bx0, by0, bx1, by1 = box_outline_geo.bounds
+            thieving_lines_geo = list()
+            new_x = bx0
+            new_y = by0
+            while new_x <= x1 - half_thick_line:
+                line_geo = LineString([(new_x, by0), (new_x, by1)]).buffer(
+                    half_thick_line,
+                    resolution=int(int(self.geo_steps_per_circle) / 4)
+                )
+                thieving_lines_geo.append(line_geo)
+                new_x += line_size + line_spacing
+
+            while new_y <= y1 - half_thick_line:
+                line_geo = LineString([(bx0, new_y), (bx1, new_y)]).buffer(
+                    half_thick_line,
+                    resolution=int(int(self.geo_steps_per_circle) / 4)
+                )
+                thieving_lines_geo.append(line_geo)
+                new_y += line_size + line_spacing
+
+            thieving_box_geo = cascaded_union(thieving_lines_geo)
+
+            # merge everything together
+            diff_lines_geo = thieving_box_geo.difference(clearance_geometry)
+            new_solid_geometry = unary_union([outline_geometry, box_outline_geometry, diff_lines_geo])
 
         geo_list = self.grb_object.solid_geometry
         if isinstance(self.grb_object.solid_geometry, MultiPolygon):
