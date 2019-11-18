@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+18.11.2019
+
+- finished the Dots and Squares options in the Copper Thieving Tool
+- working on the Lines option in Copper Thieving Tool
+
 17.11.2019
 
 - optimized the storage of the Gerber mark shapes by making them one layer only

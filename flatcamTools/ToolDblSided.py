@@ -368,22 +368,12 @@ class DblSidedTool(FlatCAMTool):
 
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
-        try:
-            dia = float(self.drill_dia.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                dia = float(self.drill_dia.get_value().replace(',', '.'))
-                self.drill_dia.set_value(dia)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool diameter value is missing or wrong format. "
-                                                              "Add it and retry."))
-                return
-
+        dia = float(self.drill_dia.get_value())
         if dia is '':
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("No value or wrong format in Drill Dia entry. Add it and retry."))
             return
+
         tools = {"1": {"C": dia}}
 
         # holes = self.alignment_holes.get_value()
