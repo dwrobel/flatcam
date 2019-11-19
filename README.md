@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - removed the f-strings replacing them with the traditional string formatting due of not being supported by older versions of Python 3
 - fixed some TclCommands: MillDrills and OpenGerber
+- fixed bug in Tool Subtract that did not allow subtracting Gerber objects
 
 18.11.2019
 

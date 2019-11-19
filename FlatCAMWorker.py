@@ -7,7 +7,7 @@
 # ########################################################## ##
 
 from PyQt5 import QtCore
-# import traceback
+import traceback
 
 
 class Worker(QtCore.QObject):
@@ -61,7 +61,7 @@ class Worker(QtCore.QObject):
                 task['fcn'](*task['params'])
             except Exception as e:
                 self.app.thread_exception.emit(e)
-                # print(traceback.format_exc())
+                print(traceback.format_exc())
                 # raise e
             finally:
                 self.task_completed.emit(self.name)

@@ -248,23 +248,22 @@ class ToolSub(FlatCAMTool):
 
         self.target_grb_obj_name = self.target_gerber_combo.currentText()
         if self.target_grb_obj_name == '':
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No Target object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Target object loaded."))
             return
+
+        self.app.inform.emit('%s' % _("Loading geometry from Gerber objects."))
 
         # Get target object.
         try:
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Could not retrieve object"), self.obj_name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
         self.sub_grb_obj_name = self.sub_gerber_combo.currentText()
         if self.sub_grb_obj_name == '':
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No Subtractor object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Subtractor object loaded."))
             return
 
         # Get substractor object.
@@ -272,20 +271,19 @@ class ToolSub(FlatCAMTool):
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Could not retrieve object"), self.obj_name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.sub_grb_obj_name
 
         # crate the new_apertures dict structure
         for apid in self.target_grb_obj.apertures:
-            self.new_apertures[apid] = {}
+            self.new_apertures[apid] = dict()
             self.new_apertures[apid]['type'] = 'C'
             self.new_apertures[apid]['size'] = self.target_grb_obj.apertures[apid]['size']
-            self.new_apertures[apid]['geometry'] = []
+            self.new_apertures[apid]['geometry'] = list()
 
-        geo_solid_union_list = []
-        geo_follow_union_list = []
-        geo_clear_union_list = []
+        geo_solid_union_list = list()
+        geo_follow_union_list = list()
+        geo_clear_union_list = list()
 
         for apid1 in self.sub_grb_obj.apertures:
             if 'geometry' in self.sub_grb_obj.apertures[apid1]:
@@ -297,6 +295,7 @@ class ToolSub(FlatCAMTool):
                     if 'clear' in elem:
                         geo_clear_union_list.append(elem['clear'])
 
+        self.app.inform.emit('%s' % _("Processing geometry from Subtractor Gerber object."))
         self.sub_solid_union = cascaded_union(geo_solid_union_list)
         self.sub_follow_union = cascaded_union(geo_follow_union_list)
         self.sub_clear_union = cascaded_union(geo_clear_union_list)
@@ -310,15 +309,15 @@ class ToolSub(FlatCAMTool):
 
         for apid in self.target_grb_obj.apertures:
             geo = self.target_grb_obj.apertures[apid]['geometry']
-            self.app.worker_task.emit({'fcn': self.aperture_intersection,
-                                       'params': [apid, geo]})
+            self.app.worker_task.emit({'fcn': self.aperture_intersection, 'params': [apid, geo]})
 
     def aperture_intersection(self, apid, geo):
-        new_geometry = []
+        new_geometry = list()
 
         log.debug("Working on promise: %s" % str(apid))
 
-        with self.app.proc_container.new('%s: %s...' % (_("Parsing geometry for aperture", str(apid)))):
+        with self.app.proc_container.new('%s: %s...' % (_("Parsing geometry for aperture"), str(apid))):
+
             for geo_el in geo:
                 new_el = dict()
 
@@ -378,6 +377,8 @@ class ToolSub(FlatCAMTool):
 
                 new_geometry.append(deepcopy(new_el))
 
+        self.app.inform.emit('%s: %s...' % (_("Finished parsing geometry for aperture"), str(apid)))
+
         if new_geometry:
             while not self.new_apertures[apid]['geometry']:
                 self.new_apertures[apid]['geometry'] = deepcopy(new_geometry)
@@ -412,6 +413,7 @@ class ToolSub(FlatCAMTool):
                 poly_buff = work_poly_buff.buffer(0.0000001)
             except ValueError:
                 pass
+
             try:
                 poly_buff = poly_buff.buffer(-0.0000001)
             except ValueError:
