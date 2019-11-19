@@ -5,11 +5,10 @@
 # MIT Licence                                              #
 # ##########################################################
 
+from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
-from FlatCAMObj import FlatCAMExcellon
-
 import math
-import collections
+
 
 class TclCommandMillDrills(TclCommandSignaled):
     """

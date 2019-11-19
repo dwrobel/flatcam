@@ -78,7 +78,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('pp', 'Name of the Geometry postprocessor. No quotes, case sensitive'),
             ('muted', 'It will not put errors in the Shell.')
         ]),
-        'examples': ['cncjob geo_name -tooldia 0.5 -z_cut -1.7 -z_move 2 -feedrate 120 -ppname_g default']
+        'examples': ['cncjob geo_name -dia 0.5 -z_cut -1.7 -z_move 2 -feedrate 120 -pp default']
     }
 
     def execute(self, args, unnamed_args):
