@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.11.2019
+
+- removed the f-strings replacing them with the traditional string formatting due of not being supported by older versions of Python 3
+
 18.11.2019
 
 - finished the Dots and Squares options in the Copper Thieving Tool

@@ -257,7 +257,7 @@ class BookmarkManager(QtWidgets.QWidget):
         else:
             title = self.title_entry.get_value()
         if title == '':
-            self.app.inform.emit(f'[ERROR_NOTCL] {_("Title entry is empty.")}')
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Title entry is empty."))
             return 'fail'
 
         if 'link' is kwargs:
@@ -266,7 +266,7 @@ class BookmarkManager(QtWidgets.QWidget):
             link = self.link_entry.get_value()
 
         if link == 'http://':
-            self.app.inform.emit(f'[ERROR_NOTCL] {_("Web link entry is empty.")}')
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Web link entry is empty."))
             return 'fail'
 
         # if 'http' not in link or 'https' not in link:
@@ -274,7 +274,7 @@ class BookmarkManager(QtWidgets.QWidget):
 
         for bookmark in self.bm_dict.values():
             if title == bookmark[0] or link == bookmark[1]:
-                self.app.inform.emit(f'[ERROR_NOTCL] {_("Either the Title or the Weblink already in the table.")}')
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Either the Title or the Weblink already in the table."))
                 return 'fail'
 
         # for some reason if the last char in the weblink is a slash it does not make the link clickable
@@ -294,7 +294,7 @@ class BookmarkManager(QtWidgets.QWidget):
             act.triggered.connect(lambda: webbrowser.open(link))
             self.app.ui.menuhelp_bookmarks.insertAction(self.app.ui.menuhelp_bookmarks_manager, act)
 
-        self.app.inform.emit(f'[success] {_("Bookmark added.")}')
+        self.app.inform.emit('[success] %s' % _("Bookmark added."))
 
         # add the new entry to the bookmark manager table
         self.build_bm_ui()
@@ -342,7 +342,7 @@ class BookmarkManager(QtWidgets.QWidget):
         self.bm_dict = deepcopy(new_dict)
         new_dict.clear()
 
-        self.app.inform.emit(f'[success] {_("Bookmark removed.")}')
+        self.app.inform.emit('[success] %s' % _("Bookmark removed."))
 
         # for index in index_list:
         #     self.table_widget.model().removeRow(index.row())
@@ -990,7 +990,7 @@ class ToolsDB(QtWidgets.QWidget):
         # add the new entry to the Tools DB table
         self.build_db_ui()
         self.callback_on_edited()
-        self.app.inform.emit(f'[success] {_("Tool added to DB.")}')
+        self.app.inform.emit('[success] %s' % _("Tool added to DB."))
 
     def on_tool_copy(self):
         """
@@ -1011,7 +1011,7 @@ class ToolsDB(QtWidgets.QWidget):
 
         self.build_db_ui()
         self.callback_on_edited()
-        self.app.inform.emit(f'[success] {_("Tool copied from Tools DB.")}')
+        self.app.inform.emit('[success] %s' % _("Tool copied from Tools DB."))
 
     def on_tool_delete(self):
         """
@@ -1029,7 +1029,7 @@ class ToolsDB(QtWidgets.QWidget):
 
         self.build_db_ui()
         self.callback_on_edited()
-        self.app.inform.emit(f'[success] {_("Tool removed from Tools DB.")}')
+        self.app.inform.emit('[success] %s' % _("Tool removed from Tools DB."))
 
     def on_export_tools_db_file(self):
         self.app.report_usage("on_export_tools_db_file")
@@ -1080,7 +1080,7 @@ class ToolsDB(QtWidgets.QWidget):
                         json.dump(self.db_tool_dict, f, default=to_dict, indent=2)
                 except Exception as e:
                     self.app.log.debug("App.on_save_tools_db() --> %s" % str(e))
-                    self.inform.emit(f'[ERROR_NOTCL] {_("Failed to write Tools DB to file.")}')
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
                     return
             except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
@@ -1135,7 +1135,7 @@ class ToolsDB(QtWidgets.QWidget):
                     f.close()
                 except Exception as e:
                     self.app.log.debug("ToolsDB.on_save_tools_db() --> %s" % str(e))
-                    self.app.inform.emit(f'[ERROR_NOTCL] {_("Failed to write Tools DB to file.")}')
+                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write Tools DB to file."))
                     return
 
                 if not silent:

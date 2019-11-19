@@ -4708,8 +4708,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Could not load defaults file.")
             App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Could not load defaults file."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load defaults file."))
             return
 
         try:
@@ -4718,8 +4717,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Failed to parse defaults file.")
             App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Failed to parse defaults file."))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse defaults file."))
             return
 
         # Update options
@@ -4766,11 +4764,11 @@ class App(QtCore.QObject):
             f.close()
         except Exception as e:
             log.debug("App.save_defaults() --> %s" % str(e))
-            self.inform.emit(f'[ERROR_NOTCL] {_("Failed to write defaults to file.")}')
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write defaults to file."))
             return
 
         if not silent:
-            self.inform.emit(f'[success] {_("Preferences saved.")}')
+            self.inform.emit('[success] %s' % _("Preferences saved."))
 
     def save_factory_defaults(self, silent_message=False, data_path=None):
         """
@@ -4798,7 +4796,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Could not load factory defaults file.")
             App.log.error(str(e))
-            self.inform.emit(f'[ERROR_NOTCL] {_("Could not load factory defaults file.")}')
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load factory defaults file."))
             return
 
         try:
@@ -4807,7 +4805,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Failed to parse factory defaults file.")
             App.log.error(str(e))
-            self.inform.emit(f'[ERROR_NOTCL] {_("Failed to parse factory defaults file.")}')
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse factory defaults file."))
             return
 
         # Update options
@@ -4821,12 +4819,12 @@ class App(QtCore.QObject):
             json.dump(factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
             f_f_def_s.close()
         except Exception as e:
-            log.debug(f"App.save_factory_default() save update --> {str(e)}")
-            self.inform.emit(f'[ERROR_NOTCL] {_("Failed to write factory defaults to file.")}')
+            log.debug("App.save_factory_default() save update --> %s" % str(e))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write factory defaults to file."))
             return
 
         if silent_message is False:
-            self.inform.emit(f'{_("Factory defaults saved.")}')
+            self.inform.emit(_("Factory defaults saved."))
 
     def final_save(self):
         """
@@ -4836,7 +4834,7 @@ class App(QtCore.QObject):
         :return: None
         """
         if self.save_in_progress:
-            self.inform.emit(f'[WARNING_NOTCL] {_("Application is saving the project. Please wait ...")}')
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Application is saving the project. Please wait ..."))
             return
 
         if self.should_we_save and self.collection.get_list():
