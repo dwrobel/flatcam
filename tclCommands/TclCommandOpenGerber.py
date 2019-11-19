@@ -1,5 +1,6 @@
 from tclCommands.TclCommand import TclCommandSignaled
-from camlib import Geometry, ParseError
+from camlib import ParseError
+from FlatCAMObj import FlatCAMGerber
 
 import collections
 
