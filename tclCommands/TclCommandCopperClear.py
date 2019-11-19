@@ -249,7 +249,7 @@ class TclCommandCopperClear(TclCommand):
                 self.app.ncclear_tool.clear_copper(ncc_obj=obj,
                                                    sel_obj=box_obj,
                                                    select_method='box',
-                                                   tooldia=tooldia,
+                                                   ncctooldia=tooldia,
                                                    overlap=overlap,
                                                    order=order,
                                                    margin=margin,

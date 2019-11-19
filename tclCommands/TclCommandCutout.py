@@ -74,7 +74,7 @@ class TclCommandCutout(TclCommand):
         if 'gaps' in args:
             gaps_par = args['gaps']
         else:
-            gaps_par = 4
+            gaps_par = "4"
 
         if 'gapsize' in args:
             gapsize_par = args['gapsize']
