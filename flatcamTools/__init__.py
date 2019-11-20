@@ -30,6 +30,7 @@ from flatcamTools.ToolQRCode import QRCode
 from flatcamTools.ToolRulesCheck import RulesCheck
 
 from flatcamTools.ToolCopperThieving import ToolCopperThieving
+from flatcamTools.ToolFiducials import ToolFiducials
 
 from flatcamTools.ToolShell import FCShell
 from flatcamTools.ToolSolderPaste import SolderPaste
