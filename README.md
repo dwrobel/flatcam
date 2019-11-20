@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 20.11.2019
 
 - Tool Fiducials - added the GUI and the shortcut key
+- Tool Fiducials - updated the icon
 
 19.11.2019
 
