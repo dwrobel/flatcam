@@ -60,51 +60,31 @@ class ToolFiducials(FlatCAMTool):
         self.layout.addWidget(QtWidgets.QLabel(''))
 
         # ## Grid Layout
-        i_grid_lay = QtWidgets.QGridLayout()
-        self.layout.addLayout(i_grid_lay)
-        i_grid_lay.setColumnStretch(0, 0)
-        i_grid_lay.setColumnStretch(1, 1)
-
-        self.grb_object_combo = QtWidgets.QComboBox()
-        self.grb_object_combo.setModel(self.app.collection)
-        self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.grb_object_combo.setCurrentIndex(1)
-
-        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
-        self.grbobj_label.setToolTip(
-            _("Gerber Object to which will be added a copper thieving.")
-        )
-
-        i_grid_lay.addWidget(self.grbobj_label, 0, 0)
-        i_grid_lay.addWidget(self.grb_object_combo, 0, 1, 1, 2)
-        i_grid_lay.addWidget(QtWidgets.QLabel(''), 1, 0)
-
-        # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.copper_fill_label = QtWidgets.QLabel('<b>%s</b>' % _('Parameters'))
+        self.copper_fill_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
         self.copper_fill_label.setToolTip(
             _("Parameters used for this tool.")
         )
         grid_lay.addWidget(self.copper_fill_label, 0, 0, 1, 2)
 
-        # CLEARANCE #
-        self.clearance_label = QtWidgets.QLabel('%s:' % _("Clearance"))
-        self.clearance_label.setToolTip(
-            _("This set the distance between the copper thieving components\n"
-              "(the polygon fill may be split in multiple polygons)\n"
-              "and the copper traces in the Gerber file.")
+        # DIAMETER #
+        self.dia_label = QtWidgets.QLabel('%s:' % _("Diameter"))
+        self.dia_label.setToolTip(
+            _("This set the fiducial diameter.\n"
+              "The soldermask opening is double than that.")
         )
-        self.clearance_entry = FCDoubleSpinner()
-        self.clearance_entry.set_range(0.00001, 9999.9999)
-        self.clearance_entry.set_precision(self.decimals)
-        self.clearance_entry.setSingleStep(0.1)
+        self.dia_entry = FCDoubleSpinner()
+        self.dia_entry.set_range(1.0000, 3.0000)
+        self.dia_entry.set_precision(self.decimals)
+        self.dia_entry.setWrapping(True)
+        self.dia_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.clearance_label, 1, 0)
-        grid_lay.addWidget(self.clearance_entry, 1, 1)
+        grid_lay.addWidget(self.dia_label, 1, 0)
+        grid_lay.addWidget(self.dia_entry, 1, 1)
 
         # MARGIN #
         self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
@@ -119,221 +99,94 @@ class ToolFiducials(FlatCAMTool):
         grid_lay.addWidget(self.margin_label, 2, 0)
         grid_lay.addWidget(self.margin_entry, 2, 1)
 
-        # Reference #
-        self.reference_radio = RadioSet([
-            {'label': _('Itself'), 'value': 'itself'},
-            {"label": _("Area Selection"), "value": "area"},
-            {'label':  _("Reference Object"), 'value': 'box'}
-        ], orientation='vertical', stretch=False)
-        self.reference_label = QtWidgets.QLabel(_("Reference:"))
-        self.reference_label.setToolTip(
-            _("- 'Itself' - the copper thieving extent is based on the object that is copper cleared.\n "
-              "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
-              "- 'Reference Object' - will do copper thieving within the area specified by another object.")
-        )
-        grid_lay.addWidget(self.reference_label, 3, 0)
-        grid_lay.addWidget(self.reference_radio, 3, 1)
-
-        self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
-        self.box_combo_type_label.setToolTip(
-            _("The type of FlatCAM object to be used as copper thieving reference.\n"
-              "It can be Gerber, Excellon or Geometry.")
-        )
-        self.box_combo_type = QtWidgets.QComboBox()
-        self.box_combo_type.addItem(_("Reference Gerber"))
-        self.box_combo_type.addItem(_("Reference Excellon"))
-        self.box_combo_type.addItem(_("Reference Geometry"))
-
-        grid_lay.addWidget(self.box_combo_type_label, 4, 0)
-        grid_lay.addWidget(self.box_combo_type, 4, 1)
-
-        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
-        self.box_combo_label.setToolTip(
-            _("The FlatCAM object to be used as non copper clearing reference.")
-        )
-        self.box_combo = QtWidgets.QComboBox()
-        self.box_combo.setModel(self.app.collection)
-        self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(1)
-
-        grid_lay.addWidget(self.box_combo_label, 5, 0)
-        grid_lay.addWidget(self.box_combo, 5, 1)
-
-        self.box_combo.hide()
-        self.box_combo_label.hide()
-        self.box_combo_type.hide()
-        self.box_combo_type_label.hide()
-
-        # Bounding Box Type #
-        self.bbox_type_radio = RadioSet([
-            {'label': _('Rectangular'), 'value': 'rect'},
-            {"label": _("Minimal"), "value": "min"}
+        # Mode #
+        self.mode_radio = RadioSet([
+            {'label': _('Auto'), 'value': 'auto'},
+            {"label": _("Manual"), "value": "manual"}
         ], stretch=False)
-        self.bbox_type_label = QtWidgets.QLabel(_("Box Type:"))
-        self.bbox_type_label.setToolTip(
-            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n "
-              "- 'Minimal' - the bounding box will be the convex hull shape.")
+        self.mode_label = QtWidgets.QLabel(_("Mode:"))
+        self.mode_label.setToolTip(
+            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n "
+              "- 'Manual' - manual placement of fiducials.")
         )
-        grid_lay.addWidget(self.bbox_type_label, 6, 0)
-        grid_lay.addWidget(self.bbox_type_radio, 6, 1)
-        self.bbox_type_label.hide()
-        self.bbox_type_radio.hide()
+        grid_lay.addWidget(self.mode_label, 3, 0)
+        grid_lay.addWidget(self.mode_radio, 3, 1)
+
+        # Position for second fiducial #
+        self.pos_radio = RadioSet([
+            {'label': _('Up'), 'value': 'up'},
+            {"label": _("Down"), "value": "down"},
+            {"label": _("None"), "value": "no"}
+        ], stretch=False)
+        self.pos_label = QtWidgets.QLabel('%s:' % _("Second fiducial"))
+        self.pos_label.setToolTip(
+            _("The position for the second fiducial.\n"
+              "- 'Up' - the order is: bottom-left, top-left, top-right.\n "
+              "- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
+              "- 'None' - there is no second fiducial. The order is: bottom-left, top-right.")
+        )
+        grid_lay.addWidget(self.pos_label, 4, 0)
+        grid_lay.addWidget(self.pos_radio, 4, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line, 7, 0, 1, 2)
+        grid_lay.addWidget(separator_line, 5, 0, 1, 2)
 
-        # Fill Type
-        self.fill_type_radio = RadioSet([
-            {'label': _('Solid'), 'value': 'solid'},
-            {"label": _("Dots Grid"), "value": "dot"},
-            {"label": _("Squares Grid"), "value": "square"},
-            {"label": _("Lines Grid"), "value": "line"}
-        ], orientation='vertical', stretch=False)
-        self.fill_type_label = QtWidgets.QLabel(_("Fill Type:"))
-        self.fill_type_label.setToolTip(
-            _("- 'Solid' - copper thieving will be a solid polygon.\n "
-              "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
-              "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
-              "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")
+        # Copper Gerber object
+        self.grb_object_combo = QtWidgets.QComboBox()
+        self.grb_object_combo.setModel(self.app.collection)
+        self.grb_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.grb_object_combo.setCurrentIndex(1)
+
+        self.grbobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("Copper Gerber"))
+        self.grbobj_label.setToolTip(
+            _("Gerber Object to which will be added a copper thieving.")
         )
-        grid_lay.addWidget(self.fill_type_label, 8, 0)
-        grid_lay.addWidget(self.fill_type_radio, 8, 1)
 
-        # DOTS FRAME
-        self.dots_frame = QtWidgets.QFrame()
-        self.dots_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.dots_frame)
-        dots_grid = QtWidgets.QGridLayout()
-        dots_grid.setColumnStretch(0, 0)
-        dots_grid.setColumnStretch(1, 1)
-        dots_grid.setContentsMargins(0, 0, 0, 0)
-        self.dots_frame.setLayout(dots_grid)
-        self.dots_frame.hide()
+        grid_lay.addWidget(self.grbobj_label, 6, 0, 1, 2)
+        grid_lay.addWidget(self.grb_object_combo, 7, 0, 1, 2)
 
-        self.dots_label = QtWidgets.QLabel('<b>%s</b>:' % _("Dots Grid Parameters"))
-        dots_grid.addWidget(self.dots_label, 0, 0, 1, 2)
-
-        # Dot diameter #
-        self.dotdia_label = QtWidgets.QLabel('%s:' % _("Dia"))
-        self.dotdia_label.setToolTip(
-            _("Dot diameter in Dots Grid.")
+        # ## Insert Copper Fiducial
+        self.add_cfid_button = QtWidgets.QPushButton(_("Add Fiducial"))
+        self.add_cfid_button.setToolTip(
+            _("Will add a polygon on the copper layer to serve as fiducial.")
         )
-        self.dot_dia_entry = FCDoubleSpinner()
-        self.dot_dia_entry.set_range(0.0, 9999.9999)
-        self.dot_dia_entry.set_precision(self.decimals)
-        self.dot_dia_entry.setSingleStep(0.1)
+        grid_lay.addWidget(self.add_cfid_button, 8, 0, 1, 2)
 
-        dots_grid.addWidget(self.dotdia_label, 1, 0)
-        dots_grid.addWidget(self.dot_dia_entry, 1, 1)
+        separator_line_1 = QtWidgets.QFrame()
+        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line_1, 9, 0, 1, 2)
 
-        # Dot spacing #
-        self.dotspacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
-        self.dotspacing_label.setToolTip(
-            _("Distance between each two dots in Dots Grid.")
+        # Soldermask Gerber object #
+        self.sm_object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Soldermask Gerber"))
+        self.sm_object_label.setToolTip(
+            _("The Soldermask Gerber object.")
         )
-        self.dot_spacing_entry = FCDoubleSpinner()
-        self.dot_spacing_entry.set_range(0.0, 9999.9999)
-        self.dot_spacing_entry.set_precision(self.decimals)
-        self.dot_spacing_entry.setSingleStep(0.1)
+        self.sm_object_combo = QtWidgets.QComboBox()
+        self.sm_object_combo.setModel(self.app.collection)
+        self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sm_object_combo.setCurrentIndex(1)
 
-        dots_grid.addWidget(self.dotspacing_label, 2, 0)
-        dots_grid.addWidget(self.dot_spacing_entry, 2, 1)
+        grid_lay.addWidget(self.sm_object_label, 10, 0, 1, 2)
+        grid_lay.addWidget(self.sm_object_combo, 11, 0, 1, 2)
 
-        # SQUARES FRAME
-        self.squares_frame = QtWidgets.QFrame()
-        self.squares_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.squares_frame)
-        squares_grid = QtWidgets.QGridLayout()
-        squares_grid.setColumnStretch(0, 0)
-        squares_grid.setColumnStretch(1, 1)
-        squares_grid.setContentsMargins(0, 0, 0, 0)
-        self.squares_frame.setLayout(squares_grid)
-        self.squares_frame.hide()
-
-        self.squares_label = QtWidgets.QLabel('<b>%s</b>:' % _("Squares Grid Parameters"))
-        squares_grid.addWidget(self.squares_label, 0, 0, 1, 2)
-
-        # Square Size #
-        self.square_size_label = QtWidgets.QLabel('%s:' % _("Size"))
-        self.square_size_label.setToolTip(
-            _("Square side size in Squares Grid.")
+        # ## Insert Soldermask opening for Fiducial
+        self.add_sm_opening_button = QtWidgets.QPushButton(_("Add SM Opening"))
+        self.add_sm_opening_button.setToolTip(
+            _("Will add a polygon on the soldermask layer\n"
+              "to serve as fiducial opening.\n"
+              "The diameter is always double of the diameter\n"
+              "for the copper fiducial.")
         )
-        self.square_size_entry = FCDoubleSpinner()
-        self.square_size_entry.set_range(0.0, 9999.9999)
-        self.square_size_entry.set_precision(self.decimals)
-        self.square_size_entry.setSingleStep(0.1)
-
-        squares_grid.addWidget(self.square_size_label, 1, 0)
-        squares_grid.addWidget(self.square_size_entry, 1, 1)
-
-        # Squares spacing #
-        self.squares_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
-        self.squares_spacing_label.setToolTip(
-            _("Distance between each two squares in Squares Grid.")
-        )
-        self.squares_spacing_entry = FCDoubleSpinner()
-        self.squares_spacing_entry.set_range(0.0, 9999.9999)
-        self.squares_spacing_entry.set_precision(self.decimals)
-        self.squares_spacing_entry.setSingleStep(0.1)
-
-        squares_grid.addWidget(self.squares_spacing_label, 2, 0)
-        squares_grid.addWidget(self.squares_spacing_entry, 2, 1)
-
-        # LINES FRAME
-        self.lines_frame = QtWidgets.QFrame()
-        self.lines_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.lines_frame)
-        lines_grid = QtWidgets.QGridLayout()
-        lines_grid.setColumnStretch(0, 0)
-        lines_grid.setColumnStretch(1, 1)
-        lines_grid.setContentsMargins(0, 0, 0, 0)
-        self.lines_frame.setLayout(lines_grid)
-        self.lines_frame.hide()
-
-        self.lines_label = QtWidgets.QLabel('<b>%s</b>:' % _("Lines Grid Parameters"))
-        lines_grid.addWidget(self.lines_label, 0, 0, 1, 2)
-
-        # Square Size #
-        self.line_size_label = QtWidgets.QLabel('%s:' % _("Size"))
-        self.line_size_label.setToolTip(
-            _("Line thickness size in Lines Grid.")
-        )
-        self.line_size_entry = FCDoubleSpinner()
-        self.line_size_entry.set_range(0.0, 9999.9999)
-        self.line_size_entry.set_precision(self.decimals)
-        self.line_size_entry.setSingleStep(0.1)
-
-        lines_grid.addWidget(self.line_size_label, 1, 0)
-        lines_grid.addWidget(self.line_size_entry, 1, 1)
-
-        # Lines spacing #
-        self.lines_spacing_label = QtWidgets.QLabel('%s:' % _("Spacing"))
-        self.lines_spacing_label.setToolTip(
-            _("Distance between each two lines in Lines Grid.")
-        )
-        self.lines_spacing_entry = FCDoubleSpinner()
-        self.lines_spacing_entry.set_range(0.0, 9999.9999)
-        self.lines_spacing_entry.set_precision(self.decimals)
-        self.lines_spacing_entry.setSingleStep(0.1)
-
-        lines_grid.addWidget(self.lines_spacing_label, 2, 0)
-        lines_grid.addWidget(self.lines_spacing_entry, 2, 1)
-
-        # ## Insert Copper Thieving
-        self.fill_button = QtWidgets.QPushButton(_("Insert Copper thieving"))
-        self.fill_button.setToolTip(
-            _("Will add a polygon (may be split in multiple parts)\n"
-              "that will surround the actual Gerber traces at a certain distance.")
-        )
-        self.layout.addWidget(self.fill_button)
+        grid_lay.addWidget(self.add_sm_opening_button, 12, 0, 1, 2)
 
         self.layout.addStretch()
 
         # Objects involved in Copper thieving
         self.grb_object = None
-        self.ref_obj = None
+        self.sm_obj = None
         self.sel_rect = list()
 
         # store the flattened geometry here:
@@ -356,10 +209,10 @@ class ToolFiducials(FlatCAMTool):
         self.geo_steps_per_circle = 128
 
         # SIGNALS
-        self.fill_button.clicked.connect(self.execute)
-        self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
-        self.reference_radio.group_toggle_fn = self.on_toggle_reference
-        self.fill_type_radio.activated_custom.connect(self.on_thieving_type)
+        # self.fill_button.clicked.connect(self.execute)
+        # self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
+        # self.reference_radio.group_toggle_fn = self.on_toggle_reference
+        # self.fill_type_radio.activated_custom.connect(self.on_thieving_type)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolFiducials()")
@@ -394,22 +247,9 @@ class ToolFiducials(FlatCAMTool):
 
     def set_tool_ui(self):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
-        self.clearance_entry.set_value(float(self.app.defaults["tools_copper_thieving_clearance"]))
-        self.margin_entry.set_value(float(self.app.defaults["tools_copper_thieving_margin"]))
-        self.reference_radio.set_value(self.app.defaults["tools_copper_thieving_reference"])
-        self.bbox_type_radio.set_value(self.app.defaults["tools_copper_thieving_box_type"])
-        self.fill_type_radio.set_value(self.app.defaults["tools_copper_thieving_fill_type"])
-        self.geo_steps_per_circle = int(self.app.defaults["tools_copper_thieving_circle_steps"])
-
-        self.dot_dia_entry.set_value(self.app.defaults["tools_copper_thieving_dots_dia"])
-        self.dot_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_dots_spacing"])
-        self.square_size_entry.set_value(self.app.defaults["tools_copper_thieving_squares_size"])
-        self.squares_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_squares_spacing"])
-        self.line_size_entry.set_value(self.app.defaults["tools_copper_thieving_lines_size"])
-        self.lines_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_lines_spacing"])
-
-        # INIT SECTION
-        self.area_method = False
+        # self.clearance_entry.set_value(float(self.app.defaults["tools_copper_thieving_clearance"]))
+        # self.margin_entry.set_value(float(self.app.defaults["tools_copper_thieving_margin"]))
+        # self.reference_radio.set_value(self.app.defaults["tools_copper_thieving_reference"])
 
     def on_combo_box_type(self):
         obj_type = self.box_combo_type.currentIndex()

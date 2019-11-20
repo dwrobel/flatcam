@@ -751,6 +751,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'),
                                                           _("Copper Thieving Tool"))
 
+        self.fiducials_btn = self.toolbartools.addAction(QtGui.QIcon('share/fiducials_32.png'), _("Fiducials Tool"))
+
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
         # ########################################################################
@@ -1320,6 +1322,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>ALT+J</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>ALT+K</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1438,7 +1444,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
                 _("Skew on Y axis"),
                 # ALT section
-                _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
+                _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"), _("Fiducials Tool"),
                 _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                 _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
@@ -2177,6 +2183,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'),
                                                           _("Copper Thieving Tool"))
 
+        self.fiducials_btn = self.toolbartools.addAction(QtGui.QIcon('share/fiducials_32.png'), _("Fiducials Tool"))
+
         # ## Excellon Editor Toolbar # ##
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Drill Hole'))
@@ -2521,6 +2529,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Toggle Grid lines
                 if key == QtCore.Qt.Key_G:
                     self.app.on_toggle_grid_lines()
+                    return
+
+                # Fiducials Tool
+                if key == QtCore.Qt.Key_J:
+                    self.app.fiducial_tool.run(toggle=True)
                     return
 
                 # Solder Paste Dispensing Tool

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.11.2019
+
+- Tool Fiducials - added the GUI and the shortcut key
+
 19.11.2019
 
 - removed the f-strings replacing them with the traditional string formatting due of not being supported by older versions of Python 3

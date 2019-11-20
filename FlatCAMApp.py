@@ -2331,6 +2331,7 @@ class App(QtCore.QObject):
         self.cal_exc_tool = None
         self.qrcode_tool = None
         self.copper_thieving_tool = None
+        self.fiducial_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         self.install_tools()
@@ -2942,6 +2943,9 @@ class App(QtCore.QObject):
         self.copper_thieving_tool = ToolCopperThieving(self)
         self.copper_thieving_tool.install(icon=QtGui.QIcon('share/copperfill32.png'), pos=self.ui.menutool)
 
+        self.fiducial_tool = ToolFiducials(self)
+        self.fiducial_tool.install(icon=QtGui.QIcon('share/fiducials_32.png'), pos=self.ui.menutool)
+
         self.qrcode_tool = QRCode(self)
         self.qrcode_tool.install(icon=QtGui.QIcon('share/qrcode32.png'), pos=self.ui.menutool)
 
@@ -3070,6 +3074,7 @@ class App(QtCore.QObject):
         self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
         self.ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
         self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
+        self.ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
 
     def object2editor(self):
         """
