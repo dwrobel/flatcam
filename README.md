@@ -12,6 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 21.11.2019
 
 - Tool Fiducials - finished the part with adding copper fiducials: manual and auto
+- Tool Fiducials - added choice of shapes: circular or non-standard cross
+- Tool Fiducials - finished the work on adding soldermask openings
+- Tool Fiducials - finished the tool
 
 20.11.2019
 

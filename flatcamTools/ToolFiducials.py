@@ -10,9 +10,7 @@ from PyQt5 import QtWidgets, QtCore
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable
 
-import shapely.geometry.base as base
-from shapely.ops import unary_union
-from shapely.geometry import Point
+from shapely.geometry import Point, MultiPolygon, LineString
 from shapely.geometry import box as box
 
 
@@ -216,6 +214,38 @@ class ToolFiducials(FlatCAMTool):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid_lay.addWidget(separator_line, 5, 0, 1, 2)
 
+        # Fiducial type #
+        self.fid_type_radio = RadioSet([
+            {'label': _('Circular'), 'value': 'circular'},
+            {"label": _("Cross"), "value": "cross"}
+        ], stretch=False)
+        self.fid_type_label = QtWidgets.QLabel('%s:' % _("Fiducial Type"))
+        self.fid_type_label.setToolTip(
+            _("The type of fiducial.\n"
+              "- 'Circular' - this is the regular fiducial.\n "
+              "- 'Cross' - non-standard fiducial.")
+        )
+        grid_lay.addWidget(self.fid_type_label, 6, 0)
+        grid_lay.addWidget(self.fid_type_radio, 6, 1)
+
+        # Line Thickness #
+        self.line_thickness_label = QtWidgets.QLabel('%s:' % _("Line thickness"))
+        self.line_thickness_label.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.line_thickness_entry = FCDoubleSpinner()
+        self.line_thickness_entry.set_range(0.00001, 9999.9999)
+        self.line_thickness_entry.set_precision(self.decimals)
+        self.line_thickness_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.line_thickness_label, 7, 0)
+        grid_lay.addWidget(self.line_thickness_entry, 7, 1)
+
+        separator_line_1 = QtWidgets.QFrame()
+        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line_1, 8, 0, 1, 2)
+
         # Copper Gerber object
         self.grb_object_combo = QtWidgets.QComboBox()
         self.grb_object_combo.setModel(self.app.collection)
@@ -227,20 +257,20 @@ class ToolFiducials(FlatCAMTool):
             _("Gerber Object to which will be added a copper thieving.")
         )
 
-        grid_lay.addWidget(self.grbobj_label, 6, 0, 1, 2)
-        grid_lay.addWidget(self.grb_object_combo, 7, 0, 1, 2)
+        grid_lay.addWidget(self.grbobj_label, 9, 0, 1, 2)
+        grid_lay.addWidget(self.grb_object_combo, 10, 0, 1, 2)
 
         # ## Insert Copper Fiducial
         self.add_cfid_button = QtWidgets.QPushButton(_("Add Fiducial"))
         self.add_cfid_button.setToolTip(
             _("Will add a polygon on the copper layer to serve as fiducial.")
         )
-        grid_lay.addWidget(self.add_cfid_button, 8, 0, 1, 2)
+        grid_lay.addWidget(self.add_cfid_button, 11, 0, 1, 2)
 
-        separator_line_1 = QtWidgets.QFrame()
-        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line_1, 9, 0, 1, 2)
+        separator_line_2 = QtWidgets.QFrame()
+        separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line_2, 12, 0, 1, 2)
 
         # Soldermask Gerber object #
         self.sm_object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Soldermask Gerber"))
@@ -252,8 +282,8 @@ class ToolFiducials(FlatCAMTool):
         self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.sm_object_combo.setCurrentIndex(1)
 
-        grid_lay.addWidget(self.sm_object_label, 10, 0, 1, 2)
-        grid_lay.addWidget(self.sm_object_combo, 11, 0, 1, 2)
+        grid_lay.addWidget(self.sm_object_label, 13, 0, 1, 2)
+        grid_lay.addWidget(self.sm_object_combo, 14, 0, 1, 2)
 
         # ## Insert Soldermask opening for Fiducial
         self.add_sm_opening_button = QtWidgets.QPushButton(_("Add Soldermask Opening"))
@@ -263,7 +293,7 @@ class ToolFiducials(FlatCAMTool):
               "The diameter is always double of the diameter\n"
               "for the copper fiducial.")
         )
-        grid_lay.addWidget(self.add_sm_opening_button, 12, 0, 1, 2)
+        grid_lay.addWidget(self.add_sm_opening_button, 15, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -301,7 +331,7 @@ class ToolFiducials(FlatCAMTool):
         self.add_cfid_button.clicked.connect(self.add_fiducials)
         self.add_sm_opening_button.clicked.connect(self.add_soldermask_opening)
 
-        # self.reference_radio.group_toggle_fn = self.on_toggle_reference
+        self.fid_type_radio.activated_custom.connect(self.on_fiducial_type)
         self.pos_radio.activated_custom.connect(self.on_second_point)
         self.mode_radio.activated_custom.connect(self.on_method_change)
 
@@ -373,11 +403,20 @@ class ToolFiducials(FlatCAMTool):
             except TypeError:
                 pass
 
+    def on_fiducial_type(self, val):
+        if val == 'cross':
+            self.line_thickness_label.setDisabled(False)
+            self.line_thickness_entry.setDisabled(False)
+        else:
+            self.line_thickness_label.setDisabled(True)
+            self.line_thickness_entry.setDisabled(True)
+
     def add_fiducials(self):
         self.app.call_source = "fiducials_tool"
         self.mode_method = self.mode_radio.get_value()
         self.margin_val = self.margin_entry.get_value()
         self.sec_position = self.pos_radio.get_value()
+        fid_type = self.fid_type_radio.get_value()
 
         # get the Gerber object on which the Fiducial will be inserted
         selection_index = self.grb_object_combo.currentIndex()
@@ -431,7 +470,7 @@ class ToolFiducials(FlatCAMTool):
                 )
                 self.sec_points_coords_entry.set_value('(%.*f, %.*f)' % (self.decimals, x1, self.decimals, y0))
 
-            self.add_fiducials_geo(self.click_points)
+            self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
             self.on_exit()
         else:
             self.app.inform.emit(_("Click to add first Fiducial. Bottom Left..."))
@@ -439,66 +478,151 @@ class ToolFiducials(FlatCAMTool):
             self.top_right_coords_entry.set_value('')
             self.sec_points_coords_entry.set_value('')
 
-            if self.app.is_legacy is False:
-                self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-                # self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.app.mp)
-                self.app.plotcanvas.graph_event_disconnect(self.app.mm)
-                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
-
-            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
-            # self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+            self.connect_event_handlers()
 
         # To be called after clicking on the plot.
 
-    def add_fiducials_geo(self, points_list):
+    def add_fiducials_geo(self, points_list, g_obj, fid_size=None, fid_type=None, line_size=None):
         """
         Add geometry to the solid_geometry of the copper Gerber object
         :param points_list: list of coordinates for the fiducials
+        :param g_obj: the Gerber object where to add the geometry
+        :param fid_size: the overall size of the fiducial or fiducial opening depending on the g_obj type
+        :param fid_type: the type of fiducial: circular or cross
+        :param line_size: the line thickenss when the fiducial type is cross
         :return:
         """
-        self.fid_dia = self.dia_entry.get_value()
-        radius = self.fid_dia / 2.0
+        fid_dia = self.dia_entry.get_value() if fid_size is None else fid_size
+        fid_type = 'crcular' if fid_type is None else fid_type
+        line_thickness = self.line_thickness_entry.get_value() if line_size is None else line_size
 
-        geo_list = [Point(pt).buffer(radius) for pt in points_list]
+        radius = fid_dia / 2.0
 
-        aperture_found = None
-        for ap_id, ap_val in self.grb_object.apertures.items():
-            if ap_val['type'] == 'C' and ap_val['size'] == self.fid_dia:
-                aperture_found = ap_id
-                break
+        if fid_type == 'circular':
+            geo_list = [Point(pt).buffer(radius) for pt in points_list]
 
-        if aperture_found:
-            for geo in geo_list:
-                dict_el = dict()
-                dict_el['follow'] = geo.centroid
-                dict_el['solid'] = geo
-                self.grb_object.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+            aperture_found = None
+            for ap_id, ap_val in g_obj.apertures.items():
+                if ap_val['type'] == 'C' and ap_val['size'] == fid_dia:
+                    aperture_found = ap_id
+                    break
+
+            if aperture_found:
+                for geo in geo_list:
+                    dict_el = dict()
+                    dict_el['follow'] = geo.centroid
+                    dict_el['solid'] = geo
+                    g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+            else:
+                ap_keys = list(g_obj.apertures.keys())
+                if ap_keys:
+                    new_apid = str(int(max(ap_keys)) + 1)
+                else:
+                    new_apid = '10'
+
+                g_obj.apertures[new_apid] = dict()
+                g_obj.apertures[new_apid]['type'] = 'C'
+                g_obj.apertures[new_apid]['size'] = fid_dia
+                g_obj.apertures[new_apid]['geometry'] = list()
+
+                for geo in geo_list:
+                    dict_el = dict()
+                    dict_el['follow'] = geo.centroid
+                    dict_el['solid'] = geo
+                    g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+
+            s_list = list()
+            if g_obj.solid_geometry:
+                try:
+                    for poly in g_obj.solid_geometry:
+                        s_list.append(poly)
+                except TypeError:
+                    s_list.append(g_obj.solid_geometry)
+
+            s_list += geo_list
+            g_obj.solid_geometry = MultiPolygon(s_list)
         else:
-            new_apid = int(max(list(self.grb_object.apertures.keys()))) + 1
-            self.grb_object.apertures[new_apid] = dict()
-            self.grb_object.apertures[new_apid]['type'] = 'C'
-            self.grb_object.apertures[new_apid]['size'] = self.fid_dia
-            self.grb_object.apertures[new_apid]['geometry'] = list()
+            geo_list = list()
 
-            for geo in geo_list:
-                dict_el = dict()
-                dict_el['follow'] = geo.centroid
-                dict_el['solid'] = geo
-                self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+            for pt in points_list:
+                x = pt[0]
+                y = pt[1]
+                line_geo_hor = LineString([
+                    (x - radius + (line_thickness / 2.0), y), (x + radius - (line_thickness / 2.0), y)
+                ])
+                line_geo_vert = LineString([
+                    (x, y - radius + (line_thickness / 2.0)), (x, y + radius - (line_thickness / 2.0))
+                ])
+                geo_list.append([line_geo_hor, line_geo_vert])
 
-            if self.grb_object.solid_geometry:
-                self.grb_object.solid_geometry = [self.grb_object.solid_geometry, geo_list]
+            aperture_found = None
+            for ap_id, ap_val in g_obj.apertures.items():
+                if ap_val['type'] == 'C' and ap_val['size'] == line_thickness:
+                    aperture_found = ap_id
+                    break
+
+            geo_buff_list = list()
+            if aperture_found:
+                for geo in geo_list:
+                    geo_buff_h = geo[0].buffer(line_thickness / 2.0)
+                    geo_buff_v = geo[1].buffer(line_thickness / 2.0)
+                    geo_buff_list.append(geo_buff_h)
+                    geo_buff_list.append(geo_buff_v)
+
+                    dict_el = dict()
+                    dict_el['follow'] = geo_buff_h.centroid
+                    dict_el['solid'] = geo_buff_h
+                    g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+                    dict_el['follow'] = geo_buff_v.centroid
+                    dict_el['solid'] = geo_buff_v
+                    g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+            else:
+                ap_keys = list(g_obj.apertures.keys())
+                if ap_keys:
+                    new_apid = str(int(max(ap_keys)) + 1)
+                else:
+                    new_apid = '10'
+
+                g_obj.apertures[new_apid] = dict()
+                g_obj.apertures[new_apid]['type'] = 'C'
+                g_obj.apertures[new_apid]['size'] = line_thickness
+                g_obj.apertures[new_apid]['geometry'] = list()
+
+                for geo in geo_list:
+                    geo_buff_h = geo[0].buffer(line_thickness / 2.0)
+                    geo_buff_v = geo[1].buffer(line_thickness / 2.0)
+                    geo_buff_list.append(geo_buff_h)
+                    geo_buff_list.append(geo_buff_v)
+
+                    dict_el = dict()
+                    dict_el['follow'] = geo_buff_h.centroid
+                    dict_el['solid'] = geo_buff_h
+                    g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+                    dict_el['follow'] = geo_buff_v.centroid
+                    dict_el['solid'] = geo_buff_v
+                    g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+
+            s_list = list()
+            if g_obj.solid_geometry:
+                try:
+                    for poly in g_obj.solid_geometry:
+                        s_list.append(poly)
+                except TypeError:
+                    s_list.append(g_obj.solid_geometry)
+
+            geo_buff_list = MultiPolygon(geo_buff_list)
+            geo_buff_list = geo_buff_list.buffer(0)
+            for poly in geo_buff_list:
+                s_list.append(poly)
+            g_obj.solid_geometry = MultiPolygon(s_list)
 
     def add_soldermask_opening(self):
 
-        self.sm_opening_dia = self.dia_entry.get_value() * 2.0
+        sm_opening_dia = self.dia_entry.get_value() * 2.0
 
         # get the Gerber object on which the Fiducial will be inserted
-        selection_index = self.grb_object_combo.currentIndex()
-        model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
+        selection_index = self.sm_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.sm_object_combo.rootModelIndex())
 
         try:
             self.sm_object = model_index.internalPointer().obj
@@ -508,6 +632,9 @@ class ToolFiducials(FlatCAMTool):
             return 'fail'
 
         self.sm_obj_set.add(self.sm_object.options['name'])
+
+        self.add_fiducials_geo(self.click_points, g_obj=self.sm_object, fid_size=sm_opening_dia, fid_type='circular')
+        self.on_exit()
 
     def on_mouse_release(self, event):
         if event.button == 1:
@@ -532,6 +659,8 @@ class ToolFiducials(FlatCAMTool):
             self.check_points()
 
     def check_points(self):
+        fid_type = self.fid_type_radio.get_value()
+
         if len(self.click_points) == 1:
             self.bottom_left_coords_entry.set_value(self.click_points[0])
             self.app.inform.emit(_("Click to add the last fiducial. Top Right..."))
@@ -549,25 +678,31 @@ class ToolFiducials(FlatCAMTool):
             if len(self.click_points) == 2:
                 self.sec_points_coords_entry.set_value(self.click_points[2])
                 self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
-                self.add_fiducials_geo(self.click_points)
+                self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
                 self.on_exit()
 
     def on_mouse_move(self, event):
         pass
 
-    def replot(self, obj):
+    def replot(self, obj, run_thread=True):
         def worker_task():
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 obj.plot()
 
-        self.app.worker_task.emit({'fcn': worker_task, 'params': []})
+        if run_thread:
+            self.app.worker_task.emit({'fcn': worker_task, 'params': []})
+        else:
+            worker_task()
 
     def on_exit(self):
         # plot the object
         for ob_name in self.copper_obj_set:
             try:
                 copper_obj = self.app.collection.get_by_name(name=ob_name)
-                self.replot(obj=copper_obj)
+                if len(self.copper_obj_set) > 1:
+                    self.replot(obj=copper_obj, run_thread=False)
+                else:
+                    self.replot(obj=copper_obj)
             except (AttributeError, TypeError):
                 continue
 
@@ -584,7 +719,10 @@ class ToolFiducials(FlatCAMTool):
         for ob_name in self.sm_obj_set:
             try:
                 sm_obj = self.app.collection.get_by_name(name=ob_name)
-                self.replot(obj=sm_obj)
+                if len(self.sm_obj_set) > 1:
+                    self.replot(obj=sm_obj, run_thread=False)
+                else:
+                    self.replot(obj=sm_obj)
             except (AttributeError, TypeError):
                 continue
 
@@ -614,19 +752,31 @@ class ToolFiducials(FlatCAMTool):
         if len(self.click_points) not in [0, 3]:
             self.click_points = list()
 
-        if self.mode_method == 'manual' and len(self.click_points) not in [0, 3]:
-            self.disconnect_event_handlers()
+        self.disconnect_event_handlers()
 
         self.app.call_source = "app"
         self.app.inform.emit('[success] %s' % _("Fiducials Tool exit."))
 
+    def connect_event_handlers(self):
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            # self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        else:
+            self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+            # self.app.plotcanvas.graph_event_disconnect(self.app.mm)
+            self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+
+        self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
+        # self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
+
     def disconnect_event_handlers(self):
         if self.app.is_legacy is False:
             self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+            # self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
         else:
             self.app.plotcanvas.graph_event_disconnect(self.mr)
-            self.app.plotcanvas.graph_event_disconnect(self.mm)
+            # self.app.plotcanvas.graph_event_disconnect(self.mm)
 
         self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
                                                               self.app.on_mouse_click_over_plot)
