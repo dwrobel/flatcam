@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - Tool Fiducials - added choice of shapes: circular or non-standard cross
 - Tool Fiducials - finished the work on adding soldermask openings
 - Tool Fiducials - finished the tool
+- updated requirements.txt and setup_ubuntu.sh files
 
 20.11.2019
 
