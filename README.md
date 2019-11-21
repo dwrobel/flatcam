@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+21.11.2019
+
+- Tool Fiducials - finished the part with adding copper fiducials: manual and auto
+
 20.11.2019
 
 - Tool Fiducials - added the GUI and the shortcut key

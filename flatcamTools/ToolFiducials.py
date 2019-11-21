@@ -7,21 +7,17 @@
 
 from PyQt5 import QtWidgets, QtCore
 
-import FlatCAMApp
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet
-from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon
+from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable
 
 import shapely.geometry.base as base
-from shapely.ops import cascaded_union, unary_union
-from shapely.geometry import Polygon, MultiPolygon, Point, LineString
+from shapely.ops import unary_union
+from shapely.geometry import Point
 from shapely.geometry import box as box
-import shapely.affinity as affinity
+
 
 import logging
 from copy import deepcopy
-import numpy as np
-from collections import Iterable
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -59,17 +55,104 @@ class ToolFiducials(FlatCAMTool):
         self.layout.addWidget(title_label)
         self.layout.addWidget(QtWidgets.QLabel(''))
 
+        self.points_label = QtWidgets.QLabel('<b>%s:</b>' % _('Fiducials Coordinates'))
+        self.points_label.setToolTip(
+            _("A table with the fiducial points coordinates,\n"
+              "in the format (x, y).")
+        )
+        self.layout.addWidget(self.points_label)
+
+        self.points_table = FCTable()
+        self.points_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+
+        self.layout.addWidget(self.points_table)
+        self.layout.addWidget(QtWidgets.QLabel(''))
+
+        self.points_table.setColumnCount(3)
+        self.points_table.setHorizontalHeaderLabels(
+            [
+                '#',
+                _("Name"),
+                _("Coordinates"),
+            ]
+        )
+        self.points_table.setRowCount(3)
+        row = 0
+
+        flags = QtCore.Qt.ItemIsEnabled
+
+        # BOTTOM LEFT
+        id_item_1 = QtWidgets.QTableWidgetItem('%d' % 1)
+        id_item_1.setFlags(flags)
+        self.points_table.setItem(row, 0, id_item_1)  # Tool name/id
+
+        self.bottom_left_coords_lbl = QtWidgets.QTableWidgetItem('%s' % _('Bottom Left'))
+        self.bottom_left_coords_lbl.setFlags(flags)
+        self.points_table.setItem(row, 1, self.bottom_left_coords_lbl)
+        self.bottom_left_coords_entry = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.bottom_left_coords_entry)
+        row += 1
+
+        # TOP RIGHT
+        id_item_2 = QtWidgets.QTableWidgetItem('%d' % 2)
+        id_item_2.setFlags(flags)
+        self.points_table.setItem(row, 0, id_item_2)  # Tool name/id
+
+        self.top_right_coords_lbl = QtWidgets.QTableWidgetItem('%s' % _('Top Right'))
+        self.top_right_coords_lbl.setFlags(flags)
+        self.points_table.setItem(row, 1, self.top_right_coords_lbl)
+        self.top_right_coords_entry = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.top_right_coords_entry)
+        row += 1
+
+        # Second Point
+        self.id_item_3 = QtWidgets.QTableWidgetItem('%d' % 3)
+        self.id_item_3.setFlags(flags)
+        self.points_table.setItem(row, 0, self.id_item_3)  # Tool name/id
+
+        self.sec_point_coords_lbl = QtWidgets.QTableWidgetItem('%s' % _('Second Point'))
+        self.sec_point_coords_lbl.setFlags(flags)
+        self.points_table.setItem(row, 1, self.sec_point_coords_lbl)
+        self.sec_points_coords_entry = EvalEntry()
+        self.points_table.setCellWidget(row, 2, self.sec_points_coords_entry)
+
+        vertical_header = self.points_table.verticalHeader()
+        vertical_header.hide()
+        self.points_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        horizontal_header = self.points_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+
+        self.points_table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        # for x in range(4):
+        #     self.points_table.resizeColumnToContents(x)
+        self.points_table.resizeColumnsToContents()
+        self.points_table.resizeRowsToContents()
+
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+
+        self.points_table.setMinimumHeight(self.points_table.getHeight() + 2)
+        self.points_table.setMaximumHeight(self.points_table.getHeight() + 2)
+
+        # remove the frame on the QLineEdit childrens of the table
+        for row in range(self.points_table.rowCount()):
+            self.points_table.cellWidget(row, 2).setFrame(False)
+
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_lay)
         grid_lay.setColumnStretch(0, 0)
         grid_lay.setColumnStretch(1, 1)
 
-        self.copper_fill_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
-        self.copper_fill_label.setToolTip(
+        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.param_label.setToolTip(
             _("Parameters used for this tool.")
         )
-        grid_lay.addWidget(self.copper_fill_label, 0, 0, 1, 2)
+        grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
 
         # DIAMETER #
         self.dia_label = QtWidgets.QLabel('%s:' % _("Diameter"))
@@ -92,7 +175,7 @@ class ToolFiducials(FlatCAMTool):
             _("Bounding box margin.")
         )
         self.margin_entry = FCDoubleSpinner()
-        self.margin_entry.set_range(0.0, 9999.9999)
+        self.margin_entry.set_range(-9999.9999, 9999.9999)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
 
@@ -173,7 +256,7 @@ class ToolFiducials(FlatCAMTool):
         grid_lay.addWidget(self.sm_object_combo, 11, 0, 1, 2)
 
         # ## Insert Soldermask opening for Fiducial
-        self.add_sm_opening_button = QtWidgets.QPushButton(_("Add SM Opening"))
+        self.add_sm_opening_button = QtWidgets.QPushButton(_("Add Soldermask Opening"))
         self.add_sm_opening_button.setToolTip(
             _("Will add a polygon on the soldermask layer\n"
               "to serve as fiducial opening.\n"
@@ -186,8 +269,10 @@ class ToolFiducials(FlatCAMTool):
 
         # Objects involved in Copper thieving
         self.grb_object = None
-        self.sm_obj = None
-        self.sel_rect = list()
+        self.sm_object = None
+
+        self.copper_obj_set = set()
+        self.sm_obj_set = set()
 
         # store the flattened geometry here:
         self.flat_geometry = list()
@@ -197,22 +282,28 @@ class ToolFiducials(FlatCAMTool):
         self.mm = None
 
         # Mouse cursor positions
-        self.mouse_is_dragging = False
         self.cursor_pos = (0, 0)
         self.first_click = False
 
-        self.area_method = False
+        self.mode_method = False
 
         # Tool properties
-        self.clearance_val = None
+        self.fid_dia = None
+        self.sm_opening_dia = None
+
         self.margin_val = None
+        self.sec_position = None
         self.geo_steps_per_circle = 128
 
+        self.click_points = list()
+
         # SIGNALS
-        # self.fill_button.clicked.connect(self.execute)
-        # self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
+        self.add_cfid_button.clicked.connect(self.add_fiducials)
+        self.add_sm_opening_button.clicked.connect(self.add_soldermask_opening)
+
         # self.reference_radio.group_toggle_fn = self.on_toggle_reference
-        # self.fill_type_radio.activated_custom.connect(self.on_thieving_type)
+        self.pos_radio.activated_custom.connect(self.on_second_point)
+        self.mode_radio.activated_custom.connect(self.on_method_change)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolFiducials()")
@@ -247,105 +338,110 @@ class ToolFiducials(FlatCAMTool):
 
     def set_tool_ui(self):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
-        # self.clearance_entry.set_value(float(self.app.defaults["tools_copper_thieving_clearance"]))
-        # self.margin_entry.set_value(float(self.app.defaults["tools_copper_thieving_margin"]))
-        # self.reference_radio.set_value(self.app.defaults["tools_copper_thieving_reference"])
+        # self.mode_radio.set_value(float(self.app.defaults["tools_fiducials_mode"]))
+        # self.margin_entry.set_value(float(self.app.defaults["tools_fiducials_margin"]))
+        # self.dia_entry.set_value(self.app.defaults["tools_fiducials_dia"])
+        self.click_points = list()
+        self.bottom_left_coords_entry.set_value('')
+        self.top_right_coords_entry.set_value('')
+        self.sec_points_coords_entry.set_value('')
 
-    def on_combo_box_type(self):
-        obj_type = self.box_combo_type.currentIndex()
-        self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(0)
+        self.copper_obj_set = set()
+        self.sm_obj_set = set()
 
-    def on_toggle_reference(self):
-        if self.reference_radio.get_value() == "itself" or self.reference_radio.get_value() == "area":
-            self.box_combo.hide()
-            self.box_combo_label.hide()
-            self.box_combo_type.hide()
-            self.box_combo_type_label.hide()
+    def on_second_point(self, val):
+        if val == 'no':
+            self.id_item_3.setFlags(QtCore.Qt.NoItemFlags)
+            self.sec_point_coords_lbl.setFlags(QtCore.Qt.NoItemFlags)
+            self.sec_points_coords_entry.setDisabled(True)
         else:
-            self.box_combo.show()
-            self.box_combo_label.show()
-            self.box_combo_type.show()
-            self.box_combo_type_label.show()
+            self.id_item_3.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.sec_point_coords_lbl.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.sec_points_coords_entry.setDisabled(False)
 
-        if self.reference_radio.get_value() == "itself":
-            self.bbox_type_label.show()
-            self.bbox_type_radio.show()
-        else:
-            if self.fill_type_radio.get_value() == 'line':
-                self.reference_radio.set_value('itself')
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Lines Grid works only for 'itself' reference ..."))
-                return
+    def on_method_change(self, val):
+        """
+        Make sure that on method change we disconnect the event handlers and reset the points storage
+        :param val: value of the Radio button which trigger this method
+        :return: None
+        """
+        if val == 'auto':
+            self.click_points = list()
 
-            self.bbox_type_label.hide()
-            self.bbox_type_radio.hide()
+            try:
+                self.disconnect_event_handlers()
+            except TypeError:
+                pass
 
-    def on_thieving_type(self, choice):
-        if choice == 'solid':
-            self.dots_frame.hide()
-            self.squares_frame.hide()
-            self.lines_frame.hide()
-            self.app.inform.emit(_("Solid fill selected."))
-        elif choice == 'dot':
-            self.dots_frame.show()
-            self.squares_frame.hide()
-            self.lines_frame.hide()
-            self.app.inform.emit(_("Dots grid fill selected."))
-        elif choice == 'square':
-            self.dots_frame.hide()
-            self.squares_frame.show()
-            self.lines_frame.hide()
-            self.app.inform.emit(_("Squares grid fill selected."))
-        else:
-            if self.reference_radio.get_value() != 'itself':
-                self.reference_radio.set_value('itself')
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Lines Grid works only for 'itself' reference ..."))
-            self.dots_frame.hide()
-            self.squares_frame.hide()
-            self.lines_frame.show()
-
-    def execute(self):
-        self.app.call_source = "copper_thieving_tool"
-
-        self.clearance_val = self.clearance_entry.get_value()
+    def add_fiducials(self):
+        self.app.call_source = "fiducials_tool"
+        self.mode_method = self.mode_radio.get_value()
         self.margin_val = self.margin_entry.get_value()
-        reference_method = self.reference_radio.get_value()
+        self.sec_position = self.pos_radio.get_value()
 
-        # get the Gerber object on which the Copper thieving will be inserted
+        # get the Gerber object on which the Fiducial will be inserted
         selection_index = self.grb_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
 
         try:
             self.grb_object = model_index.internalPointer().obj
         except Exception as e:
-            log.debug("ToolCopperThieving.execute() --> %s" % str(e))
+            log.debug("ToolFiducials.execute() --> %s" % str(e))
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return 'fail'
 
-        if reference_method == 'itself':
-            bound_obj_name = self.grb_object_combo.currentText()
+        self.copper_obj_set.add(self.grb_object.options['name'])
 
-            # Get reference object.
-            try:
-                self.ref_obj = self.app.collection.get_by_name(bound_obj_name)
-            except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), str(e)))
-                return "Could not retrieve object: %s" % self.obj_name
+        if self.mode_method == 'auto':
+            xmin, ymin, xmax, ymax = self.grb_object.bounds()
+            bbox = box(xmin, ymin, xmax, ymax)
+            buf_bbox = bbox.buffer(self.margin_val, join_style=2)
+            x0, y0, x1, y1 = buf_bbox.bounds
 
-            self.on_copper_thieving(
-                thieving_obj=self.grb_object,
-                c_val=self.clearance_val,
-                margin=self.margin_val
+            self.click_points.append(
+                (
+                    float('%.*f' % (self.decimals, x0)),
+                    float('%.*f' % (self.decimals, y0))
+                )
             )
+            self.bottom_left_coords_entry.set_value('(%.*f, %.*f)' % (self.decimals, x0, self.decimals, y0))
 
-        elif reference_method == 'area':
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the start point of the area."))
+            self.click_points.append(
+                (
+                    float('%.*f' % (self.decimals, x1)),
+                    float('%.*f' % (self.decimals, y1))
+                )
+            )
+            self.top_right_coords_entry.set_value('(%.*f, %.*f)' % (self.decimals, x1, self.decimals, y1))
 
-            self.area_method = True
+            if self.sec_position == 'up':
+                self.click_points.append(
+                    (
+                        float('%.*f' % (self.decimals, x0)),
+                        float('%.*f' % (self.decimals, y1))
+                    )
+                )
+                self.sec_points_coords_entry.set_value('(%.*f, %.*f)' % (self.decimals, x0, self.decimals, y1))
+            elif self.sec_position == 'down':
+                self.click_points.append(
+                    (
+                        float('%.*f' % (self.decimals, x1)),
+                        float('%.*f' % (self.decimals, y0))
+                    )
+                )
+                self.sec_points_coords_entry.set_value('(%.*f, %.*f)' % (self.decimals, x1, self.decimals, y0))
+
+            self.add_fiducials_geo(self.click_points)
+            self.on_exit()
+        else:
+            self.app.inform.emit(_("Click to add first Fiducial. Bottom Left..."))
+            self.bottom_left_coords_entry.set_value('')
+            self.top_right_coords_entry.set_value('')
+            self.sec_points_coords_entry.set_value('')
 
             if self.app.is_legacy is False:
                 self.app.plotcanvas.graph_event_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+                # self.app.plotcanvas.graph_event_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
                 self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.app.mp)
@@ -353,542 +449,111 @@ class ToolFiducials(FlatCAMTool):
                 self.app.plotcanvas.graph_event_disconnect(self.app.mr)
 
             self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_release)
-            self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
-
-        elif reference_method == 'box':
-            bound_obj_name = self.box_combo.currentText()
-
-            # Get reference object.
-            try:
-                self.ref_obj = self.app.collection.get_by_name(bound_obj_name)
-            except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), bound_obj_name))
-                return "Could not retrieve object: %s. Error: %s" % (bound_obj_name, str(e))
-
-            self.on_copper_thieving(
-                thieving_obj=self.grb_object,
-                ref_obj=self.ref_obj,
-                c_val=self.clearance_val,
-                margin=self.margin_val
-            )
+            # self.mm = self.app.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move)
 
         # To be called after clicking on the plot.
 
-    def on_mouse_release(self, event):
-        if self.app.is_legacy is False:
-            event_pos = event.pos
-            # event_is_dragging = event.is_dragging
-            right_button = 2
-        else:
-            event_pos = (event.xdata, event.ydata)
-            # event_is_dragging = self.app.plotcanvas.is_dragging
-            right_button = 3
-
-        event_pos = self.app.plotcanvas.translate_coords(event_pos)
-
-        # do clear area only for left mouse clicks
-        if event.button == 1:
-            if self.first_click is False:
-                self.first_click = True
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the filling area."))
-
-                self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
-                if self.app.grid_status() is True:
-                    self.cursor_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
-            else:
-                self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
-                self.app.delete_selection_shape()
-
-                if self.app.grid_status() is True:
-                    curr_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
-                else:
-                    curr_pos = (event_pos[0], event_pos[1])
-
-                x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
-                x1, y1 = curr_pos[0], curr_pos[1]
-                pt1 = (x0, y0)
-                pt2 = (x1, y0)
-                pt3 = (x1, y1)
-                pt4 = (x0, y1)
-
-                new_rectangle = Polygon([pt1, pt2, pt3, pt4])
-                self.sel_rect.append(new_rectangle)
-
-                # add a temporary shape on canvas
-                self.draw_tool_selection_shape(old_coords=(x0, y0), coords=(x1, y1))
-                self.first_click = False
-                return
-
-        elif event.button == right_button and self.mouse_is_dragging is False:
-            self.area_method = False
-            self.first_click = False
-
-            self.delete_tool_selection_shape()
-
-            if self.app.is_legacy is False:
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.mr)
-                self.app.plotcanvas.graph_event_disconnect(self.mm)
-
-            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                  self.app.on_mouse_click_over_plot)
-            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                  self.app.on_mouse_move_over_plot)
-            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                  self.app.on_mouse_click_release_over_plot)
-
-            if len(self.sel_rect) == 0:
-                return
-
-            self.sel_rect = cascaded_union(self.sel_rect)
-
-            if not isinstance(self.sel_rect, Iterable):
-                self.sel_rect = [self.sel_rect]
-
-            self.on_copper_thieving(
-                thieving_obj=self.grb_object,
-                ref_obj=self.sel_rect,
-                c_val=self.clearance_val,
-                margin=self.margin_val
-            )
-
-    # called on mouse move
-    def on_mouse_move(self, event):
-        if self.app.is_legacy is False:
-            event_pos = event.pos
-            event_is_dragging = event.is_dragging
-            # right_button = 2
-        else:
-            event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
-            # right_button = 3
-
-        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
-
-        # detect mouse dragging motion
-        if event_is_dragging is True:
-            self.mouse_is_dragging = True
-        else:
-            self.mouse_is_dragging = False
-
-        # update the cursor position
-        if self.app.grid_status() is True:
-            # Update cursor
-            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
-
-            self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
-                                         symbol='++', edge_color=self.app.cursor_color_3D,
-                                         size=self.app.defaults["global_cursor_size"])
-
-        # update the positions on status bar
-        self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                           "<b>Y</b>: %.4f" % (curr_pos[0], curr_pos[1]))
-        if self.cursor_pos is None:
-            self.cursor_pos = (0, 0)
-
-        dx = curr_pos[0] - float(self.cursor_pos[0])
-        dy = curr_pos[1] - float(self.cursor_pos[1])
-        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
-
-        # draw the utility geometry
-        if self.first_click:
-            self.app.delete_selection_shape()
-            self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
-                                                 coords=(curr_pos[0], curr_pos[1]))
-
-    def on_copper_thieving(self, thieving_obj, ref_obj=None, c_val=None, margin=None, run_threaded=True):
+    def add_fiducials_geo(self, points_list):
         """
-
-        :param thieving_obj:
-        :param ref_obj:
-        :param c_val:
-        :param margin:
-        :param run_threaded:
+        Add geometry to the solid_geometry of the copper Gerber object
+        :param points_list: list of coordinates for the fiducials
         :return:
         """
+        self.fid_dia = self.dia_entry.get_value()
+        radius = self.fid_dia / 2.0
 
-        if run_threaded:
-            proc = self.app.proc_container.new('%s ...' % _("Thieving"))
+        geo_list = [Point(pt).buffer(radius) for pt in points_list]
+
+        aperture_found = None
+        for ap_id, ap_val in self.grb_object.apertures.items():
+            if ap_val['type'] == 'C' and ap_val['size'] == self.fid_dia:
+                aperture_found = ap_id
+                break
+
+        if aperture_found:
+            for geo in geo_list:
+                dict_el = dict()
+                dict_el['follow'] = geo.centroid
+                dict_el['solid'] = geo
+                self.grb_object.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
         else:
-            QtWidgets.QApplication.processEvents()
+            new_apid = int(max(list(self.grb_object.apertures.keys()))) + 1
+            self.grb_object.apertures[new_apid] = dict()
+            self.grb_object.apertures[new_apid]['type'] = 'C'
+            self.grb_object.apertures[new_apid]['size'] = self.fid_dia
+            self.grb_object.apertures[new_apid]['geometry'] = list()
 
-        self.app.proc_container.view.set_busy('%s ...' % _("Thieving"))
+            for geo in geo_list:
+                dict_el = dict()
+                dict_el['follow'] = geo.centroid
+                dict_el['solid'] = geo
+                self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
 
-        # #####################################################################
-        # ####### Read the parameters #########################################
-        # #####################################################################
+            if self.grb_object.solid_geometry:
+                self.grb_object.solid_geometry = [self.grb_object.solid_geometry, geo_list]
 
-        log.debug("Copper Thieving Tool started. Reading parameters.")
-        self.app.inform.emit(_("Copper Thieving Tool started. Reading parameters."))
+    def add_soldermask_opening(self):
 
-        ref_selected = self.reference_radio.get_value()
-        if c_val is None:
-            c_val = float(self.app.defaults["tools_copperfill_clearance"])
-        if margin is None:
-            margin = float(self.app.defaults["tools_copperfill_margin"])
+        self.sm_opening_dia = self.dia_entry.get_value() * 2.0
 
-        fill_type = self.fill_type_radio.get_value()
-        dot_dia = self.dot_dia_entry.get_value()
-        dot_spacing = self.dot_spacing_entry.get_value()
-        square_size = self.square_size_entry.get_value()
-        square_spacing = self.squares_spacing_entry.get_value()
-        line_size = self.line_size_entry.get_value()
-        line_spacing = self.lines_spacing_entry.get_value()
+        # get the Gerber object on which the Fiducial will be inserted
+        selection_index = self.grb_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
 
-        # make sure that the source object solid geometry is an Iterable
-        if not isinstance(self.grb_object.solid_geometry, Iterable):
-            self.grb_object.solid_geometry = [self.grb_object.solid_geometry]
+        try:
+            self.sm_object = model_index.internalPointer().obj
+        except Exception as e:
+            log.debug("ToolFiducials.add_soldermask_opening() --> %s" % str(e))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            return 'fail'
 
-        def job_thread_thieving(app_obj):
-            # #########################################################################################
-            # Prepare isolation polygon. This will create the clearance over the Gerber features ######
-            # #########################################################################################
-            log.debug("Copper Thieving Tool. Preparing isolation polygons.")
-            app_obj.app.inform.emit(_("Copper Thieving Tool. Preparing isolation polygons."))
+        self.sm_obj_set.add(self.sm_object.options['name'])
 
-            # variables to display the percentage of work done
-            geo_len = 0
-            try:
-                for pol in app_obj.grb_object.solid_geometry:
-                    geo_len += 1
-            except TypeError:
-                geo_len = 1
+    def on_mouse_release(self, event):
+        if event.button == 1:
+            if self.app.is_legacy is False:
+                event_pos = event.pos
+            else:
+                event_pos = (event.xdata, event.ydata)
 
-            old_disp_number = 0
-            pol_nr = 0
+            pos_canvas = self.canvas.translate_coords(event_pos)
+            if self.app.grid_status():
+                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+            else:
+                pos = (pos_canvas[0], pos_canvas[1])
+            click_pt = Point([pos[0], pos[1]])
 
-            clearance_geometry = []
-            try:
-                for pol in app_obj.grb_object.solid_geometry:
-                    if app_obj.app.abort_flag:
-                        # graceful abort requested by the user
-                        raise FlatCAMApp.GracefulException
-
-                    clearance_geometry.append(
-                        pol.buffer(c_val, int(int(app_obj.geo_steps_per_circle) / 4))
-                    )
-
-                    pol_nr += 1
-                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
-                    if old_disp_number < disp_number <= 100:
-                        app_obj.app.proc_container.update_view_text(' %s ... %d%%' %
-                                                                 (_("Thieving"), int(disp_number)))
-                        old_disp_number = disp_number
-            except TypeError:
-                # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
-                # MultiPolygon (not an iterable)
-                clearance_geometry.append(
-                    app_obj.grb_object.solid_geometry.buffer(c_val, int(int(app_obj.geo_steps_per_circle) / 4))
+            self.click_points.append(
+                (
+                    float('%.*f' % (self.decimals, click_pt.x)),
+                    float('%.*f' % (self.decimals, click_pt.y))
                 )
-
-            app_obj.app.proc_container.update_view_text(' %s ...' % _("Buffering"))
-            clearance_geometry = unary_union(clearance_geometry)
-
-            # #########################################################################################
-            # Prepare the area to fill with copper. ###################################################
-            # #########################################################################################
-            log.debug("Copper Thieving Tool. Preparing areas to fill with copper.")
-            app_obj.app.inform.emit(_("Copper Thieving Tool. Preparing areas to fill with copper."))
-
-            try:
-                if ref_obj is None or ref_obj == 'itself':
-                    working_obj = thieving_obj
-                else:
-                    working_obj = ref_obj
-            except Exception as e:
-                log.debug("ToolCopperThieving.on_copper_thieving() --> %s" % str(e))
-                return 'fail'
-
-            app_obj.app.proc_container.update_view_text(' %s' % _("Working..."))
-            if ref_selected == 'itself':
-                geo_n = working_obj.solid_geometry
-
-                try:
-                    if app_obj.bbox_type_radio.get_value() == 'min':
-                        if isinstance(geo_n, MultiPolygon):
-                            env_obj = geo_n.convex_hull
-                        elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
-                                (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-                            env_obj = cascaded_union(geo_n)
-                        else:
-                            env_obj = cascaded_union(geo_n)
-                            env_obj = env_obj.convex_hull
-                        bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
-                    else:
-                        if isinstance(geo_n, Polygon):
-                            bounding_box = geo_n.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre).exterior
-                        elif isinstance(geo_n, list):
-                            geo_n = unary_union(geo_n)
-                            bounding_box = geo_n.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre).exterior
-                        elif isinstance(geo_n, MultiPolygon):
-                            x0, y0, x1, y1 = geo_n.bounds
-                            geo = box(x0, y0, x1, y1)
-                            bounding_box = geo.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
-                        else:
-                            app_obj.app.inform.emit(
-                                '[ERROR_NOTCL] %s: %s' % (_("Geometry not supported for bounding box"), type(geo_n))
-                            )
-                            return 'fail'
-
-                except Exception as e:
-                    log.debug("ToolCopperFIll.on_copper_thieving()  'itself'  --> %s" % str(e))
-                    app_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
-                    return 'fail'
-            elif ref_selected == 'area':
-                geo_buff_list = []
-                try:
-                    for poly in working_obj:
-                        if app_obj.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
-                        geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
-                except TypeError:
-                    geo_buff_list.append(working_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
-
-                bounding_box = MultiPolygon(geo_buff_list)
-            else:   # ref_selected == 'box'
-                geo_n = working_obj.solid_geometry
-
-                if isinstance(working_obj, FlatCAMGeometry):
-                    try:
-                        __ = iter(geo_n)
-                    except Exception as e:
-                        log.debug("ToolCopperFIll.on_copper_thieving() 'box' --> %s" % str(e))
-                        geo_n = [geo_n]
-
-                    geo_buff_list = []
-                    for poly in geo_n:
-                        if app_obj.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
-                        geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
-
-                    bounding_box = cascaded_union(geo_buff_list)
-                elif isinstance(working_obj, FlatCAMGerber):
-                    geo_n = cascaded_union(geo_n).convex_hull
-                    bounding_box = cascaded_union(thieving_obj.solid_geometry).convex_hull.intersection(geo_n)
-                    bounding_box = bounding_box.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
-                else:
-                    app_obj.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
-                    return 'fail'
-
-            log.debug("Copper Thieving Tool. Finished creating areas to fill with copper.")
-
-            app_obj.app.inform.emit(_("Copper Thieving Tool. Appending new geometry and buffering."))
-
-            # #########################################################################################
-            # ########## Generate filling geometry. ###################################################
-            # #########################################################################################
-
-            new_solid_geometry = bounding_box.difference(clearance_geometry)
-
-            # determine the bounding box polygon for the entire Gerber object to which we add copper thieving
-            # if isinstance(geo_n, list):
-            #     env_obj = unary_union(geo_n).buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
-            # else:
-            #     env_obj = geo_n.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
-            #
-            # x0, y0, x1, y1 = env_obj.bounds
-            # bounding_box = box(x0, y0, x1, y1)
-            app_obj.app.proc_container.update_view_text(' %s' % _("Create geometry"))
-
-            bounding_box = thieving_obj.solid_geometry.envelope.buffer(
-                distance=margin,
-                join_style=base.JOIN_STYLE.mitre
             )
-            x0, y0, x1, y1 = bounding_box.bounds
+            self.check_points()
 
-            if fill_type == 'dot' or fill_type == 'square':
-                # build the MultiPolygon of dots/squares that will fill the entire bounding box
-                thieving_list = list()
+    def check_points(self):
+        if len(self.click_points) == 1:
+            self.bottom_left_coords_entry.set_value(self.click_points[0])
+            self.app.inform.emit(_("Click to add the last fiducial. Top Right..."))
 
-                if fill_type == 'dot':
-                    radius = dot_dia / 2.0
-                    new_x = x0 + radius
-                    new_y = y0 + radius
-                    while new_x <= x1 - radius:
-                        while new_y <= y1 - radius:
-                            dot_geo = Point((new_x, new_y)).buffer(radius, resolution=64)
-                            thieving_list.append(dot_geo)
-                            new_y += dot_dia + dot_spacing
-                        new_x += dot_dia + dot_spacing
-                        new_y = y0 + radius
-                else:
-                    h_size = square_size / 2.0
-                    new_x = x0 + h_size
-                    new_y = y0 + h_size
-                    while new_x <= x1 - h_size:
-                        while new_y <= y1 - h_size:
-                            a, b, c, d = (Point((new_x, new_y)).buffer(h_size)).bounds
-                            square_geo = box(a, b, c, d)
-                            thieving_list.append(square_geo)
-                            new_y += square_size + square_spacing
-                        new_x += square_size + square_spacing
-                        new_y = y0 + h_size
-
-                thieving_box_geo = MultiPolygon(thieving_list)
-                dx = bounding_box.centroid.x - thieving_box_geo.centroid.x
-                dy = bounding_box.centroid.y - thieving_box_geo.centroid.y
-
-                thieving_box_geo = affinity.translate(thieving_box_geo, xoff=dx, yoff=dy)
-
-                try:
-                    _it = iter(new_solid_geometry)
-                except TypeError:
-                    new_solid_geometry = [new_solid_geometry]
-
-                try:
-                    _it = iter(thieving_box_geo)
-                except TypeError:
-                    thieving_box_geo = [thieving_box_geo]
-
-                thieving_geo = list()
-                for dot_geo in thieving_box_geo:
-                    for geo_t in new_solid_geometry:
-                        if dot_geo.within(geo_t):
-                            thieving_geo.append(dot_geo)
-
-                new_solid_geometry = thieving_geo
-
-            if fill_type == 'line':
-                half_thick_line = line_size / 2.0
-
-                # create a thick polygon-line that surrounds the copper features
-                outline_geometry = []
-                try:
-                    for pol in app_obj.grb_object.solid_geometry:
-                        if app_obj.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
-
-                        outline_geometry.append(
-                            pol.buffer(c_val+half_thick_line, int(int(app_obj.geo_steps_per_circle) / 4))
-                        )
-
-                        pol_nr += 1
-                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
-                        if old_disp_number < disp_number <= 100:
-                            app_obj.app.proc_container.update_view_text(' %s ... %d%%' %
-                                                                     (_("Buffering"), int(disp_number)))
-                            old_disp_number = disp_number
-                except TypeError:
-                    # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
-                    # MultiPolygon (not an iterable)
-                    outline_geometry.append(
-                        app_obj.grb_object.solid_geometry.buffer(
-                            c_val+half_thick_line,
-                            int(int(app_obj.geo_steps_per_circle) / 4)
-                        )
-                    )
-
-                app_obj.app.proc_container.update_view_text(' %s' % _("Buffering"))
-                outline_geometry = unary_union(outline_geometry)
-
-                outline_line = list()
-                try:
-                    for geo_o in outline_geometry:
-                        outline_line.append(
-                            geo_o.exterior.buffer(
-                                half_thick_line, resolution=int(int(app_obj.geo_steps_per_circle) / 4)
-                            )
-                        )
-                except TypeError:
-                    outline_line.append(
-                        outline_geometry.exterior.buffer(
-                            half_thick_line, resolution=int(int(app_obj.geo_steps_per_circle) / 4)
-                        )
-                    )
-
-                outline_geometry = unary_union(outline_line)
-
-                # create a polygon-line that surrounds in the inside the bounding box polygon of the target Gerber
-                box_outline_geo = box(x0, y0, x1, y1).buffer(-half_thick_line)
-                box_outline_geo_exterior = box_outline_geo.exterior
-                box_outline_geometry = box_outline_geo_exterior.buffer(
-                    half_thick_line,
-                    resolution=int(int(app_obj.geo_steps_per_circle) / 4)
-                )
-
-                bx0, by0, bx1, by1 = box_outline_geo.bounds
-                thieving_lines_geo = list()
-                new_x = bx0
-                new_y = by0
-                while new_x <= x1 - half_thick_line:
-                    line_geo = LineString([(new_x, by0), (new_x, by1)]).buffer(
-                        half_thick_line,
-                        resolution=int(int(app_obj.geo_steps_per_circle) / 4)
-                    )
-                    thieving_lines_geo.append(line_geo)
-                    new_x += line_size + line_spacing
-
-                while new_y <= y1 - half_thick_line:
-                    line_geo = LineString([(bx0, new_y), (bx1, new_y)]).buffer(
-                        half_thick_line,
-                        resolution=int(int(app_obj.geo_steps_per_circle) / 4)
-                    )
-                    thieving_lines_geo.append(line_geo)
-                    new_y += line_size + line_spacing
-
-                # merge everything together
-                diff_lines_geo = list()
-                for line_poly in thieving_lines_geo:
-                    rest_line = line_poly.difference(clearance_geometry)
-                    diff_lines_geo.append(rest_line)
-                app_obj.flatten([outline_geometry, box_outline_geometry, diff_lines_geo])
-                new_solid_geometry = app_obj.flat_geometry
-
-            app_obj.app.proc_container.update_view_text(' %s' % _("Append geometry"))
-            geo_list = app_obj.grb_object.solid_geometry
-            if isinstance(app_obj.grb_object.solid_geometry, MultiPolygon):
-                geo_list = list(app_obj.grb_object.solid_geometry.geoms)
-
-            if '0' not in app_obj.grb_object.apertures:
-                app_obj.grb_object.apertures['0'] = dict()
-                app_obj.grb_object.apertures['0']['geometry'] = list()
-                app_obj.grb_object.apertures['0']['type'] = 'REG'
-                app_obj.grb_object.apertures['0']['size'] = 0.0
-
-            try:
-                for poly in new_solid_geometry:
-                    # append to the new solid geometry
-                    geo_list.append(poly)
-
-                    # append into the '0' aperture
-                    geo_elem = dict()
-                    geo_elem['solid'] = poly
-                    geo_elem['follow'] = poly.exterior
-                    app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
-            except TypeError:
-                # append to the new solid geometry
-                geo_list.append(new_solid_geometry)
-
-                # append into the '0' aperture
-                geo_elem = dict()
-                geo_elem['solid'] = new_solid_geometry
-                geo_elem['follow'] = new_solid_geometry.exterior
-                app_obj.grb_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
-
-            app_obj.grb_object.solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
-
-            app_obj.app.proc_container.update_view_text(' %s' % _("Append source file"))
-            # update the source file with the new geometry:
-            app_obj.grb_object.source_file = app_obj.app.export_gerber(obj_name=app_obj.grb_object.options['name'],
-                                                                       filename=None,
-                                                                       local_use=app_obj.grb_object,
-                                                                       use_thread=False)
-            app_obj.app.proc_container.update_view_text(' %s' % '')
-            app_obj.on_exit()
-            app_obj.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
-
-        if run_threaded:
-            self.app.worker_task.emit({'fcn': job_thread_thieving, 'params': [self]})
+        if self.sec_position != 'no':
+            if len(self.click_points) == 2:
+                self.top_right_coords_entry.set_value(self.click_points[1])
+                self.app.inform.emit(_("Click to add the second fiducial. Top Left or Bottom Right..."))
+            elif len(self.click_points) == 3:
+                self.sec_points_coords_entry.set_value(self.click_points[2])
+                self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
+                self.add_fiducials_geo(self.click_points)
+                self.on_exit()
         else:
-            job_thread_thieving(self)
+            if len(self.click_points) == 2:
+                self.sec_points_coords_entry.set_value(self.click_points[2])
+                self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
+                self.add_fiducials_geo(self.click_points)
+                self.on_exit()
+
+    def on_mouse_move(self, event):
+        pass
 
     def replot(self, obj):
         def worker_task():
@@ -899,53 +564,76 @@ class ToolFiducials(FlatCAMTool):
 
     def on_exit(self):
         # plot the object
-        self.replot(obj=self.grb_object)
+        for ob_name in self.copper_obj_set:
+            try:
+                copper_obj = self.app.collection.get_by_name(name=ob_name)
+                self.replot(obj=copper_obj)
+            except (AttributeError, TypeError):
+                continue
 
-        # update the bounding box values
-        try:
-            a, b, c, d = self.grb_object.bounds()
-            self.grb_object.options['xmin'] = a
-            self.grb_object.options['ymin'] = b
-            self.grb_object.options['xmax'] = c
-            self.grb_object.options['ymax'] = d
-        except Exception as e:
-            log.debug("ToolCopperThieving.on_exit() bounds error --> %s" % str(e))
+            # update the bounding box values
+            try:
+                a, b, c, d = copper_obj.bounds()
+                copper_obj.options['xmin'] = a
+                copper_obj.options['ymin'] = b
+                copper_obj.options['xmax'] = c
+                copper_obj.options['ymax'] = d
+            except Exception as e:
+                log.debug("ToolFiducials.on_exit() copper_obj bounds error --> %s" % str(e))
+
+        for ob_name in self.sm_obj_set:
+            try:
+                sm_obj = self.app.collection.get_by_name(name=ob_name)
+                self.replot(obj=sm_obj)
+            except (AttributeError, TypeError):
+                continue
+
+            # update the bounding box values
+            try:
+                a, b, c, d = sm_obj.bounds()
+                sm_obj.options['xmin'] = a
+                sm_obj.options['ymin'] = b
+                sm_obj.options['xmax'] = c
+                sm_obj.options['ymax'] = d
+            except Exception as e:
+                log.debug("ToolFiducials.on_exit() sm_obj bounds error --> %s" % str(e))
 
         # reset the variables
         self.grb_object = None
-        self.ref_obj = None
-        self.sel_rect = list()
+        self.sm_object = None
 
         # Events ID
         self.mr = None
-        self.mm = None
+        # self.mm = None
 
         # Mouse cursor positions
-        self.mouse_is_dragging = False
         self.cursor_pos = (0, 0)
         self.first_click = False
 
-        # if True it means we exited from tool in the middle of area adding therefore disconnect the events
-        if self.area_method is True:
-            self.app.delete_selection_shape()
-            self.area_method = False
+        # if True it means we exited from tool in the middle of fiducials adding
+        if len(self.click_points) not in [0, 3]:
+            self.click_points = list()
 
-            if self.app.is_legacy is False:
-                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
-                self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
-            else:
-                self.app.plotcanvas.graph_event_disconnect(self.mr)
-                self.app.plotcanvas.graph_event_disconnect(self.mm)
-
-            self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
-                                                                  self.app.on_mouse_click_over_plot)
-            self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
-                                                                  self.app.on_mouse_move_over_plot)
-            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
-                                                                  self.app.on_mouse_click_release_over_plot)
+        if self.mode_method == 'manual' and len(self.click_points) not in [0, 3]:
+            self.disconnect_event_handlers()
 
         self.app.call_source = "app"
-        self.app.inform.emit('[success] %s' % _("Copper Thieving Tool exit."))
+        self.app.inform.emit('[success] %s' % _("Fiducials Tool exit."))
+
+    def disconnect_event_handlers(self):
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_release)
+            self.app.plotcanvas.graph_event_disconnect('mouse_move', self.on_mouse_move)
+        else:
+            self.app.plotcanvas.graph_event_disconnect(self.mr)
+            self.app.plotcanvas.graph_event_disconnect(self.mm)
+
+        self.app.mp = self.app.plotcanvas.graph_event_connect('mouse_press',
+                                                              self.app.on_mouse_click_over_plot)
+        # self.app.mm = self.app.plotcanvas.graph_event_connect('mouse_move',
+        #                                                       self.app.on_mouse_move_over_plot)
+        self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                              self.app.on_mouse_click_release_over_plot)
 
     def flatten(self, geometry):
         """
