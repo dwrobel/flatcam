@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.11.2019
+
+- Tool Fiducials - added GUI in Preferences and entries in self.defaults dict
+- Tool Fiducials - updated the source_file object for the modified Gerber files
+
 21.11.2019
 
 - Tool Fiducials - finished the part with adding copper fiducials: manual and auto

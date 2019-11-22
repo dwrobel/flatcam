@@ -228,6 +228,9 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
         self.tools2_cfill_group = Tools2CThievingPrefGroupUI()
         self.tools2_cfill_group.setMinimumWidth(220)
 
+        self.tools2_fiducials_group = Tools2FiducialsPrefGroupUI()
+        self.tools2_fiducials_group.setMinimumWidth(220)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools2_checkrules_group)
         self.vlay.addWidget(self.tools2_optimal_group)
@@ -239,6 +242,7 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
         self.vlay2.addWidget(self.tools2_cfill_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
+        self.vlay3.addWidget(self.tools2_fiducials_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
@@ -5916,6 +5920,118 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
 
         grid_lay.addWidget(self.lines_spacing_label, 16, 0)
         grid_lay.addWidget(self.lines_spacing_entry, 16, 1)
+
+        self.layout.addStretch()
+
+
+class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(Tools2FiducialsPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Copper Thieving Tool Options")))
+        self.decimals = 4
+
+        # ## Grid Layout
+        grid_lay = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay)
+        grid_lay.setColumnStretch(0, 0)
+        grid_lay.setColumnStretch(1, 1)
+
+        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.param_label.setToolTip(
+            _("Parameters used for this tool.")
+        )
+        grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
+
+        # DIAMETER #
+        self.dia_label = QtWidgets.QLabel('%s:' % _("Diameter"))
+        self.dia_label.setToolTip(
+            _("This set the fiducial diameter.\n"
+              "The soldermask opening is double than that.")
+        )
+        self.dia_entry = FCDoubleSpinner()
+        self.dia_entry.set_range(1.0000, 3.0000)
+        self.dia_entry.set_precision(self.decimals)
+        self.dia_entry.setWrapping(True)
+        self.dia_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.dia_label, 1, 0)
+        grid_lay.addWidget(self.dia_entry, 1, 1)
+
+        # MARGIN #
+        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.margin_label.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.margin_entry = FCDoubleSpinner()
+        self.margin_entry.set_range(-9999.9999, 9999.9999)
+        self.margin_entry.set_precision(self.decimals)
+        self.margin_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.margin_label, 2, 0)
+        grid_lay.addWidget(self.margin_entry, 2, 1)
+
+        # Mode #
+        self.mode_radio = RadioSet([
+            {'label': _('Auto'), 'value': 'auto'},
+            {"label": _("Manual"), "value": "manual"}
+        ], stretch=False)
+        self.mode_label = QtWidgets.QLabel(_("Mode:"))
+        self.mode_label.setToolTip(
+            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n "
+              "- 'Manual' - manual placement of fiducials.")
+        )
+        grid_lay.addWidget(self.mode_label, 3, 0)
+        grid_lay.addWidget(self.mode_radio, 3, 1)
+
+        # Position for second fiducial #
+        self.pos_radio = RadioSet([
+            {'label': _('Up'), 'value': 'up'},
+            {"label": _("Down"), "value": "down"},
+            {"label": _("None"), "value": "no"}
+        ], stretch=False)
+        self.pos_label = QtWidgets.QLabel('%s:' % _("Second fiducial"))
+        self.pos_label.setToolTip(
+            _("The position for the second fiducial.\n"
+              "- 'Up' - the order is: bottom-left, top-left, top-right.\n "
+              "- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
+              "- 'None' - there is no second fiducial. The order is: bottom-left, top-right.")
+        )
+        grid_lay.addWidget(self.pos_label, 4, 0)
+        grid_lay.addWidget(self.pos_radio, 4, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line, 5, 0, 1, 2)
+
+        # Fiducial type #
+        self.fid_type_radio = RadioSet([
+            {'label': _('Circular'), 'value': 'circular'},
+            {"label": _("Cross"), "value": "cross"}
+        ], stretch=False)
+        self.fid_type_label = QtWidgets.QLabel('%s:' % _("Fiducial Type"))
+        self.fid_type_label.setToolTip(
+            _("The type of fiducial.\n"
+              "- 'Circular' - this is the regular fiducial.\n "
+              "- 'Cross' - non-standard fiducial.")
+        )
+        grid_lay.addWidget(self.fid_type_label, 6, 0)
+        grid_lay.addWidget(self.fid_type_radio, 6, 1)
+
+        # Line Thickness #
+        self.line_thickness_label = QtWidgets.QLabel('%s:' % _("Line thickness"))
+        self.line_thickness_label.setToolTip(
+            _("Bounding box margin.")
+        )
+        self.line_thickness_entry = FCDoubleSpinner()
+        self.line_thickness_entry.set_range(0.00001, 9999.9999)
+        self.line_thickness_entry.set_precision(self.decimals)
+        self.line_thickness_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.line_thickness_label, 7, 0)
+        grid_lay.addWidget(self.line_thickness_entry, 7, 1)
 
         self.layout.addStretch()
 

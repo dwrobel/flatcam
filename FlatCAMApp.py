@@ -872,6 +872,14 @@ class App(QtCore.QObject):
             "tools_copper_thieving_lines_size": 0.01,
             "tools_copper_thieving_lines_spacing": 0.0787402,
 
+            # Fiducials Tool
+            "tools_fiducials_dia": 0.0393701,
+            "tools_fiducials_margin": 0.0393701,
+            "tools_fiducials_mode": 'auto',
+            "tools_fiducials_second_pos": 'up',
+            "tools_fiducials_type": 'circular',
+            "tools_fiducials_line_thickness": 0.01,
+
             # Utilities
             # file associations
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
@@ -1415,6 +1423,14 @@ class App(QtCore.QObject):
                 self.ui.tools2_defaults_form.tools2_cfill_group.squares_spacing_entry,
             "tools_copper_thieving_lines_size": self.ui.tools2_defaults_form.tools2_cfill_group.line_size_entry,
             "tools_copper_thieving_lines_spacing": self.ui.tools2_defaults_form.tools2_cfill_group.lines_spacing_entry,
+
+            # Fiducials Tool
+            "tools_fiducials_dia": self.ui.tools2_defaults_form.tools2_fiducials_group.dia_entry,
+            "tools_fiducials_margin": self.ui.tools2_defaults_form.tools2_fiducials_group.margin_entry,
+            "tools_fiducials_mode": self.ui.tools2_defaults_form.tools2_fiducials_group.mode_radio,
+            "tools_fiducials_second_pos": self.ui.tools2_defaults_form.tools2_fiducials_group.pos_radio,
+            "tools_fiducials_type": self.ui.tools2_defaults_form.tools2_fiducials_group.fid_type_radio,
+            "tools_fiducials_line_thickness": self.ui.tools2_defaults_form.tools2_fiducials_group.line_thickness_entry,
 
             # Utilities
             # File associations
@@ -5564,8 +5580,9 @@ class App(QtCore.QObject):
                       "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
                       "tools_cr_trace_size_val", "tools_cr_c2c_val", "tools_cr_c2o_val", "tools_cr_s2s_val",
                       "tools_cr_s2sm_val", "tools_cr_s2o_val", "tools_cr_sm2sm_val", "tools_cr_ri_val",
-                      "tools_cr_h2h_val", "tools_cr_dh_val",
-
+                      "tools_cr_h2h_val", "tools_cr_dh_val", "tools_fiducials_dia", "tools_fiducials_margin",
+                      "tools_fiducials_mode", "tools_fiducials_second_pos", "tools_fiducials_type",
+                      "tools_fiducials_line_thickness",
                       'global_gridx', 'global_gridy', 'global_snap_max', "global_tolerance"]
 
         def scale_defaults(sfactor):
@@ -9689,7 +9706,7 @@ class App(QtCore.QObject):
         else:
             try:
                 file = StringIO(obj.source_file)
-            except AttributeError:
+            except (AttributeError, TypeError):
                 self.inform.emit('[WARNING_NOTCL] %s' %
                                  _("There is no selected object for which to see it's source file code."))
                 return 'fail'

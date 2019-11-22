@@ -368,9 +368,13 @@ class ToolFiducials(FlatCAMTool):
 
     def set_tool_ui(self):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
-        # self.mode_radio.set_value(float(self.app.defaults["tools_fiducials_mode"]))
-        # self.margin_entry.set_value(float(self.app.defaults["tools_fiducials_margin"]))
-        # self.dia_entry.set_value(self.app.defaults["tools_fiducials_dia"])
+        self.dia_entry.set_value(self.app.defaults["tools_fiducials_dia"])
+        self.margin_entry.set_value(float(self.app.defaults["tools_fiducials_margin"]))
+        self.mode_radio.set_value(self.app.defaults["tools_fiducials_mode"])
+        self.pos_radio.set_value(self.app.defaults["tools_fiducials_second_pos"])
+        self.fid_type_radio.set_value(self.app.defaults["tools_fiducials_type"])
+        self.line_thickness_entry.set_value(float(self.app.defaults["tools_fiducials_line_thickness"]))
+
         self.click_points = list()
         self.bottom_left_coords_entry.set_value('')
         self.top_right_coords_entry.set_value('')
@@ -471,6 +475,9 @@ class ToolFiducials(FlatCAMTool):
                 self.sec_points_coords_entry.set_value('(%.*f, %.*f)' % (self.decimals, x1, self.decimals, y0))
 
             self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
+            self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
+                                                                 filename=None,
+                                                                 local_use=self.grb_object, use_thread=False)
             self.on_exit()
         else:
             self.app.inform.emit(_("Click to add first Fiducial. Bottom Left..."))
@@ -634,6 +641,8 @@ class ToolFiducials(FlatCAMTool):
         self.sm_obj_set.add(self.sm_object.options['name'])
 
         self.add_fiducials_geo(self.click_points, g_obj=self.sm_object, fid_size=sm_opening_dia, fid_type='circular')
+        self.sm_object.source_file = self.app.export_gerber(obj_name=self.sm_object.options['name'], filename=None,
+                                                            local_use=self.sm_object, use_thread=False)
         self.on_exit()
 
     def on_mouse_release(self, event):
@@ -679,6 +688,9 @@ class ToolFiducials(FlatCAMTool):
                 self.sec_points_coords_entry.set_value(self.click_points[2])
                 self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
                 self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
+                self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
+                                                                     filename=None,
+                                                                     local_use=self.grb_object, use_thread=False)
                 self.on_exit()
 
     def on_mouse_move(self, event):
