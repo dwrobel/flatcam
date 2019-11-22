@@ -5072,13 +5072,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     with self.app.proc_container.new(_("Generating CNC Code")):
                         if app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot) != 'fail':
                             app_obj.inform.emit('[success] %s: %s' %
-                                                (_("CNCjob created")), outname)
+                                                (_("CNCjob created"), outname))
                             app_obj.progress.emit(100)
                 else:
                     with self.app.proc_container.new(_("Generating CNC Code")):
                         if app_obj.new_object("cncjob", outname, job_init_multi_geometry) != 'fail':
                             app_obj.inform.emit('[success] %s: %s' %
-                                                (_("CNCjob created")), outname)
+                                                (_("CNCjob created"), outname))
                             app_obj.progress.emit(100)
 
             # Create a promise with the name

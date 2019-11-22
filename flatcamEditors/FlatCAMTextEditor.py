@@ -40,7 +40,9 @@ class TextEditor(QtWidgets.QWidget):
         self.t_frame.setLayout(self.work_editor_layout)
 
         if plain_text:
-            self.code_editor = FCPlainTextAreaExtended()
+            self.editor_class = FCTextAreaLineNumber()
+            self.code_editor = self.editor_class.edit
+
             stylesheet = """
                             QPlainTextEdit { selection-background-color:yellow;
                                              selection-color:black;

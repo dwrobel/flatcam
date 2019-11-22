@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - Tool Fiducials - added GUI in Preferences and entries in self.defaults dict
 - Tool Fiducials - updated the source_file object for the modified Gerber files
+- working on adding line numbers to the TextPlainEdit
 
 21.11.2019
 

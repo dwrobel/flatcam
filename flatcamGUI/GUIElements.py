@@ -2341,7 +2341,7 @@ class MyCompleter(QCompleter):
         return self.lastSelected
 
 
-class LNTextEdit(QtWidgets.QFrame):
+class FCTextAreaLineNumber(QtWidgets.QFrame):
     textChanged = QtCore.pyqtSignal()
 
     class NumberBar(QtWidgets.QWidget):
@@ -2372,14 +2372,14 @@ class LNTextEdit(QtWidgets.QFrame):
                 # selected.
                 self.update()
 
-    class PlainTextEdit(QtWidgets.QPlainTextEdit):
+    class PlainTextEdit(FCPlainTextAreaExtended):
         """
         TextEdit with line numbers and highlight
         From here: https://nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
         """
 
         def __init__(self, *args):
-            QtWidgets.QPlainTextEdit.__init__(self, *args)
+            FCPlainTextAreaExtended.__init__(self, *args)
 
             #self.setFrameStyle(QFrame.NoFrame)
 
@@ -2452,9 +2452,6 @@ class LNTextEdit(QtWidgets.QFrame):
 
         self.edit.blockCountChanged.connect(self.number_bar.adjustWidth)
         self.edit.updateRequest.connect(self.number_bar.updateContents)
-
-    def set_model_data(self, kwd):
-        pass
 
     def getText(self):
         return str(self.edit.toPlainText())
