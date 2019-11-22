@@ -4349,7 +4349,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                     else:
                                         self.select_tool("select")
         except Exception as e:
-            log.warning("Error: %s" % str(e))
+            log.warning("FlatCAMGrbEditor.on_grb_click_release() RMB click --> Error: %s" % str(e))
             raise
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
@@ -4367,7 +4367,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     if self.selected:
                         self.plot_all()
         except Exception as e:
-            log.warning("Error: %s" % str(e))
+            log.warning("FlatCAMGrbEditor.on_grb_click_release() LMB click --> Error: %s" % str(e))
             raise
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):

@@ -48,6 +48,7 @@ class TextEditor(QtWidgets.QWidget):
                                              selection-color:black;
                             }
                          """
+            self.work_editor_layout.addWidget(self.editor_class, 0, 0, 1, 5)
         else:
             self.code_editor = FCTextAreaExtended()
             stylesheet = """
@@ -55,6 +56,7 @@ class TextEditor(QtWidgets.QWidget):
                                         selection-color:black;
                             }
                          """
+            self.work_editor_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
         self.code_editor.setStyleSheet(stylesheet)
 
@@ -100,7 +102,6 @@ class TextEditor(QtWidgets.QWidget):
         self.buttonRun.setToolTip(_("Will run the TCL commands found in the text file, one by one."))
 
         self.buttonRun.hide()
-        self.work_editor_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
         editor_hlay_1 = QtWidgets.QHBoxLayout()
         # cnc_tab_lay_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
@@ -140,7 +141,7 @@ class TextEditor(QtWidgets.QWidget):
 
         self.code_editor.set_model_data(self.app.myKeywords)
 
-        self.gcode_edited = ''
+        self.code_edited = ''
 
     def handlePrint(self):
         self.app.report_usage("handlePrint()")
@@ -178,8 +179,8 @@ class TextEditor(QtWidgets.QWidget):
             file = QtCore.QFile(path)
             if file.open(QtCore.QIODevice.ReadOnly):
                 stream = QtCore.QTextStream(file)
-                self.gcode_edited = stream.readAll()
-                self.code_editor.setPlainText(self.gcode_edited)
+                self.code_edited = stream.readAll()
+                self.code_editor.setPlainText(self.code_edited)
                 file.close()
 
     def handleSaveGCode(self, name=None, filt=None):

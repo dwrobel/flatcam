@@ -3530,7 +3530,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                         self.app.ui.popMenu.popup(self.app.cursor.pos())
 
         except Exception as e:
-            log.warning("Error: %s" % str(e))
+            log.warning("FlatCAMExcEditor.on_exc_click_release() RMB click --> Error: %s" % str(e))
             raise
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
@@ -3548,7 +3548,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     if self.selected:
                         self.replot()
         except Exception as e:
-            log.warning("Error: %s" % str(e))
+            log.warning("FlatCAMExcEditor.on_exc_click_release() LMB click --> Error: %s" % str(e))
             raise
 
     def draw_selection_area_handler(self, start, end, sel_type):

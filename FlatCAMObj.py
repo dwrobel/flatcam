@@ -6179,8 +6179,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.gcode_editor_tab.t_frame.show()
         self.app.proc_container.view.set_idle()
 
-        self.app.inform.emit('[success] %s...' %
-                             _('Loaded Machine Code into Code Editor'))
+        self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Editor'))
 
     def gcode_header(self, comment_start_symbol=None, comment_stop_symbol=None):
         """
@@ -6650,7 +6649,8 @@ class FlatCAMScript(FlatCAMObj):
         self.source_file = ''
         self.script_code = ''
 
-        self.script_editor_tab = None
+        # self.script_editor_tab = TextEditor(app=self.app, plain_text=True)
+        self.script_editor_tab = TextEditor(app=self.app)
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -6659,12 +6659,8 @@ class FlatCAMScript(FlatCAMObj):
         assert isinstance(self.ui, ScriptObjectUI), \
             "Expected a ScriptObjectUI, got %s" % type(self.ui)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
-
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
+        self.units = self.app.defaults['units'].upper()
+        self.decimals = 4 if self.units == "IN" else 2
 
         # Fill form fields only on object create
         self.to_form()
@@ -6679,16 +6675,32 @@ class FlatCAMScript(FlatCAMObj):
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
 
-        self.script_editor_tab = TextEditor(app=self.app)
+        # tab_here = False
+        # # try to not add too many times a tab that it is already installed
+        # for idx in range(self.app.ui.plot_tab_area.count()):
+        #     if self.app.ui.plot_tab_area.widget(idx).objectName() == self.options['name']:
+        #         tab_here = True
+        #         break
+        #
+        # # add the tab if it is not already added
+        # if tab_here is False:
+        #     self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
+        #     self.script_editor_tab.setObjectName(self.options['name'])
+
+        self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
+        self.script_editor_tab.setObjectName(self.options['name'])
 
         # first clear previous text in text editor (if any)
-        self.script_editor_tab.code_editor.clear()
-        self.script_editor_tab.code_editor.setReadOnly(False)
-
-        self.script_editor_tab.buttonRun.show()
+        # self.script_editor_tab.code_editor.clear()
+        # self.script_editor_tab.code_editor.setReadOnly(False)
 
         self.ui.autocomplete_cb.set_value(self.app.defaults['script_autocompleter'])
         self.on_autocomplete_changed(state=self.app.defaults['script_autocompleter'])
+
+        self.script_editor_tab.buttonRun.show()
+
+        # Switch plot_area to CNCJob tab
+        self.app.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
 
         flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
         self.script_editor_tab.buttonOpen.clicked.disconnect()
@@ -6697,35 +6709,34 @@ class FlatCAMScript(FlatCAMObj):
         self.script_editor_tab.buttonSave.clicked.connect(lambda: self.script_editor_tab.handleSaveGCode(filt=flt))
 
         self.script_editor_tab.buttonRun.clicked.connect(self.handle_run_code)
-
         self.script_editor_tab.handleTextChanged()
 
         self.ui.autocomplete_cb.stateChanged.connect(self.on_autocomplete_changed)
 
         self.ser_attrs = ['options', 'kind', 'source_file']
 
-        for line in self.source_file.splitlines():
-            self.script_editor_tab.code_editor.append(line)
+        # ---------------------------------------------------- #
+        # ----------- LOAD THE TEXT SOURCE FILE -------------- #
+        # ---------------------------------------------------- #
+        self.app.proc_container.view.set_busy(_("Loading..."))
+        self.script_editor_tab.t_frame.hide()
 
+        try:
+            # self.script_editor_tab.code_editor.setPlainText(self.source_file)
+            for line in self.source_file.splitlines():
+                QtWidgets.QApplication.processEvents()
+                self.script_editor_tab.code_editor.append(line)
+        except Exception as e:
+            log.debug("FlatCAMScript.set_ui() --> %s" % str(e))
+
+        self.script_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.End)
+        self.script_editor_tab.t_frame.show()
+
+        self.app.proc_container.view.set_idle()
         self.build_ui()
 
     def build_ui(self):
         FlatCAMObj.build_ui(self)
-        tab_here = False
-
-        # try to not add too many times a tab that it is already installed
-        for idx in range(self.app.ui.plot_tab_area.count()):
-            if self.app.ui.plot_tab_area.widget(idx).objectName() == self.options['name']:
-                tab_here = True
-                break
-
-        # add the tab if it is not already added
-        if tab_here is False:
-            self.app.ui.plot_tab_area.addTab(self.script_editor_tab, '%s' % _("Script Editor"))
-            self.script_editor_tab.setObjectName(self.options['name'])
-
-        # Switch plot_area to CNCJob tab
-        self.app.ui.plot_tab_area.setCurrentWidget(self.script_editor_tab)
 
     def handle_run_code(self):
         # trying to run a Tcl command without having the Shell open will create some warnings because the Tcl Shell
@@ -6762,7 +6773,7 @@ class FlatCAMScript(FlatCAMObj):
                 except tk.TclError:
                     old_line = old_line + tcl_command_line + '\n'
                 except Exception as e:
-                    log.debug("App.handleRunCode() --> %s" % str(e))
+                    log.debug("FlatCAMScript.handleRunCode() --> %s" % str(e))
 
         if old_line != '':
             # it means that the script finished with an error

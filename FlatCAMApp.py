@@ -4139,23 +4139,24 @@ class App(QtCore.QObject):
         if text is not None:
             new_source_file = text
         else:
-            new_source_file = _(
-                "#\n"
-                "# CREATE A NEW FLATCAM TCL SCRIPT\n"
-                "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
-                "#\n\n"
-                "# FlatCAM commands list:\n"
-                "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, "
-                "ClearCopper,\n"
-                "# Cncjob, Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, "
-                "GetNames,\n"
-                "# GetSys, ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillDrills,\n"
-                "# MillSlots, Mirror, New, NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n"
-                "# Options, Paint, Panelize, Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, "
-                "SubtractPoly,\n"
-                "# SubtractRectangle, Version, WriteGCode\n"
-                "#\n\n"
-            )
+            commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
+                            "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n"\
+                            "# Cncjob, Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, " \
+                            "Follow, GeoCutout, GeoUnion, GetNames,\n"\
+                            "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
+                            "ListSys, MillDrills,\n"\
+                            "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
+                            "Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject,\n"\
+                            "# Options, Paint, Panelize, PlotAl, PlotObjects, SaveProject, " \
+                            "SaveSys, Scale, SetActive, SetSys, SetOrigin, Skew, SubtractPoly,\n" \
+                            "# SubtractRectangle, Version, WriteGCode\n"
+
+            new_source_file = '# %s\n' % _('CREATE A NEW FLATCAM TCL SCRIPT') + \
+                              '# %s:\n' % _('TCL Tutorial is here') + \
+                              '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
+                              '# %s:\n' % _("FlatCAM commands list")
+            new_source_file += commands_list + '\n'
+
 
         def initialize(obj, app):
             obj.source_file = deepcopy(new_source_file)
@@ -8113,7 +8114,11 @@ class App(QtCore.QObject):
                     act.setChecked(False)
                 except Exception:
                     pass
-            self.inform.emit('%s' % _("Objects selection is cleared."))
+
+            if obj_list:
+                self.inform.emit('%s' % _("Objects selection is cleared."))
+            else:
+                self.inform.emit('')
 
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():
@@ -8442,43 +8447,50 @@ class App(QtCore.QObject):
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
         # selection and then select a type of selection ("enclosing" or "touching")
-        try:
-            if event.button == 1:  # left click
-                modifiers = QtWidgets.QApplication.keyboardModifiers()
-                # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
-                if modifiers == QtCore.Qt.ShiftModifier:
-                    # do not auto open the Project Tab
-                    self.click_noproject = True
 
-                    self.clipboard.setText(self.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
-                    self.inform.emit('[success] %s' %
-                                     _("Coordinates copied to clipboard."))
-                    return
+        if event.button == 1:  # left click
+            modifiers = QtWidgets.QApplication.keyboardModifiers()
+            # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
+            if modifiers == QtCore.Qt.ShiftModifier:
+                # do not auto open the Project Tab
+                self.click_noproject = True
 
-                if self.doubleclick is True:
-                    self.doubleclick = False
-                    if self.collection.get_selected():
-                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
-                        if self.ui.splitter.sizes()[0] == 0:
-                            self.ui.splitter.setSizes([1, 1])
+                self.clipboard.setText(self.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
+                self.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
+                return
 
+            if self.doubleclick is True:
+                self.doubleclick = False
+                if self.collection.get_selected():
+                    self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+                    if self.ui.splitter.sizes()[0] == 0:
+                        self.ui.splitter.setSizes([1, 1])
+                    try:
                         # delete the selection shape(S) as it may be in the way
                         self.delete_selection_shape()
                         self.delete_hover_shape()
-                else:
-                    if self.selection_type is not None:
+                    except Exception as e:
+                        log.warning("FlatCAMApp.on_mouse_click_release_over_plot() double click --> Error: %s" % str(e))
+                        return
+            else:
+                if self.selection_type is not None:
+                    try:
                         self.selection_area_handler(self.pos, pos, self.selection_type)
                         self.selection_type = None
+                    except Exception as e:
+                        log.warning("FlatCAMApp.on_mouse_click_release_over_plot() select area --> Error: %s" % str(e))
+                        return
+                else:
+                    key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+                    if key_modifier == QtCore.Qt.ShiftModifier:
+                        mod_key = 'Shift'
+                    elif key_modifier == QtCore.Qt.ControlModifier:
+                        mod_key = 'Control'
                     else:
-                        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                        mod_key = None
 
-                        if key_modifier == QtCore.Qt.ShiftModifier:
-                            mod_key = 'Shift'
-                        elif key_modifier == QtCore.Qt.ControlModifier:
-                            mod_key = 'Control'
-                        else:
-                            mod_key = None
-
+                    try:
                         if mod_key == self.defaults["global_mselect_key"]:
                             # If the CTRL key is pressed when the LMB is clicked then if the object is selected it will
                             # deselect, and if it's not selected then it will be selected
@@ -8493,10 +8505,9 @@ class App(QtCore.QObject):
                             if self.command_active is None:
                                 self.select_objects()
                                 self.delete_hover_shape()
-
-        except Exception as e:
-            log.warning("Error: %s" % str(e))
-            return
+                    except Exception as e:
+                        log.warning("FlatCAMApp.on_mouse_click_release_over_plot() select click --> Error: %s" % str(e))
+                        return
 
     def selection_area_handler(self, start_pos, end_pos, sel_type):
         """
@@ -8554,6 +8565,10 @@ class App(QtCore.QObject):
         curr_x, curr_y = self.pos
 
         for obj in self.all_objects_list:
+            # FlatCAMScript and FlatCAMDocument objects can't be selected
+            if isinstance(obj, FlatCAMScript) or isinstance(obj, FlatCAMDocument):
+                continue
+
             if (curr_x >= obj.options['xmin']) and (curr_x <= obj.options['xmax']) and \
                     (curr_y >= obj.options['ymin']) and (curr_y <= obj.options['ymax']):
                 if obj.options['name'] not in objects_under_the_click_list:
@@ -11245,7 +11260,7 @@ class App(QtCore.QObject):
                         self.log.debug("  " + param + " OK")
                 except KeyError:
                     if silent is False:
-                        self.log.debug("  ERROR: " + param + " not in defaults.")
+                        self.log.debug("FlatCAMApp.propagate_defaults() --> ERROR: " + param + " not in defaults.")
             else:
                 # Try extracting the name:
                 # classname_param here is param in the object

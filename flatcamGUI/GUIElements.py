@@ -2382,11 +2382,9 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
             FCPlainTextAreaExtended.__init__(self, *args)
 
             #self.setFrameStyle(QFrame.NoFrame)
-
             self.setFrameStyle(QtWidgets.QFrame.NoFrame)
             self.highlight()
             #self.setLineWrapMode(QPlainTextEdit.NoWrap)
-
             self.cursorPositionChanged.connect(self.highlight)
 
         def highlight(self):
@@ -2405,6 +2403,7 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
 
             block = self.firstVisibleBlock()
             line_count = block.blockNumber()
+
             painter = QtGui.QPainter(number_bar)
             painter.fillRect(event.rect(), self.palette().base())
 
@@ -2421,16 +2420,18 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                 # We want the line number for the selected line to be bold.
                 if line_count == current_line:
                     font = painter.font()
-                    font.setBold(True)
+                    # font.setBold(True)
+                    painter.setPen(QtCore.Qt.blue)
                     painter.setFont(font)
                 else:
                     font = painter.font()
-                    font.setBold(False)
+                    # font.setBold(False)
+                    painter.setPen(QtCore.Qt.lightGray)
                     painter.setFont(font)
 
                 # Draw the line number right justified at the position of the line.
                 paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
-                painter.drawText(paint_rect, Qt.AlignRight, str(line_count))
+                painter.drawText(paint_rect, Qt.AlignRight, ' ' + str(line_count) + '  ')
 
                 block = block.next()
 

@@ -3911,7 +3911,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                                                      _("Done."))
                                 self.select_tool(self.active_tool.name)
         except Exception as e:
-            log.warning("Error: %s" % str(e))
+            log.warning("FLatCAMGeoEditor.on_geo_click_release() --> Error: %s" % str(e))
             return
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
