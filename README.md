@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - in Tool Fiducials added a new fiducial type: chess pattern
 - work in Calibrate Excellon Tool
+- fixed the line numbers in the TextPlainEdit to fit all digits of the line number; activated the line numbers for FlatCAMScript objects too
 
 22.11.2019
 

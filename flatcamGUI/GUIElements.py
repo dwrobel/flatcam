@@ -2357,7 +2357,8 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
             QtWidgets.QWidget.paintEvent(self, event)
 
         def adjustWidth(self, count):
-            width = self.fontMetrics().width(str(count))
+            # three spaces added to the width to make up for the space added in the line number
+            width = self.fontMetrics().width(str(count) + '   ')
             if self.width() != width:
                 self.setFixedWidth(width)
 
@@ -2376,15 +2377,16 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
         """
         TextEdit with line numbers and highlight
         From here: https://nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
+        and from here: https://doc.qt.io/qt-5/qtwidgets-widgets-codeeditor-example.html
         """
 
         def __init__(self, *args):
             FCPlainTextAreaExtended.__init__(self, *args)
 
-            #self.setFrameStyle(QFrame.NoFrame)
+            # self.setFrameStyle(QFrame.NoFrame)
             self.setFrameStyle(QtWidgets.QFrame.NoFrame)
             self.highlight()
-            #self.setLineWrapMode(QPlainTextEdit.NoWrap)
+            # self.setLineWrapMode(QPlainTextEdit.NoWrap)
             self.cursorPositionChanged.connect(self.highlight)
 
         def highlight(self):
@@ -2401,39 +2403,43 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
             font_metrics = self.fontMetrics()
             current_line = self.document().findBlock(self.textCursor().position()).blockNumber() + 1
 
-            block = self.firstVisibleBlock()
-            line_count = block.blockNumber()
-
             painter = QtGui.QPainter(number_bar)
-            painter.fillRect(event.rect(), self.palette().base())
+            painter.fillRect(event.rect(), QtCore.Qt.lightGray)
+
+            block = self.firstVisibleBlock()
+            line_count = int(block.blockNumber())
+            block_top = int(self.blockBoundingGeometry(block).translated(self.contentOffset()).top())
+            block_bottom = block_top + int(self.blockBoundingRect(block).height())
 
             # Iterate over all visible text blocks in the document.
-            while block.isValid():
+            while block.isValid() and block_top <= event.rect().bottom():
                 line_count += 1
-                block_top = self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
 
                 # Check if the position of the block is out side of the visible
                 # area.
-                if not block.isVisible() or block_top >= event.rect().bottom():
-                    break
+                if block.isVisible() and block_bottom >= event.rect().top():
 
-                # We want the line number for the selected line to be bold.
-                if line_count == current_line:
-                    font = painter.font()
-                    # font.setBold(True)
-                    painter.setPen(QtCore.Qt.blue)
-                    painter.setFont(font)
-                else:
-                    font = painter.font()
-                    # font.setBold(False)
-                    painter.setPen(QtCore.Qt.lightGray)
-                    painter.setFont(font)
+                    # We want the line number for the selected line to be bold.
+                    if line_count == current_line:
+                        font = painter.font()
+                        # font.setBold(True)
+                        painter.setPen(QtCore.Qt.blue)
+                        painter.setFont(font)
+                    else:
+                        font = painter.font()
+                        # font.setBold(False)
+                        painter.setPen(self.palette().base().color())
+                        painter.setFont(font)
 
-                # Draw the line number right justified at the position of the line.
-                paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
-                painter.drawText(paint_rect, Qt.AlignRight, ' ' + str(line_count) + '  ')
+                    # Draw the line number right justified at the position of the line.
+                    paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
+                    # I add some spaces to the line_count to prettify; make sure to remember adjust the width in the
+                    # NumberBar() class above
+                    painter.drawText(paint_rect, Qt.AlignRight, ' ' + str(line_count) + '  ')
 
                 block = block.next()
+                block_top = block_bottom
+                block_bottom = block_top + self.blockBoundingRect(block).height()
 
             painter.end()
 

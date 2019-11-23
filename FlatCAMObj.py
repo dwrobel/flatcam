@@ -4780,7 +4780,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = {}
+            dia_cnc_dict = dict()
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -4881,7 +4881,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 else:
                     dia_cnc_dict['gcode'] = res
 
-                app_obj.progress.emit(50)
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
                 job_obj.toolchange_xy_type = "geometry"
@@ -4899,8 +4898,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self.app.inform.emit('[success] %s...' % _("Finished G-Code processing"))
                 except Exception as e:
                     self.app.inform.emit('[ERROR] %s: %s' % (_("G-Code processing failed with error"), str(e)))
-
-                app_obj.progress.emit(80)
 
                 job_obj.cnc_tools.update({
                     tooluid_key: deepcopy(dia_cnc_dict)
@@ -4924,7 +4921,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # count the tools
             tool_cnt = 0
 
-            dia_cnc_dict = {}
+            dia_cnc_dict = dict()
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -5056,8 +5053,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # object is the source of gcode
                 job_obj.toolchange_xy_type = "geometry"
 
-                app_obj.progress.emit(80)
-
                 job_obj.cnc_tools.update({
                     tooluid_key: deepcopy(dia_cnc_dict)
                 })
@@ -5071,15 +5066,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if self.solid_geometry:
                     with self.app.proc_container.new(_("Generating CNC Code")):
                         if app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot) != 'fail':
-                            app_obj.inform.emit('[success] %s: %s' %
-                                                (_("CNCjob created"), outname))
-                            app_obj.progress.emit(100)
+                            app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
                 else:
                     with self.app.proc_container.new(_("Generating CNC Code")):
                         if app_obj.new_object("cncjob", outname, job_init_multi_geometry) != 'fail':
-                            app_obj.inform.emit('[success] %s: %s' %
-                                                (_("CNCjob created"), outname))
-                            app_obj.progress.emit(100)
+                            app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
 
             # Create a promise with the name
             self.app.collection.promise(outname)
@@ -6650,7 +6641,7 @@ class FlatCAMScript(FlatCAMObj):
         self.script_code = ''
 
         # self.script_editor_tab = TextEditor(app=self.app, plain_text=True)
-        self.script_editor_tab = TextEditor(app=self.app)
+        self.script_editor_tab = TextEditor(app=self.app, plain_text=True)
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -6722,10 +6713,10 @@ class FlatCAMScript(FlatCAMObj):
         self.script_editor_tab.t_frame.hide()
 
         try:
-            # self.script_editor_tab.code_editor.setPlainText(self.source_file)
-            for line in self.source_file.splitlines():
-                QtWidgets.QApplication.processEvents()
-                self.script_editor_tab.code_editor.append(line)
+            self.script_editor_tab.code_editor.setPlainText(self.source_file)
+            # for line in self.source_file.splitlines():
+            #     QtWidgets.QApplication.processEvents()
+            #     self.script_editor_tab.code_editor.append(line)
         except Exception as e:
             log.debug("FlatCAMScript.set_ui() --> %s" % str(e))
 
