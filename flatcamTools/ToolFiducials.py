@@ -370,7 +370,7 @@ class ToolFiducials(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+J', **kwargs)
 
     def set_tool_ui(self):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
+        self.units = self.app.defaults['units']
         self.fid_size_entry.set_value(self.app.defaults["tools_fiducials_dia"])
         self.margin_entry.set_value(float(self.app.defaults["tools_fiducials_margin"]))
         self.mode_radio.set_value(self.app.defaults["tools_fiducials_mode"])

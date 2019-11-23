@@ -367,7 +367,7 @@ class TextInputTool(FlatCAMTool):
                     font_name=self.font_name,
                     font_size=font_to_geo_size,
                     font_type=font_to_geo_type,
-                    units=self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper())
+                    units=self.app.defaults['units'].upper())
 
     def font_family(self, font):
         self.text_input_entry.selectAll()
@@ -1513,7 +1513,7 @@ class TransformEditorTool(FlatCAMTool):
                                  _("Geometry shape rotate cancelled"))
 
     def on_offx_key(self):
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        units = self.app.defaults['units'].lower()
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
@@ -1532,7 +1532,7 @@ class TransformEditorTool(FlatCAMTool):
                                  _("Geometry shape offset X cancelled"))
 
     def on_offy_key(self):
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        units = self.app.defaults['units'].lower()
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
@@ -3165,7 +3165,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             except ValueError:
                 return
 
-            units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+            units = self.app.defaults['units'].upper()
             dec = 6 if units == 'IN' else 4
             if self.app.ui.grid_gap_link_cb.isChecked():
                 self.app.ui.grid_gap_y_entry.set_value(val, decimals=dec)
@@ -3644,7 +3644,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.replot()
 
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == "IN":
             self.decimals = 4

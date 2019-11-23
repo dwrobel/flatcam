@@ -617,7 +617,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.app.ui.notebook.setTabText(2, _("NCC Tool"))
 
     def set_tool_ui(self):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == "IN":
             self.decimals = 4
@@ -715,13 +715,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.bound_obj = None
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
     def build_ui(self):
         self.ui_disconnect()
 
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         sorted_tools = []
         for k, v in self.ncc_tools.items():
@@ -954,7 +954,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def on_tool_add(self, dia=None, muted=None):
         self.ui_disconnect()
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if dia:
             tool_dia = dia
@@ -1404,7 +1404,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ####### Read the parameters #########################################
         # #####################################################################
 
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
+        units = self.app.defaults['units']
 
         log.debug("NCC Tool started. Reading parameters.")
         self.app.inform.emit(_("NCC Tool started. Reading parameters."))

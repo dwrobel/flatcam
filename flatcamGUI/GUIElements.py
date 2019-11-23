@@ -2422,12 +2422,12 @@ class FCTextAreaLineNumber(QtWidgets.QFrame):
                     # We want the line number for the selected line to be bold.
                     if line_count == current_line:
                         font = painter.font()
-                        # font.setBold(True)
+                        font.setBold(True)
                         painter.setPen(QtCore.Qt.blue)
                         painter.setFont(font)
                     else:
                         font = painter.font()
-                        # font.setBold(False)
+                        font.setBold(False)
                         painter.setPen(self.palette().base().color())
                         painter.setFont(font)
 

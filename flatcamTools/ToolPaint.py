@@ -575,7 +575,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # make the default object type, "Geometry"
         self.type_obj_combo.setCurrentIndex(2)
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == "IN":
             self.decimals = 4
@@ -637,7 +637,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             pass
 
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         sorted_tools = []
         for k, v in self.paint_tools.items():

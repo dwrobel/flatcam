@@ -871,6 +871,8 @@ class App(QtCore.QObject):
             "tools_copper_thieving_squares_spacing": 0.0787402,
             "tools_copper_thieving_lines_size": 0.01,
             "tools_copper_thieving_lines_spacing": 0.0787402,
+            "tools_copper_thieving_rb_margin": 0.039,
+            "tools_copper_thieving_rb_thickness": 0.039,
 
             # Fiducials Tool
             "tools_fiducials_dia": 0.0393701,
@@ -1423,6 +1425,8 @@ class App(QtCore.QObject):
                 self.ui.tools2_defaults_form.tools2_cfill_group.squares_spacing_entry,
             "tools_copper_thieving_lines_size": self.ui.tools2_defaults_form.tools2_cfill_group.line_size_entry,
             "tools_copper_thieving_lines_spacing": self.ui.tools2_defaults_form.tools2_cfill_group.lines_spacing_entry,
+            "tools_copper_thieving_rb_margin": self.ui.tools2_defaults_form.tools2_cfill_group.rb_margin_entry,
+            "tools_copper_thieving_rb_thickness": self.ui.tools2_defaults_form.tools2_cfill_group.rb_thickness_entry,
 
             # Fiducials Tool
             "tools_fiducials_dia": self.ui.tools2_defaults_form.tools2_fiducials_group.dia_entry,
@@ -1541,12 +1545,19 @@ class App(QtCore.QObject):
         # if user_defaults:
         #     QtCore.QTimer.singleShot(self.defaults["global_defaults_save_period_ms"], auto_save_defaults)
 
+        # #############################################################################
+        # ########################### UPDATE THE OPTIONS ##############################
+        # #############################################################################
+
         self.options = LoudDict()
         # ----------------------------------------------------------------------------------------------------
         #   Update the self.options from the self.defaults
         #   The self.defaults holds the application defaults while the self.options holds the object defaults
         # -----------------------------------------------------------------------------------------------------
-        self.options.update(self.defaults)  # Copy app defaults to project options
+        # Copy app defaults to project options
+        for def_key, def_val in self.defaults.items():
+            self.options[def_key] = deepcopy(def_val)
+        # self.options.update(self.defaults)
 
         self.gen_form = None
         self.ger_form = None
@@ -5541,7 +5552,7 @@ class App(QtCore.QObject):
         if self.toggle_units_ignore:
             return
 
-        new_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        new_units = self.defaults['units'].upper()
 
         # If option is the same, then ignore
         if new_units == self.defaults["units"].upper():
@@ -5584,6 +5595,11 @@ class App(QtCore.QObject):
                       "tools_cr_h2h_val", "tools_cr_dh_val", "tools_fiducials_dia", "tools_fiducials_margin",
                       "tools_fiducials_mode", "tools_fiducials_second_pos", "tools_fiducials_type",
                       "tools_fiducials_line_thickness",
+                      "tools_copper_thieving_clearance", "tools_copper_thieving_margin",
+                      "tools_copper_thieving_dots_dia", "tools_copper_thieving_dots_spacing",
+                      "tools_copper_thieving_squares_size", "tools_copper_thieving_squares_spacing",
+                      "tools_copper_thieving_lines_size", "tools_copper_thieving_lines_spacing",
+                      "tools_copper_thieving_rb_margin", "tools_copper_thieving_rb_thickness",
                       'global_gridx', 'global_gridy', 'global_snap_max', "global_tolerance"]
 
         def scale_defaults(sfactor):
@@ -5682,7 +5698,7 @@ class App(QtCore.QObject):
         msgbox.setInformativeText(_("Changing the units of the project causes all geometrical "
                                     "properties of all objects to be scaled accordingly.\nContinue?"))
         bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
-        bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+        msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
         msgbox.setDefaultButton(bt_ok)
         msgbox.exec_()
@@ -5734,7 +5750,7 @@ class App(QtCore.QObject):
         else:
             # Undo toggling
             self.toggle_units_ignore = True
-            if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+            if self.defaults['units'].upper() == 'MM':
                 self.ui.general_defaults_form.general_app_group.units_radio.set_value('IN')
             else:
                 self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
@@ -6861,7 +6877,7 @@ class App(QtCore.QObject):
 
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case
-        self.units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.defaults['units'].upper()
 
         notebook_widget_name = self.ui.notebook.currentWidget().objectName()
 
@@ -6968,7 +6984,7 @@ class App(QtCore.QObject):
                 msgbox.setText(_("Are you sure you want to permanently delete\n"
                                  "the selected objects?"))
                 bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
-                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
+                msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
                 msgbox.setDefaultButton(bt_ok)
                 msgbox.exec_()
@@ -8127,7 +8143,7 @@ class App(QtCore.QObject):
             return False
 
     def populate_cmenu_grids(self):
-        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        units = self.defaults['units'].lower()
 
         self.ui.cmenu_gridmenu.clear()
         sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
@@ -8157,7 +8173,7 @@ class App(QtCore.QObject):
 
     def on_grid_add(self):
         # ## Current application units in lower Case
-        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        units = self.defaults['units'].lower()
 
         grid_add_popup = FCInputDialog(title=_("New Grid ..."),
                                        text=_('Enter a Grid Value:'),
@@ -8184,7 +8200,7 @@ class App(QtCore.QObject):
 
     def on_grid_delete(self):
         # ## Current application units in lower Case
-        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        units = self.defaults['units'].lower()
 
         grid_del_popup = FCInputDialog(title="Delete Grid ...",
                                        text='Enter a Grid Value:',
@@ -8694,7 +8710,7 @@ class App(QtCore.QObject):
         pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
 
         hover_rect = Polygon([pt1, pt2, pt3, pt4])
-        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if self.defaults['units'].upper() == 'MM':
             hover_rect = hover_rect.buffer(-0.1)
             hover_rect = hover_rect.buffer(0.2)
 
@@ -8743,7 +8759,7 @@ class App(QtCore.QObject):
         pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
 
         sel_rect = Polygon([pt1, pt2, pt3, pt4])
-        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if self.defaults['units'].upper() == 'MM':
             sel_rect = sel_rect.buffer(-0.1)
             sel_rect = sel_rect.buffer(0.2)
         else:
@@ -10396,7 +10412,7 @@ class App(QtCore.QObject):
         eformat = self.defaults["excellon_exp_format"]
         slot_type = self.defaults["excellon_exp_slot_type"]
 
-        fc_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        fc_units = self.defaults['units'].upper()
         if fc_units == 'MM':
             factor = 1 if eunits == 'METRIC' else 0.03937
         else:
@@ -10541,7 +10557,7 @@ class App(QtCore.QObject):
         gfract = self.defaults["gerber_exp_decimals"]
         gzeros = self.defaults["gerber_exp_zeros"]
 
-        fc_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        fc_units = self.defaults['units'].upper()
         if fc_units == 'MM':
             factor = 1 if gunits == 'MM' else 0.03937
         else:
@@ -10720,7 +10736,7 @@ class App(QtCore.QObject):
                                "Only Geometry and Gerber are supported"))
             return
 
-        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        units = self.defaults['units'].upper()
 
         def obj_init(geo_obj, app_obj):
             geo_obj.import_svg(filename, obj_type, units=units)
@@ -10762,7 +10778,7 @@ class App(QtCore.QObject):
                              _("Not supported type is picked as parameter. Only Geometry and Gerber are supported"))
             return
 
-        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        units = self.defaults['units'].upper()
 
         def obj_init(geo_obj, app_obj):
             geo_obj.import_dxf(filename, obj_type, units=units)
@@ -10815,7 +10831,7 @@ class App(QtCore.QObject):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
-            units = self.ui.general_defaults_form.general_app_group.units_radio.get_value()
+            units = self.defaults['units']
 
             self.new_object(obj_type, name, obj_init)
             self.progress.emit(20)

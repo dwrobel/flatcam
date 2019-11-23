@@ -14,6 +14,10 @@ CAD program, and create G-Code for Isolation routing.
 - in Tool Fiducials added a new fiducial type: chess pattern
 - work in Calibrate Excellon Tool
 - fixed the line numbers in the TextPlainEdit to fit all digits of the line number; activated the line numbers for FlatCAMScript objects too
+- line numbers in the TextPlainEdit for the selected line are bold
+- made sure that the self.defaults dictionary is deepcopy-ed in the self.options dictionary
+- made sure that the units are read from the self.defaults and not from the GUI
+- added Robber Bar option to Copper Thieving Tool
 
 22.11.2019
 

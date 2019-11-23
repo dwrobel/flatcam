@@ -175,7 +175,7 @@ class Properties(FlatCAMTool):
                     log.debug("PropertiesTool.addItems() --> %s" % str(e))
 
                 # calculate box area
-                if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+                if self.app.defaults['units'].lower() == 'mm':
                     area = (length * width) / 100
                 else:
                     area = length * width
@@ -205,7 +205,7 @@ class Properties(FlatCAMTool):
                     width = abs(ymax - ymin)
 
                     # calculate box area
-                    if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+                    if self.app.defaults['units'].lower() == 'mm':
                         area = (length * width) / 100
                     else:
                         area = length * width
@@ -238,7 +238,7 @@ class Properties(FlatCAMTool):
                         area_chull = None
                         log.debug("Properties.addItems() --> %s" % str(e))
 
-            if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+            if self.app.defaults['units'].lower() == 'mm':
                 area_chull = area_chull / 100
 
             self.calculations_finished.emit(area, length, width, area_chull, dims)
@@ -251,7 +251,7 @@ class Properties(FlatCAMTool):
                            'in': _('Inch'),
                            'mm': _('Metric')
                        }
-                       [str(self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())]
+                       [str(self.app.defaults['units'].lower())]
                        ],
                       True
                       )
@@ -353,12 +353,12 @@ class Properties(FlatCAMTool):
 
         # add dimensions
         self.addChild(location, ['%s:' % _('Length'), '%.4f %s' % (
-            length, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
+            length, self.app.defaults['units'].lower())], True)
         self.addChild(location, ['%s:' % _('Width'), '%.4f %s' % (
-            width, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
+            width, self.app.defaults['units'].lower())], True)
 
         # add box area
-        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+        if self.app.defaults['units'].lower() == 'mm':
             self.addChild(location, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'cm2')], True)
             self.addChild(location, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (chull_area, 'cm2')], True)
 

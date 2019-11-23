@@ -620,7 +620,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+E', **kwargs)
 
     def set_tool_ui(self):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         # ## Initialize form
         # self.mm_entry.set_value('%.*f' % (self.decimals, 0))

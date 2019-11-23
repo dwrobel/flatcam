@@ -2150,7 +2150,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     def set_ui(self):
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == "IN":
             self.decimals = 4
@@ -2249,7 +2249,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             pass
 
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.exc_obj.options['name']

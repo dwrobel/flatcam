@@ -182,7 +182,7 @@ class Distance(FlatCAMTool):
 
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.defaults['units'].lower()
 
         self.app.command_active = "Distance"
 
@@ -210,7 +210,7 @@ class Distance(FlatCAMTool):
         self.original_call_source = copy(self.app.call_source)
 
         self.app.inform.emit(_("MEASURING: Click on the Start point ..."))
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.defaults['units'].lower()
 
         # we can connect the app mouse events to the measurement tool
         # NEVER DISCONNECT THOSE before connecting some other handlers; it breaks something in VisPy

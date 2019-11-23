@@ -99,17 +99,14 @@ class FlatCAMObj(QtCore.QObject):
         # 2D mode
         # Axes must exist and be attached to canvas.
         self.axes = None
-
         self.kind = None  # Override with proper name
 
-        # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene)
         if self.app.is_legacy is False:
             self.shapes = self.app.plotcanvas.new_shape_group()
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
 
-        # self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
-        self.mark_shapes = {}
+        self.mark_shapes = dict()
 
         self.item = None  # Link with project view item
 
@@ -126,7 +123,7 @@ class FlatCAMObj(QtCore.QObject):
         self.notHovering = True
 
         # self.units = 'IN'
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units']
 
         self.plot_single_object.connect(self.single_object_plot)
 
@@ -165,6 +162,7 @@ class FlatCAMObj(QtCore.QObject):
     def on_options_change(self, key):
         # Update form on programmatically options change
         self.set_form_item(key)
+
         # Set object visibility
         if key == 'plot':
             self.visible = self.options['plot']
@@ -308,7 +306,7 @@ class FlatCAMObj(QtCore.QObject):
         for option in self.options:
             try:
                 self.set_form_item(option)
-            except Exception as e:
+            except Exception:
                 self.app.log.warning("Unexpected error:", sys.exc_info())
 
     def read_form(self):
@@ -322,7 +320,7 @@ class FlatCAMObj(QtCore.QObject):
         for option in self.options:
             try:
                 self.read_form_item(option)
-            except Exception as e:
+            except Exception:
                 self.app.log.warning("Unexpected error:", sys.exc_info())
 
     def set_form_item(self, option):
@@ -478,13 +476,13 @@ class FlatCAMObj(QtCore.QObject):
 
     @property
     def drawing_tolerance(self):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
         tol = self._drawing_tolerance if self.units == 'MM' or not self.units else self._drawing_tolerance / 25.4
         return tol
 
     @drawing_tolerance.setter
     def drawing_tolerance(self, value):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
         self._drawing_tolerance = value if self.units == 'MM' or not self.units else value / 25.4
 
     def clear(self, update=False):
@@ -637,7 +635,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         FlatCAMObj.set_ui(self, ui)
         FlatCAMApp.App.log.debug("FlatCAMGerber.set_ui()")
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == 'MM':
             self.decimals = 2
@@ -2253,7 +2251,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def build_ui(self):
         FlatCAMObj.build_ui(self)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.udefaults['units'].upper()
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
@@ -2472,7 +2470,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         FlatCAMApp.App.log.debug("FlatCAMExcellon.set_ui()")
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == 'MM':
             self.decimals = 2
@@ -2571,7 +2569,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.itemChanged.disconnect()
         # self.tools_table_exc.selectionModel().currentChanged.disconnect()
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         self.is_modified = True
 
@@ -3434,7 +3432,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui_disconnect()
         FlatCAMObj.build_ui(self)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units']
 
         offset = 0
         tool_idx = 0
@@ -3581,7 +3579,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         assert isinstance(self.ui, GeometryObjectUI), \
             "Expected a GeometryObjectUI, got %s" % type(self.ui)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == 'MM':
             self.decimals = 2
@@ -3630,7 +3628,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.cutz_entry.setDisabled(False)
 
         # store here the default data for Geometry Data
-        self.default_data = {}
+        self.default_data = dict()
         self.default_data.update({
             "name": None,
             "plot": None,
@@ -3675,6 +3673,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         if not self.tools:
             for toold in tools_list:
+                new_data = deepcopy(self.default_data)
                 self.tools.update({
                     self.tooluid: {
                         'tooldia': float('%.*f' % (self.decimals, float(toold))),
@@ -3682,7 +3681,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         'offset_value': 0.0,
                         'type': _('Rough'),
                         'tool_type': 'C1',
-                        'data': self.default_data,
+                        'data': new_data,
                         'solid_geometry': self.solid_geometry
                     }
                 })
@@ -3915,7 +3914,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def on_tool_add(self, dia=None):
         self.ui_disconnect()
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         # if a Tool diameter entered is a char instead a number the final message of Tool adding is changed
         # because the Default value for Tool is used.
@@ -4042,7 +4041,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         """
 
         self.ui_disconnect()
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         tooldia = float(tool['tooldia'])
 
@@ -4440,7 +4439,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if widget_idx == 1 or widget_idx == 3:
             self.update_cutz()
 
-        # the original connect() function of the OptionalInpuSelection is no longer working because of the
+        # the original connect() function of the OptionalInputSelection is no longer working because of the
         # ui_diconnect() so I use this 'hack'
         if isinstance(widget_changed, FCCheckBox):
             if widget_changed.text() == 'Multi-Depth:':
@@ -4529,7 +4528,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCurrentItem(self.ui.geo_tools_table.item(row, 0))
 
     def export_dxf(self):
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        units = self.app.defaults['units'].upper()
         dwg = None
         try:
             dwg = ezdxf.new('R2010')
@@ -4741,10 +4740,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         """
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
-        if outname is None:
-            outname = "%s_%s" % (self.options["name"], 'cnc')
-        else:
-            outname = outname
+        outname = "%s_%s" % (self.options["name"], 'cnc') if outname is None else outname
 
         tools_dict = self.sel_tools if tools_dict is None else tools_dict
         tools_in_use = tools_in_use if tools_in_use is not None else self.get_selected_tools_table_items()
@@ -5832,7 +5828,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             self.ui.cnc_tools_table.hide()
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         offset = 0
         tool_idx = 0
@@ -5942,7 +5938,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         assert isinstance(self.ui, CNCObjectUI), \
             "Expected a CNCObjectUI, got %s" % type(self.ui)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == "IN":
             self.decimals = 4
@@ -6845,7 +6841,7 @@ class FlatCAMDocument(FlatCAMObj):
         assert isinstance(self.ui, DocumentObjectUI), \
             "Expected a DocumentObjectUI, got %s" % type(self.ui)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         if self.units == "IN":
             self.decimals = 4

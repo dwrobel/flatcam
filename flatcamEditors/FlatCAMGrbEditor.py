@@ -3081,7 +3081,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             pass
 
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.gerber_obj.options['name']
@@ -4883,7 +4883,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # clear previous marking
         self.ma_annotation.clear(update=True)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         text = []
         position = []
@@ -5976,7 +5976,7 @@ class TransformEditorTool(FlatCAMTool):
                                  _("Geometry shape rotate cancelled"))
 
     def on_offx_key(self):
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        units = self.app.defaults['units'].lower()
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
@@ -5995,7 +5995,7 @@ class TransformEditorTool(FlatCAMTool):
                                  _("Geometry shape offset X cancelled"))
 
     def on_offy_key(self):
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        units = self.app.defaults['units'].lower()
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),

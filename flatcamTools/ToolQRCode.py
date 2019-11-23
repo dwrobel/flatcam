@@ -353,7 +353,7 @@ class QRCode(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+Q', **kwargs)
 
     def set_tool_ui(self):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
+        self.units = self.app.defaults['units']
         self.version_entry.set_value(int(self.app.defaults["tools_qrcode_version"]))
         self.error_radio.set_value(self.app.defaults["tools_qrcode_error"])
         self.bsize_entry.set_value(int(self.app.defaults["tools_qrcode_box_size"]))

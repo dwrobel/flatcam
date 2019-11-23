@@ -5921,6 +5921,40 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.lines_spacing_label, 16, 0)
         grid_lay.addWidget(self.lines_spacing_entry, 16, 1)
 
+        self.robber_bar_label = QtWidgets.QLabel('<b>%s</b>' % _('Robber Bar Parameters'))
+        self.robber_bar_label.setToolTip(
+            _("Parameters used for the robber bar.\n"
+              "Robber bar = copper border to help in pattern hole plating.")
+        )
+        grid_lay.addWidget(self.robber_bar_label, 17, 0, 1, 2)
+
+        # ROBBER BAR MARGIN #
+        self.rb_margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.rb_margin_label.setToolTip(
+            _("Bounding box margin for robber bar.")
+        )
+        self.rb_margin_entry = FCDoubleSpinner()
+        self.rb_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.rb_margin_entry.set_precision(self.decimals)
+        self.rb_margin_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.rb_margin_label, 18, 0)
+        grid_lay.addWidget(self.rb_margin_entry, 18, 1)
+
+        # THICKNESS #
+        self.rb_thickness_label = QtWidgets.QLabel('%s:' % _("Thickness"))
+        self.rb_thickness_label.setToolTip(
+            _("The robber bar thickness.")
+        )
+        self.rb_thickness_entry = FCDoubleSpinner()
+        self.rb_thickness_entry.set_range(0.0000, 9999.9999)
+        self.rb_thickness_entry.set_precision(self.decimals)
+        self.rb_thickness_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.rb_thickness_label, 19, 0)
+        grid_lay.addWidget(self.rb_thickness_entry, 19, 1)
+
+
         self.layout.addStretch()
 
 
@@ -5929,7 +5963,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
 
         super(Tools2FiducialsPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str(_("Copper Thieving Tool Options")))
+        self.setTitle(str(_("Fiducials Tools Options")))
         self.decimals = 4
 
         # ## Grid Layout

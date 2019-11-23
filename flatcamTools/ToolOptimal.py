@@ -308,7 +308,7 @@ class ToolOptimal(FlatCAMTool):
         self.reset_fields()
 
     def find_minimum_distance(self):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
         self.decimals = int(self.precision_spinner.get_value())
 
         selection_index = self.gerber_object_combo.currentIndex()

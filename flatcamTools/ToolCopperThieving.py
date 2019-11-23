@@ -329,6 +329,62 @@ class ToolCopperThieving(FlatCAMTool):
         )
         self.layout.addWidget(self.fill_button)
 
+        # ## Grid Layout
+        grid_lay_1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay_1)
+        grid_lay_1.setColumnStretch(0, 0)
+        grid_lay_1.setColumnStretch(1, 1)
+
+        separator_line_1 = QtWidgets.QFrame()
+        separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 2)
+
+        grid_lay_1.addWidget(QtWidgets.QLabel(''))
+
+        self.robber_bar_label = QtWidgets.QLabel('<b>%s</b>' % _('Robber Bar Parameters'))
+        self.robber_bar_label.setToolTip(
+            _("Parameters used for the robber bar.\n"
+              "Robber bar = copper border to help in pattern hole plating.")
+        )
+        grid_lay_1.addWidget(self.robber_bar_label, 1, 0, 1, 2)
+
+        # ROBBER BAR MARGIN #
+        self.rb_margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
+        self.rb_margin_label.setToolTip(
+            _("Bounding box margin for robber bar.")
+        )
+        self.rb_margin_entry = FCDoubleSpinner()
+        self.rb_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.rb_margin_entry.set_precision(self.decimals)
+        self.rb_margin_entry.setSingleStep(0.1)
+
+        grid_lay_1.addWidget(self.rb_margin_label, 2, 0)
+        grid_lay_1.addWidget(self.rb_margin_entry, 2, 1)
+
+        # THICKNESS #
+        self.rb_thickness_label = QtWidgets.QLabel('%s:' % _("Thickness"))
+        self.rb_thickness_label.setToolTip(
+            _("The robber bar thickness.")
+        )
+        self.rb_thickness_entry = FCDoubleSpinner()
+        self.rb_thickness_entry.set_range(0.0000, 9999.9999)
+        self.rb_thickness_entry.set_precision(self.decimals)
+        self.rb_thickness_entry.setSingleStep(0.1)
+
+        grid_lay_1.addWidget(self.rb_thickness_label, 3, 0)
+        grid_lay_1.addWidget(self.rb_thickness_entry, 3, 1)
+
+        # ## Insert Robber Bar
+        self.rb_button = QtWidgets.QPushButton(_("Insert Robber Bar"))
+        self.rb_button.setToolTip(
+            _("Will add a polygon with a defined thickness\n"
+              "that will surround the actual Gerber object\n"
+              "at a certain distance.\n"
+              "Required when doing holes pattern plating.")
+        )
+        self.layout.addWidget(self.rb_button)
+
         self.layout.addStretch()
 
         # Objects involved in Copper thieving
@@ -360,6 +416,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
         self.fill_type_radio.activated_custom.connect(self.on_thieving_type)
+        self.rb_button.clicked.connect(self.add_robber_bar)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCopperThieving()")
@@ -393,7 +450,7 @@ class ToolCopperThieving(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+F', **kwargs)
 
     def set_tool_ui(self):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
+        self.units = self.app.defaults['units']
         self.clearance_entry.set_value(float(self.app.defaults["tools_copper_thieving_clearance"]))
         self.margin_entry.set_value(float(self.app.defaults["tools_copper_thieving_margin"]))
         self.reference_radio.set_value(self.app.defaults["tools_copper_thieving_reference"])
@@ -407,6 +464,9 @@ class ToolCopperThieving(FlatCAMTool):
         self.squares_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_squares_spacing"])
         self.line_size_entry.set_value(self.app.defaults["tools_copper_thieving_lines_size"])
         self.lines_spacing_entry.set_value(self.app.defaults["tools_copper_thieving_lines_spacing"])
+
+        self.rb_margin_entry.set_value(self.app.defaults["tools_copper_thieving_rb_margin"])
+        self.rb_thickness_entry.set_value(self.app.defaults["tools_copper_thieving_rb_thickness"])
 
         # INIT SECTION
         self.area_method = False
@@ -463,6 +523,85 @@ class ToolCopperThieving(FlatCAMTool):
             self.dots_frame.hide()
             self.squares_frame.hide()
             self.lines_frame.show()
+
+    def add_robber_bar(self):
+        rb_margin = self.rb_margin_entry.get_value()
+        rb_thickness = self.rb_thickness_entry.get_value()
+
+        # get the Gerber object on which the Robber bar will be inserted
+        selection_index = self.grb_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
+
+        try:
+            self.grb_object = model_index.internalPointer().obj
+        except Exception as e:
+            log.debug("ToolCopperThieving.add_robber_bar() --> %s" % str(e))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            return 'fail'
+
+        try:
+            outline_pol = self.grb_object.solid_geometry.envelope
+        except TypeError:
+            outline_pol = MultiPolygon(self.grb_object.solid_geometry).envelope
+
+        rb_distance = rb_margin + (rb_thickness / 2.0)
+        robber_line = outline_pol.buffer(rb_distance).exterior
+
+        robber_geo = robber_line.buffer(rb_thickness / 2.0)
+
+        self.app.proc_container.update_view_text(' %s' % _("Append geometry"))
+
+        aperture_found = None
+        for ap_id, ap_val in self.grb_object.apertures.items():
+            if ap_val['type'] == 'C' and ap_val['size'] == rb_thickness:
+                aperture_found = ap_id
+                break
+
+        if aperture_found:
+            geo_elem = dict()
+            geo_elem['solid'] = robber_geo
+            geo_elem['follow'] = robber_line
+            self.grb_object.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
+        else:
+            ap_keys = list(self.grb_object.apertures.keys())
+            if ap_keys:
+                new_apid = str(int(max(ap_keys)) + 1)
+            else:
+                new_apid = '10'
+
+            self.grb_object.apertures[new_apid] = dict()
+            self.grb_object.apertures[new_apid]['type'] = 'C'
+            self.grb_object.apertures[new_apid]['size'] = rb_thickness
+            self.grb_object.apertures[new_apid]['geometry'] = list()
+
+            geo_elem = dict()
+            geo_elem['solid'] = robber_geo
+            geo_elem['follow'] = robber_line
+            self.grb_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
+
+        geo_obj = self.grb_object.solid_geometry
+        if isinstance(geo_obj, MultiPolygon):
+            s_list = list()
+            for pol in geo_obj.geoms:
+                s_list.append(pol)
+            s_list.append(robber_geo)
+            geo_obj = MultiPolygon(s_list)
+        elif isinstance(geo_obj, list):
+            geo_obj.append(robber_geo)
+        elif isinstance(geo_obj, Polygon):
+            geo_obj = MultiPolygon([geo_obj, robber_geo])
+
+        self.grb_object.solid_geometry = geo_obj
+
+        self.app.proc_container.update_view_text(' %s' % _("Append source file"))
+        # update the source file with the new geometry:
+        self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
+                                                             filename=None,
+                                                             local_use=self.grb_object,
+                                                             use_thread=False)
+        self.app.proc_container.update_view_text(' %s' % '')
+        self.on_exit()
+        self.app.inform.emit('[success] %s' % _("Copper Thieving Tool done."))
 
     def execute(self):
         self.app.call_source = "copper_thieving_tool"

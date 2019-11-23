@@ -314,7 +314,7 @@ class ToolMove(FlatCAMTool):
 
     def draw_shape(self, shape):
 
-        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if self.app.defaults['units'].upper() == 'MM':
             proc_shape = shape.buffer(-0.1)
             proc_shape = proc_shape.buffer(0.2)
         else:
