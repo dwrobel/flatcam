@@ -10,10 +10,10 @@ from PyQt5 import QtWidgets, QtCore
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, EvalEntry, FCTable
 
-from shapely.geometry import Point, MultiPolygon, LineString
+from shapely.geometry import Point, Polygon, MultiPolygon, LineString
 from shapely.geometry import box as box
 
-
+import math
 import logging
 from copy import deepcopy
 
@@ -153,19 +153,20 @@ class ToolFiducials(FlatCAMTool):
         grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
 
         # DIAMETER #
-        self.dia_label = QtWidgets.QLabel('%s:' % _("Diameter"))
-        self.dia_label.setToolTip(
-            _("This set the fiducial diameter.\n"
+        self.size_label = QtWidgets.QLabel('%s:' % _("Size"))
+        self.size_label.setToolTip(
+            _("This set the fiducial diameter if fiducial type is circular,\n"
+              "otherwise is the size of the fiducial.\n"
               "The soldermask opening is double than that.")
         )
-        self.dia_entry = FCDoubleSpinner()
-        self.dia_entry.set_range(1.0000, 3.0000)
-        self.dia_entry.set_precision(self.decimals)
-        self.dia_entry.setWrapping(True)
-        self.dia_entry.setSingleStep(0.1)
+        self.fid_size_entry = FCDoubleSpinner()
+        self.fid_size_entry.set_range(1.0000, 3.0000)
+        self.fid_size_entry.set_precision(self.decimals)
+        self.fid_size_entry.setWrapping(True)
+        self.fid_size_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.dia_label, 1, 0)
-        grid_lay.addWidget(self.dia_entry, 1, 1)
+        grid_lay.addWidget(self.size_label, 1, 0)
+        grid_lay.addWidget(self.fid_size_entry, 1, 1)
 
         # MARGIN #
         self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
@@ -217,13 +218,15 @@ class ToolFiducials(FlatCAMTool):
         # Fiducial type #
         self.fid_type_radio = RadioSet([
             {'label': _('Circular'), 'value': 'circular'},
-            {"label": _("Cross"), "value": "cross"}
+            {"label": _("Cross"), "value": "cross"},
+            {"label": _("Chess"), "value": "chess"}
         ], stretch=False)
         self.fid_type_label = QtWidgets.QLabel('%s:' % _("Fiducial Type"))
         self.fid_type_label.setToolTip(
             _("The type of fiducial.\n"
-              "- 'Circular' - this is the regular fiducial.\n "
-              "- 'Cross' - non-standard fiducial.")
+              "- 'Circular' - this is the regular fiducial.\n"
+              "- 'Cross' - cross lines fiducial.\n"
+              "- 'Chess' - chess pattern fiducial.")
         )
         grid_lay.addWidget(self.fid_type_label, 6, 0)
         grid_lay.addWidget(self.fid_type_radio, 6, 1)
@@ -368,7 +371,7 @@ class ToolFiducials(FlatCAMTool):
 
     def set_tool_ui(self):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value()
-        self.dia_entry.set_value(self.app.defaults["tools_fiducials_dia"])
+        self.fid_size_entry.set_value(self.app.defaults["tools_fiducials_dia"])
         self.margin_entry.set_value(float(self.app.defaults["tools_fiducials_margin"]))
         self.mode_radio.set_value(self.app.defaults["tools_fiducials_mode"])
         self.pos_radio.set_value(self.app.defaults["tools_fiducials_second_pos"])
@@ -499,18 +502,18 @@ class ToolFiducials(FlatCAMTool):
         :param line_size: the line thickenss when the fiducial type is cross
         :return:
         """
-        fid_dia = self.dia_entry.get_value() if fid_size is None else fid_size
-        fid_type = 'crcular' if fid_type is None else fid_type
+        fid_size = self.fid_size_entry.get_value() if fid_size is None else fid_size
+        fid_type = 'circular' if fid_type is None else fid_type
         line_thickness = self.line_thickness_entry.get_value() if line_size is None else line_size
 
-        radius = fid_dia / 2.0
+        radius = fid_size / 2.0
 
         if fid_type == 'circular':
             geo_list = [Point(pt).buffer(radius) for pt in points_list]
 
             aperture_found = None
             for ap_id, ap_val in g_obj.apertures.items():
-                if ap_val['type'] == 'C' and ap_val['size'] == fid_dia:
+                if ap_val['type'] == 'C' and ap_val['size'] == fid_size:
                     aperture_found = ap_id
                     break
 
@@ -529,7 +532,7 @@ class ToolFiducials(FlatCAMTool):
 
                 g_obj.apertures[new_apid] = dict()
                 g_obj.apertures[new_apid]['type'] = 'C'
-                g_obj.apertures[new_apid]['size'] = fid_dia
+                g_obj.apertures[new_apid]['size'] = fid_size
                 g_obj.apertures[new_apid]['geometry'] = list()
 
                 for geo in geo_list:
@@ -548,7 +551,7 @@ class ToolFiducials(FlatCAMTool):
 
             s_list += geo_list
             g_obj.solid_geometry = MultiPolygon(s_list)
-        else:
+        elif fid_type == 'cross':
             geo_list = list()
 
             for pt in points_list:
@@ -622,10 +625,82 @@ class ToolFiducials(FlatCAMTool):
             for poly in geo_buff_list:
                 s_list.append(poly)
             g_obj.solid_geometry = MultiPolygon(s_list)
+        else:
+            # chess pattern fiducial type
+            geo_list = list()
+
+            def make_square_poly(center_pt, side_size):
+                half_s = side_size / 2
+                x_center = center_pt[0]
+                y_center = center_pt[1]
+
+                pt1 = (x_center - half_s, y_center - half_s)
+                pt2 = (x_center + half_s, y_center - half_s)
+                pt3 = (x_center + half_s, y_center + half_s)
+                pt4 = (x_center - half_s, y_center + half_s)
+
+                return Polygon([pt1, pt2, pt3, pt4, pt1])
+
+            for pt in points_list:
+                x = pt[0]
+                y = pt[1]
+                first_square = make_square_poly(center_pt=(x-fid_size/4, y+fid_size/4), side_size=fid_size/2)
+                second_square = make_square_poly(center_pt=(x+fid_size/4, y-fid_size/4), side_size=fid_size/2)
+                geo_list += [first_square, second_square]
+
+            aperture_found = None
+            new_ap_size = math.sqrt(fid_size**2 + fid_size**2)
+            for ap_id, ap_val in g_obj.apertures.items():
+                if ap_val['type'] == 'R' and \
+                        round(ap_val['size'], ndigits=self.decimals) == round(new_ap_size, ndigits=self.decimals):
+                    aperture_found = ap_id
+                    break
+
+            geo_buff_list = list()
+            if aperture_found:
+                for geo in geo_list:
+                    geo_buff_list.append(geo)
+
+                    dict_el = dict()
+                    dict_el['follow'] = geo.centroid
+                    dict_el['solid'] = geo
+                    g_obj.apertures[aperture_found]['geometry'].append(deepcopy(dict_el))
+            else:
+                ap_keys = list(g_obj.apertures.keys())
+                if ap_keys:
+                    new_apid = str(int(max(ap_keys)) + 1)
+                else:
+                    new_apid = '10'
+
+                g_obj.apertures[new_apid] = dict()
+                g_obj.apertures[new_apid]['type'] = 'R'
+                g_obj.apertures[new_apid]['size'] = new_ap_size
+                g_obj.apertures[new_apid]['width'] = fid_size
+                g_obj.apertures[new_apid]['height'] = fid_size
+                g_obj.apertures[new_apid]['geometry'] = list()
+
+                for geo in geo_list:
+                    geo_buff_list.append(geo)
+
+                    dict_el = dict()
+                    dict_el['follow'] = geo.centroid
+                    dict_el['solid'] = geo
+                    g_obj.apertures[new_apid]['geometry'].append(deepcopy(dict_el))
+
+            s_list = list()
+            if g_obj.solid_geometry:
+                try:
+                    for poly in g_obj.solid_geometry:
+                        s_list.append(poly)
+                except TypeError:
+                    s_list.append(g_obj.solid_geometry)
+
+            for poly in geo_buff_list:
+                s_list.append(poly)
+            g_obj.solid_geometry = MultiPolygon(s_list)
 
     def add_soldermask_opening(self):
-
-        sm_opening_dia = self.dia_entry.get_value() * 2.0
+        sm_opening_dia = self.fid_size_entry.get_value() * 2.0
 
         # get the Gerber object on which the Fiducial will be inserted
         selection_index = self.sm_object_combo.currentIndex()
@@ -639,8 +714,8 @@ class ToolFiducials(FlatCAMTool):
             return 'fail'
 
         self.sm_obj_set.add(self.sm_object.options['name'])
-
         self.add_fiducials_geo(self.click_points, g_obj=self.sm_object, fid_size=sm_opening_dia, fid_type='circular')
+
         self.sm_object.source_file = self.app.export_gerber(obj_name=self.sm_object.options['name'], filename=None,
                                                             local_use=self.sm_object, use_thread=False)
         self.on_exit()
@@ -759,10 +834,6 @@ class ToolFiducials(FlatCAMTool):
         # Mouse cursor positions
         self.cursor_pos = (0, 0)
         self.first_click = False
-
-        # if True it means we exited from tool in the middle of fiducials adding
-        if len(self.click_points) not in [0, 3]:
-            self.click_points = list()
 
         self.disconnect_event_handlers()
 

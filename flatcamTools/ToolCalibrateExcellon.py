@@ -821,10 +821,21 @@ class ToolCalibrateExcellon(FlatCAMTool):
         except TypeError:
             bot_right_dy = bot_right_y
 
+        # ------------------------------------------------------------------------------- #
+        # --------------------------- FACTORS CALCULUS ---------------------------------- #
+        # ------------------------------------------------------------------------------- #
         if top_left_dy != float('%.*f' % (self.decimals, 0.0)):
             # we have scale on Y
             scale_y = (top_left_dy + top_left_y - origin_y) / (top_left_y - origin_y)
             self.scaley_entry.set_value(scale_y)
+
+        if top_left_dx != float('%.*f' % (self.decimals, 0.0)):
+            # we have skew on X
+            dx = top_left_dx
+            dy = top_left_y - origin_y
+            skew_angle_x = math.degrees(math.atan(dx / dy))
+
+            self.skewx_entrx.set_value(skew_angle_x)
 
         if bot_right_dx != float('%.*f' % (self.decimals, 0.0)):
             # we have scale on X
@@ -833,11 +844,11 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         if bot_right_dy != float('%.*f' % (self.decimals, 0.0)):
             # we have skew on Y
-            dy = bot_right_dy + origin_y
             dx = bot_right_x - origin_x
+            dy = bot_right_dy + origin_y
             skew_angle_y = math.degrees(math.atan(dy / dx))
 
-            self.skewx_entry.set_value(skew_angle_y)
+            self.skewy_entry.set_value(skew_angle_y)
 
     def disconnect_cal_events(self):
         self.app.mr = self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)

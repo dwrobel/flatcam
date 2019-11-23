@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.11.2019
+
+- in Tool Fiducials added a new fiducial type: chess pattern
+- work in Calibrate Excellon Tool
+
 22.11.2019
 
 - Tool Fiducials - added GUI in Preferences and entries in self.defaults dict

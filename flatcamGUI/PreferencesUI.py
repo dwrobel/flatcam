@@ -5945,9 +5945,10 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
 
         # DIAMETER #
-        self.dia_label = QtWidgets.QLabel('%s:' % _("Diameter"))
+        self.dia_label = QtWidgets.QLabel('%s:' % _("Size"))
         self.dia_label.setToolTip(
-            _("This set the fiducial diameter.\n"
+            _("This set the fiducial diameter if fiducial type is circular,\n"
+              "otherwise is the size of the fiducial.\n"
               "The soldermask opening is double than that.")
         )
         self.dia_entry = FCDoubleSpinner()
@@ -6009,13 +6010,16 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         # Fiducial type #
         self.fid_type_radio = RadioSet([
             {'label': _('Circular'), 'value': 'circular'},
-            {"label": _("Cross"), "value": "cross"}
+            {"label": _("Cross"), "value": "cross"},
+            {"label": _("Chess"), "value": "chess"}
         ], stretch=False)
+
         self.fid_type_label = QtWidgets.QLabel('%s:' % _("Fiducial Type"))
         self.fid_type_label.setToolTip(
             _("The type of fiducial.\n"
-              "- 'Circular' - this is the regular fiducial.\n "
-              "- 'Cross' - non-standard fiducial.")
+              "- 'Circular' - this is the regular fiducial.\n"
+              "- 'Cross' - cross lines fiducial.\n"
+              "- 'Chess' - chess pattern fiducial.")
         )
         grid_lay.addWidget(self.fid_type_label, 6, 0)
         grid_lay.addWidget(self.fid_type_radio, 6, 1)
