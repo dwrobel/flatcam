@@ -6367,14 +6367,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             if 'M6' in g:
                 m6_code = self.parse_custom_toolchange_code(self.ui.toolchange_text.get_value())
                 if m6_code is None or m6_code == '':
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Cancelled. The Toolchange Custom code is enabled but it's empty.")
-                                         )
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL] %s' % _("Cancelled. The Toolchange Custom code is enabled but it's empty.")
+                    )
                     return 'fail'
 
                 g = g.replace('M6', m6_code)
-                self.app.inform.emit('[success] %s' %
-                                     _("Toolchange G-code was replaced by a custom code."))
+                self.app.inform.emit('[success] %s' % _("Toolchange G-code was replaced by a custom code."))
 
         lines = StringIO(g)
 
@@ -6391,13 +6390,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                         for line in lines:
                             f.write(line)
             except FileNotFoundError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("No such file or directory"))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No such file or directory"))
                 return
             except PermissionError:
-                self.app.inform.emit('[WARNING] %s' %
-                                     _("Permission denied, saving not possible.\n"
-                                       "Most likely another app is holding the file open and not accessible."))
+                self.app.inform.emit(
+                    '[WARNING] %s' % _("Permission denied, saving not possible.\n"
+                                       "Most likely another app is holding the file open and not accessible.")
+                )
                 return 'fail'
         elif to_file is False:
             # Just for adding it to the recent files list.
@@ -6405,8 +6404,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.app.file_opened.emit("cncjob", filename)
             self.app.file_saved.emit("cncjob", filename)
 
-            self.app.inform.emit('[success] %s: %s' %
-                                 (_("Saved to"), filename))
+            self.app.inform.emit('[success] %s: %s' % (_("Saved to"), filename))
         else:
             return lines
 

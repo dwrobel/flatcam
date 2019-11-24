@@ -2956,13 +2956,14 @@ class CNCjob(Geometry):
         self.app.inform.emit(_("Finished G-Code generation..."))
         return 'OK'
 
-    def generate_from_multitool_geometry(self, geometry, append=True,
-                                         tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
-                                         feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-                                         spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
-                                         multidepth=False, depthpercut=None,
-                                         toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False,
-                                         startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
+    def generate_from_multitool_geometry(
+            self, geometry, append=True,
+            tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
+            feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
+            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
+            multidepth=False, depthpercut=None,
+            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False,
+            startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
         """
         Algorithm to generate from multitool Geometry.
 
@@ -2973,13 +2974,29 @@ class CNCjob(Geometry):
         :param geometry:
         :param append:
         :param tooldia:
+        :param offset:
         :param tolerance:
-        :param multidepth: If True, use multiple passes to reach
-           the desired depth.
-        :param depthpercut: Maximum depth in each pass.
-        :param extracut: Adds (or not) an extra cut at the end of each path
-            overlapping the first point in path to ensure complete copper removal
-        :return: GCode - string
+        :param z_cut:
+        :param z_move:
+        :param feedrate:
+        :param feedrate_z:
+        :param feedrate_rapid:
+        :param spindlespeed:
+        :param spindledir:
+        :param dwell:
+        :param dwelltime:
+        :param multidepth:          If True, use multiple passes to reach the desired depth.
+        :param depthpercut:         Maximum depth in each pass.
+        :param toolchange:
+        :param toolchangez:
+        :param toolchangexy:
+        :param extracut:            Adds (or not) an extra cut at the end of each path overlapping the
+                                    first point in path to ensure complete copper removal
+        :param startz:
+        :param endz:
+        :param pp_geometry_name:
+        :param tool_no:
+        :return:                    GCode - string
         """
 
         log.debug("Generate_from_multitool_geometry()")
@@ -3063,17 +3080,16 @@ class CNCjob(Geometry):
                 return 'fail'
 
             if self.z_move is None:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Travel Z parameter is None or zero."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Travel Z parameter is None or zero."))
                 return 'fail'
 
             if self.z_move < 0:
                 self.app.inform.emit('[WARNING] %s' %
                                      _("The Travel Z parameter has negative value. "
-                                     "It is the height value to travel between cuts.\n"
-                                     "The Z Travel parameter needs to have a positive value, assuming it is a typo "
-                                     "therefore the app will convert the value to positive."
-                                     "Check the resulting CNC code (Gcode etc)."))
+                                       "It is the height value to travel between cuts.\n"
+                                       "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                       "therefore the app will convert the value to positive."
+                                       "Check the resulting CNC code (Gcode etc)."))
                 self.z_move = -self.z_move
             elif self.z_move == 0:
                 self.app.inform.emit('[WARNING] %s: %s' %
@@ -3164,7 +3180,7 @@ class CNCjob(Geometry):
 
         # variables to display the percentage of work done
         geo_len = len(flat_geometry)
-        disp_number = 0
+
         old_disp_number = 0
         log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
 
@@ -3173,11 +3189,9 @@ class CNCjob(Geometry):
         else:
             current_tooldia = float('%.4f' % float(self.tooldia))
 
-        self.app.inform.emit(
-            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                           str(current_tooldia),
-                           str(self.units))
-        )
+        self.app.inform.emit( '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                             str(current_tooldia),
+                                             str(self.units)))
 
         pt, geo = storage.nearest(current_pt)
 
@@ -3223,7 +3237,7 @@ class CNCjob(Geometry):
                 total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
 
-                pt, geo = storage.nearest(current_pt) # Next
+                pt, geo = storage.nearest(current_pt)   # Next
 
                 disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
@@ -3288,11 +3302,11 @@ class CNCjob(Geometry):
 
         # if solid_geometry is empty raise an exception
         if not geometry.solid_geometry:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Trying to generate a CNC Job "
-                                 "from a Geometry object without solid_geometry."))
+            self.app.inform.emit(
+                '[ERROR_NOTCL] %s' % _("Trying to generate a CNC Job from a Geometry object without solid_geometry.")
+            )
 
-        temp_solid_geometry = []
+        temp_solid_geometry = list()
 
         def bounds_rec(obj):
             if type(obj) is list:

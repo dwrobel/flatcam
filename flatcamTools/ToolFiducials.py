@@ -425,6 +425,8 @@ class ToolFiducials(FlatCAMTool):
         self.sec_position = self.pos_radio.get_value()
         fid_type = self.fid_type_radio.get_value()
 
+        self.click_points = list()
+
         # get the Gerber object on which the Fiducial will be inserted
         selection_index = self.grb_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.grb_object_combo.rootModelIndex())
@@ -756,11 +758,14 @@ class ToolFiducials(FlatCAMTool):
             elif len(self.click_points) == 3:
                 self.sec_points_coords_entry.set_value(self.click_points[2])
                 self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
-                self.add_fiducials_geo(self.click_points)
+                self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
+                self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],
+                                                                     filename=None,
+                                                                     local_use=self.grb_object, use_thread=False)
                 self.on_exit()
         else:
             if len(self.click_points) == 2:
-                self.sec_points_coords_entry.set_value(self.click_points[2])
+                self.top_right_coords_entry.set_value(self.click_points[1])
                 self.app.inform.emit('[success] %s' % _("Done. All fiducials have been added."))
                 self.add_fiducials_geo(self.click_points, g_obj=self.grb_object, fid_type=fid_type)
                 self.grb_object.source_file = self.app.export_gerber(obj_name=self.grb_object.options['name'],

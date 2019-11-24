@@ -127,7 +127,7 @@ class ToolCopperThieving(FlatCAMTool):
         ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself' - the copper thieving extent is based on the object that is copper cleared.\n "
+            _("- 'Itself' - the copper thieving extent is based on the object that is copper cleared.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
               "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
@@ -171,7 +171,7 @@ class ToolCopperThieving(FlatCAMTool):
         ], stretch=False)
         self.bbox_type_label = QtWidgets.QLabel(_("Box Type:"))
         self.bbox_type_label.setToolTip(
-            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n "
+            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n"
               "- 'Minimal' - the bounding box will be the convex hull shape.")
         )
         grid_lay.addWidget(self.bbox_type_label, 6, 0)
@@ -193,7 +193,7 @@ class ToolCopperThieving(FlatCAMTool):
         ], orientation='vertical', stretch=False)
         self.fill_type_label = QtWidgets.QLabel(_("Fill Type:"))
         self.fill_type_label.setToolTip(
-            _("- 'Solid' - copper thieving will be a solid polygon.\n "
+            _("- 'Solid' - copper thieving will be a solid polygon.\n"
               "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
               "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
               "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")
@@ -412,10 +412,11 @@ class ToolCopperThieving(FlatCAMTool):
         self.geo_steps_per_circle = 128
 
         # SIGNALS
-        self.fill_button.clicked.connect(self.execute)
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
         self.fill_type_radio.activated_custom.connect(self.on_thieving_type)
+
+        self.fill_button.clicked.connect(self.execute)
         self.rb_button.clicked.connect(self.add_robber_bar)
 
     def run(self, toggle=True):
