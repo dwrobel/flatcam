@@ -623,7 +623,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # Mouse events
         self.mr = None
 
-        # dict to store the polygons selected for isolation; key is the shape added to be ploted and value is the poly
+        # dict to store the polygons selected for isolation; key is the shape added to be plotted and value is the poly
         self.poly_dict = dict()
 
         # store the status of grid snapping
@@ -1045,7 +1045,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if iso_scope == 'all':
             self.isolate(iso_type=iso_type)
         else:
-            # disengage the grid snapping since it will be hard to find the drills on grid
+            # disengage the grid snapping since it may be hard to click on polygons with grid snapping on
             if self.app.ui.grid_snap_btn.isChecked():
                 self.grid_status_memory = True
                 self.app.ui.grid_snap_btn.trigger()
@@ -1059,7 +1059,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.app.mr)
 
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on polygon to isolate it."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on a polygon to isolate it."))
 
     def on_mouse_click_release(self, event):
         if self.app.is_legacy is False:
