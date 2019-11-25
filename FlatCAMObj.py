@@ -1006,7 +1006,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     app_obj.report_usage("gerber_on_iso_button")
                     self.read_form()
 
-                    iso_scope = 'all' if self.ui.iso_scope_radio == 'all' else 'single'
+                    iso_scope = 'all' if self.ui.iso_scope_radio.get_value() == 'all' else 'single'
                     self.isolate_handler(iso_type=self.iso_type, iso_scope=iso_scope)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})

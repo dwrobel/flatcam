@@ -458,7 +458,7 @@ class GerberObjectUI(ObjectUI):
         # ---------------------------------------------- #
         # --------- Isolation scope -------------------- #
         # ---------------------------------------------- #
-        self.iso_scope_label = QtWidgets.QLabel('%s:' % _('Scope'))
+        self.iso_scope_label = QtWidgets.QLabel('<b>%s:</b>' % _('Scope'))
         self.iso_scope_label.setToolTip(
             _("Isolation scope. Choose what to isolate:\n"
               "- 'All' -> Isolate all the polygons in the object\n"
@@ -473,7 +473,7 @@ class GerberObjectUI(ObjectUI):
         # ---------------------------------------------- #
         # --------- Isolation type  -------------------- #
         # ---------------------------------------------- #
-        self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
+        self.iso_type_label = QtWidgets.QLabel('<b>%s:</b>' % _('Isolation Type'))
         self.iso_type_label.setToolTip(
             _("Choose how the isolation will be executed:\n"
               "- 'Full' -> complete isolation of polygons\n"
