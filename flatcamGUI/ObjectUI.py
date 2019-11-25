@@ -281,6 +281,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
+        grid1.setColumnStretch(2, 1)
 
         # Tool Type
         self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
@@ -290,8 +291,8 @@ class GerberObjectUI(ObjectUI):
               "When the 'V-shape' is selected then the tool\n"
               "diameter will depend on the chosen cut depth.")
         )
-        self.tool_type_radio = RadioSet([{'label': 'Circular', 'value': 'circular'},
-                                         {'label': 'V-Shape', 'value': 'v'}])
+        self.tool_type_radio = RadioSet([{'label': _('Circular'), 'value': 'circular'},
+                                         {'label': _('V-Shape'), 'value': 'v'}])
 
         grid1.addWidget(self.tool_type_label, 0, 0)
         grid1.addWidget(self.tool_type_radio, 0, 1, 1, 2)
@@ -396,7 +397,7 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(self.milling_type_radio, 7, 1, 1, 2)
 
         # combine all passes CB
-        self.combine_passes_cb = FCCheckBox(label=_('Combine Passes'))
+        self.combine_passes_cb = FCCheckBox(label=_('Combine'))
         self.combine_passes_cb.setToolTip(
             _("Combine all passes into one object")
         )
@@ -406,15 +407,15 @@ class GerberObjectUI(ObjectUI):
         self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
                                     "This means that it will cut through\n"
                                     "the middle of the trace."))
+        grid1.addWidget(self.combine_passes_cb, 8, 0)
 
         # avoid an area from isolation
         self.except_cb = FCCheckBox(label=_('Except'))
+        grid1.addWidget(self.follow_cb, 8, 1)
+
         self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
                                     "by checking this, the area of the object bellow\n"
                                     "will be subtracted from the isolation geometry."))
-
-        grid1.addWidget(self.combine_passes_cb, 8, 0)
-        grid1.addWidget(self.follow_cb, 8, 1)
         grid1.addWidget(self.except_cb, 8, 2)
 
         # ## Form Layout
@@ -454,8 +455,50 @@ class GerberObjectUI(ObjectUI):
 
         form_layout.addRow(self.obj_label, self.obj_combo)
 
-        self.gen_iso_label = QtWidgets.QLabel("<b>%s</b>" % _("Generate Isolation Geometry"))
-        self.gen_iso_label.setToolTip(
+        # ---------------------------------------------- #
+        # --------- Isolation scope -------------------- #
+        # ---------------------------------------------- #
+        self.iso_scope_label = QtWidgets.QLabel('%s:' % _('Scope'))
+        self.iso_scope_label.setToolTip(
+            _("Isolation scope. Choose what to isolate:\n"
+              "- 'All' -> Isolate all the polygons in the object\n"
+              "- 'Single' -> Isolate a single polygon.")
+        )
+        self.iso_scope_radio = RadioSet([{'label': _('All'), 'value': 'all'},
+                                         {'label': _('Single'), 'value': 'single'}])
+
+        grid1.addWidget(self.iso_scope_label, 10, 0)
+        grid1.addWidget(self.iso_scope_radio, 10, 1, 1, 2)
+
+        # ---------------------------------------------- #
+        # --------- Isolation type  -------------------- #
+        # ---------------------------------------------- #
+        self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
+        self.iso_type_label.setToolTip(
+            _("Choose how the isolation will be executed:\n"
+              "- 'Full' -> complete isolation of polygons\n"
+              "- 'Ext' -> will isolate only on the outside\n"
+              "- 'Int' -> will isolate only on the inside\n"
+              "'Exterior' isolation is almost always possible\n"
+              "(with the right tool) but 'Interior'\n"
+              "isolation can be done only when there is an opening\n"
+              "inside of the polygon (e.g polygon is a 'doughnut' shape).")
+        )
+        self.iso_type_radio = RadioSet([{'label': _('Full'), 'value': 'full'},
+                                        {'label': _('Ext'), 'value': 'ext'},
+                                        {'label': _('Int'), 'value': 'int'}])
+
+        grid1.addWidget(self.iso_type_label, 11, 0)
+        grid1.addWidget(self.iso_type_radio, 11, 1, 1, 2)
+
+        self.generate_iso_button = QtWidgets.QPushButton("%s" % _("Generate Isolation Geometry"))
+        self.generate_iso_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.generate_iso_button.setToolTip(
             _("Create a Geometry object with toolpaths to cut \n"
               "isolation outside, inside or on both sides of the\n"
               "object. For a Gerber object outside means outside\n"
@@ -466,7 +509,7 @@ class GerberObjectUI(ObjectUI):
               "inside the actual Gerber feature, use a negative tool\n"
               "diameter above.")
         )
-        grid1.addWidget(self.gen_iso_label, 10, 0, 1, 3)
+        grid1.addWidget(self.generate_iso_button, 12, 0, 1, 3)
 
         self.create_buffer_button = QtWidgets.QPushButton(_('Buffer Solid Geometry'))
         self.create_buffer_button.setToolTip(
@@ -475,48 +518,15 @@ class GerberObjectUI(ObjectUI):
               "Clicking this will create the buffered geometry\n"
               "required for isolation.")
         )
-        grid1.addWidget(self.create_buffer_button, 11, 0, 1, 3)
-
-        self.generate_iso_button = QtWidgets.QPushButton(_('FULL Geo'))
-        self.generate_iso_button.setToolTip(
-            _("Create the Geometry Object\n"
-              "for isolation routing. It contains both\n"
-              "the interiors and exteriors geometry.")
-        )
-        grid1.addWidget(self.generate_iso_button, 12, 0)
-
-        hlay_1 = QtWidgets.QHBoxLayout()
-        grid1.addLayout(hlay_1, 12, 1, 1, 2)
-
-        self.generate_ext_iso_button = QtWidgets.QPushButton(_('Ext Geo'))
-        self.generate_ext_iso_button.setToolTip(
-            _("Create the Geometry Object\n"
-              "for isolation routing containing\n"
-              "only the exteriors geometry.")
-        )
-        # self.generate_ext_iso_button.setMinimumWidth(100)
-        hlay_1.addWidget(self.generate_ext_iso_button)
-
-        self.generate_int_iso_button = QtWidgets.QPushButton(_('Int Geo'))
-        self.generate_int_iso_button.setToolTip(
-            _("Create the Geometry Object\n"
-              "for isolation routing containing\n"
-              "only the interiors geometry.")
-        )
-        # self.generate_ext_iso_button.setMinimumWidth(90)
-        hlay_1.addWidget(self.generate_int_iso_button)
+        grid1.addWidget(self.create_buffer_button, 13, 0, 1, 2)
 
         self.ohis_iso = OptionalHideInputSection(
             self.except_cb,
             [self.type_obj_combo, self.type_obj_combo_label, self.obj_combo, self.obj_label],
             logic=True
         )
-        # when the follow checkbox is checked then the exteriors and interiors isolation generation buttons
-        # are disabled as is doesn't make sense to have them enabled due of the nature of "follow"
-        self.ois_iso = OptionalInputSection(self.follow_cb,
-                                            [self.generate_int_iso_button, self.generate_ext_iso_button], logic=False)
 
-        grid1.addWidget(QtWidgets.QLabel(''), 13, 0)
+        grid1.addWidget(QtWidgets.QLabel(''), 14, 0)
 
         # ###########################################
         # ########## NEW GRID #######################
@@ -562,6 +572,11 @@ class GerberObjectUI(ObjectUI):
         grid2.addWidget(self.board_cutout_label, 2, 0)
         grid2.addWidget(self.generate_cutout_button, 2, 1)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line, 3, 0, 1, 2)
+
         # ## Non-copper regions
         self.noncopper_label = QtWidgets.QLabel("<b>%s</b>" % _("Non-copper regions"))
         self.noncopper_label.setToolTip(
@@ -572,7 +587,7 @@ class GerberObjectUI(ObjectUI):
               "copper from a specified region.")
         )
 
-        grid2.addWidget(self.noncopper_label, 3, 0, 1, 2)
+        grid2.addWidget(self.noncopper_label, 4, 0, 1, 2)
 
         # Margin
         bmlabel = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
@@ -588,8 +603,8 @@ class GerberObjectUI(ObjectUI):
         self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
 
-        grid2.addWidget(bmlabel, 4, 0)
-        grid2.addWidget(self.noncopper_margin_entry, 4, 1)
+        grid2.addWidget(bmlabel, 5, 0)
+        grid2.addWidget(self.noncopper_margin_entry, 5, 1)
 
         # Rounded corners
         self.noncopper_rounded_cb = FCCheckBox(label=_("Rounded Geo"))
@@ -599,8 +614,13 @@ class GerberObjectUI(ObjectUI):
         self.noncopper_rounded_cb.setMinimumWidth(90)
 
         self.generate_noncopper_button = QtWidgets.QPushButton(_('Generate Geo'))
-        grid2.addWidget(self.noncopper_rounded_cb, 5, 0)
-        grid2.addWidget(self.generate_noncopper_button, 5, 1)
+        grid2.addWidget(self.noncopper_rounded_cb, 6, 0)
+        grid2.addWidget(self.generate_noncopper_button, 6, 1)
+
+        separator_line1 = QtWidgets.QFrame()
+        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line1, 7, 0, 1, 2)
 
         # ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel('<b>%s</b>' % _('Bounding Box'))
@@ -609,7 +629,7 @@ class GerberObjectUI(ObjectUI):
               "Square shape.")
         )
 
-        grid2.addWidget(self.boundingbox_label, 6, 0, 1, 2)
+        grid2.addWidget(self.boundingbox_label, 8, 0, 1, 2)
 
         bbmargin = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
         bbmargin.setToolTip(
@@ -622,8 +642,8 @@ class GerberObjectUI(ObjectUI):
         self.bbmargin_entry.set_precision(self.decimals)
         self.bbmargin_entry.setSingleStep(0.1)
 
-        grid2.addWidget(bbmargin, 7, 0)
-        grid2.addWidget(self.bbmargin_entry, 7, 1)
+        grid2.addWidget(bbmargin, 9, 0)
+        grid2.addWidget(self.bbmargin_entry, 9, 1)
 
         self.bbrounded_cb = FCCheckBox(label=_("Rounded Geo"))
         self.bbrounded_cb.setToolTip(
@@ -638,9 +658,13 @@ class GerberObjectUI(ObjectUI):
         self.generate_bb_button.setToolTip(
             _("Generate the Geometry object.")
         )
-        grid2.addWidget(self.bbrounded_cb, 8, 0)
-        grid2.addWidget(self.generate_bb_button, 8, 1)
+        grid2.addWidget(self.bbrounded_cb, 10, 0)
+        grid2.addWidget(self.generate_bb_button, 10, 1)
 
+        separator_line2 = QtWidgets.QFrame()
+        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line2, 11, 0, 1, 2)
 
 class ExcellonObjectUI(ObjectUI):
     """

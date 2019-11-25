@@ -597,7 +597,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "bboxmargin": 0.0,
             "bboxrounded": False,
             "aperture_display": False,
-            "follow": False
+            "follow": False,
+            "iso_scope": 'all',
+            "iso_type": 'full'
         })
 
         # type of isolation: 0 = exteriors, 1 = interiors, 2 = complete isolation (both interiors and exteriors)
@@ -617,6 +619,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         # Number of decimals to be used by tools in this class
         self.decimals = 4
+
+        # Mouse events
+        self.mr = self.app.mr
+
+        # list to store the polygons selected for isolation
+        self.poly_list = list()
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -662,7 +670,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "bboxmargin": self.ui.bbmargin_entry,
             "bboxrounded": self.ui.bbrounded_cb,
             "aperture_display": self.ui.aperture_table_visibility_cb,
-            "follow": self.ui.follow_cb
+            "follow": self.ui.follow_cb,
+            "iso_scope": self.ui.iso_scope_radio,
+            "iso_type": self.ui.iso_type_radio
         })
 
         # Fill form fields only on object create
@@ -672,8 +682,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
         self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
-        self.ui.generate_ext_iso_button.clicked.connect(self.on_ext_iso_button_click)
-        self.ui.generate_int_iso_button.clicked.connect(self.on_int_iso_button_click)
         self.ui.generate_iso_button.clicked.connect(self.on_iso_button_click)
         self.ui.generate_ncc_button.clicked.connect(self.app.ncclear_tool.run)
         self.ui.generate_cutout_button.clicked.connect(self.app.cutout_tool.run)
@@ -710,8 +718,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.aperture_table_visibility_cb.hide()
             self.ui.milling_type_label.hide()
             self.ui.milling_type_radio.hide()
-            self.ui.generate_ext_iso_button.hide()
-            self.ui.generate_int_iso_button.hide()
+            self.ui.iso_type_radio.hide()
+
             self.ui.follow_cb.hide()
             self.ui.except_cb.setChecked(False)
             self.ui.except_cb.hide()
@@ -978,42 +986,16 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.app.new_object("geometry", name, geo_init)
 
-    def on_ext_iso_button_click(self, *args):
-        obj = self.app.collection.get_active()
-
-        def worker_task(obj, app_obj):
-            with self.app.proc_container.new(_("Isolating...")):
-                if self.ui.follow_cb.get_value() is True:
-                    obj.follow_geo()
-                    # in the end toggle the visibility of the origin object so we can see the generated Geometry
-                    obj.ui.plot_cb.toggle()
-                else:
-                    app_obj.report_usage("gerber_on_iso_button")
-                    self.read_form()
-                    self.isolate(iso_type=0)
-
-        self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
-
-    def on_int_iso_button_click(self, *args):
-        obj = self.app.collection.get_active()
-
-        def worker_task(obj, app_obj):
-            with self.app.proc_container.new(_("Isolating...")):
-                if self.ui.follow_cb.get_value() is True:
-                    obj.follow_geo()
-                    # in the end toggle the visibility of the origin object so we can see the generated Geometry
-                    obj.ui.plot_cb.toggle()
-                else:
-                    app_obj.report_usage("gerber_on_iso_button")
-                    self.read_form()
-                    self.isolate(iso_type=1)
-
-        self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
-
     def on_iso_button_click(self, *args):
 
         obj = self.app.collection.get_active()
 
+        self.iso_type = 2
+        if self.ui.iso_type_radio.get_value() == 'ext':
+            self.iso_type = 0
+        if self.ui.iso_type_radio.get_value() == 'int':
+            self.iso_type = 1
+
         def worker_task(obj, app_obj):
             with self.app.proc_container.new(_("Isolating...")):
                 if self.ui.follow_cb.get_value() is True:
@@ -1023,7 +1005,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 else:
                     app_obj.report_usage("gerber_on_iso_button")
                     self.read_form()
-                    self.isolate()
+
+                    iso_scope = 'all' if self.ui.iso_scope_radio == 'all' else 'single'
+                    self.isolate_handler(iso_type=self.iso_type, iso_scope=iso_scope)
 
         self.app.worker_task.emit({'fcn': worker_task, 'params': [obj, self.app]})
 
@@ -1053,18 +1037,96 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except Exception as e:
             return "Operation failed: %s" % str(e)
 
-    def isolate(self, iso_type=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
+    def isolate_handler(self, iso_type, iso_scope):
+
+        if iso_scope == 'all':
+            self.isolate(iso_type=iso_type)
+        else:
+            # disengage the grid snapping since it will be hard to find the drills on grid
+            if self.app.ui.grid_snap_btn.isChecked():
+                self.grid_status_memory = True
+                self.app.ui.grid_snap_btn.trigger()
+            else:
+                self.grid_status_memory = False
+
+            self.mr = self.app.plotcanvas.graph_event_connect('mouse_release', self.on_mouse_click_release)
+
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.app.mr)
+
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click on polygon to isolate it."))
+
+    def on_mouse_click_release(self, event):
+        if self.app.is_legacy is False:
+            event_pos = event.pos
+            event_is_dragging = event.is_dragging
+            right_button = 2
+        else:
+            event_pos = (event.xdata, event.ydata)
+            event_is_dragging = self.app.plotcanvas.is_dragging
+            right_button = 3
+
+        try:
+            x = float(event_pos[0])
+            y = float(event_pos[1])
+        except TypeError:
+            return
+
+        event_pos = (x, y)
+        curr_pos = self.app.plotcanvas.translate_coords(event_pos)
+
+        if event.button == 1:
+            clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]))
+
+            if clicked_poly:
+                self.poly_list.append(clicked_poly)
+                self.app.inform.emit(
+                    '%s: %d. %s' % (_("Added polygon"),
+                                    int(len(self.poly_list)),
+                                    _("Click to start adding next polygon or right click to start isolation."))
+                )
+            else:
+                self.app.inform.emit(_("No polygon detected under click position. Try again."))
+
+        elif event.button == right_button and self.app.event_is_dragging is False:
+            # restore the Grid snapping if it was active before
+            if self.grid_status_memory is True:
+                self.app.ui.grid_snap_btn.trigger()
+
+            if self.app.is_legacy is False:
+                self.app.plotcanvas.graph_event_disconnect('mouse_release', self.on_mouse_click_release)
+            else:
+                self.app.plotcanvas.graph_event_disconnect(self.mr)
+
+            self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
+                                                                  self.app.on_mouse_click_release_over_plot)
+
+            self.isolate(iso_type=self.iso_type, geometry=self.poly_list)
+
+    def isolate(self, iso_type=None, geometry=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
                 milling_type=None, follow=None, plot=True):
         """
         Creates an isolation routing geometry object in the project.
 
         :param iso_type: type of isolation to be done: 0 = exteriors, 1 = interiors and 2 = both
+        :param iso_scope: whether to isolate all polygons or single polygpns: 'all' = all, 'single' = one by one, single
         :param dia: Tool diameter
         :param passes: Number of tool widths to cut
         :param overlap: Overlap between passes in fraction of tool diameter
         :param outname: Base name of the output object
         :return: None
         """
+
+        if geometry is None:
+            if follow:
+                work_geo = self.follow_geometry
+            else:
+                work_geo = self.solid_geometry
+        else:
+            work_geo = geometry
+
         if dia is None:
             dia = float(self.options["isotooldia"])
         if passes is None:
@@ -1075,28 +1137,33 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             combine = self.options["combine_passes"]
         else:
             combine = bool(combine)
+
         if milling_type is None:
             milling_type = self.options["milling_type"]
 
         if iso_type is None:
-            self.iso_type = 2
+            iso_t = 2
         else:
-            self.iso_type = iso_type
+            iso_t = iso_type
 
         base_name = self.options["name"]
 
-        def generate_envelope(offset, invert, envelope_iso_type=2, follow=None, passes=0):
+        def generate_envelope(offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0):
             # isolation_geometry produces an envelope that is going on the left of the geometry
             # (the copper features). To leave the least amount of burrs on the features
             # the tool needs to travel on the right side of the features (this is called conventional milling)
             # the first pass is the one cutting all of the features, so it needs to be reversed
             # the other passes overlap preceding ones and cut the left over copper. It is better for them
             # to cut on the right side of the left over copper i.e on the left side of the features.
-            try:
-                geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow, passes=passes)
-            except Exception as e:
-                log.debug('FlatCAMGerber.isolate().generate_envelope() --> %s' % str(e))
-                return 'fail'
+
+            if follow:
+                geom = self.isolation_geometry(offset, geometry=geometry, follow=follow)
+            else:
+                try:
+                    geom = self.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type, passes=nr_passes)
+                except Exception as e:
+                    log.debug('FlatCAMGerber.isolate().generate_envelope() --> %s' % str(e))
+                    return 'fail'
 
             if invert:
                 try:
@@ -1120,24 +1187,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
                     return 'fail'
             return geom
-
-            # if invert:
-            #     try:
-            #         if type(geom) is MultiPolygon:
-            #             pl = []
-            #             for p in geom:
-            #                 if p is not None:
-            #                     pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
-            #             geom = MultiPolygon(pl)
-            #         elif type(geom) is Polygon and geom is not None:
-            #             geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-            #         else:
-            #             log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
-            #                       type(geom))
-            #     except Exception as e:
-            #         log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
-            #         return 'fail'
-            # return geom
 
         # if float(self.options["isotooldia"]) < 0:
         #     self.options["isotooldia"] = -self.options["isotooldia"]
@@ -1210,30 +1259,26 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     iso_offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
 
                     # if milling type is climb then the move is counter-clockwise around features
-                    if milling_type == 'cl':
-                        # geom = generate_envelope (offset, i == 0)
-                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type, follow=follow,
-                                                 passes=i)
-                    else:
-                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow,
-                                                 passes=i)
+                    mill_t = 1 if milling_type == 'cl' else 0
+                    geom = generate_envelope(iso_offset, mill_t, geometry=work_geo, env_iso_type=iso_t, follow=follow,
+                                             nr_passes=i)
+
                     if geom == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                            _("Isolation geometry could not be generated."))
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
                     geo_obj.solid_geometry.append(geom)
 
                     # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-                    if self.ui.tool_type_radio.get_value() == 'circular':
-                        new_cutz = self.app.defaults['geometry_cutz']
-                        new_vtipdia = self.app.defaults['geometry_vtipdia']
-                        new_vtipangle = self.app.defaults['geometry_vtipangle']
-                        tool_type = 'C1'
-                    else:
+                    if self.ui.tool_type_radio.get_value() == 'v':
                         new_cutz = self.ui.cutz_spinner.get_value()
                         new_vtipdia = self.ui.tipdia_spinner.get_value()
                         new_vtipangle = self.ui.tipangle_spinner.get_value()
                         tool_type = 'V'
+                    else:
+                        new_cutz = self.app.defaults['geometry_cutz']
+                        new_vtipdia = self.app.defaults['geometry_vtipdia']
+                        new_vtipangle = self.app.defaults['geometry_vtipangle']
+                        tool_type = 'C1'
 
                     # store here the default data for Geometry Data
                     default_data = {}
@@ -1280,7 +1325,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 # proceed with object creation, if there are empty and the number of them is the length
                 # of the list then we have an empty solid_geometry which should raise a Custom Exception
                 empty_cnt = 0
-                if not isinstance(geo_obj.solid_geometry, list):
+                if not isinstance(geo_obj.solid_geometry, list) and \
+                        not isinstance(geo_obj.solid_geometry, MultiPolygon):
                     geo_obj.solid_geometry = [geo_obj.solid_geometry]
 
                 for g in geo_obj.solid_geometry:
@@ -1338,13 +1384,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
 
                     # if milling type is climb then the move is counter-clockwise around features
-                    if milling_type == 'cl':
-                        # geo_obj.solid_geometry = generate_envelope(offset, i == 0)
-                        geom = generate_envelope(offset, 1, envelope_iso_type=self.iso_type, follow=follow,
-                                                 passes=i)
-                    else:
-                        geom = generate_envelope(offset, 0, envelope_iso_type=self.iso_type, follow=follow,
-                                                 passes=i)
+                    mill_t = 1 if milling_type == 'cl' else 0
+                    mill_t = 1 if milling_type == 'cl' else 0
+                    geom = generate_envelope(offset, mill_t, geometry=work_geo, env_iso_type=iso_t, follow=follow,
+                                             nr_passes=i)
+
                     if geom == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                             _("Isolation geometry could not be generated."))

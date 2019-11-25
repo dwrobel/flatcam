@@ -897,7 +897,7 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, iso_type=2, corner=None, follow=None, passes=0):
+    def isolation_geometry(self, offset, geometry=None, iso_type=2, corner=None, follow=None, passes=0):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -916,73 +916,58 @@ class Geometry(object):
             # graceful abort requested by the user
             raise FlatCAMApp.GracefulException
 
-        geo_iso = []
-        if offset == 0:
-            if follow:
-                geo_iso = self.follow_geometry
-            else:
-                geo_iso = self.solid_geometry
+        geo_iso = list()
+
+        if follow:
+            return geometry
+
+        if geometry:
+            working_geo = geometry
         else:
-            if follow:
-                geo_iso = self.follow_geometry
+            working_geo = self.solid_geometry
+
+        try:
+            geo_len = len(working_geo)
+        except TypeError:
+            geo_len = 1
+
+        old_disp_number = 0
+        pol_nr = 0
+        # yet, it can be done by issuing an unary_union in the end, thus getting rid of the overlapping geo
+        try:
+            for pol in working_geo:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+                if offset == 0:
+                    geo_iso.append(pol)
+                else:
+                    corner_type = 1 if corner is None else corner
+                    geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4), join_style=corner_type))
+                pol_nr += 1
+                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+
+                if  old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %s %d: %d%%' %
+                                                             (_("Pass"), int(passes + 1), int(disp_number)))
+                    old_disp_number = disp_number
+        except TypeError:
+            # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
+            # MultiPolygon (not an iterable)
+            if offset == 0:
+                geo_iso.append(working_geo)
             else:
-                # if isinstance(self.solid_geometry, list):
-                #     temp_geo = cascaded_union(self.solid_geometry)
-                # else:
-                #     temp_geo = self.solid_geometry
+                corner_type = 1 if corner is None else corner
+                geo_iso.append(working_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                                  join_style=corner_type))
 
-                # Remember: do not make a buffer for each element in the solid_geometry because it will cut into
-                # other copper features
-                # if corner is None:
-                #     geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
-                # else:
-                #     geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                #                               join_style=corner)
-
-                # variables to display the percentage of work done
-                geo_len = 0
-                try:
-                    for pol in self.solid_geometry:
-                        geo_len += 1
-                except TypeError:
-                    geo_len = 1
-                disp_number = 0
-                old_disp_number = 0
-                pol_nr = 0
-                # yet, it can be done by issuing an unary_union in the end, thus getting rid of the overlapping geo
-                try:
-                    for pol in self.solid_geometry:
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
-                        if corner is None:
-                            geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-                        else:
-                            geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)),
-                                           join_style=corner)
-                        pol_nr += 1
-                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
-                        if  old_disp_number < disp_number <= 100:
-                            self.app.proc_container.update_view_text(' %s %d: %d%%' %
-                                                                     (_("Pass"), int(passes + 1), int(disp_number)))
-                            old_disp_number = disp_number
-                except TypeError:
-                    # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
-                    # MultiPolygon (not an iterable)
-                    if corner is None:
-                        geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-                    else:
-                        geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)),
-                                       join_style=corner)
-                self.app.proc_container.update_view_text(' %s' % _("Buffering"))
-                geo_iso = unary_union(geo_iso)
+        self.app.proc_container.update_view_text(' %s' % _("Buffering"))
+        geo_iso = unary_union(geo_iso)
 
         self.app.proc_container.update_view_text('')
         # end of replaced block
-        if follow:
-            return geo_iso
-        elif iso_type == 2:
+
+        if iso_type == 2:
             return geo_iso
         elif iso_type == 0:
             self.app.proc_container.update_view_text(' %s' % _("Get Exteriors"))

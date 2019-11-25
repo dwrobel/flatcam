@@ -1344,9 +1344,10 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
             _("Width of the isolation gap in\n"
               "number (integer) of tool widths.")
         )
-        grid0.addWidget(passlabel, 1, 0)
         self.iso_width_entry = FCSpinner()
         self.iso_width_entry.setRange(1, 999)
+
+        grid0.addWidget(passlabel, 1, 0)
         grid0.addWidget(self.iso_width_entry, 1, 1)
 
         # Pass overlap
@@ -1356,13 +1357,27 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "Example:\n"
               "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
         )
-        grid0.addWidget(overlabel, 2, 0)
         self.iso_overlap_entry = FCDoubleSpinner()
         self.iso_overlap_entry.set_precision(3)
         self.iso_overlap_entry.setWrapping(True)
         self.iso_overlap_entry.setRange(0.000, 0.999)
         self.iso_overlap_entry.setSingleStep(0.1)
+
+        grid0.addWidget(overlabel, 2, 0)
         grid0.addWidget(self.iso_overlap_entry, 2, 1)
+
+        # Isolation Scope
+        self.iso_scope_label = QtWidgets.QLabel('%s:' % _('Scope'))
+        self.iso_scope_label.setToolTip(
+            _("Isolation scope. Choose what to isolate:\n"
+              "- 'All' -> Isolate all the polygons in the object\n"
+              "- 'Single' -> Isolate a single polygon.")
+        )
+        self.iso_scope_radio = RadioSet([{'label': _('All'), 'value': 'all'},
+                                         {'label': _('Single'), 'value': 'single'}])
+
+        grid0.addWidget(self.iso_scope_label, 3, 0)
+        grid0.addWidget(self.iso_scope_radio, 3, 1, 1, 2)
 
         # Milling Type
         milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
@@ -1371,17 +1386,17 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
-        grid0.addWidget(milling_type_label, 3, 0)
+        grid0.addWidget(milling_type_label, 4, 0)
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
                                             {'label': _('Conv.'), 'value': 'cv'}])
-        grid0.addWidget(self.milling_type_radio, 3, 1)
+        grid0.addWidget(self.milling_type_radio, 4, 1)
 
         # Combine passes
         self.combine_passes_cb = FCCheckBox(label=_('Combine Passes'))
         self.combine_passes_cb.setToolTip(
             _("Combine all passes into one object")
         )
-        grid0.addWidget(self.combine_passes_cb, 4, 0, 1, 2)
+        grid0.addWidget(self.combine_passes_cb, 5, 0, 1, 2)
 
         # ## Clear non-copper regions
         self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Non-copper regions"))
@@ -1537,8 +1552,28 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.cutz_spinner.set_range(-99.9999, -0.0001)
         self.cutz_spinner.setSingleStep(0.1)
         self.cutz_spinner.setWrapping(True)
+
         grid0.addWidget(self.cutzlabel, 5, 0)
         grid0.addWidget(self.cutz_spinner, 5, 1, 1, 2)
+
+        # Isolation Type
+        self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
+        self.iso_type_label.setToolTip(
+            _("Choose how the isolation will be executed:\n"
+              "- 'Full' -> complete isolation of polygons\n"
+              "- 'Ext' -> will isolate only on the outside\n"
+              "- 'Int' -> will isolate only on the inside\n"
+              "'Exterior' isolation is almost always possible\n"
+              "(with the right tool) but 'Interior'\n"
+              "isolation can be done only when there is an opening\n"
+              "inside of the polygon (e.g polygon is a 'doughnut' shape).")
+        )
+        self.iso_type_radio = RadioSet([{'label': _('Full'), 'value': 'full'},
+                                        {'label': _('Exterior'), 'value': 'ext'},
+                                        {'label': _('Interior'), 'value': 'int'}])
+
+        grid0.addWidget(self.iso_type_label, 6, 0,)
+        grid0.addWidget(self.iso_type_radio, 6, 1, 1, 2)
 
         # Buffering Type
         buffering_label = QtWidgets.QLabel('%s:' % _('Buffering'))
@@ -1550,8 +1585,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.buffering_radio = RadioSet([{'label': _('None'), 'value': 'no'},
                                          {'label': _('Full'), 'value': 'full'}])
-        grid0.addWidget(buffering_label, 6, 0)
-        grid0.addWidget(self.buffering_radio, 6, 1)
+        grid0.addWidget(buffering_label, 7, 0)
+        grid0.addWidget(self.buffering_radio, 7, 1)
 
         # Simplification
         self.simplify_cb = FCCheckBox(label=_('Simplify'))
@@ -1560,7 +1595,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
               "loaded with simplification having a set tolerance.\n"
               "<<WARNING>>: Don't change this unless you know what you are doing !!!")
                                     )
-        grid0.addWidget(self.simplify_cb, 7, 0, 1, 2)
+        grid0.addWidget(self.simplify_cb, 8, 0, 1, 2)
 
         # Simplification tolerance
         self.simplification_tol_label = QtWidgets.QLabel(_('Tolerance'))
@@ -1572,11 +1607,14 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.simplification_tol_spinner.setRange(0.00000, 0.01000)
         self.simplification_tol_spinner.setSingleStep(0.0001)
 
-        grid0.addWidget(self.simplification_tol_label, 8, 0)
-        grid0.addWidget(self.simplification_tol_spinner, 8, 1)
-        self.ois_simplif = OptionalInputSection(self.simplify_cb,
-                                                [self.simplification_tol_label, self.simplification_tol_spinner],
-                                                logic=True)
+        grid0.addWidget(self.simplification_tol_label, 9, 0)
+        grid0.addWidget(self.simplification_tol_spinner, 9, 1)
+        self.ois_simplif = OptionalInputSection(
+            self.simplify_cb,
+            [
+                self.simplification_tol_label, self.simplification_tol_spinner
+            ],
+            logic=True)
 
         self.layout.addStretch()
 

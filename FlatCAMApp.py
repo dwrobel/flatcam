@@ -523,6 +523,7 @@ class App(QtCore.QObject):
             "gerber_isooverlap": 0.00393701,
             "gerber_milling_type": "cl",
             "gerber_combine_passes": False,
+            "gerber_iso_scope": 'all',
             "gerber_noncoppermargin": 0.00393701,
             "gerber_noncopperrounded": False,
             "gerber_bboxmargin": 0.00393701,
@@ -537,6 +538,7 @@ class App(QtCore.QObject):
             "gerber_vtipdia": 0.1,
             "gerber_vtipangle": 30,
             "gerber_vcutz": -0.05,
+            "gerber_iso_type": "full",
             "gerber_buffering": "full",
             "gerber_simplification": False,
             "gerber_simp_tolerance": 0.0005,
@@ -1077,6 +1079,7 @@ class App(QtCore.QObject):
             "gerber_isopasses": self.ui.gerber_defaults_form.gerber_opt_group.iso_width_entry,
             "gerber_isooverlap": self.ui.gerber_defaults_form.gerber_opt_group.iso_overlap_entry,
             "gerber_combine_passes": self.ui.gerber_defaults_form.gerber_opt_group.combine_passes_cb,
+            "gerber_iso_scope": self.ui.gerber_defaults_form.gerber_opt_group.iso_scope_radio,
             "gerber_milling_type": self.ui.gerber_defaults_form.gerber_opt_group.milling_type_radio,
             "gerber_noncoppermargin": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_margin_entry,
             "gerber_noncopperrounded": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_rounded_cb,
@@ -1092,6 +1095,7 @@ class App(QtCore.QObject):
             "gerber_vtipdia": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipdia_spinner,
             "gerber_vtipangle": self.ui.gerber_defaults_form.gerber_adv_opt_group.tipangle_spinner,
             "gerber_vcutz": self.ui.gerber_defaults_form.gerber_adv_opt_group.cutz_spinner,
+            "gerber_iso_type": self.ui.gerber_defaults_form.gerber_adv_opt_group.iso_type_radio,
 
             "gerber_buffering": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffering_radio,
             "gerber_simplification": self.ui.gerber_defaults_form.gerber_adv_opt_group.simplify_cb,
@@ -2423,6 +2427,9 @@ class App(QtCore.QObject):
 
         # decide if we have a double click or single click
         self.doubleclick = False
+
+        # store here the is_dragging value
+        self.event_is_dragging = False
 
         # variable to store if a command is active (then the var is not None) and which one it is
         self.command_active = None
@@ -8337,7 +8344,7 @@ class App(QtCore.QObject):
                 pan_button = 2
             else:
                 pan_button = 3
-            event_is_dragging = event.is_dragging
+            self.event_is_dragging = event.is_dragging
         else:
             event_pos = (event.xdata, event.ydata)
             # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
@@ -8345,7 +8352,7 @@ class App(QtCore.QObject):
                 pan_button = 3
             else:
                 pan_button = 2
-            event_is_dragging = self.plotcanvas.is_dragging
+            self.event_is_dragging = self.plotcanvas.is_dragging
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
@@ -8355,7 +8362,7 @@ class App(QtCore.QObject):
 
         if not origin_click:
             # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-            if event.button == pan_button and event_is_dragging == 1:
+            if event.button == pan_button and self.event_is_dragging == 1:
                 self.ui.popMenu.mouse_is_panning = True
                 return
 
@@ -8383,7 +8390,7 @@ class App(QtCore.QObject):
                 self.mouse = [pos[0], pos[1]]
 
                 # if the mouse is moved and the LMB is clicked then the action is a selection
-                if event_is_dragging == 1 and event.button == 1:
+                if self.event_is_dragging == 1 and event.button == 1:
                     self.delete_selection_shape()
                     if dx < 0:
                         self.draw_moving_selection_shape(self.pos, pos, color=self.defaults['global_alt_sel_line'],

@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.11.2019
+
+- In Gerber isolation changed the UI
+- in Gerber isolation added the option to selectively isolate only certain polygons
+
 23.11.2019
 
 - in Tool Fiducials added a new fiducial type: chess pattern
