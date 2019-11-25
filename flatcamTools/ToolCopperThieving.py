@@ -1,7 +1,7 @@
 # ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # File Author: Marius Adrian Stanciu (c)                   #
-# Date: 10/25/2019                                          #
+# Date: 10/25/2019                                         #
 # MIT Licence                                              #
 # ##########################################################
 
@@ -876,7 +876,7 @@ class ToolCopperThieving(FlatCAMTool):
 
                     if old_disp_number < disp_number <= 100:
                         app_obj.app.proc_container.update_view_text(' %s ... %d%%' %
-                                                                 (_("Thieving"), int(disp_number)))
+                                                                    (_("Thieving"), int(disp_number)))
                         old_disp_number = disp_number
             except TypeError:
                 # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
@@ -1074,7 +1074,7 @@ class ToolCopperThieving(FlatCAMTool):
 
                         if old_disp_number < disp_number <= 100:
                             app_obj.app.proc_container.update_view_text(' %s ... %d%%' %
-                                                                     (_("Buffering"), int(disp_number)))
+                                                                        (_("Buffering"), int(disp_number)))
                             old_disp_number = disp_number
                 except TypeError:
                     # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a

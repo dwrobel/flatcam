@@ -1602,6 +1602,13 @@ class App(QtCore.QObject):
         else:
             self.is_legacy = True
 
+        # Event signals disconnect id holders
+        self.mp = None
+        self.mm = None
+        self.mr = None
+        self.mdc = None
+        self.mp_zc = None
+
         # Matplotlib axis
         self.axes = None
 
@@ -2510,12 +2517,6 @@ class App(QtCore.QObject):
         self.y_pos = None
         self.width = None
         self.height = None
-
-        # Event signals disconnect id holders
-        self.mp = None
-        self.mm = None
-        self.mr = None
-        self.mp_zc = None
 
         # when True, the app has to return from any thread
         self.abort_flag = False
@@ -8462,11 +8463,10 @@ class App(QtCore.QObject):
 
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
-        if event.button == right_button:  # right click
-            if self.ui.popMenu.mouse_is_panning is False:
-                self.cursor = QtGui.QCursor()
-                self.populate_cmenu_grids()
-                self.ui.popMenu.popup(self.cursor.pos())
+        if event.button == right_button and self.ui.popMenu.mouse_is_panning is False:  # right click
+            self.cursor = QtGui.QCursor()
+            self.populate_cmenu_grids()
+            self.ui.popMenu.popup(self.cursor.pos())
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
         # selection and then select a type of selection ("enclosing" or "touching")

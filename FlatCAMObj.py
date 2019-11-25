@@ -621,10 +621,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.decimals = 4
 
         # Mouse events
-        self.mr = self.app.mr
+        self.mr = None
 
         # dict to store the polygons selected for isolation; key is the shape added to be ploted and value is the poly
         self.poly_dict = dict()
+
+        # store the status of grid snapping
+        self.grid_status_memory = None
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -1061,12 +1064,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def on_mouse_click_release(self, event):
         if self.app.is_legacy is False:
             event_pos = event.pos
-            event_is_dragging = event.is_dragging
             right_button = 2
+            event_is_dragging = self.app.event_is_dragging
         else:
             event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
+            event_is_dragging = self.app.ui.popMenu.mouse_is_panning
 
         try:
             x = float(event_pos[0])
@@ -1083,9 +1086,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             if clicked_poly:
                 if clicked_poly not in self.poly_dict.values():
                     shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0, shape=clicked_poly,
-                                             color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                             face_color=self.app.defaults['global_sel_draw_color'] + 'AF',
-                                             visible=True)
+                                                        color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                        face_color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                        visible=True)
                     self.poly_dict[shape_id] = clicked_poly
                     self.app.inform.emit(
                         '%s: %d. %s' % (_("Added polygon"),
@@ -1110,7 +1113,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             else:
                 self.app.inform.emit(_("No polygon detected under click position."))
 
-        elif event.button == right_button and self.app.event_is_dragging is False:
+        elif event.button == right_button and event_is_dragging is False:
             # restore the Grid snapping if it was active before
             if self.grid_status_memory is True:
                 self.app.ui.grid_snap_btn.trigger()
@@ -1126,8 +1129,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.app.tool_shapes.clear(update=True)
 
             if self.poly_dict:
-                poly_list = self.poly_dict.values()
+                poly_list = deepcopy(list(self.poly_dict.values()))
                 self.isolate(iso_type=self.iso_type, geometry=poly_list)
+                self.poly_dict.clear()
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
 

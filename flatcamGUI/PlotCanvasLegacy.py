@@ -909,6 +909,14 @@ class ShapeCollectionLegacy:
 
         return self.shape_id
 
+    def remove(self, shape_id, update=None):
+        for k in list(self._shapes.keys()):
+            if shape_id == k:
+                self._shapes.pop(k, None)
+
+        if update is True:
+            self.redraw()
+
     def clear(self, update=None):
         """
         Clear the canvas of the shapes.

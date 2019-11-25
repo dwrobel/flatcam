@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the 'single' isolation of Gerber polygons to remove the polygon if clicked on it and it is already in the list of single polygons to be isolated
 - clicking to add a polygon when doing Single type isolation will add a blue shape marking the selected polygon, second click will remove that shape
 - fixed bugs in Paint Tool when painting single polygon
+- in Gerber isolation added the option to selectively isolate only certain polygons - made it to work for Legacy(2D) graphic mode
 
 23.11.2019
 
