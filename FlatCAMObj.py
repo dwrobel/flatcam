@@ -1148,97 +1148,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         base_name = self.options["name"]
 
-        def generate_envelope(offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0):
-            # isolation_geometry produces an envelope that is going on the left of the geometry
-            # (the copper features). To leave the least amount of burrs on the features
-            # the tool needs to travel on the right side of the features (this is called conventional milling)
-            # the first pass is the one cutting all of the features, so it needs to be reversed
-            # the other passes overlap preceding ones and cut the left over copper. It is better for them
-            # to cut on the right side of the left over copper i.e on the left side of the features.
-
-            if follow:
-                geom = self.isolation_geometry(offset, geometry=geometry, follow=follow)
-            else:
-                try:
-                    geom = self.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type, passes=nr_passes)
-                except Exception as e:
-                    log.debug('FlatCAMGerber.isolate().generate_envelope() --> %s' % str(e))
-                    return 'fail'
-
-            if invert:
-                try:
-                    pl = []
-                    for p in geom:
-                        if p is not None:
-                            if isinstance(p, Polygon):
-                                pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
-                            elif isinstance(p, LinearRing):
-                                pl.append(Polygon(p.coords[::-1]))
-                    geom = MultiPolygon(pl)
-                except TypeError:
-                    if isinstance(geom, Polygon) and geom is not None:
-                        geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-                    elif isinstance(geom, LinearRing) and geom is not None:
-                        geom = Polygon(geom.coords[::-1])
-                    else:
-                        log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
-                                  type(geom))
-                except Exception as e:
-                    log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
-                    return 'fail'
-            return geom
-
-        # if float(self.options["isotooldia"]) < 0:
-        #     self.options["isotooldia"] = -self.options["isotooldia"]
-
-        def area_subtraction(geo):
-            new_geometry = []
-
-            name = self.ui.obj_combo.currentText()
-            subtractor_obj = self.app.collection.get_by_name(name)
-            sub_union = cascaded_union(subtractor_obj.solid_geometry)
-
-            try:
-                for geo_elem in geo:
-                    if isinstance(geo_elem, Polygon):
-                        for ring in self.poly2rings(geo_elem):
-                            new_geo = ring.difference(sub_union)
-                            if new_geo and not new_geo.is_empty:
-                                new_geometry.append(new_geo)
-                    elif isinstance(geo_elem, MultiPolygon):
-                        for poly in geo_elem:
-                            for ring in self.poly2rings(poly):
-                                new_geo = ring.difference(sub_union)
-                                if new_geo and not new_geo.is_empty:
-                                    new_geometry.append(new_geo)
-                    elif isinstance(geo_elem, LineString):
-                        new_geo = geo_elem.difference(sub_union)
-                        if new_geo:
-                            if not new_geo.is_empty:
-                                new_geometry.append(new_geo)
-                    elif isinstance(geo_elem, MultiLineString):
-                        for line_elem in geo_elem:
-                            new_geo = line_elem.difference(sub_union)
-                            if new_geo and not new_geo.is_empty:
-                                new_geometry.append(new_geo)
-            except TypeError:
-                if isinstance(geo, Polygon):
-                    for ring in self.poly2rings(geo):
-                        new_geo = ring.difference(sub_union)
-                        if new_geo:
-                            if not new_geo.is_empty:
-                                new_geometry.append(new_geo)
-                elif isinstance(geo, LineString):
-                    new_geo = geo.difference(sub_union)
-                    if new_geo and not new_geo.is_empty:
-                        new_geometry.append(new_geo)
-                elif isinstance(geo, MultiLineString):
-                    for line_elem in geo:
-                        new_geo = line_elem.difference(sub_union)
-                        if new_geo and not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-            return new_geometry
-
         if combine:
             if outname is None:
                 if self.iso_type == 0:
@@ -1260,8 +1169,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_t = 1 if milling_type == 'cl' else 0
-                    geom = generate_envelope(iso_offset, mill_t, geometry=work_geo, env_iso_type=iso_t, follow=follow,
-                                             nr_passes=i)
+                    geom = self.generate_envelope(iso_offset, mill_t, geometry=work_geo, env_iso_type=iso_t,
+                                                  follow=follow, nr_passes=i)
 
                     if geom == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
@@ -1349,7 +1258,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 # ############################################################
                 if self.ui.except_cb.get_value():
                     self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
-                    geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
+                    geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init, plot=plot)
@@ -1386,8 +1295,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_t = 1 if milling_type == 'cl' else 0
                     mill_t = 1 if milling_type == 'cl' else 0
-                    geom = generate_envelope(offset, mill_t, geometry=work_geo, env_iso_type=iso_t, follow=follow,
-                                             nr_passes=i)
+                    geom = self.generate_envelope(offset, mill_t, geometry=work_geo, env_iso_type=iso_t,
+                                                  follow=follow,
+                                                  nr_passes=i)
 
                     if geom == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' %
@@ -1422,10 +1332,109 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # ############################################################
                     if self.ui.except_cb.get_value():
                         self.app.proc_container.update_view_text(' %s' % _("Subtracting Geo"))
-                        geo_obj.solid_geometry = area_subtraction(geo_obj.solid_geometry)
+                        geo_obj.solid_geometry = self.area_subtraction(geo_obj.solid_geometry)
 
                 # TODO: Do something if this is None. Offer changing name?
                 self.app.new_object("geometry", iso_name, iso_init, plot=plot)
+
+    def generate_envelope(self, offset, invert, geometry=None, env_iso_type=2, follow=None, nr_passes=0):
+        # isolation_geometry produces an envelope that is going on the left of the geometry
+        # (the copper features). To leave the least amount of burrs on the features
+        # the tool needs to travel on the right side of the features (this is called conventional milling)
+        # the first pass is the one cutting all of the features, so it needs to be reversed
+        # the other passes overlap preceding ones and cut the left over copper. It is better for them
+        # to cut on the right side of the left over copper i.e on the left side of the features.
+
+        if follow:
+            geom = self.isolation_geometry(offset, geometry=geometry, follow=follow)
+        else:
+            try:
+                geom = self.isolation_geometry(offset, geometry=geometry, iso_type=env_iso_type, passes=nr_passes)
+            except Exception as e:
+                log.debug('FlatCAMGerber.isolate().generate_envelope() --> %s' % str(e))
+                return 'fail'
+
+        if invert:
+            try:
+                pl = []
+                for p in geom:
+                    if p is not None:
+                        if isinstance(p, Polygon):
+                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                        elif isinstance(p, LinearRing):
+                            pl.append(Polygon(p.coords[::-1]))
+                geom = MultiPolygon(pl)
+            except TypeError:
+                if isinstance(geom, Polygon) and geom is not None:
+                    geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                elif isinstance(geom, LinearRing) and geom is not None:
+                    geom = Polygon(geom.coords[::-1])
+                else:
+                    log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
+                              type(geom))
+            except Exception as e:
+                log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
+                return 'fail'
+        return geom
+
+    def area_subtraction(self, geo, subtractor_geo=None):
+        """
+        Subtracts the subtractor_geo (if present else self.solid_geometry) from the geo
+
+        :param geo: target geometry from which to subtract
+        :param subtractor_geo: geometry that acts as subtractor
+        :return:
+        """
+        new_geometry = []
+        target_geo = geo
+
+        if subtractor_geo:
+            sub_union = cascaded_union(subtractor_geo)
+        else:
+            name = self.ui.obj_combo.currentText()
+            subtractor_obj = self.app.collection.get_by_name(name)
+            sub_union = cascaded_union(subtractor_obj.solid_geometry)
+
+        try:
+            for geo_elem in target_geo:
+                if isinstance(geo_elem, Polygon):
+                    for ring in self.poly2rings(geo_elem):
+                        new_geo = ring.difference(sub_union)
+                        if new_geo and not new_geo.is_empty:
+                            new_geometry.append(new_geo)
+                elif isinstance(geo_elem, MultiPolygon):
+                    for poly in geo_elem:
+                        for ring in self.poly2rings(poly):
+                            new_geo = ring.difference(sub_union)
+                            if new_geo and not new_geo.is_empty:
+                                new_geometry.append(new_geo)
+                elif isinstance(geo_elem, LineString):
+                    new_geo = geo_elem.difference(sub_union)
+                    if new_geo:
+                        if not new_geo.is_empty:
+                            new_geometry.append(new_geo)
+                elif isinstance(geo_elem, MultiLineString):
+                    for line_elem in geo_elem:
+                        new_geo = line_elem.difference(sub_union)
+                        if new_geo and not new_geo.is_empty:
+                            new_geometry.append(new_geo)
+        except TypeError:
+            if isinstance(target_geo, Polygon):
+                for ring in self.poly2rings(target_geo):
+                    new_geo = ring.difference(sub_union)
+                    if new_geo:
+                        if not new_geo.is_empty:
+                            new_geometry.append(new_geo)
+            elif isinstance(target_geo, LineString):
+                new_geo = target_geo.difference(sub_union)
+                if new_geo and not new_geo.is_empty:
+                    new_geometry.append(new_geo)
+            elif isinstance(target_geo, MultiLineString):
+                for line_elem in target_geo:
+                    new_geo = line_elem.difference(sub_union)
+                    if new_geo and not new_geo.is_empty:
+                        new_geometry.append(new_geo)
+        return new_geometry
 
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
