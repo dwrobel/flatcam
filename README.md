@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - made some optimizations in FlatCAMGerber.isolate() method
 - updated the 'single' isolation of Gerber polygons to remove the polygon if clicked on it and it is already in the list of single polygons to be isolated
 - clicking to add a polygon when doing Single type isolation will add a blue shape marking the selected polygon, second click will remove that shape
+- fixed bugs in Paint Tool when painting single polygon
 
 23.11.2019
 

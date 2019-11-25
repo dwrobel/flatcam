@@ -1126,7 +1126,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.app.tool_shapes.clear(update=True)
 
             if self.poly_dict:
-                self.isolate(iso_type=self.iso_type, geometry=self.poly_list)
+                poly_list = self.poly_dict.values()
+                self.isolate(iso_type=self.iso_type, geometry=poly_list)
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
 

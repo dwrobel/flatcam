@@ -1028,7 +1028,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 # do paint single only for left mouse clicks
                 if event.button == 1:
                     self.app.inform.emit(_("Painting polygon..."))
-                    if self.app.is_legacy:
+                    if self.app.is_legacy is False:
                         self.app.plotcanvas.graph_event_disconnect('mouse_press', doit)
                     else:
                         self.app.plotcanvas.graph_event_disconnect(self.mp)
@@ -1054,6 +1054,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             else:
                 self.app.plotcanvas.graph_event_disconnect(self.app.mr)
                 self.app.plotcanvas.graph_event_disconnect(self.app.mp)
+
             self.mp = self.app.plotcanvas.graph_event_connect('mouse_press', doit)
 
         elif self.select_method == "area":
@@ -1416,9 +1417,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                     if isinstance(poly_buf, MultiPolygon):
                         cp = []
                         for pp in poly_buf:
-                            cp.append(paint_p(pp, tooldia=tool_dia))
+                            cp.append(paint_p(pp, tooldiameter=tool_dia))
                     else:
-                        cp = paint_p(poly_buf, tooldia=tool_dia)
+                        cp = paint_p(poly_buf, tooldiameter=tool_dia)
 
                     if cp is not None:
                         if isinstance(cp, list):
