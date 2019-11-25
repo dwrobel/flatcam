@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - In Gerber isolation changed the UI
 - in Gerber isolation added the option to selectively isolate only certain polygons
 - made some optimizations in FlatCAMGerber.isolate() method
+- updated the 'single' isolation of Gerber polygons to remove the polygon if clicked on it and it is already in the list of single polygons to be isolated
 
 23.11.2019
 

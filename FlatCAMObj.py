@@ -1081,14 +1081,24 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]))
 
             if clicked_poly:
-                self.poly_list.append(clicked_poly)
-                self.app.inform.emit(
-                    '%s: %d. %s' % (_("Added polygon"),
-                                    int(len(self.poly_list)),
-                                    _("Click to start adding next polygon or right click to start isolation."))
-                )
+                if clicked_poly not in self.poly_list:
+                    self.poly_list.append(clicked_poly)
+                    self.app.inform.emit(
+                        '%s: %d. %s' % (_("Added polygon"),
+                                        int(len(self.poly_list)),
+                                        _("Click to add next polygon or right click to start isolation."))
+                    )
+                else:
+                    try:
+                        self.poly_list.remove(clicked_poly)
+                    except TypeError:
+                        return
+                    self.app.inform.emit(
+                        '%s. %s' % (_("Removed polygon"),
+                                    _("Click to add/remove next polygon or right click to start isolation."))
+                    )
             else:
-                self.app.inform.emit(_("No polygon detected under click position. Try again."))
+                self.app.inform.emit(_("No polygon detected under click position."))
 
         elif event.button == right_button and self.app.event_is_dragging is False:
             # restore the Grid snapping if it was active before
@@ -1103,7 +1113,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                   self.app.on_mouse_click_release_over_plot)
 
-            self.isolate(iso_type=self.iso_type, geometry=self.poly_list)
+            if self.poly_list:
+                self.isolate(iso_type=self.iso_type, geometry=self.poly_list)
+            else:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
 
     def isolate(self, iso_type=None, geometry=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
                 milling_type=None, follow=None, plot=True):
