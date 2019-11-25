@@ -623,8 +623,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # Mouse events
         self.mr = self.app.mr
 
-        # list to store the polygons selected for isolation
-        self.poly_list = list()
+        # dict to store the polygons selected for isolation; key is the shape added to be ploted and value is the poly
+        self.poly_dict = dict()
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -1081,22 +1081,32 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]))
 
             if clicked_poly:
-                if clicked_poly not in self.poly_list:
-                    self.poly_list.append(clicked_poly)
+                if clicked_poly not in self.poly_dict.values():
+                    shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0, shape=clicked_poly,
+                                             color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                             face_color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                             visible=True)
+                    self.poly_dict[shape_id] = clicked_poly
                     self.app.inform.emit(
                         '%s: %d. %s' % (_("Added polygon"),
-                                        int(len(self.poly_list)),
+                                        int(len(self.poly_dict)),
                                         _("Click to add next polygon or right click to start isolation."))
                     )
                 else:
                     try:
-                        self.poly_list.remove(clicked_poly)
+                        for k, v in list(self.poly_dict.items()):
+                            if v == clicked_poly:
+                                self.app.tool_shapes.remove(k)
+                                self.poly_dict.pop(k)
+                                break
                     except TypeError:
                         return
                     self.app.inform.emit(
                         '%s. %s' % (_("Removed polygon"),
                                     _("Click to add/remove next polygon or right click to start isolation."))
                     )
+
+                self.app.tool_shapes.redraw()
             else:
                 self.app.inform.emit(_("No polygon detected under click position."))
 
@@ -1113,7 +1123,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.app.mr = self.app.plotcanvas.graph_event_connect('mouse_release',
                                                                   self.app.on_mouse_click_release_over_plot)
 
-            if self.poly_list:
+            self.app.tool_shapes.clear(update=True)
+
+            if self.poly_dict:
                 self.isolate(iso_type=self.iso_type, geometry=self.poly_list)
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
