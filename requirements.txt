@@ -22,3 +22,5 @@ rasterio
 lxml
 ezdxf
 qrcode>=6.0
+reportlab>=3.0
+svglib

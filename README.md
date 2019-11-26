@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+26.11.2019
+
+- updated the Film Tool to allow exporting PDF and PNG file (besides the SVG file)
+
 25.11.2019
 
 - In Gerber isolation changed the UI

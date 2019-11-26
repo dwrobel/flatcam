@@ -4634,6 +4634,27 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.film_mirror_axis_label, 13, 0)
         grid0.addWidget(self.film_mirror_axis, 13, 1)
 
+        separator_line3 = QtWidgets.QFrame()
+        separator_line3.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line3, 14, 0, 1, 2)
+
+        self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},
+                                         {'label': _('PNG'), 'value': 'png'},
+                                         {'label': _('PDF'), 'value': 'pdf'}
+                                         ], stretch=False)
+
+        self.file_type_label = QtWidgets.QLabel(_("Film Type:"))
+        self.file_type_label.setToolTip(
+            _("The file type of the saved film. Can be:\n"
+              "- 'SVG' -> open-source vectorial format\n"
+              "- 'PNG' -> raster image\n"
+              "- 'PDF' -> portable document format")
+        )
+        grid0.addWidget(self.file_type_label, 15, 0)
+        grid0.addWidget(self.file_type_radio, 15, 1)
+
+
         self.layout.addStretch()
 
 

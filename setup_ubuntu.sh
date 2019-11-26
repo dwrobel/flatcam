@@ -5,4 +5,4 @@ sudo apt install --reinstall python3-pip python3-tk python3-imaging
 
 sudo python3 -m pip install --upgrade pip numpy scipy shapely rtree tk lxml cycler python-dateutil kiwisolver dill
 sudo python3 -m pip install --upgrade vispy pyopengl setuptools svg.path ortools freetype-py fontTools rasterio ezdxf
-sudo python3 -m pip install --upgrade matplotlib qrcode
+sudo python3 -m pip install --upgrade matplotlib qrcode reportlab svglib

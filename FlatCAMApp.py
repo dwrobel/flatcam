@@ -557,7 +557,7 @@ class App(QtCore.QObject):
             "gerber_editor_newdim": "0.5, 0.5",
             "gerber_editor_array_size": 5,
             "gerber_editor_lin_axis": 'X',
-            "gerber_editor_lin_pitch": 1,
+            "gerber_editor_lin_pitch": 0.1,
             "gerber_editor_lin_angle": 0.0,
             "gerber_editor_circ_dir": 'CW',
             "gerber_editor_circ_angle": 0.0,
@@ -765,6 +765,7 @@ class App(QtCore.QObject):
             "tools_film_skew_ref_radio": 'bottomleft',
             "tools_film_mirror_cb": False,
             "tools_film_mirror_axis_radio": 'none',
+            "tools_film_file_type_radio": 'svg',
 
             # Panel Tool
             "tools_panelize_spacing_columns": 0,
@@ -1322,6 +1323,7 @@ class App(QtCore.QObject):
             "tools_film_skew_ref_radio": self.ui.tools_defaults_form.tools_film_group.film_skew_reference,
             "tools_film_mirror_cb": self.ui.tools_defaults_form.tools_film_group.film_mirror_cb,
             "tools_film_mirror_axis_radio": self.ui.tools_defaults_form.tools_film_group.film_mirror_axis,
+            "tools_film_file_type_radio": self.ui.tools_defaults_form.tools_film_group.file_type_radio,
 
             # Panelize Tool
             "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,
@@ -5560,7 +5562,7 @@ class App(QtCore.QObject):
         if self.toggle_units_ignore:
             return
 
-        new_units = self.defaults['units'].upper()
+        new_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         # If option is the same, then ignore
         if new_units == self.defaults["units"].upper():
@@ -10058,291 +10060,6 @@ class App(QtCore.QObject):
             self.file_saved.emit("SVG", filename)
             self.inform.emit('[success] %s: %s' %
                              (_("SVG file exported to"), filename))
-
-    def export_svg_negative(self, obj_name, box_name, filename, boundary,
-                            scale_stroke_factor=0.00,
-                            scale_factor_x=None, scale_factor_y=None,
-                            skew_factor_x=None, skew_factor_y=None, skew_reference='center',
-                            mirror=None,
-                            use_thread=True):
-        """
-        Exports a Geometry Object to an SVG file in negative.
-
-        :param obj_name: the name of the FlatCAM object to be saved as SVG
-        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
-        :param filename: Path to the SVG file to save to.
-        :param boundary: thickness of a black border to surround all the features
-        :param scale_stroke_factor: factor by which to change/scale the thickness of the features
-        :param scale_factor_x: factor to scale the svg geometry on the X axis
-        :param scale_factor_y: factor to scale the svg geometry on the Y axis
-        :param skew_factor_x: factor to skew the svg geometry on the X axis
-        :param skew_factor_y: factor to skew the svg geometry on the Y axis
-        :param skew_reference: reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft', 'topright' and
-        those are the 4 points of the bounding box of the geometry to be skewed.
-        :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
-        :param use_thread: if to be run in a separate thread; boolean
-        :return:
-        """
-        self.report_usage("export_negative()")
-
-        if filename is None:
-            filename = self.defaults["global_last_save_folder"]
-
-        self.log.debug("export_svg() negative")
-
-        try:
-            obj = self.collection.get_by_name(str(obj_name))
-        except Exception:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % obj_name
-
-        try:
-            box = self.collection.get_by_name(str(box_name))
-        except Exception:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % box_name
-
-        if box is None:
-            self.inform.emit('[WARNING_NOTCL] %s: %s' %
-                             (_("No object Box. Using instead"), obj))
-            box = obj
-
-        def make_negative_film():
-            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
-                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror
-                                          )
-
-            # Determine bounding area for svg export
-            bounds = box.bounds()
-            size = box.size()
-
-            uom = obj.units.lower()
-
-            # Convert everything to strings for use in the xml doc
-            svgwidth = str(size[0] + (2 * boundary))
-            svgheight = str(size[1] + (2 * boundary))
-            minx = str(bounds[0] - boundary)
-            miny = str(bounds[1] + boundary + size[1])
-            miny_rect = str(bounds[1] - boundary)
-
-            # Add a SVG Header and footer to the svg output from shapely
-            # The transform flips the Y Axis so that everything renders
-            # properly within svg apps such as inkscape
-            svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
-                         'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
-            svg_header += 'width="' + svgwidth + uom + '" '
-            svg_header += 'height="' + svgheight + uom + '" '
-            svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
-            svg_header += '>'
-            svg_header += '<g transform="scale(1,-1)">'
-            svg_footer = '</g> </svg>'
-
-            # Change the attributes of the exported SVG
-            # We don't need stroke-width - wrong, we do when we have lines with certain width
-            # We set opacity to maximum
-            # We set the color to WHITE
-            root = ET.fromstring(exported_svg)
-            for child in root:
-                child.set('fill', '#FFFFFF')
-                child.set('opacity', '1.0')
-                child.set('stroke', '#FFFFFF')
-
-            # first_svg_elem = 'rect x="' + minx + '" ' + 'y="' + miny_rect + '" '
-            # first_svg_elem += 'width="' + svgwidth + '" ' + 'height="' + svgheight + '" '
-            # first_svg_elem += 'fill="#000000" opacity="1.0" stroke-width="0.0"'
-
-            first_svg_elem_tag = 'rect'
-            first_svg_elem_attribs = {
-                'x': minx,
-                'y': miny_rect,
-                'width': svgwidth,
-                'height': svgheight,
-                'id': 'neg_rect',
-                'style': 'fill:#000000;opacity:1.0;stroke-width:0.0'
-            }
-
-            root.insert(0, ET.Element(first_svg_elem_tag, first_svg_elem_attribs))
-            exported_svg = ET.tostring(root)
-
-            svg_elem = svg_header + str(exported_svg) + svg_footer
-
-            # Parse the xml through a xml parser just to add line feeds
-            # and to make it look more pretty for the output
-            doc = parse_xml_string(svg_elem)
-            try:
-                with open(filename, 'w') as fp:
-                    fp.write(doc.toprettyxml())
-            except PermissionError:
-                self.inform.emit('[WARNING] %s' %
-                                 _("Permission denied, saving not possible.\n"
-                                   "Most likely another app is holding the file open and not accessible."))
-                return 'fail'
-
-            if self.defaults["global_open_style"] is False:
-                self.file_opened.emit("SVG", filename)
-            self.file_saved.emit("SVG", filename)
-            self.inform.emit('[success] %s: %s' %
-                             (_("SVG file exported to"), filename))
-
-        if use_thread is True:
-            proc = self.proc_container.new(_("Generating Film ... Please wait."))
-
-            def job_thread_film(app_obj):
-                try:
-                    make_negative_film()
-                except Exception:
-                    proc.done()
-                    return
-                proc.done()
-
-            self.worker_task.emit({'fcn': job_thread_film, 'params': [self]})
-        else:
-            make_negative_film()
-
-    def export_svg_positive(self, obj_name, box_name, filename,
-                            scale_stroke_factor=0.00,
-                            scale_factor_x=None, scale_factor_y=None,
-                            skew_factor_x=None, skew_factor_y=None, skew_reference='center',
-                            mirror=None,
-                            use_thread=True):
-        """
-        Exports a Geometry Object to an SVG file in positive black.
-
-        :param obj_name: the name of the FlatCAM object to be saved as SVG
-        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
-        :param filename: Path to the SVG file to save to.
-        :param scale_stroke_factor: factor by which to change/scale the thickness of the features
-        :param scale_factor_x: factor to scale the svg geometry on the X axis
-        :param scale_factor_y: factor to scale the svg geometry on the Y axis
-        :param skew_factor_x: factor to skew the svg geometry on the X axis
-        :param skew_factor_y: factor to skew the svg geometry on the Y axis
-        :param skew_reference: reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft', 'topright' and
-        those are the 4 points of the bounding box of the geometry to be skewed.
-        :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
-
-        :param use_thread: if to be run in a separate thread; boolean
-        :return:
-        """
-        self.report_usage("export_svg_positive()")
-
-        if filename is None:
-            filename = self.defaults["global_last_save_folder"]
-
-        self.log.debug("export_svg() black")
-
-        try:
-            obj = self.collection.get_by_name(str(obj_name))
-        except Exception:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % obj_name
-
-        try:
-            box = self.collection.get_by_name(str(box_name))
-        except Exception:
-            # TODO: The return behavior has not been established... should raise exception?
-            return "Could not retrieve object: %s" % box_name
-
-        if box is None:
-            self.inform.emit('[WARNING_NOTCL] %s: %s' %
-                             (_("No object Box. Using instead"), obj))
-            box = obj
-
-        def make_positive_film():
-            exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
-                                          scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
-                                          skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
-                                          mirror=mirror
-                                          )
-
-            self.progress.emit(40)
-
-            # Change the attributes of the exported SVG
-            # We don't need stroke-width
-            # We set opacity to maximum
-            # We set the colour to WHITE
-            root = ET.fromstring(exported_svg)
-            for child in root:
-                child.set('fill', str(self.defaults['tools_film_color']))
-                child.set('opacity', '1.0')
-                child.set('stroke', str(self.defaults['tools_film_color']))
-
-            exported_svg = ET.tostring(root)
-
-            # Determine bounding area for svg export
-            bounds = box.bounds()
-            size = box.size()
-
-            # This contain the measure units
-            uom = obj.units.lower()
-
-            # Define a boundary around SVG of about 1.0mm (~39mils)
-            if uom in "mm":
-                boundary = 1.0
-            else:
-                boundary = 0.0393701
-
-            self.progress.emit(80)
-
-            # Convert everything to strings for use in the xml doc
-            svgwidth = str(size[0] + (2 * boundary))
-            svgheight = str(size[1] + (2 * boundary))
-            minx = str(bounds[0] - boundary)
-            miny = str(bounds[1] + boundary + size[1])
-
-            self.log.debug(minx)
-            self.log.debug(miny)
-
-            # Add a SVG Header and footer to the svg output from shapely
-            # The transform flips the Y Axis so that everything renders
-            # properly within svg apps such as inkscape
-            svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
-                         'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
-            svg_header += 'width="' + svgwidth + uom + '" '
-            svg_header += 'height="' + svgheight + uom + '" '
-            svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
-            svg_header += '>'
-            svg_header += '<g transform="scale(1,-1)">'
-            svg_footer = '</g> </svg>'
-
-            svg_elem = str(svg_header) + str(exported_svg) + str(svg_footer)
-
-            self.progress.emit(90)
-
-            # Parse the xml through a xml parser just to add line feeds
-            # and to make it look more pretty for the output
-            doc = parse_xml_string(svg_elem)
-            try:
-                with open(filename, 'w') as fp:
-                    fp.write(doc.toprettyxml())
-            except PermissionError:
-                self.inform.emit('[WARNING] %s' %
-                                 _("Permission denied, saving not possible.\n"
-                                   "Most likely another app is holding the file open and not accessible."))
-                return 'fail'
-
-            self.progress.emit(100)
-            if self.defaults["global_open_style"] is False:
-                self.file_opened.emit("SVG", filename)
-            self.file_saved.emit("SVG", filename)
-            self.inform.emit('[success] %s: %s' %
-                             (_("SVG file exported to"), filename))
-
-        if use_thread is True:
-            proc = self.proc_container.new(_("Generating Film ... Please wait."))
-
-            def job_thread_film(app_obj):
-                try:
-                    make_positive_film()
-                except Exception:
-                    proc.done()
-                    return
-                proc.done()
-
-            self.worker_task.emit({'fcn': job_thread_film, 'params': [self]})
-        else:
-            make_positive_film()
 
     def save_source_file(self, obj_name, filename, use_thread=True):
         """
