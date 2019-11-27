@@ -3694,6 +3694,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "toolchange": self.ui.toolchangeg_cb,
             "toolchangez": self.ui.toolchangez_entry,
             "endz": self.ui.gendz_entry,
+            "cnctooldia": self.ui.addtool_entry
         })
 
         # Fill form fields only on object create
@@ -4438,9 +4439,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
 
         row = self.ui.geo_tools_table.currentRow()
-        tool_uid = int(self.ui.geo_tools_table.item(row, 5).text())
+        tool_uid_item = self.ui.geo_tools_table.item(row, 5)
+        if tool_uid_item is None:
+            return
+        tool_uid = int(tool_uid_item.text())
 
-        tooldia = float(self.ui.geo_tools_table.item(row, 1).text())
+        tool_dia_item = self.ui.geo_tools_table.item(row, 1)
+        if tool_dia_item is None:
+            return
+        tooldia = float(tool_dia_item.text())
+
         new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
         new_cutz = float('%.*f' % (self.decimals, new_cutz)) * -1.0   # this value has to be negative
 

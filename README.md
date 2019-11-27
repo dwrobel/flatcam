@@ -9,12 +9,16 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.11.2019
+
+- small fixes in NCC Tool and in the FlatCAMGeometry class
+
 27.11.2019
 
 - in Tool Film added the page size and page orientation in case of saving the film as PDF file
 - the application workspace has now a lot more options selectable in the Edit -> Preferences -> General -> GUI Preferences
 - updated the drawing of the workspace such that the application overall start time is improved and after first turn on of the workspace, toggling it will have no performance penalty
-- updated the workspace functions to work in Legacy(@D) graphic mode
+- updated the workspace functions to work in Legacy(2D) graphic mode
 - adjusted the selection color transparency for the Legacy(2D) graphic mode because it was too transparent for the fill
 
 26.11.2019

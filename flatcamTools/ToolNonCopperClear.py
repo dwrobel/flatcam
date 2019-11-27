@@ -248,7 +248,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tipangle_entry.setSingleStep(5)
 
         grid1.addWidget(self.tipanglelabel, 6, 0)
-        grid1.addWidget(self.tipangle_entry, 6 , 1)
+        grid1.addWidget(self.tipangle_entry, 6, 1)
 
         # Cut Z entry
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -537,6 +537,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tool_type_item_options = list()
 
         self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
+
+        self.tooldia = None
 
         # #############################################################################
         # ############################ SGINALS ########################################
@@ -1138,7 +1140,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.ncc_obj = self.app.collection.get_by_name(self.obj_name)
         except Exception as e:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"),  str(self.obj_name)))
-            return "Could not retrieve object: %s" % self.obj_name
+            return "Could not retrieve object: %s with error: %s" % (self.obj_name, str(e))
 
         if self.ncc_obj is None:
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(self.obj_name)))
@@ -1179,7 +1181,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
             except Exception as e:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.bound_obj_name))
-                return "Could not retrieve object: %s" % self.bound_obj_name
+                return "Could not retrieve object: %s with error: %s" % (self.bound_obj_name, str(e))
 
             self.clear_copper(ncc_obj=self.ncc_obj,
                               ncctooldia=self.ncc_dia_list,
@@ -1609,11 +1611,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     sol_geo = ncc_obj.solid_geometry
 
                 if has_offset is True:
-                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' %
-                                        _("Buffering"))
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %
-                                        _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
+
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
@@ -1890,6 +1891,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 tools_storage.pop(k, None)
 
             geo_obj.options["cnctooldia"] = str(tool)
+
             geo_obj.multigeo = True
             geo_obj.tools.clear()
             geo_obj.tools = dict(tools_storage)
@@ -2302,11 +2304,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if run_threaded:
                     proc.done()
                 return
-            except Exception as e:
+            except Exception:
                 if run_threaded:
                     proc.done()
                 traceback.print_stack()
                 return
+
             if run_threaded:
                 proc.done()
             else:
