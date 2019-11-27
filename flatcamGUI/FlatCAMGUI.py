@@ -2481,7 +2481,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Toggle Workspace
                 if key == QtCore.Qt.Key_W:
-                    self.app.on_workspace_menu()
+                    self.app.on_workspace_toggle()
                     return
 
                 # Skew on X axis

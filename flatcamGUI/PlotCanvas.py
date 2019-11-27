@@ -57,108 +57,11 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         # workspace lines; I didn't use the rectangle because I didn't want to add another VisPy Node,
         # which might decrease performance
-        self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
+        # self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
+        self.workspace_line = None
 
-        # <VisPyCanvas>
-        self.create_native()
-        self.native.setParent(self.fcapp.ui)
-
-        # <QtCore.QObject>
-        self.container.addWidget(self.native)
-
-        # ## AXIS # ##
-        self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
-                                   parent=self.view.scene)
-
-        self.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=False,
-                                   parent=self.view.scene)
-
-        # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
-        # all CNC have a limited workspace
-
-        self.draw_workspace(pagesize=self.fcapp.defaults["global_workspaceT"])
-
-        self.line_parent = None
-        self.cursor_v_line = InfiniteLine(pos=None, color=self.line_color, vertical=True,
-                                          parent=self.line_parent)
-
-        self.cursor_h_line = InfiniteLine(pos=None, color=self.line_color, vertical=False,
-                                          parent=self.line_parent)
-
-        # if self.app.defaults['global_workspace'] is True:
-        #     if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
-        #         self.wkspace_t = Line(pos=)
-
-        self.shape_collections = []
-
-        self.shape_collection = self.new_shape_collection()
-        self.fcapp.pool_recreated.connect(self.on_pool_recreated)
-        self.text_collection = self.new_text_collection()
-
-        # TODO: Should be setting to show/hide CNC job annotations (global or per object)
-        self.text_collection.enabled = True
-
-        self.c = None
-        self.big_cursor = None
-        # Keep VisPy canvas happy by letting it be "frozen" again.
-        self.freeze()
-
-        self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
-
-    # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
-    # all CNC have a limited workspace
-    # def draw_workspace(self):
-    #     a = np.empty((0, 0))
-    #
-    #     a4p_in = np.array([(0, 0), (8.3, 0), (8.3, 11.7), (0, 11.7)])
-    #     a4l_in = np.array([(0, 0), (11.7, 0), (11.7, 8.3), (0, 8.3)])
-    #     a3p_in = np.array([(0, 0), (11.7, 0), (11.7, 16.5), (0, 16.5)])
-    #     a3l_in = np.array([(0, 0), (16.5, 0), (16.5, 11.7), (0, 11.7)])
-    #
-    #     a4p_mm = np.array([(0, 0), (210, 0), (210, 297), (0, 297)])
-    #     a4l_mm = np.array([(0, 0), (297, 0), (297, 210), (0, 210)])
-    #     a3p_mm = np.array([(0, 0), (297, 0), (297, 420), (0, 420)])
-    #     a3l_mm = np.array([(0, 0), (420, 0), (420, 297), (0, 297)])
-    #
-    #     if self.fcapp.defaults['units'].upper() == 'MM':
-    #         if self.fcapp.defaults['global_workspaceT'] == 'A4P':
-    #             a = a4p_mm
-    #         elif self.fcapp.defaults['global_workspaceT'] == 'A4L':
-    #             a = a4l_mm
-    #         elif self.fcapp.defaults['global_workspaceT'] == 'A3P':
-    #             a = a3p_mm
-    #         elif self.fcapp.defaults['global_workspaceT'] == 'A3L':
-    #             a = a3l_mm
-    #     else:
-    #         if self.fcapp.defaults['global_workspaceT'] == 'A4P':
-    #             a = a4p_in
-    #         elif self.fcapp.defaults['global_workspaceT'] == 'A4L':
-    #             a = a4l_in
-    #         elif self.fcapp.defaults['global_workspaceT'] == 'A3P':
-    #             a = a3p_in
-    #         elif self.fcapp.defaults['global_workspaceT'] == 'A3L':
-    #             a = a3l_in
-    #
-    #     self.delete_workspace()
-    #
-    #     self.b_line = Line(pos=a[0:2], color=(0.70, 0.3, 0.3, 1.0),
-    #                        antialias=True, method='agg', parent=self.view.scene)
-    #     self.r_line = Line(pos=a[1:3], color=(0.70, 0.3, 0.3, 1.0),
-    #                        antialias=True, method='agg', parent=self.view.scene)
-    #
-    #     self.t_line = Line(pos=a[2:4], color=(0.70, 0.3, 0.3, 1.0),
-    #                        antialias=True, method='agg', parent=self.view.scene)
-    #     self.l_line = Line(pos=np.array((a[0], a[3])), color=(0.70, 0.3, 0.3, 1.0),
-    #                        antialias=True, method='agg', parent=self.view.scene)
-    #
-    #     if self.fcapp.defaults['global_workspace'] is False:
-    #         self.delete_workspace()
-
-    # delete the workspace lines from the plot by removing the parent
-
-    def draw_workspace(self, pagesize):
-        pagesize_dict = dict()
-        pagesize_dict.update(
+        self.pagesize_dict = dict()
+        self.pagesize_dict.update(
             {
                 'A0': (841, 1189),
                 'A1': (594, 841),
@@ -210,11 +113,64 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             }
         )
 
+        # <VisPyCanvas>
+        self.create_native()
+        self.native.setParent(self.fcapp.ui)
+
+        # <QtCore.QObject>
+        self.container.addWidget(self.native)
+
+        # ## AXIS # ##
+        self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
+                                   parent=self.view.scene)
+
+        self.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=False,
+                                   parent=self.view.scene)
+
+        # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
+        # all CNC have a limited workspace
+
+        if self.fcapp.defaults['global_workspace'] is True:
+            self.draw_workspace(workspace_size=self.fcapp.defaults["global_workspaceT"])
+
+        self.line_parent = None
+        self.cursor_v_line = InfiniteLine(pos=None, color=self.line_color, vertical=True,
+                                          parent=self.line_parent)
+
+        self.cursor_h_line = InfiniteLine(pos=None, color=self.line_color, vertical=False,
+                                          parent=self.line_parent)
+
+        # if self.app.defaults['global_workspace'] is True:
+        #     if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        #         self.wkspace_t = Line(pos=)
+
+        self.shape_collections = []
+
+        self.shape_collection = self.new_shape_collection()
+        self.fcapp.pool_recreated.connect(self.on_pool_recreated)
+        self.text_collection = self.new_text_collection()
+
+        # TODO: Should be setting to show/hide CNC job annotations (global or per object)
+        self.text_collection.enabled = True
+
+        self.c = None
+        self.big_cursor = None
+        # Keep VisPy canvas happy by letting it be "frozen" again.
+        self.freeze()
+
+        self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
+
+    def draw_workspace(self, workspace_size):
+        """
+        Draw a rectangular shape on canvas to specify our valid workspace.
+        :param workspace_size: the workspace size; tuple
+        :return:
+        """
         try:
             if self.fcapp.defaults['units'].upper() == 'MM':
-                dims = pagesize_dict[pagesize]
+                dims = self.pagesize_dict[workspace_size]
             else:
-                dims = (pagesize_dict[pagesize][0]/25.4, pagesize_dict[pagesize][1]/25.4)
+                dims = (self.pagesize_dict[workspace_size][0]/25.4, self.pagesize_dict[workspace_size][1]/25.4)
         except Exception as e:
             log.debug("PlotCanvas.draw_workspace() --> %s" % str(e))
             return
@@ -224,37 +180,22 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         a = np.array([(0, 0), (dims[0], 0), (dims[0], dims[1]), (0, dims[1])])
 
-        self.delete_workspace()
-
-        self.b_line = Line(pos=a[0:2], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias=True, method='agg', parent=self.view.scene)
-        self.r_line = Line(pos=a[1:3], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias=True, method='agg', parent=self.view.scene)
-
-        self.t_line = Line(pos=a[2:4], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias=True, method='agg', parent=self.view.scene)
-        self.l_line = Line(pos=np.array((a[0], a[3])), color=(0.70, 0.3, 0.3, 1.0),
-                           antialias=True, method='agg', parent=self.view.scene)
-
-        if self.fcapp.defaults['global_workspace'] is False:
-            self.delete_workspace()
+        if not self.workspace_line:
+            self.workspace_line = Line(pos=np.array((a[0], a[1], a[2], a[3], a[0])), color=(0.70, 0.3, 0.3, 1.0),
+                                       antialias=True, method='agg', parent=self.view.scene)
+        else:
+            self.workspace_line.parent = self.view.scene
 
     def delete_workspace(self):
         try:
-            self.b_line.parent = None
-            self.r_line.parent = None
-            self.t_line.parent = None
-            self.l_line.parent = None
+            self.workspace_line.parent = None
         except Exception:
             pass
 
-    # redraw the workspace lines on the plot by readding them to the parent view.scene
+    # redraw the workspace lines on the plot by re adding them to the parent view.scene
     def restore_workspace(self):
         try:
-            self.b_line.parent = self.view.scene
-            self.r_line.parent = self.view.scene
-            self.t_line.parent = self.view.scene
-            self.l_line.parent = self.view.scene
+            self.workspace_line.parent = self.view.scene
         except Exception:
             pass
 
