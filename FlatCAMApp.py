@@ -132,7 +132,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.99
-    version_date = "2019/11/25"
+    version_date = "2019/11/30"
     beta = True
     engine = '3D'
 
@@ -2092,12 +2092,6 @@ class App(QtCore.QObject):
         self.setup_obj_classes()
         self.setup_recent_items()
         self.setup_component_editor()
-
-        # this does not work in Legacy Mode
-        if self.is_legacy is True:
-            self.ui.general_defaults_form.general_gui_group.workspace_cb.setDisabled(True)
-            self.ui.general_defaults_form.general_gui_group.workspace_type_lbl.setDisabled(True)
-            self.ui.general_defaults_form.general_gui_group.wk_cb.setDisabled(True)
 
         # #####################################################################################
         # ######################### Auto-complete KEYWORDS ####################################
@@ -5867,30 +5861,29 @@ class App(QtCore.QObject):
 
         if self.toggle_axis is False:
             if self.is_legacy is False:
-                # self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
-                # self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
                 self.plotcanvas.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
                                                       parent=self.plotcanvas.view.scene)
 
                 self.plotcanvas.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=False,
                                                       parent=self.plotcanvas.view.scene)
-                # self.plotcanvas.redraw()
             else:
-                self.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
-                self.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
-                self.plotcanvas.canvas.draw()
-                pass
+                if self.plotcanvas.h_line not in self.plotcanvas.axes.lines and \
+                        self.plotcanvas.v_line not in self.plotcanvas.axes.lines:
+                    self.plotcanvas.h_line = self.plotcanvas.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
+                    self.plotcanvas.v_line = self.plotcanvas.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
+                    self.plotcanvas.canvas.draw()
+
             self.toggle_axis = True
         else:
             if self.is_legacy is False:
-                # self.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-                # self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-                # self.plotcanvas.redraw()
                 self.plotcanvas.v_line.parent = None
                 self.plotcanvas.h_line.parent = None
             else:
-                self.plotcanvas.axes.lines[:] = []
-                self.plotcanvas.canvas.draw()
+                if self.plotcanvas.h_line in self.plotcanvas.axes.lines and \
+                        self.plotcanvas.v_line in self.plotcanvas.axes.lines:
+                    self.plotcanvas.axes.lines.remove(self.plotcanvas.h_line)
+                    self.plotcanvas.axes.lines.remove(self.plotcanvas.v_line)
+                    self.plotcanvas.canvas.draw()
             self.toggle_axis = False
 
     def on_toggle_grid(self):
@@ -6670,13 +6663,12 @@ class App(QtCore.QObject):
 
     def on_workspace_modified(self):
         # self.save_defaults(silent=True)
+        if self.is_legacy is True:
+            self.plotcanvas.delete_workspace()
         self.defaults_read_form()
         self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
 
     def on_workspace(self):
-        self.report_usage("on_workspace()")
-        log.debug("on_workspace()")
-
         if self.ui.general_defaults_form.general_gui_group.workspace_cb.get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
         else:

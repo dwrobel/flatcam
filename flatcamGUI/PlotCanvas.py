@@ -121,15 +121,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.container.addWidget(self.native)
 
         # ## AXIS # ##
-        self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
+        self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=True,
                                    parent=self.view.scene)
 
-        self.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=False,
+        self.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=False,
                                    parent=self.view.scene)
 
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
-
         if self.fcapp.defaults['global_workspace'] is True:
             self.draw_workspace(workspace_size=self.fcapp.defaults["global_workspaceT"])
 
@@ -181,7 +180,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         a = np.array([(0, 0), (dims[0], 0), (dims[0], dims[1]), (0, dims[1])])
 
         if not self.workspace_line:
-            self.workspace_line = Line(pos=np.array((a[0], a[1], a[2], a[3], a[0])), color=(0.70, 0.3, 0.3, 1.0),
+            self.workspace_line = Line(pos=np.array((a[0], a[1], a[2], a[3], a[0])), color=(0.70, 0.3, 0.3, 0.7),
                                        antialias=True, method='agg', parent=self.view.scene)
         else:
             self.workspace_line.parent = self.view.scene

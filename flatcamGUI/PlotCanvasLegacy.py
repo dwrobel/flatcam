@@ -30,6 +30,7 @@ from matplotlib import use as mpl_use
 mpl_use("Qt5Agg")
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.lines import Line2D
 # from matplotlib.widgets import Cursor
 
 fcTranslate.apply_language('strings')
@@ -152,6 +153,64 @@ class PlotCanvasLegacy(QtCore.QObject):
             theme_color = '#000000'
             tick_color = '#FFFFFF'
 
+        # workspace lines; I didn't use the rectangle because I didn't want to add another VisPy Node,
+        # which might decrease performance
+        # self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
+        self.workspace_line = None
+
+        self.pagesize_dict = dict()
+        self.pagesize_dict.update(
+            {
+                'A0': (841, 1189),
+                'A1': (594, 841),
+                'A2': (420, 594),
+                'A3': (297, 420),
+                'A4': (210, 297),
+                'A5': (148, 210),
+                'A6': (105, 148),
+                'A7': (74, 105),
+                'A8': (52, 74),
+                'A9': (37, 52),
+                'A10': (26, 37),
+
+                'B0': (1000, 1414),
+                'B1': (707, 1000),
+                'B2': (500, 707),
+                'B3': (353, 500),
+                'B4': (250, 353),
+                'B5': (176, 250),
+                'B6': (125, 176),
+                'B7': (88, 125),
+                'B8': (62, 88),
+                'B9': (44, 62),
+                'B10': (31, 44),
+
+                'C0': (917, 1297),
+                'C1': (648, 917),
+                'C2': (458, 648),
+                'C3': (324, 458),
+                'C4': (229, 324),
+                'C5': (162, 229),
+                'C6': (114, 162),
+                'C7': (81, 114),
+                'C8': (57, 81),
+                'C9': (40, 57),
+                'C10': (28, 40),
+
+                # American paper sizes
+                'LETTER': (8.5*25.4, 11*25.4),
+                'LEGAL': (8.5*25.4, 14*25.4),
+                'ELEVENSEVENTEEN': (11*25.4, 17*25.4),
+
+                # From https://en.wikipedia.org/wiki/Paper_size
+                'JUNIOR_LEGAL': (5*25.4, 8*25.4),
+                'HALF_LETTER': (5.5*25.4, 8*25.4),
+                'GOV_LETTER': (8*25.4, 10.5*25.4),
+                'GOV_LEGAL': (8.5*25.4, 13*25.4),
+                'LEDGER': (17*25.4, 11*25.4),
+            }
+        )
+
         # Options
         self.x_margin = 15  # pixels
         self.y_margin = 25  # Pixels
@@ -169,8 +228,8 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.axes = self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label="base", alpha=0.0)
         self.axes.set_aspect(1)
         self.axes.grid(True, color='gray')
-        self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
-        self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
+        self.h_line = self.axes.axhline(color=(0.70, 0.3, 0.3), linewidth=2)
+        self.v_line = self.axes.axvline(color=(0.70, 0.3, 0.3), linewidth=2)
 
         self.axes.tick_params(axis='x', color=tick_color, labelcolor=tick_color)
         self.axes.tick_params(axis='y', color=tick_color, labelcolor=tick_color)
@@ -239,6 +298,44 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         # signal if there is a doubleclick
         self.is_dblclk = False
+
+        # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
+        # all CNC have a limited workspace
+        if self.app.defaults['global_workspace'] is True:
+            self.draw_workspace(workspace_size=self.app.defaults["global_workspaceT"])
+
+    def draw_workspace(self, workspace_size):
+        """
+        Draw a rectangular shape on canvas to specify our valid workspace.
+        :param workspace_size: the workspace size; tuple
+        :return:
+        """
+        try:
+            if self.app.defaults['units'].upper() == 'MM':
+                dims = self.pagesize_dict[workspace_size]
+            else:
+                dims = (self.pagesize_dict[workspace_size][0]/25.4, self.pagesize_dict[workspace_size][1]/25.4)
+        except Exception as e:
+            log.debug("PlotCanvasLegacy.draw_workspace() --> %s" % str(e))
+            return
+
+        if self.app.defaults['global_workspace_orientation'] == 'l':
+            dims = (dims[1], dims[0])
+
+        xdata = [0, dims[0], dims[0], 0, 0]
+        ydata = [0, 0, dims[1], dims[1], 0]
+
+        if self.workspace_line not in self.axes.lines:
+            self.workspace_line = Line2D(xdata=xdata, ydata=ydata, linewidth=2, antialiased=True, color='#b34d4d')
+            self.axes.add_line(self.workspace_line)
+            self.canvas.draw()
+
+    def delete_workspace(self):
+        try:
+            self.axes.lines.remove(self.workspace_line)
+            self.canvas.draw()
+        except Exception:
+            pass
 
     def graph_event_connect(self, event_name, callback):
         """
