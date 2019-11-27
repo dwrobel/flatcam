@@ -381,6 +381,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.overlap = None
         self.connect = None
         self.contour = None
+        self.select_method = None
 
         self.units = ''
         self.paint_tools = {}
@@ -966,7 +967,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.connect = self.pathconnect_cb.get_value()
         self.contour = self.paintcontour_cb.get_value()
         self.select_method = self.selectmethod_combo.get_value()
-
         self.obj_name = self.obj_combo.currentText()
 
         # Get source object.
@@ -2018,7 +2018,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             except FlatCAMApp.GracefulException:
                 proc.done()
                 return
-            except Exception as e:
+            except Exception:
                 proc.done()
                 traceback.print_stack()
                 return
@@ -2493,7 +2493,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             except FlatCAMApp.GracefulException:
                 proc.done()
                 return
-            except Exception as e:
+            except Exception:
                 proc.done()
                 traceback.print_stack()
                 return

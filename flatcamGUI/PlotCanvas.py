@@ -76,7 +76,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
 
-        self.draw_workspace()
+        self.draw_workspace(pagesize=self.fcapp.defaults["global_workspaceT"])
 
         self.line_parent = None
         self.cursor_v_line = InfiniteLine(pos=None, color=self.line_color, vertical=True,
@@ -107,37 +107,122 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
     # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
     # all CNC have a limited workspace
-    def draw_workspace(self):
-        a = np.empty((0, 0))
+    # def draw_workspace(self):
+    #     a = np.empty((0, 0))
+    #
+    #     a4p_in = np.array([(0, 0), (8.3, 0), (8.3, 11.7), (0, 11.7)])
+    #     a4l_in = np.array([(0, 0), (11.7, 0), (11.7, 8.3), (0, 8.3)])
+    #     a3p_in = np.array([(0, 0), (11.7, 0), (11.7, 16.5), (0, 16.5)])
+    #     a3l_in = np.array([(0, 0), (16.5, 0), (16.5, 11.7), (0, 11.7)])
+    #
+    #     a4p_mm = np.array([(0, 0), (210, 0), (210, 297), (0, 297)])
+    #     a4l_mm = np.array([(0, 0), (297, 0), (297, 210), (0, 210)])
+    #     a3p_mm = np.array([(0, 0), (297, 0), (297, 420), (0, 420)])
+    #     a3l_mm = np.array([(0, 0), (420, 0), (420, 297), (0, 297)])
+    #
+    #     if self.fcapp.defaults['units'].upper() == 'MM':
+    #         if self.fcapp.defaults['global_workspaceT'] == 'A4P':
+    #             a = a4p_mm
+    #         elif self.fcapp.defaults['global_workspaceT'] == 'A4L':
+    #             a = a4l_mm
+    #         elif self.fcapp.defaults['global_workspaceT'] == 'A3P':
+    #             a = a3p_mm
+    #         elif self.fcapp.defaults['global_workspaceT'] == 'A3L':
+    #             a = a3l_mm
+    #     else:
+    #         if self.fcapp.defaults['global_workspaceT'] == 'A4P':
+    #             a = a4p_in
+    #         elif self.fcapp.defaults['global_workspaceT'] == 'A4L':
+    #             a = a4l_in
+    #         elif self.fcapp.defaults['global_workspaceT'] == 'A3P':
+    #             a = a3p_in
+    #         elif self.fcapp.defaults['global_workspaceT'] == 'A3L':
+    #             a = a3l_in
+    #
+    #     self.delete_workspace()
+    #
+    #     self.b_line = Line(pos=a[0:2], color=(0.70, 0.3, 0.3, 1.0),
+    #                        antialias=True, method='agg', parent=self.view.scene)
+    #     self.r_line = Line(pos=a[1:3], color=(0.70, 0.3, 0.3, 1.0),
+    #                        antialias=True, method='agg', parent=self.view.scene)
+    #
+    #     self.t_line = Line(pos=a[2:4], color=(0.70, 0.3, 0.3, 1.0),
+    #                        antialias=True, method='agg', parent=self.view.scene)
+    #     self.l_line = Line(pos=np.array((a[0], a[3])), color=(0.70, 0.3, 0.3, 1.0),
+    #                        antialias=True, method='agg', parent=self.view.scene)
+    #
+    #     if self.fcapp.defaults['global_workspace'] is False:
+    #         self.delete_workspace()
 
-        a4p_in = np.array([(0, 0), (8.3, 0), (8.3, 11.7), (0, 11.7)])
-        a4l_in = np.array([(0, 0), (11.7, 0), (11.7, 8.3), (0, 8.3)])
-        a3p_in = np.array([(0, 0), (11.7, 0), (11.7, 16.5), (0, 16.5)])
-        a3l_in = np.array([(0, 0), (16.5, 0), (16.5, 11.7), (0, 11.7)])
+    # delete the workspace lines from the plot by removing the parent
 
-        a4p_mm = np.array([(0, 0), (210, 0), (210, 297), (0, 297)])
-        a4l_mm = np.array([(0, 0), (297, 0), (297, 210), (0, 210)])
-        a3p_mm = np.array([(0, 0), (297, 0), (297, 420), (0, 420)])
-        a3l_mm = np.array([(0, 0), (420, 0), (420, 297), (0, 297)])
+    def draw_workspace(self, pagesize):
+        pagesize_dict = dict()
+        pagesize_dict.update(
+            {
+                'A0': (841, 1189),
+                'A1': (594, 841),
+                'A2': (420, 594),
+                'A3': (297, 420),
+                'A4': (210, 297),
+                'A5': (148, 210),
+                'A6': (105, 148),
+                'A7': (74, 105),
+                'A8': (52, 74),
+                'A9': (37, 52),
+                'A10': (26, 37),
 
-        if self.fcapp.defaults['units'].upper() == 'MM':
-            if self.fcapp.defaults['global_workspaceT'] == 'A4P':
-                a = a4p_mm
-            elif self.fcapp.defaults['global_workspaceT'] == 'A4L':
-                a = a4l_mm
-            elif self.fcapp.defaults['global_workspaceT'] == 'A3P':
-                a = a3p_mm
-            elif self.fcapp.defaults['global_workspaceT'] == 'A3L':
-                a = a3l_mm
-        else:
-            if self.fcapp.defaults['global_workspaceT'] == 'A4P':
-                a = a4p_in
-            elif self.fcapp.defaults['global_workspaceT'] == 'A4L':
-                a = a4l_in
-            elif self.fcapp.defaults['global_workspaceT'] == 'A3P':
-                a = a3p_in
-            elif self.fcapp.defaults['global_workspaceT'] == 'A3L':
-                a = a3l_in
+                'B0': (1000, 1414),
+                'B1': (707, 1000),
+                'B2': (500, 707),
+                'B3': (353, 500),
+                'B4': (250, 353),
+                'B5': (176, 250),
+                'B6': (125, 176),
+                'B7': (88, 125),
+                'B8': (62, 88),
+                'B9': (44, 62),
+                'B10': (31, 44),
+
+                'C0': (917, 1297),
+                'C1': (648, 917),
+                'C2': (458, 648),
+                'C3': (324, 458),
+                'C4': (229, 324),
+                'C5': (162, 229),
+                'C6': (114, 162),
+                'C7': (81, 114),
+                'C8': (57, 81),
+                'C9': (40, 57),
+                'C10': (28, 40),
+
+                # American paper sizes
+                'LETTER': (8.5*25.4, 11*25.4),
+                'LEGAL': (8.5*25.4, 14*25.4),
+                'ELEVENSEVENTEEN': (11*25.4, 17*25.4),
+
+                # From https://en.wikipedia.org/wiki/Paper_size
+                'JUNIOR_LEGAL': (5*25.4, 8*25.4),
+                'HALF_LETTER': (5.5*25.4, 8*25.4),
+                'GOV_LETTER': (8*25.4, 10.5*25.4),
+                'GOV_LEGAL': (8.5*25.4, 13*25.4),
+                'LEDGER': (17*25.4, 11*25.4),
+            }
+        )
+
+        try:
+            if self.fcapp.defaults['units'].upper() == 'MM':
+                dims = pagesize_dict[pagesize]
+            else:
+                dims = (pagesize_dict[pagesize][0]/25.4, pagesize_dict[pagesize][1]/25.4)
+        except Exception as e:
+            log.debug("PlotCanvas.draw_workspace() --> %s" % str(e))
+            return
+
+        if self.fcapp.defaults['global_workspace_orientation'] == 'l':
+            dims = (dims[1], dims[0])
+
+        a = np.array([(0, 0), (dims[0], 0), (dims[0], dims[1]), (0, dims[1])])
 
         self.delete_workspace()
 
@@ -154,7 +239,6 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         if self.fcapp.defaults['global_workspace'] is False:
             self.delete_workspace()
 
-    # delete the workspace lines from the plot by removing the parent
     def delete_workspace(self):
         try:
             self.b_line.parent = None

@@ -343,19 +343,92 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
            _("Draw a delimiting rectangle on canvas.\n"
              "The purpose is to illustrate the limits for our work.")
         )
-        self.workspace_type_lbl = QtWidgets.QLabel('%s:' % _('Wk. format'))
+        self.workspace_type_lbl = QtWidgets.QLabel('%s:' % _('Wk. size'))
         self.workspace_type_lbl.setToolTip(
            _("Select the type of rectangle to be used on canvas,\n"
              "as valid workspace.")
         )
         self.workspace_cb = FCCheckBox()
         self.wk_cb = FCComboBox()
-        self.wk_cb.addItem('A4P')
-        self.wk_cb.addItem('A4L')
-        self.wk_cb.addItem('A3P')
-        self.wk_cb.addItem('A3L')
 
-        self.wks = OptionalInputSection(self.workspace_cb, [self.workspace_type_lbl, self.wk_cb])
+        self.pagesize = dict()
+        self.pagesize.update(
+            {
+                'A0': (841, 1189),
+                'A1': (594, 841),
+                'A2': (420, 594),
+                'A3': (297, 420),
+                'A4': (210, 297),
+                'A5': (148, 210),
+                'A6': (105, 148),
+                'A7': (74, 105),
+                'A8': (52, 74),
+                'A9': (37, 52),
+                'A10': (26, 37),
+
+                'B0': (1000, 1414),
+                'B1': (707, 1000),
+                'B2': (500, 707),
+                'B3': (353, 500),
+                'B4': (250, 353),
+                'B5': (176, 250),
+                'B6': (125, 176),
+                'B7': (88, 125),
+                'B8': (62, 88),
+                'B9': (44, 62),
+                'B10': (31, 44),
+
+                'C0': (917, 1297),
+                'C1': (648, 917),
+                'C2': (458, 648),
+                'C3': (324, 458),
+                'C4': (229, 324),
+                'C5': (162, 229),
+                'C6': (114, 162),
+                'C7': (81, 114),
+                'C8': (57, 81),
+                'C9': (40, 57),
+                'C10': (28, 40),
+
+                # American paper sizes
+                'LETTER': (8.5, 11),
+                'LEGAL': (8.5, 14),
+                'ELEVENSEVENTEEN': (11, 17),
+
+                # From https://en.wikipedia.org/wiki/Paper_size
+                'JUNIOR_LEGAL': (5, 8),
+                'HALF_LETTER': (5.5, 8),
+                'GOV_LETTER': (8, 10.5),
+                'GOV_LEGAL': (8.5, 13),
+                'LEDGER': (17, 11),
+            }
+        )
+
+        page_size_list = list(self.pagesize.keys())
+
+        self.wk_cb.addItems(page_size_list)
+        # self.wk_cb.addItem('A4P')
+        # self.wk_cb.addItem('A4L')
+        # self.wk_cb.addItem('A3P')
+        # self.wk_cb.addItem('A3L')
+
+        # Page orientation
+        self.wk_orientation_label = QtWidgets.QLabel('%s:' % _("Wk. Orientation"))
+        self.wk_orientation_label.setToolTip(_("Can be:\n"
+                                               "- Portrait\n"
+                                               "- Landscape"))
+
+        self.wk_orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
+                                              {'label': _('Landscape'), 'value': 'l'},
+                                              ], stretch=False)
+
+        self.wks = OptionalInputSection(self.workspace_cb,
+                                        [
+                                            self.workspace_type_lbl,
+                                            self.wk_cb,
+                                            self.wk_orientation_label,
+                                            self.wk_orientation_radio
+                                        ])
 
         # Plot Fill Color
         self.pf_color_label = QtWidgets.QLabel('%s:' % _('Plot Fill'))
@@ -579,6 +652,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.form_box.addRow(self.workspace_lbl, self.workspace_cb)
         self.form_box.addRow(self.workspace_type_lbl, self.wk_cb)
+        self.form_box.addRow(self.wk_orientation_label, self.wk_orientation_radio)
+
         self.form_box.addRow(self.spacelabel, self.spacelabel)
         self.form_box.addRow(self.pf_color_label, self.form_box_child_1)
         self.form_box.addRow(self.pf_alpha_label, self.form_box_child_2)
@@ -4654,6 +4729,84 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.file_type_label, 15, 0)
         grid0.addWidget(self.file_type_radio, 15, 1)
 
+        # Page orientation
+        self.orientation_label = QtWidgets.QLabel('%s:' % _("Page Orientation"))
+        self.orientation_label.setToolTip(_("Can be:\n"
+                                            "- Portrait\n"
+                                            "- Lanscape"))
+
+        self.orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
+                                           {'label': _('Landscape'), 'value': 'l'},
+                                           ], stretch=False)
+
+        grid0.addWidget(self.orientation_label, 16, 0)
+        grid0.addWidget(self.orientation_radio, 16, 1)
+
+        # Page Size
+        self.pagesize_label = QtWidgets.QLabel('%s:' % _("Page Size"))
+        self.pagesize_label.setToolTip(_("A selection of standard ISO 216 page sizes."))
+
+        self.pagesize_combo = FCComboBox()
+
+        self.pagesize = dict()
+        self.pagesize.update(
+            {
+                'Bounds': None,
+                'A0': (841, 1189),
+                'A1': (594, 841),
+                'A2': (420, 594),
+                'A3': (297, 420),
+                'A4': (210, 297),
+                'A5': (148, 210),
+                'A6': (105, 148),
+                'A7': (74, 105),
+                'A8': (52, 74),
+                'A9': (37, 52),
+                'A10': (26, 37),
+
+                'B0': (1000, 1414),
+                'B1': (707, 1000),
+                'B2': (500, 707),
+                'B3': (353, 500),
+                'B4': (250, 353),
+                'B5': (176, 250),
+                'B6': (125, 176),
+                'B7': (88, 125),
+                'B8': (62, 88),
+                'B9': (44, 62),
+                'B10': (31, 44),
+
+                'C0': (917, 1297),
+                'C1': (648, 917),
+                'C2': (458, 648),
+                'C3': (324, 458),
+                'C4': (229, 324),
+                'C5': (162, 229),
+                'C6': (114, 162),
+                'C7': (81, 114),
+                'C8': (57, 81),
+                'C9': (40, 57),
+                'C10': (28, 40),
+
+                # American paper sizes
+                'LETTER': (8.5, 11),
+                'LEGAL': (8.5, 14),
+                'ELEVENSEVENTEEN': (11, 17),
+
+                # From https://en.wikipedia.org/wiki/Paper_size
+                'JUNIOR_LEGAL': (5, 8),
+                'HALF_LETTER': (5.5, 8),
+                'GOV_LETTER': (8, 10.5),
+                'GOV_LEGAL': (8.5, 13),
+                'LEDGER': (17, 11),
+            }
+        )
+
+        page_size_list = list(self.pagesize.keys())
+        self.pagesize_combo.addItems(page_size_list)
+
+        grid0.addWidget(self.pagesize_label, 17, 0)
+        grid0.addWidget(self.pagesize_combo, 17, 1)
 
         self.layout.addStretch()
 

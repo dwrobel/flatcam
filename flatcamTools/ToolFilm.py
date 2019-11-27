@@ -9,15 +9,17 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
-    OptionalHideInputSection, OptionalInputSection
+    OptionalHideInputSection, OptionalInputSection, FCComboBox
 
 from copy import deepcopy
 import logging
 from shapely.geometry import Polygon, MultiPolygon, Point
 
-from reportlab.graphics import renderPDF, renderPM
+from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, A0, A1, A2, A3, A4, A5
+from reportlab.graphics import renderPM
+from reportlab.lib.units import inch, mm
+from reportlab.lib.pagesizes import landscape, portrait, A4
 
 from svglib.svglib import svg2rlg
 from xml.dom.minidom import parseString as parse_xml_string
@@ -268,6 +270,10 @@ class Film(FlatCAMTool):
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line2, 17, 0, 1, 2)
 
+        self.film_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Film Parameters"))
+
+        grid0.addWidget(self.film_param_label, 18, 0, 1, 2)
+
         # Scale Stroke size
         self.film_scale_stroke_entry = FCDoubleSpinner()
         self.film_scale_stroke_entry.set_range(-999.9999, 999.9999)
@@ -280,10 +286,10 @@ class Film(FlatCAMTool):
               "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
               "therefore the fine features may be more affected by this parameter.")
         )
-        grid0.addWidget(self.film_scale_stroke_label, 18, 0)
-        grid0.addWidget(self.film_scale_stroke_entry, 18, 1)
+        grid0.addWidget(self.film_scale_stroke_label, 19, 0)
+        grid0.addWidget(self.film_scale_stroke_entry, 19, 1)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 19, 0)
+        grid0.addWidget(QtWidgets.QLabel(''), 20, 0)
 
         # Film Type
         self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
@@ -298,8 +304,8 @@ class Film(FlatCAMTool):
               "with white on a black canvas.\n"
               "The Film format is SVG.")
         )
-        grid0.addWidget(self.film_type_label, 20, 0)
-        grid0.addWidget(self.film_type, 20, 1)
+        grid0.addWidget(self.film_type_label, 21, 0)
+        grid0.addWidget(self.film_type, 21, 1)
 
         # Boundary for negative film generation
         self.boundary_entry = FCDoubleSpinner()
@@ -318,8 +324,8 @@ class Film(FlatCAMTool):
               "white color like the rest and which may confound with the\n"
               "surroundings if not for this border.")
         )
-        grid0.addWidget(self.boundary_label, 21, 0)
-        grid0.addWidget(self.boundary_entry, 21, 1)
+        grid0.addWidget(self.boundary_label, 22, 0)
+        grid0.addWidget(self.boundary_entry, 22, 1)
 
         self.boundary_label.hide()
         self.boundary_entry.hide()
@@ -329,7 +335,7 @@ class Film(FlatCAMTool):
         self.punch_cb.setToolTip(_("When checked the generated film will have holes in pads when\n"
                                    "the generated film is positive. This is done to help drilling,\n"
                                    "when done manually."))
-        grid0.addWidget(self.punch_cb, 22, 0, 1, 2)
+        grid0.addWidget(self.punch_cb, 23, 0, 1, 2)
 
         # this way I can hide/show the frame
         self.punch_frame = QtWidgets.QFrame()
@@ -393,6 +399,7 @@ class Film(FlatCAMTool):
         separator_line3.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid1.addWidget(separator_line3, 0, 0, 1, 2)
 
+        # File type
         self.file_type_radio = RadioSet([{'label': _('SVG'), 'value': 'svg'},
                                          {'label': _('PNG'), 'value': 'png'},
                                          {'label': _('PDF'), 'value': 'pdf'}
@@ -408,15 +415,96 @@ class Film(FlatCAMTool):
         grid1.addWidget(self.file_type_label, 1, 0)
         grid1.addWidget(self.file_type_radio, 1, 1)
 
+        # Page orientation
+        self.orientation_label = QtWidgets.QLabel('%s:' % _("Page Orientation"))
+        self.orientation_label.setToolTip(_("Can be:\n"
+                                            "- Portrait\n"
+                                            "- Landscape"))
+
+        self.orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
+                                           {'label': _('Landscape'), 'value': 'l'},
+                                           ], stretch=False)
+
+        grid1.addWidget(self.orientation_label, 2, 0)
+        grid1.addWidget(self.orientation_radio, 2, 1)
+
+        # Page Size
+        self.pagesize_label = QtWidgets.QLabel('%s:' % _("Page Size"))
+        self.pagesize_label.setToolTip(_("A selection of standard ISO 216 page sizes."))
+
+        self.pagesize_combo = FCComboBox()
+
+        self.pagesize = dict()
+        self.pagesize.update(
+            {
+                'Bounds': None,
+                'A0': (841*mm, 1189*mm),
+                'A1': (594*mm, 841*mm),
+                'A2': (420*mm, 594*mm),
+                'A3': (297*mm, 420*mm),
+                'A4': (210*mm, 297*mm),
+                'A5': (148*mm, 210*mm),
+                'A6': (105*mm, 148*mm),
+                'A7': (74*mm, 105*mm),
+                'A8': (52*mm, 74*mm),
+                'A9': (37*mm, 52*mm),
+                'A10': (26*mm, 37*mm),
+
+                'B0': (1000*mm, 1414*mm),
+                'B1': (707*mm, 1000*mm),
+                'B2': (500*mm, 707*mm),
+                'B3': (353*mm, 500*mm),
+                'B4': (250*mm, 353*mm),
+                'B5': (176*mm, 250*mm),
+                'B6': (125*mm, 176*mm),
+                'B7': (88*mm, 125*mm),
+                'B8': (62*mm, 88*mm),
+                'B9': (44*mm, 62*mm),
+                'B10': (31*mm, 44*mm),
+
+                'C0': (917*mm, 1297*mm),
+                'C1': (648*mm, 917*mm),
+                'C2': (458*mm, 648*mm),
+                'C3': (324*mm, 458*mm),
+                'C4': (229*mm, 324*mm),
+                'C5': (162*mm, 229*mm),
+                'C6': (114*mm, 162*mm),
+                'C7': (81*mm, 114*mm),
+                'C8': (57*mm, 81*mm),
+                'C9': (40*mm, 57*mm),
+                'C10': (28*mm, 40*mm),
+
+                # American paper sizes
+                'LETTER': (8.5*inch, 11*inch),
+                'LEGAL': (8.5*inch, 14*inch),
+                'ELEVENSEVENTEEN': (11*inch, 17*inch),
+
+                # From https://en.wikipedia.org/wiki/Paper_size
+                'JUNIOR_LEGAL': (5*inch, 8*inch),
+                'HALF_LETTER': (5.5*inch, 8*inch),
+                'GOV_LETTER': (8*inch, 10.5*inch),
+                'GOV_LEGAL': (8.5*inch, 13*inch),
+                'LEDGER': (17*inch, 11*inch),
+            }
+        )
+
+        page_size_list = list(self.pagesize.keys())
+        self.pagesize_combo.addItems(page_size_list)
+
+        grid1.addWidget(self.pagesize_label, 3, 0)
+        grid1.addWidget(self.pagesize_combo, 3, 1)
+
+        self.on_film_type(val='hide')
+
         # Buttons
         self.film_object_button = QtWidgets.QPushButton(_("Save Film"))
         self.film_object_button.setToolTip(
             _("Create a Film for the selected object, within\n"
               "the specified box. Does not create a new \n "
-              "FlatCAM object, but directly save it in SVG format\n"
-              "which can be opened with Inkscape.")
+              "FlatCAM object, but directly save it in the\n"
+              "selected format.")
         )
-        grid1.addWidget(self.film_object_button, 2, 0, 1, 2)
+        grid1.addWidget(self.film_object_button, 4, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -429,6 +517,7 @@ class Film(FlatCAMTool):
 
         self.film_type.activated_custom.connect(self.on_film_type)
         self.source_punch.activated_custom.connect(self.on_punch_source)
+        self.file_type_radio.activated_custom.connect(self.on_file_type)
 
     def on_type_obj_index_changed(self, index):
         obj_type = self.tf_type_obj_combo.currentIndex()
@@ -498,6 +587,8 @@ class Film(FlatCAMTool):
         self.film_mirror_cb.set_value(self.app.defaults["tools_film_mirror_cb"])
         self.film_mirror_axis.set_value(self.app.defaults["tools_film_mirror_axis_radio"])
         self.file_type_radio.set_value(self.app.defaults["tools_film_file_type_radio"])
+        self.orientation_radio.set_value(self.app.defaults["tools_film_orientation"])
+        self.pagesize_combo.set_value(self.app.defaults["tools_film_pagesize"])
 
     def on_film_type(self, val):
         type_of_film = val
@@ -511,6 +602,18 @@ class Film(FlatCAMTool):
             self.boundary_label.hide()
             self.boundary_entry.hide()
             self.punch_cb.show()
+
+    def on_file_type(self, val):
+        if val == 'pdf':
+            self.orientation_label.show()
+            self.orientation_radio.show()
+            self.pagesize_label.show()
+            self.pagesize_combo.show()
+        else:
+            self.orientation_label.hide()
+            self.orientation_radio.hide()
+            self.pagesize_label.hide()
+            self.pagesize_combo.hide()
 
     def on_punch_source(self, val):
         if val == 'pad' and self.punch_cb.get_value():
@@ -604,7 +707,7 @@ class Film(FlatCAMTool):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export positive film"),
-                directory=self.app.get_last_save_folder() + '/' + name,
+                directory=self.app.get_last_save_folder() + '/' + name + '_film',
                 filter=filter_ext)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export positive film"))
@@ -647,7 +750,7 @@ class Film(FlatCAMTool):
             outname = name + "_punched"
             self.app.new_object('gerber', outname, init_func)
 
-            self.generate_positive_normal_film(outname, boxname, factor=factor)
+            self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
         else:
             log.debug("ToolFilm.Film.generate_positive_punched_film() with Pad center source started ...")
 
@@ -698,7 +801,7 @@ class Film(FlatCAMTool):
             outname = name + "_punched"
             self.app.new_object('gerber', outname, init_func)
 
-            self.generate_positive_normal_film(outname, boxname, factor=factor)
+            self.generate_positive_normal_film(outname, boxname, factor=factor, ftype=ftype)
 
     def generate_negative_film(self, name, boxname, factor, ftype='svg'):
         log.debug("ToolFilm.Film.generate_negative_film() started ...")
@@ -744,7 +847,7 @@ class Film(FlatCAMTool):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export negative film"),
-                directory=self.app.get_last_save_folder() + '/' + name,
+                directory=self.app.get_last_save_folder() + '/' + name + '_film',
                 filter=filter_ext)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export negative film"))
@@ -785,6 +888,7 @@ class Film(FlatCAMTool):
         those are the 4 points of the bounding box of the geometry to be skewed.
         :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
         :param use_thread: if to be run in a separate thread; boolean
+        :param ftype: the type of file for saving the film: 'svg', 'png' or 'pdf'
         :return:
         """
         self.app.report_usage("export_negative()")
@@ -896,19 +1000,26 @@ class Film(FlatCAMTool):
             else:
                 try:
                     if self.units == 'INCH':
-                        from reportlab.lib.units import inch
                         unit = inch
                     else:
-                        from reportlab.lib.units import mm
                         unit = mm
 
                     doc_final = StringIO(doc_final)
-                    my_canvas = canvas.Canvas(filename, pagesize=A4)
                     drawing = svg2rlg(doc_final)
-                    my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
 
-                    renderPDF.draw(drawing, my_canvas, 0, 0)
-                    my_canvas.save()
+                    p_size = self.pagesize_combo.get_value()
+                    if p_size == 'Bounds':
+                        renderPDF.drawToFile(drawing, filename)
+                    else:
+                        if self.orientation_radio.get_value() == 'p':
+                            page_size = portrait(self.pagesize[p_size])
+                        else:
+                            page_size = landscape(self.pagesize[p_size])
+
+                        my_canvas = canvas.Canvas(filename, pagesize=page_size)
+                        my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
+                        renderPDF.draw(drawing, my_canvas, 0, 0)
+                        my_canvas.save()
                 except Exception as e:
                     log.debug("FilmTool.export_negative() --> PDF output --> %s" % str(e))
                     return 'fail'
@@ -955,6 +1066,7 @@ class Film(FlatCAMTool):
         :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
 
         :param use_thread: if to be run in a separate thread; boolean
+        :param ftype: the type of file for saving the film: 'svg', 'png' or 'pdf'
         :return:
         """
         self.app.report_usage("export_positive()")
@@ -1059,19 +1171,26 @@ class Film(FlatCAMTool):
             else:
                 try:
                     if self.units == 'INCH':
-                        from reportlab.lib.units import inch
                         unit = inch
                     else:
-                        from reportlab.lib.units import mm
                         unit = mm
 
                     doc_final = StringIO(doc_final)
-                    my_canvas = canvas.Canvas(filename, pagesize=A4)
                     drawing = svg2rlg(doc_final)
-                    my_canvas.translate(bounds[0]*unit, bounds[1]*unit)
 
-                    renderPDF.draw(drawing, my_canvas, 0, 0)
-                    my_canvas.save()
+                    p_size = self.pagesize_combo.get_value()
+                    if p_size == 'Bounds':
+                        renderPDF.drawToFile(drawing, filename)
+                    else:
+                        if self.orientation_radio.get_value() == 'p':
+                            page_size = portrait(self.pagesize[p_size])
+                        else:
+                            page_size = landscape(self.pagesize[p_size])
+
+                        my_canvas = canvas.Canvas(filename, pagesize=page_size)
+                        my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
+                        renderPDF.draw(drawing, my_canvas, 0, 0)
+                        my_canvas.save()
                 except Exception as e:
                     log.debug("FilmTool.export_positive() --> PDF output --> %s" % str(e))
                     return 'fail'

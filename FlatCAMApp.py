@@ -427,7 +427,8 @@ class App(QtCore.QObject):
             "global_gridy": 0.0393701,
             "global_snap_max": 0.001968504,
             "global_workspace": False,
-            "global_workspaceT": "A4P",
+            "global_workspaceT": "A4",
+            "global_workspace_orientation": 'p',
 
             "global_grid_context_menu": {
                 'in': [0.01, 0.02, 0.025, 0.05, 0.1],
@@ -766,6 +767,8 @@ class App(QtCore.QObject):
             "tools_film_mirror_cb": False,
             "tools_film_mirror_axis_radio": 'none',
             "tools_film_file_type_radio": 'svg',
+            "tools_film_orientation": 'p',
+            "tools_film_pagesize": 'A4',
 
             # Panel Tool
             "tools_panelize_spacing_columns": 0,
@@ -1039,6 +1042,7 @@ class App(QtCore.QObject):
             "global_snap_max": self.ui.general_defaults_form.general_gui_group.snap_max_dist_entry,
             "global_workspace": self.ui.general_defaults_form.general_gui_group.workspace_cb,
             "global_workspaceT": self.ui.general_defaults_form.general_gui_group.wk_cb,
+            "global_workspace_orientation": self.ui.general_defaults_form.general_gui_group.wk_orientation_radio,
 
             "global_plot_fill": self.ui.general_defaults_form.general_gui_group.pf_color_entry,
             "global_plot_line": self.ui.general_defaults_form.general_gui_group.pl_color_entry,
@@ -1324,6 +1328,8 @@ class App(QtCore.QObject):
             "tools_film_mirror_cb": self.ui.tools_defaults_form.tools_film_group.film_mirror_cb,
             "tools_film_mirror_axis_radio": self.ui.tools_defaults_form.tools_film_group.film_mirror_axis,
             "tools_film_file_type_radio": self.ui.tools_defaults_form.tools_film_group.file_type_radio,
+            "tools_film_orientation": self.ui.tools_defaults_form.tools_film_group.orientation_radio,
+            "tools_film_pagesize": self.ui.tools_defaults_form.tools_film_group.pagesize_combo,
 
             # Panelize Tool
             "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,
@@ -1932,6 +1938,10 @@ class App(QtCore.QObject):
 
         # ############################# workspace setting signals #####################
         self.ui.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
+        self.ui.general_defaults_form.general_gui_group.wk_orientation_radio.activated_custom.connect(
+            self.on_workspace_modified
+        )
+
         self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
         self.ui.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
@@ -5729,7 +5739,7 @@ class App(QtCore.QObject):
 
             # change this only if the workspace is active
             if self.defaults['global_workspace'] is True:
-                self.plotcanvas.draw_workspace()
+                self.plotcanvas.draw_workspace(pagesize=self.defaults['global_workspaceT'])
 
             # adjust the grid values on the main toolbar
             dec = 6 if new_units == 'IN'else 4
@@ -6660,7 +6670,7 @@ class App(QtCore.QObject):
 
     def on_workspace_modified(self):
         self.save_defaults(silent=True)
-        self.plotcanvas.draw_workspace()
+        self.plotcanvas.draw_workspace(pagesize=self.defaults['global_workspaceT'])
 
     def on_workspace(self):
         self.report_usage("on_workspace()")

@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+27.11.2019
+
+- in Tool Film added the page size and page orientation in case of saving the film as PDF file
+- the application workspace has now a lot more options selectable in the Edit -> Preferences -> General -> GUI Preferences
+
 26.11.2019
 
 - updated the Film Tool to allow exporting PDF and PNG file (besides the SVG file)
