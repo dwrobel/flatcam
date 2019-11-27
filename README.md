@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - the application workspace has now a lot more options selectable in the Edit -> Preferences -> General -> GUI Preferences
 - updated the drawing of the workspace such that the application overall start time is improved and after first turn on of the workspace, toggling it will have no performance penalty
 - updated the workspace functions to work in Legacy(@D) graphic mode
+- adjusted the selection color transparency for the Legacy(2D) graphic mode because it was too transparent for the fill
 
 26.11.2019
 

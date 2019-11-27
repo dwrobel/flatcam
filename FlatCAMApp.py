@@ -8786,8 +8786,12 @@ class App(QtCore.QObject):
             face = color[:-2] + str(hex(int(0.2 * 255)))[2:]
             outline = color[:-2] + str(hex(int(0.8 * 255)))[2:]
         else:
-            face = self.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
-            outline = self.defaults['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
+            if self.is_legacy is False:
+                face = self.defaults['global_sel_fill'][:-2] + str(hex(int(0.2 * 255)))[2:]
+                outline = self.defaults['global_sel_line'][:-2] + str(hex(int(0.8 * 255)))[2:]
+            else:
+                face = self.defaults['global_sel_fill'][:-2] + str(hex(int(0.4 * 255)))[2:]
+                outline = self.defaults['global_sel_line'][:-2] + str(hex(int(1.0 * 255)))[2:]
 
         self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect,
                                                                    color=outline,
