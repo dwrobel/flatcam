@@ -2097,7 +2097,8 @@ class App(QtCore.QObject):
         # #####################################################################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'aligndrillgrid', 'bbox', 'bounding_box', 'clear', 'cncjob', 'cutout',
-                                  'delete', 'drillcncjob', 'export_gcode', 'export_svg', 'ext', 'exteriors', 'follow',
+                                  'delete', 'drillcncjob', 'export_dxf', 'edxf', 'export_excellon', 'ee', 'export_exc',
+                                  'export_gcode', 'export_gerber', 'egr', 'export_svg', 'ext', 'exteriors', 'follow',
                                   'geo_union', 'geocutout', 'get_names', 'get_sys', 'getsys', 'help', 'import_svg',
                                   'interiors', 'isolate', 'join_excellon', 'join_excellons', 'join_geometries',
                                   'join_geometry', 'list_sys', 'listsys', 'milld', 'mills', 'milldrills', 'millslots',
@@ -10131,7 +10132,7 @@ class App(QtCore.QObject):
         self.report_usage("export_excellon()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] + '/' + 'exported_excellon'
 
         self.log.debug("export_excellon()")
 
@@ -10147,6 +10148,11 @@ class App(QtCore.QObject):
                 return "Could not retrieve object: %s" % obj_name
         else:
             obj = local_use
+
+        if not isinstance(obj, FlatCAMExcellon):
+            self.inform.emit('[ERROR_NOTCL] %s' %
+                             _("Failed. Only Excellon objects can be saved as Excellon files..."))
+            return
 
         # updated units
         eunits = self.defaults["excellon_exp_units"]

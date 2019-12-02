@@ -17,6 +17,9 @@ import tclCommands.TclCommandCopperClear
 import tclCommands.TclCommandCutout
 import tclCommands.TclCommandDelete
 import tclCommands.TclCommandDrillcncjob
+import tclCommands.TclCommandExportDXF
+import tclCommands.TclCommandExportExcellon
+import tclCommands.TclCommandExportGerber
 import tclCommands.TclCommandExportGcode
 import tclCommands.TclCommandExportSVG
 import tclCommands.TclCommandExteriors

@@ -2334,7 +2334,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def build_ui(self):
         FlatCAMObj.build_ui(self)
 
-        self.units = self.app.udefaults['units'].upper()
+        self.units = self.app.defaults['units'].upper()
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
