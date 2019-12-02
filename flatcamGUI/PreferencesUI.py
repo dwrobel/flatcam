@@ -1049,8 +1049,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.unitslabel.setToolTip(_("The default value for FlatCAM units.\n"
                                      "Whatever is selected here is set every time\n"
                                      "FLatCAM is started."))
-        self.units_radio = RadioSet([{'label': _('IN'), 'value': 'IN'},
-                                     {'label': _('MM'), 'value': 'MM'}])
+        self.units_radio = RadioSet([{'label': _('MM'), 'value': 'MM'},
+                                     {'label': _('IN'), 'value': 'IN'}])
 
         grid0.addWidget(self.unitslabel, 0, 0)
         grid0.addWidget(self.units_radio, 0, 1)

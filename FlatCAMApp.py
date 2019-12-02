@@ -397,9 +397,9 @@ class App(QtCore.QObject):
         self.defaults.update({
             # Global APP Preferences
             "first_run": True,
-            "units": "IN",
+            "units": "MM",
             "global_serial": 0,
-            "global_stats": {},
+            "global_stats": dict(),
             "global_tabs_detachable": True,
             "global_graphic_engine": '3D',
             "global_app_level": 'b',
@@ -423,9 +423,9 @@ class App(QtCore.QObject):
             "global_machinist_setting": False,
 
             # Global GUI Preferences
-            "global_gridx": 0.0393701,
-            "global_gridy": 0.0393701,
-            "global_snap_max": 0.001968504,
+            "global_gridx": 1.0,
+            "global_gridy": 1.0,
+            "global_snap_max": 0.05,
             "global_workspace": False,
             "global_workspaceT": "A4",
             "global_workspace_orientation": 'p',
@@ -495,7 +495,7 @@ class App(QtCore.QObject):
             "gerber_plot": True,
             "gerber_solid": True,
             "gerber_multicolored": False,
-            "gerber_circle_steps": 128,
+            "gerber_circle_steps": 64,
             "gerber_use_buffer_for_union": True,
             "gerber_def_units": 'IN',
             "gerber_def_zeros": 'L',
@@ -519,15 +519,15 @@ class App(QtCore.QObject):
                                    "All Files (*.*)",
 
             # Gerber Options
-            "gerber_isotooldia": 0.00787402,
+            "gerber_isotooldia": 0.1,
             "gerber_isopasses": 1,
-            "gerber_isooverlap": 0.00393701,
+            "gerber_isooverlap": 0.1,
             "gerber_milling_type": "cl",
             "gerber_combine_passes": False,
             "gerber_iso_scope": 'all',
-            "gerber_noncoppermargin": 0.00393701,
+            "gerber_noncoppermargin": 0.1,
             "gerber_noncopperrounded": False,
-            "gerber_bboxmargin": 0.00393701,
+            "gerber_bboxmargin": 0.1,
             "gerber_bboxrounded": False,
 
             # Gerber Advanced Options
@@ -553,7 +553,7 @@ class App(QtCore.QObject):
             # Gerber Editor
             "gerber_editor_sel_limit": 30,
             "gerber_editor_newcode": 10,
-            "gerber_editor_newsize": 0.031496,
+            "gerber_editor_newsize": 0.8,
             "gerber_editor_newtype": 'C',
             "gerber_editor_newdim": "0.5, 0.5",
             "gerber_editor_array_size": 5,
@@ -563,7 +563,7 @@ class App(QtCore.QObject):
             "gerber_editor_circ_dir": 'CW',
             "gerber_editor_circ_angle": 0.0,
             "gerber_editor_scale_f": 1.0,
-            "gerber_editor_buff_f": 0.01,
+            "gerber_editor_buff_f": 0.1,
             "gerber_editor_ma_low": 0.0,
             "gerber_editor_ma_high": 1.0,
 
@@ -584,27 +584,27 @@ class App(QtCore.QObject):
                                      "Excellon File (*.xln);;All Files (*.*)",
 
             # Excellon Options
-            "excellon_drillz": -0.0590551,
-            "excellon_travelz": 0.0787402,
+            "excellon_drillz": -1.7,
+            "excellon_travelz": 2,
             "excellon_endz": 0.5,
-            "excellon_feedrate": 3.14961,
+            "excellon_feedrate": 300,
             "excellon_spindlespeed": None,
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
             "excellon_toolchange": False,
-            "excellon_toolchangez": 0.5,
+            "excellon_toolchangez": 15,
             "excellon_ppname_e": 'default',
-            "excellon_tooldia": 0.0314961,
-            "excellon_slot_tooldia": 0.0708661,
+            "excellon_tooldia": 0.8,
+            "excellon_slot_tooldia": 1.8,
             "excellon_gcode_type": "drills",
 
             # Excellon Advanced Options
             "excellon_offset": 0.0,
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_startz": None,
-            "excellon_feedrate_rapid": 31.4961,
+            "excellon_feedrate_rapid": 1500,
             "excellon_z_pdepth": -0.02,
-            "excellon_feedrate_probe": 3.14961,
+            "excellon_feedrate_probe": 75,
             "excellon_spindledir": 'CW',
             "excellon_f_plunge": False,
             "excellon_f_retract": False,
@@ -619,10 +619,10 @@ class App(QtCore.QObject):
 
             # Excellon Editor
             "excellon_editor_sel_limit": 30,
-            "excellon_editor_newdia": 0.039,
+            "excellon_editor_newdia": 1.0,
             "excellon_editor_array_size": 5,
             "excellon_editor_lin_dir": 'X',
-            "excellon_editor_lin_pitch": 0.1,
+            "excellon_editor_lin_pitch": 2.54,
             "excellon_editor_lin_angle": 0.0,
             "excellon_editor_circ_dir": 'CW',
             "excellon_editor_circ_angle": 12,
@@ -633,28 +633,28 @@ class App(QtCore.QObject):
             # Excellon Slot Array
             "excellon_editor_slot_array_size": 5,
             "excellon_editor_slot_lin_dir":  'X',
-            "excellon_editor_slot_lin_pitch": 0.1,
+            "excellon_editor_slot_lin_pitch": 2.54,
             "excellon_editor_slot_lin_angle": 0.0,
             "excellon_editor_slot_circ_dir": 'CW',
             "excellon_editor_slot_circ_angle": 0.0,
 
             # Geometry General
             "geometry_plot": True,
-            "geometry_circle_steps": 128,
-            "geometry_cnctooldia": "0.0944882",
+            "geometry_circle_steps": 64,
+            "geometry_cnctooldia": "2.4",
 
             # Geometry Options
-            "geometry_cutz": -0.0944882,
+            "geometry_cutz": -2.4,
             "geometry_vtipdia": 0.1,
             "geometry_vtipangle": 30,
             "geometry_multidepth": False,
-            "geometry_depthperpass": 0.0314961,
-            "geometry_travelz": 0.0787402,
+            "geometry_depthperpass": 0.8,
+            "geometry_travelz": 2,
             "geometry_toolchange": False,
-            "geometry_toolchangez": 0.5,
-            "geometry_endz": 0.5,
-            "geometry_feedrate": 3.14961,
-            "geometry_feedrate_z": 3.14961,
+            "geometry_toolchangez": 15.0,
+            "geometry_endz": 15.0,
+            "geometry_feedrate": 120,
+            "geometry_feedrate_z": 60,
             "geometry_spindlespeed": None,
             "geometry_dwell": False,
             "geometry_dwelltime": 1,
@@ -663,12 +663,12 @@ class App(QtCore.QObject):
             # Geometry Advanced Options
             "geometry_toolchangexy": "0.0, 0.0",
             "geometry_startz": None,
-            "geometry_feedrate_rapid": 3.14961,
+            "geometry_feedrate_rapid": 1500,
             "geometry_extracut": False,
             "geometry_z_pdepth": -0.02,
             "geometry_f_plunge": False,
             "geometry_spindledir": 'CW',
-            "geometry_feedrate_probe": 3.14961,
+            "geometry_feedrate_probe": 75,
             "geometry_segx": 0.0,
             "geometry_segy": 0.0,
 
@@ -680,11 +680,11 @@ class App(QtCore.QObject):
             "cncjob_plot": True,
             "cncjob_plot_kind": 'all',
             "cncjob_annotation": True,
-            "cncjob_tooldia": 0.0393701,
+            "cncjob_tooldia": 1.0,
             "cncjob_coords_type": "G90",
             "cncjob_coords_decimals": 4,
             "cncjob_fr_decimals": 2,
-            "cncjob_steps_per_circle": 128,
+            "cncjob_steps_per_circle": 64,
             "cncjob_footer": False,
             "cncjob_line_ending": False,
             "cncjob_save_filters": "G-Code Files (*.nc);;G-Code Files (*.din);;G-Code Files (*.dnc);;"
@@ -711,8 +711,8 @@ class App(QtCore.QObject):
             # NCC Tool
             "tools_ncctools": "0.0393701, 0.019685",
             "tools_nccorder": 'rev',
-            "tools_nccoverlap": 0.015748,
-            "tools_nccmargin": 0.0393701,
+            "tools_nccoverlap": 0.4,
+            "tools_nccmargin": 1.0,
             "tools_nccmethod": "seed",
             "tools_nccconnect": True,
             "tools_ncccontour": True,
@@ -723,23 +723,23 @@ class App(QtCore.QObject):
             "tools_ncc_plotting": 'normal',
             "tools_nccmilling_type": 'cl',
             "tools_ncctool_type": 'V',
-            "tools_ncccutz": -0.001968504,
-            "tools_ncctipdia": 0.00393701,
+            "tools_ncccutz": -0.05,
+            "tools_ncctipdia": 0.1,
             "tools_ncctipangle": 30,
-            "tools_nccnewdia": 0.0393701,
+            "tools_nccnewdia": 1.0,
 
             # Cutout Tool
-            "tools_cutouttooldia": 0.0944882,
+            "tools_cutouttooldia": 2.4,
             "tools_cutoutkind": "single",
-            "tools_cutoutmargin": 0.00393701,
-            "tools_cutoutgapsize": 0.15748,
+            "tools_cutoutmargin": 0.1,
+            "tools_cutoutgapsize": 4,
             "tools_gaps_ff": "4",
             "tools_cutout_convexshape": False,
 
             # Paint Tool
-            "tools_painttooldia": 0.023622,
+            "tools_painttooldia": 0.3,
             "tools_paintorder": 'rev',
-            "tools_paintoverlap": 0.015748,
+            "tools_paintoverlap": 0.2,
             "tools_paintmargin": 0.0,
             "tools_paintmethod": "seed",
             "tools_selectmethod": "all",
@@ -750,11 +750,11 @@ class App(QtCore.QObject):
             # 2-Sided Tool
             "tools_2sided_mirror_axis": "X",
             "tools_2sided_axis_loc": "point",
-            "tools_2sided_drilldia": 0.11811,
+            "tools_2sided_drilldia": 3.125,
 
             # Film Tool
             "tools_film_type": 'neg',
-            "tools_film_boundary": 0.0393701,
+            "tools_film_boundary": 1.0,
             "tools_film_scale_stroke": 0,
             "tools_film_color": '#000000',
             "tools_film_scale_cb": False,
@@ -781,9 +781,9 @@ class App(QtCore.QObject):
             "tools_panelize_panel_type": 'gerber',
 
             # Calculators Tool
-            "tools_calc_vshape_tip_dia": 0.007874,
+            "tools_calc_vshape_tip_dia": 0.2,
             "tools_calc_vshape_tip_angle": 30,
-            "tools_calc_vshape_cut_z": 0.000787,
+            "tools_calc_vshape_cut_z": 0.05,
             "tools_calc_electro_length": 10.0,
             "tools_calc_electro_width": 10.0,
             "tools_calc_electro_cdensity": 13.0,
@@ -803,20 +803,20 @@ class App(QtCore.QObject):
             "tools_transform_mirror_point": (0, 0),
 
             # SolderPaste Tool
-            "tools_solderpaste_tools": "0.0393701, 0.011811",
-            "tools_solderpaste_new": 0.011811,
-            "tools_solderpaste_z_start": 0.00019685039,
-            "tools_solderpaste_z_dispense": 0.00393701,
-            "tools_solderpaste_z_stop": 0.00019685039,
-            "tools_solderpaste_z_travel": 0.00393701,
-            "tools_solderpaste_z_toolchange": 0.0393701,
+            "tools_solderpaste_tools": "1.0, 0.3",
+            "tools_solderpaste_new": 0.3,
+            "tools_solderpaste_z_start": 0.05,
+            "tools_solderpaste_z_dispense": 0.1,
+            "tools_solderpaste_z_stop": 0.05,
+            "tools_solderpaste_z_travel": 0.1,
+            "tools_solderpaste_z_toolchange": 1.0,
             "tools_solderpaste_xy_toolchange": "0.0, 0.0",
-            "tools_solderpaste_frxy": 3.0,
-            "tools_solderpaste_frz": 3.0,
-            "tools_solderpaste_frz_dispense": 0.0393701,
-            "tools_solderpaste_speedfwd": 20,
+            "tools_solderpaste_frxy": 150,
+            "tools_solderpaste_frz": 150,
+            "tools_solderpaste_frz_dispense": 1.0,
+            "tools_solderpaste_speedfwd": 300,
             "tools_solderpaste_dwellfwd": 1,
-            "tools_solderpaste_speedrev": 10,
+            "tools_solderpaste_speedrev": 200,
             "tools_solderpaste_dwellrev": 1,
             "tools_solderpaste_pp": 'Paste_1',
 
@@ -832,25 +832,25 @@ class App(QtCore.QObject):
 
             # Check Rules Tool
             "tools_cr_trace_size": True,
-            "tools_cr_trace_size_val": 0.01,
+            "tools_cr_trace_size_val": 0.25,
             "tools_cr_c2c": True,
-            "tools_cr_c2c_val": 0.01,
+            "tools_cr_c2c_val": 0.25,
             "tools_cr_c2o": True,
-            "tools_cr_c2o_val": 0.03937,
+            "tools_cr_c2o_val": 1.0,
             "tools_cr_s2s": True,
-            "tools_cr_s2s_val": 0.01,
+            "tools_cr_s2s_val": 0.25,
             "tools_cr_s2sm": True,
-            "tools_cr_s2sm_val": 0.01,
+            "tools_cr_s2sm_val": 0.25,
             "tools_cr_s2o": True,
-            "tools_cr_s2o_val": 0.03937,
+            "tools_cr_s2o_val": 1.0,
             "tools_cr_sm2sm": True,
-            "tools_cr_sm2sm_val": 0.01,
+            "tools_cr_sm2sm_val": 0.25,
             "tools_cr_ri": True,
-            "tools_cr_ri_val": 0.015,
+            "tools_cr_ri_val": 0.3,
             "tools_cr_h2h": True,
-            "tools_cr_h2h_val": 0.015,
+            "tools_cr_h2h_val": 0.3,
             "tools_cr_dh": True,
-            "tools_cr_dh_val": 0.011811,
+            "tools_cr_dh_val": 0.3,
 
             # QRCode Tool
             "tools_qrcode_version": 1,
@@ -865,28 +865,28 @@ class App(QtCore.QObject):
             "tools_qrcode_sel_limit": 330,
 
             # Copper Thieving Tool
-            "tools_copper_thieving_clearance": 0.01,
-            "tools_copper_thieving_margin": 0.039,
+            "tools_copper_thieving_clearance": 0.25,
+            "tools_copper_thieving_margin": 1.0,
             "tools_copper_thieving_reference": 'itself',
             "tools_copper_thieving_box_type": 'rect',
-            "tools_copper_thieving_circle_steps": 128,
+            "tools_copper_thieving_circle_steps": 64,
             "tools_copper_thieving_fill_type": 'solid',
-            "tools_copper_thieving_dots_dia": 0.0393701,
-            "tools_copper_thieving_dots_spacing": 0.0787402,
-            "tools_copper_thieving_squares_size": 0.0393701,
-            "tools_copper_thieving_squares_spacing": 0.0787402,
-            "tools_copper_thieving_lines_size": 0.01,
-            "tools_copper_thieving_lines_spacing": 0.0787402,
-            "tools_copper_thieving_rb_margin": 0.039,
-            "tools_copper_thieving_rb_thickness": 0.039,
+            "tools_copper_thieving_dots_dia": 1.0,
+            "tools_copper_thieving_dots_spacing": 2.0,
+            "tools_copper_thieving_squares_size": 1.0,
+            "tools_copper_thieving_squares_spacing": 2.0,
+            "tools_copper_thieving_lines_size": 0.25,
+            "tools_copper_thieving_lines_spacing": 2.0,
+            "tools_copper_thieving_rb_margin": 1.0,
+            "tools_copper_thieving_rb_thickness": 1.0,
 
             # Fiducials Tool
-            "tools_fiducials_dia": 0.0393701,
-            "tools_fiducials_margin": 0.0393701,
+            "tools_fiducials_dia": 1.0,
+            "tools_fiducials_margin": 1.0,
             "tools_fiducials_mode": 'auto',
             "tools_fiducials_second_pos": 'up',
             "tools_fiducials_type": 'circular',
-            "tools_fiducials_line_thickness": 0.01,
+            "tools_fiducials_line_thickness": 0.25,
 
             # Utilities
             # file associations
@@ -7709,7 +7709,7 @@ class App(QtCore.QObject):
                 msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-                bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+                msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
                 msgbox.setDefaultButton(bt_yes)
                 msgbox.exec_()

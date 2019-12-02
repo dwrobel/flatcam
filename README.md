@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - a hack to import correctly the QRCode exported as SVG from FlatCAM
 - added 3 new tcl commands: export dxf, export excellon and export gerber
 - added a Cancel button in Tools DB when requesting to add a tool in the Geometry Tool Table
+- modified the default values for the METRIC system; the app now starts in the METRIC units since the majority of the world use the METRIC units system
 
 28.11.2019
 
