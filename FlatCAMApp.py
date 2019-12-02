@@ -414,7 +414,7 @@ class App(QtCore.QObject):
             "global_project_autohide": True,
             "global_toggle_tooltips": True,
             "global_worker_number": 2,
-            "global_tolerance": 0.0002,
+            "global_tolerance": 0.005,
             "global_open_style": True,
             "global_delete_confirmation": True,
             "global_compression_level": 3,

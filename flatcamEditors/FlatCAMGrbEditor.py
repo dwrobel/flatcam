@@ -2925,10 +2925,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
 
-        if self.units == 'MM':
-            self.tolerance = float(self.app.defaults["global_tolerance"])
-        else:
-            self.tolerance = float(self.app.defaults["global_tolerance"]) / 20
+        def_tol_val = float(self.app.defaults["global_tolerance"])
+        self.tolerance = def_tol_val if self.units == 'MM'else def_tol_val / 20
 
         def make_callback(the_tool):
             def f():
@@ -4808,13 +4806,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.storage_dict[apid]['geometry'] = []
                 self.storage_dict[apid]['geometry'] = temp_storage
             except Exception as e:
-                log.debug("FlatCAMGrbEditor.buffer() --> %s\n%s" % str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s\n%s' %
-                                     (_("Failed."), str(traceback.print_exc())))
+                log.debug("FlatCAMGrbEditor.buffer() --> %s" % str(e))
+                self.app.inform.emit('[ERROR_NOTCL] %s\n%s' % (_("Failed."), str(traceback.print_exc())))
                 return
+
         self.plot_all()
-        self.app.inform.emit('[success] %s' %
-                             _("Done. Buffer Tool completed."))
+        self.app.inform.emit('[success] %s' % _("Done. Buffer Tool completed."))
 
     def on_scale(self):
         scale_factor = 1.0

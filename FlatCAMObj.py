@@ -4237,8 +4237,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ser_attrs.append('tools')
 
         self.build_ui()
-        self.app.inform.emit('[success] %s' %
-                             _("Tool was copied in Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tool was copied in Tool Table."))
 
     def on_tool_edit(self, current_item):
 
@@ -4252,8 +4251,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             try:
                 d = float(self.ui.geo_tools_table.item(current_row, 1).text().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                 return
 
         tool_dia = float('%.*f' % (self.decimals, d))
@@ -4267,8 +4265,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except (TypeError, ValueError):
             pass
 
-        self.app.inform.emit('[success] %s' %
-                             _("Tool was edited in Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tool was edited in Tool Table."))
         self.build_ui()
 
     def on_tool_delete(self, all=None):

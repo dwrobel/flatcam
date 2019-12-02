@@ -2028,7 +2028,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.restoreState(saved_gui_state)
             log.debug("FlatCAMGUI.__init__() --> UI state restored.")
 
-        settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
             if layout == 'standard':
@@ -2072,7 +2071,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.lock_action.setText(_("Lock Toolbars"))
         self.lock_action.setCheckable(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("toolbar_lock"):
             lock_val = settings.value('toolbar_lock')
             if lock_val == 'true':
