@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+2.12.2019
+
+- fixed issue #343; updated the Image Tool
+
 28.11.2019
 
 - small fixes in NCC Tool and in the FlatCAMGeometry class

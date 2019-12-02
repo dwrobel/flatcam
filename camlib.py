@@ -1084,7 +1084,7 @@ class Geometry(object):
         #     geos_text_f = []
         #     self.solid_geometry = [self.solid_geometry, geos_text_f]
 
-    def import_image(self, filename, flip=True, units='MM', dpi=96, mode='black', mask=[128, 128, 128, 128]):
+    def import_image(self, filename, flip=True, units='MM', dpi=96, mode='black', mask=None):
         """
         Imports shapes from an IMAGE file into the object's geometry.
 
@@ -1098,15 +1098,13 @@ class Geometry(object):
         :param mask: level of detail for the import
         :return: None
         """
-        scale_factor = 0.264583333
+        if mask is None:
+            mask = [128, 128, 128, 128]
 
-        if units.lower() == 'mm':
-            scale_factor = 25.4 / dpi
-        else:
-            scale_factor = 1 / dpi
+        scale_factor = 25.4 / dpi if units.lower() == 'mm' else 1 / dpi
 
-        geos = []
-        unscaled_geos = []
+        geos = list()
+        unscaled_geos = list()
 
         with rasterio.open(filename) as src:
             # if filename.lower().rpartition('.')[-1] == 'bmp':
@@ -1153,7 +1151,7 @@ class Geometry(object):
 
         # Add to object
         if self.solid_geometry is None:
-            self.solid_geometry = []
+            self.solid_geometry = list()
 
         if type(self.solid_geometry) is list:
             # self.solid_geometry.append(cascaded_union(geos))

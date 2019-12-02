@@ -2090,7 +2090,6 @@ class App(QtCore.QObject):
 
         # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
         self.setup_obj_classes()
-        self.setup_recent_items()
         self.setup_component_editor()
 
         # #####################################################################################
@@ -2379,6 +2378,11 @@ class App(QtCore.QObject):
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         self.install_tools()
+
+        # ##################################################################################
+        # ########################### SETUP RECENT ITEMS ###################################
+        # ##################################################################################
+        self.setup_recent_items()
 
         # ##################################################################################
         # ########################### BookMarks Manager ####################################
@@ -10533,51 +10537,6 @@ class App(QtCore.QObject):
             self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
             self.progress.emit(100)
 
-    def import_image(self, filename, o_type='gerber', dpi=96, mode='black', mask=[250, 250, 250, 250], outname=None):
-        """
-        Adds a new Geometry Object to the projects and populates
-        it with shapes extracted from the SVG file.
-
-        :param filename: Path to the SVG file.
-        :param o_type: type of FlatCAM objeect
-        :param dpi: dot per inch
-        :param mode: black or color
-        :param mask: dictate the level of detail
-        :param outname: name for the resulting file
-        :return:
-        """
-        self.report_usage("import_image()")
-
-        if o_type is None or o_type == "geometry":
-            obj_type = "geometry"
-        elif o_type == "gerber":
-            obj_type = o_type
-        else:
-            self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Not supported type is picked as parameter. "
-                               "Only Geometry and Gerber are supported"))
-            return
-
-        def obj_init(geo_obj, app_obj):
-            geo_obj.import_image(filename, units=units, dpi=dpi, mode=mode, mask=mask)
-            geo_obj.multigeo = False
-
-        with self.proc_container.new(_("Importing Image")) as proc:
-
-            # Object name
-            name = outname or filename.split('/')[-1].split('\\')[-1]
-            units = self.defaults['units']
-
-            self.new_object(obj_type, name, obj_init)
-            self.progress.emit(20)
-            # Register recent file
-            self.file_opened.emit("image", filename)
-
-            # GUI feedback
-            self.inform.emit('[success] %s: %s' %
-                             (_("Opened"), filename))
-            self.progress.emit(100)
-
     def open_gerber(self, filename, outname=None):
         """
         Opens a Gerber file, parses it and creates a new object for
@@ -11265,7 +11224,7 @@ class App(QtCore.QObject):
             'project': self.open_project,
             'svg': self.import_svg,
             'dxf': self.import_dxf,
-            'image': self.import_image,
+            'image': self.image_tool.import_image,
             'pdf': lambda fname: self.worker_task.emit({'fcn': self.pdf_tool.open_pdf, 'params': [fname]})
         }
 
