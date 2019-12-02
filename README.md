@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - improvements in Importing SVG as Gerber - added an automatic source generation (it is not infallible)
 - a hack to import correctly the QRCode exported as SVG from FlatCAM
 - added 3 new tcl commands: export dxf, export excellon and export gerber
+- added a Cancel button in Tools DB when requesting to add a tool in the Geometry Tool Table
 
 28.11.2019
 

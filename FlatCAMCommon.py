@@ -684,16 +684,20 @@ class ToolsDB(QtWidgets.QWidget):
         # self.buttons_box.addWidget(closebtn)
 
         self.add_tool_from_db = FCButton(_("Add Tool from Tools DB"))
-        add_entry_btn.setToolTip(
+        self.add_tool_from_db.setToolTip(
             _("Add a new tool in the Tools Table of the\n"
               "active Geometry object after selecting a tool\n"
               "in the Tools Database.")
         )
         self.add_tool_from_db.hide()
 
+        self.cancel_tool_from_db = FCButton(_("Cancel"))
+        self.cancel_tool_from_db.hide()
+
         hlay = QtWidgets.QHBoxLayout()
         layout.addLayout(hlay)
         hlay.addWidget(self.add_tool_from_db)
+        hlay.addWidget(self.cancel_tool_from_db)
         hlay.addStretch()
 
         # ##############################################################################
@@ -707,6 +711,7 @@ class ToolsDB(QtWidgets.QWidget):
         # closebtn.clicked.connect(self.accept)
 
         self.add_tool_from_db.clicked.connect(self.on_tool_requested_from_app)
+        self.cancel_tool_from_db.clicked.connect(self.on_cancel_tool)
 
         self.setup_db_ui()
 
@@ -1296,6 +1301,14 @@ class ToolsDB(QtWidgets.QWidget):
                 if str(key) == str(tool_uid):
                     selected_tool = self.db_tool_dict[key]
                     self.on_tool_request(tool=selected_tool)
+
+    def on_cancel_tool(self):
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Tools Database"):
+                wdg = self.app.ui.plot_tab_area.widget(idx)
+                wdg.deleteLater()
+                self.app.ui.plot_tab_area.removeTab(idx)
+        self.app.inform.emit('%s' % _("Cancelled adding tool from DB."))
 
     def resize_new_tool_table_widget(self, min_size, max_size):
         """

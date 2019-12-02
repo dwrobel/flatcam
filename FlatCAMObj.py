@@ -4116,6 +4116,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.app.on_tools_database()
         self.app.tools_db_tab.buttons_frame.hide()
         self.app.tools_db_tab.add_tool_from_db.show()
+        self.app.tools_db_tab.cancel_tool_from_db.show()
 
     def on_tool_from_db_inserted(self, tool):
         """
