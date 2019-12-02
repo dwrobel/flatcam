@@ -30,6 +30,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ('toolchangez', float),
         ('toolchangexy', tuple),
         ('endz', float),
+        ('dwell', bool),
+        ('dwelltime', float),
         ('pp', str),
         ('outname', str),
         ('opt_type', str),
@@ -56,6 +58,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('toolchangez', 'Z distance for toolchange (example: 30.0).'),
             ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
             ('endz', 'Z distance at job end (example: 30.0).'),
+            ('dwell', 'True or False; use (or not) the dwell'),
+            ('dwelltime', 'Time to pause to allow the spindle to reach the full speed'),
             ('pp', 'This is the Excellon postprocessor name: case_sensitive, no_quotes'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('opt_type', 'Name of move optimization type. B by default for Basic OR-Tools, M for Metaheuristic OR-Tools'
@@ -179,6 +183,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.feedrate = args["feedrate"] if "feedrate" in args and args["feedrate"] else obj.options["feedrate"]
             job_obj.feedrate_rapid = args["feedrate_rapid"] \
                 if "feedrate_rapid" in args and args["feedrate_rapid"] else obj.options["feedrate_rapid"]
+
+            if args['dwell'] and args['dwelltime']:
+                job_obj.dwell = True
+                job_obj.dwelltime = float(args['dwelltime'])
 
             job_obj.spindlespeed = args["spindlespeed"] if "spindlespeed" in args else None
             job_obj.pp_excellon_name = args["pp"] if "pp" in args and args["pp"] \
