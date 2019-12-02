@@ -141,7 +141,6 @@ def path2shapely(path, object_type, res=1.0):
                     coords.append(line.coords[1])
                 geo_element = Polygon(coords)
         geometry.append(geo_element)
-
     return geometry
 
 
@@ -306,7 +305,7 @@ def getsvggeo(node, object_type, root=None):
         root = node
 
     kind = re.search('(?:\{.*\})?(.*)$', node.tag).group(1)
-    geo = []
+    geo = list()
 
     # Recurse
     if len(node) > 0:

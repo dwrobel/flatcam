@@ -1016,17 +1016,14 @@ class Geometry(object):
 
         # Add to object
         if self.solid_geometry is None:
-            self.solid_geometry = []
+            self.solid_geometry = list()
 
         if type(self.solid_geometry) is list:
-            # self.solid_geometry.append(cascaded_union(geos))
             if type(geos) is list:
                 self.solid_geometry += geos
             else:
                 self.solid_geometry.append(geos)
         else:  # It's shapely geometry
-            # self.solid_geometry = cascaded_union([self.solid_geometry,
-            #                                       cascaded_union(geos)])
             self.solid_geometry = [self.solid_geometry, geos]
 
         # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
@@ -1034,7 +1031,7 @@ class Geometry(object):
 
         geos_text = getsvgtext(svg_root, object_type, units=units)
         if geos_text is not None:
-            geos_text_f = []
+            geos_text_f = list()
             if flip:
                 # Change origin to bottom left
                 for i in geos_text:

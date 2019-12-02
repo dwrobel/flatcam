@@ -10097,6 +10097,11 @@ class App(QtCore.QObject):
         file_string = StringIO(obj.source_file)
         time_string = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
+        if file_string.getvalue() == '':
+            self.inform.emit('[ERROR_NOTCL] %s' %
+                             _("Save cancelled because source file is empty. Try to export the Gerber file."))
+            return 'fail'
+
         try:
             with open(filename, 'w') as file:
                 file.writelines('G04*\n')
@@ -10468,11 +10473,10 @@ class App(QtCore.QObject):
         if geo_type is None or geo_type == "geometry":
             obj_type = "geometry"
         elif geo_type == "gerber":
-            obj_type = geo_type
+            obj_type = "gerber"
         else:
             self.inform.emit('[ERROR_NOTCL] %s' %
-                             _("Not supported type is picked as parameter. "
-                               "Only Geometry and Gerber are supported"))
+                             _("Not supported type is picked as parameter. Only Geometry and Gerber are supported"))
             return
 
         units = self.defaults['units'].upper()
@@ -10480,6 +10484,7 @@ class App(QtCore.QObject):
         def obj_init(geo_obj, app_obj):
             geo_obj.import_svg(filename, obj_type, units=units)
             geo_obj.multigeo = False
+            geo_obj.source_file = self.export_gerber(obj_name=name, filename=None, local_use=geo_obj, use_thread=False)
 
         with self.proc_container.new(_("Importing SVG")) as proc:
 

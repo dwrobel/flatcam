@@ -9,13 +9,15 @@ import traceback
 from copy import deepcopy
 import sys
 
-from shapely.ops import cascaded_union
+from shapely.ops import cascaded_union, unary_union
 from shapely.geometry import Polygon, MultiPolygon, LineString, Point
 import shapely.affinity as affinity
 from shapely.geometry import box as shply_box
 
-import FlatCAMTranslation as fcTranslate
+from lxml import etree as ET
+from flatcamParsers.ParseSVG import *
 
+import FlatCAMTranslation as fcTranslate
 import gettext
 import builtins
 
@@ -784,7 +786,7 @@ class Gerber(Geometry):
                         self.apertures['0'] = {}
                         self.apertures['0']['type'] = 'REG'
                         self.apertures['0']['size'] = 0.0
-                        self.apertures['0']['geometry'] = []
+                        self.apertures['0']['geometry'] = list()
 
                     # if D02 happened before G37 we now have a path with 1 element only; we have to add the current
                     # geo to the poly_buffer otherwise we loose it
@@ -1634,6 +1636,87 @@ class Gerber(Geometry):
         self.file_units_factor = factor
         self.scale(factor, factor)
         return factor
+
+    def import_svg(self, filename, object_type='gerber', flip=True, units='MM'):
+        """
+        Imports shapes from an SVG file into the object's geometry.
+
+        :param filename: Path to the SVG file.
+        :type filename: str
+        :param object_type: parameter passed further along
+        :param flip: Flip the vertically.
+        :type flip: bool
+        :param units: FlatCAM units
+        :return: None
+        """
+
+        log.debug("flatcamParsers.ParseGerber.Gerber.import_svg()")
+
+        # Parse into list of shapely objects
+        svg_tree = ET.parse(filename)
+        svg_root = svg_tree.getroot()
+
+        # Change origin to bottom left
+        # h = float(svg_root.get('height'))
+        # w = float(svg_root.get('width'))
+        h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
+
+        geos = getsvggeo(svg_root, 'gerber')
+        if flip:
+            geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
+
+        # Add to object
+        if self.solid_geometry is None:
+            self.solid_geometry = list()
+
+        # if type(self.solid_geometry) == list:
+        #     if type(geos) == list:
+        #         self.solid_geometry += geos
+        #     else:
+        #         self.solid_geometry.append(geos)
+        # else:  # It's shapely geometry
+        #     self.solid_geometry = [self.solid_geometry, geos]
+
+        if type(geos) == list:
+            # HACK for importing QRCODE exported by FlatCAM
+            if len(geos) == 1:
+                geo_qrcode = list()
+                geo_qrcode.append(Polygon(geos[0].exterior))
+                for i_el in geos[0].interiors:
+                    geo_qrcode.append(Polygon(i_el).buffer(0))
+                for poly in geo_qrcode:
+                    geos.append(poly)
+
+            if type(self.solid_geometry) == list:
+                self.solid_geometry += geos
+            else:
+                geos.append(self.solid_geometry)
+                self.solid_geometry = geos
+        else:
+            if type(self.solid_geometry) == list:
+                self.solid_geometry.append(geos)
+            else:
+                self.solid_geometry = [self.solid_geometry, geos]
+
+        # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
+        self.solid_geometry = list(self.flatten_list(self.solid_geometry))
+
+        try:
+            __ = iter(self.solid_geometry)
+        except TypeError:
+            self.solid_geometry = [self.solid_geometry]
+
+        if '0' not in self.apertures:
+            self.apertures['0'] = dict()
+            self.apertures['0']['type'] = 'REG'
+            self.apertures['0']['size'] = 0.0
+            self.apertures['0']['geometry'] = list()
+
+        for pol in self.solid_geometry:
+            new_el = dict()
+            new_el['solid'] = pol
+            new_el['follow'] = pol.exterior
+            self.apertures['0']['geometry'].append(deepcopy(new_el))
 
     def scale(self, xfactor, yfactor=None, point=None):
         """

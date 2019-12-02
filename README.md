@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 2.12.2019
 
 - fixed issue #343; updated the Image Tool
+- improvements in Importing SVG as Gerber - added an automatic source generation (it is not infallible)
+- a hack to import correctly the QRCode exported as SVG from FlatCAM
 
 28.11.2019
 
