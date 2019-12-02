@@ -1,6 +1,5 @@
 from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
-import math
 
 
 class TclCommandDrillcncjob(TclCommandSignaled):
