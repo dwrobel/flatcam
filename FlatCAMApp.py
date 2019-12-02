@@ -132,7 +132,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.99
-    version_date = "2019/11/30"
+    version_date = "2019/12/7"
     beta = True
     engine = '3D'
 
@@ -4171,8 +4171,8 @@ class App(QtCore.QObject):
         else:
             commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
                             "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n"\
-                            "# Cncjob, Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, " \
-                            "Follow, GeoCutout, GeoUnion, GetNames,\n"\
+                            "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
+                            "ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n"\
                             "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
                             "ListSys, MillDrills,\n"\
                             "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
@@ -4186,7 +4186,6 @@ class App(QtCore.QObject):
                               '# https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n' + '\n\n' + \
                               '# %s:\n' % _("FlatCAM commands list")
             new_source_file += commands_list + '\n'
-
 
         def initialize(obj, app):
             obj.source_file = deepcopy(new_source_file)
@@ -7683,7 +7682,7 @@ class App(QtCore.QObject):
                 msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-                bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+                msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
                 msgbox.setDefaultButton(bt_yes)
                 msgbox.exec_()
