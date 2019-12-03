@@ -17,6 +17,7 @@ import simplejson as json
 import lzma
 import threading
 import shutil
+import stat
 
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
@@ -392,10 +393,10 @@ class App(QtCore.QObject):
         # #################################################################################
         # #################### DEFAULTS - PREFERENCES STORAGE #############################
         # #################################################################################
-
         self.defaults = LoudDict()
         self.defaults.update({
             # Global APP Preferences
+            "version": self.version,
             "first_run": True,
             "units": "MM",
             "global_serial": 0,
@@ -930,6 +931,7 @@ class App(QtCore.QObject):
         # ############################################################
         # ############### Load defaults from file ####################
         # ############################################################
+        self.old_defaults_found = False
 
         if user_defaults:
             self.load_defaults(filename='current_defaults')
@@ -2576,7 +2578,7 @@ class App(QtCore.QObject):
 
         factory_file.close()
 
-        # and then make the  factory_defaults.FlatConfig file read_only os it can't be modified after creation.
+        # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
         filename_factory = self.data_path + '/factory_defaults.FlatConfig'
         os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
 
@@ -2684,6 +2686,11 @@ class App(QtCore.QObject):
         # the path/file_name must be enclosed in quotes if it contain spaces
         if App.args:
             self.args_at_startup.emit(App.args)
+
+        if self.old_defaults_found is True:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Found old default preferences files. "
+                                                      "Please reboot the application"))
+            self.old_defaults_found = False
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -3721,8 +3728,7 @@ class App(QtCore.QObject):
             f.close()
         except IOError:
             self.log.error("Could not load defaults file.")
-            self.inform.emit('[ERROR] %s' %
-                             _("Could not load defaults file."))
+            self.inform.emit('[ERROR] %s' % _("Could not load defaults file."))
             # in case the defaults file can't be loaded, show all toolbars
             self.defaults["global_toolbar_view"] = 511
             return
@@ -3736,7 +3742,31 @@ class App(QtCore.QObject):
             App.log.error(str(e))
             self.inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
             return
-        self.defaults.update(defaults)
+
+        if 'version' not in defaults or defaults['version'] != self.defaults['version']:
+            for k, v in defaults.items():
+                if k in self.defaults:
+                    self.defaults[k] = v
+
+            # delete old factory defaults
+            try:
+                fact_def_file_path = os.path.join(self.data_path, 'factory_defaults.FlatConfig')
+                os.chmod(fact_def_file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
+                os.remove(fact_def_file_path)
+
+                # recreate a new factory defaults file and save the factory defaults data into it
+                f_f_def_s = open(self.data_path + "/factory_defaults.FlatConfig", "w")
+                json.dump(self.defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
+                f_f_def_s.close()
+
+                # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
+                os.chmod(fact_def_file_path, S_IREAD | S_IRGRP | S_IROTH)
+            except Exception as e:
+                log.debug("App.load_defaults() -> deleting old factory defaults file -> %s" % str(e))
+
+            self.old_defaults_found = True
+        else:
+            self.defaults.update(defaults)
         log.debug("FlatCAM defaults loaded from: %s" % filename)
 
     def on_import_preferences(self):
@@ -4864,7 +4894,8 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Failed to parse factory defaults file.")
             App.log.error(str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse factory defaults file."))
+            if silent_message is False:
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse factory defaults file."))
             return
 
         # Update options
@@ -4879,7 +4910,8 @@ class App(QtCore.QObject):
             f_f_def_s.close()
         except Exception as e:
             log.debug("App.save_factory_default() save update --> %s" % str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write factory defaults to file."))
+            if silent_message is False:
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write factory defaults to file."))
             return
 
         if silent_message is False:

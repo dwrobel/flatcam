@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.12.2019 
+
+- made sure that if an older preferences file is detected then there are no errors and only the parameters that are currently active are loaded; the factory defaults file is deleted and recreated in the new format
+
 3.12.2019
 
 - in Preferences added an Apply button which apply the modified preferences but does not save to a file, minimizing the file IO operations; CTRL+S key combo does the Apply now.
