@@ -2341,7 +2341,8 @@ class FCTransform(FCShapeTool):
 class FlatCAMGrbEditor(QtCore.QObject):
 
     draw_shape_idx = -1
-    plot_finished = QtCore.pyqtSignal()
+    # plot_finished = QtCore.pyqtSignal()
+    mp_finished = QtCore.pyqtSignal(list)
 
     def __init__(self, app):
         assert isinstance(app, FlatCAMApp.App), \
@@ -2956,6 +2957,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.edited_obj_name = ""
         self.tool_row = 0
 
+        # Multiprocessing pool
+        self.pool = self.app.pool
+
+        # Multiprocessing results
+        self.results = list()
+
         # A QTimer
         self.plot_thread = None
 
@@ -3006,6 +3013,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
         self.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
+
+        self.mp_finished.connect(self.on_multiprocessing_finished)
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
@@ -3789,133 +3798,176 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.gerber_obj.apertures = conv_apertures
         self.gerber_obj.units = app_units
 
-        # ############################################################# ##
-        # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
-        # ############################################################# ##
+        # # and then add it to the storage elements (each storage elements is a member of a list
+        # def job_thread(aperture_id):
+        #     with self.app.proc_container.new('%s: %s ...' %
+        #                                      (_("Adding geometry for aperture"),  str(aperture_id))):
+        #         storage_elem = []
+        #         self.storage_dict[aperture_id] = {}
+        #
+        #         # add the Gerber geometry to editor storage
+        #         for k, v in self.gerber_obj.apertures[aperture_id].items():
+        #             try:
+        #                 if k == 'geometry':
+        #                     for geo_el in v:
+        #                         if geo_el:
+        #                             self.add_gerber_shape(DrawToolShape(geo_el), storage_elem)
+        #                     self.storage_dict[aperture_id][k] = storage_elem
+        #                 else:
+        #                     self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
+        #             except Exception as e:
+        #                 log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+        #
+        #         # Check promises and clear if exists
+        #         while True:
+        #             try:
+        #                 self.grb_plot_promises.remove(aperture_id)
+        #                 time.sleep(0.5)
+        #             except ValueError:
+        #                 break
+        #
+        # # we create a job work each aperture, job that work in a threaded way to store the geometry in local storage
+        # # as DrawToolShapes
+        # for ap_id in self.gerber_obj.apertures:
+        #     self.grb_plot_promises.append(ap_id)
+        #     self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_id]})
+        #
+        # self.set_ui()
+        #
+        # # do the delayed plot only if there is something to plot (the gerber is not empty)
+        # try:
+        #     if bool(self.gerber_obj.apertures):
+        #         self.start_delayed_plot(check_period=1000)
+        #     else:
+        #         raise AttributeError
+        # except AttributeError:
+        #     # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
+        #     self.build_ui(first_run=True)
+        #     # and add the first aperture to have something to play with
+        #     self.on_aperture_add('10')
 
-        # log.warning("Applying clear geometry in the apertures dict.")
-        # list of clear geos that are to be applied to the entire file
-        global_clear_geo = []
+        def worker_job(app_obj):
+            with app_obj.app.proc_container.new('%s ...' % _("Loading Gerber into Editor")):
+                # ############################################################# ##
+                # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
+                # ############################################################# ##
 
-        # create one big geometry made out of all 'negative' (clear) polygons
-        for apid in self.gerber_obj.apertures:
-            # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
-            if 'geometry' in self.gerber_obj.apertures[apid]:
-                for elem in self.gerber_obj.apertures[apid]['geometry']:
-                    if 'clear' in elem:
-                        global_clear_geo.append(elem['clear'])
-        log.warning("Found %d clear polygons." % len(global_clear_geo))
+                # list of clear geos that are to be applied to the entire file
+                global_clear_geo = []
 
-        global_clear_geo = MultiPolygon(global_clear_geo)
-        if isinstance(global_clear_geo, Polygon):
-            global_clear_geo = list(global_clear_geo)
+                # create one big geometry made out of all 'negative' (clear) polygons
+                for apid in app_obj.gerber_obj.apertures:
+                    # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
+                    if 'geometry' in app_obj.gerber_obj.apertures[apid]:
+                        for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
+                            if 'clear' in elem:
+                                global_clear_geo.append(elem['clear'])
+                log.warning("Found %d clear polygons." % len(global_clear_geo))
 
-        # for debugging
-        # for geo in global_clear_geo:
-        #     self.shapes.add(shape=geo, color='black', face_color='#000000'+'AF', layer=0, tolerance=self.tolerance)
-        # self.shapes.redraw()
+                global_clear_geo = MultiPolygon(global_clear_geo)
+                if isinstance(global_clear_geo, Polygon):
+                    global_clear_geo = list(global_clear_geo)
 
-        # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of clear geometry
-        # that fits inside the solid. otherwise we may loose the solid
-        for apid in self.gerber_obj.apertures:
-            temp_solid_geometry = []
-            if 'geometry' in self.gerber_obj.apertures[apid]:
-                # for elem in self.gerber_obj.apertures[apid]['geometry']:
-                #     if 'solid' in elem:
-                #         solid_geo = elem['solid']
-                #         for clear_geo in global_clear_geo:
-                #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
-                #             # delete it
-                #             if clear_geo.within(solid_geo):
-                #                 solid_geo = solid_geo.difference(clear_geo)
-                #         try:
-                #             for poly in solid_geo:
-                #                 new_elem = dict()
-                #
-                #                 new_elem['solid'] = poly
-                #                 if 'clear' in elem:
-                #                     new_elem['clear'] = poly
-                #                 if 'follow' in elem:
-                #                     new_elem['follow'] = poly
-                #                 temp_elem.append(deepcopy(new_elem))
-                #         except TypeError:
-                #             new_elem = dict()
-                #             new_elem['solid'] = solid_geo
-                #             if 'clear' in elem:
-                #                 new_elem['clear'] = solid_geo
-                #             if 'follow' in elem:
-                #                 new_elem['follow'] = solid_geo
-                #             temp_elem.append(deepcopy(new_elem))
-                for elem in self.gerber_obj.apertures[apid]['geometry']:
-                    new_elem = dict()
-                    if 'solid' in elem:
-                        solid_geo = elem['solid']
+                # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
+                # clear geometry that fits inside the solid. otherwise we may loose the solid
+                for apid in app_obj.gerber_obj.apertures:
+                    temp_solid_geometry = []
+                    if 'geometry' in app_obj.gerber_obj.apertures[apid]:
+                        # for elem in self.gerber_obj.apertures[apid]['geometry']:
+                        #     if 'solid' in elem:
+                        #         solid_geo = elem['solid']
+                        #         for clear_geo in global_clear_geo:
+                        #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                        #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
+                        #             # delete it
+                        #             if clear_geo.within(solid_geo):
+                        #                 solid_geo = solid_geo.difference(clear_geo)
+                        #         try:
+                        #             for poly in solid_geo:
+                        #                 new_elem = dict()
+                        #
+                        #                 new_elem['solid'] = poly
+                        #                 if 'clear' in elem:
+                        #                     new_elem['clear'] = poly
+                        #                 if 'follow' in elem:
+                        #                     new_elem['follow'] = poly
+                        #                 temp_elem.append(deepcopy(new_elem))
+                        #         except TypeError:
+                        #             new_elem = dict()
+                        #             new_elem['solid'] = solid_geo
+                        #             if 'clear' in elem:
+                        #                 new_elem['clear'] = solid_geo
+                        #             if 'follow' in elem:
+                        #                 new_elem['follow'] = solid_geo
+                        #             temp_elem.append(deepcopy(new_elem))
+                        for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
+                            new_elem = dict()
+                            if 'solid' in elem:
+                                solid_geo = elem['solid']
 
-                        for clear_geo in global_clear_geo:
-                            # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                            # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
-                            # delete it
-                            if clear_geo.within(solid_geo):
-                                solid_geo = solid_geo.difference(clear_geo)
+                                for clear_geo in global_clear_geo:
+                                    # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                                    # the solid_geometry. We want for clear_geometry just to cut into solid_geometry
+                                    # not to delete it
+                                    if clear_geo.within(solid_geo):
+                                        solid_geo = solid_geo.difference(clear_geo)
 
-                        new_elem['solid'] = solid_geo
-                    if 'clear' in elem:
-                        new_elem['clear'] = elem['clear']
-                    if 'follow' in elem:
-                        new_elem['follow'] = elem['follow']
-                    temp_solid_geometry.append(deepcopy(new_elem))
+                                new_elem['solid'] = solid_geo
+                            if 'clear' in elem:
+                                new_elem['clear'] = elem['clear']
+                            if 'follow' in elem:
+                                new_elem['follow'] = elem['follow']
+                            temp_solid_geometry.append(deepcopy(new_elem))
 
-                self.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_solid_geometry)
-        log.warning("Polygon difference done for %d apertures." % len(self.gerber_obj.apertures))
+                        app_obj.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_solid_geometry)
+                log.warning("Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
 
-        # and then add it to the storage elements (each storage elements is a member of a list
-        def job_thread(aperture_id):
-            with self.app.proc_container.new('%s: %s ...' %
-                                             (_("Adding geometry for aperture"),  str(aperture_id))):
-                storage_elem = []
-                self.storage_dict[aperture_id] = {}
+                # Loading the Geometry into Editor Storage
+                for ap_id, ap_dict in app_obj.gerber_obj.apertures.items():
+                    app_obj.results.append(app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_id, ap_dict)))
 
-                # add the Gerber geometry to editor storage
-                for k, v in self.gerber_obj.apertures[aperture_id].items():
-                    try:
-                        if k == 'geometry':
-                            for geo_el in v:
-                                if geo_el:
-                                    self.add_gerber_shape(DrawToolShape(geo_el), storage_elem)
-                            self.storage_dict[aperture_id][k] = storage_elem
-                        else:
-                            self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
-                    except Exception as e:
-                        log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+                output = list()
+                for p in app_obj.results:
+                    output.append(p.get())
 
-                # Check promises and clear if exists
-                while True:
-                    try:
-                        self.grb_plot_promises.remove(aperture_id)
-                        time.sleep(0.5)
-                    except ValueError:
-                        break
+                for elem in output:
+                    app_obj.storage_dict[elem[0]] = deepcopy(elem[1])
 
-        # we create a job work each aperture, job that work in a threaded way to store the geometry in local storage
-        # as DrawToolShapes
-        for ap_id in self.gerber_obj.apertures:
-            self.grb_plot_promises.append(ap_id)
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_id]})
+                app_obj.mp_finished.emit(output)
 
+        self.app.worker_task.emit({'fcn': worker_job, 'params': [self]})
+
+    @staticmethod
+    def add_apertures(aperture_id, aperture_dict):
+        storage_elem = list()
+        storage_dict = dict()
+
+        for k, v in list(aperture_dict.items()):
+            try:
+                if k == 'geometry':
+                    for geo_el in v:
+                        if geo_el:
+                            storage_elem.append(DrawToolShape(geo_el))
+                    storage_dict[k] = storage_elem
+                else:
+                    storage_dict[k] = aperture_dict[k]
+            except Exception as e:
+                log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+
+        return [aperture_id, storage_dict]
+
+    def on_multiprocessing_finished(self):
+        self.app.proc_container.update_view_text(' %s' % _("Setting up the UI"))
+        self.app.inform.emit('[success] %s.' % _("Adding geometry finished. Preparing the GUI"))
         self.set_ui()
+        self.build_ui(first_run=True)
+        self.plot_all()
 
-        # do the delayed plot only if there is something to plot (the gerber is not empty)
-        try:
-            if bool(self.gerber_obj.apertures):
-                self.start_delayed_plot(check_period=1000)
-            else:
-                raise AttributeError
-        except AttributeError:
-            # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
-            self.build_ui(first_run=True)
-            # and add the first aperture to have something to play with
-            self.on_aperture_add('10')
+        # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'
+        # - perhaps is a bug in VisPy implementation
+        self.app.app_cursor.enabled = False
+        self.app.app_cursor.enabled = True
+        self.app.inform.emit('[success] %s' % _("Finished loading the Gerber object into the editor."))
 
     def update_fcgerber(self):
         """
@@ -4070,11 +4122,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.app.new_object("gerber", outname, obj_init)
             except Exception as e:
                 log.error("Error on Edited object creation: %s" % str(e))
-                self.app.progress.emit(100)
+                # make sure to clean the previous results
+                self.results = list()
                 return
 
-            self.app.inform.emit('[success] %s' %
-                                 _("Done. Gerber editing finished."))
+            self.app.inform.emit('[success] %s' %  _("Done. Gerber editing finished."))
+            # make sure to clean the previous results
+            self.results = list()
 
     def on_tool_select(self, tool):
         """
@@ -4585,49 +4639,49 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 color = color[:7] + 'AF'
             self.shapes.add(shape=geometry, color=color, face_color=color, layer=0, tolerance=self.tolerance)
 
-    def start_delayed_plot(self, check_period):
-        """
-        This function starts an QTImer and it will periodically check if all the workers finish the plotting functions
-
-        :param check_period: time at which to check periodically if all plots finished to be plotted
-        :return:
-        """
-
-        # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
-        # self.plot_thread.start()
-        log.debug("FlatCAMGrbEditor --> Delayed Plot started.")
-        self.plot_thread = QtCore.QTimer()
-        self.plot_thread.setInterval(check_period)
-        self.plot_finished.connect(self.setup_ui_after_delayed_plot)
-        self.plot_thread.timeout.connect(self.check_plot_finished)
-        self.plot_thread.start()
-
-    def check_plot_finished(self):
-        """
-        If all the promises made are finished then all the shapes are in shapes_storage and can be plotted safely and
-        then the UI is rebuilt accordingly.
-        :return:
-        """
-
-        try:
-            if not self.grb_plot_promises:
-                self.plot_thread.stop()
-                self.plot_finished.emit()
-                log.debug("FlatCAMGrbEditor --> delayed_plot finished")
-        except Exception as e:
-            traceback.print_exc()
-
-    def setup_ui_after_delayed_plot(self):
-        self.plot_finished.disconnect()
-
-        # now that we have data, create the GUI interface and add it to the Tool Tab
-        self.build_ui(first_run=True)
-        self.plot_all()
-
-        # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'
-        # - perhaps is a bug in VisPy implementation
-        self.app.app_cursor.enabled = False
-        self.app.app_cursor.enabled = True
+    # def start_delayed_plot(self, check_period):
+    #     """
+    #     This function starts an QTImer and it will periodically check if all the workers finish the plotting functions
+    #
+    #     :param check_period: time at which to check periodically if all plots finished to be plotted
+    #     :return:
+    #     """
+    #
+    #     # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
+    #     # self.plot_thread.start()
+    #     log.debug("FlatCAMGrbEditor --> Delayed Plot started.")
+    #     self.plot_thread = QtCore.QTimer()
+    #     self.plot_thread.setInterval(check_period)
+    #     self.plot_finished.connect(self.setup_ui_after_delayed_plot)
+    #     self.plot_thread.timeout.connect(self.check_plot_finished)
+    #     self.plot_thread.start()
+    #
+    # def check_plot_finished(self):
+    #     """
+    #     If all the promises made are finished then all the shapes are in shapes_storage and can be plotted safely and
+    #     then the UI is rebuilt accordingly.
+    #     :return:
+    #     """
+    #
+    #     try:
+    #         if not self.grb_plot_promises:
+    #             self.plot_thread.stop()
+    #             self.plot_finished.emit()
+    #             log.debug("FlatCAMGrbEditor --> delayed_plot finished")
+    #     except Exception as e:
+    #         traceback.print_exc()
+    #
+    # def setup_ui_after_delayed_plot(self):
+    #     self.plot_finished.disconnect()
+    #
+    #     # now that we have data, create the GUI interface and add it to the Tool Tab
+    #     self.build_ui(first_run=True)
+    #     self.plot_all()
+    #
+    #     # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'
+    #     # - perhaps is a bug in VisPy implementation
+    #     self.app.app_cursor.enabled = False
+    #     self.app.app_cursor.enabled = True
 
     def get_selected(self):
         """
