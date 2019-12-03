@@ -77,7 +77,7 @@ class CutOut(FlatCAMTool):
         # self.type_obj_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be cutout.\n"
               "It can be of type: Gerber or Geometry.\n"
@@ -88,21 +88,20 @@ class CutOut(FlatCAMTool):
         grid0.addWidget(self.type_obj_combo_label, 0, 0)
         grid0.addWidget(self.type_obj_combo, 0, 1)
 
+        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Object to be cutout"))
+        self.object_label.setToolTip('%s.' % _("Object to be cutout"))
+
         # Object to be cutout
         self.obj_combo = QtWidgets.QComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(1)
 
-        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
-        self.object_label.setToolTip(
-            _("Object to be cutout.                        ")
-        )
-        grid0.addWidget(self.object_label, 1, 0)
-        grid0.addWidget(self.obj_combo, 1, 1)
+        grid0.addWidget(self.object_label, 1, 0, 1, 2)
+        grid0.addWidget(self.obj_combo, 2, 0, 1, 2)
 
         # Object kind
-        self.kindlabel = QtWidgets.QLabel('%s:' % _('Obj kind'))
+        self.kindlabel = QtWidgets.QLabel('%s:' % _('Object kind'))
         self.kindlabel.setToolTip(
             _("Choice of what kind the object we want to cutout is.<BR>"
               "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
@@ -113,20 +112,21 @@ class CutOut(FlatCAMTool):
             {"label": _("Single"), "value": "single"},
             {"label": _("Panel"), "value": "panel"},
         ])
-        grid0.addWidget(self.kindlabel, 2, 0)
-        grid0.addWidget(self.obj_kind_combo, 2, 1)
+        grid0.addWidget(self.kindlabel, 3, 0)
+        grid0.addWidget(self.obj_kind_combo, 3, 1)
 
         # Tool Diameter
         self.dia = FCDoubleSpinner()
         self.dia.set_precision(self.decimals)
+        self.dia.set_range(0.0000, 9999.9999)
 
-        self.dia_label = QtWidgets.QLabel('%s:' % _("Tool dia"))
+        self.dia_label = QtWidgets.QLabel('%s:' % _("Tool Diameter"))
         self.dia_label.setToolTip(
            _("Diameter of the tool used to cutout\n"
              "the PCB shape out of the surrounding material.")
         )
-        grid0.addWidget(self.dia_label, 3, 0)
-        grid0.addWidget(self.dia, 3, 1)
+        grid0.addWidget(self.dia_label, 4, 0)
+        grid0.addWidget(self.dia, 4, 1)
 
         # Cut Z
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -146,8 +146,8 @@ class CutOut(FlatCAMTool):
 
         self.cutz_entry.setSingleStep(0.1)
 
-        grid0.addWidget(cutzlabel, 4, 0)
-        grid0.addWidget(self.cutz_entry, 4, 1)
+        grid0.addWidget(cutzlabel, 5, 0)
+        grid0.addWidget(self.cutz_entry, 5, 1)
 
         # Multi-pass
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -172,8 +172,8 @@ class CutOut(FlatCAMTool):
         )
         self.ois_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
-        grid0.addWidget(self.mpass_cb, 5, 0)
-        grid0.addWidget(self.maxdepth_entry, 5, 1)
+        grid0.addWidget(self.mpass_cb, 6, 0)
+        grid0.addWidget(self.maxdepth_entry, 6, 1)
 
         # Margin
         self.margin = FCDoubleSpinner()
@@ -185,8 +185,8 @@ class CutOut(FlatCAMTool):
              "will make the cutout of the PCB further from\n"
              "the actual PCB border")
         )
-        grid0.addWidget(self.margin_label, 6, 0)
-        grid0.addWidget(self.margin, 6, 1)
+        grid0.addWidget(self.margin_label, 7, 0)
+        grid0.addWidget(self.margin, 7, 1)
 
         # Gapsize
         self.gapsize = FCDoubleSpinner()
@@ -199,8 +199,8 @@ class CutOut(FlatCAMTool):
              "the surrounding material (the one \n"
              "from which the PCB is cutout).")
         )
-        grid0.addWidget(self.gapsize_label, 7, 0)
-        grid0.addWidget(self.gapsize, 7, 1)
+        grid0.addWidget(self.gapsize_label, 8, 0)
+        grid0.addWidget(self.gapsize, 8, 1)
 
         # How gaps wil be rendered:
         # lr    - left + right
@@ -217,7 +217,12 @@ class CutOut(FlatCAMTool):
             _("Create a convex shape surrounding the entire PCB.\n"
               "Used only if the source object type is Gerber.")
         )
-        grid0.addWidget(self.convex_box, 8, 0, 1, 2)
+        grid0.addWidget(self.convex_box, 9, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 10, 0, 1, 2)
 
         # Title2
         title_param_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('A. Automatic Bridge Gaps'))
@@ -282,6 +287,11 @@ class CutOut(FlatCAMTool):
                         }
                         """)
         self.layout.addWidget(self.rect_cutout_object_btn)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.layout.addWidget(separator_line)
 
         # Title5
         title_manual_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('B. Manual Bridge Gaps'))
@@ -418,6 +428,10 @@ class CutOut(FlatCAMTool):
         self.dia.set_value(float(self.app.defaults["tools_cutouttooldia"]))
         self.obj_kind_combo.set_value(self.app.defaults["tools_cutoutkind"])
         self.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))
+        self.cutz_entry.set_value(float(self.app.defaults["tools_cutout_z"]))
+        self.mpass_cb.set_value(float(self.app.defaults["tools_cutout_mdepth"]))
+        self.maxdepth_entry.set_value(float(self.app.defaults["tools_cutout_depthperpass"]))
+
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
         self.gaps.set_value(self.app.defaults["tools_gaps_ff"])
         self.convex_box.set_value(self.app.defaults['tools_cutout_convexshape'])
@@ -584,6 +598,9 @@ class CutOut(FlatCAMTool):
             geo_obj.options['xmax'] = xmax
             geo_obj.options['ymax'] = ymax
             geo_obj.options['cnctooldia'] = str(dia)
+            geo_obj.options['cutz'] = self.cutz_entry.get_value()
+            geo_obj.options['multidepth'] = self.mpass_cb.get_value()
+            geo_obj.options['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -739,6 +756,9 @@ class CutOut(FlatCAMTool):
 
             geo_obj.solid_geometry = deepcopy(solid_geo)
             geo_obj.options['cnctooldia'] = str(dia)
+            geo_obj.options['cutz'] = self.cutz_entry.get_value()
+            geo_obj.options['multidepth'] = self.mpass_cb.get_value()
+            geo_obj.options['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -879,6 +899,9 @@ class CutOut(FlatCAMTool):
                         solid_geo.append(poly.exterior)
                     geo_obj.solid_geometry = deepcopy(solid_geo)
             geo_obj.options['cnctooldia'] = str(dia)
+            geo_obj.options['cutz'] = self.cutz_entry.get_value()
+            geo_obj.options['multidepth'] = self.mpass_cb.get_value()
+            geo_obj.options['depthperpass'] = self.maxdepth_entry.get_value()
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)

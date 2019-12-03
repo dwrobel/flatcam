@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - various small fixes
 - fix for toggle grid lines updating canvas only after moving the mouse (hack, actually)
 - some changes in the UI layout in Cutout Tool
+- added some geometry parameters in Cutout Tool as a convenience, to be passed to the generated Geometry objects
 
 2.12.2019
 
