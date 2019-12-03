@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - remade the Gerber Editor way to import an Gerber object into the editor in such a way to use the multiprocessing
 - various small fixes
 - fix for toggle grid lines updating canvas only after moving the mouse (hack, actually)
+- some changes in the UI layout in Cutout Tool
 
 2.12.2019
 
