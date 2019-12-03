@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated some of the default values to metric, values that were missed previously
 - remade the Gerber Editor way to import an Gerber object into the editor in such a way to use the multiprocessing
 - various small fixes
+- fix for toggle grid lines updating canvas only after moving the mouse (hack, actually)
 
 2.12.2019
 

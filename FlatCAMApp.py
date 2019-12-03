@@ -5920,15 +5920,6 @@ class App(QtCore.QObject):
                     pass
                 pass
             self.toggle_grid_lines = True
-
-            # HACK: enabling/disabling the cursor seams to somehow update the shapes on screen
-            # - perhaps is a bug in VisPy implementation
-            if self.grid_status() is True:
-                self.app_cursor.enabled = False
-                self.app_cursor.enabled = True
-            else:
-                self.app_cursor.enabled = True
-                self.app_cursor.enabled = False
         else:
             if self.is_legacy is False:
                 if theme == 'white':
@@ -5942,6 +5933,16 @@ class App(QtCore.QObject):
                 except IndexError:
                     pass
             self.toggle_grid_lines = False
+
+        if self.is_legacy is False:
+            # HACK: enabling/disabling the cursor seams to somehow update the shapes on screen
+            # - perhaps is a bug in VisPy implementation
+            if self.grid_status() is True:
+                self.app_cursor.enabled = False
+                self.app_cursor.enabled = True
+            else:
+                self.app_cursor.enabled = True
+                self.app_cursor.enabled = False
 
     def show_preferences_gui(self):
         """
