@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 3.12.2019
 
 - in Preferences added an Apply button which apply the modified preferences but does not save to a file, minimizing the file IO operations; CTRL+S key combo does the Apply now.
+- updated some of the default values to metric, values that were missed previously
 
 2.12.2019
 

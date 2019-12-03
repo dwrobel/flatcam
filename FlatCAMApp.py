@@ -709,7 +709,7 @@ class App(QtCore.QObject):
             "cncjob_annotation_fontcolor": '#990000',
 
             # NCC Tool
-            "tools_ncctools": "0.0393701, 0.019685",
+            "tools_ncctools": "1.0, 0.5",
             "tools_nccorder": 'rev',
             "tools_nccoverlap": 0.4,
             "tools_nccmargin": 1.0,
