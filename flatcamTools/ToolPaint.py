@@ -301,27 +301,29 @@ class ToolPaint(FlatCAMTool, Gerber):
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
         selectlabel.setToolTip(
-            _("How to select Polygons to be painted.\n\n"
+            _("How to select Polygons to be painted.\n"
+              "- 'Polygon Selection' - left mouse click to add/remove polygons to be painted.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
               "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
               "- 'All Polygons' - the Paint will start after click.\n"
-              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "- 'Reference Object' - will do non copper clearing within the area\n"
               "specified by another object.")
         )
         grid3.addWidget(selectlabel, 7, 0)
         # grid3 = QtWidgets.QGridLayout()
         self.selectmethod_combo = RadioSet([
-            {"label": _("Single Polygon"), "value": "single"},
+            {"label": _("Polygon Selection"), "value": "single"},
             {"label": _("Area Selection"), "value": "area"},
             {"label": _("All Polygons"), "value": "all"},
             {"label": _("Reference Object"), "value": "ref"}
         ], orientation='vertical', stretch=False)
         self.selectmethod_combo.setToolTip(
-            _("How to select Polygons to be painted.\n\n"
+            _("How to select Polygons to be painted.\n"
+              "- 'Polygon Selection' - left mouse click to add/remove polygons to be painted.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
               "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
               "- 'All Polygons' - the Paint will start after click.\n"
-              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "- 'Reference Object' - will do non copper clearing within the area\n"
               "specified by another object.")
         )
         grid3.addWidget(self.selectmethod_combo, 7, 1)

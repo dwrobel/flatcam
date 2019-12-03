@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Preferences added an Apply button which apply the modified preferences but does not save to a file, minimizing the file IO operations; CTRL+S key combo does the Apply now.
 - updated some of the default values to metric, values that were missed previously
 - remade the Gerber Editor way to import an Gerber object into the editor in such a way to use the multiprocessing
+- various small fixes
 
 2.12.2019
 

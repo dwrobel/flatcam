@@ -346,11 +346,11 @@ class FlatCAMObj(QtCore.QObject):
         :type option: str
         :return: None
         """
-
         try:
             self.options[option] = self.form_fields[option].get_value()
         except KeyError:
-            self.app.log.warning("Failed to read option from field: %s" % option)
+            pass
+            # self.app.log.warning("Failed to read option from field: %s" % option)
 
     def plot(self):
         """

@@ -462,10 +462,10 @@ class GerberObjectUI(ObjectUI):
         self.iso_scope_label.setToolTip(
             _("Isolation scope. Choose what to isolate:\n"
               "- 'All' -> Isolate all the polygons in the object\n"
-              "- 'Single' -> Isolate a single polygon.")
+              "- 'Selection' -> Isolate a selection of polygons.")
         )
         self.iso_scope_radio = RadioSet([{'label': _('All'), 'value': 'all'},
-                                         {'label': _('Single'), 'value': 'single'}])
+                                         {'label': _('Selection'), 'value': 'single'}])
 
         grid1.addWidget(self.iso_scope_label, 10, 0)
         grid1.addWidget(self.iso_scope_radio, 10, 1, 1, 2)

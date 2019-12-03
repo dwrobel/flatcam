@@ -1446,10 +1446,10 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.iso_scope_label.setToolTip(
             _("Isolation scope. Choose what to isolate:\n"
               "- 'All' -> Isolate all the polygons in the object\n"
-              "- 'Single' -> Isolate a single polygon.")
+              "- 'Selection' -> Isolate a selection of polygons.")
         )
         self.iso_scope_radio = RadioSet([{'label': _('All'), 'value': 'all'},
-                                         {'label': _('Single'), 'value': 'single'}])
+                                         {'label': _('Selection'), 'value': 'single'}])
 
         grid0.addWidget(self.iso_scope_label, 3, 0)
         grid0.addWidget(self.iso_scope_radio, 3, 1, 1, 2)
@@ -4484,18 +4484,19 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
         selectlabel.setToolTip(
-            _("How to select Polygons to be painted.\n\n"
+            _("How to select Polygons to be painted.\n"
+              "- 'Polygon Selection' - left mouse click to add/remove polygons to be painted.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
               "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
               "- 'All Polygons' - the Paint will start after click.\n"
-              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "- 'Reference Object' - will do non copper clearing within the area\n"
               "specified by another object.")
         )
         self.selectmethod_combo = RadioSet([
-            {"label": _("Single"), "value": "single"},
+            {"label": _("Sel"), "value": "single"},
             {"label": _("Area"), "value": "area"},
             {"label": _("All"), "value": "all"},
-            {"label": _("Ref."), "value": "ref"}
+            {"label": _("Ref"), "value": "ref"}
         ])
         grid0.addWidget(selectlabel, 7, 0)
         grid0.addWidget(self.selectmethod_combo, 7, 1)
