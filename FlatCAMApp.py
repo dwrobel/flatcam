@@ -1856,7 +1856,9 @@ class App(QtCore.QObject):
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
 
         # Preferences Plot Area TAB
-        self.ui.pref_save_button.clicked.connect(self.on_save_button)
+        self.ui.pref_save_button.clicked.connect(lambda: self.on_save_button(save_to_file=True))
+        self.ui.pref_apply_button.clicked.connect(lambda: self.on_save_button(save_to_file=False))
+
         self.ui.pref_import_button.clicked.connect(self.on_import_preferences)
         self.ui.pref_export_button.clicked.connect(self.on_export_preferences)
         self.ui.pref_open_button.clicked.connect(self.on_preferences_open_folder)
@@ -5731,7 +5733,7 @@ class App(QtCore.QObject):
                 self.defaults["units"] = new_units
 
                 # save the defaults to file, some may assume that the conversion is enough and it's not
-                self.on_save_button()
+                self.on_save_button(save_to_file=True)
 
             self.should_we_save = True
 
@@ -6857,8 +6859,8 @@ class App(QtCore.QObject):
         else:
             self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
-    def on_save_button(self):
-        log.debug("App.on_save_button() --> Saving preferences to file.")
+    def on_save_button(self, save_to_file=True):
+        log.debug("App.on_save_button() --> Applying preferences to file.")
 
         # Preferences saved, update flag
         self.preferences_changed_flag = False
@@ -6868,9 +6870,13 @@ class App(QtCore.QObject):
             if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
                 self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
 
-        self.save_defaults(silent=False)
-        # load the defaults so they are updated into the app
-        self.load_defaults(filename='current_defaults')
+        self.inform.emit('%s' % _("Preferences applied."))
+
+        if save_to_file:
+            self.save_defaults(silent=False)
+            # load the defaults so they are updated into the app
+            self.load_defaults(filename='current_defaults')
+
         # Re-fresh project options
         self.on_options_app2project()
 
@@ -7689,7 +7695,7 @@ class App(QtCore.QObject):
                 response = msgbox.clickedButton()
 
                 if response == bt_yes:
-                    self.on_save_button()
+                    self.on_save_button(save_to_file=True)
                     self.inform.emit('[success] %s' % _("Preferences saved."))
                 else:
                     self.preferences_changed_flag = False

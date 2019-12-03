@@ -1084,6 +1084,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_tab_bottom_layout_2.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.pref_tab_bottom_layout.addLayout(self.pref_tab_bottom_layout_2)
 
+        self.pref_apply_button = FCButton()
+        self.pref_apply_button.setText(_("Apply"))
+        self.pref_apply_button.setMinimumWidth(130)
+        self.pref_apply_button.setToolTip(
+            _("Apply the current preferences without saving to a file."))
+        self.pref_tab_bottom_layout_2.addWidget(self.pref_apply_button)
+
         self.pref_save_button = QtWidgets.QPushButton()
         self.pref_save_button.setText(_("Save Preferences"))
         self.pref_save_button.setMinimumWidth(130)
@@ -2427,7 +2434,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_S:
                     widget_name = self.plot_tab_area.currentWidget().objectName()
                     if widget_name == 'preferences_tab':
-                        self.app.on_save_button()
+                        self.app.on_save_button(save_to_file=False)
                         return
 
                     if widget_name == 'database_tab':
