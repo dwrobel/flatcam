@@ -493,9 +493,28 @@ class RulesCheck(FlatCAMTool):
               "In other words it creates multiple copies of the source object,\n"
               "arranged in a 2D array of rows and columns.")
         )
+        self.run_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         hlay_2.addWidget(self.run_button)
 
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         # #######################################################
         # ################ SIGNALS ##############################
@@ -520,6 +539,7 @@ class RulesCheck(FlatCAMTool):
         # self.app.collection.rowsInserted.connect(self.on_object_loaded)
 
         self.tool_finished.connect(self.on_tool_finished)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
         # list to hold the temporary objects
         self.objs = []

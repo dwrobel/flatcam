@@ -100,6 +100,12 @@ class ToolSub(FlatCAMTool):
               "Can be used to remove the overlapping silkscreen\n"
               "over the soldermask.")
         )
+        self.intersect_btn.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.tools_box.addWidget(self.intersect_btn)
         self.tools_box.addWidget(e_lab_1)
 
@@ -148,10 +154,29 @@ class ToolSub(FlatCAMTool):
             _("Will remove the area occupied by the subtractor\n"
               "Geometry from the Target Geometry.")
         )
+        self.intersect_geo_btn.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.tools_box.addWidget(self.intersect_geo_btn)
         self.tools_box.addWidget(e_lab_1)
 
         self.tools_box.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.tools_box.addWidget(self.reset_button)
 
         # QTimer for periodic check
         self.check_thread = QtCore.QTimer()
@@ -198,6 +223,7 @@ class ToolSub(FlatCAMTool):
             pass
         self.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
         self.job_finished.connect(self.on_job_finished)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+W', **kwargs)

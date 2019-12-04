@@ -364,9 +364,29 @@ class ToolPaint(FlatCAMTool, Gerber):
               "- 'Reference Object' -  will do non copper clearing within the area\n"
               "specified by another object.")
         )
+        self.generate_paint_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.tools_box.addWidget(self.generate_paint_button)
 
         self.tools_box.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.tools_box.addWidget(self.reset_button)
+
         # #################################### FINSIHED GUI #####################################
         # #######################################################################################
 
@@ -453,6 +473,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
         # #############################################################################
         # ###################### Setup CONTEXT MENU ###################################

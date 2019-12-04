@@ -245,25 +245,41 @@ class Panelize(FlatCAMTool):
             self.constrain_cb, [self.x_width_lbl, self.x_width_entry, self.y_height_lbl, self.y_height_entry])
 
         # Buttons
-        hlay_2 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay_2)
-
-        hlay_2.addStretch()
         self.panelize_object_button = QtWidgets.QPushButton(_("Panelize Object"))
         self.panelize_object_button.setToolTip(
             _("Panelize the specified object around the specified box.\n"
               "In other words it creates multiple copies of the source object,\n"
               "arranged in a 2D array of rows and columns.")
         )
-        hlay_2.addWidget(self.panelize_object_button)
+        self.panelize_object_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.panelize_object_button)
 
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         # Signals
         self.reference_radio.activated_custom.connect(self.on_reference_radio_changed)
         self.panelize_object_button.clicked.connect(self.on_panelize)
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         self.type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
         # list to hold the temporary objects
         self.objs = []

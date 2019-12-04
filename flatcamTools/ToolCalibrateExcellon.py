@@ -405,7 +405,12 @@ class ToolCalibrateExcellon(FlatCAMTool):
               "Those four points should be in the four squares of\n"
               "the Excellon object.")
         )
-
+        self.start_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay.addWidget(self.start_button, 16, 0, 1, 3)
 
         # STEP 2 #
@@ -422,7 +427,12 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Generate GCode file to locate and align the PCB by using\n"
               "the four points acquired above.")
         )
-
+        self.gcode_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay.addWidget(self.gcode_button, 18, 0, 1, 3)
 
         # STEP 3 #
@@ -441,6 +451,12 @@ class ToolCalibrateExcellon(FlatCAMTool):
               "found when checking the PCB pattern. The differences must be filled\n"
               "in the fields Found (Delta).")
         )
+        self.generate_factors_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay.addWidget(self.generate_factors_button, 20, 0, 1, 3)
 
         scale_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Scale"))
@@ -474,6 +490,12 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.scale_button.setToolTip(
             _("Apply Scale factors on the calibration points.")
         )
+        self.scale_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay.addWidget(self.scale_button, 24, 0, 1, 3)
 
         skew_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Skew"))
@@ -509,6 +531,12 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.skew_button.setToolTip(
             _("Apply Skew factors on the calibration points.")
         )
+        self.skew_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay.addWidget(self.skew_button, 28, 0, 1, 3)
 
         # STEP 4 #
@@ -525,6 +553,12 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Generate verification GCode file adjusted with\n"
               "the factors above.")
         )
+        self.adj_gcode_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay.addWidget(self.adj_gcode_button, 30, 0, 1, 3)
 
         # STEP 5 #
@@ -567,10 +601,30 @@ class ToolCalibrateExcellon(FlatCAMTool):
             _("Adjust (scale and/or skew) the objects\n"
               "with the factors determined above.")
         )
+        self.adj_obj_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay.addWidget(self.adj_obj_button, 34, 0, 1, 3)
 
         grid_lay.addWidget(QtWidgets.QLabel(''), 35, 0)
+
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         self.mr = None
         self.units = ''
@@ -587,6 +641,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.start_button.clicked.connect(self.on_start_collect_points)
         self.gcode_button.clicked.connect(self.generate_verification_gcode)
         self.generate_factors_button.clicked.connect(self.calculate_factors)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCalibrateExcellon()")

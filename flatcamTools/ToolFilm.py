@@ -504,9 +504,28 @@ class Film(FlatCAMTool):
               "FlatCAM object, but directly save it in the\n"
               "selected format.")
         )
+        self.film_object_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid1.addWidget(self.film_object_button, 4, 0, 1, 2)
 
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         self.units = self.app.defaults['units']
 
@@ -518,6 +537,7 @@ class Film(FlatCAMTool):
         self.film_type.activated_custom.connect(self.on_film_type)
         self.source_punch.activated_custom.connect(self.on_punch_source)
         self.file_type_radio.activated_custom.connect(self.on_file_type)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def on_type_obj_index_changed(self, index):
         obj_type = self.tf_type_obj_combo.currentIndex()

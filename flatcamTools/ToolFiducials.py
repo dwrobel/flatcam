@@ -268,6 +268,12 @@ class ToolFiducials(FlatCAMTool):
         self.add_cfid_button.setToolTip(
             _("Will add a polygon on the copper layer to serve as fiducial.")
         )
+        self.add_cfid_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay.addWidget(self.add_cfid_button, 11, 0, 1, 2)
 
         separator_line_2 = QtWidgets.QFrame()
@@ -296,9 +302,28 @@ class ToolFiducials(FlatCAMTool):
               "The diameter is always double of the diameter\n"
               "for the copper fiducial.")
         )
+        self.add_sm_opening_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay.addWidget(self.add_sm_opening_button, 15, 0, 1, 2)
 
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         # Objects involved in Copper thieving
         self.grb_object = None
@@ -337,6 +362,7 @@ class ToolFiducials(FlatCAMTool):
         self.fid_type_radio.activated_custom.connect(self.on_fiducial_type)
         self.pos_radio.activated_custom.connect(self.on_second_point)
         self.mode_radio.activated_custom.connect(self.on_method_change)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolFiducials()")

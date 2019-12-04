@@ -222,8 +222,29 @@ class ToolOptimal(FlatCAMTool):
               "this will allow the determination of the right tool to\n"
               "use for isolation or copper clearing.")
         )
+        self.calculate_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
+
+        self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         self.loc_ois = OptionalHideInputSection(self.locations_cb, [self.locations_textb, self.locate_button])
         self.sec_loc_ois = OptionalHideInputSection(self.sec_locations_cb, [self.sec_locations_frame])
@@ -253,7 +274,7 @@ class ToolOptimal(FlatCAMTool):
         self.distances_textb.cursorPositionChanged.connect(self.on_distances_textb_clicked)
         self.locations_sec_textb.cursorPositionChanged.connect(self.on_locations_sec_clicked)
 
-        self.layout.addStretch()
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+O', **kwargs)

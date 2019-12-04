@@ -63,6 +63,12 @@ class DblSidedTool(FlatCAMTool):
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
+        self.mirror_gerber_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.mirror_gerber_button.setMinimumWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
@@ -85,6 +91,12 @@ class DblSidedTool(FlatCAMTool):
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
+        self.mirror_exc_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.mirror_exc_button.setMinimumWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
@@ -109,6 +121,12 @@ class DblSidedTool(FlatCAMTool):
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
+        self.mirror_geo_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.mirror_geo_button.setMinimumWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
@@ -171,6 +189,12 @@ class DblSidedTool(FlatCAMTool):
               "The (x, y) coordinates are captured by pressing SHIFT key\n"
               "and left mouse button click on canvas or you can enter the coords manually.")
         )
+        self.add_point_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.add_point_button.setMinimumWidth(60)
 
         grid_lay2.addWidget(self.pb_label, 10, 0)
@@ -221,6 +245,12 @@ class DblSidedTool(FlatCAMTool):
               "- press SHIFT key and left mouse clicking on canvas. Then RMB click in the field and click Paste.\n"
               "- by entering the coords manually in the format: (x1, y1), (x2, y2), ...")
         )
+        self.add_drill_point_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.add_drill_point_button.setMinimumWidth(60)
 
         grid_lay3.addWidget(self.alignment_holes, 0, 0)
@@ -251,9 +281,6 @@ class DblSidedTool(FlatCAMTool):
         grid0.addWidget(self.dd_label, 1, 0)
         grid0.addWidget(self.drill_dia, 1, 1)
 
-        hlay2 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay2)
-
         # ## Buttons
         self.create_alignment_hole_button = QtWidgets.QPushButton(_("Create Excellon Object"))
         self.create_alignment_hole_button.setToolTip(
@@ -261,16 +288,28 @@ class DblSidedTool(FlatCAMTool):
               "specified alignment holes and their mirror\n"
               "images.")
         )
-        hlay2.addWidget(self.create_alignment_hole_button)
-
-        self.reset_button = QtWidgets.QPushButton(_("Reset"))
-        self.reset_button.setToolTip(
-            _("Resets all the fields.")
-        )
-        self.reset_button.setMinimumWidth(60)
-        hlay2.addWidget(self.reset_button)
+        self.create_alignment_hole_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.create_alignment_hole_button)
 
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         # ## Signals
         self.create_alignment_hole_button.clicked.connect(self.on_create_alignment_holes)

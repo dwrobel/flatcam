@@ -356,6 +356,19 @@ class CutOut(FlatCAMTool):
 
         self.layout.addStretch()
 
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
+
         self.cutting_gapsize = 0.0
         self.cutting_dia = 0.0
 
@@ -386,6 +399,7 @@ class CutOut(FlatCAMTool):
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         self.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
         self.man_gaps_creation_btn.clicked.connect(self.on_manual_gap_click)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def on_type_obj_index_changed(self, index):
         obj_type = self.type_obj_combo.currentIndex()

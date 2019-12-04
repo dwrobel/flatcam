@@ -35,6 +35,7 @@ log = logging.getLogger('base')
 
 
 class ToolCopperThieving(FlatCAMTool):
+    work_finished = QtCore.pyqtSignal()
 
     toolName = _("Copper Thieving Tool")
 
@@ -327,6 +328,12 @@ class ToolCopperThieving(FlatCAMTool):
             _("Will add a polygon (may be split in multiple parts)\n"
               "that will surround the actual Gerber traces at a certain distance.")
         )
+        self.fill_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.layout.addWidget(self.fill_button)
 
         # ## Grid Layout
@@ -383,6 +390,12 @@ class ToolCopperThieving(FlatCAMTool):
               "at a certain distance.\n"
               "Required when doing holes pattern plating.")
         )
+        self.rb_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay_1.addWidget(self.rb_button, 4, 0, 1, 2)
 
         separator_line_2 = QtWidgets.QFrame()
@@ -448,9 +461,28 @@ class ToolCopperThieving(FlatCAMTool):
               "the geometries of the copper thieving and/or\n"
               "the robber bar if those were generated.")
         )
+        self.ppm_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid_lay_1.addWidget(self.ppm_button, 11, 0, 1, 2)
 
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         # Objects involved in Copper thieving
         self.grb_object = None
@@ -494,6 +526,9 @@ class ToolCopperThieving(FlatCAMTool):
         self.fill_button.clicked.connect(self.execute)
         self.rb_button.clicked.connect(self.add_robber_bar)
         self.ppm_button.clicked.connect(self.on_add_ppm)
+        self.reset_button.clicked.connect(self.set_tool_ui)
+
+        self.work_finished.connect(self.on_new_pattern_plating_object)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCopperThieving()")
@@ -548,6 +583,7 @@ class ToolCopperThieving(FlatCAMTool):
         # INIT SECTION
         self.area_method = False
         self.robber_geo = None
+        self.robber_line = None
         self.new_solid_geometry = None
 
     def on_combo_box_type(self):
@@ -1278,6 +1314,12 @@ class ToolCopperThieving(FlatCAMTool):
 
         self.app.proc_container.view.set_busy('%s ...' % _("P-Plating Mask"))
 
+        if run_threaded:
+            self.app.worker_task.emit({'fcn': self.on_new_pattern_plating_object, 'params': []})
+        else:
+            self.on_new_pattern_plating_object()
+
+    def on_new_pattern_plating_object(self):
         # get the Gerber object on which the Copper thieving will be inserted
         selection_index = self.sm_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.sm_object_combo.rootModelIndex())
@@ -1290,43 +1332,61 @@ class ToolCopperThieving(FlatCAMTool):
             return 'fail'
 
         ppm_clearance = self.clearance_ppm_entry.get_value()
+        rb_thickness = self.rb_thickness
 
-        def job_thread_ppm(app_obj):
+        self.app.proc_container.update_view_text(' %s' % _("Append PP-M geometry"))
+        geo_list = self.sm_object.solid_geometry
+        if isinstance(self.sm_object.solid_geometry, MultiPolygon):
+            geo_list = list(self.sm_object.solid_geometry.geoms)
 
-            app_obj.app.proc_container.update_view_text(' %s' % _("Append PP-M geometry"))
-            geo_list = app_obj.sm_object.solid_geometry
-            if isinstance(app_obj.sm_object.solid_geometry, MultiPolygon):
-                geo_list = list(app_obj.sm_object.solid_geometry.geoms)
-
-            # if the clearance is negative apply it to the original soldermask too
-            if ppm_clearance < 0:
-                temp_geo_list = list()
-                for geo in geo_list:
-                    temp_geo_list.append(geo.buffer(ppm_clearance))
-                geo_list = temp_geo_list
-
-            plated_area = 0.0
+        # if the clearance is negative apply it to the original soldermask too
+        if ppm_clearance < 0:
+            temp_geo_list = list()
             for geo in geo_list:
-                plated_area += geo.area
+                temp_geo_list.append(geo.buffer(ppm_clearance))
+            geo_list = temp_geo_list
 
-            if app_obj.new_solid_geometry:
-                for geo in app_obj.new_solid_geometry:
-                    plated_area += geo.area
-            if app_obj.robber_geo:
-                plated_area += app_obj.robber_geo.area
-            self.plated_area_entry.set_value(plated_area)
+        plated_area = 0.0
+        for geo in geo_list:
+            plated_area += geo.area
+
+        if self.new_solid_geometry:
+            for geo in self.new_solid_geometry:
+                plated_area += geo.area
+        if self.robber_geo:
+            plated_area += self.robber_geo.area
+        self.plated_area_entry.set_value(plated_area)
+
+        thieving_solid_geo = self.new_solid_geometry
+        robber_solid_geo = self.robber_geo
+        robber_line = self.robber_line
+
+        def obj_init(grb_obj, app_obj):
+            grb_obj.multitool = False
+            grb_obj.source_file = list()
+            grb_obj.multigeo = False
+            grb_obj.follow = False
+            grb_obj.apertures = dict()
+            grb_obj.solid_geometry = list()
+
+            # try:
+            #     grb_obj.options['xmin'] = 0
+            #     grb_obj.options['ymin'] = 0
+            #     grb_obj.options['xmax'] = 0
+            #     grb_obj.options['ymax'] = 0
+            # except KeyError:
+            #     pass
 
             # if we have copper thieving geometry, add it
-            if app_obj.new_solid_geometry:
-                if '0' not in app_obj.sm_object.apertures:
-                    app_obj.sm_object.apertures['0'] = dict()
-                    app_obj.sm_object.apertures['0']['geometry'] = list()
-                    app_obj.sm_object.apertures['0']['type'] = 'REG'
-                    app_obj.sm_object.apertures['0']['size'] = 0.0
+            if thieving_solid_geo:
+                if '0' not in grb_obj.apertures:
+                    grb_obj.apertures['0'] = dict()
+                    grb_obj.apertures['0']['geometry'] = list()
+                    grb_obj.apertures['0']['type'] = 'REG'
+                    grb_obj.apertures['0']['size'] = 0.0
 
                 try:
-                    for poly in app_obj.new_solid_geometry:
-
+                    for poly in thieving_solid_geo:
                         poly_b = poly.buffer(ppm_clearance)
 
                         # append to the new solid geometry
@@ -1336,65 +1396,71 @@ class ToolCopperThieving(FlatCAMTool):
                         geo_elem = dict()
                         geo_elem['solid'] = poly_b
                         geo_elem['follow'] = poly_b.exterior
-                        app_obj.sm_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
+                        grb_obj.apertures['0']['geometry'].append(deepcopy(geo_elem))
                 except TypeError:
                     # append to the new solid geometry
-                    geo_list.append(app_obj.new_solid_geometry.buffer(ppm_clearance))
+                    geo_list.append(thieving_solid_geo.buffer(ppm_clearance))
 
                     # append into the '0' aperture
                     geo_elem = dict()
-                    geo_elem['solid'] = app_obj.new_solid_geometry.buffer(ppm_clearance)
-                    geo_elem['follow'] = app_obj.new_solid_geometry.buffer(ppm_clearance).exterior
-                    app_obj.sm_object.apertures['0']['geometry'].append(deepcopy(geo_elem))
+                    geo_elem['solid'] = thieving_solid_geo.buffer(ppm_clearance)
+                    geo_elem['follow'] = thieving_solid_geo.buffer(ppm_clearance).exterior
+                    grb_obj.apertures['0']['geometry'].append(deepcopy(geo_elem))
 
             # if we have robber bar geometry, add it
-            if app_obj.robber_geo:
+            if robber_solid_geo:
                 aperture_found = None
-                for ap_id, ap_val in app_obj.sm_object.apertures.items():
+                for ap_id, ap_val in grb_obj.apertures.items():
                     if ap_val['type'] == 'C' and ap_val['size'] == app_obj.rb_thickness + ppm_clearance:
                         aperture_found = ap_id
                         break
 
                 if aperture_found:
                     geo_elem = dict()
-                    geo_elem['solid'] = app_obj.robber_geo
-                    geo_elem['follow'] = app_obj.robber_line
-                    app_obj.sm_object.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
+                    geo_elem['solid'] = robber_solid_geo
+                    geo_elem['follow'] = robber_line
+                    grb_obj.apertures[aperture_found]['geometry'].append(deepcopy(geo_elem))
                 else:
-                    ap_keys = list(app_obj.sm_object.apertures.keys())
-                    if ap_keys:
-                        new_apid = str(int(max(ap_keys)) + 1)
+                    ap_keys = list(grb_obj.apertures.keys())
+                    max_apid = int(max(ap_keys))
+                    if ap_keys and max_apid != 0:
+                        new_apid = str(max_apid + 1)
                     else:
                         new_apid = '10'
 
-                    app_obj.sm_object.apertures[new_apid] = dict()
-                    app_obj.sm_object.apertures[new_apid]['type'] = 'C'
-                    app_obj.sm_object.apertures[new_apid]['size'] = app_obj.rb_thickness + ppm_clearance
-                    app_obj.sm_object.apertures[new_apid]['geometry'] = list()
+                    grb_obj.apertures[new_apid] = dict()
+                    grb_obj.apertures[new_apid]['type'] = 'C'
+                    grb_obj.apertures[new_apid]['size'] = rb_thickness + ppm_clearance
+                    grb_obj.apertures[new_apid]['geometry'] = list()
 
                     geo_elem = dict()
-                    geo_elem['solid'] = app_obj.robber_geo.buffer(ppm_clearance)
-                    geo_elem['follow'] = Polygon(app_obj.robber_line).buffer(ppm_clearance / 2.0).exterior
-                    app_obj.sm_object.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
+                    geo_elem['solid'] = robber_solid_geo.buffer(ppm_clearance)
+                    geo_elem['follow'] = Polygon(robber_line).buffer(ppm_clearance / 2.0).exterior
+                    grb_obj.apertures[new_apid]['geometry'].append(deepcopy(geo_elem))
 
-                geo_list.append(app_obj.robber_geo.buffer(ppm_clearance))
+                geo_list.append(robber_solid_geo.buffer(ppm_clearance))
 
-            app_obj.sm_object.solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
+            grb_obj.solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
 
-            app_obj.app.proc_container.update_view_text(' %s' % _("Append source file"))
+            app_obj.proc_container.update_view_text(' %s' % _("Append source file"))
             # update the source file with the new geometry:
-            app_obj.sm_object.source_file = app_obj.app.export_gerber(obj_name=app_obj.sm_object.options['name'],
-                                                                      filename=None,
-                                                                      local_use=app_obj.sm_object,
-                                                                      use_thread=False)
-            app_obj.app.proc_container.update_view_text(' %s' % '')
-            app_obj.on_exit()
-            app_obj.app.inform.emit('[success] %s' % _("Generating Pattern Plating Mask done."))
+            grb_obj.source_file = app_obj.export_gerber(obj_name=name,
+                                                        filename=None,
+                                                        local_use=grb_obj,
+                                                        use_thread=False)
+            app_obj.proc_container.update_view_text(' %s' % '')
 
-        if run_threaded:
-            self.app.worker_task.emit({'fcn': job_thread_ppm, 'params': [self]})
-        else:
-            job_thread_ppm(self)
+        # Object name
+        obj_name, separatpr, obj_extension = self.sm_object.options['name'].rpartition('.')
+        name = '%s_%s.%s' % (obj_name, 'plating_mask', obj_extension)
+
+        self.app.new_object('gerber', name, obj_init, autoselected=False)
+
+        # Register recent file
+        self.app.file_opened.emit("gerber", name)
+
+        self.on_exit()
+        self.app.inform.emit('[success] %s' % _("Generating Pattern Plating Mask done."))
 
     def replot(self, obj):
         def worker_task():

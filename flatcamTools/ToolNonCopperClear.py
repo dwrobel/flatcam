@@ -479,8 +479,27 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Create the Geometry Object\n"
               "for non-copper routing.")
         )
+        self.generate_ncc_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.tools_box.addWidget(self.generate_ncc_button)
         self.tools_box.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.tools_box.addWidget(self.reset_button)
         # ############################ FINSIHED GUI ###################################
         # #############################################################################
 
@@ -557,6 +576,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def on_type_obj_index_changed(self, index):
         obj_type = self.type_obj_combo.currentIndex()

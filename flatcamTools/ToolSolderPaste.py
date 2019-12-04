@@ -134,6 +134,12 @@ class SolderPaste(FlatCAMTool):
         self.soldergeo_btn.setToolTip(
             _("Generate solder paste dispensing geometry.")
         )
+        self.soldergeo_btn.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
 
         grid0.addWidget(self.addtool_btn, 0, 0)
         # grid2.addWidget(self.copytool_btn, 0, 1)
@@ -343,6 +349,12 @@ class SolderPaste(FlatCAMTool):
            _("Generate GCode for Solder Paste dispensing\n"
              "on PCB pads.")
         )
+        self.solder_gcode_btn.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
 
         self.generation_frame = QtWidgets.QFrame()
         self.generation_frame.setContentsMargins(0, 0, 0, 0)
@@ -423,12 +435,24 @@ class SolderPaste(FlatCAMTool):
             _("View the generated GCode for Solder Paste dispensing\n"
               "on PCB pads.")
         )
+        self.solder_gcode_view_btn.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
 
         self.solder_gcode_save_btn = QtWidgets.QPushButton(_("Save GCode"))
         self.solder_gcode_save_btn.setToolTip(
            _("Save the generated GCode for Solder Paste dispensing\n"
              "on PCB pads, to a file.")
         )
+        self.solder_gcode_save_btn.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
 
         step4_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 4'))
         step4_lbl.setToolTip(
@@ -438,9 +462,22 @@ class SolderPaste(FlatCAMTool):
 
         grid4.addWidget(step4_lbl, 0, 0)
         grid4.addWidget(self.solder_gcode_view_btn, 0, 2)
-        grid4.addWidget(self.solder_gcode_save_btn, 1, 2)
+        grid4.addWidget(self.solder_gcode_save_btn, 1, 0, 1, 3)
 
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         # self.gcode_frame.setDisabled(True)
         # self.save_gcode_frame.setDisabled(True)
@@ -479,6 +516,7 @@ class SolderPaste(FlatCAMTool):
         self.cnc_obj_combo.currentIndexChanged.connect(self.on_cncjob_select)
 
         self.app.object_status_changed.connect(self.update_comboboxes)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolSolderPaste()")

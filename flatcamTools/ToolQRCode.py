@@ -274,6 +274,12 @@ class QRCode(FlatCAMTool):
         self.export_svg_button.setToolTip(
             _("Export a SVG file with the QRCode content.")
         )
+        self.export_svg_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.export_lay.addWidget(self.export_svg_button, 3, 0, 1, 2)
 
         # ## Export QRCode as PNG image
@@ -281,6 +287,12 @@ class QRCode(FlatCAMTool):
         self.export_png_button.setToolTip(
             _("Export a PNG image file with the QRCode content.")
         )
+        self.export_png_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.export_lay.addWidget(self.export_png_button, 4, 0, 1, 2)
 
         # ## Insert QRCode
@@ -288,9 +300,28 @@ class QRCode(FlatCAMTool):
         self.qrcode_button.setToolTip(
             _("Create the QRCode object.")
         )
+        self.qrcode_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.layout.addWidget(self.qrcode_button)
 
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         self.grb_object = None
         self.box_poly = None
@@ -320,6 +351,7 @@ class QRCode(FlatCAMTool):
         self.back_color_button.clicked.connect(self.on_qrcode_back_color_button)
 
         self.transparent_cb.stateChanged.connect(self.on_transparent_back_color)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.report_usage("QRCode()")

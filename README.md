@@ -22,6 +22,9 @@ CAD program, and create G-Code for Isolation routing.
 - Copper Thieving Tool - updated the way plated area is calculated making it a bit more precise but still it is a bit bigger than the actual area
 - fixed the Copy Object function to copy also the source_file content
 - Copper Thieving Tool - when the clearance value for the pattern plating mask is negative it will be applied to the origin soldermask too
+- modified the GUI in all tools making the text of the buttons bold and adding a new button named Reset Tool which have to reset the tool GUI and variables (need to check all tools to see if happen)
+- when the Tool tab is in focus, clicking on canvas will no longer change the focus to Project tab
+- Copper Thieving Tool - when creating the pattern platting mask will make a new Gerber object with it
 
 3.12.2019
 

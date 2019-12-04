@@ -8768,7 +8768,9 @@ class App(QtCore.QObject):
                 # only when working on App
                 if self.call_source == 'app':
                     if self.click_noproject is False:
-                        self.ui.notebook.setCurrentWidget(self.ui.project_tab)
+                        # if the Tool Tab is in focus don't change focus to Project Tab
+                        if not self.ui.notebook.currentWidget() is self.ui.tool_tab:
+                            self.ui.notebook.setCurrentWidget(self.ui.project_tab)
                     else:
                         # restore auto open the Project Tab
                         self.click_noproject = False
@@ -10648,63 +10650,44 @@ class App(QtCore.QObject):
                 "Expected to initialize a FlatCAMGerber but got %s" % type(gerber_obj)
 
             # Opening the file happens here
-            self.progress.emit(30)
             try:
                 gerber_obj.parse_file(filename)
             except IOError:
-                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                    (_("Failed to open file"), filename))
-                app_obj.progress.emit(0)
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open file"), filename))
                 return "fail"
             except ParseError as err:
-                app_obj.inform.emit('[ERROR_NOTCL] %s: %s. %s' %
-                                    (_("Failed to parse file"), filename, str(err)))
-                app_obj.progress.emit(0)
-                self.log.error(str(err))
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s. %s' % (_("Failed to parse file"), filename, str(err)))
+                app_obj.log.error(str(err))
                 return "fail"
             except Exception as e:
                 log.debug("App.open_gerber() --> %s" % str(e))
-                msg = '[ERROR] %s' % \
-                      _("An internal error has occurred. See shell.\n")
+                msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return "fail"
 
             if gerber_obj.is_empty():
-                # app_obj.inform.emit("[ERROR] No geometry found in file: " + filename)
-                # self.collection.set_active(gerber_obj.options["name"])
-                # self.collection.delete_active()
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Object is not Gerber file or empty. Aborting object creation."))
+                app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                    _("Object is not Gerber file or empty. Aborting object creation."))
                 return "fail"
-
-            # Further parsing
-            self.progress.emit(70)  # TODO: Note the mixture of self and app_obj used here
 
         App.log.debug("open_gerber()")
 
         with self.proc_container.new(_("Opening Gerber")) as proc:
-
-            self.progress.emit(10)
-
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             # # ## Object creation # ##
             ret = self.new_object("gerber", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL]%s' %
-                                 _(' Open Gerber failed. Probable not a Gerber file.'))
-                return
+                self.inform.emit('[ERROR_NOTCL]%s' %  _(' Open Gerber failed. Probable not a Gerber file.'))
+                return 'fail'
 
             # Register recent file
             self.file_opened.emit("gerber", filename)
 
-            self.progress.emit(100)
-
             # GUI feedback
-            self.inform.emit('[success] %s: %s' %
-                             (_("Opened"), filename))
+            self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
     def open_excellon(self, filename, outname=None, plot=True):
         """
