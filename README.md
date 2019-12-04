@@ -25,6 +25,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified the GUI in all tools making the text of the buttons bold and adding a new button named Reset Tool which have to reset the tool GUI and variables (need to check all tools to see if happen)
 - when the Tool tab is in focus, clicking on canvas will no longer change the focus to Project tab
 - Copper Thieving Tool - when creating the pattern platting mask will make a new Gerber object with it
+- small fix in the GUI layout in Gerber Editor
 
 3.12.2019
 

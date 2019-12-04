@@ -2360,6 +2360,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.units = self.app.defaults['units'].upper()
 
         self.grb_edit_widget = QtWidgets.QWidget()
+
         layout = QtWidgets.QVBoxLayout()
         self.grb_edit_widget.setLayout(layout)
 
@@ -2439,6 +2440,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         grid1 = QtWidgets.QGridLayout()
         self.apertures_box.addLayout(grid1)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
 
         apcode_lbl = QtWidgets.QLabel('%s:' % _('Aperture Code'))
         apcode_lbl.setToolTip(_("Code for the new aperture"))
