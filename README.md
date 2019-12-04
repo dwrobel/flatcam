@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.12.2019 
+
+- in NCC Tool, the new Geometry object that is created on copper clear now has the solid_geometry attribute where the geometry is stored not only in the obj.tools attribute
+
 4.12.2019 
 
 - made sure that if an older preferences file is detected then there are no errors and only the parameters that are currently active are loaded; the factory defaults file is deleted and recreated in the new format

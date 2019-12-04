@@ -329,7 +329,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_overlap_entry = FCDoubleSpinner(suffix='%')
         self.ncc_overlap_entry.set_precision(self.decimals)
         self.ncc_overlap_entry.setWrapping(True)
-        self.ncc_overlap_entry.setRange(0.000, 0.999)
+        self.ncc_overlap_entry.setRange(0.000, 99.9999)
         self.ncc_overlap_entry.setSingleStep(0.1)
         grid3.addWidget(nccoverlabel, 2, 0)
         grid3.addWidget(self.ncc_overlap_entry, 2, 1)
@@ -1921,6 +1921,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                      "Change the painting parameters and try again."))
                 return
 
+            # create the solid_geometry
+            geo_obj.solid_geometry = list()
+            for tooluid in geo_obj.tools:
+                if geo_obj.tools[tooluid]['solid_geometry']:
+                    try:
+                        for geo in geo_obj.tools[tooluid]['solid_geometry']:
+                            geo_obj.solid_geometry.append(geo)
+                    except TypeError:
+                        geo_obj.solid_geometry.append(geo_obj.tools[tooluid]['solid_geometry'])
+
             # Experimental...
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
@@ -2298,6 +2308,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         '[WARNING] %s: %s %s.' % (_("NCC Tool Rest Machining clear all done but the copper features "
                                                     "isolation is broken for"), str(warning_flag), _("tools")))
                 return
+
+                # create the solid_geometry
+                geo_obj.solid_geometry = list()
+                for tooluid in geo_obj.tools:
+                    if geo_obj.tools[tooluid]['solid_geometry']:
+                        try:
+                            for geo in geo_obj.tools[tooluid]['solid_geometry']:
+                                geo_obj.solid_geometry.append(geo)
+                        except TypeError:
+                            geo_obj.solid_geometry.append(geo_obj.tools[tooluid]['solid_geometry'])
             else:
                 # I will use this variable for this purpose although it was meant for something else
                 # signal that we have no geo in the object therefore don't create it
