@@ -16,9 +16,10 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in FCSpinner and FCDoubleSpinner GUI elements, that are now the main GUI element in FlatCAM, that made partial selection difficult
 - updated the Paint Tool in Geometry Editor to use the FCDoublepinbox
 - added the possibility for suffix presence on the FCSpinner and FCDoubleSpinner GUI Elements
-- added the '%' symbol for overlap fields; I still need to divide the conntet by 100 to get the original decimal
+- added the '%' symbol for overlap fields; I still need to divide the content by 100 to get the original (0 ... 1) value
 - fixed the overlap parameter all over the app to reflect the change to percentage
 - in Copper Thieving Tool added the display of the patterned plated area (approximative area) 
+- Copper Thieving Tool - updated the way plated area is calculated making it a bit more precise but still it is a bit bigger than the actual area
 
 3.12.2019
 

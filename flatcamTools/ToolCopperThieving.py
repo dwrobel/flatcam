@@ -429,7 +429,11 @@ class ToolCopperThieving(FlatCAMTool):
         self.plated_area_label = QtWidgets.QLabel('%s:' % _("Plated area"))
         self.plated_area_label.setToolTip(
             _("The area to be plated by pattern plating.\n"
-              "Basically is made from the openings in the plating mask.")
+              "Basically is made from the openings in the plating mask.\n\n"
+              "<<WARNING>> - the calculated area is actually a bit larger\n"
+              "due of the fact that the soldermask openings are by design\n"
+              "a bit larger than the copper pads, and this area is\n"
+              "calculated from the soldermask openings.")
         )
         self.plated_area_entry = FCEntry()
         self.plated_area_entry.setDisabled(True)
@@ -1294,6 +1298,17 @@ class ToolCopperThieving(FlatCAMTool):
             if isinstance(app_obj.sm_object.solid_geometry, MultiPolygon):
                 geo_list = list(app_obj.sm_object.solid_geometry.geoms)
 
+            plated_area = 0.0
+            for geo in geo_list:
+                plated_area += geo.area
+
+            if app_obj.new_solid_geometry:
+                for geo in app_obj.new_solid_geometry:
+                    plated_area += geo.area
+            if app_obj.robber_geo:
+                plated_area += app_obj.robber_geo.area
+            self.plated_area_entry.set_value(plated_area)
+
             # if we have copper thieving geometry, add it
             if app_obj.new_solid_geometry:
                 if '0' not in app_obj.sm_object.apertures:
@@ -1357,11 +1372,6 @@ class ToolCopperThieving(FlatCAMTool):
 
                 geo_list.append(app_obj.robber_geo.buffer(ppm_clearance))
 
-            plated_area = 0.0
-            for geo in geo_list:
-                plated_area += geo.area
-            self.plated_area_entry.set_value(plated_area)
-            
             app_obj.sm_object.solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
 
             app_obj.app.proc_container.update_view_text(' %s' % _("Append source file"))
