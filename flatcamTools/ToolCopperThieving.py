@@ -9,7 +9,7 @@ from PyQt5 import QtWidgets, QtCore
 
 import FlatCAMApp
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet
+from flatcamGUI.GUIElements import FCDoubleSpinner, RadioSet, FCEntry
 from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMExcellon
 
 import shapely.geometry.base as base
@@ -425,6 +425,18 @@ class ToolCopperThieving(FlatCAMTool):
         grid_lay_1.addWidget(self.clearance_ppm_label, 9, 0)
         grid_lay_1.addWidget(self.clearance_ppm_entry, 9, 1)
 
+        # Plated area
+        self.plated_area_label = QtWidgets.QLabel('%s:' % _("Plated area"))
+        self.plated_area_label.setToolTip(
+            _("The area to be plated by pattern plating.\n"
+              "Basically is made from the openings in the plating mask.")
+        )
+        self.plated_area_entry = FCEntry()
+        self.plated_area_entry.setDisabled(True)
+
+        grid_lay_1.addWidget(self.plated_area_label, 10, 0)
+        grid_lay_1.addWidget(self.plated_area_entry, 10, 1)
+
         # ## Pattern Plating Mask
         self.ppm_button = QtWidgets.QPushButton(_("Generate pattern plating mask"))
         self.ppm_button.setToolTip(
@@ -432,7 +444,7 @@ class ToolCopperThieving(FlatCAMTool):
               "the geometries of the copper thieving and/or\n"
               "the robber bar if those were generated.")
         )
-        grid_lay_1.addWidget(self.ppm_button, 10, 0, 1, 2)
+        grid_lay_1.addWidget(self.ppm_button, 11, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -1345,6 +1357,11 @@ class ToolCopperThieving(FlatCAMTool):
 
                 geo_list.append(app_obj.robber_geo.buffer(ppm_clearance))
 
+            plated_area = 0.0
+            for geo in geo_list:
+                plated_area += geo.area
+            self.plated_area_entry.set_value(plated_area)
+            
             app_obj.sm_object.solid_geometry = MultiPolygon(geo_list).buffer(0.0000001).buffer(-0.0000001)
 
             app_obj.app.proc_container.update_view_text(' %s' % _("Append source file"))

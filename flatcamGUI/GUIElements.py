@@ -353,10 +353,11 @@ class IntEntry(QtWidgets.QLineEdit):
 
 
 class FCEntry(QtWidgets.QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=None, parent=None):
         super(FCEntry, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -376,9 +377,10 @@ class FCEntry(QtWidgets.QLineEdit):
     def get_value(self):
         return str(self.text())
 
-    def set_value(self, val, decimals=4):
+    def set_value(self, val, decimals=None):
+        decimal_digits = decimals if decimals is not None else self.decimals
         if type(val) is float:
-            self.setText('%.*f' % (decimals, val))
+            self.setText('%.*f' % (decimal_digits, val))
         else:
             self.setText(str(val))
 
