@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the Paint Tool in Geometry Editor to use the FCDoublepinbox
 - added the possibility for suffix presence on the FCSpinner and FCDoubleSpinner GUI Elements
 - added the '%' symbol for overlap fields; I still need to divide the conntet by 100 to get the original decimal
+- fixed the overlap parameter all over the app to reflect the change to percentage
 
 3.12.2019
 

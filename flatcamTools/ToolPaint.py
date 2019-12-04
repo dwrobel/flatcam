@@ -219,19 +219,17 @@ class ToolPaint(FlatCAMTool, Gerber):
         ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
-              "Example:\n"
-              "A value here of 0.25 means 25%% from the tool diameter found above.\n\n"
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be painted are still \n"
               "not painted.\n"
-              "Lower values = faster processing, faster execution on PCB.\n"
+              "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
         self.paintoverlap_entry = FCDoubleSpinner(suffix='%')
         self.paintoverlap_entry.set_precision(3)
         self.paintoverlap_entry.setWrapping(True)
-        self.paintoverlap_entry.setRange(0.000, 0.999)
+        self.paintoverlap_entry.setRange(0.0000, 99.9999)
         self.paintoverlap_entry.setSingleStep(0.1)
         grid3.addWidget(ovlabel, 1, 0)
         grid3.addWidget(self.paintoverlap_entry, 1, 1)
@@ -956,7 +954,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # #####################################################
         self.app.inform.emit(_("Paint Tool. Reading parameters."))
 
-        self.overlap = float(self.paintoverlap_entry.get_value())
+        self.overlap = float(self.paintoverlap_entry.get_value()) / 100.0
 
         self.connect = self.pathconnect_cb.get_value()
         self.contour = self.paintcontour_cb.get_value()

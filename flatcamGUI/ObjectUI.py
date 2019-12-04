@@ -371,15 +371,13 @@ class GerberObjectUI(ObjectUI):
         # Pass overlap
         overlabel = QtWidgets.QLabel('%s:' % _('Pass overlap'))
         overlabel.setToolTip(
-            _("How much (fraction) of the tool width to overlap each tool pass.\n"
-              "Example:\n"
-              "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
+            _("How much (fraction) of the tool width to overlap each tool pass.")
         )
         overlabel.setMinimumWidth(90)
         self.iso_overlap_entry = FCDoubleSpinner(suffix='%')
         self.iso_overlap_entry.set_precision(self.decimals)
         self.iso_overlap_entry.setWrapping(True)
-        self.iso_overlap_entry.setRange(0.000, 0.999)
+        self.iso_overlap_entry.setRange(0.0000, 99.9999)
         self.iso_overlap_entry.setSingleStep(0.1)
         grid1.addWidget(overlabel, 6, 0)
         grid1.addWidget(self.iso_overlap_entry, 6, 1, 1, 2)

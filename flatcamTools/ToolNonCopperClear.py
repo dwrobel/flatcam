@@ -319,12 +319,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         nccoverlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
-              "Example:\n"
-              "A value here of 0.25 means 25%% from the tool diameter found above.\n\n"
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be cleared are still \n"
               "not cleared.\n"
-              "Lower values = faster processing, faster execution on PCB.\n"
+              "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
@@ -1120,14 +1118,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.reset_usage()
         self.app.report_usage("on_paint_button_click")
 
-        self.overlap = float(self.ncc_overlap_entry.get_value())
+        self.overlap = float(self.ncc_overlap_entry.get_value()) / 100.0
 
         self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
-
-        if self.overlap >= 1 or self.overlap < 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Overlap value must be between "
-                                                        "0 (inclusive) and 1 (exclusive), "))
-            return
 
         self.connect = self.ncc_connect_cb.get_value()
         self.contour = self.ncc_contour_cb.get_value()
@@ -1423,7 +1416,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         else:
             ncc_select = self.reference_radio.get_value()
 
-        overlap = overlap if overlap else float(self.app.defaults["tools_nccoverlap"])
+        overlap = overlap if overlap is not None else float(self.app.defaults["tools_nccoverlap"])
 
         connect = connect if connect else self.app.defaults["tools_nccconnect"]
         contour = contour if contour else self.app.defaults["tools_ncccontour"]

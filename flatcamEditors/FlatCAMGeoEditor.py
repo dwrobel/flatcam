@@ -458,7 +458,7 @@ class PaintOptionsTool(FlatCAMTool):
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be painted are still \n"
               "not painted.\n"
-              "Lower values = faster processing, faster execution on PCB.\n"
+              "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )

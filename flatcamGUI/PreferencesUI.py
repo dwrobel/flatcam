@@ -1386,6 +1386,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Options Preferences", parent=parent)
         super(GerberOptPrefGroupUI, self).__init__(self)
+        self.decimals = 4
 
         self.setTitle(str(_("Gerber Options")))
 
@@ -1407,7 +1408,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(tdlabel, 0, 0)
         self.iso_tool_dia_entry = FCDoubleSpinner()
-        self.iso_tool_dia_entry.set_precision(4)
+        self.iso_tool_dia_entry.set_precision(self.decimals)
         self.iso_tool_dia_entry.setSingleStep(0.1)
         self.iso_tool_dia_entry.set_range(-9999, 9999)
 
@@ -1428,14 +1429,12 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         # Pass overlap
         overlabel = QtWidgets.QLabel('%s:' % _('Pass overlap'))
         overlabel.setToolTip(
-            _("How much (fraction) of the tool width to overlap each tool pass.\n"
-              "Example:\n"
-              "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
+            _("How much (fraction) of the tool width to overlap each tool pass.")
         )
-        self.iso_overlap_entry = FCDoubleSpinner()
-        self.iso_overlap_entry.set_precision(3)
+        self.iso_overlap_entry = FCDoubleSpinner(suffix='%')
+        self.iso_overlap_entry.set_precision(self.decimals)
         self.iso_overlap_entry.setWrapping(True)
-        self.iso_overlap_entry.setRange(0.000, 0.999)
+        self.iso_overlap_entry.setRange(0.0000,99.9999)
         self.iso_overlap_entry.setSingleStep(0.1)
 
         grid0.addWidget(overlabel, 2, 0)
@@ -1497,7 +1496,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         )
         grid1.addWidget(bmlabel, 0, 0)
         self.noncopper_margin_entry = FCDoubleSpinner()
-        self.noncopper_margin_entry.set_precision(4)
+        self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
         self.noncopper_margin_entry.set_range(-9999, 9999)
         grid1.addWidget(self.noncopper_margin_entry, 0, 1)
@@ -1522,7 +1521,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "to the nearest polygon.")
         )
         self.bbmargin_entry = FCDoubleSpinner()
-        self.bbmargin_entry.set_precision(4)
+        self.bbmargin_entry.set_precision(self.decimals)
         self.bbmargin_entry.setSingleStep(0.1)
         self.bbmargin_entry.set_range(-9999, 9999)
 
@@ -1546,6 +1545,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         super(GerberAdvOptPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Gerber Adv. Options")))
+        self.decimals = 4
 
         # ## Advanced Gerber Parameters
         self.adv_param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Advanced Options'))
@@ -1598,6 +1598,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
             _("The tip diameter for V-Shape Tool")
         )
         self.tipdia_spinner = FCDoubleSpinner()
+        self.tipdia_spinner.set_precision(self.decimals)
         self.tipdia_spinner.set_range(-99.9999, 99.9999)
         self.tipdia_spinner.setSingleStep(0.1)
         self.tipdia_spinner.setWrapping(True)
@@ -1624,6 +1625,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
               "below the copper surface.")
         )
         self.cutz_spinner = FCDoubleSpinner()
+        self.cutz_spinner.set_precision(self.decimals)
         self.cutz_spinner.set_range(-99.9999, -0.0001)
         self.cutz_spinner.setSingleStep(0.1)
         self.cutz_spinner.setWrapping(True)
@@ -1677,7 +1679,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.simplification_tol_label.setToolTip(_("Tolerance for polygon simplification."))
 
         self.simplification_tol_spinner = FCDoubleSpinner()
-        self.simplification_tol_spinner.set_precision(5)
+        self.simplification_tol_spinner.set_precision(self.decimals + 1)
         self.simplification_tol_spinner.setWrapping(True)
         self.simplification_tol_spinner.setRange(0.00000, 0.01000)
         self.simplification_tol_spinner.setSingleStep(0.0001)
@@ -1700,6 +1702,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         super(GerberExpPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Gerber Export")))
+        self.decimals = 4
 
         # Plot options
         self.export_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export Options"))
@@ -1798,6 +1801,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         super(GerberEditorPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Gerber Editor")))
+        self.decimals = 4
 
         # Advanced Gerber Parameters
         self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -1845,7 +1849,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
 
         self.addsize_entry = FCDoubleSpinner()
         self.addsize_entry.set_range(0, 100)
-        self.addsize_entry.set_precision(4)
+        self.addsize_entry.set_precision(self.decimals)
 
         grid0.addWidget(self.addsize_entry_lbl, 2, 0)
         grid0.addWidget(self.addsize_entry, 2, 1)
@@ -1910,7 +1914,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         )
         # self.drill_pitch_label.setMinimumWidth(100)
         self.grb_pitch_entry = FCDoubleSpinner()
-        self.grb_pitch_entry.set_precision(4)
+        self.grb_pitch_entry.set_precision(self.decimals)
 
         grid0.addWidget(self.grb_pitch_label, 8, 0)
         grid0.addWidget(self.grb_pitch_entry, 8, 1)
@@ -1921,7 +1925,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Angle at which each element in circular array is placed.")
         )
         self.grb_angle_entry = FCDoubleSpinner()
-        self.grb_angle_entry.set_precision(4)
+        self.grb_angle_entry.set_precision(self.decimals)
         self.grb_angle_entry.set_range(-360, 360)
         self.grb_angle_entry.setSingleStep(5)
 
@@ -1950,7 +1954,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Angle at which each element in circular array is placed.")
         )
         self.grb_circular_angle_entry = FCDoubleSpinner()
-        self.grb_circular_angle_entry.set_precision(4)
+        self.grb_circular_angle_entry.set_precision(self.decimals)
         self.grb_circular_angle_entry.set_range(-360, 360)
 
         self.grb_circular_angle_entry.setSingleStep(5)
@@ -1967,7 +1971,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Distance at which to buffer the Gerber element.")
         )
         self.grb_buff_entry = FCDoubleSpinner()
-        self.grb_buff_entry.set_precision(4)
+        self.grb_buff_entry.set_precision(self.decimals)
         self.grb_buff_entry.set_range(-9999, 9999)
 
 
@@ -1983,7 +1987,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Factor to scale the Gerber element.")
         )
         self.grb_scale_entry = FCDoubleSpinner()
-        self.grb_scale_entry.set_precision(4)
+        self.grb_scale_entry.set_precision(self.decimals)
         self.grb_scale_entry.set_range(0, 9999)
 
         grid0.addWidget(self.grb_scale_label, 16, 0)
@@ -1998,7 +2002,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Threshold value under which the apertures are not marked.")
         )
         self.grb_ma_low_entry = FCDoubleSpinner()
-        self.grb_ma_low_entry.set_precision(4)
+        self.grb_ma_low_entry.set_precision(self.decimals)
         self.grb_ma_low_entry.set_range(0, 9999)
 
         grid0.addWidget(self.grb_ma_low_label, 18, 0)
@@ -2010,7 +2014,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
             _("Threshold value over which the apertures are not marked.")
         )
         self.grb_ma_high_entry = FCDoubleSpinner()
-        self.grb_ma_high_entry.set_precision(4)
+        self.grb_ma_high_entry.set_precision(self.decimals)
         self.grb_ma_high_entry.set_range(0, 9999)
 
         grid0.addWidget(self.grb_ma_high_label, 19, 0)
@@ -4032,19 +4036,17 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         nccoverlabel.setToolTip(
            _("How much (fraction) of the tool width to overlap each tool pass.\n"
-             "Example:\n"
-             "A value here of 0.25 means 25%% from the tool diameter found above.\n\n"
              "Adjust the value starting with lower values\n"
              "and increasing it if areas that should be cleared are still \n"
              "not cleared.\n"
-             "Lower values = faster processing, faster execution on PCB.\n"
+             "Lower values = faster processing, faster execution on CNC.\n"
              "Higher values = slow processing and slow execution on CNC\n"
              "due of too many paths.")
         )
-        self.ncc_overlap_entry = FCDoubleSpinner()
+        self.ncc_overlap_entry = FCDoubleSpinner(suffix='%')
         self.ncc_overlap_entry.set_precision(self.decimals)
         self.ncc_overlap_entry.setWrapping(True)
-        self.ncc_overlap_entry.setRange(0.000, 0.999)
+        self.ncc_overlap_entry.setRange(0.0000, 99.9999)
         self.ncc_overlap_entry.setSingleStep(0.1)
         grid0.addWidget(nccoverlabel, 8, 0)
         grid0.addWidget(self.ncc_overlap_entry, 8, 1)
@@ -4459,19 +4461,17 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
-              "Example:\n"
-              "A value here of 0.25 means 25%% from the tool diameter found above.\n\n"
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be painted are still \n"
               "not painted.\n"
-              "Lower values = faster processing, faster execution on PCB.\n"
+              "Lower values = faster processing, faster execution on CNC.\n"
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
-        self.paintoverlap_entry = FCDoubleSpinner()
-        self.paintoverlap_entry.set_precision(3)
+        self.paintoverlap_entry = FCDoubleSpinner(suffix='%')
+        self.paintoverlap_entry.set_precision(self.decimals)
         self.paintoverlap_entry.setWrapping(True)
-        self.paintoverlap_entry.setRange(0.000, 0.999)
+        self.paintoverlap_entry.setRange(0.0000, 99.9999)
         self.paintoverlap_entry.setSingleStep(0.1)
 
         grid0.addWidget(ovlabel, 2, 0)

@@ -589,7 +589,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "vcutz": -0.05,
             "isotooldia": 0.016,
             "isopasses": 1,
-            "isooverlap": 0.15,
+            "isooverlap": 15,
             "milling_type": "cl",
             "combine_passes": True,
             "noncoppermargin": 0.0,
@@ -1141,11 +1141,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         Creates an isolation routing geometry object in the project.
 
         :param iso_type: type of isolation to be done: 0 = exteriors, 1 = interiors and 2 = both
-        :param iso_scope: whether to isolate all polygons or single polygpns: 'all' = all, 'single' = one by one, single
+        :param geometry: specific geometry to isolate
         :param dia: Tool diameter
         :param passes: Number of tool widths to cut
         :param overlap: Overlap between passes in fraction of tool diameter
         :param outname: Base name of the output object
+        :param combine: Boolean: if to combine passes in one resulting object in case of multiple passes
+        :param milling_type: type of milling: conventional or climbing
+        :param follow: Boolean: if to generate a 'follow' geometry
+        :param plot: Boolean: if to plot the resulting geometry object
         :return: None
         """
 
@@ -1195,7 +1199,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
                 geo_obj.solid_geometry = []
                 for i in range(passes):
-                    iso_offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
+                    iso_offset = dia * ((2 * i + 1) / 2.0) - (i * (overlap / 100) * dia)
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_t = 1 if milling_type == 'cl' else 0
@@ -1295,7 +1299,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         else:
             for i in range(passes):
 
-                offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
+                offset = dia * ((2 * i + 1) / 2.0) - (i * (overlap / 100) * dia)
                 if passes > 1:
                     if outname is None:
                         if self.iso_type == 0:

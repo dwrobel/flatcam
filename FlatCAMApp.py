@@ -522,7 +522,7 @@ class App(QtCore.QObject):
             # Gerber Options
             "gerber_isotooldia": 0.1,
             "gerber_isopasses": 1,
-            "gerber_isooverlap": 0.1,
+            "gerber_isooverlap": 10,
             "gerber_milling_type": "cl",
             "gerber_combine_passes": False,
             "gerber_iso_scope": 'all',
@@ -712,7 +712,7 @@ class App(QtCore.QObject):
             # NCC Tool
             "tools_ncctools": "1.0, 0.5",
             "tools_nccorder": 'rev',
-            "tools_nccoverlap": 0.4,
+            "tools_nccoverlap": 40,
             "tools_nccmargin": 1.0,
             "tools_nccmethod": "seed",
             "tools_nccconnect": True,
@@ -743,7 +743,7 @@ class App(QtCore.QObject):
             # Paint Tool
             "tools_painttooldia": 0.3,
             "tools_paintorder": 'rev',
-            "tools_paintoverlap": 0.2,
+            "tools_paintoverlap": 20,
             "tools_paintmargin": 0.0,
             "tools_paintmethod": "seed",
             "tools_selectmethod": "all",
