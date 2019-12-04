@@ -1866,6 +1866,7 @@ class App(QtCore.QObject):
         # Preferences Plot Area TAB
         self.ui.pref_save_button.clicked.connect(lambda: self.on_save_button(save_to_file=True))
         self.ui.pref_apply_button.clicked.connect(lambda: self.on_save_button(save_to_file=False))
+        self.ui.pref_close_button.clicked.connect(self.on_pref_close_button)
 
         self.ui.pref_import_button.clicked.connect(self.on_import_preferences)
         self.ui.pref_export_button.clicked.connect(self.on_export_preferences)
@@ -6949,6 +6950,26 @@ class App(QtCore.QObject):
 
         # This will write the setting to the platform specific storage.
         del settgs
+
+    def on_pref_close_button(self):
+        # Preferences saved, update flag
+        self.preferences_changed_flag = False
+        try:
+            self.ui.plot_tab_area.tab_closed_signal.disconnect(self.on_plot_area_tab_closed)
+        except TypeError:
+            pass
+
+        self.defaults_write_form()
+
+        # Preferences save, update the color of the Preferences Tab text
+        for idx in range(self.ui.plot_tab_area.count()):
+            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
+                self.ui.plot_tab_area.closeTab(idx)
+                break
+
+        self.inform.emit('%s' % _("Preferences closed without saving."))
+        self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
 
     def on_tool_add_keypress(self):
         # ## Current application units in Upper Case

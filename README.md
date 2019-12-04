@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 4.12.2019 
 
 - made sure that if an older preferences file is detected then there are no errors and only the parameters that are currently active are loaded; the factory defaults file is deleted and recreated in the new format
+- in Preferences added a new button: 'Close' to close the Preferences window without saving
 
 3.12.2019
 

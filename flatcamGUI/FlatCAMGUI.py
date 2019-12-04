@@ -1092,12 +1092,19 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_tab_bottom_layout_2.addWidget(self.pref_apply_button)
 
         self.pref_save_button = QtWidgets.QPushButton()
-        self.pref_save_button.setText(_("Save Preferences"))
+        self.pref_save_button.setText(_("Save"))
         self.pref_save_button.setMinimumWidth(130)
         self.pref_save_button.setToolTip(
             _("Save the current settings in the 'current_defaults' file\n"
               "which is the file storing the working default preferences."))
         self.pref_tab_bottom_layout_2.addWidget(self.pref_save_button)
+
+        self.pref_close_button = QtWidgets.QPushButton()
+        self.pref_close_button.setText(_("Cancel"))
+        self.pref_close_button.setMinimumWidth(130)
+        self.pref_close_button.setToolTip(
+            _("Will not save the changes and will close the preferences window."))
+        self.pref_tab_bottom_layout_2.addWidget(self.pref_close_button)
 
         # ########################################################################
         # #################### SHORTCUT LIST AREA Tab # ##########################
