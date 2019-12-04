@@ -511,14 +511,20 @@ class FCSpinner(QtWidgets.QSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, suffix=None, parent=None):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
         self.lineEdit().installEventFilter(self)
 
+        if suffix:
+            self.setSuffix(' %s' % str(suffix))
+
+        self.prev_readyToEdit = True
+
     def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress:
+        if event.type() == QtCore.QEvent.MouseButtonPress and self.prev_readyToEdit is True:
+            self.prev_readyToEdit = False
             if self.isEnabled():
                 if self.readyToEdit:
                     self.lineEdit().selectAll()
@@ -580,7 +586,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, suffix=None, parent=None):
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
 
@@ -592,18 +598,26 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.lineEdit().setValidator(
             QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
+        if suffix:
+            self.setSuffix(' %s' % str(suffix))
+
+        self.prev_readyToEdit = True
+
     def on_edit_finished(self):
         self.clearFocus()
         self.returnPressed.emit()
 
     def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress:
+        if event.type() == QtCore.QEvent.MouseButtonPress and self.prev_readyToEdit is True:
+            self.prev_readyToEdit = False
             if self.isEnabled():
                 if self.readyToEdit:
+                    self.cursor_pos = self.lineEdit().cursorPosition()
                     self.lineEdit().selectAll()
                     self.readyToEdit = False
                 else:
                     self.lineEdit().deselect()
+
                 return True
         return False
 
@@ -625,6 +639,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.lineEdit().deselect()
             self.readyToEdit = True
+            self.prev_readyToEdit = True
 
     def valueFromText(self, p_str):
         text = p_str.replace(',', '.')

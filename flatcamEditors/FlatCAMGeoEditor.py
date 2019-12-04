@@ -418,6 +418,7 @@ class PaintOptionsTool(FlatCAMTool):
 
         self.app = app
         self.fcdraw = fcdraw
+        self.decimals = 4
 
         # Title
         title_label = QtWidgets.QLabel("%s" % ('Editor ' + self.toolName))
@@ -432,6 +433,8 @@ class PaintOptionsTool(FlatCAMTool):
 
         grid = QtWidgets.QGridLayout()
         self.layout.addLayout(grid)
+        grid.setColumnStretch(0, 0)
+        grid.setColumnStretch(1, 1)
 
         # Tool dia
         ptdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
@@ -441,7 +444,9 @@ class PaintOptionsTool(FlatCAMTool):
         )
         grid.addWidget(ptdlabel, 0, 0)
 
-        self.painttooldia_entry = FCEntry()
+        self.painttooldia_entry = FCDoubleSpinner()
+        self.painttooldia_entry.set_range(-9999.9999, 9999.9999)
+        self.painttooldia_entry.set_precision(self.decimals)
         grid.addWidget(self.painttooldia_entry, 0, 1)
 
         # Overlap
@@ -457,9 +462,13 @@ class PaintOptionsTool(FlatCAMTool):
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
+        self.paintoverlap_entry = FCDoubleSpinner(suffix='%')
+        self.paintoverlap_entry.set_range(0.0000, 1.0000)
+        self.paintoverlap_entry.set_precision(self.decimals)
+        self.paintoverlap_entry.setWrapping(True)
+        self.paintoverlap_entry.setSingleStep(0.1)
+
         grid.addWidget(ovlabel, 1, 0)
-        self.paintoverlap_entry = FCEntry()
-        self.paintoverlap_entry.setValidator(QtGui.QDoubleValidator(0.0000, 1.0000, 4))
         grid.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
@@ -469,8 +478,11 @@ class PaintOptionsTool(FlatCAMTool):
              "the edges of the polygon to\n"
              "be painted.")
         )
+        self.paintmargin_entry = FCDoubleSpinner()
+        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
+        self.paintmargin_entry.set_precision(self.decimals)
+
         grid.addWidget(marginlabel, 2, 0)
-        self.paintmargin_entry = FCEntry()
         grid.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
@@ -480,12 +492,13 @@ class PaintOptionsTool(FlatCAMTool):
               "<B>Standard</B>: Fixed step inwards.<BR>"
               "<B>Seed-based</B>: Outwards from seed.")
         )
-        grid.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
             {"label": _("Standard"), "value": "standard"},
             {"label": _("Seed-based"), "value": "seed"},
             {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
+
+        grid.addWidget(methodlabel, 3, 0)
         grid.addWidget(self.paintmethod_combo, 3, 1)
 
         # Connect lines
@@ -494,8 +507,9 @@ class PaintOptionsTool(FlatCAMTool):
            _("Draw lines between resulting\n"
              "segments to minimize tool lifts.")
         )
-        grid.addWidget(pathconnectlabel, 4, 0)
         self.pathconnect_cb = FCCheckBox()
+
+        grid.addWidget(pathconnectlabel, 4, 0)
         grid.addWidget(self.pathconnect_cb, 4, 1)
 
         contourlabel = QtWidgets.QLabel(_("Contour:"))
@@ -503,8 +517,9 @@ class PaintOptionsTool(FlatCAMTool):
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        grid.addWidget(contourlabel, 5, 0)
         self.paintcontour_cb = FCCheckBox()
+
+        grid.addWidget(contourlabel, 5, 0)
         grid.addWidget(self.paintcontour_cb, 5, 1)
 
         # Buttons
@@ -569,40 +584,10 @@ class PaintOptionsTool(FlatCAMTool):
                                  _("Paint cancelled. No shape selected."))
             return
 
-        try:
-            tooldia = float(self.painttooldia_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                tooldia = float(self.painttooldia_entry.get_value().replace(',', '.'))
-                self.painttooldia_entry.set_value(tooldia)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Tool diameter value is missing or wrong format. Add it and retry."))
-                return
-        try:
-            overlap = float(self.paintoverlap_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
-                self.paintoverlap_entry.set_value(overlap)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Overlap value is missing or wrong format. Add it and retry."))
-                return
+        tooldia = float(self.painttooldia_entry.get_value())
+        overlap = float(self.paintoverlap_entry.get_value())
+        margin = float(self.paintmargin_entry.get_value())
 
-        try:
-            margin = float(self.paintmargin_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
-                self.paintmargin_entry.set_value(margin)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Margin distance value is missing or wrong format. Add it and retry."))
-                return
         method = self.paintmethod_combo.get_value()
         contour = self.paintcontour_cb.get_value()
         connect = self.pathconnect_cb.get_value()
@@ -4609,26 +4594,24 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
     def paint(self, tooldia, overlap, margin, connect, contour, method):
 
+        if overlap >= 1:
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Could not do Paint. Overlap value has to be less than 1.00 (100%%)."))
+            return
+
         self.paint_tooldia = tooldia
         selected = self.get_selected()
 
         if len(selected) == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Nothing selected for painting."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Nothing selected for painting."))
             return
 
         for param in [tooldia, overlap, margin]:
             if not isinstance(param, float):
                 param_name = [k for k, v in locals().items() if v is param][0]
-                self.app.inform.emit('[WARNING] %s: %s' %
-                                     (_("Invalid value for"), str(param)))
+                self.app.inform.emit('[WARNING] %s: %s' % (_("Invalid value for"), str(param)))
 
         results = []
-
-        if overlap >= 1:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Could not do Paint. Overlap value has to be less than 1.00 (100%%)."))
-            return
 
         def recurse(geometry, reset=True):
             """

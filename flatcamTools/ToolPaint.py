@@ -228,7 +228,7 @@ class ToolPaint(FlatCAMTool, Gerber):
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
-        self.paintoverlap_entry = FCDoubleSpinner()
+        self.paintoverlap_entry = FCDoubleSpinner(suffix='%')
         self.paintoverlap_entry.set_precision(3)
         self.paintoverlap_entry.setWrapping(True)
         self.paintoverlap_entry.setRange(0.000, 0.999)
@@ -958,14 +958,6 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.overlap = float(self.paintoverlap_entry.get_value())
 
-        if self.overlap >= 1 or self.overlap < 0:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Overlap value must be between 0 (inclusive) and 1 (exclusive)"))
-            return
-
-        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Click inside the desired polygon."))
-
         self.connect = self.pathconnect_cb.get_value()
         self.contour = self.paintcontour_cb.get_value()
         self.select_method = self.selectmethod_combo.get_value()
@@ -1012,8 +1004,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         continue
                 self.tooldia_list.append(self.tooldia)
         else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No selected tools in Tool Table."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No selected tools in Tool Table."))
             return
 
         if self.select_method == "all":

@@ -2690,7 +2690,7 @@ class App(QtCore.QObject):
 
         if self.old_defaults_found is True:
             self.inform.emit('[WARNING_NOTCL] %s' % _("Found old default preferences files. "
-                                                      "Please reboot the application"))
+                                                      "Please reboot the application to update."))
             self.old_defaults_found = False
 
     @staticmethod

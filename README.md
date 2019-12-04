@@ -13,6 +13,10 @@ CAD program, and create G-Code for Isolation routing.
 
 - made sure that if an older preferences file is detected then there are no errors and only the parameters that are currently active are loaded; the factory defaults file is deleted and recreated in the new format
 - in Preferences added a new button: 'Close' to close the Preferences window without saving
+- fixed bug in FCSpinner and FCDoubleSpinner GUI elements, that are now the main GUI element in FlatCAM, that made partial selection difficult
+- updated the Paint Tool in Geometry Editor to use the FCDoublepinbox
+- added the possibility for suffix presence on the FCSpinner and FCDoubleSpinner GUI Elements
+- added the '%' symbol for overlap fields; I still need to divide the conntet by 100 to get the original decimal
 
 3.12.2019
 
