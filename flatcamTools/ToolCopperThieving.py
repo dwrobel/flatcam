@@ -1298,6 +1298,13 @@ class ToolCopperThieving(FlatCAMTool):
             if isinstance(app_obj.sm_object.solid_geometry, MultiPolygon):
                 geo_list = list(app_obj.sm_object.solid_geometry.geoms)
 
+            # if the clearance is negative apply it to the original soldermask too
+            if ppm_clearance < 0:
+                temp_geo_list = list()
+                for geo in geo_list:
+                    temp_geo_list.append(geo.buffer(ppm_clearance))
+                geo_list = temp_geo_list
+
             plated_area = 0.0
             for geo in geo_list:
                 plated_area += geo.area

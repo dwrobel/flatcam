@@ -14,12 +14,14 @@ CAD program, and create G-Code for Isolation routing.
 - made sure that if an older preferences file is detected then there are no errors and only the parameters that are currently active are loaded; the factory defaults file is deleted and recreated in the new format
 - in Preferences added a new button: 'Close' to close the Preferences window without saving
 - fixed bug in FCSpinner and FCDoubleSpinner GUI elements, that are now the main GUI element in FlatCAM, that made partial selection difficult
-- updated the Paint Tool in Geometry Editor to use the FCDoublepinbox
+- updated the Paint Tool in Geometry Editor to use the FCDoublespinbox
 - added the possibility for suffix presence on the FCSpinner and FCDoubleSpinner GUI Elements
 - added the '%' symbol for overlap fields; I still need to divide the content by 100 to get the original (0 ... 1) value
 - fixed the overlap parameter all over the app to reflect the change to percentage
 - in Copper Thieving Tool added the display of the patterned plated area (approximative area) 
 - Copper Thieving Tool - updated the way plated area is calculated making it a bit more precise but still it is a bit bigger than the actual area
+- fixed the Copy Object function to copy also the source_file content
+- Copper Thieving Tool - when the clearance value for the pattern plating mask is negative it will be applied to the origin soldermask too
 
 3.12.2019
 

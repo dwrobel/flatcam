@@ -7350,7 +7350,14 @@ class App(QtCore.QObject):
             except Exception as e:
                 log.debug("App.on_copy_object() --> %s" % str(e))
 
+            try:
+                obj_init.source_file = deepcopy(obj.source_file)
+            except (AttributeError, TypeError):
+                pass
+
         def initialize_excellon(obj_init, app):
+            obj_init.source_file = deepcopy(obj.source_file)
+
             obj_init.tools = deepcopy(obj.tools)
 
             # drills are offset, so they need to be deep copied
