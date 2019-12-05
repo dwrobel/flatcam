@@ -359,11 +359,20 @@ class IntEntry(QtWidgets.QLineEdit):
 
 
 class FCEntry(QtWidgets.QLineEdit):
-    def __init__(self, decimals=None, parent=None):
+    def __init__(self, decimals=None, alignment=None, parent=None):
         super(FCEntry, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
         self.decimals = decimals if decimals is not None else 4
+
+        if alignment:
+            if alignment == 'center':
+                align_val = QtCore.Qt.AlignHCenter
+            elif alignment == 'right':
+                align_val = QtCore.Qt.AlignRight
+            else:
+                align_val = QtCore.Qt.AlignLeft
+            self.setAlignment(align_val)
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -519,7 +528,7 @@ class FCSpinner(QtWidgets.QSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
 
-    def __init__(self, suffix=None, parent=None):
+    def __init__(self, suffix=None, alignment=None, parent=None):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
@@ -527,6 +536,15 @@ class FCSpinner(QtWidgets.QSpinBox):
 
         if suffix:
             self.setSuffix(' %s' % str(suffix))
+
+        if alignment:
+            if alignment == 'center':
+                align_val = QtCore.Qt.AlignHCenter
+            elif alignment == 'right':
+                align_val = QtCore.Qt.AlignRight
+            else:
+                align_val = QtCore.Qt.AlignLeft
+            self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
 
@@ -594,7 +612,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
 
-    def __init__(self, suffix=None, parent=None):
+    def __init__(self, suffix=None, alignment=None, parent=None):
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
 
@@ -608,6 +626,15 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
         if suffix:
             self.setSuffix(' %s' % str(suffix))
+
+        if alignment:
+            if alignment == 'center':
+                align_val = QtCore.Qt.AlignHCenter
+            elif alignment == 'right':
+                align_val = QtCore.Qt.AlignRight
+            else:
+                align_val = QtCore.Qt.AlignLeft
+            self.setAlignment(align_val)
 
         self.prev_readyToEdit = True
 
