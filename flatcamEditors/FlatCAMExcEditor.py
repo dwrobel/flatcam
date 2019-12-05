@@ -1446,7 +1446,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.canvas = self.app.plotcanvas
 
         # Number of decimals used by tools in this class
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # ## Current application units in Upper Case
         self.units = self.app.defaults['units'].upper()

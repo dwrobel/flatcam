@@ -54,6 +54,7 @@ class BufferSelectionTool(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         self.draw_app = draw_app
+        self.decimals = app.decimals
 
         # Title
         title_label = QtWidgets.QLabel("%s" % ('Editor ' + self.toolName))
@@ -80,7 +81,7 @@ class BufferSelectionTool(FlatCAMTool):
 
         # Buffer distance
         self.buffer_distance_entry = FCDoubleSpinner()
-        self.buffer_distance_entry.set_precision(4)
+        self.buffer_distance_entry.set_precision(self.decimals)
         self.buffer_distance_entry.set_range(0.0000, 999999.9999)
         form_layout.addRow(_("Buffer distance:"), self.buffer_distance_entry)
         self.buffer_corner_lbl = QtWidgets.QLabel(_("Buffer corner:"))
@@ -199,6 +200,7 @@ class TextInputTool(FlatCAMTool):
 
         self.app = app
         self.text_path = []
+        self.decimals = self.app.decimals
 
         self.f_parse = ParseFont(self)
         self.f_parse.get_fonts_by_types()
@@ -418,7 +420,7 @@ class PaintOptionsTool(FlatCAMTool):
 
         self.app = app
         self.fcdraw = fcdraw
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # Title
         title_label = QtWidgets.QLabel("%s" % ('Editor ' + self.toolName))
@@ -663,9 +665,11 @@ class TransformEditorTool(FlatCAMTool):
         )
         self.rotate_label.setFixedWidth(50)
 
-        self.rotate_entry = FCEntry()
-        # self.rotate_entry.setFixedWidth(60)
-        self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.rotate_entry = FCDoubleSpinner()
+        self.rotate_entry.set_precision(self.decimals)
+        self.rotate_entry.set_range(-360.0000, 360.0000)
+        self.rotate_entry.setSingleStep(0.1)
+        self.rotate_entry.setWrapping(True)
 
         self.rotate_button = FCButton()
         self.rotate_button.set_value(_("Rotate"))
@@ -699,9 +703,11 @@ class TransformEditorTool(FlatCAMTool):
             "Float number between -360 and 359.")
         )
         self.skewx_label.setFixedWidth(50)
-        self.skewx_entry = FCEntry()
-        self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.skewx_entry.setFixedWidth(60)
+        self.skewx_entry = FCDoubleSpinner()
+        self.skewx_entry.set_precision(self.decimals)
+        self.skewx_entry.set_range(-360.0000, 360.0000)
+        self.skewx_entry.setSingleStep(0.1)
+        self.skewx_entry.setWrapping(True)
 
         self.skewx_button = FCButton()
         self.skewx_button.set_value(_("Skew X"))
@@ -717,9 +723,11 @@ class TransformEditorTool(FlatCAMTool):
              "Float number between -360 and 359.")
         )
         self.skewy_label.setFixedWidth(50)
-        self.skewy_entry = FCEntry()
-        self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.skewy_entry.setFixedWidth(60)
+        self.skewy_entry = FCDoubleSpinner()
+        self.skewy_entry.set_precision(self.decimals)
+        self.skewy_entry.set_range(-360.0000, 360.0000)
+        self.skewy_entry.setSingleStep(0.1)
+        self.skewy_entry.setWrapping(True)
 
         self.skewy_button = FCButton()
         self.skewy_button.set_value(_("Skew Y"))
@@ -755,9 +763,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Factor for Scale action over X axis.")
         )
         self.scalex_label.setFixedWidth(50)
-        self.scalex_entry = FCEntry()
-        self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.scalex_entry.setFixedWidth(60)
+        self.scalex_entry = FCDoubleSpinner()
+        self.scalex_entry.set_precision(self.decimals)
+        self.scalex_entry.set_range(0.0000, 9999.9999)
+        self.scalex_entry.setSingleStep(0.1)
+        self.scalex_entry.setWrapping(True)
 
         self.scalex_button = FCButton()
         self.scalex_button.set_value(_("Scale X"))
@@ -772,9 +782,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Factor for Scale action over Y axis.")
         )
         self.scaley_label.setFixedWidth(50)
-        self.scaley_entry = FCEntry()
-        self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.scaley_entry.setFixedWidth(60)
+        self.scaley_entry = FCDoubleSpinner()
+        self.scaley_entry.set_precision(self.decimals)
+        self.scaley_entry.set_range(0.0000, 9999.9999)
+        self.scaley_entry.setSingleStep(0.1)
+        self.scaley_entry.setWrapping(True)
 
         self.scaley_button = FCButton()
         self.scaley_button.set_value(_("Scale Y"))
@@ -829,9 +841,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Value for Offset action on X axis.")
         )
         self.offx_label.setFixedWidth(50)
-        self.offx_entry = FCEntry()
-        self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.offx_entry.setFixedWidth(60)
+        self.offx_entry = FCDoubleSpinner()
+        self.offx_entry.set_precision(self.decimals)
+        self.offx_entry.set_range(-9999.9999, 9999.9999)
+        self.offx_entry.setSingleStep(0.1)
+        self.offx_entry.setWrapping(True)
 
         self.offx_button = FCButton()
         self.offx_button.set_value(_("Offset X"))
@@ -847,9 +861,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Value for Offset action on Y axis.")
         )
         self.offy_label.setFixedWidth(50)
-        self.offy_entry = FCEntry()
-        self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.offy_entry.setFixedWidth(60)
+        self.offy_entry = FCDoubleSpinner()
+        self.offy_entry.set_precision(self.decimals)
+        self.offy_entry.set_range(-9999.9999, 9999.9999)
+        self.offy_entry.setSingleStep(0.1)
+        self.offy_entry.setWrapping(True)
 
         self.offy_button = FCButton()
         self.offy_button.set_value(_("Offset Y"))
@@ -888,7 +904,6 @@ class TransformEditorTool(FlatCAMTool):
             _("Flip the selected shape(s) over the X axis.\n"
               "Does not create a new shape.")
         )
-        self.flipx_button.setFixedWidth(60)
 
         self.flipy_button = FCButton()
         self.flipy_button.set_value(_("Flip on Y"))
@@ -896,7 +911,6 @@ class TransformEditorTool(FlatCAMTool):
             _("Flip the selected shape(s) over the X axis.\n"
               "Does not create a new shape.")
         )
-        self.flipy_button.setFixedWidth(60)
 
         self.flip_ref_cb = FCCheckBox()
         self.flip_ref_cb.set_value(True)
@@ -921,9 +935,7 @@ class TransformEditorTool(FlatCAMTool):
               "the 'y' in (x, y) will be used when using Flip on Y.")
         )
         self.flip_ref_label.setFixedWidth(50)
-        self.flip_ref_entry = EvalEntry2("(0, 0)")
-        self.flip_ref_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.flip_ref_entry.setFixedWidth(60)
+        self.flip_ref_entry = FCEntry("(0, 0)")
 
         self.flip_ref_button = FCButton()
         self.flip_ref_button.set_value(_("Add"))
@@ -934,7 +946,6 @@ class TransformEditorTool(FlatCAMTool):
            )
         self.flip_ref_button.setFixedWidth(60)
 
-        form4_child_hlay.addStretch()
         form4_child_hlay.addWidget(self.flipx_button)
         form4_child_hlay.addWidget(self.flipy_button)
 
