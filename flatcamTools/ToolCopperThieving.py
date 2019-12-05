@@ -46,7 +46,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.canvas = self.app.plotcanvas
 
         self.decimals = 4
-        self.units = ''
+        self.units = self.app.defaults['units']
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -341,11 +341,12 @@ class ToolCopperThieving(FlatCAMTool):
         self.layout.addLayout(grid_lay_1)
         grid_lay_1.setColumnStretch(0, 0)
         grid_lay_1.setColumnStretch(1, 1)
+        grid_lay_1.setColumnStretch(2, 0)
 
         separator_line_1 = QtWidgets.QFrame()
         separator_line_1.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line_1.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 2)
+        grid_lay_1.addWidget(separator_line_1, 0, 0, 1, 3)
 
         grid_lay_1.addWidget(QtWidgets.QLabel(''))
 
@@ -354,7 +355,7 @@ class ToolCopperThieving(FlatCAMTool):
             _("Parameters used for the robber bar.\n"
               "Robber bar = copper border to help in pattern hole plating.")
         )
-        grid_lay_1.addWidget(self.robber_bar_label, 1, 0, 1, 2)
+        grid_lay_1.addWidget(self.robber_bar_label, 1, 0, 1, 3)
 
         # ROBBER BAR MARGIN #
         self.rb_margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
@@ -367,7 +368,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.rb_margin_entry.setSingleStep(0.1)
 
         grid_lay_1.addWidget(self.rb_margin_label, 2, 0)
-        grid_lay_1.addWidget(self.rb_margin_entry, 2, 1)
+        grid_lay_1.addWidget(self.rb_margin_entry, 2, 1, 1, 2)
 
         # THICKNESS #
         self.rb_thickness_label = QtWidgets.QLabel('%s:' % _("Thickness"))
@@ -380,7 +381,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.rb_thickness_entry.setSingleStep(0.1)
 
         grid_lay_1.addWidget(self.rb_thickness_label, 3, 0)
-        grid_lay_1.addWidget(self.rb_thickness_entry, 3, 1)
+        grid_lay_1.addWidget(self.rb_thickness_entry, 3, 1, 1, 2)
 
         # ## Insert Robber Bar
         self.rb_button = QtWidgets.QPushButton(_("Insert Robber Bar"))
@@ -396,18 +397,18 @@ class ToolCopperThieving(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid_lay_1.addWidget(self.rb_button, 4, 0, 1, 2)
+        grid_lay_1.addWidget(self.rb_button, 4, 0, 1, 3)
 
         separator_line_2 = QtWidgets.QFrame()
         separator_line_2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay_1.addWidget(separator_line_2, 5, 0, 1, 2)
+        grid_lay_1.addWidget(separator_line_2, 5, 0, 1, 3)
 
         self.patern_mask_label = QtWidgets.QLabel('<b>%s</b>' % _('Pattern Plating Mask'))
         self.patern_mask_label.setToolTip(
             _("Generate a mask for pattern plating.")
         )
-        grid_lay_1.addWidget(self.patern_mask_label, 6, 0, 1, 2)
+        grid_lay_1.addWidget(self.patern_mask_label, 6, 0, 1, 3)
 
         self.sm_obj_label = QtWidgets.QLabel("%s:" % _("Select Soldermask object"))
         self.sm_obj_label.setToolTip(
@@ -421,8 +422,8 @@ class ToolCopperThieving(FlatCAMTool):
         self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.sm_object_combo.setCurrentIndex(1)
 
-        grid_lay_1.addWidget(self.sm_obj_label, 7, 0, 1, 2)
-        grid_lay_1.addWidget(self.sm_object_combo, 8, 0, 1, 2)
+        grid_lay_1.addWidget(self.sm_obj_label, 7, 0, 1, 3)
+        grid_lay_1.addWidget(self.sm_object_combo, 8, 0, 1, 3)
 
         # Openings CLEARANCE #
         self.clearance_ppm_label = QtWidgets.QLabel('%s:' % _("Clearance"))
@@ -436,7 +437,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.clearance_ppm_entry.setSingleStep(0.1)
 
         grid_lay_1.addWidget(self.clearance_ppm_label, 9, 0)
-        grid_lay_1.addWidget(self.clearance_ppm_entry, 9, 1)
+        grid_lay_1.addWidget(self.clearance_ppm_entry, 9, 1, 1, 2)
 
         # Plated area
         self.plated_area_label = QtWidgets.QLabel('%s:' % _("Plated area"))
@@ -451,8 +452,14 @@ class ToolCopperThieving(FlatCAMTool):
         self.plated_area_entry = FCEntry()
         self.plated_area_entry.setDisabled(True)
 
+        if self.units.upper() == 'MM':
+            self.units_area_label = QtWidgets.QLabel('%s<sup>2</sup>' % _("mm"))
+        else:
+            self.units_area_label = QtWidgets.QLabel('%s<sup>2</sup>' % _("in"))
+
         grid_lay_1.addWidget(self.plated_area_label, 10, 0)
         grid_lay_1.addWidget(self.plated_area_entry, 10, 1)
+        grid_lay_1.addWidget(self.units_area_label, 10, 2)
 
         # ## Pattern Plating Mask
         self.ppm_button = QtWidgets.QPushButton(_("Generate pattern plating mask"))
@@ -467,7 +474,7 @@ class ToolCopperThieving(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid_lay_1.addWidget(self.ppm_button, 11, 0, 1, 2)
+        grid_lay_1.addWidget(self.ppm_button, 11, 0, 1, 3)
 
         self.layout.addStretch()
 

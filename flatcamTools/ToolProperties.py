@@ -7,7 +7,6 @@
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import FlatCAMCNCjob
 
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import cascaded_union
@@ -28,12 +27,14 @@ log = logging.getLogger('base')
 class Properties(FlatCAMTool):
     toolName = _("Properties")
 
-    calculations_finished = QtCore.pyqtSignal(float, float, float, float, object)
+    calculations_finished = QtCore.pyqtSignal(float, float, float, float, float, object)
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
         self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+
+        self.decimals = 4
 
         # this way I can hide/show the frame
         self.properties_frame = QtWidgets.QFrame()
@@ -162,6 +163,7 @@ class Properties(FlatCAMTool):
             length = 0.0
             width = 0.0
             area = 0.0
+            copper_area = 0.0
 
             geo = obj_prop.solid_geometry
             if geo:
@@ -172,13 +174,22 @@ class Properties(FlatCAMTool):
                     length = abs(xmax - xmin)
                     width = abs(ymax - ymin)
                 except Exception as e:
-                    log.debug("PropertiesTool.addItems() --> %s" % str(e))
+                    log.debug("PropertiesTool.addItems() -> calculate dimensions --> %s" % str(e))
 
                 # calculate box area
                 if self.app.defaults['units'].lower() == 'mm':
                     area = (length * width) / 100
                 else:
                     area = length * width
+
+                if obj_prop.kind.lower() == 'gerber':
+                    # calculate copper area
+                    try:
+                        for geo_el in geo:
+                            copper_area += geo_el.area
+                    except TypeError:
+                        copper_area += geo.area
+                    copper_area /= 100
             else:
                 xmin = []
                 ymin = []
@@ -209,11 +220,28 @@ class Properties(FlatCAMTool):
                         area = (length * width) / 100
                     else:
                         area = length * width
+
+                    if obj_prop.kind.lower() == 'gerber':
+                        # calculate copper area
+
+                        # create a complete solid_geometry from the tools
+                        geo_tools = list()
+                        for tool_k in obj_prop.tools:
+                            if 'solid_geometry' in obj_prop.tools[tool_k]:
+                                for geo_el in obj_prop.tools[tool_k]['solid_geometry']:
+                                    geo_tools.append(geo_el)
+
+                        try:
+                            for geo_el in geo_tools:
+                                copper_area += geo_el.area
+                        except TypeError:
+                            copper_area += geo_tools.area
+                        copper_area /= 100
                 except Exception as e:
                     log.debug("Properties.addItems() --> %s" % str(e))
 
             area_chull = 0.0
-            if not isinstance(obj_prop, FlatCAMCNCjob):
+            if obj_prop.kind.lower() != 'cncjob':
                 # calculate and add convex hull area
                 if geo:
                     if isinstance(geo, MultiPolygon):
@@ -241,20 +269,12 @@ class Properties(FlatCAMTool):
             if self.app.defaults['units'].lower() == 'mm':
                 area_chull = area_chull / 100
 
-            self.calculations_finished.emit(area, length, width, area_chull, dims)
+            self.calculations_finished.emit(area, length, width, area_chull, copper_area, dims)
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [obj]})
 
-        self.addChild(units,
-                      ['FlatCAM units:',
-                       {
-                           'in': _('Inch'),
-                           'mm': _('Metric')
-                       }
-                       [str(self.app.defaults['units'].lower())]
-                       ],
-                      True
-                      )
+        f_unit = {'in': _('Inch'), 'mm': _('Metric')}[str(self.app.defaults['units'].lower())]
+        self.addChild(units, ['FlatCAM units:', f_unit], True)
 
         for option in obj.options:
             if option is 'name':
@@ -349,21 +369,41 @@ class Properties(FlatCAMTool):
         if column1 is not None:
             item.setText(1, str(title[1]))
 
-    def show_area_chull(self, area, length, width, chull_area, location):
+    def show_area_chull(self, area, length, width, chull_area, copper_area, location):
 
         # add dimensions
-        self.addChild(location, ['%s:' % _('Length'), '%.4f %s' % (
-            length, self.app.defaults['units'].lower())], True)
-        self.addChild(location, ['%s:' % _('Width'), '%.4f %s' % (
-            width, self.app.defaults['units'].lower())], True)
+        self.addChild(
+            location,
+            ['%s:' % _('Length'), '%.*f %s' % (self.decimals, length, self.app.defaults['units'].lower())],
+            True
+        )
+        self.addChild(
+            location,
+            ['%s:' % _('Width'), '%.*f %s' % (self.decimals, width, self.app.defaults['units'].lower())],
+            True
+        )
 
         # add box area
         if self.app.defaults['units'].lower() == 'mm':
-            self.addChild(location, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'cm2')], True)
-            self.addChild(location, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (chull_area, 'cm2')], True)
+            self.addChild(location, ['%s:' % _('Box Area'), '%.*f %s' % (self.decimals, area, 'cm2')], True)
+            self.addChild(
+                location,
+                ['%s:' % _('Convex_Hull Area'), '%.*f %s' % (self.decimals, chull_area, 'cm2')],
+                True
+            )
 
         else:
-            self.addChild(location, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'in2')], True)
-            self.addChild(location, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (chull_area, 'in2')], True)
+            self.addChild(location, ['%s:' % _('Box Area'), '%.*f %s' % (self.decimals, area, 'in2')], True)
+            self.addChild(
+                location,
+                ['%s:' % _('Convex_Hull Area'), '%.*f %s' % (self.decimals, chull_area, 'in2')],
+                True
+            )
+
+        # add copper area
+        if self.app.defaults['units'].lower() == 'mm':
+            self.addChild(location, ['%s:' % _('Copper Area'), '%.*f %s' % (self.decimals, copper_area, 'cm2')], True)
+        else:
+            self.addChild(location, ['%s:' % _('Copper Area'), '%.*f %s' % (self.decimals, copper_area, 'in2')], True)
 
 # end of file
