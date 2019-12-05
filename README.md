@@ -19,6 +19,8 @@ CAD program, and create G-Code for Isolation routing.
 - changed the FCDoubleSpinner, FCSpinner and FCEntry GUI elements to allow passing an alignment value: left, right or center (not yet available in the app)
 - fixed the GUI of the Geometry Editor Tool Transform and adapted it to use the precision setting
 - updated Gerber Editor to use the precision setting and the Gerber Editor Transform Tool to use the FCDoubleSpinner GUI element
+- in Properties Tool added more information's regarding the Excellon tools, about travelled distance and job time; fixed issues when doing Properties on the CNCjob objects
+- TODO: I need to solve the mess in units conversion: it's too convoluted 
 
 4.12.2019 
 

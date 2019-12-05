@@ -2403,7 +2403,7 @@ class CNCjob(Geometry):
         
         # sort the tools list by the second item in tuple (here we have a dict with diameter of the tool)
         # so we actually are sorting the tools by diameter
-        #sorted_tools = sorted(exobj.tools.items(), key=lambda t1: t1['C'])
+        # sorted_tools = sorted(exobj.tools.items(), key=lambda t1: t1['C'])
 
         sort = []
         for k, v in list(exobj.tools.items()):
@@ -2420,6 +2420,32 @@ class CNCjob(Geometry):
             # Create a sorted list of selected tools from the sorted_tools list
             tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
             log.debug("Tools selected and sorted are: %s" % str(tools))
+
+        # fill the data into the self.exc_cnc_tools dictionary
+        for it in sorted_tools:
+            for to_ol in tools:
+                if to_ol == it[0]:
+                    drill_no = 0
+                    sol_geo = list()
+                    for dr in exobj.drills:
+                        if dr['tool'] == it[0]:
+                            drill_no += 1
+                            sol_geo.append(dr['point'])
+                    slot_no = 0
+                    for dr in exobj.slots:
+                        if dr['tool'] == it[0]:
+                            slot_no += 1
+                            start = (dr['start'].x, dr['start'].y)
+                            stop = (dr['stop'].x, dr['stop'].y)
+                            sol_geo.append(
+                                LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
+                            )
+
+                    self.exc_cnc_tools[it[1]] = dict()
+                    self.exc_cnc_tools[it[1]]['tool'] = it[0]
+                    self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
+                    self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
+                    self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
         # Points (Group by tool)
@@ -3498,7 +3524,7 @@ class CNCjob(Geometry):
 
         # variables to display the percentage of work done
         geo_len = len(flat_geometry)
-        disp_number = 0
+
         old_disp_number = 0
         log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
 

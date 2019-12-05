@@ -12,6 +12,8 @@ from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import cascaded_union
 
 from copy import deepcopy
+import math
+
 import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -114,35 +116,53 @@ class Properties(FlatCAMTool):
     def properties(self):
         obj_list = self.app.collection.get_selected()
         if not obj_list:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Properties Tool was not displayed. No object selected."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Properties Tool was not displayed. No object selected."))
             self.app.ui.notebook.setTabText(2, _("Tools"))
             self.properties_frame.hide()
             self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             return
+
+        # delete the selection shape, if any
+        try:
+            self.app.delete_selection_shape()
+        except Exception as e:
+            log.debug("ToolProperties.Properties.properties() --> %s" % str(e))
+
+        # populate the properties items
         for obj in obj_list:
             self.addItems(obj)
-            self.app.inform.emit('[success] %s' %
-                                 _("Object Properties are displayed."))
+            self.app.inform.emit('[success] %s' % _("Object Properties are displayed."))
         self.app.ui.notebook.setTabText(2, _("Properties Tool"))
 
     def addItems(self, obj):
         parent = self.treeWidget.invisibleRootItem()
         apertures = ''
         tools = ''
+        drills = ''
+        slots = ''
+        others = ''
 
         font = QtGui.QFont()
         font.setBold(True)
+
+        # main Items categories
         obj_type = self.addParent(parent, _('TYPE'), expanded=True, color=QtGui.QColor("#000000"), font=font)
         obj_name = self.addParent(parent, _('NAME'), expanded=True, color=QtGui.QColor("#000000"), font=font)
         dims = self.addParent(parent, _('Dimensions'), expanded=True, color=QtGui.QColor("#000000"), font=font)
         units = self.addParent(parent, _('Units'), expanded=True, color=QtGui.QColor("#000000"), font=font)
-
         options = self.addParent(parent, _('Options'), color=QtGui.QColor("#000000"), font=font)
+
         if obj.kind.lower() == 'gerber':
             apertures = self.addParent(parent, _('Apertures'), expanded=True, color=QtGui.QColor("#000000"), font=font)
         else:
             tools = self.addParent(parent, _('Tools'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+
+        if obj.kind.lower() == 'excellon':
+            drills = self.addParent(parent, _('Drills'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+            slots = self.addParent(parent, _('Slots'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+
+        if obj.kind.lower() == 'cncjob':
+            others = self.addParent(parent, _('Others'), expanded=True, color=QtGui.QColor("#000000"), font=font)
 
         separator = self.addParent(parent, '')
 
@@ -196,13 +216,34 @@ class Properties(FlatCAMTool):
                 xmax = []
                 ymax = []
 
-                for tool_k in obj_prop.tools:
+                if obj_prop.kind.lower() == 'cncjob':
                     try:
-                        x0, y0, x1, y1 = cascaded_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
-                        xmin.append(x0)
-                        ymin.append(y0)
-                        xmax.append(x1)
-                        ymax.append(y1)
+                        for tool_k in obj_prop.exc_cnc_tools:
+                            x0, y0, x1, y1 = cascaded_union(obj_prop.exc_cnc_tools[tool_k]['solid_geometry']).bounds
+                            xmin.append(x0)
+                            ymin.append(y0)
+                            xmax.append(x1)
+                            ymax.append(y1)
+                    except Exception as ee:
+                        log.debug("PropertiesTool.addItems() --> %s" % str(ee))
+
+                    try:
+                        for tool_k in obj_prop.cnc_tools:
+                            x0, y0, x1, y1 = cascaded_union(obj_prop.cnc_tools[tool_k]['solid_geometry']).bounds
+                            xmin.append(x0)
+                            ymin.append(y0)
+                            xmax.append(x1)
+                            ymax.append(y1)
+                    except Exception as ee:
+                        log.debug("PropertiesTool.addItems() --> %s" % str(ee))
+                else:
+                    try:
+                        for tool_k in obj_prop.tools:
+                            x0, y0, x1, y1 = cascaded_union(obj_prop.tools[tool_k]['solid_geometry']).bounds
+                            xmin.append(x0)
+                            ymin.append(y0)
+                            xmax.append(x1)
+                            ymax.append(y1)
                     except Exception as ee:
                         log.debug("PropertiesTool.addItems() --> %s" % str(ee))
 
@@ -273,14 +314,25 @@ class Properties(FlatCAMTool):
 
         self.app.worker_task.emit({'fcn': job_thread, 'params': [obj]})
 
-        f_unit = {'in': _('Inch'), 'mm': _('Metric')}[str(self.app.defaults['units'].lower())]
+        # Units items
+        f_unit = {'in': _('Inch'), 'mm': _('MM')}[str(self.app.defaults['units'].lower())]
         self.addChild(units, ['FlatCAM units:', f_unit], True)
 
+        o_unit = {
+            'in': _('Inch'),
+            'mm': _('Metric'),
+            'inch': _('Inch'),
+            'metric': _('Metric')
+        }[str(obj.units_found.lower())]
+        self.addChild(units, ['Object units:', o_unit], True)
+
+        # Options items
         for option in obj.options:
             if option is 'name':
                 continue
             self.addChild(options, [str(option), str(obj.options[option])], True)
 
+        # Items that depend on the object type
         if obj.kind.lower() == 'gerber':
             temp_ap = dict()
             for ap in obj.apertures:
@@ -311,10 +363,36 @@ class Properties(FlatCAMTool):
                 apid = self.addParent(apertures, str(ap), expanded=False, color=QtGui.QColor("#000000"), font=font)
                 for key in temp_ap:
                     self.addChild(apid, [str(key), str(temp_ap[key])], True)
-
         elif obj.kind.lower() == 'excellon':
+            tot_drill_cnt = 0
+            tot_slot_cnt = 0
+
             for tool, value in obj.tools.items():
-                self.addChild(tools, [str(tool), str(value['C'])], True)
+                toolid = self.addParent(tools, str(tool), expanded=False, color=QtGui.QColor("#000000"), font=font)
+
+                drill_cnt = 0  # variable to store the nr of drills per tool
+                slot_cnt = 0  # variable to store the nr of slots per tool
+
+                # Find no of drills for the current tool
+                for drill in obj.drills:
+                    if drill['tool'] == tool:
+                        drill_cnt += 1
+
+                tot_drill_cnt += drill_cnt
+
+                # Find no of slots for the current tool
+                for slot in obj.slots:
+                    if slot['tool'] == tool:
+                        slot_cnt += 1
+
+                tot_slot_cnt += slot_cnt
+
+                self.addChild(toolid, [_('Diameter'), str(value['C'])], True)
+                self.addChild(toolid, [_('Drills number'), str(drill_cnt)], True)
+                self.addChild(toolid, [_('Slots number'), str(slot_cnt)], True)
+
+            self.addChild(drills, [_('Drills total number:'), str(tot_drill_cnt)], True)
+            self.addChild(slots, [_('Slots total number:'), str(tot_slot_cnt)], True)
         elif obj.kind.lower() == 'geometry':
             for tool, value in obj.tools.items():
                 geo_tool = self.addParent(tools, str(tool), expanded=True, color=QtGui.QColor("#000000"), font=font)
@@ -330,6 +408,7 @@ class Properties(FlatCAMTool):
                     else:
                         self.addChild(geo_tool, [str(k), str(v)], True)
         elif obj.kind.lower() == 'cncjob':
+            # for cncjob objects made from gerber or geometry
             for tool, value in obj.cnc_tools.items():
                 geo_tool = self.addParent(tools, str(tool), expanded=True, color=QtGui.QColor("#000000"), font=font)
                 for k, v in value.items():
@@ -349,6 +428,33 @@ class Properties(FlatCAMTool):
                             self.addChild(tool_data, [str(data_k), str(data_v)], True)
                     else:
                         self.addChild(geo_tool, [str(k), str(v)], True)
+
+            # for cncjob objects made from excellon
+            for tool, value in obj.exc_cnc_tools.items():
+                exc_tool = self.addParent(
+                    tools, str(value['tool']), expanded=False, color=QtGui.QColor("#000000"), font=font
+                )
+                self.addChild(exc_tool, [_('Diameter'), str(tool)], True)
+                for k, v in value.items():
+                    if k == 'solid_geometry':
+                        printed_value = _('Present') if v else _('None')
+                        self.addChild(exc_tool, [str(k), printed_value], True)
+                    elif k == 'nr_drills':
+                        self.addChild(exc_tool, [_("Drills number"), str(v)], True)
+                    elif k == 'nr_slots':
+                        self.addChild(exc_tool, [_("Slots number"), str(v)], True)
+                    else:
+                        pass
+
+            r_time = obj.routing_time
+            if r_time > 1:
+                units_lbl = 'min'
+            else:
+                r_time *= 60
+                units_lbl = 'sec'
+            r_time = math.ceil(float(r_time))
+            self.addChild(others, ['%s (%s):' % (_('Routing time'), units_lbl), str(r_time)], True)
+            self.addChild(others, ['%s (%s):' % (_('Travelled distance'), f_unit), str(obj.travel_distance)], True)
 
         self.addChild(separator, [''])
 

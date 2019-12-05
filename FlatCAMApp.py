@@ -944,6 +944,8 @@ class App(QtCore.QObject):
         else:
             self.decimals = int(self.defaults['decimals_inch'])
 
+        self.current_units = self.defaults['units']
+
         # #############################################################################
         # ##################### CREATE MULTIPROCESSING POOL ###########################
         # #############################################################################
@@ -5759,9 +5761,8 @@ class App(QtCore.QObject):
                         self.defaults[dim] = val
 
         # The scaling factor depending on choice of units.
-        factor = 1/25.4
-        if new_units == 'MM':
-            factor = 25.4
+
+        factor = 25.4 if new_units == 'MM' else 1/25.4
 
         # Changing project units. Warn user.
         msgbox = QtWidgets.QMessageBox()
@@ -5795,12 +5796,11 @@ class App(QtCore.QObject):
                 self.plotcanvas.draw_workspace(pagesize=self.defaults['global_workspaceT'])
 
             # adjust the grid values on the main toolbar
-            dec = 6 if new_units == 'IN'else 4
             val_x = float(self.ui.grid_gap_x_entry.get_value()) * factor
-            self.ui.grid_gap_x_entry.set_value(val_x, decimals=dec)
+            self.ui.grid_gap_x_entry.set_value(val_x, decimals=self.decimals)
             if not self.ui.grid_gap_link_cb.isChecked():
                 val_y = float(self.ui.grid_gap_y_entry.get_value()) * factor
-                self.ui.grid_gap_y_entry.set_value(val_y, decimals=dec)
+                self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
 
             for obj in self.collection.get_list():
                 obj.convert_units(new_units)
@@ -5816,8 +5816,7 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
-            self.inform.emit('[success] %s: %s' %
-                             (_("Converted units to"), new_units))
+            self.inform.emit('[success] %s: %s' % (_("Converted units to"), new_units))
             # self.ui.units_label.setText("[" + self.options["units"] + "]")
             self.set_screen_units(new_units)
         else:
@@ -5828,8 +5827,7 @@ class App(QtCore.QObject):
             else:
                 self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
-            self.inform.emit('[WARNING_NOTCL]%s' %
-                             _(" Units conversion cancelled."))
+            self.inform.emit('[WARNING_NOTCL]%s' % _(" Units conversion cancelled."))
 
         self.defaults_read_form()
 

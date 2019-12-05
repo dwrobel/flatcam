@@ -9,6 +9,7 @@ import numpy as np
 import re
 import logging
 import traceback
+from copy import deepcopy
 
 import FlatCAMTranslation as fcTranslate
 
@@ -783,13 +784,13 @@ class Excellon(Geometry):
                     # ## Units and number format # ##
                     match = self.units_re.match(eline)
                     if match:
-                        self.units_found = match.group(1)
+                        self.units = match.group(1)
                         self.zeros = match.group(2)  # "T" or "L". Might be empty
                         self.excellon_format = match.group(3)
                         if self.excellon_format:
                             upper = len(self.excellon_format.partition('.')[0])
                             lower = len(self.excellon_format.partition('.')[2])
-                            if self.units == 'MM':
+                            if self.units == 'METRIC':
                                 self.excellon_format_upper_mm = upper
                                 self.excellon_format_lower_mm = lower
                             else:
@@ -797,7 +798,7 @@ class Excellon(Geometry):
                                 self.excellon_format_lower_in = lower
 
                         # Modified for issue #80
-                        self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units_found])
+                        self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units])
                         # log.warning("  Units/Format: %s %s" % (self.units, self.zeros))
                         log.warning("Units: %s" % self.units)
                         if self.units == 'MM':
@@ -841,13 +842,13 @@ class Excellon(Geometry):
                 # ## Units and number format outside header# ##
                 match = self.units_re.match(eline)
                 if match:
-                    self.units_found = match.group(1)
+                    self.units = match.group(1)
                     self.zeros = match.group(2)  # "T" or "L". Might be empty
                     self.excellon_format = match.group(3)
                     if self.excellon_format:
                         upper = len(self.excellon_format.partition('.')[0])
                         lower = len(self.excellon_format.partition('.')[2])
-                        if self.units == 'MM':
+                        if self.units == 'METRIC':
                             self.excellon_format_upper_mm = upper
                             self.excellon_format_lower_mm = lower
                         else:
@@ -855,7 +856,7 @@ class Excellon(Geometry):
                             self.excellon_format_lower_in = lower
 
                     # Modified for issue #80
-                    self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units_found])
+                    self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units])
                     # log.warning("  Units/Format: %s %s" % (self.units, self.zeros))
                     log.warning("Units: %s" % self.units)
                     if self.units == 'MM':
@@ -875,7 +876,7 @@ class Excellon(Geometry):
             # is finished since the tools definitions are spread in the Excellon body. We use as units the value
             # from self.defaults['excellon_units']
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
-        except Exception as e:
+        except Exception:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
             msg = '[ERROR_NOTCL] %s' % \
                   _("An internal error has ocurred. See shell.\n")

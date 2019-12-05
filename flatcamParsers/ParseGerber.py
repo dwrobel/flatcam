@@ -1612,8 +1612,8 @@ class Gerber(Geometry):
         the geometry appropriately. This call ``scale()``. Don't call
         it again in descendants.
 
-        :param units: "IN" or "MM"
-        :type units: str
+        :param obj_units: "IN" or "MM"
+        :type obj_units: str
         :return: Scaling factor resulting from unit change.
         :rtype: float
         """
