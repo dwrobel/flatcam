@@ -16,7 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - Properties Tool - added a new parameter, the copper area which show the area of the copper features for the Gerber objects
 - Copper Thieving Tool - added a default value for the mask clearance when generating pattern plating mask
 - application wide change: introduced the precision parameters in Edit -> Preferences who will control how many decimals to use in the app parameters
-- changed the FCDoubleSpinner, FCSpinner and FCEntry GUI elements to allow passing an alignemnt value: left, right or center (not yet available in the app)
+- changed the FCDoubleSpinner, FCSpinner and FCEntry GUI elements to allow passing an alignment value: left, right or center (not yet available in the app)
 
 4.12.2019 
 
