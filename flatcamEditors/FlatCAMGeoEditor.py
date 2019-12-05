@@ -619,6 +619,7 @@ class TransformEditorTool(FlatCAMTool):
 
         self.app = app
         self.draw_app = draw_app
+        self.decimals = self.app.decimals
 
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
@@ -1494,7 +1495,7 @@ class TransformEditorTool(FlatCAMTool):
     def on_rotate_key(self):
         val_box = FCInputDialog(title=_("Rotate ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=4,
+                                min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_rotate']))
         val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
 
@@ -1513,7 +1514,7 @@ class TransformEditorTool(FlatCAMTool):
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=4,
+                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
 
@@ -1532,7 +1533,7 @@ class TransformEditorTool(FlatCAMTool):
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=4,
+                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
 
@@ -1549,7 +1550,7 @@ class TransformEditorTool(FlatCAMTool):
     def on_skewx_key(self):
         val_box = FCInputDialog(title=_("Skew on X axis ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=4,
+                                min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
 
@@ -1566,7 +1567,7 @@ class TransformEditorTool(FlatCAMTool):
     def on_skewy_key(self):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=4,
+                                min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))
 
@@ -2685,7 +2686,7 @@ class FCText(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_text.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -3024,6 +3025,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app = app
         self.canvas = app.plotcanvas
+        self.decimals = app.decimals
 
         # ## Toolbar events and properties
         self.tools = {
@@ -3143,9 +3145,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.rtree_index = rtindex.Index()
 
-        # Number of decimals used by tools in this class
-        self.decimals = 4
-
         def entry2option(option, entry):
             try:
                 self.options[option] = float(entry.text())
@@ -3162,9 +3161,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 return
 
             units = self.app.defaults['units'].upper()
-            dec = 6 if units == 'IN' else 4
+
             if self.app.ui.grid_gap_link_cb.isChecked():
-                self.app.ui.grid_gap_y_entry.set_value(val, decimals=dec)
+                self.app.ui.grid_gap_y_entry.set_value(val, decimals=self.decimals)
 
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_x_entry.textChanged.connect(
@@ -3641,11 +3640,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # updated units
         self.units = self.app.defaults['units'].upper()
-
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
+        self.decimals = self.app.decimals
 
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:

@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - application wide change: introduced the precision parameters in Edit -> Preferences who will control how many decimals to use in the app parameters
 - changed the FCDoubleSpinner, FCSpinner and FCEntry GUI elements to allow passing an alignment value: left, right or center (not yet available in the app)
 - fixed the GUI of the Geometry Editor Tool Transform and adapted it to use the precision setting
+- updated Gerber Editor to use the precision setting and the Gerber Editor Transform Tool to use the FCDoubleSpinner GUI element
 
 4.12.2019 
 

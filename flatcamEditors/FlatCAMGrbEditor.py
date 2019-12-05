@@ -2352,9 +2352,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app = app
         self.canvas = self.app.plotcanvas
-
-        # number of decimals for the tool diameters to be used in this editor
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # Current application units in Upper Case
         self.units = self.app.defaults['units'].upper()
@@ -3034,11 +3032,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def set_ui(self):
         # updated units
         self.units = self.app.defaults['units'].upper()
-
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
+        self.decimals = self.app.decimals
 
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
@@ -5026,6 +5020,7 @@ class TransformEditorTool(FlatCAMTool):
 
         self.app = app
         self.draw_app = draw_app
+        self.decimals = self.app.decimals
 
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
@@ -5072,9 +5067,11 @@ class TransformEditorTool(FlatCAMTool):
         )
         self.rotate_label.setMinimumWidth(50)
 
-        self.rotate_entry = FCEntry()
-        # self.rotate_entry.setFixedWidth(60)
-        self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.rotate_entry = FCDoubleSpinner()
+        self.rotate_entry.set_precision(self.decimals)
+        self.rotate_entry.set_range(-360.0000, 360.0000)
+        self.rotate_entry.setSingleStep(0.1)
+        self.rotate_entry.setWrapping(True)
 
         self.rotate_button = FCButton()
         self.rotate_button.set_value(_("Rotate"))
@@ -5108,9 +5105,11 @@ class TransformEditorTool(FlatCAMTool):
               "Float number between -360 and 359.")
         )
         self.skewx_label.setMinimumWidth(50)
-        self.skewx_entry = FCEntry()
-        self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.skewx_entry.setFixedWidth(60)
+        self.skewx_entry = FCDoubleSpinner()
+        self.skewx_entry.set_precision(self.decimals)
+        self.skewx_entry.set_range(-360.0000, 360.0000)
+        self.skewx_entry.setSingleStep(0.1)
+        self.skewx_entry.setWrapping(True)
 
         self.skewx_button = FCButton()
         self.skewx_button.set_value(_("Skew X"))
@@ -5126,9 +5125,11 @@ class TransformEditorTool(FlatCAMTool):
               "Float number between -360 and 359.")
         )
         self.skewy_label.setMinimumWidth(50)
-        self.skewy_entry = FCEntry()
-        self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.skewy_entry.setFixedWidth(60)
+        self.skewy_entry = FCDoubleSpinner()
+        self.skewy_entry.set_precision(self.decimals)
+        self.skewy_entry.set_range(-360.0000, 360.0000)
+        self.skewy_entry.setSingleStep(0.1)
+        self.skewy_entry.setWrapping(True)
 
         self.skewy_button = FCButton()
         self.skewy_button.set_value(_("Skew Y"))
@@ -5164,9 +5165,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Factor for Scale action over X axis.")
         )
         self.scalex_label.setMinimumWidth(50)
-        self.scalex_entry = FCEntry()
-        self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.scalex_entry.setFixedWidth(60)
+        self.scalex_entry = FCDoubleSpinner()
+        self.scalex_entry.set_precision(self.decimals)
+        self.scalex_entry.set_range(0.0000, 9999.9999)
+        self.scalex_entry.setSingleStep(0.1)
+        self.scalex_entry.setWrapping(True)
 
         self.scalex_button = FCButton()
         self.scalex_button.set_value(_("Scale X"))
@@ -5181,9 +5184,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Factor for Scale action over Y axis.")
         )
         self.scaley_label.setMinimumWidth(50)
-        self.scaley_entry = FCEntry()
-        self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.scaley_entry.setFixedWidth(60)
+        self.scaley_entry = FCDoubleSpinner()
+        self.scaley_entry.set_precision(self.decimals)
+        self.scaley_entry.set_range(0.0000, 9999.9999)
+        self.scaley_entry.setSingleStep(0.1)
+        self.scaley_entry.setWrapping(True)
 
         self.scaley_button = FCButton()
         self.scaley_button.set_value(_("Scale Y"))
@@ -5239,9 +5244,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Value for Offset action on X axis.")
         )
         self.offx_label.setMinimumWidth(50)
-        self.offx_entry = FCEntry()
-        self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.offx_entry.setFixedWidth(60)
+        self.offx_entry = FCDoubleSpinner()
+        self.offx_entry.set_precision(self.decimals)
+        self.offx_entry.set_range(-9999.9999, 9999.9999)
+        self.offx_entry.setSingleStep(0.1)
+        self.offx_entry.setWrapping(True)
 
         self.offx_button = FCButton()
         self.offx_button.set_value(_("Offset X"))
@@ -5257,9 +5264,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Value for Offset action on Y axis.")
         )
         self.offy_label.setMinimumWidth(50)
-        self.offy_entry = FCEntry()
-        self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.offy_entry.setFixedWidth(60)
+        self.offy_entry = FCDoubleSpinner()
+        self.offy_entry.set_precision(self.decimals)
+        self.offy_entry.set_range(-9999.9999, 9999.9999)
+        self.offy_entry.setSingleStep(0.1)
+        self.offy_entry.setWrapping(True)
 
         self.offy_button = FCButton()
         self.offy_button.set_value(_("Offset Y"))
@@ -5298,7 +5307,6 @@ class TransformEditorTool(FlatCAMTool):
             _("Flip the selected shape(s) over the X axis.\n"
               "Does not create a new shape.")
         )
-        self.flipx_button.setMinimumWidth(60)
 
         self.flipy_button = FCButton()
         self.flipy_button.set_value(_("Flip on Y"))
@@ -5306,7 +5314,6 @@ class TransformEditorTool(FlatCAMTool):
             _("Flip the selected shape(s) over the X axis.\n"
               "Does not create a new shape.")
         )
-        self.flipy_button.setMinimumWidth(60)
 
         self.flip_ref_cb = FCCheckBox()
         self.flip_ref_cb.set_value(True)
@@ -5344,7 +5351,6 @@ class TransformEditorTool(FlatCAMTool):
         )
         self.flip_ref_button.setMinimumWidth(60)
 
-        form4_child_hlay.addStretch()
         form4_child_hlay.addWidget(self.flipx_button)
         form4_child_hlay.addWidget(self.flipy_button)
 
@@ -5477,16 +5483,8 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.rotate_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.rotate_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.rotate_entry.get_value())
+
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
                                    'params': [value]})
         # self.on_rotate_action(value)
@@ -5520,16 +5518,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.skewx_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.skewx_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.skewx_entry.get_value())
 
         # self.on_skew("X", value)
         axis = 'X'
@@ -5547,16 +5536,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.skewy_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.skewy_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.skewy_entry.get_value())
 
         # self.on_skew("Y", value)
         axis = 'Y'
@@ -5574,16 +5554,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             x_value = val
         else:
-            try:
-                x_value = float(self.scalex_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    x_value = float(self.scalex_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            x_value = float(self.scalex_entry.get_value())
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
         if x_value == 0:
@@ -5615,16 +5586,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             y_value = val
         else:
-            try:
-                y_value = float(self.scaley_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    y_value = float(self.scaley_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            y_value = float(self.scaley_entry.get_value())
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
         if y_value == 0:
@@ -5653,16 +5615,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.offx_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.offx_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.offx_entry.get_value())
 
         # self.on_offset("X", value)
         axis = 'X'
@@ -5679,16 +5632,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.offy_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.offy_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.offy_entry.get_value())
 
         # self.on_offset("Y", value)
         axis = 'Y'
@@ -5881,16 +5825,13 @@ class TransformEditorTool(FlatCAMTool):
                     self.draw_app.plot_all()
 
                     if str(axis) == 'X':
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Skew on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Skew on the X axis done'))
                     else:
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Skew on the Y axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Skew on the Y axis done'))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Skew action was not executed."), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Skew action was not executed."), str(e)))
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -5952,15 +5893,12 @@ class TransformEditorTool(FlatCAMTool):
                     self.draw_app.plot_all()
 
                     if str(axis) == 'X':
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Scale on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Scale on the X axis done'))
                     else:
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Scale on the Y axis done'))
-                    self.app.progress.emit(100)
+                        self.app.inform.emit('[success] %s...' % _('Scale on the Y axis done'))
+
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Scale action was not executed."), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Scale action was not executed."), str(e)))
                     return
 
     def on_offset(self, axis, num):
@@ -5979,8 +5917,6 @@ class TransformEditorTool(FlatCAMTool):
         else:
             with self.app.proc_container.new(_("Applying Offset")):
                 try:
-                    self.app.progress.emit(20)
-
                     for sel_el_shape in elem_list:
                         sel_el = sel_el_shape.geo
                         if axis is 'X':
@@ -6000,106 +5936,92 @@ class TransformEditorTool(FlatCAMTool):
                         self.draw_app.plot_all()
 
                     if str(axis) == 'X':
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Offset on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Offset on the X axis done'))
                     else:
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Offset on the Y axis done'))
-                    self.app.progress.emit(100)
+                        self.app.inform.emit('[success] %s...' % _('Offset on the Y axis done'))
 
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Offset action was not executed."), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Offset action was not executed."), str(e)))
                     return
 
     def on_rotate_key(self):
         val_box = FCInputDialog(title=_("Rotate ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=4,
+                                min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_rotate']))
         val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_rotate(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape rotate done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape rotate done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape rotate cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape rotate cancelled"))
 
     def on_offx_key(self):
         units = self.app.defaults['units'].lower()
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=4,
+                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape offset on X axis done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape offset on X axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape offset X cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape offset X cancelled"))
 
     def on_offy_key(self):
         units = self.app.defaults['units'].lower()
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=4,
+                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape offset on Y axis done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape offset on Y axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape offset Y cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape offset Y cancelled"))
 
     def on_skewx_key(self):
         val_box = FCInputDialog(title=_("Skew on X axis ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=4,
+                                min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape skew on X axis done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on X axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape skew X cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape skew X cancelled"))
 
     def on_skewy_key(self):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=4,
+                                min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape skew on Y axis done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on Y axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape skew Y cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape skew Y cancelled"))
 
 
 def get_shapely_list_bounds(geometry_list):
