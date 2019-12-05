@@ -1443,7 +1443,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.gendz_entry, 9, 1)
 
         # Feedrate X-Y
-        frlabel = QtWidgets.QLabel('%s:' % _('Feed Rate X-Y'))
+        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
         frlabel.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute")
@@ -1457,7 +1457,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.cncfeedrate_entry, 10, 1)
 
         # Feedrate Z (Plunge)
-        frzlabel = QtWidgets.QLabel('%s:' % _('Feed Rate Z'))
+        frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
         frzlabel.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute.\n"
@@ -1472,7 +1472,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.cncplunge_entry, 11, 1)
 
         # Feedrate rapids
-        self.fr_rapidlabel = QtWidgets.QLabel('%s:' % _('Feed Rate Rapids'))
+        self.fr_rapidlabel = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
         self.fr_rapidlabel.setToolTip(
             _("Cutting speed in the XY plane\n"
               "(in units per minute).\n"

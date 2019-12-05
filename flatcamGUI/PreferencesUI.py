@@ -3253,7 +3253,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.gendz_entry, 6, 1)
 
         # Feedrate X-Y
-        frlabel = QtWidgets.QLabel('%s:' % _('Feed Rate X-Y'))
+        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
         frlabel.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute")
@@ -3268,7 +3268,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.cncfeedrate_entry, 7, 1)
 
         # Feedrate Z (Plunge)
-        frz_label = QtWidgets.QLabel('%s:' % _('Feed Rate Z'))
+        frz_label = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
         frz_label.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute.\n"
@@ -3373,7 +3373,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.gstartz_entry, 2, 1)
 
         # Feedrate rapids
-        fr_rapid_label = QtWidgets.QLabel('%s:' % _('Feed Rate Rapids'))
+        fr_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
         fr_rapid_label.setToolTip(
             _("Cutting speed in the XY plane\n"
               "(in units per minute).\n"
@@ -3456,7 +3456,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.fplunge_cb, 9, 1)
 
         # Size of trace segment on X axis
-        segx_label = QtWidgets.QLabel('%s:' % _("Seg. X size"))
+        segx_label = QtWidgets.QLabel('%s:' % _("Segment X size"))
         segx_label.setToolTip(
             _("The size of the trace segment on the X axis.\n"
               "Useful for auto-leveling.\n"
@@ -3472,7 +3472,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.segx_entry, 10, 1)
 
         # Size of trace segment on Y axis
-        segy_label = QtWidgets.QLabel('%s:' % _("Seg. Y size"))
+        segy_label = QtWidgets.QLabel('%s:' % _("Segment Y size"))
         segy_label.setToolTip(
             _("The size of the trace segment on the Y axis.\n"
               "Useful for auto-leveling.\n"
@@ -6214,6 +6214,25 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(self.rb_thickness_label, 19, 0)
         grid_lay.addWidget(self.rb_thickness_entry, 19, 1)
 
+        self.patern_mask_label = QtWidgets.QLabel('<b>%s</b>' % _('Pattern Plating Mask'))
+        self.patern_mask_label.setToolTip(
+            _("Generate a mask for pattern plating.")
+        )
+        grid_lay.addWidget(self.patern_mask_label, 20, 0, 1, 2)
+
+        # Openings CLEARANCE #
+        self.clearance_ppm_label = QtWidgets.QLabel('%s:' % _("Clearance"))
+        self.clearance_ppm_label.setToolTip(
+            _("The distance between the possible copper thieving elements\n"
+              "and/or robber bar and the actual openings in the mask.")
+        )
+        self.clearance_ppm_entry = FCDoubleSpinner()
+        self.clearance_ppm_entry.set_range(-9999.9999, 9999.9999)
+        self.clearance_ppm_entry.set_precision(self.decimals)
+        self.clearance_ppm_entry.setSingleStep(0.1)
+
+        grid_lay.addWidget(self.clearance_ppm_label, 21, 0)
+        grid_lay.addWidget(self.clearance_ppm_entry, 21, 1)
 
         self.layout.addStretch()
 

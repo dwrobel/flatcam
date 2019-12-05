@@ -883,6 +883,7 @@ class App(QtCore.QObject):
             "tools_copper_thieving_lines_spacing": 2.0,
             "tools_copper_thieving_rb_margin": 1.0,
             "tools_copper_thieving_rb_thickness": 1.0,
+            "tools_copper_thieving_mask_clearance": 0.0,
 
             # Fiducials Tool
             "tools_fiducials_dia": 1.0,
@@ -1447,6 +1448,7 @@ class App(QtCore.QObject):
             "tools_copper_thieving_lines_spacing": self.ui.tools2_defaults_form.tools2_cfill_group.lines_spacing_entry,
             "tools_copper_thieving_rb_margin": self.ui.tools2_defaults_form.tools2_cfill_group.rb_margin_entry,
             "tools_copper_thieving_rb_thickness": self.ui.tools2_defaults_form.tools2_cfill_group.rb_thickness_entry,
+            "tools_copper_thieving_mask_clearance": self.ui.tools2_defaults_form.tools2_cfill_group.clearance_ppm_entry,
 
             # Fiducials Tool
             "tools_fiducials_dia": self.ui.tools2_defaults_form.tools2_fiducials_group.dia_entry,

@@ -586,6 +586,7 @@ class ToolCopperThieving(FlatCAMTool):
 
         self.rb_margin_entry.set_value(self.app.defaults["tools_copper_thieving_rb_margin"])
         self.rb_thickness_entry.set_value(self.app.defaults["tools_copper_thieving_rb_thickness"])
+        self.clearance_ppm_entry.set_value(self.app.defaults["tools_copper_thieving_mask_clearance"])
 
         # INIT SECTION
         self.area_method = False

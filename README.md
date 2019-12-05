@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - in NCC Tool, the new Geometry object that is created on copper clear now has the solid_geometry attribute where the geometry is stored not only in the obj.tools attribute
 - Copper Thieving Tool - added units label for the pattern plated area
 - Properties Tool - added a new parameter, the copper area which show the area of the copper features for the Gerber objects
+- Copper Thieving Tool - added a default value for the mask clearance when generating pattern plating mask
 
 4.12.2019 
 
