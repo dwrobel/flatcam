@@ -40,7 +40,7 @@ class SolderPaste(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         # Number of decimals to be used for tools/nozzles in this FlatCAM Tool
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)

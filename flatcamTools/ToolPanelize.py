@@ -34,8 +34,9 @@ class Panelize(FlatCAMTool):
     toolName = _("Panelize PCB")
 
     def __init__(self, app):
-        super(Panelize, self).__init__(self)
-        self.app = app
+        self.decimals = app.decimals
+
+        FlatCAMTool.__init__(self, app)
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)

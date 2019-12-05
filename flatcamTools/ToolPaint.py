@@ -42,7 +42,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def __init__(self, app):
         self.app = app
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         FlatCAMTool.__init__(self, app)
         Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])

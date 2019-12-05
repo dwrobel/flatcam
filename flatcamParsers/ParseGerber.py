@@ -83,6 +83,7 @@ class Gerber(Geometry):
 
         # How to approximate a circle with lines.
         self.steps_per_circle = int(self.app.defaults["gerber_circle_steps"])
+        self.decimals = self.app.decimals
 
         # Initialize parent
         Geometry.__init__(self, geo_steps_per_circle=self.steps_per_circle)

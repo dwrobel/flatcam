@@ -77,6 +77,7 @@ class Excellon(Geometry):
         :return: Excellon object.
         :rtype: Excellon
         """
+        self.decimals = self.app.decimals
 
         if geo_steps_per_circle is None:
             geo_steps_per_circle = int(Excellon.defaults['geo_steps_per_circle'])

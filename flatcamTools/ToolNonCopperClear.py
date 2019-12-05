@@ -39,7 +39,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def __init__(self, app):
         self.app = app
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         FlatCAMTool.__init__(self, app)
         Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])

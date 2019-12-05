@@ -3009,7 +3009,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # add a first tool in the Tool Table but only if the Excellon Object is empty
         if not self.tool2tooldia:
-            self.on_tool_add(tooldia=float('%.2f' % float(self.app.defaults['excellon_editor_newdia'])))
+            self.on_tool_add(tooldia=float('%.*f' % (self.decimals,
+                                                     float(self.app.defaults['excellon_editor_newdia']))))
 
     def update_fcexcellon(self, exc_obj):
         """

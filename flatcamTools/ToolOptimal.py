@@ -40,7 +40,7 @@ class ToolOptimal(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         self.units = self.app.defaults['units'].upper()
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # ############################################################################
         # ############################ GUI creation ##################################

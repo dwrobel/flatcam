@@ -24,14 +24,14 @@ class FlatCAMTool(QtWidgets.QWidget):
         :param parent: Qt Parent
         :return: FlatCAMTool
         """
-        QtWidgets.QWidget.__init__(self, parent)
+        self.app = app
+        self.decimals = app.decimals
 
+        QtWidgets.QWidget.__init__(self, parent)
         # self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
-
-        self.app = app
 
         self.menuAction = None
 

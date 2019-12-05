@@ -46,7 +46,7 @@ class CutOut(FlatCAMTool):
 
         self.app = app
         self.canvas = app.plotcanvas
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)

@@ -465,7 +465,8 @@ class Geometry(object):
     def __init__(self, geo_steps_per_circle=None):
         # Units (in or mm)
         self.units = self.app.defaults["units"]
-        
+        self.decimals = self.app.decimals
+
         # Final geometry: MultiPolygon or list (of geometry constructs)
         self.solid_geometry = None
 
@@ -2144,6 +2145,8 @@ class CNCjob(Geometry):
                  segy=None,
                  steps_per_circle=None):
 
+        self.decimals = self.app.decimals
+
         # Used when parsing G-code arcs
         self.steps_per_circle = int(self.app.defaults['cncjob_steps_per_circle'])
 
@@ -2592,10 +2595,7 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                            if self.units == 'MM':
-                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
-                            else:
-                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
+                            current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
 
                             self.app.inform.emit(
                                 '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -2738,10 +2738,7 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                            if self.units == 'MM':
-                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
-                            else:
-                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
+                            current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
 
                             self.app.inform.emit(
                                 '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -2842,10 +2839,7 @@ class CNCjob(Geometry):
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                        if self.units == 'MM':
-                            current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
-                        else:
-                            current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
+                        current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
 
                         self.app.inform.emit(
                             '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -3164,10 +3158,7 @@ class CNCjob(Geometry):
         old_disp_number = 0
         log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
 
-        if self.units == 'MM':
-            current_tooldia = float('%.2f' % float(self.tooldia))
-        else:
-            current_tooldia = float('%.4f' % float(self.tooldia))
+        current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
         self.app.inform.emit( '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
                                              str(current_tooldia),
@@ -3511,10 +3502,7 @@ class CNCjob(Geometry):
         old_disp_number = 0
         log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
 
-        if self.units == 'MM':
-            current_tooldia = float('%.2f' % float(self.tooldia))
-        else:
-            current_tooldia = float('%.4f' % float(self.tooldia))
+        current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
         self.app.inform.emit(
             '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -3997,18 +3985,27 @@ class CNCjob(Geometry):
                 # create the geometry for the holes created when drilling Excellon drills
                 if self.origin_kind == 'excellon':
                     if current['Z'] < 0:
-                        current_drill_point_coords = (float('%.4f' % current['X']), float('%.4f' % current['Y']))
+                        current_drill_point_coords = (
+                            float('%.*f' % (self.decimals, current['X'])),
+                            float('%.*f' % (self.decimals, current['Y']))
+                        )
+
                         # find the drill diameter knowing the drill coordinates
                         for pt_dict in self.exc_drills:
-                            point_in_dict_coords = (float('%.4f' % pt_dict['point'].x),
-                                                   float('%.4f' % pt_dict['point'].y))
+                            point_in_dict_coords = (
+                                float('%.*f' % (self.decimals, pt_dict['point'].x)),
+                                float('%.*f' % (self.decimals, pt_dict['point'].y))
+                            )
                             if point_in_dict_coords == current_drill_point_coords:
                                 tool = pt_dict['tool']
                                 dia = self.exc_tools[tool]['C']
                                 kind = ['C', 'F']
-                                geometry.append({"geom": Point(current_drill_point_coords).
-                                                buffer(dia/2).exterior,
-                                                 "kind": kind})
+                                geometry.append(
+                                    {
+                                        "geom": Point(current_drill_point_coords).buffer(dia/2).exterior,
+                                        "kind": kind
+                                    }
+                                )
                                 break
 
             if 'G' in gobj:
@@ -4053,8 +4050,12 @@ class CNCjob(Geometry):
         # end, therefore, see here too if there is
         # a final path.
         if len(path) > 1:
-            geometry.append({"geom": LineString(path),
-                             "kind": kind})
+            geometry.append(
+                {
+                    "geom": LineString(path),
+                    "kind": kind
+                }
+            )
 
         self.gcode_parsed = geometry
         return geometry

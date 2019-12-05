@@ -30,7 +30,7 @@ class ToolTransform(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)

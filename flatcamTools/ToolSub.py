@@ -36,6 +36,7 @@ class ToolSub(FlatCAMTool):
 
     def __init__(self, app):
         self.app = app
+        self.decimals = self.app.decimals
 
         FlatCAMTool.__init__(self, app)
 

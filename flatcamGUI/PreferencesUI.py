@@ -42,18 +42,19 @@ class OptionsGroupUI(QtWidgets.QGroupBox):
 
 
 class GeneralPreferencesUI(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
+        self.decimals = decimals
 
-        self.general_app_group = GeneralAppPrefGroupUI()
+        self.general_app_group = GeneralAppPrefGroupUI(decimals=self.decimals)
         self.general_app_group.setMinimumWidth(290)
 
-        self.general_gui_group = GeneralGUIPrefGroupUI()
+        self.general_gui_group = GeneralGUIPrefGroupUI(decimals=self.decimals)
         self.general_gui_group.setMinimumWidth(250)
 
-        self.general_gui_set_group = GeneralGUISetGroupUI()
+        self.general_gui_set_group = GeneralGUISetGroupUI(decimals=self.decimals)
         self.general_gui_set_group.setMinimumWidth(250)
 
         self.layout.addWidget(self.general_app_group)
@@ -65,20 +66,21 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
 
 class GerberPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
+        self.decimals = decimals
 
-        self.gerber_gen_group = GerberGenPrefGroupUI()
+        self.gerber_gen_group = GerberGenPrefGroupUI(decimals=self.decimals)
         self.gerber_gen_group.setMinimumWidth(250)
-        self.gerber_opt_group = GerberOptPrefGroupUI()
+        self.gerber_opt_group = GerberOptPrefGroupUI(decimals=self.decimals)
         self.gerber_opt_group.setMinimumWidth(250)
-        self.gerber_exp_group = GerberExpPrefGroupUI()
+        self.gerber_exp_group = GerberExpPrefGroupUI(decimals=self.decimals)
         self.gerber_exp_group.setMinimumWidth(230)
-        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI()
+        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI(decimals=self.decimals)
         self.gerber_adv_opt_group.setMinimumWidth(200)
-        self.gerber_editor_group = GerberEditorPrefGroupUI()
+        self.gerber_editor_group = GerberEditorPrefGroupUI(decimals=self.decimals)
         self.gerber_editor_group.setMinimumWidth(200)
 
         self.vlay = QtWidgets.QVBoxLayout()
@@ -95,20 +97,21 @@ class GerberPreferencesUI(QtWidgets.QWidget):
 
 class ExcellonPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
+        self.decimals = decimals
 
-        self.excellon_gen_group = ExcellonGenPrefGroupUI()
+        self.excellon_gen_group = ExcellonGenPrefGroupUI(decimals=self.decimals)
         self.excellon_gen_group.setMinimumWidth(220)
-        self.excellon_opt_group = ExcellonOptPrefGroupUI()
+        self.excellon_opt_group = ExcellonOptPrefGroupUI(decimals=self.decimals)
         self.excellon_opt_group.setMinimumWidth(290)
-        self.excellon_exp_group = ExcellonExpPrefGroupUI()
+        self.excellon_exp_group = ExcellonExpPrefGroupUI(decimals=self.decimals)
         self.excellon_exp_group.setMinimumWidth(250)
-        self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI()
+        self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI(decimals=self.decimals)
         self.excellon_adv_opt_group.setMinimumWidth(250)
-        self.excellon_editor_group = ExcellonEditorPrefGroupUI()
+        self.excellon_editor_group = ExcellonEditorPrefGroupUI(decimals=self.decimals)
         self.excellon_editor_group.setMinimumWidth(260)
 
         self.vlay = QtWidgets.QVBoxLayout()
@@ -125,18 +128,19 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
 
 class GeometryPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
+        self.decimals = decimals
 
-        self.geometry_gen_group = GeometryGenPrefGroupUI()
+        self.geometry_gen_group = GeometryGenPrefGroupUI(decimals=self.decimals)
         self.geometry_gen_group.setMinimumWidth(220)
-        self.geometry_opt_group = GeometryOptPrefGroupUI()
+        self.geometry_opt_group = GeometryOptPrefGroupUI(decimals=self.decimals)
         self.geometry_opt_group.setMinimumWidth(300)
-        self.geometry_adv_opt_group = GeometryAdvOptPrefGroupUI()
+        self.geometry_adv_opt_group = GeometryAdvOptPrefGroupUI(decimals=self.decimals)
         self.geometry_adv_opt_group.setMinimumWidth(270)
-        self.geometry_editor_group = GeometryEditorPrefGroupUI()
+        self.geometry_editor_group = GeometryEditorPrefGroupUI(decimals=self.decimals)
         self.geometry_editor_group.setMinimumWidth(250)
 
         self.layout.addWidget(self.geometry_gen_group)
@@ -149,38 +153,39 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
 
 class ToolsPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
+        self.decimals = decimals
 
-        self.tools_ncc_group = ToolsNCCPrefGroupUI()
+        self.tools_ncc_group = ToolsNCCPrefGroupUI(decimals=self.decimals)
         self.tools_ncc_group.setMinimumWidth(220)
-        self.tools_paint_group = ToolsPaintPrefGroupUI()
+        self.tools_paint_group = ToolsPaintPrefGroupUI(decimals=self.decimals)
         self.tools_paint_group.setMinimumWidth(220)
 
-        self.tools_cutout_group = ToolsCutoutPrefGroupUI()
+        self.tools_cutout_group = ToolsCutoutPrefGroupUI(decimals=self.decimals)
         self.tools_cutout_group.setMinimumWidth(220)
 
-        self.tools_2sided_group = Tools2sidedPrefGroupUI()
+        self.tools_2sided_group = Tools2sidedPrefGroupUI(decimals=self.decimals)
         self.tools_2sided_group.setMinimumWidth(220)
 
-        self.tools_film_group = ToolsFilmPrefGroupUI()
+        self.tools_film_group = ToolsFilmPrefGroupUI(decimals=self.decimals)
         self.tools_film_group.setMinimumWidth(220)
 
-        self.tools_panelize_group = ToolsPanelizePrefGroupUI()
+        self.tools_panelize_group = ToolsPanelizePrefGroupUI(decimals=self.decimals)
         self.tools_panelize_group.setMinimumWidth(220)
 
-        self.tools_calculators_group = ToolsCalculatorsPrefGroupUI()
+        self.tools_calculators_group = ToolsCalculatorsPrefGroupUI(decimals=self.decimals)
         self.tools_calculators_group.setMinimumWidth(220)
 
-        self.tools_transform_group = ToolsTransformPrefGroupUI()
+        self.tools_transform_group = ToolsTransformPrefGroupUI(decimals=self.decimals)
         self.tools_transform_group.setMinimumWidth(200)
 
-        self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI()
+        self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI(decimals=self.decimals)
         self.tools_solderpaste_group.setMinimumWidth(200)
 
-        self.tools_sub_group = ToolsSubPrefGroupUI()
+        self.tools_sub_group = ToolsSubPrefGroupUI(decimals=self.decimals)
         self.tools_sub_group.setMinimumWidth(200)
 
         self.vlay = QtWidgets.QVBoxLayout()
@@ -211,24 +216,25 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
 class Tools2PreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
+        self.decimals = decimals
 
-        self.tools2_checkrules_group = Tools2RulesCheckPrefGroupUI()
+        self.tools2_checkrules_group = Tools2RulesCheckPrefGroupUI(decimals=self.decimals)
         self.tools2_checkrules_group.setMinimumWidth(220)
 
-        self.tools2_optimal_group = Tools2OptimalPrefGroupUI()
+        self.tools2_optimal_group = Tools2OptimalPrefGroupUI(decimals=self.decimals)
         self.tools2_optimal_group.setMinimumWidth(220)
 
-        self.tools2_qrcode_group = Tools2QRCodePrefGroupUI()
+        self.tools2_qrcode_group = Tools2QRCodePrefGroupUI(decimals=self.decimals)
         self.tools2_qrcode_group.setMinimumWidth(220)
 
-        self.tools2_cfill_group = Tools2CThievingPrefGroupUI()
+        self.tools2_cfill_group = Tools2CThievingPrefGroupUI(decimals=self.decimals)
         self.tools2_cfill_group.setMinimumWidth(220)
 
-        self.tools2_fiducials_group = Tools2FiducialsPrefGroupUI()
+        self.tools2_fiducials_group = Tools2FiducialsPrefGroupUI(decimals=self.decimals)
         self.tools2_fiducials_group.setMinimumWidth(220)
 
         self.vlay = QtWidgets.QVBoxLayout()
@@ -254,16 +260,17 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
 
 class CNCJobPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
+        self.decimals = decimals
 
-        self.cncjob_gen_group = CNCJobGenPrefGroupUI()
+        self.cncjob_gen_group = CNCJobGenPrefGroupUI(decimals=self.decimals)
         self.cncjob_gen_group.setMinimumWidth(320)
-        self.cncjob_opt_group = CNCJobOptPrefGroupUI()
+        self.cncjob_opt_group = CNCJobOptPrefGroupUI(decimals=self.decimals)
         self.cncjob_opt_group.setMinimumWidth(260)
-        self.cncjob_adv_opt_group = CNCJobAdvOptPrefGroupUI()
+        self.cncjob_adv_opt_group = CNCJobAdvOptPrefGroupUI(decimals=self.decimals)
         self.cncjob_adv_opt_group.setMinimumWidth(260)
 
         self.layout.addWidget(self.cncjob_gen_group)
@@ -275,25 +282,26 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
 
 class UtilPreferencesUI(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
+        self.decimals = decimals
 
         self.vlay = QtWidgets.QVBoxLayout()
-        self.fa_excellon_group = FAExcPrefGroupUI()
+        self.fa_excellon_group = FAExcPrefGroupUI(decimals=self.decimals)
         self.fa_excellon_group.setMinimumWidth(260)
 
-        self.fa_gcode_group = FAGcoPrefGroupUI()
+        self.fa_gcode_group = FAGcoPrefGroupUI(decimals=self.decimals)
         self.fa_gcode_group.setMinimumWidth(260)
 
         self.vlay.addWidget(self.fa_excellon_group)
         self.vlay.addWidget(self.fa_gcode_group)
 
-        self.fa_gerber_group = FAGrbPrefGroupUI()
+        self.fa_gerber_group = FAGrbPrefGroupUI(decimals=self.decimals)
         self.fa_gerber_group.setMinimumWidth(260)
 
-        self.kw_group = AutoCompletePrefGroupUI()
+        self.kw_group = AutoCompletePrefGroupUI(decimals=self.decimals)
         self.kw_group.setMinimumWidth(260)
 
         self.layout.addLayout(self.vlay)
@@ -304,11 +312,12 @@ class UtilPreferencesUI(QtWidgets.QWidget):
 
 
 class GeneralGUIPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         super(GeneralGUIPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("GUI Preferences")))
-
+        self.decimals = decimals
+        
         # Create a form layout for the Application general settings
         self.form_box = QtWidgets.QFormLayout()
 
@@ -318,7 +327,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
            _("This is the Grid snap value on X axis.")
         )
         self.gridx_entry = FCDoubleSpinner()
-        self.gridx_entry.set_precision(4)
+        self.gridx_entry.set_precision(self.decimals)
         self.gridx_entry.setSingleStep(0.1)
 
         # Grid Y Entry
@@ -327,14 +336,14 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             _("This is the Grid snap value on Y axis.")
         )
         self.gridy_entry = FCDoubleSpinner()
-        self.gridy_entry.set_precision(4)
+        self.gridy_entry.set_precision(self.decimals)
         self.gridy_entry.setSingleStep(0.1)
 
         # Snap Max Entry
         self.snap_max_label = QtWidgets.QLabel('%s:' % _('Snap Max'))
         self.snap_max_label.setToolTip(_("Max. magnet distance"))
         self.snap_max_dist_entry = FCDoubleSpinner()
-        self.snap_max_dist_entry.set_precision(4)
+        self.snap_max_dist_entry.set_precision(self.decimals)
         self.snap_max_dist_entry.setSingleStep(0.1)
 
         # Workspace
@@ -680,11 +689,12 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
 
 class GeneralGUISetGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         super(GeneralGUISetGroupUI, self).__init__(self)
 
         self.setTitle(str(_("GUI Settings")))
-
+        self.decimals = decimals
+        
         # Create a form layout for the Application general settings
         self.form_box = QtWidgets.QFormLayout()
 
@@ -1033,11 +1043,12 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
 
 
 class GeneralAppPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         super(GeneralAppPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("App Preferences")))
-
+        self.decimals = decimals
+        
         # Create a form layout for the Application general settings
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
@@ -1055,6 +1066,34 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.unitslabel, 0, 0)
         grid0.addWidget(self.units_radio, 0, 1)
 
+        # Precision Metric
+        self.precision_metric_label = QtWidgets.QLabel('%s:' % _('Precision MM'))
+        self.precision_metric_label.setToolTip(
+            _("The number of decimals used throughout the application\n"
+              "when the set units are in METRIC system.\n"
+              "Any change here require an application restart.")
+        )
+        self.precision_metric_entry = FCSpinner()
+        self.precision_metric_entry.set_range(2, 16)
+        self.precision_metric_entry.setWrapping(True)
+
+        grid0.addWidget(self.precision_metric_label, 1, 0)
+        grid0.addWidget(self.precision_metric_entry, 1, 1)
+        
+        # Precision Inch
+        self.precision_inch_label = QtWidgets.QLabel('%s:' % _('Precision INCH'))
+        self.precision_inch_label.setToolTip(
+            _("The number of decimals used throughout the application\n"
+              "when the set units are in INCH system.\n"
+              "Any change here require an application restart.")
+        )
+        self.precision_inch_entry = FCSpinner()
+        self.precision_inch_entry.set_range(2, 16)
+        self.precision_inch_entry.setWrapping(True)
+
+        grid0.addWidget(self.precision_inch_label, 2, 0)
+        grid0.addWidget(self.precision_inch_entry, 2, 1)
+        
         # Graphic Engine for FlatCAM
         self.ge_label = QtWidgets.QLabel('<b>%s:</b>' % _('Graphic Engine'))
         self.ge_label.setToolTip(_("Choose what graphic engine to use in FlatCAM.\n"
@@ -1066,9 +1105,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.ge_radio = RadioSet([{'label': _('Legacy(2D)'), 'value': '2D'},
                                   {'label': _('OpenGL(3D)'), 'value': '3D'}])
 
-        grid0.addWidget(self.ge_label, 1, 0)
-        grid0.addWidget(self.ge_radio, 1, 1)
-        grid0.addWidget(QtWidgets.QLabel(''), 2, 0)
+        grid0.addWidget(self.ge_label, 3, 0)
+        grid0.addWidget(self.ge_radio, 3, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 4, 0)
 
         # Application Level for FlatCAM
         self.app_level_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('APP. LEVEL'))
@@ -1080,8 +1119,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.app_level_radio = RadioSet([{'label': _('Basic'), 'value': 'b'},
                                          {'label': _('Advanced'), 'value': 'a'}])
 
-        grid0.addWidget(self.app_level_label, 3, 0)
-        grid0.addWidget(self.app_level_radio, 3, 1)
+        grid0.addWidget(self.app_level_label, 5, 0)
+        grid0.addWidget(self.app_level_radio, 5, 1)
 
         # Portability for FlatCAM
         self.portability_label = QtWidgets.QLabel('%s:' % _('Portable app'))
@@ -1091,16 +1130,16 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                             "in the application folder, in the lib\\config subfolder."))
         self.portability_cb = FCCheckBox()
 
-        grid0.addWidget(self.portability_label, 4, 0)
-        grid0.addWidget(self.portability_cb, 4, 1)
+        grid0.addWidget(self.portability_label, 6, 0)
+        grid0.addWidget(self.portability_cb, 6, 1)
 
         # Languages for FlatCAM
         self.languagelabel = QtWidgets.QLabel('<b>%s:</b>' % _('Languages'))
         self.languagelabel.setToolTip(_("Set the language used throughout FlatCAM."))
         self.language_cb = FCComboBox()
 
-        grid0.addWidget(self.languagelabel, 5, 0)
-        grid0.addWidget(self.language_cb, 5, 1)
+        grid0.addWidget(self.languagelabel, 7, 0)
+        grid0.addWidget(self.language_cb, 7, 1)
 
         self.language_apply_btn = FCButton(_("Apply Language"))
         self.language_apply_btn.setToolTip(_("Set the language used throughout FlatCAM.\n"
@@ -1111,8 +1150,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                              "security features. In this case the language will be\n"
                                              "applied at the next app start."))
 
-        grid0.addWidget(self.language_apply_btn, 6, 0, 1, 2)
-        grid0.addWidget(QtWidgets.QLabel(''), 7, 0)
+        grid0.addWidget(self.language_apply_btn, 8, 0, 1, 2)
+        grid0.addWidget(QtWidgets.QLabel(''), 9, 0)
 
         # Version Check CB
         self.version_check_label = QtWidgets.QLabel('%s:' % _('Version Check'))
@@ -1126,8 +1165,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "for a new version automatically at startup.")
         )
 
-        grid0.addWidget(self.version_check_label, 8, 0)
-        grid0.addWidget(self.version_check_cb, 8, 1)
+        grid0.addWidget(self.version_check_label, 10, 0)
+        grid0.addWidget(self.version_check_cb, 10, 1)
 
         # Send Stats CB
         self.send_stats_label = QtWidgets.QLabel('%s:' % _('Send Stats'))
@@ -1141,8 +1180,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "stats automatically at startup, to help improve FlatCAM.")
         )
 
-        grid0.addWidget(self.send_stats_label, 9, 0)
-        grid0.addWidget(self.send_stats_cb, 9, 1)
+        grid0.addWidget(self.send_stats_label, 11, 0)
+        grid0.addWidget(self.send_stats_cb, 11, 1)
 
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
 
@@ -1154,8 +1193,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.pan_button_radio = RadioSet([{'label': _('MMB'), 'value': '3'},
                                           {'label': _('RMB'), 'value': '2'}])
 
-        grid0.addWidget(self.panbuttonlabel, 10, 0)
-        grid0.addWidget(self.pan_button_radio, 10, 1)
+        grid0.addWidget(self.panbuttonlabel, 12, 0)
+        grid0.addWidget(self.pan_button_radio, 12, 1)
 
         # Multiple Selection Modifier Key
         self.mselectlabel = QtWidgets.QLabel('<b>%s:</b>' % _('Multiple Sel'))
@@ -1163,8 +1202,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
                                        {'label': _('SHIFT'), 'value': 'Shift'}])
 
-        grid0.addWidget(self.mselectlabel, 11, 0)
-        grid0.addWidget(self.mselect_radio, 11, 1)
+        grid0.addWidget(self.mselectlabel, 13, 0)
+        grid0.addWidget(self.mselect_radio, 13, 1)
 
         # Worker Numbers
         self.worker_number_label = QtWidgets.QLabel('%s:' % _('Workers number'))
@@ -1187,8 +1226,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         )
         self.worker_number_sb.set_range(2, 16)
 
-        grid0.addWidget(self.worker_number_label, 12, 0)
-        grid0.addWidget(self.worker_number_sb, 12, 1)
+        grid0.addWidget(self.worker_number_label, 14, 0)
+        grid0.addWidget(self.worker_number_sb, 14, 1)
 
         # Geometric tolerance
         tol_label = QtWidgets.QLabel('%s:' % _("Geo Tolerance"))
@@ -1212,9 +1251,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.tol_entry.setSingleStep(0.001)
         self.tol_entry.set_precision(6)
 
-        grid0.addWidget(tol_label, 13, 0)
-        grid0.addWidget(self.tol_entry, 13, 1)
-        grid0.addWidget(QtWidgets.QLabel(''), 14, 0)
+        grid0.addWidget(tol_label, 15, 0)
+        grid0.addWidget(self.tol_entry, 15, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 16, 0)
 
         # Open behavior
         self.open_style_cb = FCCheckBox('%s' % _('"Open" behavior'))
@@ -1225,7 +1264,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "path for saving files or the path for opening files.")
         )
 
-        grid0.addWidget(self.open_style_cb, 15, 0, 1, 2)
+        grid0.addWidget(self.open_style_cb, 17, 0, 1, 2)
 
         # Save compressed project CB
         self.save_type_cb = FCCheckBox(_('Save Compressed Project'))
@@ -1234,7 +1273,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "When checked it will save a compressed FlatCAM project.")
         )
 
-        grid0.addWidget(self.save_type_cb, 16, 0, 1, 2)
+        grid0.addWidget(self.save_type_cb, 18, 0, 1, 2)
 
         # Project LZMA Comppression Level
         self.compress_spinner = FCSpinner()
@@ -1246,8 +1285,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "but require more RAM usage and more processing time.")
         )
 
-        grid0.addWidget(self.compress_label, 17, 0)
-        grid0.addWidget(self.compress_spinner, 17, 1)
+        grid0.addWidget(self.compress_label, 19, 0)
+        grid0.addWidget(self.compress_spinner, 19, 1)
 
         self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_spinner], True)
 
@@ -1260,8 +1299,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "but the menu will hold only so much.")
         )
 
-        grid0.addWidget(self.bm_limit_label, 18, 0)
-        grid0.addWidget(self.bm_limit_spinner, 18, 1)
+        grid0.addWidget(self.bm_limit_label, 20, 0)
+        grid0.addWidget(self.bm_limit_spinner, 20, 1)
 
         # Machinist settings that allow unsafe settings
         self.machinist_cb = FCCheckBox(_("Allow Machinist Unsafe Settings"))
@@ -1273,7 +1312,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "<<WARNING>>: Don't change this unless you know what you are doing !!!")
         )
 
-        grid0.addWidget(self.machinist_cb, 19, 0, 1, 2)
+        grid0.addWidget(self.machinist_cb, 21, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -1283,12 +1322,13 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
 
 class GerberGenPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber General Preferences", parent=parent)
         super(GerberGenPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Gerber General")))
-
+        self.decimals = decimals
+        
         # ## Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
@@ -1383,10 +1423,10 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
 
 
 class GerberOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Options Preferences", parent=parent)
         super(GerberOptPrefGroupUI, self).__init__(self)
-        self.decimals = 4
+        self.decimals = decimals
 
         self.setTitle(str(_("Gerber Options")))
 
@@ -1434,7 +1474,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.iso_overlap_entry = FCDoubleSpinner(suffix='%')
         self.iso_overlap_entry.set_precision(self.decimals)
         self.iso_overlap_entry.setWrapping(True)
-        self.iso_overlap_entry.setRange(0.0000,99.9999)
+        self.iso_overlap_entry.setRange(0.0000, 99.9999)
         self.iso_overlap_entry.setSingleStep(0.1)
 
         grid0.addWidget(overlabel, 2, 0)
@@ -1540,12 +1580,12 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
 
 
 class GerberAdvOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
         super(GerberAdvOptPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Gerber Adv. Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Advanced Gerber Parameters
         self.adv_param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Advanced Options'))
@@ -1698,11 +1738,11 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
 
 class GerberExpPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         super(GerberExpPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Gerber Export")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # Plot options
         self.export_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export Options"))
@@ -1796,12 +1836,12 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
 
 
 class GerberEditorPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
         super(GerberEditorPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Gerber Editor")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # Advanced Gerber Parameters
         self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -1875,7 +1915,6 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
 
         self.grb_array_size_entry = FCSpinner()
         self.grb_array_size_entry.set_range(0, 9999)
-
 
         grid0.addWidget(self.grb_array_size_label, 4, 0)
         grid0.addWidget(self.grb_array_size_entry, 4, 1)
@@ -1974,7 +2013,6 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.grb_buff_entry.set_precision(self.decimals)
         self.grb_buff_entry.set_range(-9999, 9999)
 
-
         grid0.addWidget(self.grb_buff_label, 14, 0)
         grid0.addWidget(self.grb_buff_entry, 14, 1)
 
@@ -2025,12 +2063,13 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
 
 class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon Options", parent=parent)
         super(ExcellonGenPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Excellon General")))
-
+        self.decimals = decimals
+        
         # Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
@@ -2269,12 +2308,13 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
 class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon Options", parent=parent)
         super(ExcellonOptPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Excellon Options")))
-
+        self.decimals = decimals
+        
         # ## Create CNC Job
         self.cncjob_label = QtWidgets.QLabel('<b>%s</b>' % _('Create CNC Job'))
         self.cncjob_label.setToolTip(
@@ -2301,7 +2341,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             self.cutz_entry.set_range(-9999.9999, 9999.9999)
 
         self.cutz_entry.setSingleStep(0.1)
-        self.cutz_entry.set_precision(4)
+        self.cutz_entry.set_precision(self.decimals)
         grid2.addWidget(self.cutz_entry, 0, 1)
 
         # Travel Z
@@ -2312,7 +2352,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(travelzlabel, 1, 0)
         self.travelz_entry = FCDoubleSpinner()
-        self.travelz_entry.set_precision(4)
+        self.travelz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
             self.travelz_entry.set_range(0.0001, 9999.9999)
@@ -2338,7 +2378,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(toolchangezlabel, 3, 0)
         self.toolchangez_entry = FCDoubleSpinner()
-        self.toolchangez_entry.set_precision(4)
+        self.toolchangez_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
             self.toolchangez_entry.set_range(0.0001, 9999.9999)
@@ -2354,7 +2394,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "the last move at the end of the job.")
         )
         self.eendz_entry = FCDoubleSpinner()
-        self.eendz_entry.set_precision(4)
+        self.eendz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
             self.eendz_entry.set_range(0.0000, 9999.9999)
@@ -2373,7 +2413,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "This is for linear move G01.")
         )
         self.feedrate_entry = FCDoubleSpinner()
-        self.feedrate_entry.set_precision(4)
+        self.feedrate_entry.set_precision(self.decimals)
         self.feedrate_entry.set_range(0, 999)
 
         grid2.addWidget(frlabel, 5, 0)
@@ -2401,7 +2441,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         self.dwell_cb = FCCheckBox()
         self.dwelltime_entry = FCDoubleSpinner()
-        self.dwelltime_entry.set_precision(4)
+        self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.set_range(0, 99999.9999)
 
         grid2.addWidget(dwelllabel, 7, 0)
@@ -2452,7 +2492,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             _("Diameter of the cutting tool.")
         )
         self.tooldia_entry = FCDoubleSpinner()
-        self.tooldia_entry.set_precision(4)
+        self.tooldia_entry.set_precision(self.decimals)
         self.tooldia_entry.set_range(0, 999.9999)
 
         grid2.addWidget(tdlabel, 12, 0)
@@ -2464,7 +2504,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "when milling slots.")
         )
         self.slot_tooldia_entry = FCDoubleSpinner()
-        self.slot_tooldia_entry.set_precision(4)
+        self.slot_tooldia_entry.set_precision(self.decimals)
         self.slot_tooldia_entry.set_range(0, 999.9999)
 
         grid2.addWidget(stdlabel, 13, 0)
@@ -2484,12 +2524,13 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
 class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon Advanced Options", parent=parent)
         super(ExcellonAdvOptPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Excellon Adv. Options")))
-
+        self.decimals = decimals
+        
         # #######################
         # ## ADVANCED OPTIONS ###
         # #######################
@@ -2511,7 +2552,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
               "to create the desired exit hole diameter due of the tip shape.\n"
               "The value here can compensate the Cut Z parameter."))
         self.offset_entry = FCDoubleSpinner()
-        self.offset_entry.set_precision(4)
+        self.offset_entry.set_precision(self.decimals)
         self.offset_entry.set_range(-999.9999, 999.9999)
 
         grid1.addWidget(offsetlabel, 0, 0)
@@ -2544,7 +2585,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
               "ignore for any other cases.")
         )
         self.feedrate_rapid_entry = FCDoubleSpinner()
-        self.feedrate_rapid_entry.set_precision(4)
+        self.feedrate_rapid_entry.set_precision(self.decimals)
         self.feedrate_rapid_entry.set_range(0, 9999999.9999)
 
         grid1.addWidget(fr_rapid_label, 3, 0)
@@ -2557,7 +2598,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
               "to probe. Negative value, in current units.")
         )
         self.pdepth_entry = FCDoubleSpinner()
-        self.pdepth_entry.set_precision(4)
+        self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-99999, -0.000001)
 
         grid1.addWidget(self.pdepth_label, 4, 0)
@@ -2569,7 +2610,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
            _("The feedrate used while the probe is probing.")
         )
         self.feedrate_probe_entry = FCDoubleSpinner()
-        self.feedrate_probe_entry.set_precision(4)
+        self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0, 9999999.9999)
 
         grid1.addWidget(self.feedrate_probe_label, 5, 0)
@@ -2618,11 +2659,12 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
 
 class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         super(ExcellonExpPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Excellon Export")))
-
+        self.decimals = decimals
+        
         # Plot options
         self.export_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export Options"))
         self.export_options_label.setToolTip(
@@ -2766,10 +2808,11 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
 
 class ExcellonEditorPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         super(ExcellonEditorPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Excellon Editor")))
+        self.decimals = decimals
 
         # Excellon Editor Parameters
         self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -2804,7 +2847,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
 
         self.addtool_entry = FCDoubleSpinner()
         self.addtool_entry.set_range(0.000001, 99.9999)
-        self.addtool_entry.set_precision(4)
+        self.addtool_entry.set_precision(self.decimals)
 
         grid0.addWidget(self.addtool_entry_lbl, 1, 0)
         grid0.addWidget(self.addtool_entry, 1, 1)
@@ -2849,7 +2892,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # self.drill_pitch_label.setMinimumWidth(100)
         self.drill_pitch_entry = FCDoubleSpinner()
         self.drill_pitch_entry.set_range(0, 99999.9999)
-        self.drill_pitch_entry.set_precision(4)
+        self.drill_pitch_entry.set_precision(self.decimals)
 
         grid0.addWidget(self.drill_pitch_label, 5, 0)
         grid0.addWidget(self.drill_pitch_entry, 5, 1)
@@ -2861,7 +2904,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         )
         self.drill_angle_entry = FCDoubleSpinner()
         self.drill_pitch_entry.set_range(-360, 360)
-        self.drill_pitch_entry.set_precision(4)
+        self.drill_pitch_entry.set_precision(self.decimals)
         self.drill_angle_entry.setWrapping(True)
         self.drill_angle_entry.setSingleStep(5)
 
@@ -2891,7 +2934,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         )
         self.drill_circular_angle_entry = FCDoubleSpinner()
         self.drill_circular_angle_entry.set_range(-360, 360)
-        self.drill_circular_angle_entry.set_precision(4)
+        self.drill_circular_angle_entry.set_precision(self.decimals)
         self.drill_circular_angle_entry.setWrapping(True)
         self.drill_circular_angle_entry.setSingleStep(5)
 
@@ -2912,7 +2955,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
 
         self.slot_length_entry = FCDoubleSpinner()
         self.slot_length_entry.set_range(0, 99999)
-        self.slot_length_entry.set_precision(4)
+        self.slot_length_entry.set_precision(self.decimals)
         self.slot_length_entry.setWrapping(True)
         self.slot_length_entry.setSingleStep(1)
 
@@ -2946,7 +2989,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.slot_angle_label.setMinimumWidth(100)
 
         self.slot_angle_spinner = FCDoubleSpinner()
-        self.slot_angle_spinner.set_precision(4)
+        self.slot_angle_spinner.set_precision(self.decimals)
         self.slot_angle_spinner.setWrapping(True)
         self.slot_angle_spinner.setRange(-359.99, 360.00)
         self.slot_angle_spinner.setSingleStep(5)
@@ -2996,7 +3039,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         )
         # self.drill_pitch_label.setMinimumWidth(100)
         self.slot_array_pitch_entry = FCDoubleSpinner()
-        self.slot_array_pitch_entry.set_precision(4)
+        self.slot_array_pitch_entry.set_precision(self.decimals)
         self.slot_array_pitch_entry.setWrapping(True)
         self.slot_array_pitch_entry.setRange(0, 999999)
         self.slot_array_pitch_entry.setSingleStep(1)
@@ -3010,7 +3053,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
             _("Angle at which each element in circular array is placed.")
         )
         self.slot_array_angle_entry = FCDoubleSpinner()
-        self.slot_array_angle_entry.set_precision(4)
+        self.slot_array_angle_entry.set_precision(self.decimals)
         self.slot_array_angle_entry.setWrapping(True)
         self.slot_array_angle_entry.setRange(-360, 360)
         self.slot_array_angle_entry.setSingleStep(5)
@@ -3040,11 +3083,10 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
             _("Angle at which each element in circular array is placed.")
         )
         self.slot_array_circular_angle_entry = FCDoubleSpinner()
-        self.slot_array_circular_angle_entry.set_precision(4)
+        self.slot_array_circular_angle_entry.set_precision(self.decimals)
         self.slot_array_circular_angle_entry.setWrapping(True)
         self.slot_array_circular_angle_entry.setRange(-360, 360)
         self.slot_array_circular_angle_entry.setSingleStep(5)
-
 
         grid0.addWidget(self.slot_array_circular_angle_label, 21, 0)
         grid0.addWidget(self.slot_array_circular_angle_entry, 21, 1)
@@ -3053,11 +3095,12 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
 
 
 class GeometryGenPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Geometry General Preferences", parent=parent)
         super(GeometryGenPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Geometry General")))
+        self.decimals = decimals
 
         # ## Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
@@ -3105,11 +3148,12 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
 
 
 class GeometryOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Geometry Options Preferences", parent=parent)
         super(GeometryOptPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Geometry Options")))
+        self.decimals = decimals
 
         # ------------------------------
         # ## Create CNC Job
@@ -3138,7 +3182,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         else:
             self.cutz_entry.set_range(-9999.9999, 9999.9999)
 
-        self.cutz_entry.set_precision(4)
+        self.cutz_entry.set_precision(self.decimals)
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.setWrapping(True)
 
@@ -3169,7 +3213,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
 
         self.depthperpass_entry = FCDoubleSpinner()
         self.depthperpass_entry.set_range(0, 99999)
-        self.depthperpass_entry.set_precision(4)
+        self.depthperpass_entry.set_precision(self.decimals)
         self.depthperpass_entry.setSingleStep(0.1)
         self.depthperpass_entry.setWrapping(True)
 
@@ -3191,7 +3235,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         else:
             self.travelz_entry.set_range(-9999.9999, 9999.9999)
 
-        self.travelz_entry.set_precision(4)
+        self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
         self.travelz_entry.setWrapping(True)
 
@@ -3225,7 +3269,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         else:
             self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
 
-        self.toolchangez_entry.set_precision(4)
+        self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setSingleStep(0.1)
         self.toolchangez_entry.setWrapping(True)
 
@@ -3245,7 +3289,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         else:
             self.gendz_entry.set_range(-9999.9999, 9999.9999)
 
-        self.gendz_entry.set_precision(4)
+        self.gendz_entry.set_precision(self.decimals)
         self.gendz_entry.setSingleStep(0.1)
         self.gendz_entry.setWrapping(True)
 
@@ -3260,7 +3304,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         )
         self.cncfeedrate_entry = FCDoubleSpinner()
         self.cncfeedrate_entry.set_range(0, 99999)
-        self.cncfeedrate_entry.set_precision(4)
+        self.cncfeedrate_entry.set_precision(self.decimals)
         self.cncfeedrate_entry.setSingleStep(0.1)
         self.cncfeedrate_entry.setWrapping(True)
 
@@ -3276,7 +3320,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         )
         self.cncplunge_entry = FCDoubleSpinner()
         self.cncplunge_entry.set_range(0, 99999)
-        self.cncplunge_entry.set_precision(4)
+        self.cncplunge_entry.set_precision(self.decimals)
         self.cncplunge_entry.setSingleStep(0.1)
         self.cncplunge_entry.setWrapping(True)
 
@@ -3308,7 +3352,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         )
         self.dwelltime_entry = FCDoubleSpinner()
         self.dwelltime_entry.set_range(0, 99999)
-        self.dwelltime_entry.set_precision(4)
+        self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.setSingleStep(0.1)
         self.dwelltime_entry.setWrapping(True)
 
@@ -3333,11 +3377,12 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
 
 
 class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Geometry Advanced Options Preferences", parent=parent)
         super(GeometryAdvOptPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Geometry Adv. Options")))
+        self.decimals = decimals
 
         # ------------------------------
         # ## Advanced Options
@@ -3383,7 +3428,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.cncfeedrate_rapid_entry = FCDoubleSpinner()
         self.cncfeedrate_rapid_entry.set_range(0, 99999)
-        self.cncfeedrate_rapid_entry.set_precision(4)
+        self.cncfeedrate_rapid_entry.set_precision(self.decimals)
         self.cncfeedrate_rapid_entry.setSingleStep(0.1)
         self.cncfeedrate_rapid_entry.setWrapping(True)
 
@@ -3408,7 +3453,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.pdepth_entry = FCDoubleSpinner()
         self.pdepth_entry.set_range(-99999, -0.000001)
-        self.pdepth_entry.set_precision(4)
+        self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.setSingleStep(0.1)
         self.pdepth_entry.setWrapping(True)
 
@@ -3422,7 +3467,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.feedrate_probe_entry = FCDoubleSpinner()
         self.feedrate_probe_entry.set_range(0, 99999)
-        self.feedrate_probe_entry.set_precision(4)
+        self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setWrapping(True)
 
@@ -3464,7 +3509,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.segx_entry = FCDoubleSpinner()
         self.segx_entry.set_range(0, 99999)
-        self.segx_entry.set_precision(4)
+        self.segx_entry.set_precision(self.decimals)
         self.segx_entry.setSingleStep(0.1)
         self.segx_entry.setWrapping(True)
 
@@ -3480,7 +3525,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.segy_entry = FCDoubleSpinner()
         self.segy_entry.set_range(0, 99999)
-        self.segy_entry.set_precision(4)
+        self.segy_entry.set_precision(self.decimals)
         self.segy_entry.setSingleStep(0.1)
         self.segy_entry.setWrapping(True)
 
@@ -3491,11 +3536,12 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
 
 
 class GeometryEditorPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
         super(GeometryEditorPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Geometry Editor")))
+        self.decimals = decimals
 
         # Advanced Geometry Parameters
         self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -3538,11 +3584,12 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
 
 
 class CNCJobGenPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "CNC Job General Preferences", parent=None)
         super(CNCJobGenPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("CNC Job General")))
+        self.decimals = decimals
 
         # ## Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
@@ -3610,7 +3657,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         )
         self.tooldia_entry = FCDoubleSpinner()
         self.tooldia_entry.set_range(0, 99999)
-        self.tooldia_entry.set_precision(4)
+        self.tooldia_entry.set_precision(self.decimals)
         self.tooldia_entry.setSingleStep(0.1)
         self.tooldia_entry.setWrapping(True)
 
@@ -3678,11 +3725,12 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
 
 
 class CNCJobOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "CNC Job Options Preferences", parent=None)
         super(CNCJobOptPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("CNC Job Options")))
+        self.decimals = decimals
 
         # ## Export G-Code
         self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export G-Code"))
@@ -3738,9 +3786,10 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
 
 class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "CNC Job Advanced Options Preferences", parent=None)
         super(CNCJobAdvOptPrefGroupUI, self).__init__(self)
+        self.decimals = decimals
 
         self.setTitle(str(_("CNC Job Adv. Options")))
 
@@ -3890,12 +3939,12 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
 
 
 class ToolsNCCPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "NCC Tool Options", parent=parent)
         super(ToolsNCCPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("NCC Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Clear non-copper regions
         self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -4182,12 +4231,12 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
 
 
 class ToolsCutoutPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
         super(ToolsCutoutPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Cutout Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Board cutout
         self.board_cutout_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -4341,12 +4390,12 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
 
 
 class Tools2sidedPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "2sided Tool Options", parent=parent)
         super(Tools2sidedPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("2Sided Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Board cuttout
         self.dblsided_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -4403,12 +4452,12 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
 
 
 class ToolsPaintPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Paint Area Tool Options", parent=parent)
         super(ToolsPaintPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Paint Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ------------------------------
         # ## Paint area
@@ -4563,12 +4612,12 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
 
 
 class ToolsFilmPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
         super(ToolsFilmPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Film Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Parameters
         self.film_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -4860,12 +4909,12 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
 
 
 class ToolsPanelizePrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
         super(ToolsPanelizePrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Panelize Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Board cuttout
         self.panelize_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -4987,12 +5036,12 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
 
 
 class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Calculators Tool Options", parent=parent)
         super(ToolsCalculatorsPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Calculators Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## V-shape Calculator Tool
         self.vshape_tool_label = QtWidgets.QLabel("<b>%s:</b>" % _("V-Shape Tool Calculator"))
@@ -5111,12 +5160,12 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
 
 
 class ToolsTransformPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
 
         super(ToolsTransformPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Transform Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Transformations
         self.transform_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -5287,12 +5336,12 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
 
 class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
 
         super(ToolsSolderpastePrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("SolderPaste Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Solder Paste Dispensing
         self.solderpastelabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -5512,11 +5561,12 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
 
 
 class ToolsSubPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
 
         super(ToolsSubPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Substractor Tool Options")))
+        self.decimals = decimals
 
         # ## Subtractor Tool Parameters
         self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -5534,12 +5584,12 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
 
 
 class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
 
         super(Tools2RulesCheckPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Check Rules Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         self.crlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.crlabel.setToolTip(
@@ -5757,12 +5807,12 @@ class Tools2RulesCheckPrefGroupUI(OptionsGroupUI):
 
 
 class Tools2OptimalPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
 
         super(Tools2OptimalPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Optimal Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Parameters
         self.optlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -5794,12 +5844,12 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
 
 
 class Tools2QRCodePrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
 
         super(Tools2QRCodePrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("QRCode Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Parameters
         self.qrlabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
@@ -5982,12 +6032,12 @@ class Tools2QRCodePrefGroupUI(OptionsGroupUI):
 
 
 class Tools2CThievingPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
 
         super(Tools2CThievingPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Copper Thieving Tool Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -6070,7 +6120,6 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         )
         grid_lay.addWidget(self.bbox_type_label, 5, 0)
         grid_lay.addWidget(self.bbox_type_radio, 5, 1)
-
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -6238,12 +6287,12 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
 
 
 class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
 
         super(Tools2FiducialsPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Fiducials Tools Options")))
-        self.decimals = 4
+        self.decimals = decimals
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -6354,11 +6403,12 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
 
 
 class FAExcPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon File associations Preferences", parent=None)
         super().__init__(self)
 
         self.setTitle(str(_("Excellon File associations")))
+        self.decimals = decimals
 
         self.layout.setContentsMargins(2, 2, 2, 2)
 
@@ -6436,11 +6486,12 @@ class FAExcPrefGroupUI(OptionsGroupUI):
 
 
 class FAGcoPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gcode File associations Preferences", parent=None)
         super(FAGcoPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("GCode File associations")))
+        self.decimals = decimals
 
         self.restore_btn = FCButton(_("Restore"))
         self.restore_btn.setToolTip(_("Restore the extension list to the default state."))
@@ -6505,11 +6556,12 @@ class FAGcoPrefGroupUI(OptionsGroupUI):
 
 
 class FAGrbPrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber File associations Preferences", parent=None)
         super(FAGrbPrefGroupUI, self).__init__(self)
 
         self.setTitle(str(_("Gerber File associations")))
+        self.decimals = decimals
 
         self.restore_btn = FCButton(_("Restore"))
         self.restore_btn.setToolTip(_("Restore the extension list to the default state."))
@@ -6574,11 +6626,12 @@ class FAGrbPrefGroupUI(OptionsGroupUI):
 
 
 class AutoCompletePrefGroupUI(OptionsGroupUI):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=4, parent=None):
         # OptionsGroupUI.__init__(self, "Gerber File associations Preferences", parent=None)
         super().__init__(self, parent=parent)
 
         self.setTitle(str(_("Autocompleter Keywords")))
+        self.decimals = decimals
 
         self.restore_btn = FCButton(_("Restore"))
         self.restore_btn.setToolTip(_("Restore the autocompleter keywords list to the default state."))

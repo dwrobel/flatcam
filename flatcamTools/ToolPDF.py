@@ -44,6 +44,7 @@ class ToolPDF(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
         self.app = app
+        self.decimals = self.app.decimals
         self.step_per_circles = self.app.defaults["gerber_circle_steps"]
 
         self.stream_re = re.compile(b'.*?FlateDecode.*?stream(.*?)endstream', re.S)

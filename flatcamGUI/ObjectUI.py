@@ -35,10 +35,11 @@ class ObjectUI(QtWidgets.QWidget):
     put UI elements in ObjectUI.custom_box (QtWidgets.QLayout).
     """
 
-    def __init__(self, icon_file='share/flatcam_icon32.png', title=_('FlatCAM Object'), parent=None, common=True):
+    def __init__(self, icon_file='share/flatcam_icon32.png', title=_('FlatCAM Object'), parent=None, common=True, 
+                 decimals=4):
         QtWidgets.QWidget.__init__(self, parent=parent)
 
-        self.decimals = 4
+        self.decimals = decimals
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
@@ -153,9 +154,9 @@ class GerberObjectUI(ObjectUI):
     User interface for Gerber objects.
     """
 
-    def __init__(self, parent=None):
-        ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent)
-        self.decimals = 4
+    def __init__(self, decimals, parent=None):
+        ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, decimals=decimals)
+        self.decimals = decimals
 
         # Plot options
         grid0 = QtWidgets.QGridLayout()
@@ -669,12 +670,13 @@ class ExcellonObjectUI(ObjectUI):
     User interface for Excellon objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         ObjectUI.__init__(self, title=_('Excellon Object'),
                           icon_file='share/drill32.png',
-                          parent=parent)
+                          parent=parent,
+                          decimals=decimals)
 
-        self.decimals = 4
+        self.decimals = decimals
 
         # ### Plot options ####
         hlay_plot = QtWidgets.QHBoxLayout()
@@ -1072,10 +1074,10 @@ class GeometryObjectUI(ObjectUI):
     User interface for Geometry objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         super(GeometryObjectUI, self).__init__(title=_('Geometry Object'),
-                                               icon_file='share/geometry32.png', parent=parent)
-        self.decimals = 4
+                                               icon_file='share/geometry32.png', parent=parent, decimals=decimals)
+        self.decimals = decimals
 
         # Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
@@ -1623,14 +1625,15 @@ class CNCObjectUI(ObjectUI):
     User interface for CNCJob objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         """
         Creates the user interface for CNCJob objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
         """
-
-        ObjectUI.__init__(self, title=_('CNC Job Object'), icon_file='share/cnc32.png', parent=parent)
-        self.decimals = 4
+        
+        ObjectUI.__init__(self, title=_('CNC Job Object'), icon_file='share/cnc32.png', parent=parent, 
+                          decimals=decimals)
+        self.decimals = decimals
 
         for i in range(0, self.common_grid.count()):
             self.common_grid.itemAt(i).widget().hide()
@@ -1932,7 +1935,7 @@ class ScriptObjectUI(ObjectUI):
     User interface for Script  objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         """
         Creates the user interface for Script objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
@@ -1941,7 +1944,10 @@ class ScriptObjectUI(ObjectUI):
         ObjectUI.__init__(self, title=_('Script Object'),
                           icon_file='share/script_new24.png',
                           parent=parent,
-                          common=False)
+                          common=False,
+                          decimals=decimals)
+
+        self.decimals = decimals
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
@@ -1984,7 +1990,7 @@ class DocumentObjectUI(ObjectUI):
     User interface for Notes objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         """
         Creates the user interface for Notes objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
@@ -1993,7 +1999,10 @@ class DocumentObjectUI(ObjectUI):
         ObjectUI.__init__(self, title=_('Document Object'),
                           icon_file='share/notes16_1.png',
                           parent=parent,
-                          common=False)
+                          common=False,
+                          decimals=decimals)
+
+        self.decimals = decimals
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()

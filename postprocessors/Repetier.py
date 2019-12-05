@@ -45,7 +45,8 @@ class Repetier(FlatCAMPostProc):
         gcode += ';Z Toolchange: ' + str(p['z_toolchange']) + units + '\n'
 
         if coords_xy is not None:
-            gcode += ';X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + '\n'
+            gcode += ';X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
+                                                           p.decimals, coords_xy[1]) + units + '\n'
         else:
             gcode += ';X,Y Toolchange: ' + "None" + units + '\n'
 
@@ -95,10 +96,7 @@ class Repetier(FlatCAMPostProc):
         if int(p.tool) == 1 and p.startz is not None:
             z_toolchange = p.startz
 
-        if p.units.upper() == 'MM':
-            toolC_formatted = format(p.toolC, '.2f')
-        else:
-            toolC_formatted = format(p.toolC, '.4f')
+        toolC_formatted = '%.*f' % (p.decimals, p.toolC)
 
         if str(p['options']['type']) == 'Excellon':
             for i in p['options']['Tools_in_use']:

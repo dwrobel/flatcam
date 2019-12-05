@@ -45,7 +45,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.app = app
         self.canvas = self.app.plotcanvas
 
-        self.decimals = 4
+        self.decimals = self.app.decimals
         self.units = self.app.defaults['units']
 
         # ## Title

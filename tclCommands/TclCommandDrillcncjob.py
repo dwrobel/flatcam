@@ -89,6 +89,13 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
         name = args['name']
 
+        obj = self.app.collection.get_by_name(name)
+        if obj is None:
+            if muted == 0:
+                self.raise_tcl_error("Object not found: %s" % name)
+            else:
+                return "fail"
+
         if 'outname' not in args:
             args['outname'] = name + "_cnc"
 
@@ -96,13 +103,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             muted = args['muted']
         else:
             muted = 0
-
-        obj = self.app.collection.get_by_name(name)
-        if obj is None:
-            if muted == 0:
-                self.raise_tcl_error("Object not found: %s" % name)
-            else:
-                return "fail"
 
         if not isinstance(obj, FlatCAMExcellon):
             if muted == 0:
@@ -127,10 +127,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                     req_tools = set()
                     for tool in obj.tools:
                         for req_dia in diameters:
-                            obj_dia_form = float('%.2f' % float(obj.tools[tool]["C"])) if units == 'MM' else \
-                                float('%.4f' % float(obj.tools[tool]["C"]))
-                            req_dia_form = float('%.2f' % float(req_dia)) if units == 'MM' else \
-                                float('%.4f' % float(req_dia))
+                            obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["C"])))
+                            req_dia_form = float('%.*f' % (obj.decimals, float(req_dia)))
 
                             if 'diatol' in args:
                                 tolerance = args['diatol'] / 100

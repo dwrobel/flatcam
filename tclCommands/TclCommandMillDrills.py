@@ -70,14 +70,14 @@ class TclCommandMillDrills(TclCommandSignaled):
 
         name = args['name']
 
-        if 'outname' not in args:
-            args['outname'] = name + "_mill_drills"
-
         try:
             obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             obj = None
             self.raise_tcl_error("Could not retrieve object: %s" % name)
+
+        if 'outname' not in args:
+            args['outname'] = name + "_mill_drills"
 
         if not obj.drills:
             self.raise_tcl_error("The Excellon object has no drills: %s" % name)
@@ -92,10 +92,8 @@ class TclCommandMillDrills(TclCommandSignaled):
                 req_tools = set()
                 for tool in obj.tools:
                     for req_dia in diameters:
-                        obj_dia_form = float('%.2f' % float(obj.tools[tool]["C"])) if units == 'MM' else \
-                            float('%.4f' % float(obj.tools[tool]["C"]))
-                        req_dia_form = float('%.2f' % float(req_dia)) if units == 'MM' else \
-                            float('%.4f' % float(req_dia))
+                        obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["C"])))
+                        req_dia_form = float('%.*f' % (obj.decimals, float(req_dia)))
 
                         if 'diatol' in args:
                             tolerance = args['diatol'] / 100

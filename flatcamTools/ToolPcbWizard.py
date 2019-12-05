@@ -34,6 +34,7 @@ class PcbWizard(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         self.app = app
+        self.decimals = self.app.decimals
 
         # Title
         title_label = QtWidgets.QLabel("%s" % _('Import 2-file Excellon'))

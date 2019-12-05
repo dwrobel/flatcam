@@ -38,7 +38,7 @@ class ToolFiducials(FlatCAMTool):
         self.app = app
         self.canvas = self.app.plotcanvas
 
-        self.decimals = 4
+        self.decimals = self.app.decimals
         self.units = ''
 
         # ## Title

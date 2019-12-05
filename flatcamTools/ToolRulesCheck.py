@@ -35,9 +35,9 @@ class RulesCheck(FlatCAMTool):
     tool_finished = QtCore.pyqtSignal(list)
 
     def __init__(self, app):
-        super(RulesCheck, self).__init__(self)
-        self.app = app
-        self.decimals = 4
+        self.decimals = app.decimals
+
+        FlatCAMTool.__init__(self, app)
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)

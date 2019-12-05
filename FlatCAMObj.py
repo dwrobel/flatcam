@@ -83,6 +83,7 @@ class FlatCAMObj(QtCore.QObject):
         :param name: Name of the object given by the user.
         :return: FlatCAMObj
         """
+
         QtCore.QObject.__init__(self)
 
         # View
@@ -572,6 +573,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
 
     def __init__(self, name):
+        self.decimals = self.app.decimals
+
         Gerber.__init__(self, steps_per_circle=int(self.app.defaults["gerber_circle_steps"]))
         FlatCAMObj.__init__(self, name)
 
@@ -617,9 +620,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # list of rows with apertures plotted
         self.marked_rows = []
 
-        # Number of decimals to be used by tools in this class
-        self.decimals = 4
-
         # Mouse events
         self.mr = None
 
@@ -647,11 +647,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         FlatCAMApp.App.log.debug("FlatCAMGerber.set_ui()")
 
         self.units = self.app.defaults['units'].upper()
-
-        if self.units == 'MM':
-            self.decimals = 2
-        else:
-            self.decimals = 4
 
         self.replotApertures.connect(self.on_mark_cb_click_table)
 
@@ -2095,6 +2090,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     optionChanged = QtCore.pyqtSignal(str)
 
     def __init__(self, name):
+        self.decimals = self.app.decimals
+
         Excellon.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
         FlatCAMObj.__init__(self, name)
 
@@ -2145,9 +2142,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.source_file = ""
 
         self.multigeo = False
-
-        # Number fo decimals to be used for tools in this class
-        self.decimals = 4
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -2558,11 +2552,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         FlatCAMApp.App.log.debug("FlatCAMExcellon.set_ui()")
 
         self.units = self.app.defaults['units'].upper()
-
-        if self.units == 'MM':
-            self.decimals = 2
-        else:
-            self.decimals = 4
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
@@ -3430,6 +3419,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     ui_type = GeometryObjectUI
 
     def __init__(self, name):
+        self.decimals = self.app.decimals
         FlatCAMObj.__init__(self, name)
         Geometry.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
 
@@ -3506,9 +3496,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.old_pp_state = self.app.defaults["geometry_multidepth"]
         self.old_toolchangeg_state = self.app.defaults["geometry_toolchange"]
-
-        # Number of decimals to be used for tools in this class
-        self.decimals = 4
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -3667,11 +3654,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "Expected a GeometryObjectUI, got %s" % type(self.ui)
 
         self.units = self.app.defaults['units'].upper()
-
-        if self.units == 'MM':
-            self.decimals = 2
-        else:
-            self.decimals = 4
 
         # populate postprocessor names in the combobox
         for name in list(self.app.postprocessors.keys()):
@@ -5588,10 +5570,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if tooldia:
             tooldia *= factor
             # limit the decimals to 2 for METRIC and 3 for INCH
-            if units.lower() == 'in':
-                tooldia = float('%.4f' % tooldia)
-            else:
-                tooldia = float('%.2f' % tooldia)
+            tooldia = float('%.*f' % (self.decimals, tooldia))
 
             self.ui.addtool_entry.set_value(tooldia)
 
@@ -5810,7 +5789,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         FlatCAMApp.App.log.debug("Creating CNCJob object...")
 
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         CNCjob.__init__(self, units=units, kind=kind, z_move=z_move,
                         feedrate=feedrate, feedrate_rapid=feedrate_rapid, z_cut=z_cut, tooldia=tooldia,
@@ -6032,11 +6011,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             "Expected a CNCObjectUI, got %s" % type(self.ui)
 
         self.units = self.app.defaults['units'].upper()
-
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
 
         # this signal has to be connected to it's slot before the defaults are populated
         # the decision done in the slot has to override the default value set bellow
@@ -6709,6 +6683,8 @@ class FlatCAMScript(FlatCAMObj):
     ui_type = ScriptObjectUI
 
     def __init__(self, name):
+        self.decimals = self.app.decimals
+
         FlatCAMApp.App.log.debug("Creating a FlatCAMScript object...")
         FlatCAMObj.__init__(self, name)
 
@@ -6721,7 +6697,6 @@ class FlatCAMScript(FlatCAMObj):
         })
 
         self.units = ''
-        self.decimals = 4
 
         self.ser_attrs = ['options', 'kind', 'source_file']
         self.source_file = ''
@@ -6738,7 +6713,6 @@ class FlatCAMScript(FlatCAMObj):
             "Expected a ScriptObjectUI, got %s" % type(self.ui)
 
         self.units = self.app.defaults['units'].upper()
-        self.decimals = 4 if self.units == "IN" else 2
 
         # Fill form fields only on object create
         self.to_form()
@@ -6905,13 +6879,13 @@ class FlatCAMDocument(FlatCAMObj):
     ui_type = DocumentObjectUI
 
     def __init__(self, name):
+        self.decimals = self.app.decimals
+
         FlatCAMApp.App.log.debug("Creating a Document object...")
         FlatCAMObj.__init__(self, name)
 
         self.kind = "document"
-
         self.units = ''
-        self.decimals = 4
 
         self.ser_attrs = ['options', 'kind', 'source_file']
         self.source_file = ''
@@ -6933,11 +6907,6 @@ class FlatCAMDocument(FlatCAMObj):
             "Expected a DocumentObjectUI, got %s" % type(self.ui)
 
         self.units = self.app.defaults['units'].upper()
-
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
 
         # Fill form fields only on object create
         self.to_form()

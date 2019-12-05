@@ -36,7 +36,8 @@ class Paste_1(FlatCAMPostProc_Tools):
         gcode += '(Z_Travel: ' + str(p['z_travel']) + units + ')\n'
         gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
 
-        gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
+        gcode += '(X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
+                                                       p.decimals, coords_xy[1]) + units + ')\n'
 
         if 'Paste' in p.pp_solderpaste_name:
             gcode += '(Postprocessor SolderPaste Dispensing Geometry: ' + str(p.pp_solderpaste_name) + ')\n' + '\n'
@@ -74,11 +75,11 @@ class Paste_1(FlatCAMPostProc_Tools):
         if toolchangexy is not None:
             x_toolchange = toolchangexy[0]
             y_toolchange = toolchangexy[1]
-
-        if p.units.upper() == 'MM':
-            toolC_formatted = format(float(p['toolC']), '.2f')
         else:
-            toolC_formatted = format(float(p['toolC']), '.4f')
+            x_toolchange = 0.0
+            y_toolchange = 0.0
+
+        toolC_formatted = '%.*f' % (p.decimals, float(p['toolC']))
 
         if toolchangexy is not None:
             gcode = """

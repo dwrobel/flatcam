@@ -34,7 +34,7 @@ class Properties(FlatCAMTool):
 
         self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
 
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # this way I can hide/show the frame
         self.properties_frame = QtWidgets.QFrame()

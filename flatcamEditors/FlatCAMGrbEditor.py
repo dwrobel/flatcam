@@ -4959,7 +4959,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                         if float(upper_threshold_val) > area > float(lower_threshold_val):
                             current_pos = geo_el.geo['solid'].exterior.coords[-1]
-                            text_elem = '%.4f' % area
+                            text_elem = '%.*f' % (self.decimals, area)
                             text.append(text_elem)
                             position.append(current_pos)
                             self.geo_to_delete.append(geo_el)

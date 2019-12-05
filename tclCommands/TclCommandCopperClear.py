@@ -89,6 +89,17 @@ class TclCommandCopperClear(TclCommand):
 
         name = args['name']
 
+        # Get source object.
+        try:
+            obj = self.app.collection.get_by_name(str(name))
+        except Exception as e:
+            log.debug("TclCommandCopperClear.execute() --> %s" % str(e))
+            self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
+            return "Could not retrieve object: %s" % name
+
+        if obj is None:
+            return "Object not found: %s" % name
+
         if 'tooldia' in args:
             tooldia = str(args['tooldia'])
         else:
@@ -181,7 +192,7 @@ class TclCommandCopperClear(TclCommand):
             tooluid += 1
             ncc_tools.update({
                 int(tooluid): {
-                    'tooldia': float('%.4f' % tool),
+                    'tooldia': float('%.*f' % (obj.decimals, tool)),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
@@ -203,17 +214,6 @@ class TclCommandCopperClear(TclCommand):
                 outname = name + "_ncc"
             else:
                 outname = name + "_ncc_rm"
-
-        # Get source object.
-        try:
-            obj = self.app.collection.get_by_name(str(name))
-        except Exception as e:
-            log.debug("TclCommandCopperClear.execute() --> %s" % str(e))
-            self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
-            return "Could not retrieve object: %s" % name
-
-        if obj is None:
-            return "Object not found: %s" % name
 
         # Non-Copper clear all polygons in the non-copper clear object
         if 'all' in args and args['all'] == 1:

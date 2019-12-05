@@ -30,7 +30,7 @@ class ToolCalculator(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         self.app = app
-        self.decimals = 6
+        self.decimals = self.app.decimals
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)

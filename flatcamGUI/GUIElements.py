@@ -145,7 +145,7 @@ class RadioSet(QtWidgets.QWidget):
 
 
 class LengthEntry(QtWidgets.QLineEdit):
-    def __init__(self, output_units='IN', parent=None):
+    def __init__(self, output_units='IN', decimals=None, parent=None):
         super(LengthEntry, self).__init__(parent)
 
         self.output_units = output_units
@@ -160,6 +160,7 @@ class LengthEntry(QtWidgets.QLineEdit):
         }
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -203,8 +204,9 @@ class LengthEntry(QtWidgets.QLineEdit):
             log.warning("Could not parse value in entry: %s" % str(raw))
             return None
 
-    def set_value(self, val):
-        self.setText(str('%.4f' % val))
+    def set_value(self, val, decimals=None):
+        dec_digits = decimals if decimals is not None else self.decimals
+        self.setText(str('%.*f' % (dec_digits, val)))
 
     def sizeHint(self):
         default_hint_size = super(LengthEntry, self).sizeHint()
@@ -212,10 +214,11 @@ class LengthEntry(QtWidgets.QLineEdit):
 
 
 class FloatEntry(QtWidgets.QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=None, parent=None):
         super(FloatEntry, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -251,9 +254,10 @@ class FloatEntry(QtWidgets.QLineEdit):
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
-    def set_value(self, val):
+    def set_value(self, val, decimals=None):
+        dig_digits = decimals if decimals is not None else self.decimals
         if val is not None:
-            self.setText("%.4f" % float(val))
+            self.setText("%.*f" % (dig_digits, float(val)))
         else:
             self.setText("")
 
@@ -263,10 +267,11 @@ class FloatEntry(QtWidgets.QLineEdit):
 
 
 class FloatEntry2(QtWidgets.QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=None, parent=None):
         super(FloatEntry2, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -295,8 +300,9 @@ class FloatEntry2(QtWidgets.QLineEdit):
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
-    def set_value(self, val):
-        self.setText("%.4f" % val)
+    def set_value(self, val, decimals=None):
+        dig_digits = decimals if decimals is not None else self.decimals
+        self.setText("%.*f" % (dig_digits, val))
 
     def sizeHint(self):
         default_hint_size = super(FloatEntry2, self).sizeHint()

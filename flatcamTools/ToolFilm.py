@@ -44,7 +44,7 @@ class Film(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)

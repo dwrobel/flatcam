@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - Copper Thieving Tool - added units label for the pattern plated area
 - Properties Tool - added a new parameter, the copper area which show the area of the copper features for the Gerber objects
 - Copper Thieving Tool - added a default value for the mask clearance when generating pattern plating mask
+- application wide change: introduced the precision parameters in Edit -> Preferences who will control how many decimals to use in the app parameters
 
 4.12.2019 
 

@@ -26,6 +26,9 @@ class ToolImage(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
+        self.app = app
+        self.decimals = self.app.decimals
+
         # Title
         title_label = QtWidgets.QLabel("%s" % _('Image to PCB'))
         title_label.setStyleSheet("""

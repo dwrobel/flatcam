@@ -396,6 +396,8 @@ class App(QtCore.QObject):
         self.defaults = LoudDict()
         self.defaults.update({
             # Global APP Preferences
+            "decimals_inch": 4,
+            "decimals_metric": 4,
             "version": self.version,
             "first_run": True,
             "units": "MM",
@@ -937,6 +939,11 @@ class App(QtCore.QObject):
         if user_defaults:
             self.load_defaults(filename='current_defaults')
 
+        if self.defaults['units'] == 'MM':
+            self.decimals = int(self.defaults['decimals_metric'])
+        else:
+            self.decimals = int(self.defaults['decimals_inch'])
+
         # #############################################################################
         # ##################### CREATE MULTIPROCESSING POOL ###########################
         # #############################################################################
@@ -987,7 +994,7 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
 
-        self.ui = FlatCAMGUI(self.version, self.beta, self)
+        self.ui = FlatCAMGUI(self)
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -1020,6 +1027,8 @@ class App(QtCore.QObject):
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
             # General App
+            "decimals_inch": self.ui.general_defaults_form.general_app_group.precision_inch_entry,
+            "decimals_metric": self.ui.general_defaults_form.general_app_group.precision_metric_entry,
             "units": self.ui.general_defaults_form.general_app_group.units_radio,
             "global_graphic_engine": self.ui.general_defaults_form.general_app_group.ge_radio,
             "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
@@ -3354,7 +3363,7 @@ class App(QtCore.QObject):
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry or Excellon Object to update."))
                         return
-                    edited_obj.set_ui(edited_obj.ui_type())
+                    edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
                     self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
                 elif response == bt_cancel:
                     return
@@ -5670,13 +5679,15 @@ class App(QtCore.QObject):
                     coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
-                    self.defaults['excellon_toolchangexy'] = "%.4f, %.4f" % (coords_xy[0], coords_xy[1])
+                    self.defaults['excellon_toolchangexy'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
+                                                                             self.decimals, coords_xy[1])
                 elif dim == 'geometry_toolchangexy':
                     coordinates = self.defaults["geometry_toolchangexy"].split(",")
                     coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
-                    self.defaults['geometry_toolchangexy'] = "%.4f, %.4f" % (coords_xy[0], coords_xy[1])
+                    self.defaults['geometry_toolchangexy'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
+                                                                             self.decimals, coords_xy[1])
                 elif dim == 'geometry_cnctooldia':
                     tools_diameters = []
                     try:
@@ -5688,7 +5699,7 @@ class App(QtCore.QObject):
                     self.defaults['geometry_cnctooldia'] = ''
                     for t in range(len(tools_diameters)):
                         tools_diameters[t] *= sfactor
-                        self.defaults['geometry_cnctooldia'] += "%.4f," % tools_diameters[t]
+                        self.defaults['geometry_cnctooldia'] += "%.*f," % (self.decimals, tools_diameters[t])
                 elif dim == 'tools_ncctools':
                     ncctools = []
                     try:
@@ -5700,7 +5711,7 @@ class App(QtCore.QObject):
                     self.defaults['tools_ncctools'] = ''
                     for t in range(len(ncctools)):
                         ncctools[t] *= sfactor
-                        self.defaults['tools_ncctools'] += "%.4f," % ncctools[t]
+                        self.defaults['tools_ncctools'] += "%.*f," % (self.decimals, ncctools[t])
                 elif dim == 'tools_solderpaste_tools':
                     sptools = []
                     try:
@@ -5712,13 +5723,14 @@ class App(QtCore.QObject):
                     self.defaults['tools_solderpaste_tools'] = ""
                     for t in range(len(sptools)):
                         sptools[t] *= sfactor
-                        self.defaults['tools_solderpaste_tools'] += "%.4f," % sptools[t]
+                        self.defaults['tools_solderpaste_tools'] += "%.*f," % (self.decimals, sptools[t])
                 elif dim == 'tools_solderpaste_xy_toolchange':
                     coordinates = self.defaults["tools_solderpaste_xy_toolchange"].split(",")
                     sp_coords = [float(eval(a)) for a in coordinates if a != '']
                     sp_coords[0] *= sfactor
                     sp_coords[1] *= sfactor
-                    self.defaults['tools_solderpaste_xy_toolchange'] = "%.4f, %.4f" % (sp_coords[0], sp_coords[1])
+                    self.defaults['tools_solderpaste_xy_toolchange'] = "%.*f, %.*f" % (self.decimals, sp_coords[0],
+                                                                                       self.decimals, sp_coords[1])
                 elif dim == 'global_gridx' or dim == 'global_gridy':
                     if new_units == 'IN':
                         val = 0.1
@@ -5727,7 +5739,7 @@ class App(QtCore.QObject):
                         except Exception as e:
                             log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
 
-                        self.defaults[dim] = float('%.6f' % val)
+                        self.defaults[dim] = float('%.*f' % (self.decimals, val))
                     else:
                         val = 0.1
                         try:
@@ -5735,7 +5747,7 @@ class App(QtCore.QObject):
                         except Exception as e:
                             log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
 
-                        self.defaults[dim] = float('%.4f' % val)
+                        self.defaults[dim] = float('%.*f' % (self.decimals, val))
                 else:
                     val = 0.1
                     if self.defaults[dim]:

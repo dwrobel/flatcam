@@ -30,6 +30,8 @@ class ToolMove(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
+        self.app = app
+        self.decimals = self.app.decimals
 
         self.layout.setContentsMargins(0, 0, 3, 0)
         self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Maximum)

@@ -33,6 +33,8 @@ class Distance(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         self.app = app
+        self.decimals = self.app.decimals
+
         self.canvas = self.app.plotcanvas
         self.units = self.app.defaults['units'].lower()
 
@@ -134,8 +136,6 @@ class Distance(FlatCAMTool):
         # store here the event connection ID's
         self.mm = None
         self.mr = None
-
-        self.decimals = 4
 
         # VisPy visuals
         if self.app.is_legacy is False:

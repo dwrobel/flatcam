@@ -32,10 +32,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
     geom_update = QtCore.pyqtSignal(int, int, int, int, int, name='geomUpdate')
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
 
-    def __init__(self, version, beta, app):
+    def __init__(self, app):
         super(FlatCAMGUI, self).__init__()
 
         self.app = app
+        self.decimals = self.app.decimals
+
         # Divine icon pack by Ipapun @ finicons.com
 
         # ################################## ##
@@ -2002,8 +2004,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.setGeometry(100, 100, 1024, 650)
         self.setWindowTitle('FlatCAM %s %s - %s' %
-                            (version,
-                             ('BETA' if beta else ''),
+                            (self.app.version,
+                             ('BETA' if self.app.beta else ''),
                              platform.architecture()[0])
                             )
 
@@ -2024,14 +2026,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_editor_cmenu.menuAction().setVisible(False)
         self.e_editor_cmenu.menuAction().setVisible(False)
 
-        self.general_defaults_form = GeneralPreferencesUI()
-        self.gerber_defaults_form = GerberPreferencesUI()
-        self.excellon_defaults_form = ExcellonPreferencesUI()
-        self.geometry_defaults_form = GeometryPreferencesUI()
-        self.cncjob_defaults_form = CNCJobPreferencesUI()
-        self.tools_defaults_form = ToolsPreferencesUI()
-        self.tools2_defaults_form = Tools2PreferencesUI()
-        self.util_defaults_form = UtilPreferencesUI()
+        self.general_defaults_form = GeneralPreferencesUI(decimals=self.decimals)
+        self.gerber_defaults_form = GerberPreferencesUI(decimals=self.decimals)
+        self.excellon_defaults_form = ExcellonPreferencesUI(decimals=self.decimals)
+        self.geometry_defaults_form = GeometryPreferencesUI(decimals=self.decimals)
+        self.cncjob_defaults_form = CNCJobPreferencesUI(decimals=self.decimals)
+        self.tools_defaults_form = ToolsPreferencesUI(decimals=self.decimals)
+        self.tools2_defaults_form = Tools2PreferencesUI(decimals=self.decimals)
+        self.util_defaults_form = UtilPreferencesUI(decimals=self.decimals)
 
         QtWidgets.qApp.installEventFilter(self)
 
@@ -3471,16 +3473,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     val, ok = tool_add_popup.get_value()
                     if ok:
                         self.app.exc_editor.on_tool_add(tooldia=val)
-                        formated_val = '%.4f' % float(val)
-                        self.app.inform.emit('[success] %s: %s %s' %
-                                             (_("Added new tool with dia"),
-                                              formated_val,
-                                              str(self.units)
-                                              )
-                                             )
-                    else:
+                        formated_val = '%.*f' % (self.decimals, float(val))
                         self.app.inform.emit(
-                            '[WARNING_NOTCL] %s' % _("Adding Tool cancelled ..."))
+                            '[success] %s: %s %s' % (_("Added new tool with dia"), formated_val, str(self.units))
+                        )
+                    else:
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding Tool cancelled ..."))
                     return
 
                 # Zoom Fit

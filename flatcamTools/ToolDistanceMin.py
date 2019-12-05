@@ -36,6 +36,7 @@ class DistanceMin(FlatCAMTool):
         self.app = app
         self.canvas = self.app.plotcanvas
         self.units = self.app.defaults['units'].lower()
+        self.decimals = self.app.decimals
 
         # ## Title
         title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
@@ -137,7 +138,6 @@ class DistanceMin(FlatCAMTool):
 
         self.layout.addStretch()
 
-        self.decimals = 4
         self.h_point = (0, 0)
 
         self.measure_btn.clicked.connect(self.activate_measure_tool)

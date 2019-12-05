@@ -89,6 +89,14 @@ class TclCommandPaint(TclCommand):
 
         name = args['name']
 
+        # Get source object.
+        try:
+            obj = self.app.collection.get_by_name(str(name))
+        except Exception as e:
+            log.debug("TclCommandPaint.execute() --> %s" % str(e))
+            self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
+            return "Could not retrieve object: %s" % name
+
         if 'tooldia' in args:
             tooldia = str(args['tooldia'])
         else:
@@ -128,14 +136,6 @@ class TclCommandPaint(TclCommand):
             outname = args['outname']
         else:
             outname = name + "_paint"
-
-        # Get source object.
-        try:
-            obj = self.app.collection.get_by_name(str(name))
-        except Exception as e:
-            log.debug("TclCommandPaint.execute() --> %s" % str(e))
-            self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
-            return "Could not retrieve object: %s" % name
 
         try:
             tools = [float(eval(dia)) for dia in tooldia.split(",") if dia != '']
@@ -181,7 +181,7 @@ class TclCommandPaint(TclCommand):
             tooluid += 1
             paint_tools.update({
                 int(tooluid): {
-                    'tooldia': float('%.4f' % tool),
+                    'tooldia': float('%.*f' % (obj.decimals, tool)),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
