@@ -2576,7 +2576,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.feedrate_probe_entry, 5, 1)
 
         # Spindle direction
-        spindle_dir_label = QtWidgets.QLabel('%s:' % _('Spindle dir.'))
+        spindle_dir_label = QtWidgets.QLabel('%s:' % _('Spindle direction'))
         spindle_dir_label.setToolTip(
             _("This sets the direction that the spindle is rotating.\n"
               "It can be either:\n"
@@ -3430,7 +3430,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.feedrate_probe_entry, 7, 1)
 
         # Spindle direction
-        spindle_dir_label = QtWidgets.QLabel('%s:' % _('Spindle dir.'))
+        spindle_dir_label = QtWidgets.QLabel('%s:' % _('Spindle direction'))
         spindle_dir_label.setToolTip(
             _("This sets the direction that the spindle is rotating.\n"
               "It can be either:\n"
