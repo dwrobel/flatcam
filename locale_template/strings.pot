@@ -1646,7 +1646,7 @@ msgstr ""
 
 #: FlatCAMCommon.py:531 flatcamGUI/ObjectUI.py:939 flatcamGUI/PreferencesUI.py:2411
 #: flatcamGUI/PreferencesUI.py:3318
-msgid "Postprocessor"
+msgid "Preprocessor"
 msgstr ""
 
 #: FlatCAMCommon.py:532
@@ -1803,7 +1803,7 @@ msgstr ""
 
 #: FlatCAMCommon.py:613
 msgid ""
-"Postprocessor.\n"
+"Preprocessor.\n"
 "A selection of files that will alter the generated G-code\n"
 "to fit for a number of use cases."
 msgstr ""
@@ -1822,7 +1822,7 @@ msgid ""
 "Toolchange.\n"
 "It will create a toolchange event.\n"
 "The kind of toolchange is determined by\n"
-"the postprocessor file."
+"the preprocessor file."
 msgstr ""
 
 #: FlatCAMCommon.py:628
@@ -2325,11 +2325,11 @@ msgid "Saved to"
 msgstr ""
 
 #: FlatCAMObj.py:6506 FlatCAMObj.py:6516
-msgid "The used postprocessor file has to have in it's name: 'toolchange_custom'"
+msgid "The used preprocessor file has to have in it's name: 'toolchange_custom'"
 msgstr ""
 
 #: FlatCAMObj.py:6520
-msgid "There is no postprocessor file."
+msgid "There is no preprocessor file."
 msgstr ""
 
 #: FlatCAMObj.py:6764
@@ -6764,7 +6764,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:941 flatcamGUI/PreferencesUI.py:2413
 msgid ""
-"The postprocessor JSON file that dictates\n"
+"The preprocessor JSON file that dictates\n"
 "Gcode output."
 msgstr ""
 
@@ -7069,7 +7069,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:1510 flatcamGUI/PreferencesUI.py:3286
 msgid ""
 "Speed of the spindle in RPM (optional).\n"
-"If LASER postprocessor is used,\n"
+"If LASER preprocessor is used,\n"
 "this value is the power of laser."
 msgstr ""
 
@@ -7080,7 +7080,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1544 flatcamGUI/PreferencesUI.py:3320
 msgid ""
-"The Postprocessor file that dictates\n"
+"The Preprocessor file that dictates\n"
 "the Machine Code (like GCode, RML, HPGL) output."
 msgstr ""
 
@@ -7250,7 +7250,7 @@ msgid ""
 "or a Toolchange Macro.\n"
 "The FlatCAM variables are surrounded by '%' symbol.\n"
 "\n"
-"WARNING: it can be used only with a postprocessor file\n"
+"WARNING: it can be used only with a preprocessor file\n"
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 msgstr ""
@@ -7260,7 +7260,7 @@ msgid ""
 "Type here any G-Code commands you would like to be executed when Toolchange event is "
 "encountered. This will constitute a Custom Toolchange GCode, or a Toolchange Macro. The "
 "FlatCAM variables are surrounded by '%' symbol. \n"
-"WARNING: it can be used only with a postprocessor file that has 'toolchange_custom' in "
+"WARNING: it can be used only with a preprocessor file that has 'toolchange_custom' in "
 "it's name."
 msgstr ""
 

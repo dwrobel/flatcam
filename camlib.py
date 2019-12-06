@@ -2187,10 +2187,10 @@ class CNCjob(Geometry):
         self.gcode_parsed = None
 
         self.pp_geometry_name = pp_geometry_name
-        self.pp_geometry = self.app.postprocessors[self.pp_geometry_name]
+        self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
 
         self.pp_excellon_name = pp_excellon_name
-        self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
+        self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
 
         self.pp_solderpaste_name = None
 
@@ -2275,7 +2275,7 @@ class CNCjob(Geometry):
             returnvalue = fun(attributes)
             return returnvalue
         except Exception:
-            self.app.log.error('Exception occurred within a postprocessor: ' + traceback.format_exc())
+            self.app.log.error('Exception occurred within a preprocessor: ' + traceback.format_exc())
             return ''
 
     def parse_custom_toolchange_code(self, data):
@@ -2394,7 +2394,7 @@ class CNCjob(Geometry):
         self.startz = startz
         self.z_end = endz
 
-        self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
+        self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
         p = self.pp_excellon
 
         log.debug("Creating CNC Job from Excellon...")
@@ -2449,7 +2449,7 @@ class CNCjob(Geometry):
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
         # Points (Group by tool)
-        points = {}
+        points = dict()
         for drill in exobj.drills:
             if self.app.abort_flag:
                 # graceful abort requested by the user
@@ -2463,7 +2463,7 @@ class CNCjob(Geometry):
 
         # log.debug("Found %d drills." % len(points))
 
-        self.gcode = []
+        self.gcode = list()
 
         self.f_plunge = self.app.defaults["excellon_f_plunge"]
         self.f_retract = self.app.defaults["excellon_f_retract"]
@@ -2946,7 +2946,7 @@ class CNCjob(Geometry):
         # I use the value of self.feedrate_rapid for the feadrate in case of the measure_lift_distance and for
         # traveled_time because it is not always possible to determine the feedrate that the CNC machine uses
         # for G0 move (the fastest speed available to the CNC router). Although self.feedrate_rapids is used only with
-        # Marlin postprocessor and derivatives.
+        # Marlin preprocessor and derivatives.
         self.routing_time = (measured_down_distance + measured_up_to_zero_distance) / self.feedrate
         lift_time = measured_lift_distance / self.feedrate_rapid
         traveled_time = measured_distance / self.feedrate_rapid
@@ -3038,7 +3038,7 @@ class CNCjob(Geometry):
 
         self.z_toolchange = float(toolchangez) if toolchangez is not None else None
 
-        # it servers in the postprocessor file
+        # it servers in the preprocessor file
         self.tool = tool_no
 
         try:
@@ -3127,15 +3127,15 @@ class CNCjob(Geometry):
         if not append:
             self.gcode = ""
 
-        # tell postprocessor the number of tool (for toolchange)
+        # tell preprocessor the number of tool (for toolchange)
         self.tool = tool_no
 
-        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
+        # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
         self.postdata['toolC'] = self.tooldia
 
         # Initial G-Code
-        self.pp_geometry = self.app.postprocessors[self.pp_geometry_name]
+        self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
         p = self.pp_geometry
 
         self.gcode = self.doformat(p.start_code)
@@ -3471,15 +3471,15 @@ class CNCjob(Geometry):
         if not append:
             self.gcode = ""
 
-        # tell postprocessor the number of tool (for toolchange)
+        # tell preprocessor the number of tool (for toolchange)
         self.tool = tool_no
 
-        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
+        # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
         self.postdata['toolC'] = self.tooldia
 
         # Initial G-Code
-        self.pp_geometry = self.app.postprocessors[self.pp_geometry_name]
+        self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
         p = self.pp_geometry
 
         self.oldx = 0.0
@@ -3632,7 +3632,7 @@ class CNCjob(Geometry):
                                  _("There is no tool data in the SolderPaste geometry."))
 
 
-        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
+        # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
 
         self.postdata['z_start'] = kwargs['data']['tools_solderpaste_z_start']
@@ -3654,7 +3654,7 @@ class CNCjob(Geometry):
 
         self.pp_solderpaste_name = kwargs['data']['tools_solderpaste_pp'] if kwargs['data']['tools_solderpaste_pp'] \
             else self.app.defaults['tools_solderpaste_pp']
-        p = self.app.postprocessors[self.pp_solderpaste_name]
+        p = self.app.preprocessors[self.pp_solderpaste_name]
 
         # ## Flatten the geometry. Only linear elements (no polygons) remain.
         flat_geometry = self.flatten(kwargs['solid_geometry'], pathonly=True)
@@ -3960,12 +3960,12 @@ class CNCjob(Geometry):
         # lifted or lowered.
         if self.toolchange_xy_type == "excellon":
             if self.app.defaults["excellon_toolchangexy"] == '':
-                pos_xy = [0, 0]
+                pos_xy = (0, 0)
             else:
                 pos_xy = [float(eval(a)) for a in self.app.defaults["excellon_toolchangexy"].split(",")]
         else:
             if self.app.defaults["geometry_toolchangexy"] == '':
-                pos_xy = [0, 0]
+                pos_xy = (0, 0)
             else:
                 pos_xy = [float(eval(a)) for a in self.app.defaults["geometry_toolchangexy"].split(",")]
 

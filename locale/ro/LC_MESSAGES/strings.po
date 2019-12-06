@@ -1817,7 +1817,7 @@ msgstr "Pauza"
 
 #: FlatCAMCommon.py:531 flatcamGUI/ObjectUI.py:915
 #: flatcamGUI/PreferencesUI.py:2294 flatcamGUI/PreferencesUI.py:3201
-msgid "Postprocessor"
+msgid "Preprocessor"
 msgstr "Postprocesor"
 
 #: FlatCAMCommon.py:532
@@ -1992,7 +1992,7 @@ msgstr "dwelltime = durata de asteptare ca motorul să ajunga la turatia setată
 
 #: FlatCAMCommon.py:613
 msgid ""
-"Postprocessor.\n"
+"Preprocessor.\n"
 "A selection of files that will alter the generated G-code\n"
 "to fit for a number of use cases."
 msgstr ""
@@ -2011,7 +2011,7 @@ msgid ""
 "Toolchange.\n"
 "It will create a toolchange event.\n"
 "The kind of toolchange is determined by\n"
-"the postprocessor file."
+"the preprocessor file."
 msgstr ""
 
 #: FlatCAMCommon.py:628
@@ -2544,12 +2544,12 @@ msgstr "Salvat in"
 
 #: FlatCAMObj.py:6388 FlatCAMObj.py:6398
 msgid ""
-"The used postprocessor file has to have in it's name: 'toolchange_custom'"
+"The used preprocessor file has to have in it's name: 'toolchange_custom'"
 msgstr ""
 "Postprocesorul folosit trebuie să aibă in numele sau: 'toolchange_custom'"
 
 #: FlatCAMObj.py:6402
-msgid "There is no postprocessor file."
+msgid "There is no preprocessor file."
 msgstr "Nu exista nici-un fişier postprocesor."
 
 #: FlatCAMObj.py:6679
@@ -7642,7 +7642,7 @@ msgstr "Timpul (ori secunde ori milisec) cat se stă in pauză."
 
 #: flatcamGUI/ObjectUI.py:917 flatcamGUI/PreferencesUI.py:2296
 msgid ""
-"The postprocessor JSON file that dictates\n"
+"The preprocessor JSON file that dictates\n"
 "Gcode output."
 msgstr ""
 "Fișierul JSON postprocesor care dictează\n"
@@ -8076,7 +8076,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:1486 flatcamGUI/PreferencesUI.py:3169
 msgid ""
 "Speed of the spindle in RPM (optional).\n"
-"If LASER postprocessor is used,\n"
+"If LASER preprocessor is used,\n"
 "this value is the power of laser."
 msgstr ""
 "Viteza motorului in RPM (optional).\n"
@@ -8090,7 +8090,7 @@ msgstr "Postprocesor"
 
 #: flatcamGUI/ObjectUI.py:1520 flatcamGUI/PreferencesUI.py:3203
 msgid ""
-"The Postprocessor file that dictates\n"
+"The Preprocessor file that dictates\n"
 "the Machine Code (like GCode, RML, HPGL) output."
 msgstr ""
 "Fişierul postprocesor care controlează generarea\n"
@@ -8312,7 +8312,7 @@ msgid ""
 "or a Toolchange Macro.\n"
 "The FlatCAM variables are surrounded by '%' symbol.\n"
 "\n"
-"WARNING: it can be used only with a postprocessor file\n"
+"WARNING: it can be used only with a preprocessor file\n"
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 msgstr ""
@@ -8335,14 +8335,14 @@ msgstr ""
 #| "or a Toolchange Macro.\n"
 #| "The FlatCAM variables are surrounded by '%' symbol.\n"
 #| "\n"
-#| "WARNING: it can be used only with a postprocessor file\n"
+#| "WARNING: it can be used only with a preprocessor file\n"
 #| "that has 'toolchange_custom' in it's name and this is built\n"
 #| "having as template the 'Toolchange Custom' posprocessor file."
 msgid ""
 "Type here any G-Code commands you would like to be executed when Toolchange "
 "event is encountered. This will constitute a Custom Toolchange GCode, or a "
 "Toolchange Macro. The FlatCAM variables are surrounded by '%' symbol. \n"
-"WARNING: it can be used only with a postprocessor file that has "
+"WARNING: it can be used only with a preprocessor file that has "
 "'toolchange_custom' in it's name."
 msgstr ""
 "Plasează aici acele comenzi G-Code care se dorește să fie executate\n"
@@ -18034,7 +18034,7 @@ msgstr ""
 #~ "pentru a ajunge la adâncimea de tăiere."
 
 #~ msgid ""
-#~ "The postprocessor file that dictates\n"
+#~ "The preprocessor file that dictates\n"
 #~ "Machine Code output."
 #~ msgstr ""
 #~ "Un fişier care prelucrează codul G-Code astfel încât să\n"

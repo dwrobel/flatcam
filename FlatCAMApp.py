@@ -50,7 +50,7 @@ from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
 
 from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB
-from FlatCAMPostProc import load_postprocessors
+from FlatCAMPostProc import load_preprocessors
 
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
 from flatcamEditors.FlatCAMExcEditor import FlatCAMExcEditor
@@ -318,13 +318,13 @@ class App(QtCore.QObject):
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
             App.log.debug('Created data folder: ' + self.data_path)
-            os.makedirs(os.path.join(self.data_path, 'postprocessors'))
-            App.log.debug('Created data postprocessors folder: ' + os.path.join(self.data_path, 'postprocessors'))
+            os.makedirs(os.path.join(self.data_path, 'preprocessors'))
+            App.log.debug('Created data preprocessors folder: ' + os.path.join(self.data_path, 'preprocessors'))
 
-        self.postprocessorpaths = os.path.join(self.data_path, 'postprocessors')
-        if not os.path.exists(self.postprocessorpaths):
-            os.makedirs(self.postprocessorpaths)
-            App.log.debug('Created postprocessors folder: ' + self.postprocessorpaths)
+        self.preprocessorpaths = os.path.join(self.data_path, 'preprocessors')
+        if not os.path.exists(self.preprocessorpaths):
+            os.makedirs(self.preprocessorpaths)
+            App.log.debug('Created preprocessors folder: ' + self.preprocessorpaths)
 
         # create tools_db.FlatConfig file if there is none
         try:
@@ -1501,33 +1501,33 @@ class App(QtCore.QObject):
         # ########################## LOAD POSTPROCESSORS ##############################
         # #############################################################################
 
-        # a dictionary that have as keys the name of the postprocessor files and the value is the class from
-        # the postprocessor file
-        self.postprocessors = load_postprocessors(self)
+        # a dictionary that have as keys the name of the preprocessor files and the value is the class from
+        # the preprocessor file
+        self.preprocessors = load_preprocessors(self)
 
-        # make sure that always the 'default' postprocessor is the first item in the dictionary
-        if 'default' in self.postprocessors.keys():
+        # make sure that always the 'default' preprocessor is the first item in the dictionary
+        if 'default' in self.preprocessors.keys():
             new_ppp_dict = dict()
 
-            # add the 'default' name first in the dict after removing from the postprocessor's dictionary
-            default_pp = self.postprocessors.pop('default')
+            # add the 'default' name first in the dict after removing from the preprocessor's dictionary
+            default_pp = self.preprocessors.pop('default')
             new_ppp_dict['default'] = default_pp
 
             # then add the rest of the keys
-            for name, val_class in self.postprocessors.items():
+            for name, val_class in self.preprocessors.items():
                 new_ppp_dict[name] = val_class
 
             # and now put back the ordered dict with 'default' key first
-            self.postprocessors = new_ppp_dict
+            self.preprocessors = new_ppp_dict
 
-        for name in list(self.postprocessors.keys()):
-            # 'Paste' postprocessors are to be used only in the Solder Paste Dispensing Tool
+        for name in list(self.preprocessors.keys()):
+            # 'Paste' preprocessors are to be used only in the Solder Paste Dispensing Tool
             if name.partition('_')[0] == 'Paste':
                 self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.addItem(name)
                 continue
 
             self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
-            # HPGL postprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
+            # HPGL preprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
             if name == 'hpgl':
                 continue
 

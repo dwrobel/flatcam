@@ -32,9 +32,9 @@ class grbl_laser(FlatCAMPostProc):
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
-            gcode += '(Postprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
+            gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
         else:
-            gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n'
+            gcode += '(Preprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n'
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n" + '\n'
 
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'

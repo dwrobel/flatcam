@@ -2451,10 +2451,10 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
-        # postprocessor selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Postprocessor"))
+        # preprocessor selection
+        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_excellon_label.setToolTip(
-            _("The postprocessor JSON file that dictates\n"
+            _("The preprocessor JSON file that dictates\n"
               "Gcode output.")
         )
         grid2.addWidget(pp_excellon_label, 9, 0)
@@ -3332,7 +3332,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         spdlabel.setToolTip(
             _(
                 "Speed of the spindle in RPM (optional).\n"
-                "If LASER postprocessor is used,\n"
+                "If LASER preprocessor is used,\n"
                 "this value is the power of laser."
             )
         )
@@ -3362,10 +3362,10 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
-        # postprocessor selection
-        pp_label = QtWidgets.QLabel('%s:' % _("Postprocessor"))
+        # preprocessor selection
+        pp_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_label.setToolTip(
-            _("The Postprocessor file that dictates\n"
+            _("The Preprocessor file that dictates\n"
               "the Machine Code (like GCode, RML, HPGL) output.")
         )
         grid1.addWidget(pp_label, 12, 0)
@@ -3810,7 +3810,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
                 "This will constitute a Custom Toolchange GCode,\n"
                 "or a Toolchange Macro.\n"
                 "The FlatCAM variables are surrounded by '%' symbol.\n\n"
-                "WARNING: it can be used only with a postprocessor file\n"
+                "WARNING: it can be used only with a preprocessor file\n"
                 "that has 'toolchange_custom' in it's name and this is built\n"
                 "having as template the 'Toolchange Custom' posprocessor file."
             )
@@ -3833,7 +3833,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
                 "This will constitute a Custom Toolchange GCode, "
                 "or a Toolchange Macro. "
                 "The FlatCAM variables are surrounded by '%' symbol. \n"
-                "WARNING: it can be used only with a postprocessor file "
+                "WARNING: it can be used only with a preprocessor file "
                 "that has 'toolchange_custom' in it's name."
             )
         )
@@ -5547,7 +5547,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.dwellrev_label, 14, 0)
         grid0.addWidget(self.dwellrev_entry, 14, 1)
 
-        # Postprocessors
+        # Preprocessors
         pp_label = QtWidgets.QLabel('%s:' % _('PostProcessor'))
         pp_label.setToolTip(
             _("Files that control the GCode generation.")

@@ -60,7 +60,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('endz', 'Z distance at job end (example: 30.0).'),
             ('dwell', 'True or False; use (or not) the dwell'),
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed'),
-            ('pp', 'This is the Excellon postprocessor name: case_sensitive, no_quotes'),
+            ('pp', 'This is the Excellon preprocessor name: case_sensitive, no_quotes'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('opt_type', 'Name of move optimization type. B by default for Basic OR-Tools, M for Metaheuristic OR-Tools'
                          'T from Travelling Salesman Algorithm. B and M works only for 64bit version of FlatCAM and '

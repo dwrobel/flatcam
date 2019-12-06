@@ -9,7 +9,7 @@
 from FlatCAMPostProc import *
 
 
-# for Roland Postprocessors it is mandatory for the postprocessor name (python file and class name, both of them must be
+# for Roland Preprocessors it is mandatory for the preprocessor name (python file and class name, both of them must be
 # the same) to contain the following keyword, case-sensitive: 'Roland' without the quotes.
 class hpgl(FlatCAMPostProc):
 

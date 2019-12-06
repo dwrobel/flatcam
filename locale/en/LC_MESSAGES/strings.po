@@ -1854,8 +1854,8 @@ msgstr "Dwelltime"
 
 #: FlatCAMCommon.py:531 flatcamGUI/ObjectUI.py:939
 #: flatcamGUI/PreferencesUI.py:2411 flatcamGUI/PreferencesUI.py:3318
-msgid "Postprocessor"
-msgstr "Postprocessor"
+msgid "Preprocessor"
+msgstr "Preprocessor"
 
 #: FlatCAMCommon.py:532
 msgid "ExtraCut"
@@ -2071,11 +2071,11 @@ msgstr ""
 
 #: FlatCAMCommon.py:613
 msgid ""
-"Postprocessor.\n"
+"Preprocessor.\n"
 "A selection of files that will alter the generated G-code\n"
 "to fit for a number of use cases."
 msgstr ""
-"Postprocessor.\n"
+"Preprocessor.\n"
 "A selection of files that will alter the generated G-code\n"
 "to fit for a number of use cases."
 
@@ -2098,12 +2098,12 @@ msgid ""
 "Toolchange.\n"
 "It will create a toolchange event.\n"
 "The kind of toolchange is determined by\n"
-"the postprocessor file."
+"the preprocessor file."
 msgstr ""
 "Toolchange.\n"
 "It will create a toolchange event.\n"
 "The kind of toolchange is determined by\n"
-"the postprocessor file."
+"the preprocessor file."
 
 #: FlatCAMCommon.py:628
 msgid ""
@@ -2691,13 +2691,13 @@ msgstr "Saved to"
 
 #: FlatCAMObj.py:6506 FlatCAMObj.py:6516
 msgid ""
-"The used postprocessor file has to have in it's name: 'toolchange_custom'"
+"The used preprocessor file has to have in it's name: 'toolchange_custom'"
 msgstr ""
-"The used postprocessor file has to have in it's name: 'toolchange_custom'"
+"The used preprocessor file has to have in it's name: 'toolchange_custom'"
 
 #: FlatCAMObj.py:6520
-msgid "There is no postprocessor file."
-msgstr "There is no postprocessor file."
+msgid "There is no preprocessor file."
+msgstr "There is no preprocessor file."
 
 #: FlatCAMObj.py:6764
 msgid "Script Editor"
@@ -7732,10 +7732,10 @@ msgstr "Number of time units for spindle to dwell."
 
 #: flatcamGUI/ObjectUI.py:941 flatcamGUI/PreferencesUI.py:2413
 msgid ""
-"The postprocessor JSON file that dictates\n"
+"The preprocessor JSON file that dictates\n"
 "Gcode output."
 msgstr ""
-"The postprocessor JSON file that dictates\n"
+"The preprocessor JSON file that dictates\n"
 "Gcode output."
 
 #: flatcamGUI/ObjectUI.py:950 flatcamGUI/ObjectUI.py:1554
@@ -8155,11 +8155,11 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:1510 flatcamGUI/PreferencesUI.py:3286
 msgid ""
 "Speed of the spindle in RPM (optional).\n"
-"If LASER postprocessor is used,\n"
+"If LASER preprocessor is used,\n"
 "this value is the power of laser."
 msgstr ""
 "Speed of the spindle in RPM (optional).\n"
-"If LASER postprocessor is used,\n"
+"If LASER preprocessor is used,\n"
 "this value is the power of laser."
 
 #: flatcamGUI/ObjectUI.py:1542 flatcamGUI/PreferencesUI.py:5455
@@ -8169,10 +8169,10 @@ msgstr "PostProcessor"
 
 #: flatcamGUI/ObjectUI.py:1544 flatcamGUI/PreferencesUI.py:3320
 msgid ""
-"The Postprocessor file that dictates\n"
+"The Preprocessor file that dictates\n"
 "the Machine Code (like GCode, RML, HPGL) output."
 msgstr ""
-"The Postprocessor file that dictates\n"
+"The Preprocessor file that dictates\n"
 "the Machine Code (like GCode, RML, HPGL) output."
 
 #: flatcamGUI/ObjectUI.py:1588
@@ -8387,7 +8387,7 @@ msgid ""
 "or a Toolchange Macro.\n"
 "The FlatCAM variables are surrounded by '%' symbol.\n"
 "\n"
-"WARNING: it can be used only with a postprocessor file\n"
+"WARNING: it can be used only with a preprocessor file\n"
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 msgstr ""
@@ -8397,7 +8397,7 @@ msgstr ""
 "or a Toolchange Macro.\n"
 "The FlatCAM variables are surrounded by '%' symbol.\n"
 "\n"
-"WARNING: it can be used only with a postprocessor file\n"
+"WARNING: it can be used only with a preprocessor file\n"
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 
@@ -8409,20 +8409,20 @@ msgstr ""
 #| "or a Toolchange Macro.\n"
 #| "The FlatCAM variables are surrounded by '%' symbol.\n"
 #| "\n"
-#| "WARNING: it can be used only with a postprocessor file\n"
+#| "WARNING: it can be used only with a preprocessor file\n"
 #| "that has 'toolchange_custom' in it's name and this is built\n"
 #| "having as template the 'Toolchange Custom' posprocessor file."
 msgid ""
 "Type here any G-Code commands you would like to be executed when Toolchange "
 "event is encountered. This will constitute a Custom Toolchange GCode, or a "
 "Toolchange Macro. The FlatCAM variables are surrounded by '%' symbol. \n"
-"WARNING: it can be used only with a postprocessor file that has "
+"WARNING: it can be used only with a preprocessor file that has "
 "'toolchange_custom' in it's name."
 msgstr ""
 "Type here any G-Code commands you would like to be executed when Toolchange "
 "event is encountered. This will constitute a Custom Toolchange GCode, or a "
 "Toolchange Macro. The FlatCAM variables are surrounded by '%' symbol. \n"
-"WARNING: it can be used only with a postprocessor file that has "
+"WARNING: it can be used only with a preprocessor file that has "
 "'toolchange_custom' in it's name."
 
 #: flatcamGUI/ObjectUI.py:1864 flatcamGUI/PreferencesUI.py:3794
@@ -18945,10 +18945,10 @@ msgstr "No Geometry name in args. Provide a name and try again."
 #~ msgstr "Multidepth usage: True or False."
 
 #~ msgid ""
-#~ "The postprocessor file that dictates\n"
+#~ "The preprocessor file that dictates\n"
 #~ "Machine Code output."
 #~ msgstr ""
-#~ "The postprocessor file that dictates\n"
+#~ "The preprocessor file that dictates\n"
 #~ "Machine Code output."
 
 #~ msgid "Display Annotation:"

@@ -1759,11 +1759,11 @@ msgid "Saved to"
 msgstr "Gespeichert in"
 
 #: FlatCAMObj.py:6332 FlatCAMObj.py:6342
-msgid "The used postprocessor file has to have in it's name: 'toolchange_custom'"
+msgid "The used preprocessor file has to have in it's name: 'toolchange_custom'"
 msgstr "Die verwendete Postprozessor-Datei muss im Namen enthalten sein: 'toolchange_custom'"
 
 #: FlatCAMObj.py:6346
-msgid "There is no postprocessor file."
+msgid "There is no preprocessor file."
 msgstr "Es gibt keine Postprozessor-Datei."
 
 #: FlatCAMObj.py:6623
@@ -6533,11 +6533,11 @@ msgstr "Anzahl der Zeiteinheiten, in denen die Spindel verweilen soll."
 
 #: flatcamGUI/ObjectUI.py:889 flatcamGUI/PreferencesUI.py:2253
 #: flatcamGUI/PreferencesUI.py:3140
-msgid "Postprocessor"
+msgid "Preprocessor"
 msgstr "Postprozessor"
 
 #: flatcamGUI/ObjectUI.py:891 flatcamGUI/PreferencesUI.py:2255
-msgid "The postprocessor JSON file that dictates\n"
+msgid "The preprocessor JSON file that dictates\n"
 "Gcode output."
 msgstr "Die Postprozessor-JSON-Datei, die diktiert\n"
 "Gcode-Ausgabe."
@@ -6880,7 +6880,7 @@ msgstr "Um zu entfernen möglich\n"
 
 #: flatcamGUI/ObjectUI.py:1457 flatcamGUI/PreferencesUI.py:3108
 msgid "Speed of the spindle in RPM (optional).\n"
-"If LASER postprocessor is used,\n"
+"If LASER preprocessor is used,\n"
 "this value is the power of laser."
 msgstr "Drehzahl der Spindel in U / min (optional).\n"
 "Wenn LASER-Postprozessor verwendet wird,\n"
@@ -6892,7 +6892,7 @@ msgid "PostProcessor"
 msgstr "Postprozessor"
 
 #: flatcamGUI/ObjectUI.py:1491 flatcamGUI/PreferencesUI.py:3142
-msgid "The Postprocessor file that dictates\n"
+msgid "The Preprocessor file that dictates\n"
 "the Machine Code (like GCode, RML, HPGL) output."
 msgstr "Die Postprozessor-Datei, die diktiert\n"
 "den Maschinencode (wie GCode, RML, HPGL)."
@@ -7067,7 +7067,7 @@ msgid "Type here any G-Code commands you would\n"
 "or a Toolchange Macro.\n"
 "The FlatCAM variables are surrounded by '%' symbol.\n"
 "\n"
-"WARNING: it can be used only with a postprocessor file\n"
+"WARNING: it can be used only with a preprocessor file\n"
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 msgstr "Geben Sie hier alle G-Code-Befehle ein\n"
@@ -15261,7 +15261,7 @@ msgstr "Kein Geometriename in args. Geben Sie einen Namen ein und versuchen Sie 
 #~ msgstr "Mehrere Tiefe-Nutzung: Richtig oder Falsch."
 
 #~ msgid ""
-#~ "The postprocessor file that dictates\n"
+#~ "The preprocessor file that dictates\n"
 #~ "Machine Code output."
 #~ msgstr ""
 #~ "Die Postprozessor-Datei, die diktiert\n"

@@ -1917,7 +1917,7 @@ msgstr "Habitar"
 
 #: FlatCAMCommon.py:531 flatcamGUI/ObjectUI.py:939
 #: flatcamGUI/PreferencesUI.py:2411 flatcamGUI/PreferencesUI.py:3318
-msgid "Postprocessor"
+msgid "Preprocessor"
 msgstr "Postprocesador"
 
 #: FlatCAMCommon.py:532
@@ -2096,7 +2096,7 @@ msgstr ""
 
 #: FlatCAMCommon.py:613
 msgid ""
-"Postprocessor.\n"
+"Preprocessor.\n"
 "A selection of files that will alter the generated G-code\n"
 "to fit for a number of use cases."
 msgstr ""
@@ -2115,7 +2115,7 @@ msgid ""
 "Toolchange.\n"
 "It will create a toolchange event.\n"
 "The kind of toolchange is determined by\n"
-"the postprocessor file."
+"the preprocessor file."
 msgstr ""
 
 #: FlatCAMCommon.py:628
@@ -2737,12 +2737,12 @@ msgstr "Guardado en"
 
 #: FlatCAMObj.py:6506 FlatCAMObj.py:6516
 msgid ""
-"The used postprocessor file has to have in it's name: 'toolchange_custom'"
+"The used preprocessor file has to have in it's name: 'toolchange_custom'"
 msgstr ""
 "El archivo de postprocesador usado debe tener su nombre: 'toolchange_custom'"
 
 #: FlatCAMObj.py:6520
-msgid "There is no postprocessor file."
+msgid "There is no preprocessor file."
 msgstr "No hay archivo de postprocesador."
 
 #: FlatCAMObj.py:6764
@@ -7849,7 +7849,7 @@ msgstr "Número de unidades de tiempo para que el husillo permanezca."
 
 #: flatcamGUI/ObjectUI.py:941 flatcamGUI/PreferencesUI.py:2413
 msgid ""
-"The postprocessor JSON file that dictates\n"
+"The preprocessor JSON file that dictates\n"
 "Gcode output."
 msgstr ""
 "El archivo JSON del postprocesador que dicta\n"
@@ -8282,7 +8282,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:1510 flatcamGUI/PreferencesUI.py:3286
 msgid ""
 "Speed of the spindle in RPM (optional).\n"
-"If LASER postprocessor is used,\n"
+"If LASER preprocessor is used,\n"
 "this value is the power of laser."
 msgstr ""
 "Velocidad del husillo en RPM (opcional).\n"
@@ -8296,7 +8296,7 @@ msgstr "Postprocesador"
 
 #: flatcamGUI/ObjectUI.py:1544 flatcamGUI/PreferencesUI.py:3320
 msgid ""
-"The Postprocessor file that dictates\n"
+"The Preprocessor file that dictates\n"
 "the Machine Code (like GCode, RML, HPGL) output."
 msgstr ""
 "El archivo de postprocesador que dicta\n"
@@ -8518,7 +8518,7 @@ msgid ""
 "or a Toolchange Macro.\n"
 "The FlatCAM variables are surrounded by '%' symbol.\n"
 "\n"
-"WARNING: it can be used only with a postprocessor file\n"
+"WARNING: it can be used only with a preprocessor file\n"
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 msgstr ""
@@ -8541,14 +8541,14 @@ msgstr ""
 #| "or a Toolchange Macro.\n"
 #| "The FlatCAM variables are surrounded by '%' symbol.\n"
 #| "\n"
-#| "WARNING: it can be used only with a postprocessor file\n"
+#| "WARNING: it can be used only with a preprocessor file\n"
 #| "that has 'toolchange_custom' in it's name and this is built\n"
 #| "having as template the 'Toolchange Custom' posprocessor file."
 msgid ""
 "Type here any G-Code commands you would like to be executed when Toolchange "
 "event is encountered. This will constitute a Custom Toolchange GCode, or a "
 "Toolchange Macro. The FlatCAM variables are surrounded by '%' symbol. \n"
-"WARNING: it can be used only with a postprocessor file that has "
+"WARNING: it can be used only with a preprocessor file that has "
 "'toolchange_custom' in it's name."
 msgstr ""
 "Escriba aquí cualquier comando de código G que desee\n"
@@ -17652,7 +17652,7 @@ msgstr ""
 #~ msgstr "Uso de profundidad múltiple: Verdadero o Falso."
 
 #~ msgid ""
-#~ "The postprocessor file that dictates\n"
+#~ "The preprocessor file that dictates\n"
 #~ "Machine Code output."
 #~ msgstr ""
 #~ "El archivo de postprocesador que dicta.\n"

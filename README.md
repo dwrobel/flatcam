@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - in Excellon UI fixed bug that did not allow editing of the Offset Z parameter from the Tool table
 - in Properties Tool added new information's for the tools in the CNCjob objects
 - few bugs solved regarding the newly created empty objects
+- changed everywhere the name "postprocessor" with "preprocessor"
+- updated the preprocessor files in the toolchange section in order to avoid a graphical representation of travel lines glitch
 
 5.12.2019 
 

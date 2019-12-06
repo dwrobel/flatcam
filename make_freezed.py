@@ -57,7 +57,7 @@ if platform.architecture()[0] == '64bit':
     include_files.append((os.path.join(site_dir, "ortools"), "ortools"))
 
 include_files.append(("locale", "lib/locale"))
-include_files.append(("postprocessors", "lib/postprocessors"))
+include_files.append(("preprocessors", "lib/preprocessors"))
 include_files.append(("share", "lib/share"))
 include_files.append(("flatcamGUI/VisPyData", "lib/vispy"))
 include_files.append(("config", "lib/config"))

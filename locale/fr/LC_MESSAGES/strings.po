@@ -1966,13 +1966,13 @@ msgstr "Enregistré dans"
 
 #: FlatCAMObj.py:6332 FlatCAMObj.py:6342
 msgid ""
-"The used postprocessor file has to have in it's name: 'toolchange_custom'"
+"The used preprocessor file has to have in it's name: 'toolchange_custom'"
 msgstr ""
 "Le fichier de post-traitement utilisé doit avoir pour nom: "
 "'toolchange_custom'"
 
 #: FlatCAMObj.py:6346
-msgid "There is no postprocessor file."
+msgid "There is no preprocessor file."
 msgstr "Il n'y a pas de fichier de post-processeur."
 
 #: FlatCAMObj.py:6623
@@ -7102,12 +7102,12 @@ msgstr "Nombre d'unités de temps pendant lesquelles la broche s'arrête."
 
 #: flatcamGUI/ObjectUI.py:889 flatcamGUI/PreferencesUI.py:2253
 #: flatcamGUI/PreferencesUI.py:3140
-msgid "Postprocessor"
+msgid "Preprocessor"
 msgstr "Post-processeur"
 
 #: flatcamGUI/ObjectUI.py:891 flatcamGUI/PreferencesUI.py:2255
 msgid ""
-"The postprocessor JSON file that dictates\n"
+"The preprocessor JSON file that dictates\n"
 "Gcode output."
 msgstr ""
 "Le fichier JSON post-processeur qui dicte\n"
@@ -7532,7 +7532,7 @@ msgstr ""
 #: flatcamGUI/ObjectUI.py:1457 flatcamGUI/PreferencesUI.py:3108
 msgid ""
 "Speed of the spindle in RPM (optional).\n"
-"If LASER postprocessor is used,\n"
+"If LASER preprocessor is used,\n"
 "this value is the power of laser."
 msgstr ""
 "Vitesse de la broche en tours / minute (facultatif).\n"
@@ -7546,7 +7546,7 @@ msgstr "Post-processeur"
 
 #: flatcamGUI/ObjectUI.py:1491 flatcamGUI/PreferencesUI.py:3142
 msgid ""
-"The Postprocessor file that dictates\n"
+"The Preprocessor file that dictates\n"
 "the Machine Code (like GCode, RML, HPGL) output."
 msgstr ""
 "Le fichier post-processeur qui dicte\n"
@@ -7742,7 +7742,7 @@ msgid ""
 "or a Toolchange Macro.\n"
 "The FlatCAM variables are surrounded by '%' symbol.\n"
 "\n"
-"WARNING: it can be used only with a postprocessor file\n"
+"WARNING: it can be used only with a preprocessor file\n"
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 msgstr ""

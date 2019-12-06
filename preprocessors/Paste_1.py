@@ -40,7 +40,7 @@ class Paste_1(FlatCAMPostProc_Tools):
                                                        p.decimals, coords_xy[1]) + units + ')\n'
 
         if 'Paste' in p.pp_solderpaste_name:
-            gcode += '(Postprocessor SolderPaste Dispensing Geometry: ' + str(p.pp_solderpaste_name) + ')\n' + '\n'
+            gcode += '(Preprocessor SolderPaste Dispensing Geometry: ' + str(p.pp_solderpaste_name) + ')\n' + '\n'
 
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
@@ -89,6 +89,7 @@ T{tool}
 M6    
 (MSG, Change to Tool with Nozzle Dia = {toolC})
 M0
+G00 Z{z_toolchange}
 """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
            y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
            z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
@@ -102,6 +103,7 @@ T{tool}
 M6    
 (MSG, Change to Tool with Nozzle Dia = {toolC})
 M0
+G00 Z{z_toolchange}
 """.format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
            tool=int(int(p.tool)),
            toolC=toolC_formatted)

@@ -9,7 +9,7 @@
 from FlatCAMPostProc import *
 
 
-class grbl_11(FlatCAMPostProc):
+class ISEL_CNC(FlatCAMPostProc):
 
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
@@ -25,7 +25,7 @@ class grbl_11(FlatCAMPostProc):
         ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
         if str(p['options']['type']) == 'Geometry':
-            gcode += '(TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + ')\n' + '\n'
+            gcode += '(TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + ')\n'
 
         gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
 
@@ -42,29 +42,30 @@ class grbl_11(FlatCAMPostProc):
 
         gcode += '(Z_Move: ' + str(p['z_move']) + units + ')\n'
         gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
+
         if coords_xy is not None:
             gcode += '(X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
                                                            p.decimals, coords_xy[1]) + units + ')\n'
         else:
             gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
+
         gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
         gcode += '(Z End: ' + str(p['z_end']) + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
-            gcode += '(Postprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
+            gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n' + '\n'
         else:
-            gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
+            gcode += '(Preprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
 
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
-        gcode += '(Spindle Speed: ' + str(p['spindlespeed']) + ' RPM' + ')\n' + '\n'
+        gcode += '(Spindle Speed: %s RPM)\n' % str(p['spindlespeed'])
 
-        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
+        gcode += 'G71\n'
         gcode += 'G90\n'
         gcode += 'G94\n'
-        gcode += 'G17\n'
 
         return gcode
 
@@ -81,19 +82,8 @@ class grbl_11(FlatCAMPostProc):
         return 'G01 Z' + self.coordinate_format%(p.coords_decimals, p.z_cut)
 
     def toolchange_code(self, p):
-        z_toolchange = p.z_toolchange
-        toolchangexy = p.xy_toolchange
         f_plunge = p.f_plunge
-        gcode = ''
-
-        if toolchangexy is not None:
-            x_toolchange = toolchangexy[0]
-            y_toolchange = toolchangexy[1]
-
         no_drills = 1
-
-        if int(p.tool) == 1 and p.startz is not None:
-            z_toolchange = p.startz
 
         toolC_formatted = '%.*f' % (p.decimals, p.toolC)
 
@@ -102,60 +92,24 @@ class grbl_11(FlatCAMPostProc):
                 if i[0] == p.tool:
                     no_drills = i[2]
 
-            if toolchangexy is not None:
-                gcode = """
-M5             
-G00 Z{z_toolchange}
-G00 X{x_toolchange} Y{y_toolchange}                
+            gcode = """
+M05       
 T{tool}
-M6
+M06
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
-             y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
-             z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-             tool=int(p.tool),
-             t_drills=no_drills,
-             toolC=toolC_formatted)
-            else:
-                gcode = """
-M5             
-G00 Z{z_toolchange}               
-T{tool}
-M6
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-             tool=int(p.tool),
-             t_drills=no_drills,
-             toolC=toolC_formatted)
+M01""".format(tool=int(p.tool), t_drills=no_drills, toolC=toolC_formatted)
 
             if f_plunge is True:
                 gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
             return gcode
 
         else:
-            if toolchangexy is not None:
-                gcode = """
-M5             
-G00 Z{z_toolchange}
-G00 X{x_toolchange} Y{y_toolchange}                
+            gcode = """
+M05
 T{tool}
-M6
+M06    
 (MSG, Change to Tool Dia = {toolC})
-M0""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
-             y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
-             z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-             tool=int(p.tool),
-             toolC=toolC_formatted)
-            else:
-                gcode = """
-M5             
-G00 Z{z_toolchange}              
-T{tool}
-M6
-(MSG, Change to Tool Dia = {toolC})
-M0""".format(z_toolchange=self.coordinate_format%(p.coords_decimals, z_toolchange),
-             tool=int(p.tool),
-             toolC=toolC_formatted)
+M01""".format(tool=int(p.tool), toolC=toolC_formatted)
 
             if f_plunge is True:
                 gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
@@ -172,8 +126,7 @@ M0""".format(z_toolchange=self.coordinate_format%(p.coords_decimals, z_toolchang
         return ('G00 ' + self.position_code(p)).format(**p)
 
     def linear_code(self, p):
-        return ('G01 ' + self.position_code(p)).format(**p) + \
-               ' F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
+        return ('G01 ' + self.position_code(p)).format(**p)
 
     def end_code(self, p):
         coords_xy = p['xy_toolchange']

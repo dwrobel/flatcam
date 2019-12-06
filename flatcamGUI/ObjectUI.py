@@ -935,10 +935,10 @@ class ExcellonObjectUI(ObjectUI):
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
-        # postprocessor selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Postprocessor"))
+        # preprocessor selection
+        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_excellon_label.setToolTip(
-            _("The postprocessor JSON file that dictates\n"
+            _("The preprocessor JSON file that dictates\n"
               "Gcode output.")
         )
         self.pp_excellon_name_cb = FCComboBox()
@@ -1508,7 +1508,7 @@ class GeometryObjectUI(ObjectUI):
         spdlabel.setToolTip(
             _(
                 "Speed of the spindle in RPM (optional).\n"
-                "If LASER postprocessor is used,\n"
+                "If LASER preprocessor is used,\n"
                 "this value is the power of laser."
             )
         )
@@ -1538,10 +1538,10 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.dwell_cb, 15, 0)
         self.grid3.addWidget(self.dwelltime_entry, 15, 1)
 
-        # postprocessor selection
+        # preprocessor selection
         pp_label = QtWidgets.QLabel('%s:' % _("PostProcessor"))
         pp_label.setToolTip(
-            _("The Postprocessor file that dictates\n"
+            _("The Preprocessor file that dictates\n"
               "the Machine Code (like GCode, RML, HPGL) output.")
         )
         self.pp_geometry_name_cb = FCComboBox()
@@ -1837,7 +1837,7 @@ class CNCObjectUI(ObjectUI):
                 "This will constitute a Custom Toolchange GCode,\n"
                 "or a Toolchange Macro.\n"
                 "The FlatCAM variables are surrounded by '%' symbol.\n\n"
-                "WARNING: it can be used only with a postprocessor file\n"
+                "WARNING: it can be used only with a preprocessor file\n"
                 "that has 'toolchange_custom' in it's name and this is built\n"
                 "having as template the 'Toolchange Custom' posprocessor file."
             )
@@ -1852,7 +1852,7 @@ class CNCObjectUI(ObjectUI):
                 "This will constitute a Custom Toolchange GCode, "
                 "or a Toolchange Macro. "
                 "The FlatCAM variables are surrounded by '%' symbol. \n"
-                "WARNING: it can be used only with a postprocessor file "
+                "WARNING: it can be used only with a preprocessor file "
                 "that has 'toolchange_custom' in it's name."
             )
         )

@@ -11,20 +11,20 @@ import os
 from abc import ABCMeta, abstractmethod
 import math
 
-# module-root dictionary of postprocessors
+# module-root dictionary of preprocessors
 import FlatCAMApp
 
-postprocessors = {}
+preprocessors = {}
 
 
 class ABCPostProcRegister(ABCMeta):
-    # handles postprocessors registration on instantiation
+    # handles preprocessors registration on instantiation
     def __new__(cls, clsname, bases, attrs):
         newclass = super(ABCPostProcRegister, cls).__new__(cls, clsname, bases, attrs)
         if object not in bases:
-            if newclass.__name__ in postprocessors:
-                FlatCAMApp.App.log.warning('Postprocessor %s has been overriden' % newclass.__name__)
-            postprocessors[newclass.__name__] = newclass()  # here is your register function
+            if newclass.__name__ in preprocessors:
+                FlatCAMApp.App.log.warning('Preprocessor %s has been overriden' % newclass.__name__)
+            preprocessors[newclass.__name__] = newclass()  # here is your register function
         return newclass
 
 
@@ -144,14 +144,14 @@ class FlatCAMPostProc_Tools(object, metaclass=ABCPostProcRegister):
         pass
 
 
-def load_postprocessors(app):
-    postprocessors_path_search = [os.path.join(app.data_path, 'postprocessors', '*.py'),
-                                  os.path.join('postprocessors', '*.py')]
+def load_preprocessors(app):
+    preprocessors_path_search = [os.path.join(app.data_path, 'preprocessors', '*.py'),
+                                  os.path.join('preprocessors', '*.py')]
     import glob
-    for path_search in postprocessors_path_search:
+    for path_search in preprocessors_path_search:
         for file in glob.glob(path_search):
             try:
                 SourceFileLoader('FlatCAMPostProcessor', file).load_module()
             except Exception as e:
                 app.log.error(str(e))
-    return postprocessors
+    return preprocessors

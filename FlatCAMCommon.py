@@ -528,7 +528,7 @@ class ToolsDB(QtWidgets.QWidget):
                 _("Spindle Speed"),
                 _("Dwell"),
                 _("Dwelltime"),
-                _("Postprocessor"),
+                _("Preprocessor"),
                 _("ExtraCut"),
                 _("Toolchange"),
                 _("Toolchange XY"),
@@ -610,7 +610,7 @@ class ToolsDB(QtWidgets.QWidget):
             _("Dwell Time.\n"
               "A delay used to allow the motor spindle reach it's set speed."))
         self.table_widget.horizontalHeaderItem(19).setToolTip(
-            _("Postprocessor.\n"
+            _("Preprocessor.\n"
               "A selection of files that will alter the generated G-code\n"
               "to fit for a number of use cases."))
         self.table_widget.horizontalHeaderItem(20).setToolTip(
@@ -623,7 +623,7 @@ class ToolsDB(QtWidgets.QWidget):
             _("Toolchange.\n"
               "It will create a toolchange event.\n"
               "The kind of toolchange is determined by\n"
-              "the postprocessor file."))
+              "the preprocessor file."))
         self.table_widget.horizontalHeaderItem(22).setToolTip(
             _("Toolchange XY.\n"
               "A set of coordinates in the format (x, y).\n"
@@ -904,7 +904,7 @@ class ToolsDB(QtWidgets.QWidget):
         widget.setCellWidget(row, 18, dwelltime_item)
 
         pp_item = FCComboBox()
-        for item in self.app.postprocessors:
+        for item in self.app.preprocessors:
             pp_item.addItem(item)
         pp_item.set_value(data['ppname_g'])
         widget.setCellWidget(row, 19, pp_item)
@@ -1263,7 +1263,7 @@ class ToolsDB(QtWidgets.QWidget):
                         default_data['dwell'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == 'Dwelltime':
                         default_data['dwelltime'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'Postprocessor':
+                    elif column_header_text == 'Preprocessor':
                         default_data['ppname_g'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == 'ExtraCut':
                         default_data['extracut'] = self.table_widget.cellWidget(row, col).get_value()

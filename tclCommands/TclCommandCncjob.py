@@ -75,7 +75,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('dwell', 'True or False; use (or not) the dwell'),
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed'),
             ('outname', 'Name of the resulting Geometry object.'),
-            ('pp', 'Name of the Geometry postprocessor. No quotes, case sensitive'),
+            ('pp', 'Name of the Geometry preprocessor. No quotes, case sensitive'),
             ('muted', 'It will not put errors in the Shell.')
         ]),
         'examples': ['cncjob geo_name -dia 0.5 -z_cut -1.7 -z_move 2 -feedrate 120 -pp default']

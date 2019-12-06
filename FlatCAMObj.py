@@ -2583,8 +2583,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "gcode_type": self.ui.excellon_gcode_type_radio
         })
 
-        for name in list(self.app.postprocessors.keys()):
-            # the HPGL postprocessor is only for Geometry not for Excellon job therefore don't add it
+        for name in list(self.app.preprocessors.keys()):
+            # the HPGL preprocessor is only for Geometry not for Excellon job therefore don't add it
             if name == 'hpgl':
                 continue
             self.ui.pp_excellon_name_cb.addItem(name)
@@ -2592,7 +2592,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # Fill form fields
         self.to_form()
 
-        # update the changes in UI depending on the selected postprocessor in Preferences
+        # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
         # self.ui.pp_excellon_name_cb combobox
         self.on_pp_changed()
@@ -3659,8 +3659,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.units = self.app.defaults['units'].upper()
         self.units_found = self.app.defaults['units']
 
-        # populate postprocessor names in the combobox
-        for name in list(self.app.postprocessors.keys()):
+        # populate preprocessor names in the combobox
+        for name in list(self.app.preprocessors.keys()):
             self.ui.pp_geometry_name_cb.addItem(name)
 
         self.form_fields.update({
@@ -3690,7 +3690,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Fill form fields only on object create
         self.to_form()
 
-        # update the changes in UI depending on the selected postprocessor in Preferences
+        # update the changes in UI depending on the selected preprocessor in Preferences
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
         # self.ui.pp_geometry_name_cb combobox
         self.on_pp_changed()
@@ -4808,7 +4808,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param tools_dict: a dictionary that holds the whole data needed to create the Gcode
         (including the solid_geometry)
 
-        :param tools_in_use: the tools that are used, needed by some postprocessors
+        :param tools_in_use: the tools that are used, needed by some preprocessors
         :type list of lists, each list in the list is made out of row elements of tools table from GUI
 
         :param segx: number of segments on the X axis, for auto-levelling
@@ -5184,7 +5184,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param dia: Tool diameter
         :param outname: Name of the new object
         :param spindlespeed: Spindle speed (RPM)
-        :param pp Name of the postprocessor
+        :param pp Name of the preprocessor
         :return: None
         """
 
@@ -6382,7 +6382,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         except AttributeError:
             pass
 
-        # detect if using Roland postprocessor
+        # detect if using Roland preprocessor
         try:
             for key in self.cnc_tools:
                 if self.cnc_tools[key]['data']['ppname_g'] == 'Roland_MDX_20':
@@ -6400,7 +6400,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             except Exception as e:
                 pass
 
-        # do not add gcode_header when using the Roland postprocessor, add it for every other postprocessor
+        # do not add gcode_header when using the Roland preprocessor, add it for every other preprocessor
         if roland is False and hpgl is False:
             gcode = self.gcode_header()
 
@@ -6488,7 +6488,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 if self.ui.toolchange_cb.get_value():
                     self.ui.toolchange_cb.set_value(False)
                     self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("The used postprocessor file has to have in it's name: 'toolchange_custom'"))
+                                         _("The used preprocessor file has to have in it's name: 'toolchange_custom'"))
         except KeyError:
             try:
                 for key in self.cnc_tools:
@@ -6498,11 +6498,11 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                         if self.ui.toolchange_cb.get_value():
                             self.ui.toolchange_cb.set_value(False)
                             self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                                 _("The used postprocessor file has to have in it's name: "
+                                                 _("The used preprocessor file has to have in it's name: "
                                                    "'toolchange_custom'"))
             except KeyError:
                 self.app.inform.emit('[ERROR] %s' %
-                                     _("There is no postprocessor file."))
+                                     _("There is no preprocessor file."))
 
     def get_gcode(self, preamble='', postamble=''):
         # we need this to be able get_gcode separatelly for shell command export_gcode
