@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - renamed Calibrate Excellon Tool to a simpler Calibrate Tool
 - Calibrate Tool - when generating verification GCode it will always load into an Editor from which it can be edited and/or saved. On save the editor will close.
+- updated the CNCJob and Drillcncjob Tcl Commands to use 0 and 1 as values for the parameters that are stated as of bool type, beside the normal keywords of False and True
 
 6.12.2019
 

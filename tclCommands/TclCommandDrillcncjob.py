@@ -90,19 +90,20 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         name = args['name']
 
         obj = self.app.collection.get_by_name(name)
-        if obj is None:
-            if muted == 0:
-                self.raise_tcl_error("Object not found: %s" % name)
-            else:
-                return "fail"
 
         if 'outname' not in args:
             args['outname'] = name + "_cnc"
 
         if 'muted' in args:
-            muted = args['muted']
+            muted = bool(args['muted'])
         else:
-            muted = 0
+            muted = False
+
+        if obj is None:
+            if muted is False:
+                self.raise_tcl_error("Object not found: %s" % name)
+            else:
+                return "fail"
 
         if not isinstance(obj, FlatCAMExcellon):
             if muted == 0:
@@ -174,7 +175,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             toolchangez = args["toolchangez"] if "toolchangez" in args and args["toolchangez"] else \
                 obj.options["toolchangez"]
             endz = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
-            toolchange = True if "toolchange" in args and args["toolchange"] == 1 else False
+            toolchange = True if "toolchange" in args and bool(args["toolchange"]) is True else False
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 
             job_obj.z_move = args["travelz"] if "travelz" in args and args["travelz"] else obj.options["travelz"]
@@ -182,7 +183,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.feedrate_rapid = args["feedrate_rapid"] \
                 if "feedrate_rapid" in args and args["feedrate_rapid"] else obj.options["feedrate_rapid"]
 
-            if args['dwell'] and args['dwelltime']:
+            if bool(args['dwell']) and args['dwelltime']:
                 job_obj.dwell = True
                 job_obj.dwelltime = float(args['dwelltime'])
 

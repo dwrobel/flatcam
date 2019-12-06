@@ -134,9 +134,8 @@ class TclCommandCncjob(TclCommandSignaled):
         args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args and args["feedrate_rapid"] else \
             obj.options["feedrate_rapid"]
 
-        args["multidepth"] = args["multidepth"] if "multidepth" in args and args["multidepth"] else \
-            obj.options["multidepth"]
-        args["extracut"] = args["extracut"] if "extracut" in args and args["extracut"] else obj.options["extracut"]
+        args["multidepth"] = bool(args["multidepth"]) if "multidepth" in args else obj.options["multidepth"]
+        args["extracut"] = bool(args["extracut"]) if "extracut" in args else obj.options["extracut"]
         args["depthperpass"] = args["depthperpass"] if "depthperpass" in args and args["depthperpass"] else \
             obj.options["depthperpass"]
 
@@ -145,7 +144,7 @@ class TclCommandCncjob(TclCommandSignaled):
         args["endz"] = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
 
         args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] else None
-        args["dwell"] = args["dwell"] if "dwell" in args and args["dwell"] else obj.options["dwell"]
+        args["dwell"] = bool(args["dwell"]) if "dwell" in args else obj.options["dwell"]
         args["dwelltime"] = args["dwelltime"] if "dwelltime" in args and args["dwelltime"] else obj.options["dwelltime"]
 
         args["pp"] = args["pp"] if "pp" in args and args["pp"] else obj.options["ppname_g"]
