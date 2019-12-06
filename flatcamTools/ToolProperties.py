@@ -307,8 +307,11 @@ class Properties(FlatCAMTool):
                         area_chull = None
                         log.debug("Properties.addItems() --> %s" % str(e))
 
-            if self.app.defaults['units'].lower() == 'mm':
+            if self.app.defaults['units'].lower() == 'mm' and area_chull:
                 area_chull = area_chull / 100
+
+            if area_chull is None:
+                area_chull = 0
 
             self.calculations_finished.emit(area, length, width, area_chull, copper_area, dims)
 

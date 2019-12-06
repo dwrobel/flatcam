@@ -997,7 +997,8 @@ class Excellon(Geometry):
         # now it can get bounds for nested lists of objects
 
         log.debug("flatcamParsers.ParseExcellon.Excellon.bounds()")
-        if self.solid_geometry is None:
+
+        if self.solid_geometry is None or not self.tools:
             log.debug("flatcamParsers.ParseExcellon.Excellon -> solid_geometry is None")
             return 0, 0, 0, 0
 
@@ -1039,7 +1040,7 @@ class Excellon(Geometry):
             maxx_list.append(maxx)
             maxy_list.append(maxy)
 
-        return (min(minx_list), min(miny_list), max(maxx_list), max(maxy_list))
+        return min(minx_list), min(miny_list), max(maxx_list), max(maxy_list)
 
     def convert_units(self, units):
         """

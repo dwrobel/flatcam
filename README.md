@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - cleaned up the Excellon parser and fixed some bugs (old and new); Excellon parser has it's own convert_units() method no longer inheriting from Geometry
 - in Excellon UI fixed bug that did not allow editing of the Offset Z parameter from the Tool table
 - in Properties Tool added new information's for the tools in the CNCjob objects
+- few bugs solved regarding the newly created empty objects
 
 5.12.2019 
 
