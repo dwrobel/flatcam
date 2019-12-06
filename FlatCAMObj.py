@@ -267,7 +267,7 @@ class FlatCAMObj(QtCore.QObject):
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_scale_button_click(self):
-        self.app.report_usage("obj_on_scale_button")
+        log.debug("FlatCAMObj.on_scale_button_click()")
         self.read_form()
         factor = self.ui.scale_entry.get_value()
 
@@ -2338,11 +2338,13 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.units = self.app.defaults['units'].upper()
 
-        try:
-            # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.ui.tools_table.itemChanged.disconnect()
-        except (TypeError, AttributeError):
-            pass
+        for row in range(self.ui.tools_table.rowCount()):
+            try:
+                # if connected, disconnect the signal from the slot on item_changed as it creates issues
+                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
+                offset_spin_widget.valueChanged.disconnect()
+            except (TypeError, AttributeError):
+                pass
 
         n = len(self.tools)
         # we have (n+2) rows because there are 'n' tools, each a row, plus the last 2 rows for totals.
@@ -2378,45 +2380,42 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
             self.tot_slot_cnt += slot_cnt
 
-            exc_id = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
-            exc_id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.tools_table.setItem(self.tool_row, 0, exc_id)  # Tool name/id
+            exc_id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_no))
+            exc_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
-            # Make sure that the drill diameter when in MM is with no more than 2 decimals
-            # There are no drill bits in MM with more than 3 decimals diameter
-            # For INCH the decimals should be no more than 3. There are no drills under 10mils
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.tools[tool_no]['C']))
+            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            dia = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, self.tools[tool_no]['C']))
-
-            dia.setFlags(QtCore.Qt.ItemIsEnabled)
-
-            drill_count = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
-            drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
+            drill_count_item = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
+            drill_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
-            if slot_cnt > 0:
-                slot_count = QtWidgets.QTableWidgetItem('%d' % slot_cnt)
-            else:
-                slot_count = QtWidgets.QTableWidgetItem('')
-            slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
+            slot_count_str = '%d' % slot_cnt if slot_cnt > 0 else ''
+            slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
+            slot_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             try:
                 t_offset = self.tool_offset[float('%.*f' % (self.decimals, float(self.tools[tool_no]['C'])))]
             except KeyError:
                 t_offset = self.app.defaults['excellon_offset']
 
-            tool_offset_item = QtWidgets.QTableWidgetItem('%s' % str(t_offset))
-            tool_offset_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            tool_offset_item = FCDoubleSpinner()
+            tool_offset_item.set_precision(self.decimals)
+            tool_offset_item.set_range(-9999.9999, 9999.9999)
+            tool_offset_item.setWrapping(True)
+            tool_offset_item.setSingleStep(0.1) if self.units == 'MM' else tool_offset_item.setSingleStep(0.01)
+            tool_offset_item.set_value(t_offset)
 
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
             if self.ui.plot_cb.isChecked():
                 plot_item.setChecked(True)
 
-            self.ui.tools_table.setItem(self.tool_row, 1, dia)  # Diameter
-            self.ui.tools_table.setItem(self.tool_row, 2, drill_count)  # Number of drills per tool
-            self.ui.tools_table.setItem(self.tool_row, 3, slot_count)  # Number of drills per tool
-            self.ui.tools_table.setItem(self.tool_row, 4, tool_offset_item)  # Tool offset
+            self.ui.tools_table.setItem(self.tool_row, 0, exc_id_item)  # Tool name/id
+            self.ui.tools_table.setItem(self.tool_row, 1, dia_item)  # Diameter
+            self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)  # Number of drills per tool
+            self.ui.tools_table.setItem(self.tool_row, 3, slot_count_item)  # Number of drills per tool
+            self.ui.tools_table.setCellWidget(self.tool_row, 4, tool_offset_item)  # Tool offset
             empty_plot_item = QtWidgets.QTableWidgetItem('')
             empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 5, empty_plot_item)
@@ -2538,7 +2537,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.generate_milling_slots_button.show()
 
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
-        self.ui.tools_table.itemChanged.connect(self.on_tool_offset_edit)
+        for row in range(self.ui.tools_table.rowCount()):
+            try:
+                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
+                offset_spin_widget.valueChanged.connect(self.on_tool_offset_edit)
+            except (TypeError, AttributeError):
+                pass
 
         self.ui_connect()
 
@@ -2647,36 +2651,29 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
     def on_tool_offset_edit(self):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
-        self.ui.tools_table.itemChanged.disconnect()
-        # self.tools_table_exc.selectionModel().currentChanged.disconnect()
+        for row in range(self.ui.tools_table.rowCount()):
+            try:
+                # if connected, disconnect the signal from the slot on item_changed as it creates issues
+                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
+                offset_spin_widget.valueChanged.disconnect()
+            except (TypeError, AttributeError):
+                pass
 
         self.units = self.app.defaults['units'].upper()
-
         self.is_modified = True
 
         row_of_item_changed = self.ui.tools_table.currentRow()
         dia = float('%.*f' % (self.decimals, float(self.ui.tools_table.item(row_of_item_changed, 1).text())))
 
-        current_table_offset_edited = None
-        if self.ui.tools_table.currentItem() is not None:
-            try:
-                current_table_offset_edited = float(self.ui.tools_table.currentItem().text())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    current_table_offset_edited = float(self.ui.tools_table.currentItem().text().replace(',', '.'))
-                    self.ui.tools_table.currentItem().setText(
-                        self.ui.tools_table.currentItem().text().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    self.ui.tools_table.currentItem().setText(str(self.tool_offset[dia]))
-                    return
-
-        self.tool_offset[dia] = current_table_offset_edited
+        self.tool_offset[dia] = self.sender().get_value()
 
         # we reactivate the signals after the after the tool editing
-        self.ui.tools_table.itemChanged.connect(self.on_tool_offset_edit)
+        for row in range(self.ui.tools_table.rowCount()):
+            try:
+                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
+                offset_spin_widget.valueChanged.connect(self.on_tool_offset_edit)
+            except (TypeError, AttributeError):
+                pass
 
     def get_selected_tools_list(self):
         """

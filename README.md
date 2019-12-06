@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 6.12.2019
 
 - fixed the toggle_units() method so now the grid values are accurate to the decimal
+- cleaned up the Excellon parser and fixed some bugs (old and new); Excellon parser has it's own convert_units() method no longer inheriting from Geometry
+- in Excellon UI fixed bug that did not allow editing of the Offset Z parameter from the Tool table
 
 5.12.2019 
 

@@ -90,7 +90,6 @@ class Excellon(Geometry):
         self.tools = {}
         # list to store the drills, see above for description
         self.drills = []
-
         # self.slots (list) to store the slots; each is a dictionary
         self.slots = []
 
@@ -107,7 +106,7 @@ class Excellon(Geometry):
         self.index_per_tool = {}  # Dictionary to store the indexed points for each tool
 
         # ## IN|MM -> Units are inherited from Geometry
-        # self.units = units
+        self.units = self.app.defaults['units']
 
         # Trailing "T" or leading "L" (default)
         # self.zeros = "T"
@@ -305,8 +304,7 @@ class Excellon(Geometry):
                 # and we need to exit from here
                 if self.detect_gcode_re.search(eline):
                     log.warning("This is GCODE mark: %s" % eline)
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_('This is GCODE mark'), eline))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_('This is GCODE mark'), eline))
                     return
 
                 # Header Begin (M48) #
@@ -341,11 +339,11 @@ class Excellon(Geometry):
                             if line_units == 'MILS':
                                 spec = {"C": (float(match.group(2)) / 1000)}
                                 self.tools[str(name_tool)] = spec
-                                log.debug("  Tool definition: %s %s" % (name_tool, spec))
+                                log.debug("Tool definition: %s %s" % (name_tool, spec))
                             else:
                                 spec = {"C": float(match.group(2))}
                                 self.tools[str(name_tool)] = spec
-                                log.debug("  Tool definition: %s %s" % (name_tool, spec))
+                                log.debug("Tool definition: %s %s" % (name_tool, spec))
                             spec['solid_geometry'] = []
                             continue
                     # search for Altium Excellon Format / Sprint Layout who is included as a comment
@@ -387,17 +385,18 @@ class Excellon(Geometry):
                 # object's units.
                 match = self.meas_re.match(eline)
                 if match:
-                    # self.units = {"1": "MM", "2": "IN"}[match.group(1)]
+                    self.units = {"1": "MM", "2": "IN"}[match.group(1)]
 
                     # Modified for issue #80
-                    self.convert_units({"1": "MM", "2": "IN"}[match.group(1)])
-                    log.debug("  Units: %s" % self.units)
+                    log.debug("ALternative M71/M72 units found, before conversion: %s" % self.units)
+                    self.convert_units(self.units)
+                    log.debug("ALternative M71/M72 units found, after conversion: %s" % self.units)
                     if self.units == 'MM':
-                        log.warning("Excellon format preset is: %s" % self.excellon_format_upper_mm + \
-                                    ':' + str(self.excellon_format_lower_mm))
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                     else:
-                        log.warning("Excellon format preset is: %s" % self.excellon_format_upper_in + \
-                                    ':' + str(self.excellon_format_lower_in))
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
                     continue
 
                 # ### Body ####
@@ -784,13 +783,13 @@ class Excellon(Geometry):
                     # ## Units and number format # ##
                     match = self.units_re.match(eline)
                     if match:
-                        self.units = match.group(1)
+                        self.units = self.units = {"METRIC": "MM", "INCH": "IN"}[match.group(1)]
                         self.zeros = match.group(2)  # "T" or "L". Might be empty
                         self.excellon_format = match.group(3)
                         if self.excellon_format:
                             upper = len(self.excellon_format.partition('.')[0])
                             lower = len(self.excellon_format.partition('.')[2])
-                            if self.units == 'METRIC':
+                            if self.units == 'MM':
                                 self.excellon_format_upper_mm = upper
                                 self.excellon_format_lower_mm = lower
                             else:
@@ -798,57 +797,55 @@ class Excellon(Geometry):
                                 self.excellon_format_lower_in = lower
 
                         # Modified for issue #80
-                        self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units])
-                        # log.warning("  Units/Format: %s %s" % (self.units, self.zeros))
-                        log.warning("Units: %s" % self.units)
+                        log.warning("UNITS found inline before conversion: %s" % self.units)
+                        self.convert_units(self.units)
+                        log.warning("UNITS found inline after conversion: %s" % self.units)
                         if self.units == 'MM':
-                            log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_mm) +
-                                        ':' + str(self.excellon_format_lower_mm))
+                            log.warning("Excellon format preset is: %s:%s" %
+                                        (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                         else:
-                            log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_in) +
-                                        ':' + str(self.excellon_format_lower_in))
-                        log.warning("Type of zeros found inline: %s" % self.zeros)
+                            log.warning("Excellon format preset is: %s:%s" %
+                                        (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
+                        log.warning("Type of ZEROS found inline, in header: %s" % self.zeros)
                         continue
 
                     # Search for units type again it might be alone on the line
                     if "INCH" in eline:
-                        line_units = "INCH"
+                        line_units = "IN"
                         # Modified for issue #80
-                        self.convert_units({"INCH": "IN", "METRIC": "MM"}[line_units])
-                        log.warning("Type of UNITS found inline: %s" % line_units)
-                        log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_in) +
-                                    ':' + str(self.excellon_format_lower_in))
-                        # TODO: not working
-                        # FlatCAMApp.App.inform.emit("Detected INLINE: %s" % str(eline))
+                        log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
+                        self.convert_units(line_units)
+                        log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
                         continue
                     elif "METRIC" in eline:
-                        line_units = "METRIC"
+                        line_units = "MM"
                         # Modified for issue #80
-                        self.convert_units({"INCH": "IN", "METRIC": "MM"}[line_units])
-                        log.warning("Type of UNITS found inline: %s" % line_units)
-                        log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_mm) +
-                                    ':' + str(self.excellon_format_lower_mm))
-                        # TODO: not working
-                        # FlatCAMApp.App.inform.emit("Detected INLINE: %s" % str(eline))
+                        log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
+                        self.convert_units(line_units)
+                        log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                         continue
 
                     # Search for zeros type again because it might be alone on the line
                     match = re.search(r'[LT]Z', eline)
                     if match:
                         self.zeros = match.group()
-                        log.warning("Type of zeros found: %s" % self.zeros)
+                        log.warning("Type of ZEROS found: %s" % self.zeros)
                         continue
 
                 # ## Units and number format outside header# ##
                 match = self.units_re.match(eline)
                 if match:
-                    self.units = match.group(1)
+                    self.units = self.units = {"METRIC": "MM", "INCH": "IN"}[match.group(1)]
                     self.zeros = match.group(2)  # "T" or "L". Might be empty
                     self.excellon_format = match.group(3)
                     if self.excellon_format:
                         upper = len(self.excellon_format.partition('.')[0])
                         lower = len(self.excellon_format.partition('.')[2])
-                        if self.units == 'METRIC':
+                        if self.units == 'MM':
                             self.excellon_format_upper_mm = upper
                             self.excellon_format_lower_mm = lower
                         else:
@@ -856,18 +853,17 @@ class Excellon(Geometry):
                             self.excellon_format_lower_in = lower
 
                     # Modified for issue #80
-                    self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units])
-                    # log.warning("  Units/Format: %s %s" % (self.units, self.zeros))
-                    log.warning("Units: %s" % self.units)
-                    if self.units == 'MM':
-                        log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_mm) +
-                                    ':' + str(self.excellon_format_lower_mm))
-                    else:
-                        log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_in) +
-                                    ':' + str(self.excellon_format_lower_in))
-                    log.warning("Type of zeros found outside header, inline: %s" % self.zeros)
+                    log.warning("Type of UNITS found outside header, inline before conversion: %s" % self.units)
+                    self.convert_units(self.units)
+                    log.warning("Type of UNITS found outside header, inline after conversion: %s" % self.units)
 
-                    log.warning("UNITS found outside header")
+                    if self.units == 'MM':
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
+                    else:
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
+                    log.warning("Type of ZEROS found outside header, inline: %s" % self.zeros)
                     continue
 
                 log.warning("Line ignored: %s" % eline)
@@ -875,6 +871,7 @@ class Excellon(Geometry):
             # make sure that since we are in headerless mode, we convert the tools only after the file parsing
             # is finished since the tools definitions are spread in the Excellon body. We use as units the value
             # from self.defaults['excellon_units']
+
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
         except Exception:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
@@ -950,6 +947,8 @@ class Excellon(Geometry):
 
         :return: None
         """
+
+        log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry()")
         self.solid_geometry = []
         try:
             # clear the solid_geometry in self.tools
@@ -1084,16 +1083,29 @@ class Excellon(Geometry):
         :type str: IN or MM
         :return:
         """
-        log.debug("camlib.Excellon.convert_units()")
 
-        factor = Geometry.convert_units(self, units)
+        # factor = Geometry.convert_units(self, units)
+        obj_units = units
+        if obj_units.upper() == self.units.upper():
+            factor = 1.0
+        elif obj_units.upper() == "MM":
+            factor = 25.4
+        elif obj_units.upper() == "IN":
+            factor = 1 / 25.4
+        else:
+            log.error("Unsupported units: %s" % str(obj_units))
+            factor = 1.0
+        log.debug("flatcamParsers.ParseExcellon.Excellon.convert_units() --> Factor: %s" % str(factor))
+
+        self.units = obj_units
+        self.scale(factor, factor)
+        self.file_units_factor = factor
 
         # Tools
         for tname in self.tools:
             self.tools[tname]["C"] *= factor
 
         self.create_geometry()
-
         return factor
 
     def scale(self, xfactor, yfactor=None, point=None):
@@ -1108,7 +1120,7 @@ class Excellon(Geometry):
         :return: None
         :rtype: NOne
         """
-        log.debug("camlib.Excellon.scale()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon..scale()")
 
         if yfactor is None:
             yfactor = xfactor
