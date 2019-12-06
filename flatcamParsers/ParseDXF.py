@@ -25,6 +25,7 @@ def dxfpoint2shapely(point):
     geo = Point(point.dxf.location).buffer(0.01)
     return geo
 
+
 def dxfline2shapely(line):
 
     try:
@@ -38,6 +39,7 @@ def dxfline2shapely(line):
     geo = LineString([start, stop])
 
     return geo
+
 
 def dxfcircle2shapely(circle, n_points=100):
 

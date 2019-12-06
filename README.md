@@ -18,6 +18,8 @@ CAD program, and create G-Code for Isolation routing.
 - few bugs solved regarding the newly created empty objects
 - changed everywhere the name "postprocessor" with "preprocessor"
 - updated the preprocessor files in the toolchange section in order to avoid a graphical representation of travel lines glitch
+- fixed a GUI glitch in the Excellon tool table
+- added units to some of the parameters in the Properties Tool
 
 5.12.2019 
 

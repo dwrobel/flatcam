@@ -166,7 +166,7 @@ class Properties(FlatCAMTool):
 
         separator = self.addParent(parent, '')
 
-        self.addChild(obj_type, ['%s:' % _('Object Type'), ('%s' % (obj.kind.capitalize()))], True)
+        self.addChild(obj_type, ['%s:' % _('Object Type'), ('%s' % (obj.kind.upper()))], True, font=font, font_items=1)
         try:
             self.addChild(obj_type,
                           ['%s:' % _('Geo Type'),
@@ -318,7 +318,7 @@ class Properties(FlatCAMTool):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [obj]})
 
         # Units items
-        f_unit = {'in': _('Inch'), 'mm': _('MM')}[str(self.app.defaults['units'].lower())]
+        f_unit = {'in': _('Inch'), 'mm': _('Metric')}[str(self.app.defaults['units'].lower())]
         self.addChild(units, ['FlatCAM units:', f_unit], True)
 
         o_unit = {
@@ -390,7 +390,14 @@ class Properties(FlatCAMTool):
 
                 tot_slot_cnt += slot_cnt
 
-                self.addChild(toolid, [_('Diameter'), str(value['C'])], True)
+                self.addChild(
+                    toolid,
+                    [
+                        _('Diameter'),
+                        '%.*f %s' % (self.decimals, value['C'], self.app.defaults['units'].lower())
+                    ],
+                    True
+                )
                 self.addChild(toolid, [_('Drills number'), str(drill_cnt)], True)
                 self.addChild(toolid, [_('Slots number'), str(slot_cnt)], True)
 
@@ -436,7 +443,14 @@ class Properties(FlatCAMTool):
                 exc_tool = self.addParent(
                     tools, str(value['tool']), expanded=False, color=QtGui.QColor("#000000"), font=font
                 )
-                self.addChild(exc_tool, [_('Diameter'), str(tool_dia)], True)
+                self.addChild(
+                    exc_tool,
+                    [
+                        _('Diameter'),
+                        '%.*f %s' % (self.decimals, tool_dia, self.app.defaults['units'].lower())
+                    ],
+                    True
+                )
                 for k, v in value.items():
                     if k == 'solid_geometry':
                         printed_value = _('Present') if v else _('None')
@@ -448,9 +462,42 @@ class Properties(FlatCAMTool):
                     else:
                         pass
 
-                self.addChild(exc_tool, [_("Depth of Cut"), str(obj.z_cut - obj.tool_offset[tool_dia])], True)
-                self.addChild(exc_tool, [_("Clearance Height"), str(obj.z_move)], True)
-                self.addChild(exc_tool, [_("Feedrate"), str(obj.feedrate)], True)
+                self.addChild(
+                    exc_tool,
+                    [
+                        _("Depth of Cut"),
+                        '%.*f %s' % (
+                            self.decimals,
+                            (obj.z_cut - obj.tool_offset[tool_dia]),
+                            self.app.defaults['units'].lower()
+                        )
+                    ],
+                    True
+                )
+                self.addChild(
+                    exc_tool,
+                    [
+                        _("Clearance Height"),
+                        '%.*f %s' % (
+                            self.decimals,
+                            obj.z_move,
+                            self.app.defaults['units'].lower()
+                        )
+                    ],
+                    True
+                )
+                self.addChild(
+                    exc_tool,
+                    [
+                        _("Feedrate"),
+                        '%.*f %s/min' % (
+                            self.decimals,
+                            obj.feedrate,
+                            self.app.defaults['units'].lower()
+                        )
+                    ],
+                    True
+                )
 
             r_time = obj.routing_time
             if r_time > 1:
@@ -462,15 +509,15 @@ class Properties(FlatCAMTool):
             self.addChild(
                 others,
                 [
-                    '%s (%s):' % (_('Routing time'), units_lbl),
-                    '%.*f' % (self.decimals, r_time)],
+                    '%s:' % _('Routing time'),
+                    '%.*f %s' % (self.decimals, r_time, units_lbl)],
                 True
             )
             self.addChild(
                 others,
                 [
-                    '%s (%s):' % (_('Travelled distance'), f_unit),
-                    '%.*f' % (self.decimals, obj.travel_distance)
+                    '%s:' % _('Travelled distance'),
+                    '%.*f %s' % (self.decimals, obj.travel_distance, self.app.defaults['units'].lower())
                 ],
                 True
             )
@@ -488,11 +535,17 @@ class Properties(FlatCAMTool):
             item.setFont(0, font)
         return item
 
-    def addChild(self, parent, title, column1=None):
+    def addChild(self, parent, title, column1=None, font=None, font_items=None):
         item = QtWidgets.QTreeWidgetItem(parent)
         item.setText(0, str(title[0]))
         if column1 is not None:
             item.setText(1, str(title[1]))
+        if font and font_items:
+            try:
+                for fi in font_items:
+                    item.setFont(fi, font)
+            except TypeError:
+                item.setFont(font_items, font)
 
     def show_area_chull(self, area, length, width, chull_area, copper_area, location):
 
