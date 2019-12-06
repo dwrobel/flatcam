@@ -183,7 +183,7 @@ class TextEditor(QtWidgets.QWidget):
                 self.code_editor.setPlainText(self.code_edited)
                 file.close()
 
-    def handleSaveGCode(self, name=None, filt=None):
+    def handleSaveGCode(self, name=None, filt=None, callback=None):
         self.app.report_usage("handleSaveGCode()")
 
         if filt:
@@ -234,6 +234,9 @@ class TextEditor(QtWidgets.QWidget):
             self.app.file_opened.emit("cncjob", filename)
         self.app.file_saved.emit("cncjob", filename)
         self.app.inform.emit('%s: %s' % (_("Saved to"), str(filename)))
+
+        if callback is not None:
+            callback()
 
     def handleFindGCode(self):
         self.app.report_usage("handleFindGCode()")

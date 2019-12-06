@@ -5,10 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCTable
+from flatcamEditors.FlatCAMTextEditor import TextEditor
 
 from shapely.geometry import Point
 from shapely.geometry.base import *
@@ -28,9 +29,9 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolCalibrateExcellon(FlatCAMTool):
+class ToolCalibrate(FlatCAMTool):
 
-    toolName = _("Calibrate Excellon")
+    toolName = _("Calibrate Tool")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -288,108 +289,6 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.points_table.setMinimumHeight(self.points_table.getHeight() + 2)
         self.points_table.setMaximumHeight(self.points_table.getHeight() + 3)
 
-        # # BOTTOM LEFT
-        # self.bottom_left_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Bottom Left'))
-        # grid_lay.addWidget(self.bottom_left_lbl, 3, 0)
-        # self.bottom_left_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        # grid_lay.addWidget(self.bottom_left_tgt_lbl, 3, 1)
-        # self.bottom_left_found_lbl = QtWidgets.QLabel('%s' % _('Cal. Origin'))
-        # grid_lay.addWidget(self.bottom_left_found_lbl, 3, 2)
-        #
-        # self.bottom_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        # grid_lay.addWidget(self.bottom_left_coordx_lbl, 4, 0)
-        # self.bottom_left_coordx_tgt = EvalEntry()
-        # self.bottom_left_coordx_tgt.setReadOnly(True)
-        # grid_lay.addWidget(self.bottom_left_coordx_tgt, 4, 1)
-        # self.bottom_left_coordx_found = EvalEntry()
-        # grid_lay.addWidget(self.bottom_left_coordx_found, 4, 2)
-        #
-        # self.bottom_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        # grid_lay.addWidget(self.bottom_left_coordy_lbl, 5, 0)
-        # self.bottom_left_coordy_tgt = EvalEntry()
-        # self.bottom_left_coordy_tgt.setReadOnly(True)
-        # grid_lay.addWidget(self.bottom_left_coordy_tgt, 5, 1)
-        # self.bottom_left_coordy_found = EvalEntry()
-        # grid_lay.addWidget(self.bottom_left_coordy_found, 5, 2)
-        #
-        # self.bottom_left_coordx_found.set_value(_('Set Origin'))
-        # self.bottom_left_coordy_found.set_value(_('Set Origin'))
-        # self.bottom_left_coordx_found.setDisabled(True)
-        # self.bottom_left_coordy_found.setDisabled(True)
-        #
-        # # BOTTOM RIGHT
-        # self.bottom_right_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Bottom Right'))
-        # grid_lay.addWidget(self.bottom_right_lbl, 6, 0)
-        # self.bottom_right_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        # grid_lay.addWidget(self.bottom_right_tgt_lbl, 6, 1)
-        # self.bottom_right_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
-        # grid_lay.addWidget(self.bottom_right_found_lbl, 6, 2)
-        #
-        # self.bottom_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        # grid_lay.addWidget(self.bottom_right_coordx_lbl, 7, 0)
-        # self.bottom_right_coordx_tgt = EvalEntry()
-        # self.bottom_right_coordx_tgt.setReadOnly(True)
-        # grid_lay.addWidget(self.bottom_right_coordx_tgt, 7, 1)
-        # self.bottom_right_coordx_found = EvalEntry()
-        # grid_lay.addWidget(self.bottom_right_coordx_found, 7, 2)
-        #
-        # self.bottom_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        # grid_lay.addWidget(self.bottom_right_coordy_lbl, 8, 0)
-        # self.bottom_right_coordy_tgt = EvalEntry()
-        # self.bottom_right_coordy_tgt.setReadOnly(True)
-        # grid_lay.addWidget(self.bottom_right_coordy_tgt, 8, 1)
-        # self.bottom_right_coordy_found = EvalEntry()
-        # grid_lay.addWidget(self.bottom_right_coordy_found, 8, 2)
-        #
-        # # TOP LEFT
-        # self.top_left_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Top Left'))
-        # grid_lay.addWidget(self.top_left_lbl, 9, 0)
-        # self.top_left_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        # grid_lay.addWidget(self.top_left_tgt_lbl, 9, 1)
-        # self.top_left_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
-        # grid_lay.addWidget(self.top_left_found_lbl, 9, 2)
-        #
-        # self.top_left_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        # grid_lay.addWidget(self.top_left_coordx_lbl, 10, 0)
-        # self.top_left_coordx_tgt = EvalEntry()
-        # self.top_left_coordx_tgt.setReadOnly(True)
-        # grid_lay.addWidget(self.top_left_coordx_tgt, 10, 1)
-        # self.top_left_coordx_found = EvalEntry()
-        # grid_lay.addWidget(self.top_left_coordx_found, 10, 2)
-        #
-        # self.top_left_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        # grid_lay.addWidget(self.top_left_coordy_lbl, 11, 0)
-        # self.top_left_coordy_tgt = EvalEntry()
-        # self.top_left_coordy_tgt.setReadOnly(True)
-        # grid_lay.addWidget(self.top_left_coordy_tgt, 11, 1)
-        # self.top_left_coordy_found = EvalEntry()
-        # grid_lay.addWidget(self.top_left_coordy_found, 11, 2)
-        #
-        # # TOP RIGHT
-        # self.top_right_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Top Right'))
-        # grid_lay.addWidget(self.top_right_lbl, 12, 0)
-        # self.top_right_tgt_lbl = QtWidgets.QLabel('%s' % _('Target'))
-        # grid_lay.addWidget(self.top_right_tgt_lbl, 12, 1)
-        # self.top_right_found_lbl = QtWidgets.QLabel('%s' % _('Found Delta'))
-        # grid_lay.addWidget(self.top_right_found_lbl, 12, 2)
-        #
-        # self.top_right_coordx_lbl = QtWidgets.QLabel('%s' % _('X'))
-        # grid_lay.addWidget(self.top_right_coordx_lbl, 13, 0)
-        # self.top_right_coordx_tgt = EvalEntry()
-        # self.top_right_coordx_tgt.setReadOnly(True)
-        # grid_lay.addWidget(self.top_right_coordx_tgt, 13, 1)
-        # self.top_right_coordx_found = EvalEntry()
-        # grid_lay.addWidget(self.top_right_coordx_found, 13, 2)
-        #
-        # self.top_right_coordy_lbl = QtWidgets.QLabel('%s' % _('Y'))
-        # grid_lay.addWidget(self.top_right_coordy_lbl, 14, 0)
-        # self.top_right_coordy_tgt = EvalEntry()
-        # self.top_right_coordy_tgt.setReadOnly(True)
-        # grid_lay.addWidget(self.top_right_coordy_tgt, 14, 1)
-        # self.top_right_coordy_found = EvalEntry()
-        # grid_lay.addWidget(self.top_right_coordy_found, 14, 2)
-
-        # STEP 1 #
         step_1 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 1"))
         step_1.setToolTip(
             _("Pick four points by clicking inside the drill holes.\n"
@@ -403,7 +302,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.start_button.setToolTip(
             _("Pick four points by clicking inside the drill holes.\n"
               "Those four points should be in the four squares of\n"
-              "the Excellon object.")
+              "the object.")
         )
         self.start_button.setStyleSheet("""
                         QPushButton
@@ -644,7 +543,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
         self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolCalibrateExcellon()")
+        self.app.report_usage("ToolCalibrate()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -669,7 +568,7 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Cal Exc Tool"))
+        self.app.ui.notebook.setTabText(2, _("Calibrate Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+E', **kwargs)
@@ -751,13 +650,13 @@ class ToolCalibrateExcellon(FlatCAMTool):
                 self.app.ui.grid_snap_btn.trigger()
 
     def gcode_header(self):
-        log.debug("ToolCalibrateExcellon.gcode_header()")
+        log.debug("ToolCalibrate.gcode_header()")
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
         gcode = '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
                 (str(self.app.version), str(self.app.version_date)) + '\n'
 
-        gcode += '(Name: ' + _('Verification GCode') + ')\n'
+        gcode += '(Name: ' + _('Verification GCode for FlatCAM Calibrate Tool') + ')\n'
 
         gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
         gcode += '(Created on ' + time_str + ')\n' + '\n'
@@ -767,7 +666,15 @@ class ToolCalibrateExcellon(FlatCAMTool):
         gcode += 'G94\n\n'
         return gcode
 
+    def close_tab(self):
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.tabText(idx) == _("Gcode Viewer"):
+                wdg = self.app.ui.plot_tab_area.widget(idx)
+                wdg.deleteLater()
+                self.app.ui.plot_tab_area.removeTab(idx)
+
     def generate_verification_gcode(self):
+
         travel_z = '%.*f' % (self.decimals, self.travelz_entry.get_value())
         toolchange_z = '%.*f' % (self.decimals, self.toolchangez_entry.get_value())
         verification_z = '%.*f' % (self.decimals, self.verz_entry.get_value())
@@ -812,26 +719,64 @@ class ToolCalibrateExcellon(FlatCAMTool):
 
         gcode += 'M2'
 
-        _filter_ = "G-Code Files (*.nc);;All Files (*.*)"
+        self.gcode_editor_tab = TextEditor(app=self.app, plain_text=True)
 
+        # add the tab if it was closed
+        self.app.ui.plot_tab_area.addTab(self.gcode_editor_tab, '%s' % _("Gcode Viewer"))
+        self.gcode_editor_tab.setObjectName('gcode_viewer_tab')
+
+        # delete the absolute and relative position and messages in the infobar
+        self.app.ui.position_label.setText("")
+        self.app.ui.rel_position_label.setText("")
+
+        # first clear previous text in text editor (if any)
+        self.gcode_editor_tab.code_editor.clear()
+        self.gcode_editor_tab.code_editor.setReadOnly(False)
+
+        self.gcode_editor_tab.code_editor.completer_enable = False
+        self.gcode_editor_tab.buttonRun.hide()
+
+        # Switch plot_area to CNCJob tab
+        self.app.ui.plot_tab_area.setCurrentWidget(self.gcode_editor_tab)
+
+        self.gcode_editor_tab.t_frame.hide()
+        # then append the text from GCode to the text editor
         try:
-            dir_file_to_save = self.app.get_last_save_folder() + '/' + 'ver_gcode'
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
-                caption=_("Export Machine Code ..."),
-                directory=dir_file_to_save,
-                filter=_filter_
-            )
-        except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Machine Code ..."), filter=_filter_)
-
-        filename = str(filename)
-
-        if filename == '':
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Machine Code cancelled ..."))
+            self.gcode_editor_tab.code_editor.setPlainText(gcode)
+        except Exception as e:
+            self.app.inform.emit('[ERROR] %s %s' % ('ERROR -->', str(e)))
             return
 
-        with open(filename, 'w') as f:
-            f.write(gcode)
+        self.gcode_editor_tab.code_editor.moveCursor(QtGui.QTextCursor.Start)
+
+        self.gcode_editor_tab.t_frame.show()
+        self.app.proc_container.view.set_idle()
+
+        self.app.inform.emit('[success] %s...' % _('Loaded Machine Code into Code Editor'))
+
+        _filter_ = "G-Code Files (*.nc);;All Files (*.*)"
+        self.gcode_editor_tab.buttonSave.clicked.disconnect()
+        self.gcode_editor_tab.buttonSave.clicked.connect(
+            lambda: self.gcode_editor_tab.handleSaveGCode(name='fc_ver_gcode', filt=_filter_, callback=self.close_tab))
+        #
+        # try:
+        #     dir_file_to_save = self.app.get_last_save_folder() + '/' + 'ver_gcode'
+        #     filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+        #         caption=_("Export Machine Code ..."),
+        #         directory=dir_file_to_save,
+        #         filter=_filter_
+        #     )
+        # except TypeError:
+        #     filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Machine Code ..."), filter=_filter_)
+        #
+        # filename = str(filename)
+        #
+        # if filename == '':
+        #     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Machine Code cancelled ..."))
+        #     return
+        #
+        # with open(filename, 'w') as f:
+        #     f.write(gcode)
 
     def calculate_factors(self):
         origin_x = self.click_points[0][0]

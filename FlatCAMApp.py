@@ -2964,7 +2964,7 @@ class App(QtCore.QObject):
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
-        self.cal_exc_tool = ToolCalibrateExcellon(self)
+        self.cal_exc_tool = ToolCalibrate(self)
         self.cal_exc_tool.install(icon=QtGui.QIcon('share/drill16.png'), pos=self.ui.menutool,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)

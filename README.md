@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.12.2019 
+
+- renamed Calibrate Excellon Tool to a simpler Calibrate Tool
+- Calibrate Tool - when generating verification GCode it will always load into an Editor from which it can be edited and/or saved. On save the editor will close.
+
 6.12.2019
 
 - fixed the toggle_units() method so now the grid values are accurate to the decimal

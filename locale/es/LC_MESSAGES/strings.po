@@ -1882,7 +1882,7 @@ msgstr "Ángulo"
 
 #: FlatCAMCommon.py:524 flatcamGUI/ObjectUI.py:798 flatcamGUI/ObjectUI.py:1369
 #: flatcamGUI/PreferencesUI.py:2304 flatcamGUI/PreferencesUI.py:3178
-#: flatcamTools/ToolCalibrateExcellon.py:82
+#: flatcamTools/ToolCalibrate.py:82
 msgid "Travel Z"
 msgstr "Viaje Z"
 
@@ -1937,7 +1937,7 @@ msgid "Toolchange XY"
 msgstr "Cambio de herra X, Y"
 
 #: FlatCAMCommon.py:535 flatcamGUI/PreferencesUI.py:2330
-#: flatcamGUI/PreferencesUI.py:3210 flatcamTools/ToolCalibrateExcellon.py:119
+#: flatcamGUI/PreferencesUI.py:3210 flatcamTools/ToolCalibrate.py:119
 msgid "Toolchange Z"
 msgstr "Cambio de herramienta Z"
 
@@ -2685,13 +2685,13 @@ msgid "Plotting..."
 msgstr "Trazando ..."
 
 #: FlatCAMObj.py:6172 FlatCAMObj.py:6177
-#: flatcamTools/ToolCalibrateExcellon.py:765
-#: flatcamTools/ToolCalibrateExcellon.py:770
+#: flatcamTools/ToolCalibrate.py:765
+#: flatcamTools/ToolCalibrate.py:770
 #: flatcamTools/ToolSolderPaste.py:1470
 msgid "Export Machine Code ..."
 msgstr "Exportar código de máquina ..."
 
-#: FlatCAMObj.py:6182 flatcamTools/ToolCalibrateExcellon.py:775
+#: FlatCAMObj.py:6182 flatcamTools/ToolCalibrate.py:775
 #: flatcamTools/ToolSolderPaste.py:1474
 msgid "Export Machine Code cancelled ..."
 msgstr "Exportar código de máquina cancelado ..."
@@ -3791,8 +3791,8 @@ msgstr "Sesgo / cizalla"
 #: flatcamGUI/FlatCAMGUI.py:1849 flatcamGUI/FlatCAMGUI.py:1927
 #: flatcamGUI/FlatCAMGUI.py:2262 flatcamGUI/ObjectUI.py:91
 #: flatcamGUI/ObjectUI.py:112 flatcamGUI/PreferencesUI.py:5139
-#: flatcamTools/ToolCalibrateExcellon.py:446
-#: flatcamTools/ToolCalibrateExcellon.py:473 flatcamTools/ToolTransform.py:27
+#: flatcamTools/ToolCalibrate.py:446
+#: flatcamTools/ToolCalibrate.py:473 flatcamTools/ToolTransform.py:27
 msgid "Scale"
 msgstr "Escala"
 
@@ -3848,7 +3848,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:711
 #: flatcamEditors/FlatCAMGrbEditor.py:5102
-#: flatcamTools/ToolCalibrateExcellon.py:482
+#: flatcamTools/ToolCalibrate.py:482
 msgid "Angle X:"
 msgstr "Ángulo X:"
 
@@ -3856,8 +3856,8 @@ msgstr "Ángulo X:"
 #: flatcamEditors/FlatCAMGeoEditor.py:731
 #: flatcamEditors/FlatCAMGrbEditor.py:5104
 #: flatcamEditors/FlatCAMGrbEditor.py:5122 flatcamGUI/PreferencesUI.py:5118
-#: flatcamGUI/PreferencesUI.py:5132 flatcamTools/ToolCalibrateExcellon.py:484
-#: flatcamTools/ToolCalibrateExcellon.py:497
+#: flatcamGUI/PreferencesUI.py:5132 flatcamTools/ToolCalibrate.py:484
+#: flatcamTools/ToolCalibrate.py:497
 msgid ""
 "Angle for Skew action, in degrees.\n"
 "Float number between -360 and 359."
@@ -3885,7 +3885,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:729
 #: flatcamEditors/FlatCAMGrbEditor.py:5120
-#: flatcamTools/ToolCalibrateExcellon.py:495
+#: flatcamTools/ToolCalibrate.py:495
 msgid "Angle Y:"
 msgstr "Ángulo Y:"
 
@@ -3896,13 +3896,13 @@ msgstr "Sesgo y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:768
 #: flatcamEditors/FlatCAMGrbEditor.py:5159
-#: flatcamTools/ToolCalibrateExcellon.py:449
+#: flatcamTools/ToolCalibrate.py:449
 msgid "Factor X:"
 msgstr "Factor X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:770
 #: flatcamEditors/FlatCAMGrbEditor.py:5161
-#: flatcamTools/ToolCalibrateExcellon.py:451
+#: flatcamTools/ToolCalibrate.py:451
 msgid "Factor for Scale action over X axis."
 msgstr "Factor para la acción de escala sobre el eje X."
 
@@ -3926,13 +3926,13 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:785
 #: flatcamEditors/FlatCAMGrbEditor.py:5176
-#: flatcamTools/ToolCalibrateExcellon.py:461
+#: flatcamTools/ToolCalibrate.py:461
 msgid "Factor Y:"
 msgstr "Factor Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:787
 #: flatcamEditors/FlatCAMGrbEditor.py:5178
-#: flatcamTools/ToolCalibrateExcellon.py:463
+#: flatcamTools/ToolCalibrate.py:463
 msgid "Factor for Scale action over Y axis."
 msgstr "Factor de acción de escala sobre eje Y."
 
@@ -6330,12 +6330,12 @@ msgstr "General"
 msgid "GERBER"
 msgstr "GERBER"
 
-#: flatcamGUI/FlatCAMGUI.py:994 flatcamTools/ToolCalibrateExcellon.py:66
-#: flatcamTools/ToolCalibrateExcellon.py:543 flatcamTools/ToolDblSided.py:79
+#: flatcamGUI/FlatCAMGUI.py:994 flatcamTools/ToolCalibrate.py:66
+#: flatcamTools/ToolCalibrate.py:543 flatcamTools/ToolDblSided.py:79
 msgid "EXCELLON"
 msgstr "EXCELLON"
 
-#: flatcamGUI/FlatCAMGUI.py:1004 flatcamTools/ToolCalibrateExcellon.py:556
+#: flatcamGUI/FlatCAMGUI.py:1004 flatcamTools/ToolCalibrate.py:556
 #: flatcamTools/ToolDblSided.py:101
 msgid "GEOMETRY"
 msgstr "GEOMETRÍA"
@@ -7165,7 +7165,7 @@ msgstr "Trazar (mostrar) este objeto."
 #: flatcamGUI/ObjectUI.py:199 flatcamGUI/ObjectUI.py:697
 #: flatcamGUI/ObjectUI.py:1089 flatcamGUI/ObjectUI.py:1671
 #: flatcamGUI/ObjectUI.py:1952 flatcamGUI/ObjectUI.py:2004
-#: flatcamTools/ToolCalibrateExcellon.py:159 flatcamTools/ToolFiducials.py:73
+#: flatcamTools/ToolCalibrate.py:159 flatcamTools/ToolFiducials.py:73
 msgid "Name"
 msgstr "Nombre"
 
@@ -11525,8 +11525,8 @@ msgstr ""
 "Diversas transformaciones que se pueden aplicar.\n"
 "en un objeto FlatCAM."
 
-#: flatcamGUI/PreferencesUI.py:5108 flatcamTools/ToolCalibrateExcellon.py:479
-#: flatcamTools/ToolCalibrateExcellon.py:508
+#: flatcamGUI/PreferencesUI.py:5108 flatcamTools/ToolCalibrate.py:479
+#: flatcamTools/ToolCalibrate.py:508
 msgid "Skew"
 msgstr "Sesgar"
 
@@ -12770,30 +12770,30 @@ msgstr ""
 msgid "Calc. Tool"
 msgstr "Calc. Herramienta"
 
-#: flatcamTools/ToolCalibrateExcellon.py:33
+#: flatcamTools/ToolCalibrate.py:33
 #, fuzzy
 #| msgid "Creating Excellon."
 msgid "Calibrate Excellon"
 msgstr "Creación de Excellon."
 
-#: flatcamTools/ToolCalibrateExcellon.py:68
+#: flatcamTools/ToolCalibrate.py:68
 #, fuzzy
 #| msgid "The FlatCAM object to be used as non copper clearing reference."
 msgid "Excellon Object to be used as a source for reference points."
 msgstr ""
 "El objeto FlatCAM que se utilizará como referencia de compensación sin cobre."
 
-#: flatcamTools/ToolCalibrateExcellon.py:75
+#: flatcamTools/ToolCalibrate.py:75
 #, fuzzy
 #| msgid "Slot Parameters"
 msgid "GCode Parameters"
 msgstr "Parámetros de ranura"
 
-#: flatcamTools/ToolCalibrateExcellon.py:77
+#: flatcamTools/ToolCalibrate.py:77
 msgid "Parameters used when creating the GCode in this tool."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:84
+#: flatcamTools/ToolCalibrate.py:84
 #, fuzzy
 #| msgid ""
 #| "The height (Z) for travel between pads\n"
@@ -12803,266 +12803,266 @@ msgstr ""
 "La altura (Z) para viajar entre almohadillas\n"
 "(sin dispensar pasta de soldadura)."
 
-#: flatcamTools/ToolCalibrateExcellon.py:96
+#: flatcamTools/ToolCalibrate.py:96
 #, fuzzy
 #| msgid "Gerber Specification"
 msgid "Verification Z"
 msgstr "Especificación de Gerber"
 
-#: flatcamTools/ToolCalibrateExcellon.py:98
+#: flatcamTools/ToolCalibrate.py:98
 msgid "Height (Z) for checking the point."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:110
+#: flatcamTools/ToolCalibrate.py:110
 msgid "Zero Z tool"
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:112
+#: flatcamTools/ToolCalibrate.py:112
 msgid ""
 "Include a sequence to zero the height (Z)\n"
 "of the verification tool."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:121
+#: flatcamTools/ToolCalibrate.py:121
 msgid "Height (Z) for mounting the verification probe."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:143
+#: flatcamTools/ToolCalibrate.py:143
 msgid "Calibration Points"
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:145
+#: flatcamTools/ToolCalibrate.py:145
 msgid ""
 "Contain the expected calibration points and the\n"
 "ones measured."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:160 flatcamTools/ToolSub.py:73
+#: flatcamTools/ToolCalibrate.py:160 flatcamTools/ToolSub.py:73
 #: flatcamTools/ToolSub.py:119
 msgid "Target"
 msgstr "Objetivo"
 
-#: flatcamTools/ToolCalibrateExcellon.py:161
+#: flatcamTools/ToolCalibrate.py:161
 msgid "Found Delta"
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:173
+#: flatcamTools/ToolCalibrate.py:173
 #, fuzzy
 #| msgid "Bottom Left"
 msgid "Bot Left X"
 msgstr "Abajo a la izquierda"
 
-#: flatcamTools/ToolCalibrateExcellon.py:182
+#: flatcamTools/ToolCalibrate.py:182
 #, fuzzy
 #| msgid "Bottom Left"
 msgid "Bot Left Y"
 msgstr "Abajo a la izquierda"
 
-#: flatcamTools/ToolCalibrateExcellon.py:190
-#: flatcamTools/ToolCalibrateExcellon.py:191
+#: flatcamTools/ToolCalibrate.py:190
+#: flatcamTools/ToolCalibrate.py:191
 #, fuzzy
 #| msgid "Origin set"
 msgid "Origin"
 msgstr "Conjunto de origen"
 
-#: flatcamTools/ToolCalibrateExcellon.py:202
+#: flatcamTools/ToolCalibrate.py:202
 #, fuzzy
 #| msgid "Bottom Right"
 msgid "Bot Right X"
 msgstr "Abajo a la derecha"
 
-#: flatcamTools/ToolCalibrateExcellon.py:212
+#: flatcamTools/ToolCalibrate.py:212
 #, fuzzy
 #| msgid "Bottom Right"
 msgid "Bot Right Y"
 msgstr "Abajo a la derecha"
 
-#: flatcamTools/ToolCalibrateExcellon.py:227
+#: flatcamTools/ToolCalibrate.py:227
 #, fuzzy
 #| msgid "Top Left"
 msgid "Top Left X"
 msgstr "Arriba a la izquierda"
 
-#: flatcamTools/ToolCalibrateExcellon.py:236
+#: flatcamTools/ToolCalibrate.py:236
 #, fuzzy
 #| msgid "Top Left"
 msgid "Top Left Y"
 msgstr "Arriba a la izquierda"
 
-#: flatcamTools/ToolCalibrateExcellon.py:251
+#: flatcamTools/ToolCalibrate.py:251
 #, fuzzy
 #| msgid "Top right"
 msgid "Top Right X"
 msgstr "Arriba a la derecha"
 
-#: flatcamTools/ToolCalibrateExcellon.py:260
+#: flatcamTools/ToolCalibrate.py:260
 #, fuzzy
 #| msgid "Top right"
 msgid "Top Right Y"
 msgstr "Arriba a la derecha"
 
-#: flatcamTools/ToolCalibrateExcellon.py:393
+#: flatcamTools/ToolCalibrate.py:393
 #: flatcamTools/ToolSolderPaste.py:148
 msgid "STEP 1"
 msgstr "PASO 1"
 
-#: flatcamTools/ToolCalibrateExcellon.py:395
+#: flatcamTools/ToolCalibrate.py:395
 msgid ""
 "Pick four points by clicking inside the drill holes.\n"
 "Those four points should be in the four\n"
 "(as much as possible) corners of the Excellon object."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:402
+#: flatcamTools/ToolCalibrate.py:402
 msgid "Acquire Calibration Points"
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:404
+#: flatcamTools/ToolCalibrate.py:404
 msgid ""
 "Pick four points by clicking inside the drill holes.\n"
 "Those four points should be in the four squares of\n"
 "the Excellon object."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:412
+#: flatcamTools/ToolCalibrate.py:412
 #: flatcamTools/ToolSolderPaste.py:358
 msgid "STEP 2"
 msgstr "PASO 2"
 
-#: flatcamTools/ToolCalibrateExcellon.py:414
-#: flatcamTools/ToolCalibrateExcellon.py:422
+#: flatcamTools/ToolCalibrate.py:414
+#: flatcamTools/ToolCalibrate.py:422
 msgid ""
 "Generate GCode file to locate and align the PCB by using\n"
 "the four points acquired above."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:420
+#: flatcamTools/ToolCalibrate.py:420
 #: flatcamTools/ToolSolderPaste.py:341
 msgid "Generate GCode"
 msgstr "Generar GCode"
 
-#: flatcamTools/ToolCalibrateExcellon.py:429
+#: flatcamTools/ToolCalibrate.py:429
 #: flatcamTools/ToolSolderPaste.py:387
 msgid "STEP 3"
 msgstr "PASO 3"
 
-#: flatcamTools/ToolCalibrateExcellon.py:431
-#: flatcamTools/ToolCalibrateExcellon.py:440
+#: flatcamTools/ToolCalibrate.py:431
+#: flatcamTools/ToolCalibrate.py:440
 msgid ""
 "Calculate Scale and Skew factors based on the differences (delta)\n"
 "found when checking the PCB pattern. The differences must be filled\n"
 "in the fields Found (Delta)."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:438
+#: flatcamTools/ToolCalibrate.py:438
 #, fuzzy
 #| msgid "Calculators"
 msgid "Calculate Factors"
 msgstr "Calculadoras"
 
-#: flatcamTools/ToolCalibrateExcellon.py:475
+#: flatcamTools/ToolCalibrate.py:475
 msgid "Apply Scale factors on the calibration points."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:510
+#: flatcamTools/ToolCalibrate.py:510
 msgid "Apply Skew factors on the calibration points."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:515
+#: flatcamTools/ToolCalibrate.py:515
 #: flatcamTools/ToolSolderPaste.py:433
 msgid "STEP 4"
 msgstr "PASO 4"
 
-#: flatcamTools/ToolCalibrateExcellon.py:517
-#: flatcamTools/ToolCalibrateExcellon.py:525
+#: flatcamTools/ToolCalibrate.py:517
+#: flatcamTools/ToolCalibrate.py:525
 msgid ""
 "Generate verification GCode file adjusted with\n"
 "the factors above."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:523
+#: flatcamTools/ToolCalibrate.py:523
 #, fuzzy
 #| msgid "Generate GCode"
 msgid "Generate Adjusted GCode"
 msgstr "Generar GCode"
 
-#: flatcamTools/ToolCalibrateExcellon.py:531
+#: flatcamTools/ToolCalibrate.py:531
 #, fuzzy
 #| msgid "STEP 1"
 msgid "STEP 5"
 msgstr "PASO 1"
 
-#: flatcamTools/ToolCalibrateExcellon.py:533
+#: flatcamTools/ToolCalibrate.py:533
 msgid ""
 "Ajust the Excellon and Cutout Geometry objects\n"
 "with the factors determined, and verified, above."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:545
+#: flatcamTools/ToolCalibrate.py:545
 #, fuzzy
 #| msgid "Excellon Object to be mirrored."
 msgid "Excellon Object to be adjusted."
 msgstr "Excellon Objeto a ser reflejado."
 
-#: flatcamTools/ToolCalibrateExcellon.py:558
+#: flatcamTools/ToolCalibrate.py:558
 #, fuzzy
 #| msgid "Geometry Obj to be mirrored."
 msgid "Geometry Object to be adjusted."
 msgstr "Obj de geometría para ser reflejado."
 
-#: flatcamTools/ToolCalibrateExcellon.py:565
+#: flatcamTools/ToolCalibrate.py:565
 #, fuzzy
 #| msgid "Edit Object\tE"
 msgid "Adjust Objects"
 msgstr "Editar objeto\tE"
 
-#: flatcamTools/ToolCalibrateExcellon.py:567
+#: flatcamTools/ToolCalibrate.py:567
 msgid ""
 "Adjust (scale and/or skew) the objects\n"
 "with the factors determined above."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:617
+#: flatcamTools/ToolCalibrate.py:617
 #, fuzzy
 #| msgid "Calc. Tool"
 msgid "Cal Exc Tool"
 msgstr "Calc. Herramienta"
 
-#: flatcamTools/ToolCalibrateExcellon.py:648 flatcamTools/ToolDblSided.py:457
+#: flatcamTools/ToolCalibrate.py:648 flatcamTools/ToolDblSided.py:457
 msgid "There is no Excellon object loaded ..."
 msgstr "No hay ningún objeto Excellon cargado ..."
 
-#: flatcamTools/ToolCalibrateExcellon.py:651
+#: flatcamTools/ToolCalibrate.py:651
 #, fuzzy
 #| msgid "Click inside the desired polygon."
 msgid "Click inside the First drill point. Bottom Left..."
 msgstr "Haga clic dentro del polígono deseado."
 
-#: flatcamTools/ToolCalibrateExcellon.py:679
+#: flatcamTools/ToolCalibrate.py:679
 msgid "Click inside the Second drill point. Bottom Right..."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:683
+#: flatcamTools/ToolCalibrate.py:683
 #, fuzzy
 #| msgid "Click inside the desired polygon."
 msgid "Click inside the Third drill point. Top Left..."
 msgstr "Haga clic dentro del polígono deseado."
 
-#: flatcamTools/ToolCalibrateExcellon.py:687
+#: flatcamTools/ToolCalibrate.py:687
 msgid "Click inside the Fourth drill point. Top Right..."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:691
+#: flatcamTools/ToolCalibrate.py:691
 msgid "Done. All four points have been acquired."
 msgstr ""
 
-#: flatcamTools/ToolCalibrateExcellon.py:705
+#: flatcamTools/ToolCalibrate.py:705
 #, fuzzy
 #| msgid "Generate GCode"
 msgid "Verification GCode"
 msgstr "Generar GCode"
 
-#: flatcamTools/ToolCalibrateExcellon.py:721
+#: flatcamTools/ToolCalibrate.py:721
 msgid "Cancelled. Four points are needed for GCode generation."
 msgstr ""
 
