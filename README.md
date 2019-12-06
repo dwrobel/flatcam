@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.12.2019
+
+- fixed the toggle_units() method so now the grid values are accurate to the decimal
+
 5.12.2019 
 
 - in NCC Tool, the new Geometry object that is created on copper clear now has the solid_geometry attribute where the geometry is stored not only in the obj.tools attribute

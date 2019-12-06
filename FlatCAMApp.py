@@ -2454,7 +2454,7 @@ class App(QtCore.QObject):
         # #####################################################################################
 
         # hold the App units
-        self.units = 'IN'
+        self.units = 'MM'
 
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
@@ -4129,8 +4129,7 @@ class App(QtCore.QObject):
         # Check units and convert if necessary
         # This condition CAN be true because initialize() can change obj.units
         if self.options["units"].upper() != obj.units.upper():
-            self.inform.emit('%s: %s' %
-                             (_("Converting units to "), self.options["units"]))
+            self.inform.emit('%s: %s' % (_("Converting units to "), self.options["units"]))
             obj.convert_units(self.options["units"])
             t3 = time.time()
             self.log.debug("%f seconds converting units." % (t3 - t2))
@@ -5609,6 +5608,22 @@ class App(QtCore.QObject):
         """
         self.ui.units_label.setText("[" + units.lower() + "]")
 
+    def on_toggle_units_click(self):
+        try:
+            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        if self.defaults["units"] == 'MM':
+            self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
+        else:
+            self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
+
+        self.on_toggle_units(no_pref=True)
+
+        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+            lambda: self.on_toggle_units(no_pref=False))
+
     def on_toggle_units(self, no_pref=False):
         """
         Callback for the Units radio-button change in the Preferences tab.
@@ -5761,16 +5776,15 @@ class App(QtCore.QObject):
                         self.defaults[dim] = val
 
         # The scaling factor depending on choice of units.
-
         factor = 25.4 if new_units == 'MM' else 1/25.4
 
         # Changing project units. Warn user.
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon('share/toggle_units32.png'))
-        msgbox.setText("<B>%s</B>" % _("Change project units ..."))
-        msgbox.setInformativeText(_("Changing the units of the project causes all geometrical "
-                                    "properties of all objects to be scaled accordingly.\nContinue?"))
+        msgbox.setText(_("Changing the units of the project\n"
+                         "will scale all objects.\n\n"
+                         "Do you want to continue?"))
         bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
         msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
@@ -5786,28 +5800,25 @@ class App(QtCore.QObject):
 
                 self.defaults["units"] = new_units
 
-                # save the defaults to file, some may assume that the conversion is enough and it's not
-                self.on_save_button(save_to_file=True)
+                # update the defaults from form, some may assume that the conversion is enough and it's not
+                self.on_options_app2project()
 
-            self.should_we_save = True
+            # update the objects
+            for obj in self.collection.get_list():
+                obj.convert_units(new_units)
+
+                # make that the properties stored in the object are also updated
+                self.object_changed.emit(obj)
+                # rebuild the object UI
+                obj.build_ui()
 
             # change this only if the workspace is active
             if self.defaults['global_workspace'] is True:
                 self.plotcanvas.draw_workspace(pagesize=self.defaults['global_workspaceT'])
 
             # adjust the grid values on the main toolbar
-            val_x = float(self.ui.grid_gap_x_entry.get_value()) * factor
-            self.ui.grid_gap_x_entry.set_value(val_x, decimals=self.decimals)
-            if not self.ui.grid_gap_link_cb.isChecked():
-                val_y = float(self.ui.grid_gap_y_entry.get_value()) * factor
-                self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
-
-            for obj in self.collection.get_list():
-                obj.convert_units(new_units)
-
-                # make that the properties stored in the object are also updated
-                self.object_changed.emit(obj)
-                obj.build_ui()
+            val_x = float(self.defaults['global_gridx']) * factor
+            val_y = val_x if self.ui.grid_gap_link_cb.isChecked() else float(self.defaults['global_gridx']) * factor
 
             current = self.collection.get_active()
             if current is not None:
@@ -5815,10 +5826,15 @@ class App(QtCore.QObject):
                 if not isinstance(current, FlatCAMGeometry):
                     current.to_form()
 
+            # replot all objects
             self.plot_all()
-            self.inform.emit('[success] %s: %s' % (_("Converted units to"), new_units))
-            # self.ui.units_label.setText("[" + self.options["units"] + "]")
+            # set the status labels to reflect the current FlatCAM units
             self.set_screen_units(new_units)
+
+            # signal to the app that we changed the object properties and it shoud save the project
+            self.should_we_save = True
+
+            self.inform.emit('[success] %s: %s' % (_("Converted units to"), new_units))
         else:
             # Undo toggling
             self.toggle_units_ignore = True
@@ -5827,25 +5843,21 @@ class App(QtCore.QObject):
             else:
                 self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
-            self.inform.emit('[WARNING_NOTCL]%s' % _(" Units conversion cancelled."))
+
+            # store the grid values so they are not changed in the next step
+            val_x = float(self.defaults['global_gridx'])
+            val_y = float(self.defaults['global_gridy'])
+
+            self.inform.emit('[WARNING_NOTCL]%s' % _("Units conversion cancelled."))
 
         self.defaults_read_form()
 
-    def on_toggle_units_click(self):
-        try:
-            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-        if self.defaults["units"] == 'MM':
-            self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
-        else:
-            self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
-
-        self.on_toggle_units(no_pref=True)
-
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
-            lambda: self.on_toggle_units(no_pref=False))
+        # the self.defaults_read_form() will update all defaults values in self.defaults from the GUI elements but
+        # I don't want it for the grid values, so I update them here
+        self.defaults['global_gridx'] = val_x
+        self.defaults['global_gridy'] = val_y
+        self.ui.grid_gap_x_entry.set_value(val_x, decimals=self.decimals)
+        self.ui.grid_gap_y_entry.set_value(val_y, decimals=self.decimals)
 
     def on_fullscreen(self, disable=False):
         self.report_usage("on_fullscreen()")
