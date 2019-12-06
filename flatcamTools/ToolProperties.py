@@ -414,37 +414,40 @@ class Properties(FlatCAMTool):
                 for k, v in value.items():
                     if k == 'solid_geometry':
                         printed_value = _('Present') if v else _('None')
-                        self.addChild(geo_tool, [str(k), printed_value], True)
+                        self.addChild(geo_tool, [_("Solid Geometry"), printed_value], True)
                     elif k == 'gcode':
                         printed_value = _('Present') if v != '' else _('None')
-                        self.addChild(geo_tool, [str(k), printed_value], True)
+                        self.addChild(geo_tool, [_("GCode Text"), printed_value], True)
                     elif k == 'gcode_parsed':
                         printed_value = _('Present') if v else _('None')
-                        self.addChild(geo_tool, [str(k), printed_value], True)
+                        self.addChild(geo_tool, [_("GCode Geometry"), printed_value], True)
                     elif k == 'data':
-                        tool_data = self.addParent(geo_tool, str(k).capitalize(),
-                                                   color=QtGui.QColor("#000000"), font=font)
+                        tool_data = self.addParent(geo_tool, _("Data"), color=QtGui.QColor("#000000"), font=font)
                         for data_k, data_v in v.items():
-                            self.addChild(tool_data, [str(data_k), str(data_v)], True)
+                            self.addChild(tool_data, [str(data_k).capitalize(), str(data_v)], True)
                     else:
                         self.addChild(geo_tool, [str(k), str(v)], True)
 
             # for cncjob objects made from excellon
-            for tool, value in obj.exc_cnc_tools.items():
+            for tool_dia, value in obj.exc_cnc_tools.items():
                 exc_tool = self.addParent(
                     tools, str(value['tool']), expanded=False, color=QtGui.QColor("#000000"), font=font
                 )
-                self.addChild(exc_tool, [_('Diameter'), str(tool)], True)
+                self.addChild(exc_tool, [_('Diameter'), str(tool_dia)], True)
                 for k, v in value.items():
                     if k == 'solid_geometry':
                         printed_value = _('Present') if v else _('None')
-                        self.addChild(exc_tool, [str(k), printed_value], True)
+                        self.addChild(exc_tool, [_("Solid Geometry"), printed_value], True)
                     elif k == 'nr_drills':
                         self.addChild(exc_tool, [_("Drills number"), str(v)], True)
                     elif k == 'nr_slots':
                         self.addChild(exc_tool, [_("Slots number"), str(v)], True)
                     else:
                         pass
+
+                self.addChild(exc_tool, [_("Depth of Cut"), str(obj.z_cut - obj.tool_offset[tool_dia])], True)
+                self.addChild(exc_tool, [_("Clearance Height"), str(obj.z_move)], True)
+                self.addChild(exc_tool, [_("Feedrate"), str(obj.feedrate)], True)
 
             r_time = obj.routing_time
             if r_time > 1:
@@ -453,8 +456,21 @@ class Properties(FlatCAMTool):
                 r_time *= 60
                 units_lbl = 'sec'
             r_time = math.ceil(float(r_time))
-            self.addChild(others, ['%s (%s):' % (_('Routing time'), units_lbl), str(r_time)], True)
-            self.addChild(others, ['%s (%s):' % (_('Travelled distance'), f_unit), str(obj.travel_distance)], True)
+            self.addChild(
+                others,
+                [
+                    '%s (%s):' % (_('Routing time'), units_lbl),
+                    '%.*f' % (self.decimals, r_time)],
+                True
+            )
+            self.addChild(
+                others,
+                [
+                    '%s (%s):' % (_('Travelled distance'), f_unit),
+                    '%.*f' % (self.decimals, obj.travel_distance)
+                ],
+                True
+            )
 
         self.addChild(separator, [''])
 

@@ -777,7 +777,7 @@ class Excellon(Geometry):
                         name = str(int(match.group(1)))
                         spec = {"C": float(match.group(2)), 'solid_geometry': []}
                         self.tools[name] = spec
-                        log.debug("  Tool definition: %s %s" % (name, spec))
+                        log.debug("Tool definition: %s %s" % (name, spec))
                         continue
 
                     # ## Units and number format # ##
@@ -965,7 +965,7 @@ class Excellon(Geometry):
                                          _("Excellon.create_geometry() -> a drill location was skipped "
                                            "due of not having a tool associated.\n"
                                            "Check the resulting GCode."))
-                    log.debug("Excellon.create_geometry() -> a drill location was skipped "
+                    log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry() -> a drill location was skipped "
                               "due of not having a tool associated")
                     continue
                 tooldia = self.tools[drill['tool']]['C']
@@ -984,36 +984,9 @@ class Excellon(Geometry):
                 self.tools[slot['tool']]['solid_geometry'].append(poly)
 
         except Exception as e:
-            log.debug("Excellon geometry creation failed due of ERROR: %s" % str(e))
+            log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry() -> "
+                      "Excellon geometry creation failed due of ERROR: %s" % str(e))
             return "fail"
-
-        # drill_geometry = {}
-        # slot_geometry = {}
-        #
-        # def insertIntoDataStruct(dia, drill_geo, aDict):
-        #     if not dia in aDict:
-        #         aDict[dia] = [drill_geo]
-        #     else:
-        #         aDict[dia].append(drill_geo)
-        #
-        # for tool in self.tools:
-        #     tooldia = self.tools[tool]['C']
-        #     for drill in self.drills:
-        #         if drill['tool'] == tool:
-        #             poly = drill['point'].buffer(tooldia / 2.0)
-        #             insertIntoDataStruct(tooldia, poly, drill_geometry)
-        #
-        # for tool in self.tools:
-        #     slot_tooldia = self.tools[tool]['C']
-        #     for slot in self.slots:
-        #         if slot['tool'] == tool:
-        #             start = slot['start']
-        #             stop = slot['stop']
-        #             lines_string = LineString([start, stop])
-        #             poly = lines_string.buffer(slot_tooldia/2.0, self.geo_steps_per_circle)
-        #             insertIntoDataStruct(slot_tooldia, poly, drill_geometry)
-        #
-        # self.solid_geometry = [drill_geometry, slot_geometry]
 
     def bounds(self):
         """
@@ -1023,9 +996,9 @@ class Excellon(Geometry):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("camlib.Excellon.bounds()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.bounds()")
         if self.solid_geometry is None:
-            log.debug("solid_geometry is None")
+            log.debug("flatcamParsers.ParseExcellon.Excellon -> solid_geometry is None")
             return 0, 0, 0, 0
 
         def bounds_rec(obj):
@@ -1120,7 +1093,7 @@ class Excellon(Geometry):
         :return: None
         :rtype: NOne
         """
-        log.debug("flatcamParsers.ParseExcellon.Excellon..scale()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.scale()")
 
         if yfactor is None:
             yfactor = xfactor
@@ -1183,7 +1156,7 @@ class Excellon(Geometry):
         :type vect: tuple
         :return: None
         """
-        log.debug("camlib.Excellon.offset()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.offset()")
 
         dx, dy = vect
 
@@ -1241,7 +1214,7 @@ class Excellon(Geometry):
         :type point: list
         :return: None
         """
-        log.debug("camlib.Excellon.mirror()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -1308,7 +1281,7 @@ class Excellon(Geometry):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
-        log.debug("camlib.Excellon.skew()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.skew()")
 
         if angle_x is None:
             angle_x = 0.0
@@ -1392,7 +1365,7 @@ class Excellon(Geometry):
         :param point: tuple of coordinates (x, y)
         :return:
         """
-        log.debug("camlib.Excellon.rotate()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.rotate()")
 
         def rotate_geom(obj, origin=None):
             if type(obj) is list:
