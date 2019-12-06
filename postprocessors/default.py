@@ -107,8 +107,8 @@ class default(FlatCAMPostProc):
                 gcode = """
 M5
 G00 Z{z_toolchange}
-G00 X{x_toolchange} Y{y_toolchange}                
 T{tool}
+G00 X{x_toolchange} Y{y_toolchange}                
 M6
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0

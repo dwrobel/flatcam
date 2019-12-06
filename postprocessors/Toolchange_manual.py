@@ -89,9 +89,6 @@ class Toolchange_manual(FlatCAMPostProc):
         if toolchangexy is not None:
             x_toolchange = toolchangexy[0]
             y_toolchange = toolchangexy[1]
-        # else:
-        #     x_toolchange = p.oldx
-        #     y_toolchange = p.oldy
 
         no_drills = 1
 

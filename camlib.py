@@ -2612,7 +2612,7 @@ class CNCjob(Geometry):
 
                             # Tool change sequence (optional)
                             if toolchange:
-                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                                gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                                 gcode += self.doformat(p.spindle_code)  # Spindle start
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -3972,9 +3972,11 @@ class CNCjob(Geometry):
         path = [pos_xy]
         # path = [(0, 0)]
 
-        self.app.inform.emit('%s: %d' % (_("Parsing GCode file. Number of lines"), len(self.gcode.splitlines())))
+        gcode_lines_list = self.gcode.splitlines()
+        self.app.inform.emit('%s: %d' % (_("Parsing GCode file. Number of lines"), len(gcode_lines_list)))
+
         # Process every instruction
-        for line in StringIO(self.gcode):
+        for line in gcode_lines_list:
             if force_parsing is False or force_parsing is None:
                 if '%MO' in line or '%' in line or 'MOIN' in line or 'MOMM' in line:
                     return "fail"
@@ -3985,6 +3987,10 @@ class CNCjob(Geometry):
             if 'G' in gobj and (gobj['G'] == 20.0 or gobj['G'] == 21.0):
                 self.units = {20.0: "IN", 21.0: "MM"}[gobj['G']]
                 continue
+
+            # TODO take into consideration the tools and update the travel line thickness
+            if 'T' in gobj:
+                pass
 
             # ## Changing height
             if 'Z' in gobj:
@@ -4066,6 +4072,9 @@ class CNCjob(Geometry):
                     start = np.arctan2(-gobj['J'], -gobj['I'])
                     stop = np.arctan2(-center[1] + y, -center[0] + x)
                     path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle / 4))
+
+                current['X'] = x
+                current['Y'] = y
 
             # Update current instruction
             for code in gobj:
