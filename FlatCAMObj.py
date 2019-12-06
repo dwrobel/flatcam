@@ -629,6 +629,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # store the status of grid snapping
         self.grid_status_memory = None
 
+        self.units_found = self.app.defaults['units']
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -741,6 +743,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.on_aperture_table_visibility_change()
 
         self.build_ui()
+        self.units_found = self.app.defaults['units']
 
     def on_calculate_tooldia(self):
         try:
@@ -2142,6 +2145,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.source_file = ""
 
         self.multigeo = False
+        self.units_found = self.app.defaults['units']
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -2621,6 +2625,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
 
         self.ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
+        self.units_found = self.app.defaults['units']
 
     def ui_connect(self):
 
@@ -3496,6 +3501,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.old_pp_state = self.app.defaults["geometry_multidepth"]
         self.old_toolchangeg_state = self.app.defaults["geometry_toolchange"]
+        self.units_found = self.app.defaults['units']
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -3654,6 +3660,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "Expected a GeometryObjectUI, got %s" % type(self.ui)
 
         self.units = self.app.defaults['units'].upper()
+        self.units_found = self.app.defaults['units']
 
         # populate postprocessor names in the combobox
         for name in list(self.app.postprocessors.keys()):
@@ -5889,6 +5896,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         self.gcode_editor_tab = None
 
+        self.units_found = self.app.defaults['units']
+
     def build_ui(self):
         self.ui_disconnect()
 
@@ -6011,6 +6020,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             "Expected a CNCObjectUI, got %s" % type(self.ui)
 
         self.units = self.app.defaults['units'].upper()
+        self.units_found = self.app.defaults['units']
 
         # this signal has to be connected to it's slot before the defaults are populated
         # the decision done in the slot has to override the default value set bellow
@@ -6702,6 +6712,8 @@ class FlatCAMScript(FlatCAMObj):
         self.source_file = ''
         self.script_code = ''
 
+        self.units_found = self.app.defaults['units']
+
         # self.script_editor_tab = TextEditor(app=self.app, plain_text=True)
         self.script_editor_tab = TextEditor(app=self.app, plain_text=True)
 
@@ -6713,6 +6725,7 @@ class FlatCAMScript(FlatCAMObj):
             "Expected a ScriptObjectUI, got %s" % type(self.ui)
 
         self.units = self.app.defaults['units'].upper()
+        self.units_found = self.app.defaults['units']
 
         # Fill form fields only on object create
         self.to_form()
@@ -6898,6 +6911,7 @@ class FlatCAMDocument(FlatCAMObj):
         self.document_editor_tab = None
 
         self._read_only = False
+        self.units_found = self.app.defaults['units']
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -6907,6 +6921,7 @@ class FlatCAMDocument(FlatCAMObj):
             "Expected a DocumentObjectUI, got %s" % type(self.ui)
 
         self.units = self.app.defaults['units'].upper()
+        self.units_found = self.app.defaults['units']
 
         # Fill form fields only on object create
         self.to_form()
