@@ -55,7 +55,7 @@ class DblSidedTool(FlatCAMTool):
         self.gerber_object_combo.setCurrentIndex(1)
 
         self.botlay_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
-        self.botlay_label.setToolTip('%s.' % _("Gerber  to be mirrored"))
+        self.botlay_label.setToolTip('%s.' % _("Gerber to be mirrored"))
 
         self.mirror_gerber_button = QtWidgets.QPushButton(_("Mirror"))
         self.mirror_gerber_button.setToolTip(

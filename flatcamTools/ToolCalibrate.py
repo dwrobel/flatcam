@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCTable
+from flatcamGUI.GUIElements import FCDoubleSpinner, EvalEntry, FCCheckBox, OptionalInputSection, FCTable, FCComboBox
 from flatcamEditors.FlatCAMTextEditor import TextEditor
 
 from shapely.geometry import Point
@@ -59,25 +59,35 @@ class ToolCalibrate(FlatCAMTool):
         i_grid_lay.setColumnStretch(1, 1)
         i_grid_lay.setColumnStretch(2, 1)
 
-        self.exc_object_combo = QtWidgets.QComboBox()
-        self.exc_object_combo.setModel(self.app.collection)
-        self.exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_object_combo.setCurrentIndex(1)
+        self.obj_type_label = QtWidgets.QLabel("<b>%s:</b>" % _("Object Type"))
 
-        self.excobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("EXCELLON"))
+        self.obj_type_combo = FCComboBox()
+        self.obj_type_combo.addItem(_("Gerber"))
+        self.obj_type_combo.addItem(_("Excellon"))
+        self.obj_type_combo.setCurrentIndex(1)
+
+        i_grid_lay.addWidget(self.obj_type_label, 0, 0)
+        i_grid_lay.addWidget(self.obj_type_combo, 0, 1, 1,2)
+
+        self.object_combo = FCComboBox()
+        self.object_combo.setModel(self.app.collection)
+        self.object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.object_combo.setCurrentIndex(1)
+
+        self.excobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("Target Object"))
         self.excobj_label.setToolTip(
-            _("Excellon Object to be used as a source for reference points.")
+            _("FlatCAM Object to be used as a source for reference points.")
         )
 
-        i_grid_lay.addWidget(self.excobj_label, 0, 0)
-        i_grid_lay.addWidget(self.exc_object_combo, 0, 1, 1, 2)
-        i_grid_lay.addWidget(QtWidgets.QLabel(''), 1, 0)
+        i_grid_lay.addWidget(self.excobj_label, 1, 0, 1, 3)
+        i_grid_lay.addWidget(self.object_combo, 2, 0, 1, 3)
+        i_grid_lay.addWidget(QtWidgets.QLabel(''), 3, 0)
 
         self.gcode_title_label = QtWidgets.QLabel('<b>%s</b>' % _('GCode Parameters'))
         self.gcode_title_label.setToolTip(
             _("Parameters used when creating the GCode in this tool.")
         )
-        i_grid_lay.addWidget(self.gcode_title_label, 1, 0, 1, 3)
+        i_grid_lay.addWidget(self.gcode_title_label, 4, 0, 1, 3)
 
         # Travel Z entry
         travelz_lbl = QtWidgets.QLabel('%s:' % _("Travel Z"))
@@ -90,8 +100,8 @@ class ToolCalibrate(FlatCAMTool):
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
 
-        i_grid_lay.addWidget(travelz_lbl, 2, 0)
-        i_grid_lay.addWidget(self.travelz_entry, 2, 1, 1, 2)
+        i_grid_lay.addWidget(travelz_lbl, 5, 0)
+        i_grid_lay.addWidget(self.travelz_entry, 5, 1, 1, 2)
 
         # Verification Z entry
         verz_lbl = QtWidgets.QLabel('%s:' % _("Verification Z"))
@@ -104,8 +114,8 @@ class ToolCalibrate(FlatCAMTool):
         self.verz_entry.set_precision(self.decimals)
         self.verz_entry.setSingleStep(0.1)
 
-        i_grid_lay.addWidget(verz_lbl, 3, 0)
-        i_grid_lay.addWidget(self.verz_entry, 3, 1, 1, 2)
+        i_grid_lay.addWidget(verz_lbl, 6, 0)
+        i_grid_lay.addWidget(self.verz_entry, 6, 1, 1, 2)
 
         # Zero the Z of the verification tool
         self.zeroz_cb = FCCheckBox('%s' % _("Zero Z tool"))
@@ -114,7 +124,7 @@ class ToolCalibrate(FlatCAMTool):
               "of the verification tool.")
         )
 
-        i_grid_lay.addWidget(self.zeroz_cb, 4, 0, 1, 3)
+        i_grid_lay.addWidget(self.zeroz_cb, 7, 0, 1, 3)
 
         # Toochange Z entry
         toolchangez_lbl = QtWidgets.QLabel('%s:' % _("Toolchange Z"))
@@ -127,12 +137,12 @@ class ToolCalibrate(FlatCAMTool):
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setSingleStep(0.1)
 
-        i_grid_lay.addWidget(toolchangez_lbl, 5, 0)
-        i_grid_lay.addWidget(self.toolchangez_entry, 5, 1, 1, 2)
+        i_grid_lay.addWidget(toolchangez_lbl, 8, 0)
+        i_grid_lay.addWidget(self.toolchangez_entry, 8, 1, 1, 2)
 
         self.z_ois = OptionalInputSection(self.zeroz_cb, [toolchangez_lbl, self.toolchangez_entry])
 
-        i_grid_lay.addWidget(QtWidgets.QLabel(''), 6, 0, 1, 3)
+        i_grid_lay.addWidget(QtWidgets.QLabel(''), 9, 0, 1, 3)
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -534,13 +544,15 @@ class ToolCalibrate(FlatCAMTool):
         # store the status of the grid
         self.grid_status_memory = None
 
-        self.exc_obj = None
+        self.target_obj = None
 
         # ## Signals
         self.start_button.clicked.connect(self.on_start_collect_points)
         self.gcode_button.clicked.connect(self.generate_verification_gcode)
         self.generate_factors_button.clicked.connect(self.calculate_factors)
         self.reset_button.clicked.connect(self.set_tool_ui)
+
+        self.obj_type_combo.currentIndexChanged.connect(self.on_obj_type_combo)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCalibrate()")
@@ -579,6 +591,11 @@ class ToolCalibrate(FlatCAMTool):
         # ## Initialize form
         # self.mm_entry.set_value('%.*f' % (self.decimals, 0))
 
+    def on_obj_type_combo(self):
+        obj_type = self.obj_type_combo.currentIndex()
+        self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.object_combo.setCurrentIndex(0)
+
     def on_start_collect_points(self):
         # disengage the grid snapping since it will be hard to find the drills on grid
         if self.app.ui.grid_snap_btn.isChecked():
@@ -594,12 +611,12 @@ class ToolCalibrate(FlatCAMTool):
         else:
             self.canvas.graph_event_disconnect(self.app.mr)
 
-        selection_index = self.exc_object_combo.currentIndex()
-        model_index = self.app.collection.index(selection_index, 0, self.exc_object_combo.rootModelIndex())
+        selection_index = self.object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.object_combo.rootModelIndex())
         try:
-            self.exc_obj = model_index.internalPointer().obj
+            self.target_obj = model_index.internalPointer().obj
         except Exception:
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Excellon object loaded ..."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no target object loaded ..."))
             return
 
         self.app.inform.emit(_("Click inside the First drill point. Bottom Left..."))
@@ -614,17 +631,21 @@ class ToolCalibrate(FlatCAMTool):
             pos_canvas = self.canvas.translate_coords(event_pos)
             click_pt = Point([pos_canvas[0], pos_canvas[1]])
 
-            for tool, tool_dict in self.exc_obj.tools.items():
-                for geo in tool_dict['solid_geometry']:
-                    if click_pt.within(geo):
-                        center_pt = geo.centroid
-                        self.click_points.append(
-                            (
-                                float('%.*f' % (self.decimals, center_pt.x)),
-                                float('%.*f' % (self.decimals, center_pt.y))
+            if self.target_obj.kind.lower() == 'excellon':
+                for tool, tool_dict in self.target_obj.tools.items():
+                    for geo in tool_dict['solid_geometry']:
+                        if click_pt.within(geo):
+                            center_pt = geo.centroid
+                            self.click_points.append(
+                                (
+                                    float('%.*f' % (self.decimals, center_pt.x)),
+                                    float('%.*f' % (self.decimals, center_pt.y))
+                                )
                             )
-                        )
-                        self.check_points()
+                            self.check_points()
+            else:
+                for tool, tool_dict in self.target_obj.apertures.items():
+                    pass
 
     def check_points(self):
         if len(self.click_points) == 1:
@@ -835,7 +856,7 @@ class ToolCalibrate(FlatCAMTool):
             dy = top_left_y - origin_y
             skew_angle_x = math.degrees(math.atan(dx / dy))
 
-            self.skewx_entrx.set_value(skew_angle_x)
+            self.skewx_entry.set_value(skew_angle_x)
 
         if bot_right_dx != float('%.*f' % (self.decimals, 0.0)):
             # we have scale on X
@@ -859,6 +880,6 @@ class ToolCalibrate(FlatCAMTool):
             self.canvas.graph_event_disconnect(self.mr)
 
     def reset_fields(self):
-        self.exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
 
 # end of file
