@@ -261,9 +261,13 @@ class FlatCAMObj(QtCore.QObject):
         self.app.worker_task.emit({'fcn': worker_task, 'params': []})
 
     def on_scale_button_click(self):
-        log.debug("FlatCAMObj.on_scale_button_click()")
         self.read_form()
         factor = self.ui.scale_entry.get_value()
+        # if factor is 1.0 do nothing, there is no point in scaling with a factor of 1.0
+        if factor == 1.0:
+            return
+
+        log.debug("FlatCAMObj.on_scale_button_click()")
 
         def worker_task():
             with self.app.proc_container.new(_("Scaling...")):

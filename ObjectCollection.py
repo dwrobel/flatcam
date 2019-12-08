@@ -831,8 +831,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             try:
                 a_idx.build_ui()
             except Exception as e:
-                self.app.inform.emit('[ERROR] %s: %s' %
-                                     (_("Cause of error"), str(e)))
+                self.app.inform.emit('[ERROR] %s: %s' % (_("Cause of error"), str(e)))
                 raise
 
     def get_list(self):

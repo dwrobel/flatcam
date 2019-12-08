@@ -8075,7 +8075,7 @@ class App(QtCore.QObject):
         if index.isValid():
             if index.internalPointer().parent_item != self.collection.root_item:
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
-        self.collection.on_item_activated(index)
+        # self.collection.on_item_activated(index)
 
     def on_row_selected(self, obj_name):
         # this is a special string; when received it will make all entries unchecked
