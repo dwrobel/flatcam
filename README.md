@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - Calibrate Tool - rearranged the GUI
 - in Geometry UI made sure that the Label that points to the Tool parameters show clearly that those parameters apply only for the selected tool
+- fixed an small issue in Object UI
 
 7.12.2019 
 

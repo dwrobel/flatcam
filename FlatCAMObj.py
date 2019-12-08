@@ -208,19 +208,13 @@ class FlatCAMObj(QtCore.QObject):
         self.muted_ui = True
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> FlatCAMObj.build_ui()")
 
-        # Remove anything else in the box
-        # box_children = self.app.ui.notebook.selected_contents.get_children()
-        # for child in box_children:
-        #     self.app.ui.notebook.selected_contents.remove(child)
-        # while self.app.ui.selected_layout.count():
-        #     self.app.ui.selected_layout.takeAt(0)
-
-        # Put in the UI
-        # box_selected.pack_start(sw, True, True, 0)
-        # self.app.ui.notebook.selected_contents.add(self.ui)
-        # self.app.ui.selected_layout.addWidget(self.ui)
         try:
+            # HACK: disconnect the scale entry signal since on focus out event will trigger an undesired scale()
+            # it seems that the takewidget() does generate a focus out event for the QDoubleSpinbox ...
+            # and reconnect after the takeWidget() is done
+            self.ui.scale_entry.returnPressed.disconnect(self.on_scale_button_click)
             self.app.ui.selected_scroll_area.takeWidget()
+            self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
         except Exception as e:
             self.app.log.debug("FlatCAMObj.build_ui() --> Nothing to remove: %s" % str(e))
         self.app.ui.selected_scroll_area.setWidget(self.ui)
