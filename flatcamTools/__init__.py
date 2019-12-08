@@ -2,7 +2,7 @@ import sys
 
 
 from flatcamTools.ToolCalculators import ToolCalculator
-from flatcamTools.ToolCalibrate import ToolCalibrate
+from flatcamTools.ToolCalibration import ToolCalibration
 from flatcamTools.ToolCutOut import CutOut
 
 from flatcamTools.ToolDblSided import DblSidedTool

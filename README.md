@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.12.2019 
+
+- updated the border for fit view on OpenGL graphic mode
+- Calibration Tool - added preferences values
+- Calibration Tool - more work on it
+
 8.12.2019
 
 - Calibrate Tool - rearranged the GUI

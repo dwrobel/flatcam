@@ -1596,6 +1596,10 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(separator_line2, 19, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
+        self.apply_param_to_all.setToolTip(
+            _("The parameters in the current form will be applied\n"
+              "on all the tools from the Tool Table.")
+        )
         self.grid3.addWidget(self.apply_param_to_all, 20, 0, 1, 2)
 
         self.grid3.addWidget(QtWidgets.QLabel(''), 21, 0, 1, 2)

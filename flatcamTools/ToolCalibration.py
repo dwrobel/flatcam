@@ -30,9 +30,9 @@ if '_' not in builtins.__dict__:
 log = logging.getLogger('base')
 
 
-class ToolCalibrate(FlatCAMTool):
+class ToolCalibration(FlatCAMTool):
 
-    toolName = _("Calibrate Tool")
+    toolName = _("Calibration Tool")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -388,10 +388,7 @@ class ToolCalibrate(FlatCAMTool):
                         """)
         grid_lay.addWidget(self.generate_factors_button, 20, 0, 1, 3)
 
-        scale_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Scale Factors"))
-        grid_lay.addWidget(scale_lbl, 21, 0, 1, 3)
-
-        self.scalex_label = QtWidgets.QLabel(_("Factor X:"))
+        self.scalex_label = QtWidgets.QLabel(_("Scale Factor X:"))
         self.scalex_label.setToolTip(
             _("Factor for Scale action over X axis.")
         )
@@ -400,10 +397,10 @@ class ToolCalibrate(FlatCAMTool):
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.scalex_label, 22, 0)
-        grid_lay.addWidget(self.scalex_entry, 22, 1, 1, 2)
+        grid_lay.addWidget(self.scalex_label, 21, 0)
+        grid_lay.addWidget(self.scalex_entry, 21, 1, 1, 2)
 
-        self.scaley_label = QtWidgets.QLabel(_("Factor Y:"))
+        self.scaley_label = QtWidgets.QLabel(_("Scale Factor Y:"))
         self.scaley_label.setToolTip(
             _("Factor for Scale action over Y axis.")
         )
@@ -412,8 +409,8 @@ class ToolCalibrate(FlatCAMTool):
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.scaley_label, 23, 0)
-        grid_lay.addWidget(self.scaley_entry, 23, 1, 1, 2)
+        grid_lay.addWidget(self.scaley_label, 22, 0)
+        grid_lay.addWidget(self.scaley_entry, 22, 1, 1, 2)
 
         self.scale_button = QtWidgets.QPushButton(_("Apply Scale Factors"))
         self.scale_button.setToolTip(
@@ -425,12 +422,9 @@ class ToolCalibrate(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid_lay.addWidget(self.scale_button, 24, 0, 1, 3)
+        grid_lay.addWidget(self.scale_button, 23, 0, 1, 3)
 
-        skew_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Skew Factors"))
-        grid_lay.addWidget(skew_lbl, 25, 0, 1, 3)
-
-        self.skewx_label = QtWidgets.QLabel(_("Angle X:"))
+        self.skewx_label = QtWidgets.QLabel(_("Skew Angle X:"))
         self.skewx_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
@@ -440,10 +434,10 @@ class ToolCalibrate(FlatCAMTool):
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.skewx_label, 26, 0)
-        grid_lay.addWidget(self.skewx_entry, 26, 1, 1, 2)
+        grid_lay.addWidget(self.skewx_label, 24, 0)
+        grid_lay.addWidget(self.skewx_entry, 24, 1, 1, 2)
 
-        self.skewy_label = QtWidgets.QLabel(_("Angle Y:"))
+        self.skewy_label = QtWidgets.QLabel(_("Skew Angle Y:"))
         self.skewy_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
@@ -453,8 +447,8 @@ class ToolCalibrate(FlatCAMTool):
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.skewy_label, 27, 0)
-        grid_lay.addWidget(self.skewy_entry, 27, 1, 1, 2)
+        grid_lay.addWidget(self.skewy_label, 25, 0)
+        grid_lay.addWidget(self.skewy_entry, 25, 1, 1, 2)
 
         self.skew_button = QtWidgets.QPushButton(_("Apply Skew Factors"))
         self.skew_button.setToolTip(
@@ -466,14 +460,71 @@ class ToolCalibrate(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid_lay.addWidget(self.skew_button, 28, 0, 1, 3)
+        grid_lay.addWidget(self.skew_button, 26, 0, 1, 3)
+
+        # final_factors_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Final Factors"))
+        # final_factors_lbl.setToolTip(
+        #     _("Generate verification GCode file adjusted with\n"
+        #       "the factors above.")
+        # )
+        # grid_lay.addWidget(final_factors_lbl, 27, 0, 1, 3)
+        #
+        # self.fin_scalex_label = QtWidgets.QLabel(_("Scale Factor X:"))
+        # self.fin_scalex_label.setToolTip(
+        #     _("Final factor for Scale action over X axis.")
+        # )
+        # self.fin_scalex_entry = FCDoubleSpinner()
+        # self.fin_scalex_entry.set_range(0, 9999.9999)
+        # self.fin_scalex_entry.set_precision(self.decimals)
+        # self.fin_scalex_entry.setSingleStep(0.1)
+        #
+        # grid_lay.addWidget(self.fin_scalex_label, 28, 0)
+        # grid_lay.addWidget(self.fin_scalex_entry, 28, 1, 1, 2)
+        #
+        # self.fin_scaley_label = QtWidgets.QLabel(_("Scale Factor Y:"))
+        # self.fin_scaley_label.setToolTip(
+        #     _("Final factor for Scale action over Y axis.")
+        # )
+        # self.fin_scaley_entry = FCDoubleSpinner()
+        # self.fin_scaley_entry.set_range(0, 9999.9999)
+        # self.fin_scaley_entry.set_precision(self.decimals)
+        # self.fin_scaley_entry.setSingleStep(0.1)
+        #
+        # grid_lay.addWidget(self.fin_scaley_label, 29, 0)
+        # grid_lay.addWidget(self.fin_scaley_entry, 29, 1, 1, 2)
+        #
+        # self.fin_skewx_label = QtWidgets.QLabel(_("Skew Angle X:"))
+        # self.fin_skewx_label.setToolTip(
+        #     _("Final value for angle for Skew action, in degrees.\n"
+        #       "Float number between -360 and 359.")
+        # )
+        # self.fin_skewx_entry = FCDoubleSpinner()
+        # self.fin_skewx_entry.set_range(-360, 360)
+        # self.fin_skewx_entry.set_precision(self.decimals)
+        # self.fin_skewx_entry.setSingleStep(0.1)
+        #
+        # grid_lay.addWidget(self.fin_skewx_label, 30, 0)
+        # grid_lay.addWidget(self.fin_skewx_entry, 30, 1, 1, 2)
+        #
+        # self.fin_skewy_label = QtWidgets.QLabel(_("Skew Angle Y:"))
+        # self.fin_skewy_label.setToolTip(
+        #     _("Final value for angle for Skew action, in degrees.\n"
+        #       "Float number between -360 and 359.")
+        # )
+        # self.fin_skewy_entry = FCDoubleSpinner()
+        # self.fin_skewy_entry.set_range(-360, 360)
+        # self.fin_skewy_entry.set_precision(self.decimals)
+        # self.fin_skewy_entry.setSingleStep(0.1)
+        #
+        # grid_lay.addWidget(self.fin_skewy_label, 31, 0)
+        # grid_lay.addWidget(self.fin_skewy_entry, 31, 1, 1, 2)
 
         separator_line1 = QtWidgets.QFrame()
         separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line1, 29, 0, 1, 3)
+        grid_lay.addWidget(separator_line1, 32, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 30, 0, 1, 3)
+        grid_lay.addWidget(QtWidgets.QLabel(''), 32, 0, 1, 3)
 
         # STEP 4 #
         step_4 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 4: Adjusted GCode"))
@@ -481,7 +532,7 @@ class ToolCalibrate(FlatCAMTool):
             _("Generate verification GCode file adjusted with\n"
               "the factors above.")
         )
-        grid_lay.addWidget(step_4, 31, 0, 1, 3)
+        grid_lay.addWidget(step_4, 34, 0, 1, 3)
 
         # ## Adjusted GCode Button
         self.adj_gcode_button = QtWidgets.QPushButton(_("Generate Adjusted GCode"))
@@ -495,14 +546,14 @@ class ToolCalibrate(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid_lay.addWidget(self.adj_gcode_button, 32, 0, 1, 3)
+        grid_lay.addWidget(self.adj_gcode_button, 35, 0, 1, 3)
 
         separator_line1 = QtWidgets.QFrame()
         separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line1, 33, 0, 1, 3)
+        grid_lay.addWidget(separator_line1, 36, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 34, 0, 1, 3)
+        grid_lay.addWidget(QtWidgets.QLabel(''), 37, 0, 1, 3)
 
         # STEP 5 #
         step_5 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 5: Calibrate FlatCAM Objects"))
@@ -510,7 +561,7 @@ class ToolCalibrate(FlatCAMTool):
             _("Adjust the Excellon and Cutout Geometry objects\n"
               "with the factors determined, and verified, above.")
         )
-        grid_lay.addWidget(step_5, 35, 0, 1, 3)
+        grid_lay.addWidget(step_5, 38, 0, 1, 3)
 
         self.adj_exc_object_combo = QtWidgets.QComboBox()
         self.adj_exc_object_combo.setModel(self.app.collection)
@@ -522,8 +573,8 @@ class ToolCalibrate(FlatCAMTool):
             _("Excellon Object to be adjusted.")
         )
 
-        grid_lay.addWidget(self.adj_excobj_label, 36, 0, 1, 3)
-        grid_lay.addWidget(self.adj_exc_object_combo, 37, 0, 1, 3)
+        grid_lay.addWidget(self.adj_excobj_label, 39, 0, 1, 3)
+        grid_lay.addWidget(self.adj_exc_object_combo, 40, 0, 1, 3)
 
         self.adj_geo_object_combo = QtWidgets.QComboBox()
         self.adj_geo_object_combo.setModel(self.app.collection)
@@ -535,8 +586,8 @@ class ToolCalibrate(FlatCAMTool):
             _("Geometry Object to be adjusted.")
         )
 
-        grid_lay.addWidget(self.adj_geoobj_label, 38, 0, 1, 3)
-        grid_lay.addWidget(self.adj_geo_object_combo, 39, 0, 1, 3)
+        grid_lay.addWidget(self.adj_geoobj_label, 41, 0, 1, 3)
+        grid_lay.addWidget(self.adj_geo_object_combo, 42, 0, 1, 3)
 
         # ## Adjust Objects Button
         self.adj_obj_button = QtWidgets.QPushButton(_("Calibrate"))
@@ -550,14 +601,14 @@ class ToolCalibrate(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid_lay.addWidget(self.adj_obj_button, 40, 0, 1, 3)
+        grid_lay.addWidget(self.adj_obj_button, 43, 0, 1, 3)
 
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line2, 41, 0, 1, 3)
+        grid_lay.addWidget(separator_line2, 44, 0, 1, 3)
 
-        grid_lay.addWidget(QtWidgets.QLabel(''), 42, 0, 1, 3)
+        grid_lay.addWidget(QtWidgets.QLabel(''), 45, 0, 1, 3)
 
         self.layout.addStretch()
 
@@ -585,6 +636,9 @@ class ToolCalibrate(FlatCAMTool):
 
         self.target_obj = None
 
+        # if the mouse events are connected to a local method set this True
+        self.local_connected = False
+
         # ## Signals
         self.start_button.clicked.connect(self.on_start_collect_points)
         self.gcode_button.clicked.connect(self.generate_verification_gcode)
@@ -596,7 +650,7 @@ class ToolCalibrate(FlatCAMTool):
         self.obj_type_combo.currentIndexChanged.connect(self.on_obj_type_combo)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolCalibrate()")
+        self.app.report_usage("ToolCalibration()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -629,8 +683,23 @@ class ToolCalibrate(FlatCAMTool):
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
 
-        # ## Initialize form
-        # self.mm_entry.set_value('%.*f' % (self.decimals, 0))
+        if self.local_connected is True:
+            self.disconnect_cal_events()
+
+        self.reset_calibration_points()
+
+        self.cal_source_radio.set_value(self.app.defaults['tools_cal_calsource'])
+        self.travelz_entry.set_value(self.app.defaults['tools_cal_travelz'])
+        self.verz_entry.set_value(self.app.defaults['tools_cal_verz'])
+        self.zeroz_cb.set_value(self.app.defaults['tools_cal_zeroz'])
+        self.toolchangez_entry.set_value(self.app.defaults['tools_cal_toolchangez'])
+
+        self.scalex_entry.set_value(1.0)
+        self.scaley_entry.set_value(1.0)
+        self.skewx_entry.set_value(0.0)
+        self.skewy_entry.set_value(0.0)
+
+        self.app.inform.emit('%s...' % _("Tool initialized"))
 
     def on_obj_type_combo(self):
         obj_type = self.obj_type_combo.currentIndex()
@@ -664,6 +733,8 @@ class ToolCalibrate(FlatCAMTool):
         else:
             self.canvas.graph_event_disconnect(self.app.mr)
 
+        self.local_connected = True
+
         if self.cal_source_radio.get_value() == 'object':
             selection_index = self.object_combo.currentIndex()
             model_index = self.app.collection.index(selection_index, 0, self.object_combo.rootModelIndex())
@@ -675,7 +746,7 @@ class ToolCalibrate(FlatCAMTool):
 
         self.reset_calibration_points()
 
-        self.app.inform.emit(_("Click inside the First drill point. Bottom Left..."))
+        self.app.inform.emit(_("Get First calibration point. Bottom Left..."))
 
     def on_mouse_click_release(self, event):
         if event.button == 1:
@@ -705,7 +776,6 @@ class ToolCalibrate(FlatCAMTool):
                         for geo_el in apid_val['geometry']:
                             if 'solid' in geo_el:
                                 if click_pt.within(geo_el['solid']):
-                                    print(type(geo_el['follow']))
                                     if isinstance(geo_el['follow'], Point):
                                         center_pt = geo_el['solid'].centroid
                                         self.click_points.append(
@@ -728,24 +798,20 @@ class ToolCalibrate(FlatCAMTool):
         if len(self.click_points) == 1:
             self.bottom_left_coordx_tgt.set_value(self.click_points[0][0])
             self.bottom_left_coordy_tgt.set_value(self.click_points[0][1])
-            self.app.inform.emit(_("Click inside the Second drill point. Bottom Right..."))
+            self.app.inform.emit(_("Get Second calibration point. Bottom Right..."))
         elif len(self.click_points) == 2:
             self.bottom_right_coordx_tgt.set_value(self.click_points[1][0])
             self.bottom_right_coordy_tgt.set_value(self.click_points[1][1])
-            self.app.inform.emit(_("Click inside the Third drill point. Top Left..."))
+            self.app.inform.emit(_("Get Third calibration point. Top Left..."))
         elif len(self.click_points) == 3:
             self.top_left_coordx_tgt.set_value(self.click_points[2][0])
             self.top_left_coordy_tgt.set_value(self.click_points[2][1])
-            self.app.inform.emit(_("Click inside the Fourth drill point. Top Right..."))
+            self.app.inform.emit(_("Get Forth calibration point. Top Right..."))
         elif len(self.click_points) == 4:
             self.top_right_coordx_tgt.set_value(self.click_points[3][0])
             self.top_right_coordy_tgt.set_value(self.click_points[3][1])
             self.app.inform.emit('[success] %s' % _("Done. All four points have been acquired."))
             self.disconnect_cal_events()
-
-            # restore the Grid snapping if it was active before
-            if self.grid_status_memory is True:
-                self.app.ui.grid_snap_btn.trigger()
 
     def reset_calibration_points(self):
         self.click_points = list()
@@ -763,7 +829,7 @@ class ToolCalibrate(FlatCAMTool):
         self.top_right_coordy_tgt.set_value('')
 
     def gcode_header(self):
-        log.debug("ToolCalibrate.gcode_header()")
+        log.debug("ToolCalibration.gcode_header()")
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
         gcode = '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
@@ -908,18 +974,18 @@ class ToolCalibrate(FlatCAMTool):
         except TypeError:
             top_left_dy = top_left_y
 
-        top_right_x = float('%.*f' % (self.decimals, self.click_points[3][0]))
-        top_right_y = float('%.*f' % (self.decimals, self.click_points[3][1]))
+        # top_right_x = float('%.*f' % (self.decimals, self.click_points[3][0]))
+        # top_right_y = float('%.*f' % (self.decimals, self.click_points[3][1]))
 
-        try:
-            top_right_dx = float('%.*f' % (self.decimals, self.top_right_coordx_found.get_value()))
-        except TypeError:
-            top_right_dx = top_right_x
-
-        try:
-            top_right_dy = float('%.*f' % (self.decimals, self.top_right_coordy_found.get_value()))
-        except TypeError:
-            top_right_dy = top_right_y
+        # try:
+        #     top_right_dx = float('%.*f' % (self.decimals, self.top_right_coordx_found.get_value()))
+        # except TypeError:
+        #     top_right_dx = top_right_x
+        #
+        # try:
+        #     top_right_dy = float('%.*f' % (self.decimals, self.top_right_coordy_found.get_value()))
+        # except TypeError:
+        #     top_right_dy = top_right_y
 
         bot_right_x = float('%.*f' % (self.decimals, self.click_points[1][0]))
         bot_right_y = float('%.*f' % (self.decimals, self.click_points[1][1]))
@@ -964,6 +1030,10 @@ class ToolCalibrate(FlatCAMTool):
             self.skewy_entry.set_value(skew_angle_y)
 
     def disconnect_cal_events(self):
+        # restore the Grid snapping if it was active before
+        if self.grid_status_memory is True:
+            self.app.ui.grid_snap_btn.trigger()
+
         self.app.mr = self.canvas.graph_event_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
         if self.app.is_legacy is False:
@@ -971,7 +1041,11 @@ class ToolCalibrate(FlatCAMTool):
         else:
             self.canvas.graph_event_disconnect(self.mr)
 
+        self.local_connected = False
+
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.adj_exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.adj_geo_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
 
 # end of file

@@ -334,12 +334,32 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             except TypeError:
                 pass
 
-        # adjust the view camera to be slightly bigger than the bounds so the shape colleaction can be seen clearly
+        # adjust the view camera to be slightly bigger than the bounds so the shape collection can be seen clearly
         # otherwise the shape collection boundary will have no border
-        rect.left *= 0.96
-        rect.bottom *= 0.96
-        rect.right *= 1.01
-        rect.top *= 1.01
+        dx = rect.right - rect.left
+        dy = rect.top - rect.bottom
+        x_factor = dx * 0.02
+        y_factor = dy * 0.02
+
+        rect.left -= x_factor
+        rect.bottom -= y_factor
+        rect.right += x_factor
+        rect.top += y_factor
+
+        # rect.left *= 0.96
+        # rect.bottom *= 0.96
+        # rect.right *= 1.04
+        # rect.top *= 1.04
+
+        # units = self.fcapp.defaults['units'].upper()
+        # if units == 'MM':
+        #     compensation = 0.5
+        # else:
+        #     compensation = 0.5 / 25.4
+        # rect.left -= compensation
+        # rect.bottom -= compensation
+        # rect.right += compensation
+        # rect.top += compensation
 
         self.view.camera.rect = rect
 

@@ -895,6 +895,13 @@ class App(QtCore.QObject):
             "tools_fiducials_type": 'circular',
             "tools_fiducials_line_thickness": 0.25,
 
+            # Calibration Tool
+            "tools_cal_calsource": 'object',
+            "tools_cal_travelz": 2.0,
+            "tools_cal_verz": 0.1,
+            "tools_cal_zeroz": False,
+            "tools_cal_toolchangez": 15,
+
             # Utilities
             # file associations
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
@@ -1468,6 +1475,13 @@ class App(QtCore.QObject):
             "tools_fiducials_second_pos": self.ui.tools2_defaults_form.tools2_fiducials_group.pos_radio,
             "tools_fiducials_type": self.ui.tools2_defaults_form.tools2_fiducials_group.fid_type_radio,
             "tools_fiducials_line_thickness": self.ui.tools2_defaults_form.tools2_fiducials_group.line_thickness_entry,
+
+            # Calibration Tool
+            "tools_cal_calsource": self.ui.tools2_defaults_form.tools2_cal_group.cal_source_radio,
+            "tools_cal_travelz": self.ui.tools2_defaults_form.tools2_cal_group.travelz_entry,
+            "tools_cal_verz": self.ui.tools2_defaults_form.tools2_cal_group.verz_entry,
+            "tools_cal_zeroz": self.ui.tools2_defaults_form.tools2_cal_group.zeroz_cb,
+            "tools_cal_toolchangez": self.ui.tools2_defaults_form.tools2_cal_group.toolchangez_entry,
 
             # Utilities
             # File associations
@@ -2964,7 +2978,7 @@ class App(QtCore.QObject):
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
-        self.cal_exc_tool = ToolCalibrate(self)
+        self.cal_exc_tool = ToolCalibration(self)
         self.cal_exc_tool.install(icon=QtGui.QIcon('share/drill16.png'), pos=self.ui.menutool,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)
@@ -7312,14 +7326,26 @@ class App(QtCore.QObject):
         else:
             location = custom_location
 
+        units = self.defaults['units'].upper()
+
         if fit_center:
             self.plotcanvas.fit_center(loc=location)
 
         cursor = QtGui.QCursor()
 
         if self.is_legacy is False:
+            # I don't know where those differences come from but they are constant for the current
+            # execution of the application and they are multiples of a value around 0.0263mm.
+            # In a random way sometimes they are more sometimes they are less
+            # if units == 'MM':
+            #     cal_factor = 0.0263
+            # else:
+            #     cal_factor = 0.0263 / 25.4
+
+            cal_location = (location[0], location[1])
+
             canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
-            jump_loc = self.plotcanvas.translate_coords_2((location[0], location[1]))
+            jump_loc = self.plotcanvas.translate_coords_2((cal_location[0], cal_location[1]))
             j_pos = (canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
             cursor.setPos(j_pos[0], j_pos[1])
         else:
@@ -7363,6 +7389,7 @@ class App(QtCore.QObject):
                 obj_init.follow_geometry = deepcopy(obj.follow_geometry)
             except AttributeError:
                 pass
+
             try:
                 obj_init.apertures = deepcopy(obj.apertures)
             except AttributeError:
