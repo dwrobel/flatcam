@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.12.2019
+
+- Calibrate Tool - rearranged the GUI
+- in Geometry UI made sure that the Label that points to the Tool parameters show clearly that those parameters apply only for the selected tool
+
 7.12.2019 
 
 - renamed Calibrate Excellon Tool to a simpler Calibrate Tool

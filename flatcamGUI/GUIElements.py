@@ -1193,6 +1193,17 @@ class FCButton(QtWidgets.QPushButton):
         self.setText(str(val))
 
 
+class FCLabel(QtWidgets.QLabel):
+    def __init__(self, parent=None):
+        super(FCLabel, self).__init__(parent)
+
+    def get_value(self):
+        return self.text()
+
+    def set_value(self, val):
+        self.setText(str(val))
+
+
 class FCMenu(QtWidgets.QMenu):
     def __init__(self):
         super().__init__()

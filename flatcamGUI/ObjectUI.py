@@ -1267,7 +1267,8 @@ class GeometryObjectUI(ObjectUI):
         # Create CNC Job ###
         # ##################
         # ### Tools Data ## ##
-        self.tool_data_label = QtWidgets.QLabel('<b>%s</b>' % _('Tool Data'))
+        self.tool_data_label = QtWidgets.QLabel(
+            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
             _(
                 "The data used for creating GCode.\n"
@@ -1592,7 +1593,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(warning_lbl, 19, 0, 1, 2)
 
         # Button
-        self.generate_cnc_button = QtWidgets.QPushButton(_('Generate'))
+        self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setToolTip(
             _("Generate the CNC Job object.")
         )

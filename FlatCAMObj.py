@@ -4354,7 +4354,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if row is None:
             try:
                 current_row = self.ui.geo_tools_table.currentRow()
-            except Exception as e:
+            except Exception:
                 current_row = 0
         else:
             current_row = row
@@ -4374,6 +4374,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except Exception as e:
             log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
             return
+
+        # update the QLabel that shows for which Tool we have the parameters in the UI form
+        self.ui.tool_data_label.setText(
+            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
+        )
 
         # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
         # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
@@ -5382,8 +5387,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in self.solid_geometry:
-                        self.geo_len += 1
+                    self.geo_len = len(self.solid_geometry)
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -5395,7 +5399,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 return
 
         self.app.proc_container.new_text = ''
-        self.app.inform.emit('[success] %s' % _("Geometry Scale done."))
+        if xfactor != 1 and yfactor != 1:
+            self.app.inform.emit('[success] %s' % _("Geometry Scale done."))
 
     def offset(self, vect):
         """
