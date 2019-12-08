@@ -67,12 +67,12 @@ class TclCommandCutout(TclCommand):
             return
 
         if 'margin' in args:
-            margin_par = args['margin']
+            margin_par = float(args['margin'])
         else:
             margin_par = 0.001
 
         if 'dia' in args:
-            dia_par = args['dia']
+            dia_par = float(args['dia'])
         else:
             dia_par = 0.1
 
@@ -82,7 +82,7 @@ class TclCommandCutout(TclCommand):
             gaps_par = "4"
 
         if 'gapsize' in args:
-            gapsize_par = args['gapsize']
+            gapsize_par = float(args['gapsize'])
         else:
             gapsize_par = 0.1
 

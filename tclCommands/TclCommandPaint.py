@@ -123,12 +123,12 @@ class TclCommandPaint(TclCommand):
             method = str(self.app.defaults["tools_paintmethod"])
 
         if 'connect' in args:
-            connect = eval(str(args['connect']).capitalize())
+            connect = bool(args['connect'])
         else:
             connect = eval(str(self.app.defaults["tools_pathconnect"]))
 
         if 'contour' in args:
-            contour = eval(str(args['contour']).capitalize())
+            contour = bool(args['contour'])
         else:
             contour = eval(str(self.app.defaults["tools_paintcontour"]))
 
@@ -195,7 +195,7 @@ class TclCommandPaint(TclCommand):
             return "Object not found: %s" % name
 
         # Paint all polygons in the painted object
-        if 'all' in args and args['all'] is True:
+        if 'all' in args and bool(args['all']) is True:
             self.app.paint_tool.paint_poly_all(obj=obj,
                                                tooldia=tooldia,
                                                overlap=overlap,
@@ -211,7 +211,7 @@ class TclCommandPaint(TclCommand):
             return
 
         # Paint single polygon in the painted object
-        elif 'single' in args and args['single'] is True:
+        elif 'single' in args and bool(args['single']) is True:
             if 'x' not in args or 'y' not in args:
                 self.raise_tcl_error('%s' % _("Expected -x <value> and -y <value>."))
             else:
@@ -234,7 +234,7 @@ class TclCommandPaint(TclCommand):
             return
 
         # Paint all polygons found within the box object from the the painted object
-        elif 'ref' in args and args['ref'] is True:
+        elif 'ref' in args and bool(args['ref']) is True:
             if 'box' not in args:
                 self.raise_tcl_error('%s' % _("Expected -box <value>."))
             else:

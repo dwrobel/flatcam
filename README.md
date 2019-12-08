@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed an small issue in Object UI
 - small fixes: selected object in Project used to ask twice for UI build; if scale factor in Object UI is 1 do nothing as there is no point in scaling with a factor of 1
 - in Geometry UI added a button that allow updating all the tools in the Tool Table with the current values in the UI form
+- updated Tcl commands to make use of either 0 or False for False value or 1 or True for True in case of a parameter with type Bool
 
 7.12.2019 
 

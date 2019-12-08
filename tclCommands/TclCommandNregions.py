@@ -74,11 +74,11 @@ class TclCommandNregions(TclCommand):
 
         if 'margin' not in args:
             args['margin'] = float(self.app.defaults["gerber_noncoppermargin"])
-        margin = args['margin']
+        margin = float(args['margin'])
 
         if 'rounded' not in args:
             args['rounded'] = self.app.defaults["gerber_noncopperrounded"]
-        rounded = args['rounded']
+        rounded = bool(args['rounded'])
 
         del args['name']
 

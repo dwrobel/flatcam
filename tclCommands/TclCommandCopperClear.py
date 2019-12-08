@@ -126,18 +126,18 @@ class TclCommandCopperClear(TclCommand):
             method = str(self.app.defaults["tools_nccmethod"])
 
         if 'connect' in args:
-            connect = eval(str(args['connect']).capitalize())
+            connect = bool(args['connect'])
         else:
             connect = eval(str(self.app.defaults["tools_nccconnect"]))
 
         if 'contour' in args:
-            contour = eval(str(args['contour']).capitalize())
+            contour = bool(args['contour'])
         else:
             contour = eval(str(self.app.defaults["tools_ncccontour"]))
 
         offset = 0.0
         if 'has_offset' in args:
-            has_offset = args['has_offset']
+            has_offset = bool(args['has_offset'])
             if args['has_offset'] is True:
                 if 'offset' in args:
                     offset = float(args['margin'])
@@ -203,7 +203,7 @@ class TclCommandCopperClear(TclCommand):
             })
 
         if 'rest' in args:
-            rest = eval(str(args['rest']).capitalize())
+            rest = bool(args['rest'])
         else:
             rest = eval(str(self.app.defaults["tools_nccrest"]))
 

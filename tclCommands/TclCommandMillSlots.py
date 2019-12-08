@@ -79,6 +79,9 @@ class TclCommandMillSlots(TclCommandSignaled):
         if 'outname' not in args:
             args['outname'] = name + "_mill_slots"
 
+        if 'use_thread' in args:
+            args['use_thread'] = bool(args['use_thread'])
+
         if not obj.slots:
             self.raise_tcl_error("The Excellon object has no slots: %s" % name)
 

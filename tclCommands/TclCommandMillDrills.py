@@ -79,6 +79,9 @@ class TclCommandMillDrills(TclCommandSignaled):
         if 'outname' not in args:
             args['outname'] = name + "_mill_drills"
 
+        if 'use_thread' in args:
+            args['use_thread'] = bool(args['use_thread'])
+
         if not obj.drills:
             self.raise_tcl_error("The Excellon object has no drills: %s" % name)
 
@@ -96,7 +99,7 @@ class TclCommandMillDrills(TclCommandSignaled):
                         req_dia_form = float('%.*f' % (obj.decimals, float(req_dia)))
 
                         if 'diatol' in args:
-                            tolerance = args['diatol'] / 100
+                            tolerance = float(args['diatol']) / 100
 
                             tolerance = 0.0 if tolerance < 0.0 else tolerance
                             tolerance = 1.0 if tolerance > 1.0 else tolerance
