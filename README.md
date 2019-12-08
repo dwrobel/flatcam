@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Geometry UI made sure that the Label that points to the Tool parameters show clearly that those parameters apply only for the selected tool
 - fixed an small issue in Object UI
 - small fixes: selected object in Project used to ask twice for UI build; if scale factor in Object UI is 1 do nothing as there is no point in scaling with a factor of 1
+- in Geometry UI added a button that allow updating all the tools in the Tool Table with the current values in the UI form
 
 7.12.2019 
 

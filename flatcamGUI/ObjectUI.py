@@ -1266,6 +1266,12 @@ class GeometryObjectUI(ObjectUI):
         # ##################
         # Create CNC Job ###
         # ##################
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.geo_tools_box.addWidget(separator_line)
+
         # ### Tools Data ## ##
         self.tool_data_label = QtWidgets.QLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
@@ -1584,13 +1590,23 @@ class GeometryObjectUI(ObjectUI):
         self.feedrate_probe_label.hide()
         self.feedrate_probe_entry.setVisible(False)
 
+        separator_line2 = QtWidgets.QFrame()
+        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(separator_line2, 19, 0, 1, 2)
+
+        self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
+        self.grid3.addWidget(self.apply_param_to_all, 20, 0, 1, 2)
+
+        self.grid3.addWidget(QtWidgets.QLabel(''), 21, 0, 1, 2)
+
         warning_lbl = QtWidgets.QLabel(
             _(
                 "Add at least one tool in the tool-table.\n"
                 "Click the header to select all, or Ctrl + LMB\n"
                 "for custom selection of tools."
             ))
-        self.grid3.addWidget(warning_lbl, 19, 0, 1, 2)
+        self.grid3.addWidget(warning_lbl, 22, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))

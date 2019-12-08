@@ -3826,6 +3826,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.tipangle_entry.valueChanged.connect(self.update_cutz)
 
         self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
+        self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
 
     def set_tool_offset_visibility(self, current_row):
         if current_row is None:
@@ -4393,7 +4394,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         try:
             # set the form with data from the newly selected tool
-            for tooluid_key, tooluid_value in self.tools.items():
+            for tooluid_key, tooluid_value in list(self.tools.items()):
                 if int(tooluid_key) == tooluid:
                     for key, value in tooluid_value.items():
                         if key == 'data':
@@ -4503,8 +4504,70 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.ois_mpass_geo.on_cb_change()
         self.ui.ois_tcz_geo.on_cb_change()
 
-    def gui_form_to_storage(self):
+    def on_apply_param_to_all_clicked(self):
+        if self.ui.geo_tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            log.debug("FlatCAMGeometry.gui_form_to_storage() --> no tool in Tools Table, aborting.")
+            return
 
+        self.ui_disconnect()
+
+        row = self.ui.geo_tools_table.currentRow()
+        if row < 0:
+            row = 0
+
+        # store all the data associated with the row parameter to the self.tools storage
+        tooldia_item = float(self.ui.geo_tools_table.item(row, 1).text())
+        offset_item = self.ui.geo_tools_table.cellWidget(row, 2).currentText()
+        type_item = self.ui.geo_tools_table.cellWidget(row, 3).currentText()
+        tool_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
+
+        offset_value_item = float(self.ui.tool_offset_entry.get_value())
+
+        # this new dict will hold the actual useful data, another dict that is the value of key 'data'
+        temp_tools = {}
+        temp_dia = {}
+        temp_data = {}
+
+        for tooluid_key, tooluid_value in self.tools.items():
+            for key, value in tooluid_value.items():
+                if key == 'tooldia':
+                    temp_dia[key] = tooldia_item
+                # update the 'offset', 'type' and 'tool_type' sections
+                if key == 'offset':
+                    temp_dia[key] = offset_item
+                if key == 'type':
+                    temp_dia[key] = type_item
+                if key == 'tool_type':
+                    temp_dia[key] = tool_type_item
+                if key == 'offset_value':
+                    temp_dia[key] = offset_value_item
+
+                if key == 'data':
+                    # update the 'data' section
+                    for data_key in tooluid_value[key].keys():
+                        for form_key, form_value in self.form_fields.items():
+                            if form_key == data_key:
+                                temp_data[data_key] = form_value.get_value()
+                        # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
+                        # updated from self.app.defaults
+                        if data_key not in self.form_fields:
+                            temp_data[data_key] = value[data_key]
+                    temp_dia[key] = deepcopy(temp_data)
+                    temp_data.clear()
+
+                if key == 'solid_geometry':
+                    temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
+
+                temp_tools[tooluid_key] = deepcopy(temp_dia)
+
+        self.tools.clear()
+        self.tools = deepcopy(temp_tools)
+        temp_tools.clear()
+
+        self.ui_connect()
+
+    def gui_form_to_storage(self):
         if self.ui.geo_tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("FlatCAMGeometry.gui_form_to_storage() --> no tool in Tools Table, aborting.")
@@ -4544,16 +4607,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         tool_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
         tooluid_item = int(self.ui.geo_tools_table.item(row, 5).text())
 
-        try:
-            offset_value_item = float(self.ui.tool_offset_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                offset_value_item = float(self.ui.tool_offset_entry.get_value().replace(',', '.'))
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Wrong value format entered, use a number."))
-                return
+        offset_value_item = float(self.ui.tool_offset_entry.get_value())
 
         # this new dict will hold the actual useful data, another dict that is the value of key 'data'
         temp_tools = {}
@@ -4592,7 +4646,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
 
                     temp_tools[tooluid_key] = deepcopy(temp_dia)
-
             else:
                 temp_tools[tooluid_key] = deepcopy(tooluid_value)
 
