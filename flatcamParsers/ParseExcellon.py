@@ -1112,6 +1112,9 @@ class Excellon(Geometry):
         else:
             px, py = point
 
+        if xfactor == 0 and yfactor == 0:
+            return
+
         def scale_geom(obj):
             if type(obj) is list:
                 new_obj = []
@@ -1167,6 +1170,9 @@ class Excellon(Geometry):
         log.debug("flatcamParsers.ParseExcellon.Excellon.offset()")
 
         dx, dy = vect
+
+        if dx == 0 and dy == 0:
+            return
 
         def offset_geom(obj):
             if type(obj) is list:
@@ -1297,6 +1303,9 @@ class Excellon(Geometry):
         if angle_y is None:
             angle_y = 0.0
 
+        if angle_x == 0 and angle_y == 0:
+            return
+
         def skew_geom(obj):
             if type(obj) is list:
                 new_obj = []
@@ -1374,6 +1383,9 @@ class Excellon(Geometry):
         :return:
         """
         log.debug("flatcamParsers.ParseExcellon.Excellon.rotate()")
+
+        if angle == 0:
+            return
 
         def rotate_geom(obj, origin=None):
             if type(obj) is list:

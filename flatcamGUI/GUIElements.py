@@ -531,6 +531,7 @@ class FCSpinner(QtWidgets.QSpinBox):
     def __init__(self, suffix=None, alignment=None, parent=None):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
+
         self.editingFinished.connect(self.on_edit_finished)
         self.lineEdit().installEventFilter(self)
 
@@ -588,6 +589,7 @@ class FCSpinner(QtWidgets.QSpinBox):
             super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.lineEdit().deselect()
             self.readyToEdit = True
+            self.prev_readyToEdit = True
 
     def get_value(self):
         return int(self.value())
@@ -652,7 +654,6 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
                     self.readyToEdit = False
                 else:
                     self.lineEdit().deselect()
-
                 return True
         return False
 

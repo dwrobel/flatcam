@@ -18,6 +18,7 @@ from shapely.geometry.base import *
 import math
 from datetime import datetime
 import logging
+from copy import deepcopy
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -388,6 +389,21 @@ class ToolCalibration(FlatCAMTool):
                         """)
         grid_lay.addWidget(self.generate_factors_button, 20, 0, 1, 3)
 
+        separator_line1 = QtWidgets.QFrame()
+        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line1, 21, 0, 1, 3)
+
+        grid_lay.addWidget(QtWidgets.QLabel(''), 22, 0, 1, 3)
+
+        # STEP 4 #
+        step_4 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 4: Adjusted GCode"))
+        step_4.setToolTip(
+            _("Generate verification GCode file adjusted with\n"
+              "the factors above.")
+        )
+        grid_lay.addWidget(step_4, 23, 0, 1, 3)
+
         self.scalex_label = QtWidgets.QLabel(_("Scale Factor X:"))
         self.scalex_label.setToolTip(
             _("Factor for Scale action over X axis.")
@@ -397,8 +413,8 @@ class ToolCalibration(FlatCAMTool):
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.scalex_label, 21, 0)
-        grid_lay.addWidget(self.scalex_entry, 21, 1, 1, 2)
+        grid_lay.addWidget(self.scalex_label, 24, 0)
+        grid_lay.addWidget(self.scalex_entry, 24, 1, 1, 2)
 
         self.scaley_label = QtWidgets.QLabel(_("Scale Factor Y:"))
         self.scaley_label.setToolTip(
@@ -409,20 +425,20 @@ class ToolCalibration(FlatCAMTool):
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.scaley_label, 22, 0)
-        grid_lay.addWidget(self.scaley_entry, 22, 1, 1, 2)
+        grid_lay.addWidget(self.scaley_label, 25, 0)
+        grid_lay.addWidget(self.scaley_entry, 25, 1, 1, 2)
 
         self.scale_button = QtWidgets.QPushButton(_("Apply Scale Factors"))
         self.scale_button.setToolTip(
             _("Apply Scale factors on the calibration points.")
         )
         self.scale_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        grid_lay.addWidget(self.scale_button, 23, 0, 1, 3)
+                               QPushButton
+                               {
+                                   font-weight: bold;
+                               }
+                               """)
+        grid_lay.addWidget(self.scale_button, 26, 0, 1, 3)
 
         self.skewx_label = QtWidgets.QLabel(_("Skew Angle X:"))
         self.skewx_label.setToolTip(
@@ -434,8 +450,8 @@ class ToolCalibration(FlatCAMTool):
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.skewx_label, 24, 0)
-        grid_lay.addWidget(self.skewx_entry, 24, 1, 1, 2)
+        grid_lay.addWidget(self.skewx_label, 27, 0)
+        grid_lay.addWidget(self.skewx_entry, 27, 1, 1, 2)
 
         self.skewy_label = QtWidgets.QLabel(_("Skew Angle Y:"))
         self.skewy_label.setToolTip(
@@ -447,20 +463,20 @@ class ToolCalibration(FlatCAMTool):
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.setSingleStep(0.1)
 
-        grid_lay.addWidget(self.skewy_label, 25, 0)
-        grid_lay.addWidget(self.skewy_entry, 25, 1, 1, 2)
+        grid_lay.addWidget(self.skewy_label, 28, 0)
+        grid_lay.addWidget(self.skewy_entry, 28, 1, 1, 2)
 
         self.skew_button = QtWidgets.QPushButton(_("Apply Skew Factors"))
         self.skew_button.setToolTip(
             _("Apply Skew factors on the calibration points.")
         )
         self.skew_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        grid_lay.addWidget(self.skew_button, 26, 0, 1, 3)
+                               QPushButton
+                               {
+                                   font-weight: bold;
+                               }
+                               """)
+        grid_lay.addWidget(self.skew_button, 29, 0, 1, 3)
 
         # final_factors_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Final Factors"))
         # final_factors_lbl.setToolTip(
@@ -519,22 +535,8 @@ class ToolCalibration(FlatCAMTool):
         # grid_lay.addWidget(self.fin_skewy_label, 31, 0)
         # grid_lay.addWidget(self.fin_skewy_entry, 31, 1, 1, 2)
 
-        separator_line1 = QtWidgets.QFrame()
-        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid_lay.addWidget(separator_line1, 32, 0, 1, 3)
-
-        grid_lay.addWidget(QtWidgets.QLabel(''), 32, 0, 1, 3)
-
-        # STEP 4 #
-        step_4 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 4: Adjusted GCode"))
-        step_4.setToolTip(
-            _("Generate verification GCode file adjusted with\n"
-              "the factors above.")
-        )
-        grid_lay.addWidget(step_4, 34, 0, 1, 3)
-
         # ## Adjusted GCode Button
+
         self.adj_gcode_button = QtWidgets.QPushButton(_("Generate Adjusted GCode"))
         self.adj_gcode_button.setToolTip(
             _("Generate verification GCode file adjusted with\n"
@@ -735,6 +737,16 @@ class ToolCalibration(FlatCAMTool):
             self.object_combo.setDisabled(True)
 
     def on_start_collect_points(self):
+
+        if self.cal_source_radio.get_value() == 'object':
+            selection_index = self.object_combo.currentIndex()
+            model_index = self.app.collection.index(selection_index, 0, self.object_combo.rootModelIndex())
+            try:
+                self.target_obj = model_index.internalPointer().obj
+            except Exception:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no source FlatCAM object selected..."))
+                return
+
         # disengage the grid snapping since it will be hard to find the drills on grid
         if self.app.ui.grid_snap_btn.isChecked():
             self.grid_status_memory = True
@@ -750,15 +762,6 @@ class ToolCalibration(FlatCAMTool):
             self.canvas.graph_event_disconnect(self.app.mr)
 
         self.local_connected = True
-
-        if self.cal_source_radio.get_value() == 'object':
-            selection_index = self.object_combo.currentIndex()
-            model_index = self.app.collection.index(selection_index, 0, self.object_combo.rootModelIndex())
-            try:
-                self.target_obj = model_index.internalPointer().obj
-            except Exception:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no target object loaded ..."))
-                return
 
         self.reset_calibration_points()
 
@@ -1038,8 +1041,113 @@ class ToolCalibration(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no FlatCAM object selected..."))
             return 'fail'
 
+        obj_name = self.cal_object.options["name"] + "_calibrated"
+
+        self.app.worker_task.emit({'fcn': self.new_calibrated_object, 'params': [obj_name]})
+
+    def new_calibrated_object(self, obj_name):
+
+        try:
+            origin_x = self.click_points[0][0]
+            origin_y = self.click_points[0][1]
+        except IndexError as e:
+            log.debug("ToolCalibration.new_calibrated_object() --> %s" % str(e))
+            return 'fail'
+
+        scalex = self.scalex_entry.get_value()
+        scaley = self.scaley_entry.get_value()
+
+        skewx = self.skewx_entry.get_value()
+        skewy = self.skewy_entry.get_value()
+
         # create a new object adjusted (calibrated)
-        # TODO
+        def initialize_geometry(obj_init, app):
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
+            try:
+                obj_init.follow_geometry = deepcopy(obj.follow_geometry)
+            except AttributeError:
+                pass
+
+            try:
+                obj_init.apertures = deepcopy(obj.apertures)
+            except AttributeError:
+                pass
+
+            try:
+                if obj.tools:
+                    obj_init.tools = deepcopy(obj.tools)
+            except Exception as e:
+                log.debug("App.on_copy_object() --> %s" % str(e))
+
+            obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
+            obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
+
+            try:
+                obj_init.source_file = deepcopy(obj.source_file)
+            except (AttributeError, TypeError):
+                pass
+
+        def initialize_gerber(obj_init, app):
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
+            try:
+                obj_init.follow_geometry = deepcopy(obj.follow_geometry)
+            except AttributeError:
+                pass
+
+            try:
+                obj_init.apertures = deepcopy(obj.apertures)
+            except AttributeError:
+                pass
+
+            try:
+                if obj.tools:
+                    obj_init.tools = deepcopy(obj.tools)
+            except Exception as e:
+                log.debug("App.on_copy_object() --> %s" % str(e))
+
+            obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
+            obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
+
+            try:
+                obj_init.source_file = self.export_gerber(obj_name=obj_name, filename=None, local_use=obj_init,
+                                                          use_thread=False)
+            except (AttributeError, TypeError):
+                pass
+
+        def initialize_excellon(obj_init, app):
+            obj_init.tools = deepcopy(obj.tools)
+
+            # drills are offset, so they need to be deep copied
+            obj_init.drills = deepcopy(obj.drills)
+            # slots are offset, so they need to be deep copied
+            obj_init.slots = deepcopy(obj.slots)
+
+            obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
+            obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
+
+            obj_init.create_geometry()
+
+            obj_init.source_file = self.app.export_excellon(obj_name=obj_name, local_use=obj, filename=None,
+                                                            use_thread=False)
+
+        obj = self.cal_object
+        obj_name = obj_name
+
+        if obj is None:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no FlatCAM object selected..."))
+            log.debug("ToolCalibration.new_calibrated_object() --> No object to calibrate")
+            return 'fail'
+
+        try:
+            if obj.kind.lower() == 'excellon':
+                self.app.new_object("excellon", str(obj_name), initialize_excellon)
+            elif obj.kind.lower() == 'gerber':
+                self.app.new_object("gerber", str(obj_name), initialize_gerber)
+            elif obj.kind.lower() == 'geometry':
+                self.app.new_object("geometry", str(obj_name), initialize_geometry)
+        except Exception as e:
+            log.debug("ToolCalibration.new_calibrated_object() --> %s" % str(e))
+            return "Operation failed: %s" % str(e)
 
     def disconnect_cal_events(self):
         # restore the Grid snapping if it was active before

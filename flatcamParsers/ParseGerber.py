@@ -1760,6 +1760,9 @@ class Gerber(Geometry):
                                      _("Scale factor has to be a number: integer or float."))
                 return
 
+        if xfactor == 0 and yfactor == 0:
+            return
+
         if point is None:
             px = 0
             py = 0
@@ -1769,8 +1772,7 @@ class Gerber(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for __ in self.solid_geometry:
-                self.geo_len += 1
+            self.geo_len = len(self.solid_geometry)
         except TypeError:
             self.geo_len = 1
 
@@ -1835,8 +1837,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' %
-                             _("Gerber Scale done."))
+        self.app.inform.emit('[success] %s' % _("Gerber Scale done."))
         self.app.proc_container.new_text = ''
 
         # ## solid_geometry ???
@@ -1874,6 +1875,9 @@ class Gerber(Geometry):
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("An (x,y) pair of values are needed. "
                                    "Probable you entered only one value in the Offset field."))
+            return
+
+        if dx == 0 and dy == 0:
             return
 
         # variables to display the percentage of work done
@@ -2028,11 +2032,13 @@ class Gerber(Geometry):
 
         px, py = point
 
+        if angle_x == 0 and angle_y == 0:
+            return
+
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for __ in self.solid_geometry:
-                self.geo_len += 1
+            self.geo_len = len(self.solid_geometry)
         except TypeError:
             self.geo_len = 1
 
@@ -2088,6 +2094,9 @@ class Gerber(Geometry):
         log.debug("parseGerber.Gerber.rotate()")
 
         px, py = point
+
+        if angle == 0:
+            return
 
         # variables to display the percentage of work done
         self.geo_len = 0

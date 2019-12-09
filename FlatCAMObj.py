@@ -5370,9 +5370,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         try:
             xfactor = float(xfactor)
-        except Exception as e:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Scale factor has to be a number: integer or float."))
+        except Exception:
+            self.app.inform.emit('[ERROR_NOTCL] %s' %  _("Scale factor has to be a number: integer or float."))
             return
 
         if yfactor is None:
@@ -5380,28 +5379,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             try:
                 yfactor = float(yfactor)
-            except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Scale factor has to be a number: integer or float."))
+            except Exception:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scale factor has to be a number: integer or float."))
                 return
+
+        if xfactor == 1 and yfactor == 1:
+            return
 
         if point is None:
             px = 0
             py = 0
         else:
             px, py = point
-
-        # if type(self.solid_geometry) == list:
-        #     geo_list =  self.flatten(self.solid_geometry)
-        #     self.solid_geometry = []
-        #     # for g in geo_list:
-        #     #     self.solid_geometry.append(affinity.scale(g, xfactor, yfactor, origin=(px, py)))
-        #     self.solid_geometry = [affinity.scale(g, xfactor, yfactor, origin=(px, py))
-        #                            for g in geo_list]
-        # else:
-        #     self.solid_geometry = affinity.scale(self.solid_geometry, xfactor, yfactor,
-        #                                          origin=(px, py))
-        # self.app.inform.emit("[success] Geometry Scale done.")
 
         self.geo_len = 0
         self.old_disp_number = 0
@@ -5438,25 +5427,24 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.el_count = 0
 
                 self.tools[tool]['solid_geometry'] = scale_recursion(self.tools[tool]['solid_geometry'])
-        else:
-            try:
-                # variables to display the percentage of work done
-                self.geo_len = 0
-                try:
-                    self.geo_len = len(self.solid_geometry)
-                except TypeError:
-                    self.geo_len = 1
-                self.old_disp_number = 0
-                self.el_count = 0
 
-                self.solid_geometry = scale_recursion(self.solid_geometry)
-            except AttributeError:
-                self.solid_geometry = []
-                return
+        try:
+            # variables to display the percentage of work done
+            self.geo_len = 0
+            try:
+                self.geo_len = len(self.solid_geometry)
+            except TypeError:
+                self.geo_len = 1
+            self.old_disp_number = 0
+            self.el_count = 0
+
+            self.solid_geometry = scale_recursion(self.solid_geometry)
+        except AttributeError:
+            self.solid_geometry = []
+            return
 
         self.app.proc_container.new_text = ''
-        if xfactor != 1 and yfactor != 1:
-            self.app.inform.emit('[success] %s' % _("Geometry Scale done."))
+        self.app.inform.emit('[success] %s' % _("Geometry Scale done."))
 
     def offset(self, vect):
         """
@@ -5476,6 +5464,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                  _("An (x,y) pair of values are needed. "
                                    "Probable you entered only one value in the Offset field.")
                                  )
+            return
+
+        if dx == 0 and dy == 0:
             return
 
         self.geo_len = 0
@@ -5513,18 +5504,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.el_count = 0
 
                 self.tools[tool]['solid_geometry'] = translate_recursion(self.tools[tool]['solid_geometry'])
-        else:
-            # variables to display the percentage of work done
-            self.geo_len = 0
-            try:
-                for g in self.solid_geometry:
-                    self.geo_len += 1
-            except TypeError:
-                self.geo_len = 1
-            self.old_disp_number = 0
-            self.el_count = 0
 
-            self.solid_geometry = translate_recursion(self.solid_geometry)
+        # variables to display the percentage of work done
+        self.geo_len = 0
+        try:
+            for g in self.solid_geometry:
+                self.geo_len += 1
+        except TypeError:
+            self.geo_len = 1
+        self.old_disp_number = 0
+        self.el_count = 0
+
+        self.solid_geometry = translate_recursion(self.solid_geometry)
 
         self.app.proc_container.new_text = ''
         self.app.inform.emit('[success] %s' % _("Geometry Offset done."))

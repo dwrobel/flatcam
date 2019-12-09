@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - reverted this change: "selected object in Project used to ask twice for UI build" because it will not build the UI when a tab is closed for Document object and the object is selected
 - fixed issue after Geometry object edit; the GCode made from and edited object did not reflect the changes in the object
 - in Object UI, the Scale FCDoubleSpinner will no longer work for Return key press due of issues of unwanted scaling on focusOut event
+- in FlatCAMGeometry fixed the scale and offset methods to always process the self.solid_geometry
+- Calibration Tool - finished the calibrated object creation method
 
 8.12.2019
 
