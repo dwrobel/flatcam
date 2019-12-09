@@ -558,50 +558,49 @@ class ToolCalibration(FlatCAMTool):
         # STEP 5 #
         step_5 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 5: Calibrate FlatCAM Objects"))
         step_5.setToolTip(
-            _("Adjust the Excellon and Cutout Geometry objects\n"
-              "with the factors determined, and verified, above.")
+            _("Adjust the FlatCAM objects\n"
+              "with the factors determined and verified above.")
         )
         grid_lay.addWidget(step_5, 38, 0, 1, 3)
 
-        self.adj_exc_object_combo = QtWidgets.QComboBox()
-        self.adj_exc_object_combo.setModel(self.app.collection)
-        self.adj_exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.adj_exc_object_combo.setCurrentIndex(1)
+        self.adj_object_type_combo = QtWidgets.QComboBox()
+        self.adj_object_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
+        self.adj_object_type_combo.setCurrentIndex(0)
 
-        self.adj_excobj_label = QtWidgets.QLabel("%s:" % _("EXCELLON"))
-        self.adj_excobj_label.setToolTip(
-            _("Excellon Object to be adjusted.")
+        self.adj_object_type_label = QtWidgets.QLabel("%s:" % _("Adjusted object type"))
+        self.adj_object_type_label.setToolTip(
+            _("Type of the FlatCAM Object to be adjusted.")
         )
 
-        grid_lay.addWidget(self.adj_excobj_label, 39, 0, 1, 3)
-        grid_lay.addWidget(self.adj_exc_object_combo, 40, 0, 1, 3)
+        grid_lay.addWidget(self.adj_object_type_label, 39, 0, 1, 3)
+        grid_lay.addWidget(self.adj_object_type_combo, 40, 0, 1, 3)
 
-        self.adj_geo_object_combo = QtWidgets.QComboBox()
-        self.adj_geo_object_combo.setModel(self.app.collection)
-        self.adj_geo_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.adj_geo_object_combo.setCurrentIndex(1)
+        self.adj_object_combo = FCComboBox()
+        self.adj_object_combo.setModel(self.app.collection)
+        self.adj_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.adj_object_combo.setCurrentIndex(0)
 
-        self.adj_geoobj_label = QtWidgets.QLabel("%s:" % _("GEOMETRY"))
-        self.adj_geoobj_label.setToolTip(
-            _("Geometry Object to be adjusted.")
+        self.adj_object_label = QtWidgets.QLabel("%s:" % _("Adjusted object selection"))
+        self.adj_object_label.setToolTip(
+            _("The FlatCAM Object to be adjusted.")
         )
 
-        grid_lay.addWidget(self.adj_geoobj_label, 41, 0, 1, 3)
-        grid_lay.addWidget(self.adj_geo_object_combo, 42, 0, 1, 3)
+        grid_lay.addWidget(self.adj_object_label, 41, 0, 1, 3)
+        grid_lay.addWidget(self.adj_object_combo, 42, 0, 1, 3)
 
         # ## Adjust Objects Button
-        self.adj_obj_button = QtWidgets.QPushButton(_("Calibrate"))
-        self.adj_obj_button.setToolTip(
+        self.cal_button = QtWidgets.QPushButton(_("Calibrate"))
+        self.cal_button.setToolTip(
             _("Adjust (scale and/or skew) the objects\n"
               "with the factors determined above.")
         )
-        self.adj_obj_button.setStyleSheet("""
+        self.cal_button.setStyleSheet("""
                         QPushButton
                         {
                             font-weight: bold;
                         }
                         """)
-        grid_lay.addWidget(self.adj_obj_button, 43, 0, 1, 3)
+        grid_lay.addWidget(self.cal_button, 43, 0, 1, 3)
 
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
@@ -639,6 +638,12 @@ class ToolCalibration(FlatCAMTool):
         # if the mouse events are connected to a local method set this True
         self.local_connected = False
 
+        # reference for the tab where to open and view the verification GCode
+        self.gcode_editor_tab = None
+
+        # calibrated object
+        self.cal_object = None
+
         # ## Signals
         self.start_button.clicked.connect(self.on_start_collect_points)
         self.gcode_button.clicked.connect(self.generate_verification_gcode)
@@ -648,6 +653,9 @@ class ToolCalibration(FlatCAMTool):
         self.cal_source_radio.activated_custom.connect(self.on_cal_source_radio)
 
         self.obj_type_combo.currentIndexChanged.connect(self.on_obj_type_combo)
+        self.adj_object_type_combo.currentIndexChanged.connect(self.on_adj_obj_type_combo)
+
+        self.cal_button.clicked.connect(self.on_cal_button_click)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCalibration()")
@@ -699,12 +707,20 @@ class ToolCalibration(FlatCAMTool):
         self.skewx_entry.set_value(0.0)
         self.skewy_entry.set_value(0.0)
 
+        # calibrated object
+        self.cal_object = None
+
         self.app.inform.emit('%s...' % _("Tool initialized"))
 
     def on_obj_type_combo(self):
         obj_type = self.obj_type_combo.currentIndex()
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
+
+    def on_adj_obj_type_combo(self):
+        obj_type = self.adj_object_type_combo.currentIndex()
+        self.adj_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.adj_object_combo.setCurrentIndex(0)
 
     def on_cal_source_radio(self, val):
         if val == 'object':
@@ -937,25 +953,6 @@ class ToolCalibration(FlatCAMTool):
         self.gcode_editor_tab.buttonSave.clicked.disconnect()
         self.gcode_editor_tab.buttonSave.clicked.connect(
             lambda: self.gcode_editor_tab.handleSaveGCode(name='fc_ver_gcode', filt=_filter_, callback=self.close_tab))
-        #
-        # try:
-        #     dir_file_to_save = self.app.get_last_save_folder() + '/' + 'ver_gcode'
-        #     filename, _f = QtWidgets.QFileDialog.getSaveFileName(
-        #         caption=_("Export Machine Code ..."),
-        #         directory=dir_file_to_save,
-        #         filter=_filter_
-        #     )
-        # except TypeError:
-        #     filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Machine Code ..."), filter=_filter_)
-        #
-        # filename = str(filename)
-        #
-        # if filename == '':
-        #     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Machine Code cancelled ..."))
-        #     return
-        #
-        # with open(filename, 'w') as f:
-        #     f.write(gcode)
 
     def calculate_factors(self):
         origin_x = self.click_points[0][0]
@@ -1028,6 +1025,21 @@ class ToolCalibration(FlatCAMTool):
             skew_angle_y = math.degrees(math.atan(dy / dx))
 
             self.skewy_entry.set_value(skew_angle_y)
+
+    def on_cal_button_click(self):
+        # get the FlatCAM object to calibrate
+        selection_index = self.adj_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.adj_object_combo.rootModelIndex())
+
+        try:
+            self.cal_object = model_index.internalPointer().obj
+        except Exception as e:
+            log.debug("ToolCalibration.on_cal_button_click() --> %s" % str(e))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no FlatCAM object selected..."))
+            return 'fail'
+
+        # create a new object adjusted (calibrated)
+        # TODO
 
     def disconnect_cal_events(self):
         # restore the Grid snapping if it was active before
