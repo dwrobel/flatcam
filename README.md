@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the border for fit view on OpenGL graphic mode
 - Calibration Tool - added preferences values
 - Calibration Tool - more work on it
+- reverted this change: "selected object in Project used to ask twice for UI build" because it will not build the UI when a tab is closed for Document object and the object is selected
 
 8.12.2019
 

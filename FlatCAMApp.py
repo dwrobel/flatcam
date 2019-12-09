@@ -133,7 +133,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.99
-    version_date = "2019/12/7"
+    version_date = "2019/12/12"
     beta = True
     engine = '3D'
 
@@ -8102,7 +8102,7 @@ class App(QtCore.QObject):
         if index.isValid():
             if index.internalPointer().parent_item != self.collection.root_item:
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
-        # self.collection.on_item_activated(index)
+        self.collection.on_item_activated(index)
 
     def on_row_selected(self, obj_name):
         # this is a special string; when received it will make all entries unchecked
