@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-12-09 13:38-0300\n"
-"PO-Revision-Date: 2019-12-09 18:13-0300\n"
+"PO-Revision-Date: 2019-12-09 18:30-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -75,6 +75,8 @@ msgstr "Executando Script Tcl..."
 msgid ""
 "Found old default preferences files. Please reboot the application to update."
 msgstr ""
+"Arquivos de preferências padrão antigos encontrados. Por favor, reinicie o "
+"aplicativo para atualizar."
 
 #: FlatCAMApp.py:2763 ObjectCollection.py:90 flatcamTools/ToolImage.py:248
 #: flatcamTools/ToolPcbWizard.py:301 flatcamTools/ToolPcbWizard.py:324
@@ -304,38 +306,6 @@ msgid "Licensed under the MIT license"
 msgstr "Licenciado sob licença do MIT"
 
 #: FlatCAMApp.py:4448
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "Licensed under the MIT license:\n"
-#| "http://www.opensource.org/licenses/mit-license.php\n"
-#| "\n"
-#| "Permission is hereby granted, free of charge, to any person obtaining a "
-#| "copy\n"
-#| "of this software and associated documentation files (the \"Software\"), "
-#| "to deal\n"
-#| "in the Software without restriction, including without limitation the "
-#| "rights\n"
-#| "to use, copy, modify, merge, publish, distribute, sublicense, and/or "
-#| "sell\n"
-#| "copies of the Software, and to permit persons to whom the Software is\n"
-#| "furnished to do so, subject to the following conditions:\n"
-#| "\n"
-#| "The above copyright notice and this permission notice shall be included "
-#| "in\n"
-#| "all copies or substantial portions of the Software.\n"
-#| "\n"
-#| "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
-#| "OR\n"
-#| "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
-#| "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL "
-#| "THE\n"
-#| "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
-#| "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING "
-#| "FROM,\n"
-#| "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS "
-#| "IN\n"
-#| "THE SOFTWARE."
 msgid ""
 "Permission is hereby granted, free of charge, to any person obtaining a "
 "copy\n"
@@ -360,10 +330,6 @@ msgid ""
 "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
 "THE SOFTWARE."
 msgstr ""
-"\n"
-"Licensed under the MIT license:\n"
-"http://www.opensource.org/licenses/mit-license.php\n"
-"\n"
 "Permission is hereby granted, free of charge, to any person obtaining a "
 "copy\n"
 "of this software and associated documentation files (the \"Software\"), to "
@@ -1376,7 +1342,7 @@ msgstr "Falha ao abrir Excellon. Provavelmente não é um arquivo Excellon."
 
 #: FlatCAMApp.py:10831
 msgid "Reading GCode file"
-msgstr "Lendo Arquivo G-Code."
+msgstr "Lendo Arquivo G-Code"
 
 #: FlatCAMApp.py:10838
 msgid "Failed to open"
@@ -2285,10 +2251,9 @@ msgid "Saved Tools DB."
 msgstr "BD de Ferramentas Salvo."
 
 #: FlatCAMCommon.py:1293
-#, fuzzy
-#| msgid "Failed. No tool selected in the tool table ..."
 msgid "No Tool/row selected in the Tools Database table"
-msgstr "Falhou. Nenhuma ferramenta selecionada na tabela de ferramentas ..."
+msgstr ""
+"Nenhuma ferramenta selecionada na tabela de Banco de Dados de Ferramentas"
 
 #: FlatCAMCommon.py:1311
 msgid "Cancelled adding tool from DB."
@@ -2658,7 +2623,7 @@ msgstr "Este objeto Trabalho CNC não pode ser processado porque é um"
 
 #: FlatCAMObj.py:6432
 msgid "CNCJob object"
-msgstr "objeto de Trabalho CNC"
+msgstr "Objeto de Trabalho CNC"
 
 #: FlatCAMObj.py:6483
 msgid "G-code does not have a units code: either G20 or G21"
@@ -2804,7 +2769,7 @@ msgstr "Iniciando o G-Code para ferramenta com diâmetro"
 
 #: camlib.py:2683 camlib.py:2826 camlib.py:2928
 msgid "G91 coordinates not implemented"
-msgstr "coordenadas G91 não implementadas"
+msgstr "Coordenadas G91 não implementadas"
 
 #: camlib.py:2689 camlib.py:2832 camlib.py:2934
 msgid "The loaded Excellon file has no drills"
@@ -2926,7 +2891,7 @@ msgstr "Analisando o arquivo G-Code. Número de linhas"
 
 #: camlib.py:4083
 msgid "Creating Geometry from the parsed GCode file. "
-msgstr "Criando Geometria a partir do arquivo G-Code analisado."
+msgstr "Criando Geometria a partir do arquivo G-Code analisado. "
 
 #: camlib.py:4219 camlib.py:4503 camlib.py:4606 camlib.py:4653
 msgid "G91 coordinates not implemented ..."
@@ -4331,7 +4296,7 @@ msgstr "MOVER: Clique no ponto de referência ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2523
 msgid " Click on destination point ..."
-msgstr "Clique no ponto de destino ..."
+msgstr " Clique no ponto de destino ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2558
 msgid "Done. Geometry(s) Move completed."
@@ -4355,7 +4320,7 @@ msgstr "Nenhum texto para adicionar."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2728
 msgid " Done. Adding Text completed."
-msgstr "Texto adicionado."
+msgstr " Texto adicionado."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2756
 msgid "Create buffer geometry ..."
@@ -4966,7 +4931,7 @@ msgstr "Adicionada nova abertura com código"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3337
 msgid " Select an aperture in Aperture Table"
-msgstr "Selecione uma abertura na Tabela de Aberturas"
+msgstr " Selecione uma abertura na Tabela de Aberturas"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3345
 msgid "Select an aperture in Aperture Table -->"
@@ -8154,10 +8119,8 @@ msgstr ""
 "para seleção personalizada de ferramentas."
 
 #: flatcamGUI/ObjectUI.py:1616
-#, fuzzy
-#| msgid "Generate the CNC Job object."
 msgid "Generate CNCJob object"
-msgstr "Gera o objeto de Trabalho CNC."
+msgstr "Gera o objeto de Trabalho CNC"
 
 #: flatcamGUI/ObjectUI.py:1618
 msgid "Generate the CNC Job object."
@@ -8203,7 +8166,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1678 flatcamGUI/PreferencesUI.py:3624
 msgid "Travel"
-msgstr "Desloc."
+msgstr "Deslocamento"
 
 #: flatcamGUI/ObjectUI.py:1682 flatcamGUI/PreferencesUI.py:3633
 msgid "Display Annotation"
@@ -12067,11 +12030,11 @@ msgstr "Parâmetros das Linhas"
 
 #: flatcamGUI/PreferencesUI.py:6214 flatcamTools/ToolCopperThieving.py:302
 msgid "Line thickness size in Lines Grid."
-msgstr "Espessura das Linhas"
+msgstr "Espessura das Linhas."
 
 #: flatcamGUI/PreferencesUI.py:6227 flatcamTools/ToolCopperThieving.py:315
 msgid "Distance between each two lines in Lines Grid."
-msgstr "Distância entre duas linhas"
+msgstr "Distância entre duas linhas."
 
 #: flatcamGUI/PreferencesUI.py:6237 flatcamTools/ToolCopperThieving.py:353
 msgid "Robber Bar Parameters"
@@ -12097,7 +12060,7 @@ msgstr "Espessura"
 
 #: flatcamGUI/PreferencesUI.py:6260 flatcamTools/ToolCopperThieving.py:376
 msgid "The robber bar thickness."
-msgstr "Espessura da barra"
+msgstr "Espessura da barra."
 
 #: flatcamGUI/PreferencesUI.py:6270 flatcamTools/ToolCopperThieving.py:407
 msgid "Pattern Plating Mask"
@@ -12632,10 +12595,8 @@ msgid "Object Type"
 msgstr "Tipo de Objeto"
 
 #: flatcamTools/ToolCalibration.py:101
-#, fuzzy
-#| msgid "No object selected."
 msgid "Source object selection"
-msgstr "Nenhum objeto selecionado."
+msgstr "Seleção do objeto fonte"
 
 #: flatcamTools/ToolCalibration.py:103
 msgid "FlatCAM Object to be used as a source for reference points."
@@ -12716,7 +12677,7 @@ msgstr ""
 
 #: flatcamTools/ToolCalibration.py:281
 msgid "STEP 2: Verification GCode"
-msgstr "PASSO 2: G-Code de Verificação "
+msgstr "PASSO 2: G-Code de Verificação"
 
 #: flatcamTools/ToolCalibration.py:283 flatcamTools/ToolCalibration.py:350
 msgid ""
@@ -12829,10 +12790,8 @@ msgid "Type of the FlatCAM Object to be adjusted."
 msgstr "Tipo do objeto FlatCAM a ser ajustado."
 
 #: flatcamTools/ToolCalibration.py:585
-#, fuzzy
-#| msgid "No object selected."
 msgid "Adjusted object selection"
-msgstr "Nenhum objeto selecionado."
+msgstr "Seleção do objeto ajustado"
 
 #: flatcamTools/ToolCalibration.py:587
 msgid "The FlatCAM Object to be adjusted."
@@ -12857,10 +12816,8 @@ msgstr ""
 #: flatcamTools/ToolPaint.py:378 flatcamTools/ToolPanelize.py:266
 #: flatcamTools/ToolQRCode.py:314 flatcamTools/ToolRulesCheck.py:507
 #: flatcamTools/ToolSolderPaste.py:470 flatcamTools/ToolSub.py:170
-#, fuzzy
-#| msgid "Rules Tool"
 msgid "Reset Tool"
-msgstr "Ferramenta de Regras"
+msgstr "Redefinir Ferramenta"
 
 #: flatcamTools/ToolCalibration.py:619 flatcamTools/ToolCopperThieving.py:484
 #: flatcamTools/ToolCutOut.py:362 flatcamTools/ToolDblSided.py:304
@@ -13125,10 +13082,8 @@ msgstr "Não há objeto Gerber carregado ..."
 
 #: flatcamTools/ToolCopperThieving.py:675
 #: flatcamTools/ToolCopperThieving.py:1267
-#, fuzzy
-#| msgid "geometry"
 msgid "Append geometry"
-msgstr "geometria"
+msgstr "Anexar geometria"
 
 #: flatcamTools/ToolCopperThieving.py:719
 #: flatcamTools/ToolCopperThieving.py:1300
@@ -13139,7 +13094,7 @@ msgstr "Anexar arquivo fonte"
 #: flatcamTools/ToolCopperThieving.py:727
 #: flatcamTools/ToolCopperThieving.py:1308
 msgid "Copper Thieving Tool done."
-msgstr "Área de Retirada de Cobre"
+msgstr "Área de Retirada de Cobre."
 
 #: flatcamTools/ToolCopperThieving.py:754
 #: flatcamTools/ToolCopperThieving.py:787 flatcamTools/ToolCutOut.py:466
@@ -13252,10 +13207,8 @@ msgstr ""
 "de objetos que preencherão a caixa de combinação 'Objeto'."
 
 #: flatcamTools/ToolCutOut.py:91 flatcamTools/ToolCutOut.py:92
-#, fuzzy
-#| msgid "Object to be painted."
 msgid "Object to be cutout"
-msgstr "Objeto a ser pintado."
+msgstr "Objeto a ser recortado"
 
 #: flatcamTools/ToolCutOut.py:214
 #, fuzzy
@@ -13476,10 +13429,8 @@ msgid "2-Sided PCB"
 msgstr "PCB de 2 faces"
 
 #: flatcamTools/ToolDblSided.py:58
-#, fuzzy
-#| msgid "Geometry Obj to be mirrored."
 msgid "Gerber to be mirrored"
-msgstr "Objeto Geometria a ser espelhado."
+msgstr "Gerber a ser espelhado"
 
 #: flatcamTools/ToolDblSided.py:60 flatcamTools/ToolDblSided.py:88
 #: flatcamTools/ToolDblSided.py:118
@@ -15383,22 +15334,16 @@ msgid "Drills number"
 msgstr "Número de furos"
 
 #: flatcamTools/ToolProperties.py:402 flatcamTools/ToolProperties.py:461
-#, fuzzy
-#| msgid "tool number"
 msgid "Slots number"
-msgstr "número da ferramenta"
+msgstr "Número de Ranhuras"
 
 #: flatcamTools/ToolProperties.py:404
-#, fuzzy
-#| msgid "tool number"
 msgid "Drills total number:"
-msgstr "número da ferramenta"
+msgstr "Número total de furos:"
 
 #: flatcamTools/ToolProperties.py:405
-#, fuzzy
-#| msgid "tool number"
 msgid "Slots total number:"
-msgstr "número da ferramenta"
+msgstr "Número total de ranhuras:"
 
 #: flatcamTools/ToolProperties.py:411 flatcamTools/ToolProperties.py:426
 #: flatcamTools/ToolProperties.py:429 flatcamTools/ToolProperties.py:432
@@ -15425,10 +15370,8 @@ msgid "Data"
 msgstr "Dados"
 
 #: flatcamTools/ToolProperties.py:468
-#, fuzzy
-#| msgid "depth where to cut"
 msgid "Depth of Cut"
-msgstr "profundidade de corte"
+msgstr "Profundidade de Corte"
 
 #: flatcamTools/ToolProperties.py:480
 msgid "Clearance Height"
@@ -15516,10 +15459,8 @@ msgstr "Cria o objeto QRCode."
 
 #: flatcamTools/ToolQRCode.py:413 flatcamTools/ToolQRCode.py:748
 #: flatcamTools/ToolQRCode.py:797
-#, fuzzy
-#| msgid "Cancelled. There is no Tool/Drill selected"
 msgid "Cancelled. There is no QRCode Data in the text box."
-msgstr "Cancelado. Não há ferramenta/broca selecionada"
+msgstr "Cancelado. Não há dados para o QRCode na caixa de texto."
 
 #: flatcamTools/ToolQRCode.py:432
 msgid "Generating QRCode geometry"
@@ -16136,10 +16077,8 @@ msgid "No Target object loaded."
 msgstr "Nenhum objeto de destino foi carregado."
 
 #: flatcamTools/ToolSub.py:281
-#, fuzzy
-#| msgid "Adding geometry for aperture"
 msgid "Loading geometry from Gerber objects."
-msgstr "Adicionando geometria na abertura"
+msgstr "Carregando geometria de objetos Gerber."
 
 #: flatcamTools/ToolSub.py:293 flatcamTools/ToolSub.py:498
 msgid "No Subtractor object loaded."
