@@ -19,6 +19,9 @@ CAD program, and create G-Code for Isolation routing.
 - in Object UI, the Scale FCDoubleSpinner will no longer work for Return key press due of issues of unwanted scaling on focusOut event
 - in FlatCAMGeometry fixed the scale and offset methods to always process the self.solid_geometry
 - Calibration Tool - finished the calibrated object creation method
+- updated the POT file
+- fixed an error in the German PO file
+- updated the languages PO files
 
 8.12.2019
 
