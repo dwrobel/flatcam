@@ -177,23 +177,28 @@ class FlatCAMObj(QtCore.QObject):
 
         assert isinstance(self.ui, ObjectUI)
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
+
         try:
             # it will raise an exception for those FlatCAM objects that do not build UI with the common elements
             self.ui.offset_button.clicked.connect(self.on_offset_button_click)
         except (TypeError, AttributeError):
             pass
+
         try:
             self.ui.scale_button.clicked.connect(self.on_scale_button_click)
         except (TypeError, AttributeError):
             pass
+
         try:
             self.ui.offsetvector_entry.returnPressed.connect(self.on_offset_button_click)
         except (TypeError, AttributeError):
             pass
-        try:
-            self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
-        except (TypeError, AttributeError):
-            pass
+
+        # Creates problems on focusOut
+        # try:
+        #     self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+        # except (TypeError, AttributeError):
+        #     pass
         # self.ui.skew_button.clicked.connect(self.on_skew_button_click)
 
     def build_ui(self):
@@ -212,9 +217,9 @@ class FlatCAMObj(QtCore.QObject):
             # HACK: disconnect the scale entry signal since on focus out event will trigger an undesired scale()
             # it seems that the takewidget() does generate a focus out event for the QDoubleSpinbox ...
             # and reconnect after the takeWidget() is done
-            self.ui.scale_entry.returnPressed.disconnect(self.on_scale_button_click)
+            # self.ui.scale_entry.returnPressed.disconnect(self.on_scale_button_click)
             self.app.ui.selected_scroll_area.takeWidget()
-            self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+            # self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
         except Exception as e:
             self.app.log.debug("FlatCAMObj.build_ui() --> Nothing to remove: %s" % str(e))
         self.app.ui.selected_scroll_area.setWidget(self.ui)

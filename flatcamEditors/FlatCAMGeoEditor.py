@@ -4277,11 +4277,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
             for shape in self.storage.get_objects():
                 fcgeometry.tools[self.multigeo_tool]['solid_geometry'].append(shape.geo)
             self.multigeo_tool = None
-        else:
-            fcgeometry.solid_geometry = []
-            # for shape in self.shape_buffer:
-            for shape in self.storage.get_objects():
-                fcgeometry.solid_geometry.append(shape.geo)
+
+        fcgeometry.solid_geometry = []
+        # for shape in self.shape_buffer:
+        for shape in self.storage.get_objects():
+            fcgeometry.solid_geometry.append(shape.geo)
 
     def update_options(self, obj):
         if self.paint_tooldia:
