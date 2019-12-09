@@ -24,6 +24,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the languages PO files
 - some fixes on the app.jump_to() method
 - made sure that the ToolFilm will not start saving a file if there are no objects loaded
+- some fixes on the app.jump_to() method for the Legacy(2D) graphic mode
 
 8.12.2019
 

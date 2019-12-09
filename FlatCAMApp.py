@@ -7362,10 +7362,15 @@ class App(QtCore.QObject):
             # in pixels where the origin 0,0 is in the lowest left point of the display window (in our case is the
             # canvas) and the point (width, height) is in the top-right location
             loc = self.plotcanvas.axes.transData.transform_point(location)
-            j_pos = (x0 + loc[0], y0 - loc[1])
+            j_pos = (
+                int(x0 + loc[0]),
+                int(y0 - loc[1])
+            )
             cursor.setPos(j_pos[0], j_pos[1])
+            self.plotcanvas.mouse = [location[0], location[1]]
+            self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1])
 
-        if self.grid_status() == True:
+        if self.grid_status():
             # Update cursor
             self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
                                      symbol='++', edge_color=self.cursor_color_3D,
