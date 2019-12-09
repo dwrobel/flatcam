@@ -108,10 +108,17 @@ class VisPyCanvas(scene.SceneCanvas):
         # self.measure_fps()
 
     def translate_coords(self, pos):
+        """
+        Translate pixels to FlatCAM units.
+
+        """
         tr = self.grid.get_transform('canvas', 'visual')
         return tr.map(pos)
 
     def translate_coords_2(self, pos):
+        """
+        Translate FlatCAM units to pixels.
+        """
         tr = self.grid.get_transform('visual', 'document')
         return tr.map(pos)
 

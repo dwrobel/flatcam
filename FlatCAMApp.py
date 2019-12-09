@@ -7346,7 +7346,11 @@ class App(QtCore.QObject):
 
             canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
             jump_loc = self.plotcanvas.translate_coords_2((cal_location[0], cal_location[1]))
-            j_pos = (canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
+
+            j_pos = (
+                int(canvas_origin.x() + round(jump_loc[0])),
+                int(canvas_origin.y() + round(jump_loc[1]))
+            )
             cursor.setPos(j_pos[0], j_pos[1])
         else:
             # find the canvas origin which is in the top left corner

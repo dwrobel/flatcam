@@ -15,13 +15,15 @@ CAD program, and create G-Code for Isolation routing.
 - Calibration Tool - added preferences values
 - Calibration Tool - more work on it
 - reverted this change: "selected object in Project used to ask twice for UI build" because it will not build the UI when a tab is closed for Document object and the object is selected
-- fixed issue after Geometry object edit; the GCode made from and edited object did not reflect the changes in the object
+- fixed issue after Geometry object edit; the GCode made from an edited object did not reflect the changes in the object
 - in Object UI, the Scale FCDoubleSpinner will no longer work for Return key press due of issues of unwanted scaling on focusOut event
 - in FlatCAMGeometry fixed the scale and offset methods to always process the self.solid_geometry
 - Calibration Tool - finished the calibrated object creation method
 - updated the POT file
 - fixed an error in the German PO file
 - updated the languages PO files
+- some fixes on the app.jump_to() method
+- made sure that the ToolFilm will not start saving a file if there are no objects loaded
 
 8.12.2019
 

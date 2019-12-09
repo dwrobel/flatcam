@@ -669,6 +669,10 @@ class Film(FlatCAMTool):
                                  _("No FlatCAM object selected. Load an object for Box and retry."))
             return
 
+        if name == '' or boxname == '':
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No FlatCAM object selected."))
+            return
+
         scale_stroke_width = float(self.film_scale_stroke_entry.get_value())
         source = self.source_punch.get_value()
         file_type = self.file_type_radio.get_value()
