@@ -32,10 +32,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
     geom_update = QtCore.pyqtSignal(int, int, int, int, int, name='geomUpdate')
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
 
-    def __init__(self, version, beta, app):
+    def __init__(self, app):
         super(FlatCAMGUI, self).__init__()
 
         self.app = app
+        self.decimals = self.app.decimals
+
         # Divine icon pack by Ipapun @ finicons.com
 
         # ################################## ##
@@ -337,21 +339,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuedit.addSeparator()
         self.menueditpreferences = self.menuedit.addAction(QtGui.QIcon('share/pref.png'), _('&Preferences\tSHIFT+P'))
 
-        # ## Options # ##
+        # ########################################################################
+        # ########################## OPTIONS # ###################################
+        # ########################################################################
+
         self.menuoptions = self.menu.addMenu(_('Options'))
-        # self.menuoptions_transfer = self.menuoptions.addMenu(QtGui.QIcon('share/transfer.png'), 'Transfer options')
-        # self.menuoptions_transfer_a2p = self.menuoptions_transfer.addAction("Application to Project")
-        # self.menuoptions_transfer_p2a = self.menuoptions_transfer.addAction("Project to Application")
-        # self.menuoptions_transfer_p2o = self.menuoptions_transfer.addAction("Project to Object")
-        # self.menuoptions_transfer_o2p = self.menuoptions_transfer.addAction("Object to Project")
-        # self.menuoptions_transfer_a2o = self.menuoptions_transfer.addAction("Application to Object")
-        # self.menuoptions_transfer_o2a = self.menuoptions_transfer.addAction("Object to Application")
-
-        # Separator
-        # self.menuoptions.addSeparator()
-
-        # self.menuoptions_transform = self.menuoptions.addMenu(QtGui.QIcon('share/transform.png'),
-        #                                                       '&Transform Object')
         self.menuoptions_transform_rotate = self.menuoptions.addAction(QtGui.QIcon('share/rotate.png'),
                                                                        _("&Rotate Selection\tSHIFT+(R)"))
         # Separator
@@ -373,13 +365,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.menuoptions_view_source = self.menuoptions.addAction(QtGui.QIcon('share/source32.png'),
                                                                   _("View source\tALT+S"))
+        self.menuoptions_tools_db = self.menuoptions.addAction(QtGui.QIcon('share/database32.png'),
+                                                               _("Tools DataBase\tCTRL+D"))
         # Separator
         self.menuoptions.addSeparator()
 
         # ########################################################################
         # ########################## View # ######################################
         # ########################################################################
-        self.menuview = self.menu.addMenu(_('&View'))
+        self.menuview = self.menu.addMenu(_('View'))
         self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), _('Enable all plots\tALT+1'))
         self.menuviewdisableall = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
                                                           _('Disable all plots\tALT+2'))
@@ -430,7 +424,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## Tool # ######################################
         # ########################################################################
-        self.menutool = QtWidgets.QMenu(_('&Tool'))
+        self.menutool = QtWidgets.QMenu(_('Tool'))
         self.menutoolaction = self.menu.addMenu(self.menutool)
         self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), _('&Command Line\tS'))
 
@@ -755,6 +749,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), _("Calculators Tool"))
         self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
+        self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
+        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'),
+                                                          _("Copper Thieving Tool"))
+
+        self.fiducials_btn = self.toolbartools.addAction(QtGui.QIcon('share/fiducials_32.png'), _("Fiducials Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -956,6 +955,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## PREFERENCES AREA Tab # ######################
         # ########################################################################
         self.preferences_tab = QtWidgets.QWidget()
+        self.preferences_tab.setObjectName("preferences_tab")
         self.pref_tab_layout = QtWidgets.QVBoxLayout(self.preferences_tab)
         self.pref_tab_layout.setContentsMargins(2, 2, 2, 2)
 
@@ -976,13 +976,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.hlay1 = QtWidgets.QHBoxLayout()
         self.general_tab_lay.addLayout(self.hlay1)
 
-        self.options_combo = QtWidgets.QComboBox()
-        self.options_combo.addItem(_("APP.  DEFAULTS"))
-        self.options_combo.addItem(_("PROJ. OPTIONS "))
-        self.hlay1.addWidget(self.options_combo)
-
-        # disable this button as it may no longer be useful
-        self.options_combo.setVisible(False)
         self.hlay1.addStretch()
 
         self.general_scroll_area = QtWidgets.QScrollArea()
@@ -1093,13 +1086,27 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_tab_bottom_layout_2.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.pref_tab_bottom_layout.addLayout(self.pref_tab_bottom_layout_2)
 
+        self.pref_apply_button = FCButton()
+        self.pref_apply_button.setText(_("Apply"))
+        self.pref_apply_button.setMinimumWidth(130)
+        self.pref_apply_button.setToolTip(
+            _("Apply the current preferences without saving to a file."))
+        self.pref_tab_bottom_layout_2.addWidget(self.pref_apply_button)
+
         self.pref_save_button = QtWidgets.QPushButton()
-        self.pref_save_button.setText(_("Save Preferences"))
+        self.pref_save_button.setText(_("Save"))
         self.pref_save_button.setMinimumWidth(130)
         self.pref_save_button.setToolTip(
             _("Save the current settings in the 'current_defaults' file\n"
               "which is the file storing the working default preferences."))
         self.pref_tab_bottom_layout_2.addWidget(self.pref_save_button)
+
+        self.pref_close_button = QtWidgets.QPushButton()
+        self.pref_close_button.setText(_("Cancel"))
+        self.pref_close_button.setMinimumWidth(130)
+        self.pref_close_button.setToolTip(
+            _("Will not save the changes and will close the preferences window."))
+        self.pref_tab_bottom_layout_2.addWidget(self.pref_close_button)
 
         # ########################################################################
         # #################### SHORTCUT LIST AREA Tab # ##########################
@@ -1235,6 +1242,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>CTRL+D</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>CTRL+E</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1252,6 +1263,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>CTRL+O</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>CTRL+Q</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1320,6 +1335,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+E</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>ALT+J</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1428,18 +1447,32 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("New Excellon"), _("Move Obj"), _("New Geometry"), _("Set Origin"), _("Change Units"),
                 _("Open Properties Tool"), _("Rotate by 90 degree CW"), _("Shell Toggle"),
                 _("Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)"), _("Zoom Fit"),
-                _("Flip on X_axis"), _("Flip on Y_axis"), _("Zoom Out"), _("Zoom In"), _("Select All"), _("Copy Obj"),
+                _("Flip on X_axis"), _("Flip on Y_axis"), _("Zoom Out"), _("Zoom In"),
+
+                # CTRL section
+                _("Select All"), _("Copy Obj"), _("Open Tools Database"),
                 _("Open Excellon File"), _("Open Gerber File"), _("New Project"), _("Distance Tool"),
-                _("Open Project"), _("Save Project As"), _("Toggle Plot Area"), _("Copy Obj_Name"),
+                _("Open Project"), _("PDF Import Tool"), _("Save Project As"), _("Toggle Plot Area"),
+
+                # SHIFT section
+                _("Copy Obj_Name"),
                 _("Toggle Code Editor"), _("Toggle the axis"), _("Distance Minimum Tool"), _("Open Preferences Window"),
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
-                _("Skew on Y axis"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
+                _("Skew on Y axis"),
+                # ALT section
+                _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"), _("Fiducials Tool"),
                 _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
-                _("Paint Area Tool"), _("PDF Import Tool"), _("Rules Check Tool"),
+                _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
                 _("View File Source"),
                 _("Cutout PCB Tool"), _("Enable all Plots"), _("Disable all Plots"), _("Disable Non-selected Plots"),
-                _("Toggle Full Screen"), _("Abort current task (gracefully)"), _("Open Online Manual"),
+                _("Toggle Full Screen"),
+
+                # CTRL + ALT section
+                _("Abort current task (gracefully)"),
+
+                # F keys section
+                _("Open Online Manual"),
                 _("Open Online Tutorials"), _("Refresh Plots"), _("Delete Object"), _("Alternate: Delete Tool"),
                 _("(left to Key_1)Toogle Notebook Area (Left Side)"), _("En(Dis)able Obj Plot"),
                 _("Deselects all objects")
@@ -1971,8 +2004,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.setGeometry(100, 100, 1024, 650)
         self.setWindowTitle('FlatCAM %s %s - %s' %
-                            (version,
-                             ('BETA' if beta else ''),
+                            (self.app.version,
+                             ('BETA' if self.app.beta else ''),
                              platform.architecture()[0])
                             )
 
@@ -1993,23 +2026,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_editor_cmenu.menuAction().setVisible(False)
         self.e_editor_cmenu.menuAction().setVisible(False)
 
-        self.general_defaults_form = GeneralPreferencesUI()
-        self.gerber_defaults_form = GerberPreferencesUI()
-        self.excellon_defaults_form = ExcellonPreferencesUI()
-        self.geometry_defaults_form = GeometryPreferencesUI()
-        self.cncjob_defaults_form = CNCJobPreferencesUI()
-        self.tools_defaults_form = ToolsPreferencesUI()
-        self.tools2_defaults_form = Tools2PreferencesUI()
-        self.util_defaults_form = UtilPreferencesUI()
-
-        self.general_options_form = GeneralPreferencesUI()
-        self.gerber_options_form = GerberPreferencesUI()
-        self.excellon_options_form = ExcellonPreferencesUI()
-        self.geometry_options_form = GeometryPreferencesUI()
-        self.cncjob_options_form = CNCJobPreferencesUI()
-        self.tools_options_form = ToolsPreferencesUI()
-        self.tools2_options_form = Tools2PreferencesUI()
-        self.util_options_form = UtilPreferencesUI()
+        self.general_defaults_form = GeneralPreferencesUI(decimals=self.decimals)
+        self.gerber_defaults_form = GerberPreferencesUI(decimals=self.decimals)
+        self.excellon_defaults_form = ExcellonPreferencesUI(decimals=self.decimals)
+        self.geometry_defaults_form = GeometryPreferencesUI(decimals=self.decimals)
+        self.cncjob_defaults_form = CNCJobPreferencesUI(decimals=self.decimals)
+        self.tools_defaults_form = ToolsPreferencesUI(decimals=self.decimals)
+        self.tools2_defaults_form = Tools2PreferencesUI(decimals=self.decimals)
+        self.util_defaults_form = UtilPreferencesUI(decimals=self.decimals)
 
         QtWidgets.qApp.installEventFilter(self)
 
@@ -2020,7 +2044,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.restoreState(saved_gui_state)
             log.debug("FlatCAMGUI.__init__() --> UI state restored.")
 
-        settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
             if layout == 'standard':
@@ -2064,7 +2087,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.lock_action.setText(_("Lock Toolbars"))
         self.lock_action.setCheckable(True)
 
-        settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("toolbar_lock"):
             lock_val = settings.value('toolbar_lock')
             if lock_val == 'true':
@@ -2171,6 +2193,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'),
                                                            _("Calculators Tool"))
         self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
+        self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
+        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'),
+                                                          _("Copper Thieving Tool"))
+
+        self.fiducials_btn = self.toolbartools.addAction(QtGui.QIcon('share/fiducials_32.png'), _("Fiducials Tool"))
 
         # ## Excellon Editor Toolbar # ##
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
@@ -2369,28 +2396,62 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     return
 
             elif modifiers == QtCore.Qt.ControlModifier:
+                # Select All
                 if key == QtCore.Qt.Key_A:
                     self.app.on_selectall()
 
+                # Copy an FlatCAM object
                 if key == QtCore.Qt.Key_C:
+                    widget_name = self.plot_tab_area.currentWidget().objectName()
+                    if widget_name == 'database_tab':
+                        # Tools DB saved, update flag
+                        self.app.tools_db_changed_flag = True
+                        self.app.tools_db_tab.on_tool_copy()
+                        return
+
                     self.app.on_copy_object()
 
+                # Copy an FlatCAM object
+                if key == QtCore.Qt.Key_D:
+                    self.app.on_tools_database()
+
+                # Open Excellon file
                 if key == QtCore.Qt.Key_E:
                     self.app.on_fileopenexcellon()
 
+                # Open Gerber file
                 if key == QtCore.Qt.Key_G:
                     self.app.on_fileopengerber()
 
+                # Create New Project
                 if key == QtCore.Qt.Key_N:
                     self.app.on_file_new_click()
 
+                # Distance Tool
                 if key == QtCore.Qt.Key_M:
                     self.app.distance_tool.run()
 
+                # Open Project
                 if key == QtCore.Qt.Key_O:
                     self.app.on_file_openproject()
 
+                # PDF Import
+                if key == QtCore.Qt.Key_Q:
+                    self.app.pdf_tool.run()
+
+                # Save Project
                 if key == QtCore.Qt.Key_S:
+                    widget_name = self.plot_tab_area.currentWidget().objectName()
+                    if widget_name == 'preferences_tab':
+                        self.app.on_save_button(save_to_file=False)
+                        return
+
+                    if widget_name == 'database_tab':
+                        # Tools DB saved, update flag
+                        self.app.tools_db_changed_flag = False
+                        self.app.tools_db_tab.on_save_tools_db()
+                        return
+
                     self.app.on_file_saveproject()
 
                 # Toggle Plot Area
@@ -2434,7 +2495,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Toggle Workspace
                 if key == QtCore.Qt.Key_W:
-                    self.app.on_workspace_menu()
+                    self.app.on_workspace_toggle()
                     return
 
                 # Skew on X axis
@@ -2469,14 +2530,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.dblsidedtool.run(toggle=True)
                     return
 
-                # Transformation Tool
+                # Calibrate  Tool
                 if key == QtCore.Qt.Key_E:
-                    self.app.transform_tool.run(toggle=True)
+                    self.app.cal_exc_tool.run(toggle=True)
+                    return
+
+                # Copper Thieving Tool
+                if key == QtCore.Qt.Key_F:
+                    self.app.copper_thieving_tool.run(toggle=True)
                     return
 
                 # Toggle Grid lines
                 if key == QtCore.Qt.Key_G:
                     self.app.on_toggle_grid_lines()
+                    return
+
+                # Fiducials Tool
+                if key == QtCore.Qt.Key_J:
+                    self.app.fiducial_tool.run(toggle=True)
                     return
 
                 # Solder Paste Dispensing Tool
@@ -2504,9 +2575,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.paint_tool.run(toggle=True)
                     return
 
-                # Paint Tool
+                # QRCode Tool
                 if key == QtCore.Qt.Key_Q:
-                    self.app.pdf_tool.run()
+                    self.app.qrcode_tool.run()
                     return
 
                 # Rules Tool
@@ -2519,14 +2590,19 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_view_source()
                     return
 
-                # Cutout Tool
-                if key == QtCore.Qt.Key_U:
-                    self.app.cutout_tool.run(toggle=True)
+                # Transformation Tool
+                if key == QtCore.Qt.Key_T:
+                    self.app.transform_tool.run(toggle=True)
                     return
 
                 # Substract Tool
                 if key == QtCore.Qt.Key_W:
                     self.app.sub_tool.run(toggle=True)
+                    return
+
+                # Cutout Tool
+                if key == QtCore.Qt.Key_X:
+                    self.app.cutout_tool.run(toggle=True)
                     return
 
                 # Panelize Tool
@@ -2571,6 +2647,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # It's meant to make a difference between delete objects and delete tools in
                 # Geometry Selected tool table
                 if key == QtCore.Qt.Key_Delete and matplotlib_key_flag is False:
+                    widget_name = self.plot_tab_area.currentWidget().objectName()
+                    if widget_name == 'database_tab':
+                        # Tools DB saved, update flag
+                        self.app.tools_db_changed_flag = True
+                        self.app.tools_db_tab.on_tool_delete()
+                        return
+
                     self.app.on_delete_keypress()
 
                 # Delete from canvas
@@ -2663,6 +2746,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Add a Tool from shortcut
                 if key == QtCore.Qt.Key_T:
+                    widget_name = self.plot_tab_area.currentWidget().objectName()
+                    if widget_name == 'database_tab':
+                        # Tools DB saved, update flag
+                        self.app.tools_db_changed_flag = True
+                        self.app.tools_db_tab.on_tool_add()
+                        return
+
                     self.app.on_tool_add_keypress()
 
                 # Zoom Fit
@@ -2720,7 +2810,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                         messagebox.exec_()
                     return
-
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
@@ -2810,10 +2899,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Space or key == 'Space':
                     self.app.geo_editor.transform_tool.on_rotate_key()
 
+                # Zoom Out
                 if key == QtCore.Qt.Key_Minus or key == '-':
                     self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
+                # Zoom In
                 if key == QtCore.Qt.Key_Equal or key == '=':
                     self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
@@ -3382,16 +3473,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     val, ok = tool_add_popup.get_value()
                     if ok:
                         self.app.exc_editor.on_tool_add(tooldia=val)
-                        formated_val = '%.4f' % float(val)
-                        self.app.inform.emit('[success] %s: %s %s' %
-                                             (_("Added new tool with dia"),
-                                              formated_val,
-                                              str(self.units)
-                                              )
-                                             )
-                    else:
+                        formated_val = '%.*f' % (self.decimals, float(val))
                         self.app.inform.emit(
-                            '[WARNING_NOTCL] %s' % _("Adding Tool cancelled ..."))
+                            '[success] %s: %s %s' % (_("Added new tool with dia"), formated_val, str(self.units))
+                        )
+                    else:
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding Tool cancelled ..."))
                     return
 
                 # Zoom Fit
@@ -3443,6 +3530,54 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Jump to coords
                 if key == QtCore.Qt.Key_J or key == 'J':
+                    self.app.on_jump_to()
+        elif self.app.call_source == 'qrcode_tool':
+            if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
+                if key == QtCore.Qt.Key_X:
+                    self.app.abort_all_tasks()
+                    return
+
+            elif modifiers == QtCore.Qt.ControlModifier:
+                pass
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            elif modifiers == QtCore.Qt.NoModifier:
+                # Escape = Deselect All
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    self.app.qrcode_tool.on_exit()
+
+                # Grid toggle
+                if key == QtCore.Qt.Key_G:
+                    self.app.ui.grid_snap_btn.trigger()
+
+                # Jump to coords
+                if key == QtCore.Qt.Key_J:
+                    self.app.on_jump_to()
+        elif self.app.call_source == 'copper_thieving_tool':
+            if modifiers == QtCore.Qt.ControlModifier | QtCore.Qt.AltModifier:
+                if key == QtCore.Qt.Key_X:
+                    self.app.abort_all_tasks()
+                    return
+
+            elif modifiers == QtCore.Qt.ControlModifier:
+                pass
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            elif modifiers == QtCore.Qt.NoModifier:
+                # Escape = Deselect All
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    self.app.copperfill_tool.on_exit()
+
+                # Grid toggle
+                if key == QtCore.Qt.Key_G:
+                    self.app.ui.grid_snap_btn.trigger()
+
+                # Jump to coords
+                if key == QtCore.Qt.Key_J:
                     self.app.on_jump_to()
 
     def createPopupMenu(self):
@@ -3557,8 +3692,26 @@ class FlatCAMActivityView(QtWidgets.QWidget):
     This class create and control the activity icon displayed in the App status bar
     """
 
-    def __init__(self, movie="share/active.gif", icon='share/active_static.png', parent=None):
+    def __init__(self, app, parent=None):
         super().__init__(parent=parent)
+
+        self.app = app
+
+        if self.app.defaults["global_activity_icon"] == "Ball green":
+            icon = 'share/active_2_static.png'
+            movie = "share/active_2.gif"
+        elif self.app.defaults["global_activity_icon"] == "Ball black":
+            icon = 'share/active_static.png'
+            movie = "share/active.gif"
+        elif self.app.defaults["global_activity_icon"] == "Arrow green":
+            icon = 'share/active_3_static.png'
+            movie = "share/active_3.gif"
+        elif self.app.defaults["global_activity_icon"] == "Eclipse green":
+            icon = 'share/active_4_static.png'
+            movie = "share/active_4.gif"
+        else:
+            icon = 'share/active_static.png'
+            movie = "share/active.gif"
 
         self.setMinimumWidth(200)
         self.movie_path = movie
@@ -3704,378 +3857,5 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
             silent=True if self.app.cmd_line_headless == 1 else False))
 
         exitAction.triggered.connect(self.app.final_save)
-
-
-class BookmarkManager(QtWidgets.QWidget):
-
-    mark_rows = QtCore.pyqtSignal()
-
-    def __init__(self, app, storage, parent=None):
-        super(BookmarkManager, self).__init__(parent)
-
-        self.app = app
-
-        assert isinstance(storage, dict), "Storage argument is not a dictionary"
-
-        self.bm_dict = deepcopy(storage)
-
-        # Icon and title
-        # self.setWindowIcon(parent.app_icon)
-        # self.setWindowTitle(_("Bookmark Manager"))
-        # self.resize(600, 400)
-
-        # title = QtWidgets.QLabel(
-        #     "<font size=8><B>FlatCAM</B></font><BR>"
-        # )
-        # title.setOpenExternalLinks(True)
-
-        # layouts
-        layout = QtWidgets.QVBoxLayout()
-        self.setLayout(layout)
-
-        table_hlay = QtWidgets.QHBoxLayout()
-        layout.addLayout(table_hlay)
-
-        self.table_widget = FCTable(drag_drop=True, protected_rows=[0, 1])
-        self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        table_hlay.addWidget(self.table_widget)
-
-        self.table_widget.setColumnCount(3)
-        self.table_widget.setColumnWidth(0, 20)
-        self.table_widget.setHorizontalHeaderLabels(
-            [
-                '#',
-                _('Title'),
-                _('Web Link')
-            ]
-        )
-        self.table_widget.horizontalHeaderItem(0).setToolTip(
-            _("Index.\n"
-              "The rows in gray color will populate the Bookmarks menu.\n"
-              "The number of gray colored rows is set in Preferences."))
-        self.table_widget.horizontalHeaderItem(1).setToolTip(
-            _("Description of the link that is set as an menu action.\n"
-              "Try to keep it short because it is installed as a menu item."))
-        self.table_widget.horizontalHeaderItem(2).setToolTip(
-            _("Web Link. E.g: https://your_website.org "))
-
-        # pal = QtGui.QPalette()
-        # pal.setColor(QtGui.QPalette.Background, Qt.white)
-
-        # New Bookmark
-        new_vlay = QtWidgets.QVBoxLayout()
-        layout.addLayout(new_vlay)
-
-        new_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Bookmark"))
-        new_vlay.addWidget(new_title_lbl)
-
-        form0 = QtWidgets.QFormLayout()
-        new_vlay.addLayout(form0)
-
-        title_lbl = QtWidgets.QLabel('%s:' % _("Title"))
-        self.title_entry = FCEntry()
-        form0.addRow(title_lbl, self.title_entry)
-
-        link_lbl = QtWidgets.QLabel('%s:' % _("Web Link"))
-        self.link_entry = FCEntry()
-        self.link_entry.set_value('http://')
-        form0.addRow(link_lbl, self.link_entry)
-
-        # Buttons Layout
-        button_hlay = QtWidgets.QHBoxLayout()
-        layout.addLayout(button_hlay)
-
-        add_entry_btn = FCButton(_("Add Entry"))
-        remove_entry_btn = FCButton(_("Remove Entry"))
-        export_list_btn = FCButton(_("Export List"))
-        import_list_btn = FCButton(_("Import List"))
-        closebtn = QtWidgets.QPushButton(_("Close"))
-
-        # button_hlay.addStretch()
-        button_hlay.addWidget(add_entry_btn)
-        button_hlay.addWidget(remove_entry_btn)
-
-        button_hlay.addWidget(export_list_btn)
-        button_hlay.addWidget(import_list_btn)
-        # button_hlay.addWidget(closebtn)
-        # ##############################################################################
-        # ######################## SIGNALS #############################################
-        # ##############################################################################
-
-        add_entry_btn.clicked.connect(self.on_add_entry)
-        remove_entry_btn.clicked.connect(self.on_remove_entry)
-        export_list_btn.clicked.connect(self.on_export_bookmarks)
-        import_list_btn.clicked.connect(self.on_import_bookmarks)
-        self.title_entry.returnPressed.connect(self.on_add_entry)
-        self.link_entry.returnPressed.connect(self.on_add_entry)
-        # closebtn.clicked.connect(self.accept)
-
-        self.table_widget.drag_drop_sig.connect(self.mark_table_rows_for_actions)
-        self.build_bm_ui()
-
-    def build_bm_ui(self):
-
-        self.table_widget.setRowCount(len(self.bm_dict))
-
-        nr_crt = 0
-        sorted_bookmarks = sorted(list(self.bm_dict.items()), key=lambda x: int(x[0]))
-        for entry, bookmark in sorted_bookmarks:
-            row = nr_crt
-            nr_crt += 1
-
-            title = bookmark[0]
-            weblink = bookmark[1]
-
-            id_item = QtWidgets.QTableWidgetItem('%d' % int(nr_crt))
-            # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.table_widget.setItem(row, 0, id_item)  # Tool name/id
-
-            title_item = QtWidgets.QTableWidgetItem(title)
-            self.table_widget.setItem(row, 1, title_item)
-
-            weblink_txt = QtWidgets.QTextBrowser()
-            weblink_txt.setOpenExternalLinks(True)
-            weblink_txt.setFrameStyle(QtWidgets.QFrame.NoFrame)
-            weblink_txt.document().setDefaultStyleSheet("a{ text-decoration: none; }")
-
-            weblink_txt.setHtml('<a href=%s>%s</a>' % (weblink, weblink))
-
-            self.table_widget.setCellWidget(row, 2, weblink_txt)
-
-            vertical_header = self.table_widget.verticalHeader()
-            vertical_header.hide()
-
-            horizontal_header = self.table_widget.horizontalHeader()
-            horizontal_header.setMinimumSectionSize(10)
-            horizontal_header.setDefaultSectionSize(70)
-            horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-            horizontal_header.resizeSection(0, 20)
-            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-            horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
-
-        self.mark_table_rows_for_actions()
-
-        self.app.defaults["global_bookmarks"].clear()
-        for key, val in self.bm_dict.items():
-            self.app.defaults["global_bookmarks"][key] = deepcopy(val)
-
-    def on_add_entry(self, **kwargs):
-        """
-        Add a entry in the Bookmark Table and in the menu actions
-        :return: None
-        """
-        if 'title' in kwargs:
-            title = kwargs['title']
-        else:
-            title = self.title_entry.get_value()
-        if title == '':
-            self.app.inform.emit(f'[ERROR_NOTCL] {_("Title entry is empty.")}')
-            return 'fail'
-
-        if 'link' is kwargs:
-            link = kwargs['link']
-        else:
-            link = self.link_entry.get_value()
-
-        if link == 'http://':
-            self.app.inform.emit(f'[ERROR_NOTCL] {_("Web link entry is empty.")}')
-            return 'fail'
-
-        # if 'http' not in link or 'https' not in link:
-        #     link = 'http://' + link
-
-        for bookmark in self.bm_dict.values():
-            if title == bookmark[0] or link == bookmark[1]:
-                self.app.inform.emit(f'[ERROR_NOTCL] {_("Either the Title or the Weblink already in the table.")}')
-                return 'fail'
-
-        # for some reason if the last char in the weblink is a slash it does not make the link clickable
-        # so I remove it
-        if link[-1] == '/':
-            link = link[:-1]
-        # add the new entry to storage
-        new_entry = len(self.bm_dict) + 1
-        self.bm_dict[str(new_entry)] = [title, link]
-
-        # add the link to the menu but only if it is within the set limit
-        bm_limit = int(self.app.defaults["global_bookmarks_limit"])
-        if len(self.bm_dict) < bm_limit:
-            act = QtWidgets.QAction(parent=self.app.ui.menuhelp_bookmarks)
-            act.setText(title)
-            act.setIcon(QtGui.QIcon('share/link16.png'))
-            act.triggered.connect(lambda: webbrowser.open(link))
-            self.app.ui.menuhelp_bookmarks.insertAction(self.app.ui.menuhelp_bookmarks_manager, act)
-
-        self.app.inform.emit(f'[success] {_("Bookmark added.")}')
-
-        # add the new entry to the bookmark manager table
-        self.build_bm_ui()
-
-    def on_remove_entry(self):
-        """
-        Remove an Entry in the Bookmark table and from the menu actions
-        :return:
-        """
-        index_list = []
-        for model_index in self.table_widget.selectionModel().selectedRows():
-            index = QtCore.QPersistentModelIndex(model_index)
-            index_list.append(index)
-            title_to_remove = self.table_widget.item(model_index.row(), 1).text()
-
-            if title_to_remove == 'FlatCAM' or title_to_remove == 'Backup Site':
-                self.app.inform.emit('[WARNING_NOTCL] %s.' % _("This bookmark can not be removed"))
-                self.build_bm_ui()
-                return
-            else:
-                for k, bookmark in list(self.bm_dict.items()):
-                    if title_to_remove == bookmark[0]:
-                        # remove from the storage
-                        self.bm_dict.pop(k, None)
-
-                        for act in self.app.ui.menuhelp_bookmarks.actions():
-                            if act.text() == title_to_remove:
-                                # disconnect the signal
-                                try:
-                                    act.triggered.disconnect()
-                                except TypeError:
-                                    pass
-                                # remove the action from the menu
-                                self.app.ui.menuhelp_bookmarks.removeAction(act)
-
-        # house keeping: it pays to have keys increased by one
-        new_key = 0
-        new_dict = dict()
-        for k, v in self.bm_dict.items():
-            # we start with key 1 so we can use the len(self.bm_dict)
-            # when adding bookmarks (keys in bm_dict)
-            new_key += 1
-            new_dict[str(new_key)] = v
-
-        self.bm_dict = deepcopy(new_dict)
-        new_dict.clear()
-
-        self.app.inform.emit(f'[success] {_("Bookmark removed.")}')
-
-        # for index in index_list:
-        #     self.table_widget.model().removeRow(index.row())
-        self.build_bm_ui()
-
-    def on_export_bookmarks(self):
-        self.app.report_usage("on_export_bookmarks")
-        self.app.log.debug("on_export_bookmarks()")
-
-        date = str(datetime.today()).rpartition('.')[0]
-        date = ''.join(c for c in date if c not in ':-')
-        date = date.replace(' ', '_')
-
-        filter__ = "Text File (*.TXT);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
-                                                             directory='{l_save}/FlatCAM_{n}_{date}'.format(
-                                                                 l_save=str(self.app.get_last_save_folder()),
-                                                                 n=_("Bookmarks"),
-                                                                 date=date),
-                                                             filter=filter__)
-
-        filename = str(filename)
-
-        if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM bookmarks export cancelled."))
-            return
-        else:
-            try:
-                f = open(filename, 'w')
-                f.close()
-            except PermissionError:
-                self.app.inform.emit('[WARNING] %s' %
-                                     _("Permission denied, saving not possible.\n"
-                                       "Most likely another app is holding the file open and not accessible."))
-                return
-            except IOError:
-                self.app.log.debug('Creating a new bookmarks file ...')
-                f = open(filename, 'w')
-                f.close()
-            except:
-                e = sys.exc_info()[0]
-                self.app.log.error("Could not load defaults file.")
-                self.app.log.error(str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not load bookmarks file."))
-                return
-
-            # Save update options
-            try:
-                with open(filename, "w") as f:
-                    for title, link in self.bm_dict.items():
-                        line2write = str(title) + ':' + str(link) + '\n'
-                        f.write(line2write)
-            except:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Failed to write bookmarks to file."))
-                return
-        self.app.inform.emit('[success] %s: %s' %
-                             (_("Exported bookmarks to"), filename))
-
-    def on_import_bookmarks(self):
-        self.app.log.debug("on_import_bookmarks()")
-
-        filter_ = "Text File (*.txt);;All Files (*.*)"
-        filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Bookmarks"),
-                                                             filter=filter_)
-
-        filename = str(filename)
-
-        if filename == "":
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("FlatCAM bookmarks import cancelled."))
-        else:
-            try:
-                with open(filename) as f:
-                    bookmarks = f.readlines()
-            except IOError:
-                self.app.log.error("Could not load bookmarks file.")
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Could not load bookmarks file."))
-                return
-
-            for line in bookmarks:
-                proc_line = line.replace(' ', '').partition(':')
-                self.on_add_entry(title=proc_line[0], link=proc_line[2])
-
-            self.app.inform.emit('[success] %s: %s' %
-                                 (_("Imported Bookmarks from"), filename))
-
-    def mark_table_rows_for_actions(self):
-        for row in range(self.table_widget.rowCount()):
-            item_to_paint = self.table_widget.item(row, 0)
-            if row < self.app.defaults["global_bookmarks_limit"]:
-                item_to_paint.setBackground(QtGui.QColor('gray'))
-                # item_to_paint.setForeground(QtGui.QColor('black'))
-            else:
-                item_to_paint.setBackground(QtGui.QColor('white'))
-                # item_to_paint.setForeground(QtGui.QColor('black'))
-
-    def rebuild_actions(self):
-        # rebuild the storage to reflect the order of the lines
-        self.bm_dict.clear()
-        for row in range(self.table_widget.rowCount()):
-            title = self.table_widget.item(row, 1).text()
-            wlink = self.table_widget.cellWidget(row, 2).toPlainText()
-
-            entry = int(row) + 1
-            self.bm_dict.update(
-                {
-                    str(entry): [title, wlink]
-                }
-            )
-
-        self.app.install_bookmarks(book_dict=self.bm_dict)
-
-    # def accept(self):
-    #     self.rebuild_actions()
-    #     super().accept()
-
-    def closeEvent(self, QCloseEvent):
-        self.rebuild_actions()
-        super().closeEvent(QCloseEvent)
 
 # end of file

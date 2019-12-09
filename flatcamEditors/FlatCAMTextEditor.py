@@ -19,7 +19,7 @@ if '_' not in builtins.__dict__:
 
 class TextEditor(QtWidgets.QWidget):
 
-    def __init__(self, app, text=None):
+    def __init__(self, app, text=None, plain_text=None):
         super().__init__()
 
         self.app = app
@@ -39,12 +39,24 @@ class TextEditor(QtWidgets.QWidget):
         self.work_editor_layout.setContentsMargins(2, 2, 2, 2)
         self.t_frame.setLayout(self.work_editor_layout)
 
-        self.code_editor = FCTextAreaExtended()
-        stylesheet = """
-                        QTextEdit { selection-background-color:yellow;
-                                    selection-color:black;
-                        }
-                     """
+        if plain_text:
+            self.editor_class = FCTextAreaLineNumber()
+            self.code_editor = self.editor_class.edit
+
+            stylesheet = """
+                            QPlainTextEdit { selection-background-color:yellow;
+                                             selection-color:black;
+                            }
+                         """
+            self.work_editor_layout.addWidget(self.editor_class, 0, 0, 1, 5)
+        else:
+            self.code_editor = FCTextAreaExtended()
+            stylesheet = """
+                            QTextEdit { selection-background-color:yellow;
+                                        selection-color:black;
+                            }
+                         """
+            self.work_editor_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
         self.code_editor.setStyleSheet(stylesheet)
 
@@ -90,7 +102,6 @@ class TextEditor(QtWidgets.QWidget):
         self.buttonRun.setToolTip(_("Will run the TCL commands found in the text file, one by one."))
 
         self.buttonRun.hide()
-        self.work_editor_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
         editor_hlay_1 = QtWidgets.QHBoxLayout()
         # cnc_tab_lay_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
@@ -130,7 +141,7 @@ class TextEditor(QtWidgets.QWidget):
 
         self.code_editor.set_model_data(self.app.myKeywords)
 
-        self.gcode_edited = ''
+        self.code_edited = ''
 
     def handlePrint(self):
         self.app.report_usage("handlePrint()")
@@ -168,11 +179,11 @@ class TextEditor(QtWidgets.QWidget):
             file = QtCore.QFile(path)
             if file.open(QtCore.QIODevice.ReadOnly):
                 stream = QtCore.QTextStream(file)
-                self.gcode_edited = stream.readAll()
-                self.code_editor.setPlainText(self.gcode_edited)
+                self.code_edited = stream.readAll()
+                self.code_editor.setPlainText(self.code_edited)
                 file.close()
 
-    def handleSaveGCode(self, name=None, filt=None):
+    def handleSaveGCode(self, name=None, filt=None, callback=None):
         self.app.report_usage("handleSaveGCode()")
 
         if filt:
@@ -193,12 +204,12 @@ class TextEditor(QtWidgets.QWidget):
 
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
-                caption=_("Export G-Code ..."),
+                caption=_("Export Code ..."),
                 directory=self.app.defaults["global_last_folder"] + '/' + str(obj_name),
                 filter=_filter_
             )[0])
         except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export G-Code ..."), filter=_filter_)[0])
+            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Code ..."), filter=_filter_)[0])
 
         if filename == "":
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export Code cancelled."))
@@ -224,6 +235,9 @@ class TextEditor(QtWidgets.QWidget):
         self.app.file_saved.emit("cncjob", filename)
         self.app.inform.emit('%s: %s' % (_("Saved to"), str(filename)))
 
+        if callback is not None:
+            callback()
+
     def handleFindGCode(self):
         self.app.report_usage("handleFindGCode()")
 
@@ -233,6 +247,7 @@ class TextEditor(QtWidgets.QWidget):
         r = self.code_editor.find(str(text_to_be_found), flags)
         if r is False:
             self.code_editor.moveCursor(QtGui.QTextCursor.Start)
+            r = self.code_editor.find(str(text_to_be_found), flags)
 
     def handleReplaceGCode(self):
         self.app.report_usage("handleReplaceGCode()")

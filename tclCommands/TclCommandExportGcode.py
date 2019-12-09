@@ -1,5 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from camlib import CNCjob
+
+import collections
 
 
 class TclCommandExportGcode(TclCommandSignaled):

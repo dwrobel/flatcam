@@ -117,18 +117,21 @@ def apply_patches():
                 minor.extend(np.linspace(maj + minstep,
                                          maj + majstep - minstep,
                                          minor_num))
+
             major_frac = (major - offset) / scale
-            minor_frac = (np.array(minor) - offset) / scale
             major_frac = major_frac[::-1] if flip else major_frac
             use_mask = (major_frac > -0.0001) & (major_frac < 1.0001)
             major_frac = major_frac[use_mask]
             labels = [l for li, l in enumerate(labels) if use_mask[li]]
-            minor_frac = minor_frac[(minor_frac > -0.0001) &
-                                    (minor_frac < 1.0001)]
+
+            minor_frac = (np.array(minor) - offset) / scale
+            use_minor_mask = (minor_frac > -0.0001) & (minor_frac < 1.0001)
+            minor_frac = minor_frac[use_minor_mask]
+
+            return major_frac, minor_frac, labels
         elif self.axis.scale_type == 'logarithmic':
             return NotImplementedError
         elif self.axis.scale_type == 'power':
             return NotImplementedError
-        return major_frac, minor_frac, labels
 
     Ticker._get_tick_frac_labels = _get_tick_frac_labels

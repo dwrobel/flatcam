@@ -26,6 +26,9 @@ class ToolImage(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
+        self.app = app
+        self.decimals = self.app.decimals
+
         # Title
         title_label = QtWidgets.QLabel("%s" % _('Image to PCB'))
         title_label.setStyleSheet("""
@@ -59,6 +62,7 @@ class ToolImage(FlatCAMTool):
 
         # DPI value of the imported image
         self.dpi_entry = FCSpinner()
+        self.dpi_entry.set_range(0, 99999)
         self.dpi_label = QtWidgets.QLabel('%s:' % _("DPI value"))
         self.dpi_label.setToolTip(_("Specify a DPI value for the image.") )
         ti_form_layout.addRow(self.dpi_label, self.dpi_entry)
@@ -145,8 +149,11 @@ class ToolImage(FlatCAMTool):
 
         self.layout.addStretch()
 
+        self.on_image_type(val=False)
+
         # ## Signals
         self.import_button.clicked.connect(self.on_file_importimage)
+        self.image_type.activated_custom.connect(self.on_image_type)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolImage()")
@@ -187,6 +194,28 @@ class ToolImage(FlatCAMTool):
         self.mask_g_entry.set_value(250)
         self.mask_b_entry.set_value(250)
 
+    def on_image_type(self, val):
+        if val == 'color':
+            self.mask_r_label.setDisabled(False)
+            self.mask_r_entry.setDisabled(False)
+            self.mask_g_label.setDisabled(False)
+            self.mask_g_entry.setDisabled(False)
+            self.mask_b_label.setDisabled(False)
+            self.mask_b_entry.setDisabled(False)
+
+            self.mask_bw_label.setDisabled(True)
+            self.mask_bw_entry.setDisabled(True)
+        else:
+            self.mask_r_label.setDisabled(True)
+            self.mask_r_entry.setDisabled(True)
+            self.mask_g_label.setDisabled(True)
+            self.mask_g_entry.setDisabled(True)
+            self.mask_b_label.setDisabled(True)
+            self.mask_b_entry.setDisabled(True)
+
+            self.mask_bw_label.setDisabled(False)
+            self.mask_bw_entry.setDisabled(False)
+
     def on_file_importimage(self):
         """
         Callback for menu item File->Import IMAGE.
@@ -194,7 +223,7 @@ class ToolImage(FlatCAMTool):
         :type type_of_obj: str
         :return: None
         """
-        mask = []
+        mask = list()
         self.app.log.debug("on_file_importimage()")
 
         _filter = "Image Files(*.BMP *.PNG *.JPG *.JPEG);;" \
@@ -218,6 +247,52 @@ class ToolImage(FlatCAMTool):
         if filename == "":
             self.app.inform.emit(_("Open cancelled."))
         else:
-            self.app.worker_task.emit({'fcn': self.app.import_image,
+            self.app.worker_task.emit({'fcn': self.import_image,
                                        'params': [filename, type_obj, dpi, mode, mask]})
-            #  self.import_svg(filename, "geometry")
+
+    def import_image(self, filename, o_type='gerber', dpi=96, mode='black', mask=None, outname=None):
+        """
+        Adds a new Geometry Object to the projects and populates
+        it with shapes extracted from the SVG file.
+
+        :param filename: Path to the SVG file.
+        :param o_type: type of FlatCAM objeect
+        :param dpi: dot per inch
+        :param mode: black or color
+        :param mask: dictate the level of detail
+        :param outname: name for the resulting file
+        :return:
+        """
+
+        self.app.report_usage("import_image()")
+
+        if mask is None:
+            mask = [250, 250, 250, 250]
+
+        if o_type is None or o_type == "geometry":
+            obj_type = "geometry"
+        elif o_type == "gerber":
+            obj_type = o_type
+        else:
+            self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                 _("Not supported type is picked as parameter. "
+                                   "Only Geometry and Gerber are supported"))
+            return
+
+        def obj_init(geo_obj, app_obj):
+            geo_obj.import_image(filename, units=units, dpi=dpi, mode=mode, mask=mask)
+            geo_obj.multigeo = False
+
+        with self.app.proc_container.new(_("Importing Image")) as proc:
+
+            # Object name
+            name = outname or filename.split('/')[-1].split('\\')[-1]
+            units = self.app.defaults['units']
+
+            self.app.new_object(obj_type, name, obj_init)
+
+            # Register recent file
+            self.app.file_opened.emit("image", filename)
+
+            # GUI feedback
+            self.app.inform.emit('[success] %s: %s' % (_("Opened"), filename))

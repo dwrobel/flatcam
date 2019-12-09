@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
 
 
 class TclCommandVersion(TclCommand):
@@ -44,4 +45,3 @@ class TclCommandVersion(TclCommand):
         """
 
         self.app.version_check()
-

@@ -6,10 +6,12 @@
 # ##########################################################
 
 from tclCommands.TclCommand import TclCommand
-from ObjectCollection import *
+
+import collections
 
 from camlib import get_bounds
 
+import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -17,6 +19,8 @@ import builtins
 fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+log = logging.getLogger('base')
 
 
 class TclCommandSetOrigin(TclCommand):
@@ -48,8 +52,8 @@ class TclCommandSetOrigin(TclCommand):
         'main': "Will set the origin at the specified x,y location.",
         'args': collections.OrderedDict([
             ('loc', 'Location to offset all the selected objects. No spaces between x and y pair. Use like this: 2,3'),
-            ('auto', 'If set to 1 it will set the origin to the minimum x, y of the object selection bounding box.'
-                     '-auto=1 is not correct but -auto 1 or -auto True is correct.')
+            ('auto', 'If set to True it will set the origin to the minimum x, y of the object selection bounding box.'
+                     '-auto=True is not correct but -auto 1 or -auto True is correct.')
         ]),
         'examples': ['set_origin 3,2', 'set_origin -auto 1']
     }
@@ -64,7 +68,7 @@ class TclCommandSetOrigin(TclCommand):
 
         loc = list()
         if 'auto' in args:
-            if args['auto'] == 1:
+            if bool(args['auto']) is True:
                 objs = self.app.collection.get_list()
                 minx, miny, __, ___ = get_bounds(objs)
 

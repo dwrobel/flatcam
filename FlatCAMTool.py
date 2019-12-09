@@ -9,6 +9,8 @@
 from PyQt5 import QtGui, QtCore, QtWidgets, QtWidgets
 from PyQt5.QtCore import Qt
 
+from shapely.geometry import Polygon
+
 
 class FlatCAMTool(QtWidgets.QWidget):
 
@@ -22,14 +24,14 @@ class FlatCAMTool(QtWidgets.QWidget):
         :param parent: Qt Parent
         :return: FlatCAMTool
         """
-        QtWidgets.QWidget.__init__(self, parent)
+        self.app = app
+        self.decimals = app.decimals
 
+        QtWidgets.QWidget.__init__(self, parent)
         # self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
-
-        self.app = app
 
         self.menuAction = None
 
@@ -90,3 +92,49 @@ class FlatCAMTool(QtWidgets.QWidget):
         self.app.ui.tool_scroll_area.widget().setObjectName(self.toolName)
 
         self.show()
+
+    def draw_tool_selection_shape(self, old_coords, coords, **kwargs):
+        """
+
+        :param old_coords: old coordinates
+        :param coords: new coordinates
+        :return:
+        """
+
+        if 'color' in kwargs:
+            color = kwargs['color']
+        else:
+            color = self.app.defaults['global_sel_line']
+
+        if 'face_color' in kwargs:
+            face_color = kwargs['face_color']
+        else:
+            face_color = self.app.defaults['global_sel_fill']
+
+        if 'face_alpha' in kwargs:
+            face_alpha = kwargs['face_alpha']
+        else:
+            face_alpha = 0.3
+
+        x0, y0 = old_coords
+        x1, y1 = coords
+
+        pt1 = (x0, y0)
+        pt2 = (x1, y0)
+        pt3 = (x1, y1)
+        pt4 = (x0, y1)
+        sel_rect = Polygon([pt1, pt2, pt3, pt4])
+
+        # color_t = Color(face_color)
+        # color_t.alpha = face_alpha
+
+        color_t = face_color[:-2] + str(hex(int(face_alpha * 255)))[2:]
+
+        self.app.tool_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
+                                 layer=0, tolerance=None)
+        if self.app.is_legacy is True:
+            self.app.tool_shapes.redraw()
+
+    def delete_tool_selection_shape(self):
+        self.app.tool_shapes.clear()
+        self.app.tool_shapes.redraw()

@@ -1,16 +1,19 @@
-# ########################################################## ##
-# FlatCAM: 2D Post-processing for Manufacturing            #
-# http://flatcam.org                                       #
-# File Author: Marius Adrian Stanciu (c)                   #
-# Date: 3/10/2019                                          #
-# MIT Licence                                              #
-# ########################################################## ##
+##############################################################
+# FlatCAM: 2D Post-processing for Manufacturing              #
+# http://flatcam.org                                         #
+# File Author: Matthieu Berthomé                             #
+# Date: 5/26/2017                                            #
+#                                                            #
+# Correction & Adaptation for Berta CNC machine              #
+# Date: 24/10/2019                                           #
+#                                                            #
+# MIT Licence                                                #
+##############################################################
 
 from FlatCAMPostProc import *
 
 
-class Toolchange_Custom(FlatCAMPostProc):
-
+class Berta_CNC(FlatCAMPostProc):
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
 
@@ -44,7 +47,8 @@ class Toolchange_Custom(FlatCAMPostProc):
         gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
 
         if coords_xy is not None:
-            gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
+            gcode += '(X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
+                                                           p.decimals, coords_xy[1]) + units + ')\n'
         else:
             gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
 
@@ -53,30 +57,41 @@ class Toolchange_Custom(FlatCAMPostProc):
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
-            gcode += '(Postprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
+            gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n' + '\n'
         else:
-            gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
+            gcode += '(Preprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
 
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
         gcode += '(Spindle Speed: %s RPM)\n' % str(p['spindlespeed'])
 
-        gcode += ('G20\n' if p.units.upper() == 'IN' else 'G21\n')
-        gcode += 'G90\n'
-        gcode += 'G17\n'
-        gcode += 'G94\n'
+        gcode += '(Berta)\n'
+        gcode += 'G90 G94 G17 G91.1'
+        gcode += (
+            # This line allow you to sets the machine to METRIC / INCH in the GUI
+            'G20\n' if p.units.upper() == 'IN' else 'G21\n')
+        #        gcode += 'G21\n' # This line sets the machine to METRIC ONLY
+        #        gcode += 'G20\n' # This line sets the machine to INCH ONLY
+        gcode += 'G64 P0.03\n'
+        gcode += 'M110\n'
+        gcode += 'G54\n'
+        gcode += 'G0\n'
+        gcode += '(Berta)\n'
 
         return gcode
 
     def startz_code(self, p):
-        return ''
+        if p.startz is not None:
+            return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.startz)
+        else:
+            return ''
 
     def lift_code(self, p):
-        return 'G00 Z' + self.coordinate_format%(p.coords_decimals, p.z_move)
+        return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
 
     def down_code(self, p):
-        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, p.z_cut)
+        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
 
     def toolchange_code(self, p):
         z_toolchange = p.z_toolchange
@@ -87,16 +102,16 @@ class Toolchange_Custom(FlatCAMPostProc):
         if toolchangexy is not None:
             x_toolchange = toolchangexy[0]
             y_toolchange = toolchangexy[1]
+        else:
+            x_toolchange = 0
+            y_toolchange = 0
 
         no_drills = 1
 
         if int(p.tool) == 1 and p.startz is not None:
             z_toolchange = p.startz
 
-        if p.units.upper() == 'MM':
-            toolC_formatted = format(p.toolC, '.2f')
-        else:
-            toolC_formatted = format(p.toolC, '.4f')
+        toolC_formatted = '%.*f' % (p.decimals, p.toolC)
 
         if str(p['options']['type']) == 'Excellon':
             for i in p['options']['Tools_in_use']:
@@ -105,9 +120,27 @@ class Toolchange_Custom(FlatCAMPostProc):
 
             if toolchangexy is not None:
                 gcode = """
+M5
+G00 Z{z_toolchange}
+G00 X{x_toolchange} Y{y_toolchange}                
+T{tool}
 M6
+(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
+M0
 """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
-             y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+           y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+           z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+           tool=int(p.tool),
+           t_drills=no_drills,
+           toolC=toolC_formatted)
+            else:
+                gcode = """
+M5       
+G00 Z{z_toolchange}
+T{tool}
+M6
+(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
+M0""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
              tool=int(p.tool),
              t_drills=no_drills,
              toolC=toolC_formatted)
@@ -119,9 +152,25 @@ M6
         else:
             if toolchangexy is not None:
                 gcode = """
-M6
-""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+M5
+G00 Z{z_toolchange}
+G00 X{x_toolchange} Y{y_toolchange}
+T{tool}
+M6    
+(MSG, Change to Tool Dia = {toolC})
+M0""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
              y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+             z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+             tool=int(p.tool),
+             toolC=toolC_formatted)
+            else:
+                gcode = """
+M5
+G00 Z{z_toolchange}
+T{tool}
+M6    
+(MSG, Change to Tool Dia = {toolC})
+M0""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
              tool=int(p.tool),
              toolC=toolC_formatted)
 
@@ -144,17 +193,22 @@ M6
 
     def end_code(self, p):
         coords_xy = p['xy_toolchange']
-        gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.z_end) + "\n")
+        gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
         if coords_xy is not None:
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
+
+        gcode += '(Berta)\n'
+        gcode += 'M111\n'
+        gcode += 'M30\n'
+        gcode += '(Berta)\n'
         return gcode
 
     def feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def z_feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.z_feedrate))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
         sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
@@ -167,5 +221,5 @@ M6
         if p.dwelltime:
             return 'G4 P' + str(p.dwelltime)
 
-    def spindle_stop_code(self,p):
+    def spindle_stop_code(self, p):
         return 'M05'

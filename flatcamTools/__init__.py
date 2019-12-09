@@ -2,6 +2,7 @@ import sys
 
 
 from flatcamTools.ToolCalculators import ToolCalculator
+from flatcamTools.ToolCalibration import ToolCalibration
 from flatcamTools.ToolCutOut import CutOut
 
 from flatcamTools.ToolDblSided import DblSidedTool
@@ -25,7 +26,11 @@ from flatcamTools.ToolPcbWizard import PcbWizard
 from flatcamTools.ToolPDF import ToolPDF
 from flatcamTools.ToolProperties import Properties
 
+from flatcamTools.ToolQRCode import QRCode
 from flatcamTools.ToolRulesCheck import RulesCheck
+
+from flatcamTools.ToolCopperThieving import ToolCopperThieving
+from flatcamTools.ToolFiducials import ToolFiducials
 
 from flatcamTools.ToolShell import FCShell
 from flatcamTools.ToolSolderPaste import SolderPaste

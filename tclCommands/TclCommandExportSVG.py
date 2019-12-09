@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
 
 
 class TclCommandExportSVG(TclCommand):
@@ -46,7 +47,5 @@ class TclCommandExportSVG(TclCommand):
         :param unnamed_args:
         :return:
         """
-
-        name = args['name']
 
         self.app.export_svg(**args)

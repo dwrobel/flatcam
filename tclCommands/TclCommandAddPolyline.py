@@ -1,4 +1,5 @@
-from ObjectCollection import *
+from camlib import Geometry
+import collections
 from tclCommands.TclCommand import TclCommandSignaled
 
 

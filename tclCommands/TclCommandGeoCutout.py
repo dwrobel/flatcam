@@ -1,8 +1,13 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry
+
+import logging
+import collections
 from copy import deepcopy
 from shapely.ops import cascaded_union
 from shapely.geometry import Polygon, LineString, LinearRing
+
+log = logging.getLogger('base')
 
 
 class TclCommandGeoCutout(TclCommandSignaled):
@@ -132,12 +137,12 @@ class TclCommandGeoCutout(TclCommandSignaled):
             return
 
         if 'margin' in args:
-            margin = args['margin']
+            margin = float(args['margin'])
         else:
             margin = 0.001
 
         if 'dia' in args:
-            dia = args['dia']
+            dia = float(args['dia'])
         else:
             dia = 0.1
 
@@ -147,7 +152,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
             gaps = 4
 
         if 'gapsize' in args:
-            gapsize = args['gapsize']
+            gapsize = float(args['gapsize'])
         else:
             gapsize = 0.1
 

@@ -22,6 +22,12 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+settings = QtCore.QSettings("Open Source", "FlatCAM")
+if settings.contains("machinist"):
+    machinist_setting = settings.value('machinist', type=int)
+else:
+    machinist_setting = 0
+
 
 class ObjectUI(QtWidgets.QWidget):
     """
@@ -29,10 +35,11 @@ class ObjectUI(QtWidgets.QWidget):
     put UI elements in ObjectUI.custom_box (QtWidgets.QLayout).
     """
 
-    def __init__(self, icon_file='share/flatcam_icon32.png', title=_('FlatCAM Object'), parent=None, common=True):
+    def __init__(self, icon_file='share/flatcam_icon32.png', title=_('FlatCAM Object'), parent=None, common=True, 
+                 decimals=4):
         QtWidgets.QWidget.__init__(self, parent=parent)
 
-        self.decimals = 4
+        self.decimals = decimals
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
@@ -147,9 +154,9 @@ class GerberObjectUI(ObjectUI):
     User interface for Gerber objects.
     """
 
-    def __init__(self, parent=None):
-        ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent)
-        self.decimals = 4
+    def __init__(self, decimals, parent=None):
+        ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, decimals=decimals)
+        self.decimals = decimals
 
         # Plot options
         grid0 = QtWidgets.QGridLayout()
@@ -275,6 +282,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addLayout(grid1)
         grid1.setColumnStretch(0, 0)
         grid1.setColumnStretch(1, 1)
+        grid1.setColumnStretch(2, 1)
 
         # Tool Type
         self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
@@ -284,8 +292,8 @@ class GerberObjectUI(ObjectUI):
               "When the 'V-shape' is selected then the tool\n"
               "diameter will depend on the chosen cut depth.")
         )
-        self.tool_type_radio = RadioSet([{'label': 'Circular', 'value': 'circular'},
-                                         {'label': 'V-Shape', 'value': 'v'}])
+        self.tool_type_radio = RadioSet([{'label': _('Circular'), 'value': 'circular'},
+                                         {'label': _('V-Shape'), 'value': 'v'}])
 
         grid1.addWidget(self.tool_type_label, 0, 0)
         grid1.addWidget(self.tool_type_radio, 0, 1, 1, 2)
@@ -342,7 +350,7 @@ class GerberObjectUI(ObjectUI):
         )
         tdlabel.setMinimumWidth(90)
         self.iso_tool_dia_entry = FCDoubleSpinner()
-        self.iso_tool_dia_entry.set_range(0, 9999.9999)
+        self.iso_tool_dia_entry.set_range(-9999.9999, 9999.9999)
         self.iso_tool_dia_entry.set_precision(self.decimals)
         self.iso_tool_dia_entry.setSingleStep(0.1)
 
@@ -364,15 +372,13 @@ class GerberObjectUI(ObjectUI):
         # Pass overlap
         overlabel = QtWidgets.QLabel('%s:' % _('Pass overlap'))
         overlabel.setToolTip(
-            _("How much (fraction) of the tool width to overlap each tool pass.\n"
-              "Example:\n"
-              "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
+            _("How much (fraction) of the tool width to overlap each tool pass.")
         )
         overlabel.setMinimumWidth(90)
-        self.iso_overlap_entry = FCDoubleSpinner()
+        self.iso_overlap_entry = FCDoubleSpinner(suffix='%')
         self.iso_overlap_entry.set_precision(self.decimals)
         self.iso_overlap_entry.setWrapping(True)
-        self.iso_overlap_entry.setRange(0.000, 0.999)
+        self.iso_overlap_entry.setRange(0.0000, 99.9999)
         self.iso_overlap_entry.setSingleStep(0.1)
         grid1.addWidget(overlabel, 6, 0)
         grid1.addWidget(self.iso_overlap_entry, 6, 1, 1, 2)
@@ -385,12 +391,12 @@ class GerberObjectUI(ObjectUI):
               "- conventional / useful when there is no backlash compensation")
         )
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conv.'), 'value': 'cv'}])
+                                            {'label': _('Conventional'), 'value': 'cv'}])
         grid1.addWidget(self.milling_type_label, 7, 0)
         grid1.addWidget(self.milling_type_radio, 7, 1, 1, 2)
 
         # combine all passes CB
-        self.combine_passes_cb = FCCheckBox(label=_('Combine Passes'))
+        self.combine_passes_cb = FCCheckBox(label=_('Combine'))
         self.combine_passes_cb.setToolTip(
             _("Combine all passes into one object")
         )
@@ -400,15 +406,15 @@ class GerberObjectUI(ObjectUI):
         self.follow_cb.setToolTip(_("Generate a 'Follow' geometry.\n"
                                     "This means that it will cut through\n"
                                     "the middle of the trace."))
+        grid1.addWidget(self.combine_passes_cb, 8, 0)
 
         # avoid an area from isolation
         self.except_cb = FCCheckBox(label=_('Except'))
+        grid1.addWidget(self.follow_cb, 8, 1)
+
         self.except_cb.setToolTip(_("When the isolation geometry is generated,\n"
                                     "by checking this, the area of the object bellow\n"
                                     "will be subtracted from the isolation geometry."))
-
-        grid1.addWidget(self.combine_passes_cb, 8, 0)
-        grid1.addWidget(self.follow_cb, 8, 1)
         grid1.addWidget(self.except_cb, 8, 2)
 
         # ## Form Layout
@@ -448,8 +454,50 @@ class GerberObjectUI(ObjectUI):
 
         form_layout.addRow(self.obj_label, self.obj_combo)
 
-        self.gen_iso_label = QtWidgets.QLabel("<b>%s</b>" % _("Generate Isolation Geometry"))
-        self.gen_iso_label.setToolTip(
+        # ---------------------------------------------- #
+        # --------- Isolation scope -------------------- #
+        # ---------------------------------------------- #
+        self.iso_scope_label = QtWidgets.QLabel('<b>%s:</b>' % _('Scope'))
+        self.iso_scope_label.setToolTip(
+            _("Isolation scope. Choose what to isolate:\n"
+              "- 'All' -> Isolate all the polygons in the object\n"
+              "- 'Selection' -> Isolate a selection of polygons.")
+        )
+        self.iso_scope_radio = RadioSet([{'label': _('All'), 'value': 'all'},
+                                         {'label': _('Selection'), 'value': 'single'}])
+
+        grid1.addWidget(self.iso_scope_label, 10, 0)
+        grid1.addWidget(self.iso_scope_radio, 10, 1, 1, 2)
+
+        # ---------------------------------------------- #
+        # --------- Isolation type  -------------------- #
+        # ---------------------------------------------- #
+        self.iso_type_label = QtWidgets.QLabel('<b>%s:</b>' % _('Isolation Type'))
+        self.iso_type_label.setToolTip(
+            _("Choose how the isolation will be executed:\n"
+              "- 'Full' -> complete isolation of polygons\n"
+              "- 'Ext' -> will isolate only on the outside\n"
+              "- 'Int' -> will isolate only on the inside\n"
+              "'Exterior' isolation is almost always possible\n"
+              "(with the right tool) but 'Interior'\n"
+              "isolation can be done only when there is an opening\n"
+              "inside of the polygon (e.g polygon is a 'doughnut' shape).")
+        )
+        self.iso_type_radio = RadioSet([{'label': _('Full'), 'value': 'full'},
+                                        {'label': _('Ext'), 'value': 'ext'},
+                                        {'label': _('Int'), 'value': 'int'}])
+
+        grid1.addWidget(self.iso_type_label, 11, 0)
+        grid1.addWidget(self.iso_type_radio, 11, 1, 1, 2)
+
+        self.generate_iso_button = QtWidgets.QPushButton("%s" % _("Generate Isolation Geometry"))
+        self.generate_iso_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.generate_iso_button.setToolTip(
             _("Create a Geometry object with toolpaths to cut \n"
               "isolation outside, inside or on both sides of the\n"
               "object. For a Gerber object outside means outside\n"
@@ -460,7 +508,7 @@ class GerberObjectUI(ObjectUI):
               "inside the actual Gerber feature, use a negative tool\n"
               "diameter above.")
         )
-        grid1.addWidget(self.gen_iso_label, 10, 0, 1, 3)
+        grid1.addWidget(self.generate_iso_button, 12, 0, 1, 3)
 
         self.create_buffer_button = QtWidgets.QPushButton(_('Buffer Solid Geometry'))
         self.create_buffer_button.setToolTip(
@@ -469,48 +517,15 @@ class GerberObjectUI(ObjectUI):
               "Clicking this will create the buffered geometry\n"
               "required for isolation.")
         )
-        grid1.addWidget(self.create_buffer_button, 11, 0, 1, 3)
-
-        self.generate_iso_button = QtWidgets.QPushButton(_('FULL Geo'))
-        self.generate_iso_button.setToolTip(
-            _("Create the Geometry Object\n"
-              "for isolation routing. It contains both\n"
-              "the interiors and exteriors geometry.")
-        )
-        grid1.addWidget(self.generate_iso_button, 12, 0)
-
-        hlay_1 = QtWidgets.QHBoxLayout()
-        grid1.addLayout(hlay_1, 12, 1, 1, 2)
-
-        self.generate_ext_iso_button = QtWidgets.QPushButton(_('Ext Geo'))
-        self.generate_ext_iso_button.setToolTip(
-            _("Create the Geometry Object\n"
-              "for isolation routing containing\n"
-              "only the exteriors geometry.")
-        )
-        # self.generate_ext_iso_button.setMinimumWidth(100)
-        hlay_1.addWidget(self.generate_ext_iso_button)
-
-        self.generate_int_iso_button = QtWidgets.QPushButton(_('Int Geo'))
-        self.generate_int_iso_button.setToolTip(
-            _("Create the Geometry Object\n"
-              "for isolation routing containing\n"
-              "only the interiors geometry.")
-        )
-        # self.generate_ext_iso_button.setMinimumWidth(90)
-        hlay_1.addWidget(self.generate_int_iso_button)
+        grid1.addWidget(self.create_buffer_button, 13, 0, 1, 2)
 
         self.ohis_iso = OptionalHideInputSection(
             self.except_cb,
             [self.type_obj_combo, self.type_obj_combo_label, self.obj_combo, self.obj_label],
             logic=True
         )
-        # when the follow checkbox is checked then the exteriors and interiors isolation generation buttons
-        # are disabled as is doesn't make sense to have them enabled due of the nature of "follow"
-        self.ois_iso = OptionalInputSection(self.follow_cb,
-                                            [self.generate_int_iso_button, self.generate_ext_iso_button], logic=False)
 
-        grid1.addWidget(QtWidgets.QLabel(''), 13, 0)
+        grid1.addWidget(QtWidgets.QLabel(''), 14, 0)
 
         # ###########################################
         # ########## NEW GRID #######################
@@ -556,6 +571,11 @@ class GerberObjectUI(ObjectUI):
         grid2.addWidget(self.board_cutout_label, 2, 0)
         grid2.addWidget(self.generate_cutout_button, 2, 1)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line, 3, 0, 1, 2)
+
         # ## Non-copper regions
         self.noncopper_label = QtWidgets.QLabel("<b>%s</b>" % _("Non-copper regions"))
         self.noncopper_label.setToolTip(
@@ -566,7 +586,7 @@ class GerberObjectUI(ObjectUI):
               "copper from a specified region.")
         )
 
-        grid2.addWidget(self.noncopper_label, 3, 0, 1, 2)
+        grid2.addWidget(self.noncopper_label, 4, 0, 1, 2)
 
         # Margin
         bmlabel = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
@@ -582,8 +602,8 @@ class GerberObjectUI(ObjectUI):
         self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
 
-        grid2.addWidget(bmlabel, 4, 0)
-        grid2.addWidget(self.noncopper_margin_entry, 4, 1)
+        grid2.addWidget(bmlabel, 5, 0)
+        grid2.addWidget(self.noncopper_margin_entry, 5, 1)
 
         # Rounded corners
         self.noncopper_rounded_cb = FCCheckBox(label=_("Rounded Geo"))
@@ -593,8 +613,13 @@ class GerberObjectUI(ObjectUI):
         self.noncopper_rounded_cb.setMinimumWidth(90)
 
         self.generate_noncopper_button = QtWidgets.QPushButton(_('Generate Geo'))
-        grid2.addWidget(self.noncopper_rounded_cb, 5, 0)
-        grid2.addWidget(self.generate_noncopper_button, 5, 1)
+        grid2.addWidget(self.noncopper_rounded_cb, 6, 0)
+        grid2.addWidget(self.generate_noncopper_button, 6, 1)
+
+        separator_line1 = QtWidgets.QFrame()
+        separator_line1.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line1, 7, 0, 1, 2)
 
         # ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel('<b>%s</b>' % _('Bounding Box'))
@@ -603,7 +628,7 @@ class GerberObjectUI(ObjectUI):
               "Square shape.")
         )
 
-        grid2.addWidget(self.boundingbox_label, 6, 0, 1, 2)
+        grid2.addWidget(self.boundingbox_label, 8, 0, 1, 2)
 
         bbmargin = QtWidgets.QLabel('%s:' % _('Boundary Margin'))
         bbmargin.setToolTip(
@@ -616,8 +641,8 @@ class GerberObjectUI(ObjectUI):
         self.bbmargin_entry.set_precision(self.decimals)
         self.bbmargin_entry.setSingleStep(0.1)
 
-        grid2.addWidget(bbmargin, 7, 0)
-        grid2.addWidget(self.bbmargin_entry, 7, 1)
+        grid2.addWidget(bbmargin, 9, 0)
+        grid2.addWidget(self.bbmargin_entry, 9, 1)
 
         self.bbrounded_cb = FCCheckBox(label=_("Rounded Geo"))
         self.bbrounded_cb.setToolTip(
@@ -632,21 +657,26 @@ class GerberObjectUI(ObjectUI):
         self.generate_bb_button.setToolTip(
             _("Generate the Geometry object.")
         )
-        grid2.addWidget(self.bbrounded_cb, 8, 0)
-        grid2.addWidget(self.generate_bb_button, 8, 1)
+        grid2.addWidget(self.bbrounded_cb, 10, 0)
+        grid2.addWidget(self.generate_bb_button, 10, 1)
 
+        separator_line2 = QtWidgets.QFrame()
+        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line2, 11, 0, 1, 2)
 
 class ExcellonObjectUI(ObjectUI):
     """
     User interface for Excellon objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         ObjectUI.__init__(self, title=_('Excellon Object'),
                           icon_file='share/drill32.png',
-                          parent=parent)
+                          parent=parent,
+                          decimals=decimals)
 
-        self.decimals = 4
+        self.decimals = decimals
 
         # ### Plot options ####
         hlay_plot = QtWidgets.QHBoxLayout()
@@ -754,7 +784,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(cutzlabel, 0, 0)
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.setRange(-9999.9999, -0.000001)
+
+        if machinist_setting == 0:
+            self.cutz_entry.setRange(-9999.9999, -0.000001)
+        else:
+            self.cutz_entry.setRange(-9999.9999, 9999.9999)
+
         self.cutz_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.cutz_entry, 0, 1)
@@ -768,7 +803,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(travelzlabel, 1, 0)
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_precision(self.decimals)
-        self.travelz_entry.setRange(0.0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.travelz_entry.setRange(0.00001, 9999.9999)
+        else:
+            self.travelz_entry.setRange(-9999.9999, 9999.9999)
+
         self.travelz_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.travelz_entry, 1, 1)
@@ -790,7 +830,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(toolchzlabel, 3, 0)
         self.toolchangez_entry = FCDoubleSpinner()
         self.toolchangez_entry.set_precision(self.decimals)
-        self.toolchangez_entry.setRange(0.0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.setRange(0.0, 9999.9999)
+        else:
+            self.toolchangez_entry.setRange(-9999.9999, 9999.9999)
+
         self.toolchangez_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.toolchangez_entry, 3, 1)
@@ -815,7 +860,12 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(self.eendz_label, 5, 0)
         self.eendz_entry = FCDoubleSpinner()
         self.eendz_entry.set_precision(self.decimals)
-        self.eendz_entry.setRange(0.0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.eendz_entry.setRange(0.0, 9999.9999)
+        else:
+            self.eendz_entry.setRange(-9999.9999, 9999.9999)
+
         self.eendz_entry.setSingleStep(0.1)
 
         grid1.addWidget(self.eendz_entry, 5, 1)
@@ -885,10 +935,10 @@ class ExcellonObjectUI(ObjectUI):
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
-        # postprocessor selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Postprocessor"))
+        # preprocessor selection
+        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_excellon_label.setToolTip(
-            _("The postprocessor JSON file that dictates\n"
+            _("The preprocessor JSON file that dictates\n"
               "Gcode output.")
         )
         self.pp_excellon_name_cb = FCComboBox()
@@ -934,12 +984,11 @@ class ExcellonObjectUI(ObjectUI):
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)
 
-        choose_tools_label = QtWidgets.QLabel(
-            _("Select from the Tools Table above\n"
-              "the hole dias that are to be drilled.\n"
-              "Use the # column to make the selection.")
-        )
-        grid2.addWidget(choose_tools_label, 0, 0, 1, 3)
+        # choose_tools_label = QtWidgets.QLabel(
+        #     _("Select from the Tools Table above the hole dias to be\n"
+        #       "drilled. Use the # column to make the selection.")
+        # )
+        # grid2.addWidget(choose_tools_label, 0, 0, 1, 3)
 
         # ### Choose what to use for Gcode creation: Drills, Slots or Both
         gcode_type_label = QtWidgets.QLabel('<b>%s</b>' % _('Gcode'))
@@ -967,16 +1016,11 @@ class ExcellonObjectUI(ObjectUI):
         # ### Milling Holes Drills ####
         self.mill_hole_label = QtWidgets.QLabel('<b>%s</b>' % _('Mill Holes'))
         self.mill_hole_label.setToolTip(
-            _("Create Geometry for milling holes.")
+            _("Create Geometry for milling holes.\n"
+              "Select from the Tools Table above the hole dias to be\n"
+              "milled. Use the # column to make the selection.")
         )
         grid2.addWidget(self.mill_hole_label, 3, 0, 1, 3)
-
-        self.choose_tools_label2 = QtWidgets.QLabel(
-            _("Select from the Tools Table above\n"
-              "the hole dias that are to be milled.\n"
-              "Use the # column to make the selection.")
-        )
-        grid2.addWidget(self.choose_tools_label2, 4, 0, 1, 3)
 
         self.tdlabel = QtWidgets.QLabel('%s:' % _('Drill Tool dia'))
         self.tdlabel.setToolTip(
@@ -993,9 +1037,9 @@ class ExcellonObjectUI(ObjectUI):
               "for milling DRILLS toolpaths.")
         )
 
-        grid2.addWidget(self.tdlabel, 5, 0)
-        grid2.addWidget(self.tooldia_entry, 5, 1)
-        grid2.addWidget(self.generate_milling_button, 5, 2)
+        grid2.addWidget(self.tdlabel, 4, 0)
+        grid2.addWidget(self.tooldia_entry, 4, 1)
+        grid2.addWidget(self.generate_milling_button, 4, 2)
 
         self.stdlabel = QtWidgets.QLabel('%s:' % _('Slot Tool dia'))
         self.stdlabel.setToolTip(
@@ -1014,9 +1058,9 @@ class ExcellonObjectUI(ObjectUI):
               "for milling SLOTS toolpaths.")
         )
 
-        grid2.addWidget(self.stdlabel, 6, 0)
-        grid2.addWidget(self.slot_tooldia_entry, 6, 1)
-        grid2.addWidget(self.generate_milling_slots_button, 6, 2)
+        grid2.addWidget(self.stdlabel, 5, 0)
+        grid2.addWidget(self.slot_tooldia_entry, 5, 1)
+        grid2.addWidget(self.generate_milling_slots_button, 5, 2)
 
     def hide_drills(self, state=True):
         if state is True:
@@ -1030,10 +1074,10 @@ class GeometryObjectUI(ObjectUI):
     User interface for Geometry objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         super(GeometryObjectUI, self).__init__(title=_('Geometry Object'),
-                                               icon_file='share/geometry32.png', parent=parent)
-        self.decimals = 4
+                                               icon_file='share/geometry32.png', parent=parent, decimals=decimals)
+        self.decimals = decimals
 
         # Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
@@ -1152,6 +1196,8 @@ class GeometryObjectUI(ObjectUI):
         # Tool Offset
         self.grid1 = QtWidgets.QGridLayout()
         self.geo_tools_box.addLayout(self.grid1)
+        self.grid1.setColumnStretch(0, 0)
+        self.grid1.setColumnStretch(1, 1)
 
         self.tool_offset_lbl = QtWidgets.QLabel('%s:' % _('Tool Offset'))
         self.tool_offset_lbl.setToolTip(
@@ -1162,70 +1208,57 @@ class GeometryObjectUI(ObjectUI):
                 "cut and negative for 'inside' cut."
             )
         )
-        self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
         self.tool_offset_entry = FCDoubleSpinner()
         self.tool_offset_entry.set_precision(self.decimals)
         self.tool_offset_entry.setRange(-9999.9999, 9999.9999)
         self.tool_offset_entry.setSingleStep(0.1)
 
-        spacer_lbl = QtWidgets.QLabel(" ")
-        spacer_lbl.setMinimumWidth(80)
+        self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
+        self.grid1.addWidget(self.tool_offset_entry, 0, 1, 1, 2)
 
-        self.grid1.addWidget(self.tool_offset_entry, 0, 1)
-        self.grid1.addWidget(spacer_lbl, 0, 2)
-
-        # ### Add a new Tool ####
-        hlay = QtWidgets.QHBoxLayout()
-        self.geo_tools_box.addLayout(hlay)
-
-        # self.addtool_label = QtWidgets.QLabel('<b>Tool</b>')
-        # self.addtool_label.setToolTip(
-        #     "Add/Copy/Delete a tool to the tool list."
-        # )
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
-            _(
-                "Diameter for the new tool"
-            )
+            _("Diameter for the new tool")
         )
         self.addtool_entry = FCDoubleSpinner()
         self.addtool_entry.set_precision(self.decimals)
         self.addtool_entry.setRange(0.00001, 9999.9999)
         self.addtool_entry.setSingleStep(0.1)
 
-        hlay.addWidget(self.addtool_entry_lbl)
-        hlay.addWidget(self.addtool_entry)
+        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
+        self.addtool_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "with the specified diameter.")
+        )
+
+        self.grid1.addWidget(self.addtool_entry_lbl, 1, 0)
+        self.grid1.addWidget(self.addtool_entry, 1, 1)
+        self.grid1.addWidget(self.addtool_btn, 1, 2)
+
+        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add Tool from DataBase'))
+        self.addtool_from_db_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "from the Tool DataBase.")
+        )
+        self.grid1.addWidget(self.addtool_from_db_btn, 2, 0, 1, 3)
 
         grid2 = QtWidgets.QGridLayout()
         self.geo_tools_box.addLayout(grid2)
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
-        self.addtool_btn.setToolTip(
-            _(
-                "Add a new tool to the Tool Table\n"
-                "with the diameter specified above."
-            )
-        )
-
         self.copytool_btn = QtWidgets.QPushButton(_('Copy'))
         self.copytool_btn.setToolTip(
-            _(
-                "Copy a selection of tools in the Tool Table\n"
-                "by first selecting a row in the Tool Table."
-            )
+            _("Copy a selection of tools in the Tool Table\n"
+              "by first selecting a row in the Tool Table.")
         )
 
         self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
         self.deltool_btn.setToolTip(
-            _(
-                "Delete a selection of tools in the Tool Table\n"
-                "by first selecting a row in the Tool Table."
-            )
+            _("Delete a selection of tools in the Tool Table\n"
+              "by first selecting a row in the Tool Table.")
         )
 
-        grid2.addWidget(self.addtool_btn, 0, 0)
-        grid2.addWidget(self.copytool_btn, 0, 1)
-        grid2.addWidget(self.deltool_btn, 0, 2)
+        grid2.addWidget(self.copytool_btn, 0, 0)
+        grid2.addWidget(self.deltool_btn, 0, 1)
 
         self.empty_label = QtWidgets.QLabel('')
         self.geo_tools_box.addWidget(self.empty_label)
@@ -1233,8 +1266,15 @@ class GeometryObjectUI(ObjectUI):
         # ##################
         # Create CNC Job ###
         # ##################
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.geo_tools_box.addWidget(separator_line)
+
         # ### Tools Data ## ##
-        self.tool_data_label = QtWidgets.QLabel('<b>%s</b>' % _('Tool Data'))
+        self.tool_data_label = QtWidgets.QLabel(
+            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
         self.tool_data_label.setToolTip(
             _(
                 "The data used for creating GCode.\n"
@@ -1295,7 +1335,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.setRange(-9999.9999, -0.00001)
+
+        if machinist_setting == 0:
+            self.cutz_entry.setRange(-9999.9999, -0.00001)
+        else:
+            self.cutz_entry.setRange(-9999.9999, 9999.9999)
+
         self.cutz_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(cutzlabel, 3, 0)
@@ -1335,7 +1380,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.travelz_entry = FCDoubleSpinner()
         self.travelz_entry.set_precision(self.decimals)
-        self.travelz_entry.setRange(0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.travelz_entry.setRange(0.00001, 9999.9999)
+        else:
+            self.travelz_entry.setRange(-9999.9999, 9999.9999)
+
         self.travelz_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(travelzlabel, 5, 0)
@@ -1358,7 +1408,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.toolchangez_entry = FCDoubleSpinner()
         self.toolchangez_entry.set_precision(self.decimals)
-        self.toolchangez_entry.setRange(0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.setRange(0, 9999.9999)
+        else:
+            self.toolchangez_entry.setRange(-9999.9999, 9999.9999)
+
         self.toolchangez_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.toolchangeg_cb, 6, 0, 1, 2)
@@ -1385,14 +1440,19 @@ class GeometryObjectUI(ObjectUI):
         )
         self.gendz_entry = FCDoubleSpinner()
         self.gendz_entry.set_precision(self.decimals)
-        self.gendz_entry.setRange(0, 9999.9999)
+
+        if machinist_setting == 0:
+            self.gendz_entry.setRange(0, 9999.9999)
+        else:
+            self.gendz_entry.setRange(-9999.9999, 9999.9999)
+
         self.gendz_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.endzlabel, 9, 0)
         self.grid3.addWidget(self.gendz_entry, 9, 1)
 
         # Feedrate X-Y
-        frlabel = QtWidgets.QLabel('%s:' % _('Feed Rate X-Y'))
+        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
         frlabel.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute")
@@ -1406,7 +1466,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.cncfeedrate_entry, 10, 1)
 
         # Feedrate Z (Plunge)
-        frzlabel = QtWidgets.QLabel('%s:' % _('Feed Rate Z'))
+        frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
         frzlabel.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute.\n"
@@ -1421,7 +1481,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.cncplunge_entry, 11, 1)
 
         # Feedrate rapids
-        self.fr_rapidlabel = QtWidgets.QLabel('%s:' % _('Feed Rate Rapids'))
+        self.fr_rapidlabel = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
         self.fr_rapidlabel.setToolTip(
             _("Cutting speed in the XY plane\n"
               "(in units per minute).\n"
@@ -1455,7 +1515,7 @@ class GeometryObjectUI(ObjectUI):
         spdlabel.setToolTip(
             _(
                 "Speed of the spindle in RPM (optional).\n"
-                "If LASER postprocessor is used,\n"
+                "If LASER preprocessor is used,\n"
                 "this value is the power of laser."
             )
         )
@@ -1485,10 +1545,10 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.dwell_cb, 15, 0)
         self.grid3.addWidget(self.dwelltime_entry, 15, 1)
 
-        # postprocessor selection
+        # preprocessor selection
         pp_label = QtWidgets.QLabel('%s:' % _("PostProcessor"))
         pp_label.setToolTip(
-            _("The Postprocessor file that dictates\n"
+            _("The Preprocessor file that dictates\n"
               "the Machine Code (like GCode, RML, HPGL) output.")
         )
         self.pp_geometry_name_cb = FCComboBox()
@@ -1530,16 +1590,30 @@ class GeometryObjectUI(ObjectUI):
         self.feedrate_probe_label.hide()
         self.feedrate_probe_entry.setVisible(False)
 
+        separator_line2 = QtWidgets.QFrame()
+        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(separator_line2, 19, 0, 1, 2)
+
+        self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
+        self.apply_param_to_all.setToolTip(
+            _("The parameters in the current form will be applied\n"
+              "on all the tools from the Tool Table.")
+        )
+        self.grid3.addWidget(self.apply_param_to_all, 20, 0, 1, 2)
+
+        self.grid3.addWidget(QtWidgets.QLabel(''), 21, 0, 1, 2)
+
         warning_lbl = QtWidgets.QLabel(
             _(
                 "Add at least one tool in the tool-table.\n"
                 "Click the header to select all, or Ctrl + LMB\n"
                 "for custom selection of tools."
             ))
-        self.grid3.addWidget(warning_lbl, 19, 0, 1, 2)
+        self.grid3.addWidget(warning_lbl, 22, 0, 1, 2)
 
         # Button
-        self.generate_cnc_button = QtWidgets.QPushButton(_('Generate'))
+        self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setToolTip(
             _("Generate the CNC Job object.")
         )
@@ -1572,14 +1646,15 @@ class CNCObjectUI(ObjectUI):
     User interface for CNCJob objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         """
         Creates the user interface for CNCJob objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
         """
-
-        ObjectUI.__init__(self, title=_('CNC Job Object'), icon_file='share/cnc32.png', parent=parent)
-        self.decimals = 4
+        
+        ObjectUI.__init__(self, title=_('CNC Job Object'), icon_file='share/cnc32.png', parent=parent, 
+                          decimals=decimals)
+        self.decimals = decimals
 
         for i in range(0, self.common_grid.count()):
             self.common_grid.itemAt(i).widget().hide()
@@ -1744,6 +1819,10 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(prependlabel)
 
         self.prepend_text = FCTextArea()
+        self.prepend_text.setPlaceholderText(
+            _("Type here any G-Code commands you would "
+              "like to add at the beginning of the G-Code file.")
+        )
         self.custom_box.addWidget(self.prepend_text)
 
         # Append text to GCode
@@ -1756,6 +1835,11 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(appendlabel)
 
         self.append_text = FCTextArea()
+        self.append_text.setPlaceholderText(
+            _("Type here any G-Code commands you would "
+              "like to append to the generated file. "
+              "I.e.: M2 (End of program)")
+        )
         self.custom_box.addWidget(self.append_text)
 
         self.cnc_frame = QtWidgets.QFrame()
@@ -1774,7 +1858,7 @@ class CNCObjectUI(ObjectUI):
                 "This will constitute a Custom Toolchange GCode,\n"
                 "or a Toolchange Macro.\n"
                 "The FlatCAM variables are surrounded by '%' symbol.\n\n"
-                "WARNING: it can be used only with a postprocessor file\n"
+                "WARNING: it can be used only with a preprocessor file\n"
                 "that has 'toolchange_custom' in it's name and this is built\n"
                 "having as template the 'Toolchange Custom' posprocessor file."
             )
@@ -1782,6 +1866,17 @@ class CNCObjectUI(ObjectUI):
         self.cnc_box.addWidget(self.toolchangelabel)
 
         self.toolchange_text = FCTextArea()
+        self.toolchange_text.setPlaceholderText(
+            _(
+                "Type here any G-Code commands you would "
+                "like to be executed when Toolchange event is encountered. "
+                "This will constitute a Custom Toolchange GCode, "
+                "or a Toolchange Macro. "
+                "The FlatCAM variables are surrounded by '%' symbol. \n"
+                "WARNING: it can be used only with a preprocessor file "
+                "that has 'toolchange_custom' in it's name."
+            )
+        )
         self.cnc_box.addWidget(self.toolchange_text)
 
         cnclay = QtWidgets.QHBoxLayout()
@@ -1861,7 +1956,7 @@ class ScriptObjectUI(ObjectUI):
     User interface for Script  objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         """
         Creates the user interface for Script objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
@@ -1870,7 +1965,10 @@ class ScriptObjectUI(ObjectUI):
         ObjectUI.__init__(self, title=_('Script Object'),
                           icon_file='share/script_new24.png',
                           parent=parent,
-                          common=False)
+                          common=False,
+                          decimals=decimals)
+
+        self.decimals = decimals
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
@@ -1913,7 +2011,7 @@ class DocumentObjectUI(ObjectUI):
     User interface for Notes objects.
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, decimals, parent=None):
         """
         Creates the user interface for Notes objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
@@ -1922,7 +2020,10 @@ class DocumentObjectUI(ObjectUI):
         ObjectUI.__init__(self, title=_('Document Object'),
                           icon_file='share/notes16_1.png',
                           parent=parent,
-                          common=False)
+                          common=False,
+                          decimals=decimals)
+
+        self.decimals = decimals
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()

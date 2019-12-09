@@ -1,5 +1,8 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMExcellon
+
+import collections
+import math
 
 
 class TclCommandDrillcncjob(TclCommandSignaled):
@@ -57,7 +60,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('endz', 'Z distance at job end (example: 30.0).'),
             ('dwell', 'True or False; use (or not) the dwell'),
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed'),
-            ('pp', 'This is the Excellon postprocessor name: case_sensitive, no_quotes'),
+            ('pp', 'This is the Excellon preprocessor name: case_sensitive, no_quotes'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('opt_type', 'Name of move optimization type. B by default for Basic OR-Tools, M for Metaheuristic OR-Tools'
                          'T from Travelling Salesman Algorithm. B and M works only for 64bit version of FlatCAM and '
@@ -86,17 +89,18 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
         name = args['name']
 
+        obj = self.app.collection.get_by_name(name)
+
         if 'outname' not in args:
             args['outname'] = name + "_cnc"
 
         if 'muted' in args:
-            muted = args['muted']
+            muted = bool(args['muted'])
         else:
-            muted = 0
+            muted = False
 
-        obj = self.app.collection.get_by_name(name)
         if obj is None:
-            if muted == 0:
+            if muted is False:
                 self.raise_tcl_error("Object not found: %s" % name)
             else:
                 return "fail"
@@ -114,20 +118,18 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
         def job_init(job_obj, app_obj):
             # tools = args["tools"] if "tools" in args else 'all'
-            units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+            units = self.app.defaults['units'].upper()
 
             try:
                 if 'drilled_dias' in args and args['drilled_dias'] != 'all':
-                    diameters = [x.strip() for x in args['drilled_dias'].split(",") if x!= '']
+                    diameters = [x.strip() for x in args['drilled_dias'].split(",") if x != '']
                     nr_diameters = len(diameters)
 
                     req_tools = set()
                     for tool in obj.tools:
                         for req_dia in diameters:
-                            obj_dia_form = float('%.2f' % float(obj.tools[tool]["C"])) if units == 'MM' else \
-                                float('%.4f' % float(obj.tools[tool]["C"]))
-                            req_dia_form = float('%.2f' % float(req_dia)) if units == 'MM' else \
-                                float('%.4f' % float(req_dia))
+                            obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["C"])))
+                            req_dia_form = float('%.*f' % (obj.decimals, float(req_dia)))
 
                             if 'diatol' in args:
                                 tolerance = args['diatol'] / 100
@@ -173,7 +175,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             toolchangez = args["toolchangez"] if "toolchangez" in args and args["toolchangez"] else \
                 obj.options["toolchangez"]
             endz = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
-            toolchange = True if "toolchange" in args and args["toolchange"] == 1 else False
+            toolchange = True if "toolchange" in args and bool(args["toolchange"]) is True else False
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 
             job_obj.z_move = args["travelz"] if "travelz" in args and args["travelz"] else obj.options["travelz"]
@@ -181,7 +183,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.feedrate_rapid = args["feedrate_rapid"] \
                 if "feedrate_rapid" in args and args["feedrate_rapid"] else obj.options["feedrate_rapid"]
 
-            if args['dwell'] and args['dwelltime']:
+            if bool(args['dwell']) and args['dwelltime']:
                 job_obj.dwell = True
                 job_obj.dwelltime = float(args['dwelltime'])
 

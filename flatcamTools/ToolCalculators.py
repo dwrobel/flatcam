@@ -30,7 +30,7 @@ class ToolCalculator(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         self.app = app
-        self.decimals = 6
+        self.decimals = self.app.decimals
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -94,6 +94,8 @@ class ToolCalculator(FlatCAMTool):
         self.tipDia_label = QtWidgets.QLabel('%s:' % _("Tip Diameter"))
         self.tipDia_entry = FCDoubleSpinner()
         self.tipDia_entry.set_precision(self.decimals)
+        self.tipDia_entry.set_range(0.0, 9999.9999)
+        self.tipDia_entry.setSingleStep(0.1)
 
         # self.tipDia_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.tipDia_label.setToolTip(
@@ -102,6 +104,8 @@ class ToolCalculator(FlatCAMTool):
         )
         self.tipAngle_label = QtWidgets.QLabel('%s:' % _("Tip Angle"))
         self.tipAngle_entry = FCSpinner()
+        self.tipAngle_entry.set_range(0,180)
+        self.tipAngle_entry.setSingleStep(5)
 
         # self.tipAngle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.tipAngle_label.setToolTip(_("This is the angle of the tip of the tool.\n"
@@ -109,7 +113,7 @@ class ToolCalculator(FlatCAMTool):
 
         self.cutDepth_label = QtWidgets.QLabel('%s:' % _("Cut Z"))
         self.cutDepth_entry = FCDoubleSpinner()
-        self.cutDepth_entry.setMinimum(-1e10)    # to allow negative numbers without actually adding a real limit
+        self.cutDepth_entry.set_range(-9999.9999, 9999.9999)
         self.cutDepth_entry.set_precision(self.decimals)
 
         # self.cutDepth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -163,6 +167,7 @@ class ToolCalculator(FlatCAMTool):
         self.pcblengthlabel = QtWidgets.QLabel('%s:' % _("Board Length"))
         self.pcblength_entry = FCDoubleSpinner()
         self.pcblength_entry.set_precision(self.decimals)
+        self.pcblength_entry.set_range(0.0, 9999.9999)
 
         # self.pcblength_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.pcblengthlabel.setToolTip(_('This is the board length. In centimeters.'))
@@ -170,6 +175,7 @@ class ToolCalculator(FlatCAMTool):
         self.pcbwidthlabel = QtWidgets.QLabel('%s:' % _("Board Width"))
         self.pcbwidth_entry = FCDoubleSpinner()
         self.pcbwidth_entry.set_precision(self.decimals)
+        self.pcbwidth_entry.set_range(0.0, 9999.9999)
 
         # self.pcbwidth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.pcbwidthlabel.setToolTip(_('This is the board width.In centimeters.'))
@@ -177,6 +183,8 @@ class ToolCalculator(FlatCAMTool):
         self.cdensity_label = QtWidgets.QLabel('%s:' % _("Current Density"))
         self.cdensity_entry = FCDoubleSpinner()
         self.cdensity_entry.set_precision(self.decimals)
+        self.cdensity_entry.set_range(0.0, 9999.9999)
+        self.cdensity_entry.setSingleStep(0.1)
 
         # self.cdensity_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.cdensity_label.setToolTip(_("Current density to pass through the board. \n"
@@ -185,6 +193,8 @@ class ToolCalculator(FlatCAMTool):
         self.growth_label = QtWidgets.QLabel('%s:' % _("Copper Growth"))
         self.growth_entry = FCDoubleSpinner()
         self.growth_entry.set_precision(self.decimals)
+        self.growth_entry.set_range(0.0, 9999.9999)
+        self.growth_entry.setSingleStep(0.01)
 
         # self.growth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.growth_label.setToolTip(_("How thick the copper growth is intended to be.\n"
@@ -195,6 +205,8 @@ class ToolCalculator(FlatCAMTool):
         self.cvaluelabel = QtWidgets.QLabel('%s:' % _("Current Value"))
         self.cvalue_entry = FCDoubleSpinner()
         self.cvalue_entry.set_precision(self.decimals)
+        self.cvalue_entry.set_range(0.0, 9999.9999)
+        self.cvalue_entry.setSingleStep(0.1)
 
         # self.cvalue_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.cvaluelabel.setToolTip(_('This is the current intensity value\n'
@@ -204,6 +216,8 @@ class ToolCalculator(FlatCAMTool):
         self.timelabel = QtWidgets.QLabel('%s:' % _("Time"))
         self.time_entry = FCDoubleSpinner()
         self.time_entry.set_precision(self.decimals)
+        self.time_entry.set_range(0.0, 9999.9999)
+        self.time_entry.setSingleStep(0.1)
 
         # self.time_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.timelabel.setToolTip(_('This is the calculated time required for the procedure.\n'
@@ -274,7 +288,7 @@ class ToolCalculator(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+C', **kwargs)
 
     def set_tool_ui(self):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         # ## Initialize form
         self.mm_entry.set_value('%.*f' % (self.decimals, 0))
@@ -311,8 +325,7 @@ class ToolCalculator(FlatCAMTool):
 
         tip_diameter = float(self.tipDia_entry.get_value())
 
-        half_tip_angle = float(self.tipAngle_entry.get_value())
-        half_tip_angle /= 2
+        half_tip_angle = float(self.tipAngle_entry.get_value()) / 2.0
 
         cut_depth = float(self.cutDepth_entry.get_value())
         cut_depth = -cut_depth if cut_depth < 0 else cut_depth

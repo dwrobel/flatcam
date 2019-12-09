@@ -25,6 +25,7 @@ def dxfpoint2shapely(point):
     geo = Point(point.dxf.location).buffer(0.01)
     return geo
 
+
 def dxfline2shapely(line):
 
     try:
@@ -38,6 +39,7 @@ def dxfline2shapely(line):
     geo = LineString([start, stop])
 
     return geo
+
 
 def dxfcircle2shapely(circle, n_points=100):
 
@@ -241,7 +243,7 @@ def dxfsolid2shapely(solid):
     try:
         corner_list.append(solid[iterator])
         iterator += 1
-    except:
+    except Exception:
         return Polygon(corner_list)
 
 
@@ -265,7 +267,7 @@ def dxftrace2shapely(trace):
     try:
         corner_list.append(trace[iterator])
         iterator += 1
-    except:
+    except Exception:
         return Polygon(corner_list)
 
 

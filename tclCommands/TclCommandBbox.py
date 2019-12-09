@@ -1,5 +1,9 @@
-from ObjectCollection import *
+import collections
 from tclCommands.TclCommand import TclCommand
+from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber
+
+from shapely.ops import cascaded_union
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -75,7 +79,7 @@ class TclCommandBbox(TclCommand):
 
         if 'rounded' not in args:
             args['rounded'] = self.app.defaults["gerber_bboxrounded"]
-        rounded = args['rounded']
+        rounded = bool(args['rounded'])
 
         del args['name']
 

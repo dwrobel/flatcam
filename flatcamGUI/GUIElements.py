@@ -12,7 +12,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot, QSettings
 from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
 from PyQt5.QtGui import QKeySequence, QTextCursor
 
@@ -145,7 +145,7 @@ class RadioSet(QtWidgets.QWidget):
 
 
 class LengthEntry(QtWidgets.QLineEdit):
-    def __init__(self, output_units='IN', parent=None):
+    def __init__(self, output_units='IN', decimals=None, parent=None):
         super(LengthEntry, self).__init__(parent)
 
         self.output_units = output_units
@@ -160,6 +160,7 @@ class LengthEntry(QtWidgets.QLineEdit):
         }
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -199,12 +200,13 @@ class LengthEntry(QtWidgets.QLineEdit):
         except KeyError:
             value = raw
             return float(eval(value))
-        except:
+        except Exception:
             log.warning("Could not parse value in entry: %s" % str(raw))
             return None
 
-    def set_value(self, val):
-        self.setText(str('%.4f' % val))
+    def set_value(self, val, decimals=None):
+        dec_digits = decimals if decimals is not None else self.decimals
+        self.setText(str('%.*f' % (dec_digits, val)))
 
     def sizeHint(self):
         default_hint_size = super(LengthEntry, self).sizeHint()
@@ -212,10 +214,11 @@ class LengthEntry(QtWidgets.QLineEdit):
 
 
 class FloatEntry(QtWidgets.QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=None, parent=None):
         super(FloatEntry, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -251,9 +254,10 @@ class FloatEntry(QtWidgets.QLineEdit):
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
-    def set_value(self, val):
+    def set_value(self, val, decimals=None):
+        dig_digits = decimals if decimals is not None else self.decimals
         if val is not None:
-            self.setText("%.4f" % float(val))
+            self.setText("%.*f" % (dig_digits, float(val)))
         else:
             self.setText("")
 
@@ -263,10 +267,11 @@ class FloatEntry(QtWidgets.QLineEdit):
 
 
 class FloatEntry2(QtWidgets.QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=None, parent=None):
         super(FloatEntry2, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -295,8 +300,9 @@ class FloatEntry2(QtWidgets.QLineEdit):
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
-    def set_value(self, val):
-        self.setText("%.4f" % val)
+    def set_value(self, val, decimals=None):
+        dig_digits = decimals if decimals is not None else self.decimals
+        self.setText("%.*f" % (dig_digits, val))
 
     def sizeHint(self):
         default_hint_size = super(FloatEntry2, self).sizeHint()
@@ -353,10 +359,20 @@ class IntEntry(QtWidgets.QLineEdit):
 
 
 class FCEntry(QtWidgets.QLineEdit):
-    def __init__(self, parent=None):
+    def __init__(self, decimals=None, alignment=None, parent=None):
         super(FCEntry, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
+        self.decimals = decimals if decimals is not None else 4
+
+        if alignment:
+            if alignment == 'center':
+                align_val = QtCore.Qt.AlignHCenter
+            elif alignment == 'right':
+                align_val = QtCore.Qt.AlignRight
+            else:
+                align_val = QtCore.Qt.AlignLeft
+            self.setAlignment(align_val)
 
     def on_edit_finished(self):
         self.clearFocus()
@@ -376,9 +392,10 @@ class FCEntry(QtWidgets.QLineEdit):
     def get_value(self):
         return str(self.text())
 
-    def set_value(self, val):
+    def set_value(self, val, decimals=None):
+        decimal_digits = decimals if decimals is not None else self.decimals
         if type(val) is float:
-            self.setText('%.4f' % val)
+            self.setText('%.*f' % (decimal_digits, val))
         else:
             self.setText(str(val))
 
@@ -511,20 +528,37 @@ class FCSpinner(QtWidgets.QSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, suffix=None, alignment=None, parent=None):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
+
         self.editingFinished.connect(self.on_edit_finished)
         self.lineEdit().installEventFilter(self)
 
-    def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress:
-            if self.readyToEdit:
-                self.lineEdit().selectAll()
-                self.readyToEdit = False
+        if suffix:
+            self.setSuffix(' %s' % str(suffix))
+
+        if alignment:
+            if alignment == 'center':
+                align_val = QtCore.Qt.AlignHCenter
+            elif alignment == 'right':
+                align_val = QtCore.Qt.AlignRight
             else:
-                self.lineEdit().deselect()
-            return True
+                align_val = QtCore.Qt.AlignLeft
+            self.setAlignment(align_val)
+
+        self.prev_readyToEdit = True
+
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress and self.prev_readyToEdit is True:
+            self.prev_readyToEdit = False
+            if self.isEnabled():
+                if self.readyToEdit:
+                    self.lineEdit().selectAll()
+                    self.readyToEdit = False
+                else:
+                    self.lineEdit().deselect()
+                return True
         return False
 
     def keyPressEvent(self, event):
@@ -541,6 +575,7 @@ class FCSpinner(QtWidgets.QSpinBox):
 
     def on_edit_finished(self):
         self.clearFocus()
+        self.returnPressed.emit()
 
     # def mousePressEvent(self, e, parent=None):
     #     super(FCSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -554,6 +589,7 @@ class FCSpinner(QtWidgets.QSpinBox):
             super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.lineEdit().deselect()
             self.readyToEdit = True
+            self.prev_readyToEdit = True
 
     def get_value(self):
         return int(self.value())
@@ -578,7 +614,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, suffix=None, alignment=None, parent=None):
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
 
@@ -590,17 +626,35 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.lineEdit().setValidator(
             QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
+        if suffix:
+            self.setSuffix(' %s' % str(suffix))
+
+        if alignment:
+            if alignment == 'center':
+                align_val = QtCore.Qt.AlignHCenter
+            elif alignment == 'right':
+                align_val = QtCore.Qt.AlignRight
+            else:
+                align_val = QtCore.Qt.AlignLeft
+            self.setAlignment(align_val)
+
+        self.prev_readyToEdit = True
+
     def on_edit_finished(self):
         self.clearFocus()
+        self.returnPressed.emit()
 
     def eventFilter(self, object, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress:
-            if self.readyToEdit:
-                self.lineEdit().selectAll()
-                self.readyToEdit = False
-            else:
-                self.lineEdit().deselect()
-            return True
+        if event.type() == QtCore.QEvent.MouseButtonPress and self.prev_readyToEdit is True:
+            self.prev_readyToEdit = False
+            if self.isEnabled():
+                if self.readyToEdit:
+                    self.cursor_pos = self.lineEdit().cursorPosition()
+                    self.lineEdit().selectAll()
+                    self.readyToEdit = False
+                else:
+                    self.lineEdit().deselect()
+                return True
         return False
 
     def keyPressEvent(self, event):
@@ -621,6 +675,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.lineEdit().deselect()
             self.readyToEdit = True
+            self.prev_readyToEdit = True
 
     def valueFromText(self, p_str):
         text = p_str.replace(',', '.')
@@ -632,9 +687,10 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         return ret_val
 
     def validate(self, p_str, p_int):
+        text = p_str.replace(',', '.')
         try:
-            if float(p_str) < self.minimum() or float(p_str) > self.maximum():
-                return QtGui.QValidator.Intermediate, p_str, p_int
+            if float(text) < self.minimum() or float(text) > self.maximum():
+                return QtGui.QValidator.Intermediate, text, p_int
         except ValueError:
             pass
         return QtGui.QValidator.Acceptable, p_str, p_int
@@ -881,6 +937,178 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         self.setTextCursor(cursor)
 
 
+class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.completer = MyCompleter()
+
+        self.model = QtCore.QStringListModel()
+        self.completer.setModel(self.model)
+        self.set_model_data(keyword_list=[])
+        self.completer.insertText.connect(self.insertCompletion)
+
+        self.completer_enable = False
+
+    def append(self, text):
+        """
+        Added this to make this subclass compatible with FCTextAreaExtended
+        :param text: string
+        :return:
+        """
+        self.appendPlainText(text)
+
+    def set_model_data(self, keyword_list):
+        self.model.setStringList(keyword_list)
+
+    def insertCompletion(self, completion):
+        tc = self.textCursor()
+        extra = (len(completion) - len(self.completer.completionPrefix()))
+
+        # don't insert if the word is finished but add a space instead
+        if extra == 0:
+            tc.insertText(' ')
+            self.completer.popup().hide()
+            return
+
+        tc.movePosition(QTextCursor.Left)
+        tc.movePosition(QTextCursor.EndOfWord)
+        tc.insertText(completion[-extra:])
+        # add a space after inserting the word
+        tc.insertText(' ')
+        self.setTextCursor(tc)
+        self.completer.popup().hide()
+
+    def focusInEvent(self, event):
+        if self.completer:
+            self.completer.setWidget(self)
+        QtWidgets.QPlainTextEdit.focusInEvent(self, event)
+
+    def set_value(self, val):
+        self.setPlainText(val)
+
+    def get_value(self):
+        self.toPlainText()
+
+    def insertFromMimeData(self, data):
+        """
+        Reimplemented such that when SHIFT is pressed and doing click Paste in the contextual menu, the '\' symbol
+        is replaced with the '/' symbol. That's because of the difference in path separators in Windows and TCL
+        :param data:
+        :return:
+        """
+        modifier = QtWidgets.QApplication.keyboardModifiers()
+        if modifier == Qt.ShiftModifier:
+            text = data.text()
+            text = text.replace('\\', '/')
+            self.insertPlainText(text)
+        else:
+            self.insertPlainText(data.text())
+
+    def keyPressEvent(self, event):
+        """
+        Reimplemented so the CTRL + SHIFT + V shortcut key combo will paste the text but replacing '\' with '/'
+        :param event:
+        :return:
+        """
+        key = event.key()
+        modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if modifier & Qt.ControlModifier and modifier & Qt.ShiftModifier:
+            if key == QtCore.Qt.Key_V:
+                clipboard = QtWidgets.QApplication.clipboard()
+                clip_text = clipboard.text()
+                clip_text = clip_text.replace('\\', '/')
+                self.insertPlainText(clip_text)
+
+        if modifier & Qt.ControlModifier and key == Qt.Key_Slash:
+            self.comment()
+
+        tc = self.textCursor()
+        if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
+            self.completer.insertText.emit(self.completer.getSelected())
+            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            return
+        elif key == Qt.Key_BraceLeft:
+            tc.insertText('{}')
+            self.moveCursor(QtGui.QTextCursor.Left)
+        elif key == Qt.Key_BracketLeft:
+            tc.insertText('[]')
+            self.moveCursor(QtGui.QTextCursor.Left)
+        elif key == Qt.Key_ParenLeft:
+            tc.insertText('()')
+            self.moveCursor(QtGui.QTextCursor.Left)
+
+        elif key == Qt.Key_BraceRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == '}':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText('}')
+        elif key == Qt.Key_BracketRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == ']':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText(']')
+        elif key == Qt.Key_ParenRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == ')':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText(')')
+        else:
+            super(FCPlainTextAreaExtended, self).keyPressEvent(event)
+
+        if self.completer_enable:
+            tc.select(QTextCursor.WordUnderCursor)
+            cr = self.cursorRect()
+
+            if len(tc.selectedText()) > 0:
+                self.completer.setCompletionPrefix(tc.selectedText())
+                popup = self.completer.popup()
+                popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
+
+                cr.setWidth(self.completer.popup().sizeHintForColumn(0)
+                            + self.completer.popup().verticalScrollBar().sizeHint().width())
+                self.completer.complete(cr)
+            else:
+                self.completer.popup().hide()
+
+    def comment(self):
+        """
+        Got it from here:
+        https://stackoverflow.com/questions/49898820/how-to-get-text-next-to-cursor-in-qtextedit-in-pyqt4
+        :return:
+        """
+        pos = self.textCursor().position()
+        self.moveCursor(QtGui.QTextCursor.StartOfLine)
+        line_text = self.textCursor().block().text()
+        if self.textCursor().block().text().startswith(" "):
+            # skip the white space
+            self.moveCursor(QtGui.QTextCursor.NextWord)
+        self.moveCursor(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.KeepAnchor)
+        character = self.textCursor().selectedText()
+        if character == "#":
+            # delete #
+            self.textCursor().deletePreviousChar()
+            # delete white space
+            self.moveCursor(QtGui.QTextCursor.NextWord, QtGui.QTextCursor.KeepAnchor)
+            self.textCursor().removeSelectedText()
+        else:
+            self.moveCursor(QtGui.QTextCursor.PreviousCharacter, QtGui.QTextCursor.KeepAnchor)
+            self.textCursor().insertText("# ")
+        cursor = QtGui.QTextCursor(self.textCursor())
+        cursor.setPosition(pos)
+        self.setTextCursor(cursor)
+
+
 class FCComboBox(QtWidgets.QComboBox):
 
     def __init__(self, parent=None, callback=None):
@@ -961,6 +1189,17 @@ class FCButton(QtWidgets.QPushButton):
 
     def get_value(self):
         return self.isChecked()
+
+    def set_value(self, val):
+        self.setText(str(val))
+
+
+class FCLabel(QtWidgets.QLabel):
+    def __init__(self, parent=None):
+        super(FCLabel, self).__init__(parent)
+
+    def get_value(self):
+        return self.text()
 
     def set_value(self, val):
         self.setText(str(val))
@@ -1773,8 +2012,9 @@ class FCTable(QtWidgets.QTableWidget):
 
     # if user is clicking an blank area inside the QTableWidget it will deselect currently selected rows
     def mousePressEvent(self, event):
-        if self.itemAt(event.pos()) is None:
+        if not self.itemAt(event.pos()):
             self.clearSelection()
+            self.clearFocus()
         else:
             QtWidgets.QTableWidget.mousePressEvent(self, event)
 
@@ -2161,3 +2401,154 @@ class MyCompleter(QCompleter):
 
     def getSelected(self):
         return self.lastSelected
+
+
+class FCTextAreaLineNumber(QtWidgets.QFrame):
+    textChanged = QtCore.pyqtSignal()
+
+    class NumberBar(QtWidgets.QWidget):
+
+        def __init__(self, edit):
+            QtWidgets.QWidget.__init__(self, edit)
+
+            self.edit = edit
+            self.adjustWidth(1)
+
+        def paintEvent(self, event):
+            self.edit.numberbarPaint(self, event)
+            QtWidgets.QWidget.paintEvent(self, event)
+
+        def adjustWidth(self, count):
+            # three spaces added to the width to make up for the space added in the line number
+            width = self.fontMetrics().width(str(count) + '   ')
+            if self.width() != width:
+                self.setFixedWidth(width)
+
+        def updateContents(self, rect, scroll):
+            if scroll:
+                self.scroll(0, scroll)
+            else:
+                # It would be nice to do
+                # self.update(0, rect.y(), self.width(), rect.height())
+                # But we can't because it will not remove the bold on the
+                # current line if word wrap is enabled and a new block is
+                # selected.
+                self.update()
+
+    class PlainTextEdit(FCPlainTextAreaExtended):
+        """
+        TextEdit with line numbers and highlight
+        From here: https://nachtimwald.com/2009/08/19/better-qplaintextedit-with-line-numbers/
+        and from here: https://doc.qt.io/qt-5/qtwidgets-widgets-codeeditor-example.html
+        """
+
+        def __init__(self, *args):
+            FCPlainTextAreaExtended.__init__(self, *args)
+
+            # self.setFrameStyle(QFrame.NoFrame)
+            self.setFrameStyle(QtWidgets.QFrame.NoFrame)
+            self.highlight()
+            # self.setLineWrapMode(QPlainTextEdit.NoWrap)
+            self.cursorPositionChanged.connect(self.highlight)
+
+        def highlight(self):
+            hi_selection = QTextEdit.ExtraSelection()
+
+            hi_selection.format.setBackground(self.palette().alternateBase())
+            hi_selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
+            hi_selection.cursor = self.textCursor()
+            hi_selection.cursor.clearSelection()
+
+            self.setExtraSelections([hi_selection])
+
+        def numberbarPaint(self, number_bar, event):
+            font_metrics = self.fontMetrics()
+            current_line = self.document().findBlock(self.textCursor().position()).blockNumber() + 1
+
+            painter = QtGui.QPainter(number_bar)
+            painter.fillRect(event.rect(), QtCore.Qt.lightGray)
+
+            block = self.firstVisibleBlock()
+            line_count = int(block.blockNumber())
+            block_top = int(self.blockBoundingGeometry(block).translated(self.contentOffset()).top())
+            block_bottom = block_top + int(self.blockBoundingRect(block).height())
+
+            # Iterate over all visible text blocks in the document.
+            while block.isValid() and block_top <= event.rect().bottom():
+                line_count += 1
+
+                # Check if the position of the block is out side of the visible
+                # area.
+                if block.isVisible() and block_bottom >= event.rect().top():
+
+                    # We want the line number for the selected line to be bold.
+                    if line_count == current_line:
+                        font = painter.font()
+                        font.setBold(True)
+                        painter.setPen(QtCore.Qt.blue)
+                        painter.setFont(font)
+                    else:
+                        font = painter.font()
+                        font.setBold(False)
+                        painter.setPen(self.palette().base().color())
+                        painter.setFont(font)
+
+                    # Draw the line number right justified at the position of the line.
+                    paint_rect = QtCore.QRect(0, block_top, number_bar.width(), font_metrics.height())
+                    # I add some spaces to the line_count to prettify; make sure to remember adjust the width in the
+                    # NumberBar() class above
+                    painter.drawText(paint_rect, Qt.AlignRight, ' ' + str(line_count) + '  ')
+
+                block = block.next()
+                block_top = block_bottom
+                block_bottom = block_top + self.blockBoundingRect(block).height()
+
+            painter.end()
+
+    def __init__(self, *args):
+        QtWidgets.QFrame.__init__(self, *args)
+
+        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Sunken)
+
+        self.edit = self.PlainTextEdit()
+        self.number_bar = self.NumberBar(self.edit)
+
+        hbox = QtWidgets.QHBoxLayout(self)
+        hbox.setSpacing(0)
+        hbox.setContentsMargins(0, 0, 0, 0)
+        hbox.addWidget(self.number_bar)
+        hbox.addWidget(self.edit)
+
+        self.edit.blockCountChanged.connect(self.number_bar.adjustWidth)
+        self.edit.updateRequest.connect(self.number_bar.updateContents)
+
+    def getText(self):
+        return str(self.edit.toPlainText())
+
+    def setText(self, text):
+        self.edit.setPlainText(text)
+
+    def isModified(self):
+        return self.edit.document().isModified()
+
+    def setModified(self, modified):
+        self.edit.document().setModified(modified)
+
+    def setLineWrapMode(self, mode):
+        self.edit.setLineWrapMode(mode)
+
+
+def rreplace(s, old, new, occurrence):
+    """
+    Credits go here:
+    https://stackoverflow.com/questions/2556108/rreplace-how-to-replace-the-last-occurrence-of-an-expression-in-a-string
+
+    :param s: string to be processed
+    :param old: old char to be replaced
+    :param new: new char to replace the old one
+    :param occurrence: how many places from end to replace the old char
+    :return: modified string
+    """
+
+    li = s.rsplit(old, occurrence)
+    return new.join(li)

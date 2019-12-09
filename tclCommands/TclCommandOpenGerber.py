@@ -1,5 +1,8 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from camlib import ParseError
+from FlatCAMObj import FlatCAMGerber
+
+import collections
 
 
 class TclCommandOpenGerber(TclCommandSignaled):

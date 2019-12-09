@@ -30,7 +30,7 @@ class ToolTransform(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
@@ -371,7 +371,7 @@ class ToolTransform(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Transform Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+E', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
 
     def set_tool_ui(self):
         # ## Initialize form

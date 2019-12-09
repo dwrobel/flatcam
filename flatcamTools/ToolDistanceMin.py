@@ -35,7 +35,8 @@ class DistanceMin(FlatCAMTool):
 
         self.app = app
         self.canvas = self.app.plotcanvas
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.defaults['units'].lower()
+        self.decimals = self.app.decimals
 
         # ## Title
         title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
@@ -137,7 +138,6 @@ class DistanceMin(FlatCAMTool):
 
         self.layout.addStretch()
 
-        self.decimals = 4
         self.h_point = (0, 0)
 
         self.measure_btn.clicked.connect(self.activate_measure_tool)
@@ -175,7 +175,7 @@ class DistanceMin(FlatCAMTool):
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.defaults['units'].lower()
 
         # initial view of the layout
         self.start_entry.set_value('(0, 0)')
@@ -195,7 +195,7 @@ class DistanceMin(FlatCAMTool):
         # ENABLE the Measuring TOOL
         self.jump_hp_btn.setDisabled(False)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.defaults['units'].lower()
 
         if self.app.call_source == 'app':
             selected_objs = self.app.collection.get_selected()

@@ -1,7 +1,13 @@
-from ObjectCollection import *
-from copy import copy,deepcopy
-
 from tclCommands.TclCommand import TclCommand
+from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon
+
+import shapely.affinity as affinity
+
+import logging
+from copy import deepcopy
+import collections
+
+log = logging.getLogger('base')
 
 
 class TclCommandPanelize(TclCommand):
@@ -28,7 +34,7 @@ class TclCommandPanelize(TclCommand):
         ('spacing_rows', float),
         ('box', str),
         ('outname', str),
-        ('threaded', int)
+        ('run_threaded', bool)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -46,7 +52,7 @@ class TclCommandPanelize(TclCommand):
             ('columns', 'Number of columns.'),
             ('rows', 'Number of rows;'),
             ('outname', 'Name of the new geometry object.'),
-            ('threaded', '0 = non-threaded || 1 = threaded')
+            ('run_threaded', 'False = non-threaded || True = threaded')
         ]),
         'examples': []
     }
@@ -64,7 +70,7 @@ class TclCommandPanelize(TclCommand):
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
             return "Could not retrieve object: %s" % name
 
         if obj is None:
@@ -74,7 +80,7 @@ class TclCommandPanelize(TclCommand):
             boxname = args['box']
             try:
                 box = self.app.collection.get_by_name(boxname)
-            except:
+            except Exception:
                 return "Could not retrieve object: %s" % name
         else:
             box = obj
@@ -87,23 +93,23 @@ class TclCommandPanelize(TclCommand):
         else:
             outname = name + '_panelized'
 
-        if 'threaded' in args:
-            threaded = args['threaded']
+        if 'run_threaded' in args:
+            threaded = bool(args['run_threaded'])
         else:
-            threaded = 0
+            threaded = False
 
         if 'spacing_columns' in args:
-            spacing_columns = args['spacing_columns']
+            spacing_columns = int(args['spacing_columns'])
         else:
             spacing_columns = 5
 
         if 'spacing_rows' in args:
-            spacing_rows = args['spacing_rows']
+            spacing_rows = int(args['spacing_rows'])
         else:
             spacing_rows = 5
 
-        rows = args['rows']
-        columns = args['columns']
+        rows = int(args['rows'])
+        columns = int(args['columns'])
 
         xmin, ymin, xmax, ymax = box.bounds()
         lenghtx = xmax - xmin + spacing_columns
@@ -185,8 +191,9 @@ class TclCommandPanelize(TclCommand):
                         if option is not 'name':
                             try:
                                 obj_fin.options[option] = obj.options[option]
-                            except:
-                                log.warning("Failed to copy option.", option)
+                            except Exception as e:
+                                log.warning("Failed to copy option: %s" % str(option))
+                                log.debug("TclCommandPanelize.execute().panelize2() --> %s" % str(e))
 
                     for row in range(rows):
                         currentx = 0.0
@@ -270,16 +277,16 @@ class TclCommandPanelize(TclCommand):
                     self.app.progress.emit(50)
                     self.app.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)
 
-        if threaded == 1:
+        if threaded is True:
             proc = self.app.proc_container.new("Generating panel ... Please wait.")
 
             def job_thread(app_obj):
                 try:
                     panelize_2()
                     self.app.inform.emit("[success] Panel created successfully.")
-                except Exception as e:
+                except Exception as ee:
                     proc.done()
-                    log.debug(str(e))
+                    log.debug(str(ee))
                     return
                 proc.done()
 
