@@ -2962,7 +2962,7 @@ class CNCjob(Geometry):
             feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
             spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
             multidepth=False, depthpercut=None,
-            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False,
+            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False, extracut_length=0.2,
             startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
         """
         Algorithm to generate from multitool Geometry.
@@ -2992,6 +2992,7 @@ class CNCjob(Geometry):
         :param toolchangexy:
         :param extracut:            Adds (or not) an extra cut at the end of each path overlapping the
                                     first point in path to ensure complete copper removal
+        :param extracut_length:     Extra cut legth at the end of the path
         :param startz:
         :param endz:
         :param pp_geometry_name:
@@ -3213,7 +3214,8 @@ class CNCjob(Geometry):
                     # calculate the cut distance
                     total_cut = total_cut + geo.length
 
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance, old_point=current_pt)
+                    self.gcode += self.create_gcode_single_pass(geo, extracut, extracut_length, tolerance,
+                                                                old_point=current_pt)
 
                 # --------- Multi-pass ---------
                 else:
@@ -3227,7 +3229,7 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
+                    self.gcode += self.create_gcode_multi_pass(geo, extracut, extracut_length, tolerance,
                                                                postproc=p, old_point=current_pt)
 
                 # calculate the total distance
@@ -3270,7 +3272,7 @@ class CNCjob(Geometry):
             spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
             multidepth=False, depthpercut=None,
             toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0",
-            extracut=False, startz=None, endz=2.0,
+            extracut=False, extracut_length=0.1, startz=None, endz=2.0,
             pp_geometry_name=None, tool_no=1):
         """
         Second algorithm to generate from Geometry.
@@ -3288,6 +3290,7 @@ class CNCjob(Geometry):
         :param depthpercut: Maximum depth in each pass.
         :param extracut: Adds (or not) an extra cut at the end of each path
             overlapping the first point in path to ensure complete copper removal
+        :param extracut_length: The extra cut length
         :return: None
         """
 
@@ -3559,7 +3562,8 @@ class CNCjob(Geometry):
                 if not multidepth:
                     # calculate the cut distance
                     total_cut += geo.length
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance, old_point=current_pt)
+                    self.gcode += self.create_gcode_single_pass(geo, extracut, extracut_length, tolerance,
+                                                                old_point=current_pt)
 
                 # --------- Multi-pass ---------
                 else:
@@ -3573,7 +3577,7 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
+                    self.gcode += self.create_gcode_multi_pass(geo, extracut, extracut_length, tolerance,
                                                                postproc=p, old_point=current_pt)
 
                 # calculate the travel distance
@@ -3798,7 +3802,7 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.lift_code)
         return gcode
 
-    def create_gcode_single_pass(self, geometry, extracut, tolerance, old_point=(0, 0)):
+    def create_gcode_single_pass(self, geometry, extracut, extracut_length, tolerance, old_point=(0, 0)):
         # G-code. Note: self.linear2gcode() and self.point2gcode() will lower and raise the tool every time.
         gcode_single_pass = ''
 
@@ -3807,7 +3811,8 @@ class CNCjob(Geometry):
                 gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, old_point=old_point)
             else:
                 if geometry.is_ring:
-                    gcode_single_pass = self.linear2gcode_extra(geometry, tolerance=tolerance, old_point=old_point)
+                    gcode_single_pass = self.linear2gcode_extra(geometry, extracut_length, tolerance=tolerance,
+                                                                old_point=old_point)
                 else:
                     gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, old_point=old_point)
         elif type(geometry) == Point:
@@ -3818,7 +3823,7 @@ class CNCjob(Geometry):
 
         return gcode_single_pass
 
-    def create_gcode_multi_pass(self, geometry, extracut, tolerance, postproc, old_point=(0, 0)):
+    def create_gcode_multi_pass(self, geometry, extracut, extracut_length, tolerance, postproc, old_point=(0, 0)):
 
         gcode_multi_pass = ''
 
@@ -3851,8 +3856,8 @@ class CNCjob(Geometry):
                                                           old_point=old_point)
                 else:
                     if geometry.is_ring:
-                        gcode_multi_pass += self.linear2gcode_extra(geometry, tolerance=tolerance, z_cut=depth,
-                                                                    up=False, old_point=old_point)
+                        gcode_multi_pass += self.linear2gcode_extra(geometry, extracut_length, tolerance=tolerance,
+                                                                    z_cut=depth, up=False, old_point=old_point)
                     else:
                         gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False,
                                                               old_point=old_point)
@@ -4513,13 +4518,14 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # Stop cutting
         return gcode
 
-    def linear2gcode_extra(self, linear, tolerance=0, down=True, up=True,
+    def linear2gcode_extra(self, linear, extracut_length, tolerance=0, down=True, up=True,
                      z_cut=None, z_move=None, zdownrate=None,
                      feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
         Generates G-code to cut along the linear feature.
 
         :param linear: The path to cut along.
+        :param extracut_length: how much to cut extra over the first point at the end of the path
         :type: Shapely.LinearRing or Shapely.Linear String
         :param tolerance: All points in the simplified object will be within the
             tolerance distance of the original geometry.
@@ -4613,19 +4619,36 @@ class CNCjob(Geometry):
         # this line is added to create an extra cut over the first point in patch
         # to make sure that we remove the copper leftovers
         # Linear motion to the 1st point in the cut path
-        if self.coordinates_type == "G90":
-            # For Absolute coordinates type G90
-            last_x = path[1][0]
-            last_y = path[1][1]
+        # if self.coordinates_type == "G90":
+        #     # For Absolute coordinates type G90
+        #     last_x = path[1][0]
+        #     last_y = path[1][1]
+        # else:
+        #     # For Incremental coordinates type G91
+        #     last_x = path[1][0] - first_x
+        #     last_y = path[1][1] - first_y
+        # gcode += self.doformat(p.linear_code, x=last_x, y=last_y)
+
+        # the first point for extracut is always mandatory if the extracut is enabled. But if the length of distance
+        # between point 0 and point 1 is more than the distance we set for the extra cut then make an interpolation
+        # along the path and find the point at the distance extracut_length
+
+        if abs(distance(path[1], path[0])) > extracut_length:
+            i_point = LineString([path[0], path[1]]).interpolate(extracut_length)
+            gcode += self.doformat(p.linear_code, x=i_point.x, y=i_point.y)
         else:
-            # For Incremental coordinates type G91
-            last_x = path[1][0] - first_x
-            last_y = path[1][1] - first_y
-        gcode += self.doformat(p.linear_code, x=last_x, y=last_y)
+            last_pt = path[0]
+            for pt in path[1:]:
+                extracut_distance = abs(distance(pt, last_pt))
+                if extracut_distance <= extracut_length:
+                    gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+                    last_pt = pt
+                else:
+                    break
 
         # Up to travelling height.
         if up:
-            gcode += self.doformat(p.lift_code, x=last_x, y=last_y, z_move=z_move)  # Stop cutting
+            gcode += self.doformat(p.lift_code, x=pt[0], y=pt[1], z_move=z_move)  # Stop cutting
 
         return gcode
 

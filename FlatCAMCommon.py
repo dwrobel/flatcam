@@ -505,7 +505,7 @@ class ToolsDB(QtWidgets.QWidget):
         self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         table_hlay.addWidget(self.table_widget)
 
-        self.table_widget.setColumnCount(26)
+        self.table_widget.setColumnCount(27)
         # self.table_widget.setColumnWidth(0, 20)
         self.table_widget.setHorizontalHeaderLabels(
             [
@@ -530,6 +530,7 @@ class ToolsDB(QtWidgets.QWidget):
                 _("Dwelltime"),
                 _("Preprocessor"),
                 _("ExtraCut"),
+                _("E-Cut Length"),
                 _("Toolchange"),
                 _("Toolchange XY"),
                 _("Toolchange Z"),
@@ -620,23 +621,30 @@ class ToolsDB(QtWidgets.QWidget):
               "such as that this point is covered by this extra cut to\n"
               "ensure a complete isolation."))
         self.table_widget.horizontalHeaderItem(21).setToolTip(
+            _("Extra Cut length.\n"
+              "If checked, after a isolation is finished an extra cut\n"
+              "will be added where the start and end of isolation meet\n"
+              "such as that this point is covered by this extra cut to\n"
+              "ensure a complete isolation. This is the length of\n"
+              "the extra cut."))
+        self.table_widget.horizontalHeaderItem(22).setToolTip(
             _("Toolchange.\n"
               "It will create a toolchange event.\n"
               "The kind of toolchange is determined by\n"
               "the preprocessor file."))
-        self.table_widget.horizontalHeaderItem(22).setToolTip(
+        self.table_widget.horizontalHeaderItem(23).setToolTip(
             _("Toolchange XY.\n"
               "A set of coordinates in the format (x, y).\n"
               "Will determine the cartesian position of the point\n"
               "where the tool change event take place."))
-        self.table_widget.horizontalHeaderItem(23).setToolTip(
+        self.table_widget.horizontalHeaderItem(24).setToolTip(
             _("Toolchange Z.\n"
               "The position on Z plane where the tool change event take place."))
-        self.table_widget.horizontalHeaderItem(24).setToolTip(
+        self.table_widget.horizontalHeaderItem(25).setToolTip(
             _("Start Z.\n"
               "If it's left empty it will not be used.\n"
               "A position on Z plane to move immediately after job start."))
-        self.table_widget.horizontalHeaderItem(25).setToolTip(
+        self.table_widget.horizontalHeaderItem(26).setToolTip(
             _("End Z.\n"
               "A position on Z plane to move immediately after job stop."))
 
@@ -913,12 +921,18 @@ class ToolsDB(QtWidgets.QWidget):
         ecut_item.set_value(data['extracut'])
         widget.setCellWidget(row, 20, ecut_item)
 
+        ecut_length_item = FCDoubleSpinner()
+        ecut_length_item.set_precision(self.decimals)
+        ecut_length_item.set_range(0.0, 9999.9999)
+        ecut_length_item.set_value(data['extracut_length'])
+        widget.setCellWidget(row, 21, ecut_length_item)
+
         toolchange_item = FCCheckBox()
         toolchange_item.set_value(data['toolchange'])
-        widget.setCellWidget(row, 21, toolchange_item)
+        widget.setCellWidget(row, 22, toolchange_item)
 
         toolchangexy_item = QtWidgets.QTableWidgetItem(str(data['toolchangexy']) if data['toolchangexy'] else '')
-        widget.setItem(row, 22, toolchangexy_item)
+        widget.setItem(row, 23, toolchangexy_item)
 
         toolchangez_item = FCDoubleSpinner()
         toolchangez_item.set_precision(self.decimals)
@@ -929,10 +943,10 @@ class ToolsDB(QtWidgets.QWidget):
             toolchangez_item.set_range(0.0000, 9999.9999)
 
         toolchangez_item.set_value(float(data['toolchangez']))
-        widget.setCellWidget(row, 23, toolchangez_item)
+        widget.setCellWidget(row, 24, toolchangez_item)
 
         startz_item = QtWidgets.QTableWidgetItem(str(data['startz']) if data['startz'] else '')
-        widget.setItem(row, 24, startz_item)
+        widget.setItem(row, 25, startz_item)
 
         endz_item = FCDoubleSpinner()
         endz_item.set_precision(self.decimals)
@@ -943,7 +957,7 @@ class ToolsDB(QtWidgets.QWidget):
             endz_item.set_range(0.0000, 9999.9999)
 
         endz_item.set_value(float(data['endz']))
-        widget.setCellWidget(row, 25, endz_item)
+        widget.setCellWidget(row, 26, endz_item)
 
     def on_tool_add(self):
         """
@@ -970,6 +984,7 @@ class ToolsDB(QtWidgets.QWidget):
             "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
             "ppname_g": self.app.defaults["geometry_ppname_g"],
             "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length": self.app.defaults["geometry_extracut_length"],
             "toolchange": self.app.defaults["geometry_toolchange"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
@@ -1267,6 +1282,8 @@ class ToolsDB(QtWidgets.QWidget):
                         default_data['ppname_g'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == 'ExtraCut':
                         default_data['extracut'] = self.table_widget.cellWidget(row, col).get_value()
+                    elif column_header_text == "E-Cut Length":
+                        default_data['extracut_length'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == 'Toolchange':
                         default_data['toolchange'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == 'Toolchange XY':

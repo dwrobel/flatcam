@@ -3440,14 +3440,27 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.cncfeedrate_rapid_entry, 4, 1)
 
         # End move extra cut
-        self.extracut_cb = FCCheckBox(label='%s' % _('Re-cut 1st pt.'))
+        self.extracut_cb = FCCheckBox('%s' % _('Re-cut'))
         self.extracut_cb.setToolTip(
             _("In order to remove possible\n"
               "copper leftovers where first cut\n"
               "meet with last cut, we generate an\n"
               "extended cut over the first cut section.")
         )
+
+        self.e_cut_entry = FCDoubleSpinner()
+        self.e_cut_entry.set_range(0, 99999)
+        self.e_cut_entry.set_precision(self.decimals)
+        self.e_cut_entry.setSingleStep(0.1)
+        self.e_cut_entry.setWrapping(True)
+        self.e_cut_entry.setToolTip(
+            _("In order to remove possible\n"
+              "copper leftovers where first cut\n"
+              "meet with last cut, we generate an\n"
+              "extended cut over the first cut section.")
+        )
         grid1.addWidget(self.extracut_cb, 5, 0)
+        grid1.addWidget(self.e_cut_entry, 5, 1)
 
         # Probe depth
         self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))

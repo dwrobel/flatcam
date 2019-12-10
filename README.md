@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 10.12.2019
 
 - small changes in the Geometry UI
+- now extracut option in the Geometry Object will recut as many points as many they are within the specified re-cut length
 
 9.12.2019 
 

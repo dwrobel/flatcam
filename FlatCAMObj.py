@@ -1242,6 +1242,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         "ppname_g": self.app.defaults['geometry_ppname_g'],
                         "depthperpass": self.app.defaults['geometry_depthperpass'],
                         "extracut": self.app.defaults['geometry_extracut'],
+                        "extracut_length": self.app.defaults['geometry_extracut_length'],
                         "toolchange": self.app.defaults['geometry_toolchange'],
                         "toolchangez": self.app.defaults['geometry_toolchangez'],
                         "endz": self.app.defaults['geometry_endz'],
@@ -3445,6 +3446,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "multidepth": False,
             "depthperpass": 0.002,
             "extracut": False,
+            "extracut_length": 0.1,
             "endz": 2.0,
             "startz": None,
             "toolchange": False,
@@ -3684,6 +3686,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "feedrate_probe": self.ui.feedrate_probe_entry,
             "depthperpass": self.ui.maxdepth_entry,
             "extracut": self.ui.extracut_cb,
+            "extracut_length": self.ui.e_cut_entry,
             "toolchange": self.ui.toolchangeg_cb,
             "toolchangez": self.ui.toolchangez_entry,
             "endz": self.ui.gendz_entry,
@@ -3722,6 +3725,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "ppname_g": None,
             "depthperpass": None,
             "extracut": None,
+            "extracut_length": None,
             "toolchange": None,
             "toolchangez": None,
             "endz": None,
@@ -3814,12 +3818,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.fr_rapidlabel.hide()
             self.ui.cncfeedrate_rapid_entry.hide()
             self.ui.extracut_cb.hide()
+            self.ui.e_cut_entry.hide()
             self.ui.pdepth_label.hide()
             self.ui.pdepth_entry.hide()
             self.ui.feedrate_probe_label.hide()
             self.ui.feedrate_probe_entry.hide()
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
+
+        self.ui.e_cut_entry.setDisabled(True)
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
@@ -4975,6 +4982,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 feedrate_rapid = tools_dict[tooluid_key]['data']["feedrate_rapid"]
                 multidepth = tools_dict[tooluid_key]['data']["multidepth"]
                 extracut = tools_dict[tooluid_key]['data']["extracut"]
+                extracut_length = tools_dict[tooluid_key]['data']["extracut_length"]
                 depthpercut = tools_dict[tooluid_key]['data']["depthperpass"]
                 toolchange = tools_dict[tooluid_key]['data']["toolchange"]
                 toolchangez = tools_dict[tooluid_key]['data']["toolchangez"]
@@ -5006,7 +5014,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, startz=startz, endz=endz,
+                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
@@ -5127,6 +5135,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 feedrate_rapid = tools_dict[tooluid_key]['data']["feedrate_rapid"]
                 multidepth = tools_dict[tooluid_key]['data']["multidepth"]
                 extracut = tools_dict[tooluid_key]['data']["extracut"]
+                extracut_length = tools_dict[tooluid_key]['data']["extracut_length"]
                 depthpercut = tools_dict[tooluid_key]['data']["depthperpass"]
                 toolchange = tools_dict[tooluid_key]['data']["toolchange"]
                 toolchangez = tools_dict[tooluid_key]['data']["toolchangez"]
@@ -5158,7 +5167,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, startz=startz, endz=endz,
+                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
@@ -5226,7 +5235,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             spindlespeed=None, dwell=None, dwelltime=None,
             multidepth=None, depthperpass=None,
             toolchange=None, toolchangez=None, toolchangexy=None,
-            extracut=None, startz=None, endz=None,
+            extracut=None, extracut_length=None, startz=None, endz=None,
             pp=None,
             segx=None, segy=None,
             use_thread=True,
@@ -5266,6 +5275,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
         extracut = extracut if extracut is not None else float(self.options["extracut"])
+        extracut_length = extracut_length if extracut_length is not None else float(self.options["extracut_length"])
+
         startz = startz if startz is not None else self.options["startz"]
         endz = endz if endz is not None else float(self.options["endz"])
 
@@ -5320,7 +5331,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
                 multidepth=multidepth, depthpercut=depthperpass,
                 toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                extracut=extracut, startz=startz, endz=endz,
+                extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
                 pp_geometry_name=ppname_g
             )
 
