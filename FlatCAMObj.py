@@ -6039,15 +6039,22 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui_disconnect()
 
         FlatCAMObj.build_ui(self)
-
-        # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
-        if self.cnc_tools:
-            self.ui.cnc_tools_table.show()
-        else:
-            self.ui.cnc_tools_table.hide()
-
         self.units = self.app.defaults['units'].upper()
 
+        # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
+        self.ui.cnc_tools_table.hide()
+        if self.cnc_tools:
+            self.ui.cnc_tools_table.show()
+            self.build_cnc_tools_table()
+
+        self.ui.exc_cnc_tools_table.hide()
+        if self.exc_cnc_tools:
+            self.ui.exc_cnc_tools_table.show()
+            self.build_excellon_cnc_tools()
+        #
+        self.ui_connect()
+
+    def build_cnc_tools_table(self):
         offset = 0
         tool_idx = 0
 
@@ -6146,7 +6153,86 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui.cnc_tools_table.setMinimumHeight(self.ui.cnc_tools_table.getHeight())
         self.ui.cnc_tools_table.setMaximumHeight(self.ui.cnc_tools_table.getHeight())
 
-        self.ui_connect()
+    def build_excellon_cnc_tools(self):
+        tool_idx = 0
+
+        n = len(self.exc_cnc_tools)
+        self.ui.exc_cnc_tools_table.setRowCount(n)
+
+        for tooldia_key, dia_value in self.exc_cnc_tools.items():
+
+            tool_idx += 1
+            row_no = tool_idx - 1
+
+            id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
+            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
+            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
+
+            id.setFlags(QtCore.Qt.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            nr_drills_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            nr_slots_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            # hack so the checkbox stay centered in the table cell
+            # used this:
+            # https://stackoverflow.com/questions/32458111/pyqt-allign-checkbox-and-put-it-in-every-row
+            # plot_item = QtWidgets.QWidget()
+            # checkbox = FCCheckBox()
+            # checkbox.setCheckState(QtCore.Qt.Checked)
+            # qhboxlayout = QtWidgets.QHBoxLayout(plot_item)
+            # qhboxlayout.addWidget(checkbox)
+            # qhboxlayout.setAlignment(QtCore.Qt.AlignCenter)
+            # qhboxlayout.setContentsMargins(0, 0, 0, 0)
+
+            plot_item = FCCheckBox()
+            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_value['tool']))
+            if self.ui.plot_cb.isChecked():
+                plot_item.setChecked(True)
+
+            # TODO until the feature of individual plot for an Excellon tool is implemented
+            plot_item.setDisabled(True)
+
+            self.ui.exc_cnc_tools_table.setItem(row_no, 0, id)  # Tool name/id
+            self.ui.exc_cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
+            self.ui.exc_cnc_tools_table.setItem(row_no, 2, nr_drills_item)  # Nr of drills
+            self.ui.exc_cnc_tools_table.setItem(row_no, 3, nr_slots_item)  # Nr of slots
+
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
+            self.ui.exc_cnc_tools_table.setItem(row_no, 4, tool_uid_item)  # Tool unique ID)
+            self.ui.exc_cnc_tools_table.setCellWidget(row_no, 5, plot_item)
+
+        for row in range(tool_idx):
+            self.ui.exc_cnc_tools_table.item(row, 0).setFlags(
+                self.ui.exc_cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemIsSelectable)
+
+        self.ui.exc_cnc_tools_table.resizeColumnsToContents()
+        self.ui.exc_cnc_tools_table.resizeRowsToContents()
+
+        vertical_header = self.ui.exc_cnc_tools_table.verticalHeader()
+        vertical_header.hide()
+        self.ui.exc_cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        horizontal_header = self.ui.exc_cnc_tools_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+
+        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
+
+        # horizontal_header.setStretchLastSection(True)
+        self.ui.exc_cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.ui.exc_cnc_tools_table.setColumnWidth(0, 20)
+        self.ui.exc_cnc_tools_table.setColumnWidth(5, 17)
+
+        self.ui.exc_cnc_tools_table.setMinimumHeight(self.ui.exc_cnc_tools_table.getHeight())
+        self.ui.exc_cnc_tools_table.setMaximumHeight(self.ui.exc_cnc_tools_table.getHeight())
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -6733,10 +6819,20 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.plot2(dia_plot, obj=self, visible=visible, kind=kind)
             else:
                 # multiple tools usage
-                for tooluid_key in self.cnc_tools:
-                    tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
-                    gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
-                    self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                if self.cnc_tools:
+                    for tooluid_key in self.cnc_tools:
+                        tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
+                        gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
+                        self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+
+                # TODO: until the gcode parsed will be stored on each Excellon tool this will not get executed
+                if self.exc_cnc_tools:
+                    for tooldia_key in self.exc_cnc_tools:
+                        tooldia = float('%.*f' % (self.decimals, float(tooldia_key)))
+                        # gcode_parsed = self.cnc_tools[tooldia_key]['gcode_parsed']
+                        gcode_parsed = self.gcode_parsed
+                        self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)

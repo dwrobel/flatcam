@@ -1030,6 +1030,12 @@ class ExcellonObjectUI(ObjectUI):
         self.generate_cnc_button.setToolTip(
             _("Generate the CNC Job.")
         )
+        self.generate_cnc_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         grid2.addWidget(self.generate_cnc_button, 2, 0, 1, 3)
 
         # ### Milling Holes Drills ####
@@ -1055,6 +1061,12 @@ class ExcellonObjectUI(ObjectUI):
             _("Create the Geometry Object\n"
               "for milling DRILLS toolpaths.")
         )
+        self.generate_milling_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
 
         grid2.addWidget(self.tdlabel, 4, 0)
         grid2.addWidget(self.tooldia_entry, 4, 1)
@@ -1076,6 +1088,12 @@ class ExcellonObjectUI(ObjectUI):
             _("Create the Geometry Object\n"
               "for milling SLOTS toolpaths.")
         )
+        self.generate_milling_slots_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
 
         grid2.addWidget(self.stdlabel, 5, 0)
         grid2.addWidget(self.slot_tooldia_entry, 5, 1)
@@ -1827,11 +1845,18 @@ class CNCObjectUI(ObjectUI):
 
         self.cnc_tools_table.setColumnCount(7)
         self.cnc_tools_table.setColumnWidth(0, 20)
-        self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Offset'), _('Type'), _('TT'), '',
-                                                        _('P')])
+        self.cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Offset'), _('Type'), _('TT'), '', _('P')])
         self.cnc_tools_table.setColumnHidden(5, True)
         # stylesheet = "::section{Background-color:rgb(239,239,245)}"
         # self.cnc_tools_table.horizontalHeader().setStyleSheet(stylesheet)
+
+        self.exc_cnc_tools_table = FCTable()
+        self.custom_box.addWidget(self.exc_cnc_tools_table)
+
+        self.exc_cnc_tools_table.setColumnCount(6)
+        self.exc_cnc_tools_table.setColumnWidth(0, 20)
+        self.exc_cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Drills'), _('Slots'), '', _('P')])
+        self.exc_cnc_tools_table.setColumnHidden(4, True)
 
         self.tooldia_entry = FCDoubleSpinner()
         self.tooldia_entry.set_range(0, 9999.9999)

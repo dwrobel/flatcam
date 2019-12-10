@@ -14,7 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - small changes in the Geometry UI
 - now extracut option in the Geometry Object will recut as many points as many they are within the specified re-cut length
 - if extracut_length is zero then the extracut will cut up until the first point in path no matter what the distance is
-- in Gerber isolation when selection mode is checked now area selection works too
+- in Gerber isolation, when selection mode is checked, now area selection works too
+- in CNCJob UI, now the CNCJob objects made out of Excellon objects will display their CNC tools (drill bits)
 
 9.12.2019 
 

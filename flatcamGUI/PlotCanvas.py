@@ -303,7 +303,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             p2 = np.array(curr_pos)[:2]
             self.view.camera.pan(p2 - p1)
 
-        if self.fcapp.grid_status() == True:
+        if self.fcapp.grid_status():
             pos_canvas = self.translate_coords(curr_pos)
             pos = self.fcapp.geo_editor.snap(pos_canvas[0], pos_canvas[1])
 

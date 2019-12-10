@@ -848,6 +848,16 @@ class ToolsDB(QtWidgets.QWidget):
         multidepth_item.set_value(data['multidepth'])
         widget.setCellWidget(row, 8, multidepth_item)
 
+        # to make the checkbox centered but it can no longer have it's value accessed - needs a fix using findchild()
+        # multidepth_item = QtWidgets.QWidget()
+        # cb = FCCheckBox()
+        # cb.set_value(data['multidepth'])
+        # qhboxlayout = QtWidgets.QHBoxLayout(multidepth_item)
+        # qhboxlayout.addWidget(cb)
+        # qhboxlayout.setAlignment(QtCore.Qt.AlignCenter)
+        # qhboxlayout.setContentsMargins(0, 0, 0, 0)
+        # widget.setCellWidget(row, 8, multidepth_item)
+
         depth_per_pass_item = FCDoubleSpinner()
         depth_per_pass_item.set_precision(self.decimals)
         depth_per_pass_item.setSingleStep(0.1)
