@@ -910,7 +910,7 @@ class ToolsDB(QtWidgets.QWidget):
 
         spindlespeed_item = FCSpinner()
         spindlespeed_item.set_range(0, 1000000)
-        spindlespeed_item.set_range(int(data['spindlespeed']))
+        spindlespeed_item.set_value(int(data['spindlespeed']))
         spindlespeed_item.setSingleStep(100)
         widget.setCellWidget(row, 16, spindlespeed_item)
 
