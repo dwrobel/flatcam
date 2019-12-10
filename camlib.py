@@ -4602,8 +4602,7 @@ class CNCjob(Geometry):
                 # For Incremental coordinates type G91
                 # next_x = pt[0] - prev_x
                 # next_y = pt[1] - prev_y
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _('G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
                 next_x = pt[0]
                 next_y = pt[1]
 

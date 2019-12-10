@@ -7385,8 +7385,7 @@ class App(QtCore.QObject):
         self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        self.inform.emit('[success] %s' %
-                         _("Done."))
+        self.inform.emit('[success] %s' % _("Done."))
         return location
 
     def on_copy_object(self):

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.12.2019
+
+- small changes in the Geometry UI
+
 9.12.2019 
 
 - updated the border for fit view on OpenGL graphic mode
