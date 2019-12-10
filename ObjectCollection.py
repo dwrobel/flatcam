@@ -219,6 +219,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         "document": "share/notes16_1.png"
     }
 
+    # will emit the name of the object that was just selected
+    item_selected = QtCore.pyqtSignal(str)
+
     root_item = None
     # app = None
 
@@ -495,7 +498,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 name += "_1"
         obj.options["name"] = name
 
-        obj.set_ui(obj.ui_type())
+        obj.set_ui(obj.ui_type(decimals=self.app.decimals))
 
         # Required before appending (Qt MVC)
         group = self.group_items[obj.kind]
@@ -779,6 +782,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         try:
             obj = current.indexes()[0].internalPointer().obj
+            self.item_selected.emit(obj.options['name'])
 
             if obj.kind == 'gerber':
                 self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
@@ -799,6 +803,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
                     color='darkCyan', name=str(obj.options['name'])))
         except IndexError:
+            self.item_selected.emit('none')
             # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')
             try:
@@ -826,8 +831,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             try:
                 a_idx.build_ui()
             except Exception as e:
-                self.app.inform.emit('[ERROR] %s: %s' %
-                                     (_("Cause of error"), str(e)))
+                self.app.inform.emit('[ERROR] %s: %s' % (_("Cause of error"), str(e)))
                 raise
 
     def get_list(self):

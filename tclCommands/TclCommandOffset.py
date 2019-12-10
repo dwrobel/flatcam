@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
 
 
 class TclCommandOffset(TclCommand):
@@ -48,6 +49,6 @@ class TclCommandOffset(TclCommand):
         """
 
         name = args['name']
-        x, y = args['x'], args['y']
+        x, y = float(args['x']), float(args['y'])
 
         self.app.collection.get_by_name(name).offset((x, y))

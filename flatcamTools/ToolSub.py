@@ -36,6 +36,7 @@ class ToolSub(FlatCAMTool):
 
     def __init__(self, app):
         self.app = app
+        self.decimals = self.app.decimals
 
         FlatCAMTool.__init__(self, app)
 
@@ -100,6 +101,12 @@ class ToolSub(FlatCAMTool):
               "Can be used to remove the overlapping silkscreen\n"
               "over the soldermask.")
         )
+        self.intersect_btn.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.tools_box.addWidget(self.intersect_btn)
         self.tools_box.addWidget(e_lab_1)
 
@@ -148,10 +155,29 @@ class ToolSub(FlatCAMTool):
             _("Will remove the area occupied by the subtractor\n"
               "Geometry from the Target Geometry.")
         )
+        self.intersect_geo_btn.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.tools_box.addWidget(self.intersect_geo_btn)
         self.tools_box.addWidget(e_lab_1)
 
         self.tools_box.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.tools_box.addWidget(self.reset_button)
 
         # QTimer for periodic check
         self.check_thread = QtCore.QTimer()
@@ -198,6 +224,7 @@ class ToolSub(FlatCAMTool):
             pass
         self.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
         self.job_finished.connect(self.on_job_finished)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+W', **kwargs)
@@ -248,23 +275,22 @@ class ToolSub(FlatCAMTool):
 
         self.target_grb_obj_name = self.target_gerber_combo.currentText()
         if self.target_grb_obj_name == '':
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No Target object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Target object loaded."))
             return
+
+        self.app.inform.emit('%s' % _("Loading geometry from Gerber objects."))
 
         # Get target object.
         try:
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Could not retrieve object"), self.obj_name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
         self.sub_grb_obj_name = self.sub_gerber_combo.currentText()
         if self.sub_grb_obj_name == '':
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("No Subtractor object loaded."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No Subtractor object loaded."))
             return
 
         # Get substractor object.
@@ -272,20 +298,19 @@ class ToolSub(FlatCAMTool):
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except Exception as e:
             log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Could not retrieve object"), self.obj_name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
             return "Could not retrieve object: %s" % self.sub_grb_obj_name
 
         # crate the new_apertures dict structure
         for apid in self.target_grb_obj.apertures:
-            self.new_apertures[apid] = {}
+            self.new_apertures[apid] = dict()
             self.new_apertures[apid]['type'] = 'C'
             self.new_apertures[apid]['size'] = self.target_grb_obj.apertures[apid]['size']
-            self.new_apertures[apid]['geometry'] = []
+            self.new_apertures[apid]['geometry'] = list()
 
-        geo_solid_union_list = []
-        geo_follow_union_list = []
-        geo_clear_union_list = []
+        geo_solid_union_list = list()
+        geo_follow_union_list = list()
+        geo_clear_union_list = list()
 
         for apid1 in self.sub_grb_obj.apertures:
             if 'geometry' in self.sub_grb_obj.apertures[apid1]:
@@ -297,6 +322,7 @@ class ToolSub(FlatCAMTool):
                     if 'clear' in elem:
                         geo_clear_union_list.append(elem['clear'])
 
+        self.app.inform.emit('%s' % _("Processing geometry from Subtractor Gerber object."))
         self.sub_solid_union = cascaded_union(geo_solid_union_list)
         self.sub_follow_union = cascaded_union(geo_follow_union_list)
         self.sub_clear_union = cascaded_union(geo_clear_union_list)
@@ -310,15 +336,15 @@ class ToolSub(FlatCAMTool):
 
         for apid in self.target_grb_obj.apertures:
             geo = self.target_grb_obj.apertures[apid]['geometry']
-            self.app.worker_task.emit({'fcn': self.aperture_intersection,
-                                       'params': [apid, geo]})
+            self.app.worker_task.emit({'fcn': self.aperture_intersection, 'params': [apid, geo]})
 
     def aperture_intersection(self, apid, geo):
-        new_geometry = []
+        new_geometry = list()
 
         log.debug("Working on promise: %s" % str(apid))
 
-        with self.app.proc_container.new('%s: %s...' % (_("Parsing geometry for aperture", str(apid)))):
+        with self.app.proc_container.new('%s: %s...' % (_("Parsing geometry for aperture"), str(apid))):
+
             for geo_el in geo:
                 new_el = dict()
 
@@ -378,6 +404,8 @@ class ToolSub(FlatCAMTool):
 
                 new_geometry.append(deepcopy(new_el))
 
+        self.app.inform.emit('%s: %s...' % (_("Finished parsing geometry for aperture"), str(apid)))
+
         if new_geometry:
             while not self.new_apertures[apid]['geometry']:
                 self.new_apertures[apid]['geometry'] = deepcopy(new_geometry)
@@ -412,6 +440,7 @@ class ToolSub(FlatCAMTool):
                 poly_buff = work_poly_buff.buffer(0.0000001)
             except ValueError:
                 pass
+
             try:
                 poly_buff = poly_buff.buffer(-0.0000001)
             except ValueError:

@@ -36,10 +36,11 @@ class Paste_1(FlatCAMPostProc_Tools):
         gcode += '(Z_Travel: ' + str(p['z_travel']) + units + ')\n'
         gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
 
-        gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
+        gcode += '(X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
+                                                       p.decimals, coords_xy[1]) + units + ')\n'
 
         if 'Paste' in p.pp_solderpaste_name:
-            gcode += '(Postprocessor SolderPaste Dispensing Geometry: ' + str(p.pp_solderpaste_name) + ')\n' + '\n'
+            gcode += '(Preprocessor SolderPaste Dispensing Geometry: ' + str(p.pp_solderpaste_name) + ')\n' + '\n'
 
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
@@ -74,11 +75,11 @@ class Paste_1(FlatCAMPostProc_Tools):
         if toolchangexy is not None:
             x_toolchange = toolchangexy[0]
             y_toolchange = toolchangexy[1]
-
-        if p.units.upper() == 'MM':
-            toolC_formatted = format(float(p['toolC']), '.2f')
         else:
-            toolC_formatted = format(float(p['toolC']), '.4f')
+            x_toolchange = 0.0
+            y_toolchange = 0.0
+
+        toolC_formatted = '%.*f' % (p.decimals, float(p['toolC']))
 
         if toolchangexy is not None:
             gcode = """
@@ -88,6 +89,7 @@ T{tool}
 M6    
 (MSG, Change to Tool with Nozzle Dia = {toolC})
 M0
+G00 Z{z_toolchange}
 """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
            y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
            z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
@@ -101,6 +103,7 @@ T{tool}
 M6    
 (MSG, Change to Tool with Nozzle Dia = {toolC})
 M0
+G00 Z{z_toolchange}
 """.format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
            tool=int(int(p.tool)),
            toolC=toolC_formatted)

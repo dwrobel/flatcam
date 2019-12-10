@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+
+import collections
 
 
 class TclCommandSubtractPoly(TclCommandSignaled):
@@ -50,11 +51,13 @@ class TclCommandSubtractPoly(TclCommandSignaled):
         if len(unnamed_args) % 2 != 0:
             return "Incomplete coordinate."
 
-        points = [[float(unnamed_args[2 * i]), float(unnamed_args[2 * i + 1])] for i in range(len(unnamed_args) / 2)]
+        points = [
+            [float(unnamed_args[2 * i]), float(unnamed_args[2 * i + 1])] for i in range(int(len(unnamed_args) / 2))
+        ]
 
         try:
             obj = self.app.collection.get_by_name(str(obj_name))
-        except:
+        except Exception:
             return "Could not retrieve object: %s" % obj_name
         if obj is None:
             return "Object not found: %s" % obj_name

@@ -44,6 +44,7 @@ class ToolPDF(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
         self.app = app
+        self.decimals = self.app.decimals
         self.step_per_circles = self.app.defaults["gerber_circle_steps"]
 
         self.stream_re = re.compile(b'.*?FlateDecode.*?stream(.*?)endstream', re.S)
@@ -134,7 +135,7 @@ class ToolPDF(FlatCAMTool):
         self.on_open_pdf_click()
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+Q', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='CTRL+Q', **kwargs)
 
     def set_tool_ui(self):
         pass
@@ -180,7 +181,7 @@ class ToolPDF(FlatCAMTool):
         self.pdf_decompressed[short_name] = ''
 
         # the UNITS in PDF files are points and here we set the factor to convert them to real units (either MM or INCH)
-        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if self.app.defaults['units'].upper() == 'MM':
             # 1 inch = 72 points => 1 point = 1 / 72 = 0.01388888888 inch = 0.01388888888 inch * 25.4 = 0.35277777778 mm
             self.point_to_unit_factor = 25.4 / 72
         else:

@@ -25,7 +25,10 @@
 #   scipy.sparse.sparsetools._csr.pyd, scipy.sparse.sparsetools._csc.pyd,
 #   scipy.sparse.sparsetools._coo.pyd
 
-import os, site, sys, platform
+import os
+import site
+import sys
+import platform
 from cx_Freeze import setup, Executable
 
 # this is done to solve the tkinter not being found
@@ -54,7 +57,7 @@ if platform.architecture()[0] == '64bit':
     include_files.append((os.path.join(site_dir, "ortools"), "ortools"))
 
 include_files.append(("locale", "lib/locale"))
-include_files.append(("postprocessors", "lib/postprocessors"))
+include_files.append(("preprocessors", "lib/preprocessors"))
 include_files.append(("share", "lib/share"))
 include_files.append(("flatcamGUI/VisPyData", "lib/vispy"))
 include_files.append(("config", "lib/config"))
@@ -71,11 +74,10 @@ if sys.platform == "win32":
 if platform.architecture()[0] == '64bit':
     buildOptions = dict(
         include_files=include_files,
-        excludes=['scipy','pytz'],
+        excludes=['scipy', 'pytz'],
         # packages=['OpenGL','numpy','vispy','ortools','google']
         # packages=['numpy','google', 'rasterio'] # works for Python 3.7
-        packages = ['opengl', 'numpy', 'google', 'rasterio'] # works for Python 3.6.5 and Python 3.7.1
-
+        packages=['opengl', 'numpy', 'google', 'rasterio'],   # works for Python 3.6.5 and Python 3.7.1
     )
 else:
     buildOptions = dict(
@@ -83,13 +85,26 @@ else:
         excludes=['scipy', 'pytz'],
         # packages=['OpenGL','numpy','vispy','ortools','google']
         # packages=['numpy', 'rasterio']  # works for Python 3.7
-        packages = ['opengl', 'numpy', 'rasterio'] # works for Python 3.6.5 and Python 3.7.1
-
+        packages=['opengl', 'numpy', 'rasterio'],   # works for Python 3.6.5 and Python 3.7.1
     )
+
+if sys.platform == "win32":
+    buildOptions["include_msvcr"] = True
 
 print("INCLUDE_FILES", include_files)
 
-# execfile('clean.py')
+
+def getTargetName():
+    my_OS = platform.system()
+    if my_OS == 'Linux':
+        return "FlatCAM"
+    elif my_OS == 'Windows':
+        return "FlatCAM.exe"
+    else:
+        return "FlatCAM.dmg"
+
+
+exe = Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base, targetName=getTargetName())
 
 setup(
     name="FlatCAM",
@@ -97,5 +112,5 @@ setup(
     version="8.9",
     description="FlatCAM: 2D Computer Aided PCB Manufacturing",
     options=dict(build_exe=buildOptions),
-    executables=[Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base)]
+    executables=[exe]
 )

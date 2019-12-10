@@ -5,8 +5,9 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+
+import collections
 
 
 class TclCommandNewGerber(TclCommandSignaled):
@@ -56,7 +57,7 @@ class TclCommandNewGerber(TclCommandSignaled):
         else:
             name = 'new_grb'
 
-        def initialize(grb_obj, self):
+        def initialize(grb_obj, app_obj):
             grb_obj.multitool = False
             grb_obj.source_file = []
             grb_obj.multigeo = False

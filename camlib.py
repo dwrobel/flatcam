@@ -7,7 +7,7 @@
 # ########################################################## ##
 
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from io import StringIO
 
 import numpy as np
@@ -465,7 +465,8 @@ class Geometry(object):
     def __init__(self, geo_steps_per_circle=None):
         # Units (in or mm)
         self.units = self.app.defaults["units"]
-        
+        self.decimals = self.app.decimals
+
         # Final geometry: MultiPolygon or list (of geometry constructs)
         self.solid_geometry = None
 
@@ -496,10 +497,6 @@ class Geometry(object):
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.temp_shapes = ShapeCollectionLegacy(obj=self, app=self.app, name='camlib.geometry')
-
-        # if geo_steps_per_circle is None:
-        #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
-        # self.geo_steps_per_circle = geo_steps_per_circle
 
     def plot_temp_shapes(self, element, color='red'):
 
@@ -901,7 +898,7 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, iso_type=2, corner=None, follow=None, passes=0):
+    def isolation_geometry(self, offset, geometry=None, iso_type=2, corner=None, follow=None, passes=0):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -920,73 +917,58 @@ class Geometry(object):
             # graceful abort requested by the user
             raise FlatCAMApp.GracefulException
 
-        geo_iso = []
-        if offset == 0:
-            if follow:
-                geo_iso = self.follow_geometry
-            else:
-                geo_iso = self.solid_geometry
+        geo_iso = list()
+
+        if follow:
+            return geometry
+
+        if geometry:
+            working_geo = geometry
         else:
-            if follow:
-                geo_iso = self.follow_geometry
-            else:
-                if isinstance(self.solid_geometry, list):
-                    temp_geo = cascaded_union(self.solid_geometry)
+            working_geo = self.solid_geometry
+
+        try:
+            geo_len = len(working_geo)
+        except TypeError:
+            geo_len = 1
+
+        old_disp_number = 0
+        pol_nr = 0
+        # yet, it can be done by issuing an unary_union in the end, thus getting rid of the overlapping geo
+        try:
+            for pol in working_geo:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+                if offset == 0:
+                    geo_iso.append(pol)
                 else:
-                    temp_geo = self.solid_geometry
+                    corner_type = 1 if corner is None else corner
+                    geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4), join_style=corner_type))
+                pol_nr += 1
+                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                # Remember: do not make a buffer for each element in the solid_geometry because it will cut into
-                # other copper features
-                # if corner is None:
-                #     geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
-                # else:
-                #     geo_iso = temp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                #                               join_style=corner)
+                if  old_disp_number < disp_number <= 100:
+                    self.app.proc_container.update_view_text(' %s %d: %d%%' %
+                                                             (_("Pass"), int(passes + 1), int(disp_number)))
+                    old_disp_number = disp_number
+        except TypeError:
+            # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
+            # MultiPolygon (not an iterable)
+            if offset == 0:
+                geo_iso.append(working_geo)
+            else:
+                corner_type = 1 if corner is None else corner
+                geo_iso.append(working_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                                  join_style=corner_type))
 
-                # variables to display the percentage of work done
-                geo_len = 0
-                try:
-                    for pol in self.solid_geometry:
-                        geo_len += 1
-                except TypeError:
-                    geo_len = 1
-                disp_number = 0
-                old_disp_number = 0
-                pol_nr = 0
-                # yet, it can be done by issuing an unary_union in the end, thus getting rid of the overlapping geo
-                try:
-                    for pol in self.solid_geometry:
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
-                        if corner is None:
-                            geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-                        else:
-                            geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4)),
-                                           join_style=corner)
-                        pol_nr += 1
-                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
-                        if  old_disp_number < disp_number <= 100:
-                            self.app.proc_container.update_view_text(' %s %d: %d%%' %
-                                                                     (_("Pass"), int(passes + 1), int(disp_number)))
-                            old_disp_number = disp_number
-                except TypeError:
-                    # taking care of the case when the self.solid_geometry is just a single Polygon, not a list or a
-                    # MultiPolygon (not an iterable)
-                    if corner is None:
-                        geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-                    else:
-                        geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)),
-                                       join_style=corner)
-                self.app.proc_container.update_view_text(' %s' % _("Buffering"))
-                geo_iso = unary_union(geo_iso)
+        self.app.proc_container.update_view_text(' %s' % _("Buffering"))
+        geo_iso = unary_union(geo_iso)
 
         self.app.proc_container.update_view_text('')
         # end of replaced block
-        if follow:
-            return geo_iso
-        elif iso_type == 2:
+
+        if iso_type == 2:
             return geo_iso
         elif iso_type == 0:
             self.app.proc_container.update_view_text(' %s' % _("Get Exteriors"))
@@ -1018,6 +1000,8 @@ class Geometry(object):
         :return: None
         """
 
+        log.debug("camlib.Geometry.import_svg()")
+
         # Parse into list of shapely objects
         svg_tree = ET.parse(filename)
         svg_root = svg_tree.getroot()
@@ -1026,23 +1010,21 @@ class Geometry(object):
         # h = float(svg_root.get('height'))
         # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
+
         geos = getsvggeo(svg_root, object_type)
         if flip:
             geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
 
         # Add to object
         if self.solid_geometry is None:
-            self.solid_geometry = []
+            self.solid_geometry = list()
 
         if type(self.solid_geometry) is list:
-            # self.solid_geometry.append(cascaded_union(geos))
             if type(geos) is list:
                 self.solid_geometry += geos
             else:
                 self.solid_geometry.append(geos)
         else:  # It's shapely geometry
-            # self.solid_geometry = cascaded_union([self.solid_geometry,
-            #                                       cascaded_union(geos)])
             self.solid_geometry = [self.solid_geometry, geos]
 
         # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
@@ -1050,7 +1032,7 @@ class Geometry(object):
 
         geos_text = getsvgtext(svg_root, object_type, units=units)
         if geos_text is not None:
-            geos_text_f = []
+            geos_text_f = list()
             if flip:
                 # Change origin to bottom left
                 for i in geos_text:
@@ -1100,7 +1082,7 @@ class Geometry(object):
         #     geos_text_f = []
         #     self.solid_geometry = [self.solid_geometry, geos_text_f]
 
-    def import_image(self, filename, flip=True, units='MM', dpi=96, mode='black', mask=[128, 128, 128, 128]):
+    def import_image(self, filename, flip=True, units='MM', dpi=96, mode='black', mask=None):
         """
         Imports shapes from an IMAGE file into the object's geometry.
 
@@ -1114,15 +1096,13 @@ class Geometry(object):
         :param mask: level of detail for the import
         :return: None
         """
-        scale_factor = 0.264583333
+        if mask is None:
+            mask = [128, 128, 128, 128]
 
-        if units.lower() == 'mm':
-            scale_factor = 25.4 / dpi
-        else:
-            scale_factor = 1 / dpi
+        scale_factor = 25.4 / dpi if units.lower() == 'mm' else 1 / dpi
 
-        geos = []
-        unscaled_geos = []
+        geos = list()
+        unscaled_geos = list()
 
         with rasterio.open(filename) as src:
             # if filename.lower().rpartition('.')[-1] == 'bmp':
@@ -1137,12 +1117,12 @@ class Geometry(object):
 
             try:
                 green = src.read(2)
-            except Exception as e:
+            except Exception:
                 pass
 
             try:
                 blue = src.read(3)
-            except Exception as e:
+            except Exception:
                 pass
 
         if mode == 'black':
@@ -1169,7 +1149,7 @@ class Geometry(object):
 
         # Add to object
         if self.solid_geometry is None:
-            self.solid_geometry = []
+            self.solid_geometry = list()
 
         if type(self.solid_geometry) is list:
             # self.solid_geometry.append(cascaded_union(geos))
@@ -2146,6 +2126,12 @@ class CNCjob(Geometry):
         "excellon_optimization_type": "B",
     }
 
+    settings = QtCore.QSettings("Open Source", "FlatCAM")
+    if settings.contains("machinist"):
+        machinist_setting = settings.value('machinist', type=int)
+    else:
+        machinist_setting = 0
+
     def __init__(self,
                  units="in", kind="generic", tooldia=0.0,
                  z_cut=-0.002, z_move=0.1,
@@ -2158,6 +2144,8 @@ class CNCjob(Geometry):
                  segx=None,
                  segy=None,
                  steps_per_circle=None):
+
+        self.decimals = self.app.decimals
 
         # Used when parsing G-code arcs
         self.steps_per_circle = int(self.app.defaults['cncjob_steps_per_circle'])
@@ -2199,10 +2187,10 @@ class CNCjob(Geometry):
         self.gcode_parsed = None
 
         self.pp_geometry_name = pp_geometry_name
-        self.pp_geometry = self.app.postprocessors[self.pp_geometry_name]
+        self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
 
         self.pp_excellon_name = pp_excellon_name
-        self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
+        self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
 
         self.pp_solderpaste_name = None
 
@@ -2286,8 +2274,8 @@ class CNCjob(Geometry):
         try:
             returnvalue = fun(attributes)
             return returnvalue
-        except Exception as e:
-            self.app.log.error('Exception occurred within a postprocessor: ' + traceback.format_exc())
+        except Exception:
+            self.app.log.error('Exception occurred within a preprocessor: ' + traceback.format_exc())
             return ''
 
     def parse_custom_toolchange_code(self, data):
@@ -2371,21 +2359,21 @@ class CNCjob(Geometry):
         self.exc_drills = deepcopy(exobj.drills)
         self.exc_tools = deepcopy(exobj.tools)
 
-        if drillz > 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Cut Z parameter has positive value. "
-                                   "It is the depth value to drill into material.\n"
-                                   "The Cut Z parameter needs to have a negative value, assuming it is a typo "
-                                   "therefore the app will convert the value to negative. "
-                                   "Check the resulting CNC code (Gcode etc)."))
-            self.z_cut = -drillz
-        elif drillz == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                  exobj.options['name']))
-            return 'fail'
-        else:
-            self.z_cut = drillz
+        self.z_cut = drillz
+        if self.machinist_setting == 0:
+            if drillz > 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Cut Z parameter has positive value. "
+                                       "It is the depth value to drill into material.\n"
+                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                       "therefore the app will convert the value to negative. "
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_cut = -drillz
+            elif drillz == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                      exobj.options['name']))
+                return 'fail'
 
         self.z_toolchange = toolchangez
 
@@ -2406,7 +2394,7 @@ class CNCjob(Geometry):
         self.startz = startz
         self.z_end = endz
 
-        self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
+        self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
         p = self.pp_excellon
 
         log.debug("Creating CNC Job from Excellon...")
@@ -2415,7 +2403,7 @@ class CNCjob(Geometry):
         
         # sort the tools list by the second item in tuple (here we have a dict with diameter of the tool)
         # so we actually are sorting the tools by diameter
-        #sorted_tools = sorted(exobj.tools.items(), key=lambda t1: t1['C'])
+        # sorted_tools = sorted(exobj.tools.items(), key=lambda t1: t1['C'])
 
         sort = []
         for k, v in list(exobj.tools.items()):
@@ -2433,9 +2421,35 @@ class CNCjob(Geometry):
             tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
             log.debug("Tools selected and sorted are: %s" % str(tools))
 
+        # fill the data into the self.exc_cnc_tools dictionary
+        for it in sorted_tools:
+            for to_ol in tools:
+                if to_ol == it[0]:
+                    drill_no = 0
+                    sol_geo = list()
+                    for dr in exobj.drills:
+                        if dr['tool'] == it[0]:
+                            drill_no += 1
+                            sol_geo.append(dr['point'])
+                    slot_no = 0
+                    for dr in exobj.slots:
+                        if dr['tool'] == it[0]:
+                            slot_no += 1
+                            start = (dr['start'].x, dr['start'].y)
+                            stop = (dr['stop'].x, dr['stop'].y)
+                            sol_geo.append(
+                                LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
+                            )
+
+                    self.exc_cnc_tools[it[1]] = dict()
+                    self.exc_cnc_tools[it[1]]['tool'] = it[0]
+                    self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
+                    self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
+                    self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
+
         self.app.inform.emit(_("Creating a list of points to drill..."))
         # Points (Group by tool)
-        points = {}
+        points = dict()
         for drill in exobj.drills:
             if self.app.abort_flag:
                 # graceful abort requested by the user
@@ -2447,9 +2461,9 @@ class CNCjob(Geometry):
                 except KeyError:
                     points[drill['tool']] = [drill['point']]
 
-        #log.debug("Found %d drills." % len(points))
+        # log.debug("Found %d drills." % len(points))
 
-        self.gcode = []
+        self.gcode = list()
 
         self.f_plunge = self.app.defaults["excellon_f_plunge"]
         self.f_retract = self.app.defaults["excellon_f_retract"]
@@ -2515,8 +2529,7 @@ class CNCjob(Geometry):
         measured_up_to_zero_distance = 0.0
         measured_lift_distance = 0.0
 
-        self.app.inform.emit('%s...' %
-                             _("Starting G-Code"))
+        self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
@@ -2599,7 +2612,7 @@ class CNCjob(Geometry):
 
                             # Tool change sequence (optional)
                             if toolchange:
-                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                                gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                                 gcode += self.doformat(p.spindle_code)  # Spindle start
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -2608,10 +2621,7 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                            if self.units == 'MM':
-                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
-                            else:
-                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
+                            current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
 
                             self.app.inform.emit(
                                 '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -2632,7 +2642,7 @@ class CNCjob(Geometry):
                                 # Drillling! for Absolute coordinates type G90
                                 # variables to display the percentage of work done
                                 geo_len = len(node_list)
-                                disp_number = 0
+
                                 old_disp_number = 0
                                 log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
@@ -2670,8 +2680,7 @@ class CNCjob(Geometry):
                                         old_disp_number = disp_number
 
                             else:
-                                self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                                     _('G91 coordinates not implemented'))
+                                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                                 return 'fail'
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
@@ -2755,10 +2764,7 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                            if self.units == 'MM':
-                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
-                            else:
-                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
+                            current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
 
                             self.app.inform.emit(
                                 '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -2817,8 +2823,7 @@ class CNCjob(Geometry):
                                         old_disp_number = disp_number
 
                             else:
-                                self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                                     _('G91 coordinates not implemented'))
+                                self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                                 return 'fail'
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
@@ -2860,10 +2865,7 @@ class CNCjob(Geometry):
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                        if self.units == 'MM':
-                            current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
-                        else:
-                            current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
+                        current_tooldia = float('%.*f' % (self.decimals, float(exobj.tools[tool]["C"])))
 
                         self.app.inform.emit(
                             '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -2923,8 +2925,7 @@ class CNCjob(Geometry):
                                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                     old_disp_number = disp_number
                         else:
-                            self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                                 _('G91 coordinates not implemented'))
+                            self.app.inform.emit('[ERROR_NOTCL] %s...' %  _('G91 coordinates not implemented'))
                             return 'fail'
                     else:
                         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
@@ -2945,7 +2946,7 @@ class CNCjob(Geometry):
         # I use the value of self.feedrate_rapid for the feadrate in case of the measure_lift_distance and for
         # traveled_time because it is not always possible to determine the feedrate that the CNC machine uses
         # for G0 move (the fastest speed available to the CNC router). Although self.feedrate_rapids is used only with
-        # Marlin postprocessor and derivatives.
+        # Marlin preprocessor and derivatives.
         self.routing_time = (measured_down_distance + measured_up_to_zero_distance) / self.feedrate
         lift_time = measured_lift_distance / self.feedrate_rapid
         traveled_time = measured_distance / self.feedrate_rapid
@@ -2955,13 +2956,14 @@ class CNCjob(Geometry):
         self.app.inform.emit(_("Finished G-Code generation..."))
         return 'OK'
 
-    def generate_from_multitool_geometry(self, geometry, append=True,
-                                         tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
-                                         feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-                                         spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
-                                         multidepth=False, depthpercut=None,
-                                         toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False,
-                                         startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
+    def generate_from_multitool_geometry(
+            self, geometry, append=True,
+            tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
+            feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
+            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
+            multidepth=False, depthpercut=None,
+            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False,
+            startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
         """
         Algorithm to generate from multitool Geometry.
 
@@ -2972,13 +2974,29 @@ class CNCjob(Geometry):
         :param geometry:
         :param append:
         :param tooldia:
+        :param offset:
         :param tolerance:
-        :param multidepth: If True, use multiple passes to reach
-           the desired depth.
-        :param depthpercut: Maximum depth in each pass.
-        :param extracut: Adds (or not) an extra cut at the end of each path
-            overlapping the first point in path to ensure complete copper removal
-        :return: GCode - string
+        :param z_cut:
+        :param z_move:
+        :param feedrate:
+        :param feedrate_z:
+        :param feedrate_rapid:
+        :param spindlespeed:
+        :param spindledir:
+        :param dwell:
+        :param dwelltime:
+        :param multidepth:          If True, use multiple passes to reach the desired depth.
+        :param depthpercut:         Maximum depth in each pass.
+        :param toolchange:
+        :param toolchangez:
+        :param toolchangexy:
+        :param extracut:            Adds (or not) an extra cut at the end of each path overlapping the
+                                    first point in path to ensure complete copper removal
+        :param startz:
+        :param endz:
+        :param pp_geometry_name:
+        :param tool_no:
+        :return:                    GCode - string
         """
 
         log.debug("Generate_from_multitool_geometry()")
@@ -3001,10 +3019,10 @@ class CNCjob(Geometry):
 
         self.tooldia = float(tooldia) if tooldia else None
         self.z_cut = float(z_cut) if z_cut else None
-        self.z_move = float(z_move) if z_move else None
+        self.z_move = float(z_move) if z_move is not None else None
 
         self.feedrate = float(feedrate) if feedrate else None
-        self.z_feedrate = float(feedrate_z) if feedrate_z else None
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
         self.spindlespeed = int(spindlespeed) if spindlespeed else None
@@ -3012,15 +3030,15 @@ class CNCjob(Geometry):
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime else None
 
-        self.startz = float(startz) if startz else None
-        self.z_end = float(endz) if endz else None
+        self.startz = float(startz) if startz is not None else None
+        self.z_end = float(endz) if endz is not None else None
 
         self.z_depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
 
-        self.z_toolchange = float(toolchangez) if toolchangez else None
+        self.z_toolchange = float(toolchangez) if toolchangez is not None else None
 
-        # it servers in the postprocessor file
+        # it servers in the preprocessor file
         self.tool = tool_no
 
         try:
@@ -3043,45 +3061,45 @@ class CNCjob(Geometry):
         if self.z_cut is None:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                 "other parameters."))
+                                   "other parameters."))
             return 'fail'
 
-        if self.z_cut > 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Cut Z parameter has positive value. "
-                                 "It is the depth value to cut into material.\n"
-                                 "The Cut Z parameter needs to have a negative value, assuming it is a typo "
-                                 "therefore the app will convert the value to negative."
-                                 "Check the resulting CNC code (Gcode etc)."))
-            self.z_cut = -self.z_cut
-        elif self.z_cut == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                  self.options['name']))
-            return 'fail'
+        if self.machinist_setting == 0:
+            if self.z_cut > 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Cut Z parameter has positive value. "
+                                       "It is the depth value to cut into material.\n"
+                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                       "therefore the app will convert the value to negative."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_cut = -self.z_cut
+            elif self.z_cut == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                      self.options['name']))
+                return 'fail'
+
+            if self.z_move is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Travel Z parameter is None or zero."))
+                return 'fail'
+
+            if self.z_move < 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Travel Z parameter has negative value. "
+                                       "It is the height value to travel between cuts.\n"
+                                       "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                       "therefore the app will convert the value to positive."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_move = -self.z_move
+            elif self.z_move == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
+                                      self.options['name']))
+                return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
         if abs(self.z_cut) < self.z_depthpercut:
             self.z_depthpercut = abs(self.z_cut)
-
-        if self.z_move is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Travel Z parameter is None or zero."))
-            return 'fail'
-
-        if self.z_move < 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Travel Z parameter has negative value. "
-                                 "It is the height value to travel between cuts.\n"
-                                 "The Z Travel parameter needs to have a positive value, assuming it is a typo "
-                                 "therefore the app will convert the value to positive."
-                                 "Check the resulting CNC code (Gcode etc)."))
-            self.z_move = -self.z_move
-        elif self.z_move == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
-                                  self.options['name']))
-            return 'fail'
 
         # ## Index first and last points in paths
         # What points to index.
@@ -3109,15 +3127,15 @@ class CNCjob(Geometry):
         if not append:
             self.gcode = ""
 
-        # tell postprocessor the number of tool (for toolchange)
+        # tell preprocessor the number of tool (for toolchange)
         self.tool = tool_no
 
-        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
+        # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
         self.postdata['toolC'] = self.tooldia
 
         # Initial G-Code
-        self.pp_geometry = self.app.postprocessors[self.pp_geometry_name]
+        self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
         p = self.pp_geometry
 
         self.gcode = self.doformat(p.start_code)
@@ -3162,20 +3180,15 @@ class CNCjob(Geometry):
 
         # variables to display the percentage of work done
         geo_len = len(flat_geometry)
-        disp_number = 0
+
         old_disp_number = 0
         log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
 
-        if self.units == 'MM':
-            current_tooldia = float('%.2f' % float(self.tooldia))
-        else:
-            current_tooldia = float('%.4f' % float(self.tooldia))
+        current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
-        self.app.inform.emit(
-            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                           str(current_tooldia),
-                           str(self.units))
-        )
+        self.app.inform.emit( '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                             str(current_tooldia),
+                                             str(self.units)))
 
         pt, geo = storage.nearest(current_pt)
 
@@ -3221,7 +3234,7 @@ class CNCjob(Geometry):
                 total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
 
-                pt, geo = storage.nearest(current_pt) # Next
+                pt, geo = storage.nearest(current_pt)   # Next
 
                 disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
@@ -3286,11 +3299,11 @@ class CNCjob(Geometry):
 
         # if solid_geometry is empty raise an exception
         if not geometry.solid_geometry:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Trying to generate a CNC Job "
-                                 "from a Geometry object without solid_geometry."))
+            self.app.inform.emit(
+                '[ERROR_NOTCL] %s' % _("Trying to generate a CNC Job from a Geometry object without solid_geometry.")
+            )
 
-        temp_solid_geometry = []
+        temp_solid_geometry = list()
 
         def bounds_rec(obj):
             if type(obj) is list:
@@ -3355,11 +3368,11 @@ class CNCjob(Geometry):
         except ValueError:
             self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia else None
 
-        self.z_cut = float(z_cut) if z_cut else None
-        self.z_move = float(z_move) if z_move else None
+        self.z_cut = float(z_cut) if z_cut is not None else None
+        self.z_move = float(z_move) if z_move is not None else None
 
         self.feedrate = float(feedrate) if feedrate else None
-        self.z_feedrate = float(feedrate_z) if feedrate_z else None
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
         self.spindlespeed = int(spindlespeed) if spindlespeed else None
@@ -3367,11 +3380,11 @@ class CNCjob(Geometry):
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime else None
 
-        self.startz = float(startz) if startz else None
-        self.z_end = float(endz) if endz else None
+        self.startz = float(startz) if startz is not None else None
+        self.z_end = float(endz) if endz is not None else None
         self.z_depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
-        self.z_toolchange = float(toolchangez) if toolchangez else None
+        self.z_toolchange = float(toolchangez) if toolchangez is not None else None
 
         try:
             if toolchangexy == '':
@@ -3390,44 +3403,45 @@ class CNCjob(Geometry):
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
-        if self.z_cut is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                   "other parameters."))
-            return 'fail'
+        if self.machinist_setting == 0:
+            if self.z_cut is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                       "other parameters."))
+                return 'fail'
 
-        if self.z_cut > 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Cut Z parameter has positive value. "
-                                   "It is the depth value to cut into material.\n"
-                                   "The Cut Z parameter needs to have a negative value, assuming it is a typo "
-                                   "therefore the app will convert the value to negative."
-                                   "Check the resulting CNC code (Gcode etc)."))
-            self.z_cut = -self.z_cut
-        elif self.z_cut == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                  geometry.options['name']))
-            return 'fail'
+            if self.z_cut > 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Cut Z parameter has positive value. "
+                                       "It is the depth value to cut into material.\n"
+                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                       "therefore the app will convert the value to negative."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_cut = -self.z_cut
+            elif self.z_cut == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                      geometry.options['name']))
+                return 'fail'
 
-        if self.z_move is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Travel Z parameter is None or zero."))
-            return 'fail'
+            if self.z_move is None:
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Travel Z parameter is None or zero."))
+                return 'fail'
 
-        if self.z_move < 0:
-            self.app.inform.emit('[WARNING] %s' %
-                                 _("The Travel Z parameter has negative value. "
-                                   "It is the height value to travel between cuts.\n"
-                                   "The Z Travel parameter needs to have a positive value, assuming it is a typo "
-                                   "therefore the app will convert the value to positive."
-                                   "Check the resulting CNC code (Gcode etc)."))
-            self.z_move = -self.z_move
-        elif self.z_move == 0:
-            self.app.inform.emit('[WARNING] %s: %s' %
-                                 (_("The Z Travel parameter is zero. "
-                                   "This is dangerous, skipping file"), self.options['name']))
-            return 'fail'
+            if self.z_move < 0:
+                self.app.inform.emit('[WARNING] %s' %
+                                     _("The Travel Z parameter has negative value. "
+                                       "It is the height value to travel between cuts.\n"
+                                       "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                       "therefore the app will convert the value to positive."
+                                       "Check the resulting CNC code (Gcode etc)."))
+                self.z_move = -self.z_move
+            elif self.z_move == 0:
+                self.app.inform.emit('[WARNING] %s: %s' %
+                                     (_("The Z Travel parameter is zero. "
+                                       "This is dangerous, skipping file"), self.options['name']))
+                return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
         if abs(self.z_cut) < self.z_depthpercut:
@@ -3457,15 +3471,15 @@ class CNCjob(Geometry):
         if not append:
             self.gcode = ""
 
-        # tell postprocessor the number of tool (for toolchange)
+        # tell preprocessor the number of tool (for toolchange)
         self.tool = tool_no
 
-        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
+        # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
         self.postdata['toolC'] = self.tooldia
 
         # Initial G-Code
-        self.pp_geometry = self.app.postprocessors[self.pp_geometry_name]
+        self.pp_geometry = self.app.preprocessors[self.pp_geometry_name]
         p = self.pp_geometry
 
         self.oldx = 0.0
@@ -3510,14 +3524,11 @@ class CNCjob(Geometry):
 
         # variables to display the percentage of work done
         geo_len = len(flat_geometry)
-        disp_number = 0
+
         old_disp_number = 0
         log.warning("Number of paths for which to generate GCode: %s" % str(geo_len))
 
-        if self.units == 'MM':
-            current_tooldia = float('%.2f' % float(self.tooldia))
-        else:
-            current_tooldia = float('%.4f' % float(self.tooldia))
+        current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
         self.app.inform.emit(
             '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
@@ -3589,12 +3600,9 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.spindle_stop_code)
         self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
         self.gcode += self.doformat(p.end_code, x=0, y=0)
-        self.app.inform.emit('%s... %s %s' %
-                             (_("Finished G-Code generation"),
-                              str(path_count),
-                             _(" paths traced.")
-                              )
-                             )
+        self.app.inform.emit(
+            '%s... %s %s' % (_("Finished G-Code generation"), str(path_count), _(" paths traced."))
+        )
 
         return self.gcode
 
@@ -3624,7 +3632,7 @@ class CNCjob(Geometry):
                                  _("There is no tool data in the SolderPaste geometry."))
 
 
-        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
+        # this is the tool diameter, it is used as such to accommodate the preprocessor who need the tool diameter
         # given under the name 'toolC'
 
         self.postdata['z_start'] = kwargs['data']['tools_solderpaste_z_start']
@@ -3646,7 +3654,7 @@ class CNCjob(Geometry):
 
         self.pp_solderpaste_name = kwargs['data']['tools_solderpaste_pp'] if kwargs['data']['tools_solderpaste_pp'] \
             else self.app.defaults['tools_solderpaste_pp']
-        p = self.app.postprocessors[self.pp_solderpaste_name]
+        p = self.app.preprocessors[self.pp_solderpaste_name]
 
         # ## Flatten the geometry. Only linear elements (no polygons) remain.
         flat_geometry = self.flatten(kwargs['solid_geometry'], pathonly=True)
@@ -3952,21 +3960,23 @@ class CNCjob(Geometry):
         # lifted or lowered.
         if self.toolchange_xy_type == "excellon":
             if self.app.defaults["excellon_toolchangexy"] == '':
-                pos_xy = [0, 0]
+                pos_xy = (0, 0)
             else:
                 pos_xy = [float(eval(a)) for a in self.app.defaults["excellon_toolchangexy"].split(",")]
         else:
             if self.app.defaults["geometry_toolchangexy"] == '':
-                pos_xy = [0, 0]
+                pos_xy = (0, 0)
             else:
                 pos_xy = [float(eval(a)) for a in self.app.defaults["geometry_toolchangexy"].split(",")]
 
         path = [pos_xy]
         # path = [(0, 0)]
 
-        self.app.inform.emit('%s: %d' % (_("Parsing GCode file. Number of lines"), len(self.gcode.splitlines())))
+        gcode_lines_list = self.gcode.splitlines()
+        self.app.inform.emit('%s: %d' % (_("Parsing GCode file. Number of lines"), len(gcode_lines_list)))
+
         # Process every instruction
-        for line in StringIO(self.gcode):
+        for line in gcode_lines_list:
             if force_parsing is False or force_parsing is None:
                 if '%MO' in line or '%' in line or 'MOIN' in line or 'MOMM' in line:
                     return "fail"
@@ -3977,6 +3987,10 @@ class CNCjob(Geometry):
             if 'G' in gobj and (gobj['G'] == 20.0 or gobj['G'] == 21.0):
                 self.units = {20.0: "IN", 21.0: "MM"}[gobj['G']]
                 continue
+
+            # TODO take into consideration the tools and update the travel line thickness
+            if 'T' in gobj:
+                pass
 
             # ## Changing height
             if 'Z' in gobj:
@@ -4003,18 +4017,27 @@ class CNCjob(Geometry):
                 # create the geometry for the holes created when drilling Excellon drills
                 if self.origin_kind == 'excellon':
                     if current['Z'] < 0:
-                        current_drill_point_coords = (float('%.4f' % current['X']), float('%.4f' % current['Y']))
+                        current_drill_point_coords = (
+                            float('%.*f' % (self.decimals, current['X'])),
+                            float('%.*f' % (self.decimals, current['Y']))
+                        )
+
                         # find the drill diameter knowing the drill coordinates
                         for pt_dict in self.exc_drills:
-                            point_in_dict_coords = (float('%.4f' % pt_dict['point'].x),
-                                                   float('%.4f' % pt_dict['point'].y))
+                            point_in_dict_coords = (
+                                float('%.*f' % (self.decimals, pt_dict['point'].x)),
+                                float('%.*f' % (self.decimals, pt_dict['point'].y))
+                            )
                             if point_in_dict_coords == current_drill_point_coords:
                                 tool = pt_dict['tool']
                                 dia = self.exc_tools[tool]['C']
                                 kind = ['C', 'F']
-                                geometry.append({"geom": Point(current_drill_point_coords).
-                                                buffer(dia/2).exterior,
-                                                 "kind": kind})
+                                geometry.append(
+                                    {
+                                        "geom": Point(current_drill_point_coords).buffer(dia/2).exterior,
+                                        "kind": kind
+                                    }
+                                )
                                 break
 
             if 'G' in gobj:
@@ -4050,6 +4073,9 @@ class CNCjob(Geometry):
                     stop = np.arctan2(-center[1] + y, -center[0] + x)
                     path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle / 4))
 
+                current['X'] = x
+                current['Y'] = y
+
             # Update current instruction
             for code in gobj:
                 current[code] = gobj[code]
@@ -4059,8 +4085,12 @@ class CNCjob(Geometry):
         # end, therefore, see here too if there is
         # a final path.
         if len(path) > 1:
-            geometry.append({"geom": LineString(path),
-                             "kind": kind})
+            geometry.append(
+                {
+                    "geom": LineString(path),
+                    "kind": kind
+                }
+            )
 
         self.gcode_parsed = geometry
         return geometry
@@ -4799,7 +4829,7 @@ class CNCjob(Geometry):
             temp_gcode = ''
             header_start = False
             header_stop = False
-            units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+            units = self.app.defaults['units'].upper()
 
             lines = StringIO(g)
             for line in lines:
@@ -5194,7 +5224,7 @@ def get_bounds(geometry_list):
             ymin = min([ymin, gymin])
             xmax = max([xmax, gxmax])
             ymax = max([ymax, gymax])
-        except:
+        except Exception:
             log.warning("DEVELOPMENT: Tried to get bounds of empty geometry.")
 
     return [xmin, ymin, xmax, ymax]

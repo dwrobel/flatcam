@@ -18,7 +18,7 @@ from copy import copy, deepcopy
 import logging
 
 from camlib import distance, arc, three_point_circle
-from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, \
+from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, FCSpinner, RadioSet, \
     EvalEntry2, FCInputDialog, FCButton, OptionalInputSection, FCCheckBox
 from FlatCAMTool import FlatCAMTool
 import FlatCAMApp
@@ -2341,7 +2341,8 @@ class FCTransform(FCShapeTool):
 class FlatCAMGrbEditor(QtCore.QObject):
 
     draw_shape_idx = -1
-    plot_finished = QtCore.pyqtSignal()
+    # plot_finished = QtCore.pyqtSignal()
+    mp_finished = QtCore.pyqtSignal(list)
 
     def __init__(self, app):
         assert isinstance(app, FlatCAMApp.App), \
@@ -2351,12 +2352,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app = app
         self.canvas = self.app.plotcanvas
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # Current application units in Upper Case
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         self.grb_edit_widget = QtWidgets.QWidget()
+
         layout = QtWidgets.QVBoxLayout()
         self.grb_edit_widget.setLayout(layout)
 
@@ -2436,13 +2438,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         grid1 = QtWidgets.QGridLayout()
         self.apertures_box.addLayout(grid1)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
 
         apcode_lbl = QtWidgets.QLabel('%s:' % _('Aperture Code'))
         apcode_lbl.setToolTip(_("Code for the new aperture"))
         grid1.addWidget(apcode_lbl, 1, 0)
 
-        self.apcode_entry = FCEntry()
-        self.apcode_entry.setValidator(QtGui.QIntValidator(0, 999))
+        self.apcode_entry = FCSpinner()
+        self.apcode_entry.set_range(0, 999)
+        self.apcode_entry.setWrapping(True)
+
         grid1.addWidget(self.apcode_entry, 1, 1)
 
         apsize_lbl = QtWidgets.QLabel('%s:' % _('Aperture Size'))
@@ -2455,8 +2461,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         grid1.addWidget(apsize_lbl, 2, 0)
 
-        self.apsize_entry = FCEntry()
-        self.apsize_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
+        self.apsize_entry = FCDoubleSpinner()
+        self.apsize_entry.set_precision(self.decimals)
+        self.apsize_entry.set_range(0.0, 9999)
+
         grid1.addWidget(self.apsize_entry, 2, 1)
 
         aptype_lbl = QtWidgets.QLabel('%s:' % _('Aperture Type'))
@@ -2527,7 +2535,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.buffer_tools_box.addLayout(buf_form_layout)
 
         # Buffer distance
-        self.buffer_distance_entry = FCEntry()
+        self.buffer_distance_entry = FCDoubleSpinner()
+        self.buffer_distance_entry.set_precision(self.decimals)
+        self.buffer_distance_entry.set_range(-9999.9999, 9999.9999)
+
         buf_form_layout.addRow('%s:' % _("Buffer distance"), self.buffer_distance_entry)
         self.buffer_corner_lbl = QtWidgets.QLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
@@ -2576,8 +2587,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
             _("The factor by which to scale the selected aperture.\n"
               "Values can be between 0.0000 and 999.9999")
         )
-        self.scale_factor_entry = FCEntry()
-        self.scale_factor_entry.setValidator(QtGui.QDoubleValidator(0.0000, 999.9999, 4))
+        self.scale_factor_entry = FCDoubleSpinner()
+        self.scale_factor_entry.set_precision(self.decimals)
+        self.scale_factor_entry.set_range(0.0000, 9999.9999)
+
         scale_form_layout.addRow(self.scale_factor_lbl, self.scale_factor_entry)
 
         # Buttons
@@ -2693,7 +2706,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         self.pad_array_size_label.setMinimumWidth(100)
 
-        self.pad_array_size_entry = LengthEntry()
+        self.pad_array_size_entry = FCSpinner()
+        self.pad_array_size_entry.set_range(1, 9999)
+
         self.array_form.addRow(self.pad_array_size_label, self.pad_array_size_entry)
 
         self.array_linear_frame = QtWidgets.QFrame()
@@ -2727,7 +2742,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         self.pad_pitch_label.setMinimumWidth(100)
 
-        self.pad_pitch_entry = LengthEntry()
+        self.pad_pitch_entry = FCDoubleSpinner()
+        self.pad_pitch_entry.set_precision(self.decimals)
+        self.pad_pitch_entry.set_range(0.0000, 9999.9999)
+        self.pad_pitch_entry.setSingleStep(0.1)
+
         self.linear_form.addRow(self.pad_pitch_label, self.pad_pitch_entry)
 
         self.linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
@@ -2740,8 +2759,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.linear_angle_label.setMinimumWidth(100)
 
         self.linear_angle_spinner = FCDoubleSpinner()
-        self.linear_angle_spinner.set_precision(2)
-        self.linear_angle_spinner.setRange(-359.99, 360.00)
+        self.linear_angle_spinner.set_precision(self.decimals)
+        self.linear_angle_spinner.setRange(-360.00, 360.00)
         self.linear_form.addRow(self.linear_angle_label, self.linear_angle_spinner)
 
         self.array_circular_frame = QtWidgets.QFrame()
@@ -2772,7 +2791,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         self.pad_angle_label.setMinimumWidth(100)
 
-        self.pad_angle_entry = LengthEntry()
+        self.pad_angle_entry = FCDoubleSpinner()
+        self.pad_angle_entry.set_precision(self.decimals)
+        self.pad_angle_entry.set_range(-360.00, 360.00)
+        self.pad_angle_entry.setSingleStep(0.1)
+
         self.circular_form.addRow(self.pad_angle_label, self.pad_angle_entry)
 
         self.array_circular_frame.hide()
@@ -2904,10 +2927,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
 
-        if self.units == 'MM':
-            self.tolerance = float(self.app.defaults["global_tolerance"])
-        else:
-            self.tolerance = float(self.app.defaults["global_tolerance"]) / 20
+        def_tol_val = float(self.app.defaults["global_tolerance"])
+        self.tolerance = def_tol_val if self.units == 'MM'else def_tol_val / 20
 
         def make_callback(the_tool):
             def f():
@@ -2926,7 +2947,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             "corner_snap": False,
             "grid_gap_link": True
         }
-        self.app.options_read_form()
+        self.options.update(self.app.options)
 
         for option in self.options:
             if option in self.app.options:
@@ -2936,6 +2957,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.is_modified = False
         self.edited_obj_name = ""
         self.tool_row = 0
+
+        # Multiprocessing pool
+        self.pool = self.app.pool
+
+        # Multiprocessing results
+        self.results = list()
 
         # A QTimer
         self.plot_thread = None
@@ -2958,8 +2985,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.aptype_cb.currentIndexChanged[str].connect(self.on_aptype_changed)
 
         self.addaperture_btn.clicked.connect(self.on_aperture_add)
-        self.apsize_entry.editingFinished.connect(self.on_aperture_add)
-        self.apdim_entry.editingFinished.connect(self.on_aperture_add)
+        self.apsize_entry.returnPressed.connect(self.on_aperture_add)
+        self.apdim_entry.returnPressed.connect(self.on_aperture_add)
 
         self.delaperture_btn.clicked.connect(self.on_aperture_delete)
         self.apertures_table.cellPressed.connect(self.on_row_selected)
@@ -2988,13 +3015,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
         self.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
+        self.mp_finished.connect(self.on_multiprocessing_finished)
+
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
 
         self.conversion_factor = 1
-
-        # number of decimals for the tool diameters to be used in this editor
-        self.decimals = 4
 
         self.set_ui()
         log.debug("Initialization of the FlatCAM Gerber Editor is finished ...")
@@ -3005,12 +3031,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def set_ui(self):
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
-
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
+        self.units = self.app.defaults['units'].upper()
+        self.decimals = self.app.decimals
 
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
@@ -3063,7 +3085,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             pass
 
         # updated units
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.gerber_obj.options['name']
@@ -3314,6 +3336,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.app.inform.emit('[WARNING_NOTCL]%s' %
                                          _(" Select an aperture in Aperture Table"))
                     return
+
                 for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
                     deleted_apcode_list.append(self.apertures_table.item(row, 1).text())
@@ -3329,7 +3352,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                 # I've added this flag_del variable because dictionary don't like
                 # having keys deleted while iterating through them
-                flag_del = []
+                flag_del = list()
                 for deleted_tool in self.tool2tooldia:
                     if self.tool2tooldia[deleted_tool] == deleted_aperture:
                         flag_del.append(deleted_tool)
@@ -3338,12 +3361,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     for aperture_to_be_deleted in flag_del:
                         # delete the tool
                         self.tool2tooldia.pop(aperture_to_be_deleted, None)
-                    flag_del = []
 
                     self.olddia_newdia.pop(deleted_aperture, None)
 
                     self.app.inform.emit('[success] %s: %s' %
                                          (_("Deleted aperture with code"), str(deleted_aperture)))
+                    flag_del.clear()
 
         self.plot_all()
         self.build_ui()
@@ -3772,133 +3795,176 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.gerber_obj.apertures = conv_apertures
         self.gerber_obj.units = app_units
 
-        # ############################################################# ##
-        # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
-        # ############################################################# ##
+        # # and then add it to the storage elements (each storage elements is a member of a list
+        # def job_thread(aperture_id):
+        #     with self.app.proc_container.new('%s: %s ...' %
+        #                                      (_("Adding geometry for aperture"),  str(aperture_id))):
+        #         storage_elem = []
+        #         self.storage_dict[aperture_id] = {}
+        #
+        #         # add the Gerber geometry to editor storage
+        #         for k, v in self.gerber_obj.apertures[aperture_id].items():
+        #             try:
+        #                 if k == 'geometry':
+        #                     for geo_el in v:
+        #                         if geo_el:
+        #                             self.add_gerber_shape(DrawToolShape(geo_el), storage_elem)
+        #                     self.storage_dict[aperture_id][k] = storage_elem
+        #                 else:
+        #                     self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
+        #             except Exception as e:
+        #                 log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+        #
+        #         # Check promises and clear if exists
+        #         while True:
+        #             try:
+        #                 self.grb_plot_promises.remove(aperture_id)
+        #                 time.sleep(0.5)
+        #             except ValueError:
+        #                 break
+        #
+        # # we create a job work each aperture, job that work in a threaded way to store the geometry in local storage
+        # # as DrawToolShapes
+        # for ap_id in self.gerber_obj.apertures:
+        #     self.grb_plot_promises.append(ap_id)
+        #     self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_id]})
+        #
+        # self.set_ui()
+        #
+        # # do the delayed plot only if there is something to plot (the gerber is not empty)
+        # try:
+        #     if bool(self.gerber_obj.apertures):
+        #         self.start_delayed_plot(check_period=1000)
+        #     else:
+        #         raise AttributeError
+        # except AttributeError:
+        #     # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
+        #     self.build_ui(first_run=True)
+        #     # and add the first aperture to have something to play with
+        #     self.on_aperture_add('10')
 
-        # log.warning("Applying clear geometry in the apertures dict.")
-        # list of clear geos that are to be applied to the entire file
-        global_clear_geo = []
+        def worker_job(app_obj):
+            with app_obj.app.proc_container.new('%s ...' % _("Loading Gerber into Editor")):
+                # ############################################################# ##
+                # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
+                # ############################################################# ##
 
-        # create one big geometry made out of all 'negative' (clear) polygons
-        for apid in self.gerber_obj.apertures:
-            # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
-            if 'geometry' in self.gerber_obj.apertures[apid]:
-                for elem in self.gerber_obj.apertures[apid]['geometry']:
-                    if 'clear' in elem:
-                        global_clear_geo.append(elem['clear'])
-        log.warning("Found %d clear polygons." % len(global_clear_geo))
+                # list of clear geos that are to be applied to the entire file
+                global_clear_geo = []
 
-        global_clear_geo = MultiPolygon(global_clear_geo)
-        if isinstance(global_clear_geo, Polygon):
-            global_clear_geo = list(global_clear_geo)
+                # create one big geometry made out of all 'negative' (clear) polygons
+                for apid in app_obj.gerber_obj.apertures:
+                    # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
+                    if 'geometry' in app_obj.gerber_obj.apertures[apid]:
+                        for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
+                            if 'clear' in elem:
+                                global_clear_geo.append(elem['clear'])
+                log.warning("Found %d clear polygons." % len(global_clear_geo))
 
-        # for debugging
-        # for geo in global_clear_geo:
-        #     self.shapes.add(shape=geo, color='black', face_color='#000000'+'AF', layer=0, tolerance=self.tolerance)
-        # self.shapes.redraw()
+                global_clear_geo = MultiPolygon(global_clear_geo)
+                if isinstance(global_clear_geo, Polygon):
+                    global_clear_geo = list(global_clear_geo)
 
-        # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of clear geometry
-        # that fits inside the solid. otherwise we may loose the solid
-        for apid in self.gerber_obj.apertures:
-            temp_solid_geometry = []
-            if 'geometry' in self.gerber_obj.apertures[apid]:
-                # for elem in self.gerber_obj.apertures[apid]['geometry']:
-                #     if 'solid' in elem:
-                #         solid_geo = elem['solid']
-                #         for clear_geo in global_clear_geo:
-                #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
-                #             # delete it
-                #             if clear_geo.within(solid_geo):
-                #                 solid_geo = solid_geo.difference(clear_geo)
-                #         try:
-                #             for poly in solid_geo:
-                #                 new_elem = dict()
-                #
-                #                 new_elem['solid'] = poly
-                #                 if 'clear' in elem:
-                #                     new_elem['clear'] = poly
-                #                 if 'follow' in elem:
-                #                     new_elem['follow'] = poly
-                #                 temp_elem.append(deepcopy(new_elem))
-                #         except TypeError:
-                #             new_elem = dict()
-                #             new_elem['solid'] = solid_geo
-                #             if 'clear' in elem:
-                #                 new_elem['clear'] = solid_geo
-                #             if 'follow' in elem:
-                #                 new_elem['follow'] = solid_geo
-                #             temp_elem.append(deepcopy(new_elem))
-                for elem in self.gerber_obj.apertures[apid]['geometry']:
-                    new_elem = dict()
-                    if 'solid' in elem:
-                        solid_geo = elem['solid']
+                # we subtract the big "negative" (clear) geometry from each solid polygon but only the part of
+                # clear geometry that fits inside the solid. otherwise we may loose the solid
+                for apid in app_obj.gerber_obj.apertures:
+                    temp_solid_geometry = []
+                    if 'geometry' in app_obj.gerber_obj.apertures[apid]:
+                        # for elem in self.gerber_obj.apertures[apid]['geometry']:
+                        #     if 'solid' in elem:
+                        #         solid_geo = elem['solid']
+                        #         for clear_geo in global_clear_geo:
+                        #             # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                        #             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
+                        #             # delete it
+                        #             if clear_geo.within(solid_geo):
+                        #                 solid_geo = solid_geo.difference(clear_geo)
+                        #         try:
+                        #             for poly in solid_geo:
+                        #                 new_elem = dict()
+                        #
+                        #                 new_elem['solid'] = poly
+                        #                 if 'clear' in elem:
+                        #                     new_elem['clear'] = poly
+                        #                 if 'follow' in elem:
+                        #                     new_elem['follow'] = poly
+                        #                 temp_elem.append(deepcopy(new_elem))
+                        #         except TypeError:
+                        #             new_elem = dict()
+                        #             new_elem['solid'] = solid_geo
+                        #             if 'clear' in elem:
+                        #                 new_elem['clear'] = solid_geo
+                        #             if 'follow' in elem:
+                        #                 new_elem['follow'] = solid_geo
+                        #             temp_elem.append(deepcopy(new_elem))
+                        for elem in app_obj.gerber_obj.apertures[apid]['geometry']:
+                            new_elem = dict()
+                            if 'solid' in elem:
+                                solid_geo = elem['solid']
 
-                        for clear_geo in global_clear_geo:
-                            # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                            # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
-                            # delete it
-                            if clear_geo.within(solid_geo):
-                                solid_geo = solid_geo.difference(clear_geo)
+                                for clear_geo in global_clear_geo:
+                                    # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                                    # the solid_geometry. We want for clear_geometry just to cut into solid_geometry
+                                    # not to delete it
+                                    if clear_geo.within(solid_geo):
+                                        solid_geo = solid_geo.difference(clear_geo)
 
-                        new_elem['solid'] = solid_geo
-                    if 'clear' in elem:
-                        new_elem['clear'] = elem['clear']
-                    if 'follow' in elem:
-                        new_elem['follow'] = elem['follow']
-                    temp_solid_geometry.append(deepcopy(new_elem))
+                                new_elem['solid'] = solid_geo
+                            if 'clear' in elem:
+                                new_elem['clear'] = elem['clear']
+                            if 'follow' in elem:
+                                new_elem['follow'] = elem['follow']
+                            temp_solid_geometry.append(deepcopy(new_elem))
 
-                self.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_solid_geometry)
-        log.warning("Polygon difference done for %d apertures." % len(self.gerber_obj.apertures))
+                        app_obj.gerber_obj.apertures[apid]['geometry'] = deepcopy(temp_solid_geometry)
+                log.warning("Polygon difference done for %d apertures." % len(app_obj.gerber_obj.apertures))
 
-        # and then add it to the storage elements (each storage elements is a member of a list
-        def job_thread(aperture_id):
-            with self.app.proc_container.new('%s: %s ...' %
-                                             (_("Adding geometry for aperture"),  str(aperture_id))):
-                storage_elem = []
-                self.storage_dict[aperture_id] = {}
+                # Loading the Geometry into Editor Storage
+                for ap_id, ap_dict in app_obj.gerber_obj.apertures.items():
+                    app_obj.results.append(app_obj.pool.apply_async(app_obj.add_apertures, args=(ap_id, ap_dict)))
 
-                # add the Gerber geometry to editor storage
-                for k, v in self.gerber_obj.apertures[aperture_id].items():
-                    try:
-                        if k == 'geometry':
-                            for geo_el in v:
-                                if geo_el:
-                                    self.add_gerber_shape(DrawToolShape(geo_el), storage_elem)
-                            self.storage_dict[aperture_id][k] = storage_elem
-                        else:
-                            self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
-                    except Exception as e:
-                        log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+                output = list()
+                for p in app_obj.results:
+                    output.append(p.get())
 
-                # Check promises and clear if exists
-                while True:
-                    try:
-                        self.grb_plot_promises.remove(aperture_id)
-                        time.sleep(0.5)
-                    except ValueError:
-                        break
+                for elem in output:
+                    app_obj.storage_dict[elem[0]] = deepcopy(elem[1])
 
-        # we create a job work each aperture, job that work in a threaded way to store the geometry in local storage
-        # as DrawToolShapes
-        for ap_id in self.gerber_obj.apertures:
-            self.grb_plot_promises.append(ap_id)
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_id]})
+                app_obj.mp_finished.emit(output)
 
+        self.app.worker_task.emit({'fcn': worker_job, 'params': [self]})
+
+    @staticmethod
+    def add_apertures(aperture_id, aperture_dict):
+        storage_elem = list()
+        storage_dict = dict()
+
+        for k, v in list(aperture_dict.items()):
+            try:
+                if k == 'geometry':
+                    for geo_el in v:
+                        if geo_el:
+                            storage_elem.append(DrawToolShape(geo_el))
+                    storage_dict[k] = storage_elem
+                else:
+                    storage_dict[k] = aperture_dict[k]
+            except Exception as e:
+                log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
+
+        return [aperture_id, storage_dict]
+
+    def on_multiprocessing_finished(self):
+        self.app.proc_container.update_view_text(' %s' % _("Setting up the UI"))
+        self.app.inform.emit('[success] %s.' % _("Adding geometry finished. Preparing the GUI"))
         self.set_ui()
+        self.build_ui(first_run=True)
+        self.plot_all()
 
-        # do the delayed plot only if there is something to plot (the gerber is not empty)
-        try:
-            if bool(self.gerber_obj.apertures):
-                self.start_delayed_plot(check_period=1000)
-            else:
-                raise AttributeError
-        except AttributeError:
-            # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
-            self.build_ui(first_run=True)
-            # and add the first aperture to have something to play with
-            self.on_aperture_add('10')
+        # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'
+        # - perhaps is a bug in VisPy implementation
+        self.app.app_cursor.enabled = False
+        self.app.app_cursor.enabled = True
+        self.app.inform.emit('[success] %s' % _("Finished loading the Gerber object into the editor."))
 
     def update_fcgerber(self):
         """
@@ -4053,11 +4119,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.app.new_object("gerber", outname, obj_init)
             except Exception as e:
                 log.error("Error on Edited object creation: %s" % str(e))
-                self.app.progress.emit(100)
+                # make sure to clean the previous results
+                self.results = list()
                 return
 
-            self.app.inform.emit('[success] %s' %
-                                 _("Done. Gerber editing finished."))
+            self.app.inform.emit('[success] %s' %  _("Done. Gerber editing finished."))
+            # make sure to clean the previous results
+            self.results = list()
 
     def on_tool_select(self, tool):
         """
@@ -4330,7 +4398,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                     else:
                                         self.select_tool("select")
         except Exception as e:
-            log.warning("Error: %s" % str(e))
+            log.warning("FlatCAMGrbEditor.on_grb_click_release() RMB click --> Error: %s" % str(e))
             raise
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
@@ -4348,7 +4416,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     if self.selected:
                         self.plot_all()
         except Exception as e:
-            log.warning("Error: %s" % str(e))
+            log.warning("FlatCAMGrbEditor.on_grb_click_release() LMB click --> Error: %s" % str(e))
             raise
 
     def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
@@ -4568,49 +4636,49 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 color = color[:7] + 'AF'
             self.shapes.add(shape=geometry, color=color, face_color=color, layer=0, tolerance=self.tolerance)
 
-    def start_delayed_plot(self, check_period):
-        """
-        This function starts an QTImer and it will periodically check if all the workers finish the plotting functions
-
-        :param check_period: time at which to check periodically if all plots finished to be plotted
-        :return:
-        """
-
-        # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
-        # self.plot_thread.start()
-        log.debug("FlatCAMGrbEditor --> Delayed Plot started.")
-        self.plot_thread = QtCore.QTimer()
-        self.plot_thread.setInterval(check_period)
-        self.plot_finished.connect(self.setup_ui_after_delayed_plot)
-        self.plot_thread.timeout.connect(self.check_plot_finished)
-        self.plot_thread.start()
-
-    def check_plot_finished(self):
-        """
-        If all the promises made are finished then all the shapes are in shapes_storage and can be plotted safely and
-        then the UI is rebuilt accordingly.
-        :return:
-        """
-
-        try:
-            if not self.grb_plot_promises:
-                self.plot_thread.stop()
-                self.plot_finished.emit()
-                log.debug("FlatCAMGrbEditor --> delayed_plot finished")
-        except Exception as e:
-            traceback.print_exc()
-
-    def setup_ui_after_delayed_plot(self):
-        self.plot_finished.disconnect()
-
-        # now that we have data, create the GUI interface and add it to the Tool Tab
-        self.build_ui(first_run=True)
-        self.plot_all()
-
-        # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'
-        # - perhaps is a bug in VisPy implementation
-        self.app.app_cursor.enabled = False
-        self.app.app_cursor.enabled = True
+    # def start_delayed_plot(self, check_period):
+    #     """
+    #     This function starts an QTImer and it will periodically check if all the workers finish the plotting functions
+    #
+    #     :param check_period: time at which to check periodically if all plots finished to be plotted
+    #     :return:
+    #     """
+    #
+    #     # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
+    #     # self.plot_thread.start()
+    #     log.debug("FlatCAMGrbEditor --> Delayed Plot started.")
+    #     self.plot_thread = QtCore.QTimer()
+    #     self.plot_thread.setInterval(check_period)
+    #     self.plot_finished.connect(self.setup_ui_after_delayed_plot)
+    #     self.plot_thread.timeout.connect(self.check_plot_finished)
+    #     self.plot_thread.start()
+    #
+    # def check_plot_finished(self):
+    #     """
+    #     If all the promises made are finished then all the shapes are in shapes_storage and can be plotted safely and
+    #     then the UI is rebuilt accordingly.
+    #     :return:
+    #     """
+    #
+    #     try:
+    #         if not self.grb_plot_promises:
+    #             self.plot_thread.stop()
+    #             self.plot_finished.emit()
+    #             log.debug("FlatCAMGrbEditor --> delayed_plot finished")
+    #     except Exception as e:
+    #         traceback.print_exc()
+    #
+    # def setup_ui_after_delayed_plot(self):
+    #     self.plot_finished.disconnect()
+    #
+    #     # now that we have data, create the GUI interface and add it to the Tool Tab
+    #     self.build_ui(first_run=True)
+    #     self.plot_all()
+    #
+    #     # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'
+    #     # - perhaps is a bug in VisPy implementation
+    #     self.app.app_cursor.enabled = False
+    #     self.app.app_cursor.enabled = True
 
     def get_selected(self):
         """
@@ -4789,13 +4857,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.storage_dict[apid]['geometry'] = []
                 self.storage_dict[apid]['geometry'] = temp_storage
             except Exception as e:
-                log.debug("FlatCAMGrbEditor.buffer() --> %s\n%s" % str(e))
-                self.app.inform.emit('[ERROR_NOTCL] %s\n%s' %
-                                     (_("Failed."), str(traceback.print_exc())))
+                log.debug("FlatCAMGrbEditor.buffer() --> %s" % str(e))
+                self.app.inform.emit('[ERROR_NOTCL] %s\n%s' % (_("Failed."), str(traceback.print_exc())))
                 return
+
         self.plot_all()
-        self.app.inform.emit('[success] %s' %
-                             _("Done. Buffer Tool completed."))
+        self.app.inform.emit('[success] %s' % _("Done. Buffer Tool completed."))
 
     def on_scale(self):
         scale_factor = 1.0
@@ -4864,7 +4931,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # clear previous marking
         self.ma_annotation.clear(update=True)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
 
         text = []
         position = []
@@ -4886,7 +4953,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                         if float(upper_threshold_val) > area > float(lower_threshold_val):
                             current_pos = geo_el.geo['solid'].exterior.coords[-1]
-                            text_elem = '%.4f' % area
+                            text_elem = '%.*f' % (self.decimals, area)
                             text.append(text_elem)
                             position.append(current_pos)
                             self.geo_to_delete.append(geo_el)
@@ -4953,6 +5020,7 @@ class TransformEditorTool(FlatCAMTool):
 
         self.app = app
         self.draw_app = draw_app
+        self.decimals = self.app.decimals
 
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
@@ -4999,9 +5067,11 @@ class TransformEditorTool(FlatCAMTool):
         )
         self.rotate_label.setMinimumWidth(50)
 
-        self.rotate_entry = FCEntry()
-        # self.rotate_entry.setFixedWidth(60)
-        self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.rotate_entry = FCDoubleSpinner()
+        self.rotate_entry.set_precision(self.decimals)
+        self.rotate_entry.set_range(-360.0000, 360.0000)
+        self.rotate_entry.setSingleStep(0.1)
+        self.rotate_entry.setWrapping(True)
 
         self.rotate_button = FCButton()
         self.rotate_button.set_value(_("Rotate"))
@@ -5035,9 +5105,11 @@ class TransformEditorTool(FlatCAMTool):
               "Float number between -360 and 359.")
         )
         self.skewx_label.setMinimumWidth(50)
-        self.skewx_entry = FCEntry()
-        self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.skewx_entry.setFixedWidth(60)
+        self.skewx_entry = FCDoubleSpinner()
+        self.skewx_entry.set_precision(self.decimals)
+        self.skewx_entry.set_range(-360.0000, 360.0000)
+        self.skewx_entry.setSingleStep(0.1)
+        self.skewx_entry.setWrapping(True)
 
         self.skewx_button = FCButton()
         self.skewx_button.set_value(_("Skew X"))
@@ -5053,9 +5125,11 @@ class TransformEditorTool(FlatCAMTool):
               "Float number between -360 and 359.")
         )
         self.skewy_label.setMinimumWidth(50)
-        self.skewy_entry = FCEntry()
-        self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.skewy_entry.setFixedWidth(60)
+        self.skewy_entry = FCDoubleSpinner()
+        self.skewy_entry.set_precision(self.decimals)
+        self.skewy_entry.set_range(-360.0000, 360.0000)
+        self.skewy_entry.setSingleStep(0.1)
+        self.skewy_entry.setWrapping(True)
 
         self.skewy_button = FCButton()
         self.skewy_button.set_value(_("Skew Y"))
@@ -5091,9 +5165,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Factor for Scale action over X axis.")
         )
         self.scalex_label.setMinimumWidth(50)
-        self.scalex_entry = FCEntry()
-        self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.scalex_entry.setFixedWidth(60)
+        self.scalex_entry = FCDoubleSpinner()
+        self.scalex_entry.set_precision(self.decimals)
+        self.scalex_entry.set_range(0.0000, 9999.9999)
+        self.scalex_entry.setSingleStep(0.1)
+        self.scalex_entry.setWrapping(True)
 
         self.scalex_button = FCButton()
         self.scalex_button.set_value(_("Scale X"))
@@ -5108,9 +5184,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Factor for Scale action over Y axis.")
         )
         self.scaley_label.setMinimumWidth(50)
-        self.scaley_entry = FCEntry()
-        self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.scaley_entry.setFixedWidth(60)
+        self.scaley_entry = FCDoubleSpinner()
+        self.scaley_entry.set_precision(self.decimals)
+        self.scaley_entry.set_range(0.0000, 9999.9999)
+        self.scaley_entry.setSingleStep(0.1)
+        self.scaley_entry.setWrapping(True)
 
         self.scaley_button = FCButton()
         self.scaley_button.set_value(_("Scale Y"))
@@ -5166,9 +5244,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Value for Offset action on X axis.")
         )
         self.offx_label.setMinimumWidth(50)
-        self.offx_entry = FCEntry()
-        self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.offx_entry.setFixedWidth(60)
+        self.offx_entry = FCDoubleSpinner()
+        self.offx_entry.set_precision(self.decimals)
+        self.offx_entry.set_range(-9999.9999, 9999.9999)
+        self.offx_entry.setSingleStep(0.1)
+        self.offx_entry.setWrapping(True)
 
         self.offx_button = FCButton()
         self.offx_button.set_value(_("Offset X"))
@@ -5184,9 +5264,11 @@ class TransformEditorTool(FlatCAMTool):
             _("Value for Offset action on Y axis.")
         )
         self.offy_label.setMinimumWidth(50)
-        self.offy_entry = FCEntry()
-        self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        # self.offy_entry.setFixedWidth(60)
+        self.offy_entry = FCDoubleSpinner()
+        self.offy_entry.set_precision(self.decimals)
+        self.offy_entry.set_range(-9999.9999, 9999.9999)
+        self.offy_entry.setSingleStep(0.1)
+        self.offy_entry.setWrapping(True)
 
         self.offy_button = FCButton()
         self.offy_button.set_value(_("Offset Y"))
@@ -5225,7 +5307,6 @@ class TransformEditorTool(FlatCAMTool):
             _("Flip the selected shape(s) over the X axis.\n"
               "Does not create a new shape.")
         )
-        self.flipx_button.setMinimumWidth(60)
 
         self.flipy_button = FCButton()
         self.flipy_button.set_value(_("Flip on Y"))
@@ -5233,7 +5314,6 @@ class TransformEditorTool(FlatCAMTool):
             _("Flip the selected shape(s) over the X axis.\n"
               "Does not create a new shape.")
         )
-        self.flipy_button.setMinimumWidth(60)
 
         self.flip_ref_cb = FCCheckBox()
         self.flip_ref_cb.set_value(True)
@@ -5271,7 +5351,6 @@ class TransformEditorTool(FlatCAMTool):
         )
         self.flip_ref_button.setMinimumWidth(60)
 
-        form4_child_hlay.addStretch()
         form4_child_hlay.addWidget(self.flipx_button)
         form4_child_hlay.addWidget(self.flipy_button)
 
@@ -5404,16 +5483,8 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.rotate_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.rotate_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.rotate_entry.get_value())
+
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
                                    'params': [value]})
         # self.on_rotate_action(value)
@@ -5447,16 +5518,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.skewx_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.skewx_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.skewx_entry.get_value())
 
         # self.on_skew("X", value)
         axis = 'X'
@@ -5474,16 +5536,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.skewy_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.skewy_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.skewy_entry.get_value())
 
         # self.on_skew("Y", value)
         axis = 'Y'
@@ -5501,16 +5554,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             x_value = val
         else:
-            try:
-                x_value = float(self.scalex_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    x_value = float(self.scalex_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            x_value = float(self.scalex_entry.get_value())
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
         if x_value == 0:
@@ -5542,16 +5586,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             y_value = val
         else:
-            try:
-                y_value = float(self.scaley_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    y_value = float(self.scaley_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            y_value = float(self.scaley_entry.get_value())
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
         if y_value == 0:
@@ -5580,16 +5615,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.offx_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.offx_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.offx_entry.get_value())
 
         # self.on_offset("X", value)
         axis = 'X'
@@ -5606,16 +5632,7 @@ class TransformEditorTool(FlatCAMTool):
         if val:
             value = val
         else:
-            try:
-                value = float(self.offy_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    value = float(self.offy_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _("Wrong value format entered, use a number."))
-                    return
+            value = float(self.offy_entry.get_value())
 
         # self.on_offset("Y", value)
         axis = 'Y'
@@ -5808,16 +5825,13 @@ class TransformEditorTool(FlatCAMTool):
                     self.draw_app.plot_all()
 
                     if str(axis) == 'X':
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Skew on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Skew on the X axis done'))
                     else:
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Skew on the Y axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Skew on the Y axis done'))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Skew action was not executed."), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Skew action was not executed."), str(e)))
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -5879,15 +5893,12 @@ class TransformEditorTool(FlatCAMTool):
                     self.draw_app.plot_all()
 
                     if str(axis) == 'X':
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Scale on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Scale on the X axis done'))
                     else:
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Scale on the Y axis done'))
-                    self.app.progress.emit(100)
+                        self.app.inform.emit('[success] %s...' % _('Scale on the Y axis done'))
+
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Scale action was not executed."), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Scale action was not executed."), str(e)))
                     return
 
     def on_offset(self, axis, num):
@@ -5906,8 +5917,6 @@ class TransformEditorTool(FlatCAMTool):
         else:
             with self.app.proc_container.new(_("Applying Offset")):
                 try:
-                    self.app.progress.emit(20)
-
                     for sel_el_shape in elem_list:
                         sel_el = sel_el_shape.geo
                         if axis is 'X':
@@ -5927,106 +5936,92 @@ class TransformEditorTool(FlatCAMTool):
                         self.draw_app.plot_all()
 
                     if str(axis) == 'X':
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Offset on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Offset on the X axis done'))
                     else:
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Offset on the Y axis done'))
-                    self.app.progress.emit(100)
+                        self.app.inform.emit('[success] %s...' % _('Offset on the Y axis done'))
 
                 except Exception as e:
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_("Offset action was not executed."), str(e)))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Offset action was not executed."), str(e)))
                     return
 
     def on_rotate_key(self):
         val_box = FCInputDialog(title=_("Rotate ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=4,
+                                min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_rotate']))
         val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_rotate(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape rotate done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape rotate done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape rotate cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape rotate cancelled"))
 
     def on_offx_key(self):
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        units = self.app.defaults['units'].lower()
 
         val_box = FCInputDialog(title=_("Offset on X axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=4,
+                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape offset on X axis done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape offset on X axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape offset X cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape offset X cancelled"))
 
     def on_offy_key(self):
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        units = self.app.defaults['units'].lower()
 
         val_box = FCInputDialog(title=_("Offset on Y axis ..."),
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=4,
+                                min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_offx(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape offset on Y axis done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape offset on Y axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape offset Y cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape offset Y cancelled"))
 
     def on_skewx_key(self):
         val_box = FCInputDialog(title=_("Skew on X axis ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=4,
+                                min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape skew on X axis done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on X axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape skew X cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape skew X cancelled"))
 
     def on_skewy_key(self):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
-                                min=-359.9999, max=360.0000, decimals=4,
+                                min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))
 
         val, ok = val_box.get_value()
         if ok:
             self.on_skewx(val=val)
-            self.app.inform.emit('[success] %s...' %
-                                 _("Geometry shape skew on Y axis done"))
+            self.app.inform.emit('[success] %s...' % _("Geometry shape skew on Y axis done"))
             return
         else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                 _("Geometry shape skew Y cancelled"))
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Geometry shape skew Y cancelled"))
 
 
 def get_shapely_list_bounds(geometry_list):

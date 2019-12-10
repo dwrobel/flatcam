@@ -1,7 +1,7 @@
 # This file contains python only requirements to be installed with pip
-# Python pacakges that cannot be installed with pip (e.g. PyQt5, GDAL) are not included.
-# Usage: pip install -r requirements.txt
-numpy>=1.11
+# Python packages that cannot be installed with pip (e.g. PyQt5, GDAL) are not included.
+# Usage: pip3 install -r requirements.txt
+numpy>=1.16
 matplotlib>=3.1
 cycler>=0.10
 python-dateutil>=2.1
@@ -11,7 +11,6 @@ setuptools
 dill
 rtree
 pyopengl
-pyopengl-accelerate
 vispy
 ortools
 svg.path
@@ -22,3 +21,6 @@ fontTools
 rasterio
 lxml
 ezdxf
+qrcode>=6.0
+reportlab>=3.0
+svglib

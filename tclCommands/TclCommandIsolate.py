@@ -1,6 +1,7 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMGerber
 
+import collections
 
 class TclCommandIsolate(TclCommandSignaled):
     """
@@ -69,10 +70,10 @@ class TclCommandIsolate(TclCommandSignaled):
         if 'outname' not in args:
             args['outname'] = name + "_iso"
 
-        if 'timeout' in args:
-            timeout = args['timeout']
-        else:
-            timeout = 10000
+        # if 'timeout' in args:
+        #     timeout = args['timeout']
+        # else:
+        #     timeout = 10000
 
         if 'follow' not in args:
             args['follow'] = None

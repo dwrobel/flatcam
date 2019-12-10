@@ -1,7 +1,12 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+
+import collections
+import logging
+
 from shapely.ops import cascaded_union
 from shapely.geometry import LineString
+
+log = logging.getLogger('base')
 
 
 class TclCommandCutout(TclCommand):
@@ -62,22 +67,22 @@ class TclCommandCutout(TclCommand):
             return
 
         if 'margin' in args:
-            margin_par = args['margin']
+            margin_par = float(args['margin'])
         else:
             margin_par = 0.001
 
         if 'dia' in args:
-            dia_par = args['dia']
+            dia_par = float(args['dia'])
         else:
             dia_par = 0.1
 
         if 'gaps' in args:
             gaps_par = args['gaps']
         else:
-            gaps_par = 4
+            gaps_par = "4"
 
         if 'gapsize' in args:
-            gapsize_par = args['gapsize']
+            gapsize_par = float(args['gapsize'])
         else:
             gapsize_par = 0.1
 

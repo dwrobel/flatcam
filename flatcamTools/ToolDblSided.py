@@ -26,7 +26,7 @@ class DblSidedTool(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
-        self.decimals = 4
+        self.decimals = self.app.decimals
 
         # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
@@ -45,6 +45,8 @@ class DblSidedTool(FlatCAMTool):
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_lay)
+        grid_lay.setColumnStretch(0, 1)
+        grid_lay.setColumnStretch(1, 0)
 
         # ## Gerber Object to mirror
         self.gerber_object_combo = QtWidgets.QComboBox()
@@ -53,9 +55,7 @@ class DblSidedTool(FlatCAMTool):
         self.gerber_object_combo.setCurrentIndex(1)
 
         self.botlay_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
-        self.botlay_label.setToolTip(
-            "Gerber  to be mirrored."
-        )
+        self.botlay_label.setToolTip('%s.' % _("Gerber to be mirrored"))
 
         self.mirror_gerber_button = QtWidgets.QPushButton(_("Mirror"))
         self.mirror_gerber_button.setToolTip(
@@ -63,6 +63,12 @@ class DblSidedTool(FlatCAMTool):
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
+        self.mirror_gerber_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.mirror_gerber_button.setMinimumWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
@@ -77,9 +83,7 @@ class DblSidedTool(FlatCAMTool):
         self.exc_object_combo.setCurrentIndex(1)
 
         self.excobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("EXCELLON"))
-        self.excobj_label.setToolTip(
-            _("Excellon Object to be mirrored.")
-        )
+        self.excobj_label.setToolTip(_("Excellon Object to be mirrored."))
 
         self.mirror_exc_button = QtWidgets.QPushButton(_("Mirror"))
         self.mirror_exc_button.setToolTip(
@@ -87,6 +91,12 @@ class DblSidedTool(FlatCAMTool):
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
+        self.mirror_exc_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.mirror_exc_button.setMinimumWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
@@ -111,6 +121,12 @@ class DblSidedTool(FlatCAMTool):
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
+        self.mirror_geo_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.mirror_geo_button.setMinimumWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
@@ -126,9 +142,8 @@ class DblSidedTool(FlatCAMTool):
         self.mirror_axis = RadioSet([{'label': 'X', 'value': 'X'},
                                      {'label': 'Y', 'value': 'Y'}])
         self.mirax_label = QtWidgets.QLabel(_("Mirror Axis:"))
-        self.mirax_label.setToolTip(
-            _("Mirror vertically (X) or horizontally (Y).")
-        )
+        self.mirax_label.setToolTip(_("Mirror vertically (X) or horizontally (Y)."))
+
         # grid_lay.addRow("Mirror Axis:", self.mirror_axis)
         self.empty_lb1 = QtWidgets.QLabel("")
         grid_lay1.addWidget(self.empty_lb1, 6, 0)
@@ -154,6 +169,8 @@ class DblSidedTool(FlatCAMTool):
         # ## Grid Layout
         grid_lay2 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_lay2)
+        grid_lay2.setColumnStretch(0, 1)
+        grid_lay2.setColumnStretch(1, 0)
 
         # ## Point/Box
         self.point_box_container = QtWidgets.QVBoxLayout()
@@ -172,6 +189,12 @@ class DblSidedTool(FlatCAMTool):
               "The (x, y) coordinates are captured by pressing SHIFT key\n"
               "and left mouse button click on canvas or you can enter the coords manually.")
         )
+        self.add_point_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.add_point_button.setMinimumWidth(60)
 
         grid_lay2.addWidget(self.pb_label, 10, 0)
@@ -187,9 +210,9 @@ class DblSidedTool(FlatCAMTool):
         self.box_combo.setCurrentIndex(1)
 
         self.box_combo_type = QtWidgets.QComboBox()
-        self.box_combo_type.addItem(_("Gerber   Reference Box Object"))
-        self.box_combo_type.addItem(_("Excellon Reference Box Object"))
-        self.box_combo_type.addItem(_("Geometry Reference Box Object"))
+        self.box_combo_type.addItem(_("Reference Gerber"))
+        self.box_combo_type.addItem(_("Reference Excellon"))
+        self.box_combo_type.addItem(_("Reference Geometry"))
 
         self.point_box_container.addWidget(self.box_combo_type)
         self.point_box_container.addWidget(self.box_combo)
@@ -222,6 +245,12 @@ class DblSidedTool(FlatCAMTool):
               "- press SHIFT key and left mouse clicking on canvas. Then RMB click in the field and click Paste.\n"
               "- by entering the coords manually in the format: (x1, y1), (x2, y2), ...")
         )
+        self.add_drill_point_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.add_drill_point_button.setMinimumWidth(60)
 
         grid_lay3.addWidget(self.alignment_holes, 0, 0)
@@ -252,9 +281,6 @@ class DblSidedTool(FlatCAMTool):
         grid0.addWidget(self.dd_label, 1, 0)
         grid0.addWidget(self.drill_dia, 1, 1)
 
-        hlay2 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay2)
-
         # ## Buttons
         self.create_alignment_hole_button = QtWidgets.QPushButton(_("Create Excellon Object"))
         self.create_alignment_hole_button.setToolTip(
@@ -262,16 +288,28 @@ class DblSidedTool(FlatCAMTool):
               "specified alignment holes and their mirror\n"
               "images.")
         )
-        hlay2.addWidget(self.create_alignment_hole_button)
-
-        self.reset_button = QtWidgets.QPushButton(_("Reset"))
-        self.reset_button.setToolTip(
-            _("Resets all the fields.")
-        )
-        self.reset_button.setMinimumWidth(60)
-        hlay2.addWidget(self.reset_button)
+        self.create_alignment_hole_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.create_alignment_hole_button)
 
         self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         # ## Signals
         self.create_alignment_hole_button.clicked.connect(self.on_create_alignment_holes)
@@ -369,22 +407,12 @@ class DblSidedTool(FlatCAMTool):
 
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
-        try:
-            dia = float(self.drill_dia.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
-            try:
-                dia = float(self.drill_dia.get_value().replace(',', '.'))
-                self.drill_dia.set_value(dia)
-            except ValueError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Tool diameter value is missing or wrong format. "
-                                                              "Add it and retry."))
-                return
-
+        dia = float(self.drill_dia.get_value())
         if dia is '':
             self.app.inform.emit('[WARNING_NOTCL] %s' %
                                  _("No value or wrong format in Drill Dia entry. Add it and retry."))
             return
+
         tools = {"1": {"C": dia}}
 
         # holes = self.alignment_holes.get_value()

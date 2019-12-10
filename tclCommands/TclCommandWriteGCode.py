@@ -1,5 +1,6 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+
+import collections
 
 
 class TclCommandWriteGCode(TclCommandSignaled):
@@ -89,7 +90,7 @@ class TclCommandWriteGCode(TclCommandSignaled):
 
         try:
             obj = self.app.collection.get_by_name(str(obj_name))
-        except:
+        except Exception:
             if muted == 0:
                 return "Could not retrieve object: %s" % obj_name
             else:

@@ -1,5 +1,14 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+
+import collections
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class TclCommandSubtractRectangle(TclCommandSignaled):
@@ -61,8 +70,9 @@ class TclCommandSubtractRectangle(TclCommandSignaled):
 
         try:
             obj = self.app.collection.get_by_name(str(obj_name))
-        except:
+        except Exception:
             return "Could not retrieve object: %s" % obj_name
+
         if obj is None:
             return "Object not found: %s" % obj_name
 

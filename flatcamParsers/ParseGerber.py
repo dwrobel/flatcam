@@ -9,13 +9,15 @@ import traceback
 from copy import deepcopy
 import sys
 
-from shapely.ops import cascaded_union
+from shapely.ops import cascaded_union, unary_union
 from shapely.geometry import Polygon, MultiPolygon, LineString, Point
 import shapely.affinity as affinity
 from shapely.geometry import box as shply_box
 
-import FlatCAMTranslation as fcTranslate
+from lxml import etree as ET
+from flatcamParsers.ParseSVG import *
 
+import FlatCAMTranslation as fcTranslate
 import gettext
 import builtins
 
@@ -81,6 +83,7 @@ class Gerber(Geometry):
 
         # How to approximate a circle with lines.
         self.steps_per_circle = int(self.app.defaults["gerber_circle_steps"])
+        self.decimals = self.app.decimals
 
         # Initialize parent
         Geometry.__init__(self, geo_steps_per_circle=self.steps_per_circle)
@@ -258,7 +261,7 @@ class Gerber(Geometry):
 
         try:  # Could be empty for aperture macros
             paramList = apParameters.split('X')
-        except:
+        except Exception:
             paramList = None
 
         if apertureType == "C":  # Circle, example: %ADD11C,0.1*%
@@ -784,7 +787,7 @@ class Gerber(Geometry):
                         self.apertures['0'] = {}
                         self.apertures['0']['type'] = 'REG'
                         self.apertures['0']['size'] = 0.0
-                        self.apertures['0']['geometry'] = []
+                        self.apertures['0']['geometry'] = list()
 
                     # if D02 happened before G37 we now have a path with 1 element only; we have to add the current
                     # geo to the poly_buffer otherwise we loose it
@@ -867,7 +870,7 @@ class Gerber(Geometry):
                     # if match.group(1) is None and match.group(2) is None and match.group(3) is None:
                     #     try:
                     #         current_operation_code = int(match.group(4))
-                    #     except:
+                    #     except Exception:
                     #         pass  # A line with just * will match too.
                     #     continue
                     # NOTE: Letting it continue allows it to react to the
@@ -1082,7 +1085,7 @@ class Gerber(Geometry):
                                             geo_dict['clear'] = geo_s
                                         else:
                                             geo_dict['solid'] = geo_s
-                                except:
+                                except Exception:
                                     if self.app.defaults['gerber_simplification']:
                                         poly_buffer.append(geo_s.simplify(s_tol))
                                     else:
@@ -1434,7 +1437,7 @@ class Gerber(Geometry):
                 #     for poly in new_poly:
                 #         try:
                 #             self.solid_geometry = self.solid_geometry.union(poly)
-                #         except:
+                #         except Exception:
                 #             pass
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
@@ -1607,10 +1610,10 @@ class Gerber(Geometry):
         """
         Converts the units of the object to ``units`` by scaling all
         the geometry appropriately. This call ``scale()``. Don't call
-        it again in descendents.
+        it again in descendants.
 
-        :param units: "IN" or "MM"
-        :type units: str
+        :param obj_units: "IN" or "MM"
+        :type obj_units: str
         :return: Scaling factor resulting from unit change.
         :rtype: float
         """
@@ -1634,6 +1637,87 @@ class Gerber(Geometry):
         self.file_units_factor = factor
         self.scale(factor, factor)
         return factor
+
+    def import_svg(self, filename, object_type='gerber', flip=True, units='MM'):
+        """
+        Imports shapes from an SVG file into the object's geometry.
+
+        :param filename: Path to the SVG file.
+        :type filename: str
+        :param object_type: parameter passed further along
+        :param flip: Flip the vertically.
+        :type flip: bool
+        :param units: FlatCAM units
+        :return: None
+        """
+
+        log.debug("flatcamParsers.ParseGerber.Gerber.import_svg()")
+
+        # Parse into list of shapely objects
+        svg_tree = ET.parse(filename)
+        svg_root = svg_tree.getroot()
+
+        # Change origin to bottom left
+        # h = float(svg_root.get('height'))
+        # w = float(svg_root.get('width'))
+        h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
+
+        geos = getsvggeo(svg_root, 'gerber')
+        if flip:
+            geos = [translate(scale(g, 1.0, -1.0, origin=(0, 0)), yoff=h) for g in geos]
+
+        # Add to object
+        if self.solid_geometry is None:
+            self.solid_geometry = list()
+
+        # if type(self.solid_geometry) == list:
+        #     if type(geos) == list:
+        #         self.solid_geometry += geos
+        #     else:
+        #         self.solid_geometry.append(geos)
+        # else:  # It's shapely geometry
+        #     self.solid_geometry = [self.solid_geometry, geos]
+
+        if type(geos) == list:
+            # HACK for importing QRCODE exported by FlatCAM
+            if len(geos) == 1:
+                geo_qrcode = list()
+                geo_qrcode.append(Polygon(geos[0].exterior))
+                for i_el in geos[0].interiors:
+                    geo_qrcode.append(Polygon(i_el).buffer(0))
+                for poly in geo_qrcode:
+                    geos.append(poly)
+
+            if type(self.solid_geometry) == list:
+                self.solid_geometry += geos
+            else:
+                geos.append(self.solid_geometry)
+                self.solid_geometry = geos
+        else:
+            if type(self.solid_geometry) == list:
+                self.solid_geometry.append(geos)
+            else:
+                self.solid_geometry = [self.solid_geometry, geos]
+
+        # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
+        self.solid_geometry = list(self.flatten_list(self.solid_geometry))
+
+        try:
+            __ = iter(self.solid_geometry)
+        except TypeError:
+            self.solid_geometry = [self.solid_geometry]
+
+        if '0' not in self.apertures:
+            self.apertures['0'] = dict()
+            self.apertures['0']['type'] = 'REG'
+            self.apertures['0']['size'] = 0.0
+            self.apertures['0']['geometry'] = list()
+
+        for pol in self.solid_geometry:
+            new_el = dict()
+            new_el['solid'] = pol
+            new_el['follow'] = pol.exterior
+            self.apertures['0']['geometry'].append(deepcopy(new_el))
 
     def scale(self, xfactor, yfactor=None, point=None):
         """
@@ -1661,7 +1745,7 @@ class Gerber(Geometry):
 
         try:
             xfactor = float(xfactor)
-        except:
+        except Exception:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("Scale factor has to be a number: integer or float."))
             return
@@ -1671,10 +1755,13 @@ class Gerber(Geometry):
         else:
             try:
                 yfactor = float(yfactor)
-            except:
+            except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Scale factor has to be a number: integer or float."))
                 return
+
+        if xfactor == 0 and yfactor == 0:
+            return
 
         if point is None:
             px = 0
@@ -1685,8 +1772,7 @@ class Gerber(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for __ in self.solid_geometry:
-                self.geo_len += 1
+            self.geo_len = len(self.solid_geometry)
         except TypeError:
             self.geo_len = 1
 
@@ -1751,8 +1837,7 @@ class Gerber(Geometry):
             log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
             return 'fail'
 
-        self.app.inform.emit('[success] %s' %
-                             _("Gerber Scale done."))
+        self.app.inform.emit('[success] %s' % _("Gerber Scale done."))
         self.app.proc_container.new_text = ''
 
         # ## solid_geometry ???
@@ -1790,6 +1875,9 @@ class Gerber(Geometry):
             self.app.inform.emit('[ERROR_NOTCL] %s' %
                                  _("An (x,y) pair of values are needed. "
                                    "Probable you entered only one value in the Offset field."))
+            return
+
+        if dx == 0 and dy == 0:
             return
 
         # variables to display the percentage of work done
@@ -1944,11 +2032,13 @@ class Gerber(Geometry):
 
         px, py = point
 
+        if angle_x == 0 and angle_y == 0:
+            return
+
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for __ in self.solid_geometry:
-                self.geo_len += 1
+            self.geo_len = len(self.solid_geometry)
         except TypeError:
             self.geo_len = 1
 
@@ -2004,6 +2094,9 @@ class Gerber(Geometry):
         log.debug("parseGerber.Gerber.rotate()")
 
         px, py = point
+
+        if angle == 0:
+            return
 
         # variables to display the percentage of work done
         self.geo_len = 0

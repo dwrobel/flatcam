@@ -30,6 +30,8 @@ class ToolMove(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
+        self.app = app
+        self.decimals = self.app.decimals
 
         self.layout.setContentsMargins(0, 0, 3, 0)
         self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Maximum)
@@ -160,11 +162,12 @@ class ToolMove(FlatCAMTool):
 
                     def job_move(app_obj):
                         with self.app.proc_container.new(_("Moving...")) as proc:
-                            try:
-                                if not obj_list:
-                                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object(s) selected."))
-                                    return "fail"
 
+                            if not obj_list:
+                                app_obj.app.inform.emit('[WARNING_NOTCL] %s' % _("No object(s) selected."))
+                                return "fail"
+
+                            try:
                                 # remove any mark aperture shape that may be displayed
                                 for sel_obj in obj_list:
                                     # if the Gerber mark shapes are enabled they need to be disabled before move
@@ -173,10 +176,9 @@ class ToolMove(FlatCAMTool):
 
                                     try:
                                         sel_obj.replotApertures.emit()
-                                    except Exception as e:
+                                    except Exception:
                                         pass
 
-                                for sel_obj in obj_list:
                                     # offset solid_geometry
                                     sel_obj.offset((dx, dy))
 
@@ -186,15 +188,13 @@ class ToolMove(FlatCAMTool):
                                     sel_obj.options['ymin'] = b
                                     sel_obj.options['xmax'] = c
                                     sel_obj.options['ymax'] = d
-
-                                # time to plot the moved objects
-                                self.replot_signal.emit(obj_list)
                             except Exception as e:
-                                proc.done()
-                                self.app.inform.emit('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(e)))
+                                log.debug('[ERROR_NOTCL] %s --> %s' % ('ToolMove.on_left_click()', str(e)))
                                 return "fail"
 
-                        proc.done()
+                            # time to plot the moved objects
+                            app_obj.replot_signal.emit(obj_list)
+
                         # delete the selection bounding box
                         self.delete_shape()
                         self.app.inform.emit('[success] %s %s' %
@@ -314,7 +314,7 @@ class ToolMove(FlatCAMTool):
 
     def draw_shape(self, shape):
 
-        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if self.app.defaults['units'].upper() == 'MM':
             proc_shape = shape.buffer(-0.1)
             proc_shape = proc_shape.buffer(0.2)
         else:

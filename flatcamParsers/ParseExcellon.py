@@ -1,3 +1,10 @@
+# ########################################################## ##
+# FlatCAM: 2D Post-processing for Manufacturing               #
+# http://flatcam.org                                          #
+# Author: Juan Pablo Caram (c)                                #
+# Date: 2/5/2014                                              #
+# MIT Licence                                                 #
+# ########################################################## ##
 
 from camlib import Geometry
 import FlatCAMApp
@@ -9,6 +16,7 @@ import numpy as np
 import re
 import logging
 import traceback
+from copy import deepcopy
 
 import FlatCAMTranslation as fcTranslate
 
@@ -77,6 +85,7 @@ class Excellon(Geometry):
         :return: Excellon object.
         :rtype: Excellon
         """
+        self.decimals = self.app.decimals
 
         if geo_steps_per_circle is None:
             geo_steps_per_circle = int(Excellon.defaults['geo_steps_per_circle'])
@@ -88,7 +97,6 @@ class Excellon(Geometry):
         self.tools = {}
         # list to store the drills, see above for description
         self.drills = []
-
         # self.slots (list) to store the slots; each is a dictionary
         self.slots = []
 
@@ -105,7 +113,7 @@ class Excellon(Geometry):
         self.index_per_tool = {}  # Dictionary to store the indexed points for each tool
 
         # ## IN|MM -> Units are inherited from Geometry
-        # self.units = units
+        self.units = self.app.defaults['units']
 
         # Trailing "T" or leading "L" (default)
         # self.zeros = "T"
@@ -250,7 +258,7 @@ class Excellon(Geometry):
 
         try:
             self.parse_lines(estr)
-        except:
+        except Exception:
             return "fail"
 
     def parse_lines(self, elines):
@@ -303,8 +311,7 @@ class Excellon(Geometry):
                 # and we need to exit from here
                 if self.detect_gcode_re.search(eline):
                     log.warning("This is GCODE mark: %s" % eline)
-                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                         (_('This is GCODE mark'), eline))
+                    self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_('This is GCODE mark'), eline))
                     return
 
                 # Header Begin (M48) #
@@ -339,11 +346,11 @@ class Excellon(Geometry):
                             if line_units == 'MILS':
                                 spec = {"C": (float(match.group(2)) / 1000)}
                                 self.tools[str(name_tool)] = spec
-                                log.debug("  Tool definition: %s %s" % (name_tool, spec))
+                                log.debug("Tool definition: %s %s" % (name_tool, spec))
                             else:
                                 spec = {"C": float(match.group(2))}
                                 self.tools[str(name_tool)] = spec
-                                log.debug("  Tool definition: %s %s" % (name_tool, spec))
+                                log.debug("Tool definition: %s %s" % (name_tool, spec))
                             spec['solid_geometry'] = []
                             continue
                     # search for Altium Excellon Format / Sprint Layout who is included as a comment
@@ -385,17 +392,18 @@ class Excellon(Geometry):
                 # object's units.
                 match = self.meas_re.match(eline)
                 if match:
-                    # self.units = {"1": "MM", "2": "IN"}[match.group(1)]
+                    self.units = {"1": "MM", "2": "IN"}[match.group(1)]
 
                     # Modified for issue #80
-                    self.convert_units({"1": "MM", "2": "IN"}[match.group(1)])
-                    log.debug("  Units: %s" % self.units)
+                    log.debug("ALternative M71/M72 units found, before conversion: %s" % self.units)
+                    self.convert_units(self.units)
+                    log.debug("ALternative M71/M72 units found, after conversion: %s" % self.units)
                     if self.units == 'MM':
-                        log.warning("Excellon format preset is: %s" % self.excellon_format_upper_mm + \
-                                    ':' + str(self.excellon_format_lower_mm))
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                     else:
-                        log.warning("Excellon format preset is: %s" % self.excellon_format_upper_in + \
-                                    ':' + str(self.excellon_format_lower_in))
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
                     continue
 
                 # ### Body ####
@@ -412,7 +420,7 @@ class Excellon(Geometry):
                                 name = str(int(match.group(1)))
                                 try:
                                     diam = float(match.group(2))
-                                except:
+                                except Exception:
                                     # it's possible that tool definition has only tool number and no diameter info
                                     # (those could be in another file like PCB Wizard do)
                                     # then match.group(2) = None and float(None) will create the exception
@@ -476,7 +484,7 @@ class Excellon(Geometry):
                                 slot_current_x = slot_start_x
                             except TypeError:
                                 slot_start_x = slot_current_x
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -484,7 +492,7 @@ class Excellon(Geometry):
                                 slot_current_y = slot_start_y
                             except TypeError:
                                 slot_start_y = slot_current_y
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -492,7 +500,7 @@ class Excellon(Geometry):
                                 slot_current_x = slot_stop_x
                             except TypeError:
                                 slot_stop_x = slot_current_x
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -500,7 +508,7 @@ class Excellon(Geometry):
                                 slot_current_y = slot_stop_y
                             except TypeError:
                                 slot_stop_y = slot_current_y
-                            except:
+                            except Exception:
                                 return
 
                             if (slot_start_x is None or slot_start_y is None or
@@ -546,7 +554,7 @@ class Excellon(Geometry):
                                 slot_current_x = slot_start_x
                             except TypeError:
                                 slot_start_x = slot_current_x
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -554,7 +562,7 @@ class Excellon(Geometry):
                                 slot_current_y = slot_start_y
                             except TypeError:
                                 slot_start_y = slot_current_y
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -562,7 +570,7 @@ class Excellon(Geometry):
                                 slot_current_x = slot_stop_x
                             except TypeError:
                                 slot_stop_x = slot_current_x
-                            except:
+                            except Exception:
                                 return
 
                             try:
@@ -570,7 +578,7 @@ class Excellon(Geometry):
                                 slot_current_y = slot_stop_y
                             except TypeError:
                                 slot_stop_y = slot_current_y
-                            except:
+                            except Exception:
                                 return
 
                             if (slot_start_x is None or slot_start_y is None or
@@ -619,7 +627,7 @@ class Excellon(Geometry):
                         except TypeError:
                             x = current_x
                             repeating_x = 0
-                        except:
+                        except Exception:
                             return
 
                         try:
@@ -629,7 +637,7 @@ class Excellon(Geometry):
                         except TypeError:
                             y = current_y
                             repeating_y = 0
-                        except:
+                        except Exception:
                             return
 
                         if x is None or y is None:
@@ -776,13 +784,13 @@ class Excellon(Geometry):
                         name = str(int(match.group(1)))
                         spec = {"C": float(match.group(2)), 'solid_geometry': []}
                         self.tools[name] = spec
-                        log.debug("  Tool definition: %s %s" % (name, spec))
+                        log.debug("Tool definition: %s %s" % (name, spec))
                         continue
 
                     # ## Units and number format # ##
                     match = self.units_re.match(eline)
                     if match:
-                        self.units_found = match.group(1)
+                        self.units = self.units = {"METRIC": "MM", "INCH": "IN"}[match.group(1)]
                         self.zeros = match.group(2)  # "T" or "L". Might be empty
                         self.excellon_format = match.group(3)
                         if self.excellon_format:
@@ -796,51 +804,49 @@ class Excellon(Geometry):
                                 self.excellon_format_lower_in = lower
 
                         # Modified for issue #80
-                        self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units_found])
-                        # log.warning("  Units/Format: %s %s" % (self.units, self.zeros))
-                        log.warning("Units: %s" % self.units)
+                        log.warning("UNITS found inline before conversion: %s" % self.units)
+                        self.convert_units(self.units)
+                        log.warning("UNITS found inline after conversion: %s" % self.units)
                         if self.units == 'MM':
-                            log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_mm) +
-                                        ':' + str(self.excellon_format_lower_mm))
+                            log.warning("Excellon format preset is: %s:%s" %
+                                        (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                         else:
-                            log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_in) +
-                                        ':' + str(self.excellon_format_lower_in))
-                        log.warning("Type of zeros found inline: %s" % self.zeros)
+                            log.warning("Excellon format preset is: %s:%s" %
+                                        (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
+                        log.warning("Type of ZEROS found inline, in header: %s" % self.zeros)
                         continue
 
                     # Search for units type again it might be alone on the line
                     if "INCH" in eline:
-                        line_units = "INCH"
+                        line_units = "IN"
                         # Modified for issue #80
-                        self.convert_units({"INCH": "IN", "METRIC": "MM"}[line_units])
-                        log.warning("Type of UNITS found inline: %s" % line_units)
-                        log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_in) +
-                                    ':' + str(self.excellon_format_lower_in))
-                        # TODO: not working
-                        # FlatCAMApp.App.inform.emit("Detected INLINE: %s" % str(eline))
+                        log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
+                        self.convert_units(line_units)
+                        log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
                         continue
                     elif "METRIC" in eline:
-                        line_units = "METRIC"
+                        line_units = "MM"
                         # Modified for issue #80
-                        self.convert_units({"INCH": "IN", "METRIC": "MM"}[line_units])
-                        log.warning("Type of UNITS found inline: %s" % line_units)
-                        log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_mm) +
-                                    ':' + str(self.excellon_format_lower_mm))
-                        # TODO: not working
-                        # FlatCAMApp.App.inform.emit("Detected INLINE: %s" % str(eline))
+                        log.warning("Type of UNITS found inline, in header, before conversion: %s" % line_units)
+                        self.convert_units(line_units)
+                        log.warning("Type of UNITS found inline, in header, after conversion: %s" % self.units)
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
                         continue
 
                     # Search for zeros type again because it might be alone on the line
                     match = re.search(r'[LT]Z', eline)
                     if match:
                         self.zeros = match.group()
-                        log.warning("Type of zeros found: %s" % self.zeros)
+                        log.warning("Type of ZEROS found: %s" % self.zeros)
                         continue
 
                 # ## Units and number format outside header# ##
                 match = self.units_re.match(eline)
                 if match:
-                    self.units_found = match.group(1)
+                    self.units = self.units = {"METRIC": "MM", "INCH": "IN"}[match.group(1)]
                     self.zeros = match.group(2)  # "T" or "L". Might be empty
                     self.excellon_format = match.group(3)
                     if self.excellon_format:
@@ -854,18 +860,17 @@ class Excellon(Geometry):
                             self.excellon_format_lower_in = lower
 
                     # Modified for issue #80
-                    self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units_found])
-                    # log.warning("  Units/Format: %s %s" % (self.units, self.zeros))
-                    log.warning("Units: %s" % self.units)
-                    if self.units == 'MM':
-                        log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_mm) +
-                                    ':' + str(self.excellon_format_lower_mm))
-                    else:
-                        log.warning("Excellon format preset is: %s" % str(self.excellon_format_upper_in) +
-                                    ':' + str(self.excellon_format_lower_in))
-                    log.warning("Type of zeros found outside header, inline: %s" % self.zeros)
+                    log.warning("Type of UNITS found outside header, inline before conversion: %s" % self.units)
+                    self.convert_units(self.units)
+                    log.warning("Type of UNITS found outside header, inline after conversion: %s" % self.units)
 
-                    log.warning("UNITS found outside header")
+                    if self.units == 'MM':
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_mm), str(self.excellon_format_lower_mm)))
+                    else:
+                        log.warning("Excellon format preset is: %s:%s" %
+                                    (str(self.excellon_format_upper_in), str(self.excellon_format_lower_in)))
+                    log.warning("Type of ZEROS found outside header, inline: %s" % self.zeros)
                     continue
 
                 log.warning("Line ignored: %s" % eline)
@@ -873,8 +878,9 @@ class Excellon(Geometry):
             # make sure that since we are in headerless mode, we convert the tools only after the file parsing
             # is finished since the tools definitions are spread in the Excellon body. We use as units the value
             # from self.defaults['excellon_units']
+
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
-        except Exception as e:
+        except Exception:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
             msg = '[ERROR_NOTCL] %s' % \
                   _("An internal error has ocurred. See shell.\n")
@@ -948,6 +954,8 @@ class Excellon(Geometry):
 
         :return: None
         """
+
+        log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry()")
         self.solid_geometry = []
         try:
             # clear the solid_geometry in self.tools
@@ -964,7 +972,7 @@ class Excellon(Geometry):
                                          _("Excellon.create_geometry() -> a drill location was skipped "
                                            "due of not having a tool associated.\n"
                                            "Check the resulting GCode."))
-                    log.debug("Excellon.create_geometry() -> a drill location was skipped "
+                    log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry() -> a drill location was skipped "
                               "due of not having a tool associated")
                     continue
                 tooldia = self.tools[drill['tool']]['C']
@@ -983,36 +991,9 @@ class Excellon(Geometry):
                 self.tools[slot['tool']]['solid_geometry'].append(poly)
 
         except Exception as e:
-            log.debug("Excellon geometry creation failed due of ERROR: %s" % str(e))
+            log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry() -> "
+                      "Excellon geometry creation failed due of ERROR: %s" % str(e))
             return "fail"
-
-        # drill_geometry = {}
-        # slot_geometry = {}
-        #
-        # def insertIntoDataStruct(dia, drill_geo, aDict):
-        #     if not dia in aDict:
-        #         aDict[dia] = [drill_geo]
-        #     else:
-        #         aDict[dia].append(drill_geo)
-        #
-        # for tool in self.tools:
-        #     tooldia = self.tools[tool]['C']
-        #     for drill in self.drills:
-        #         if drill['tool'] == tool:
-        #             poly = drill['point'].buffer(tooldia / 2.0)
-        #             insertIntoDataStruct(tooldia, poly, drill_geometry)
-        #
-        # for tool in self.tools:
-        #     slot_tooldia = self.tools[tool]['C']
-        #     for slot in self.slots:
-        #         if slot['tool'] == tool:
-        #             start = slot['start']
-        #             stop = slot['stop']
-        #             lines_string = LineString([start, stop])
-        #             poly = lines_string.buffer(slot_tooldia/2.0, self.geo_steps_per_circle)
-        #             insertIntoDataStruct(slot_tooldia, poly, drill_geometry)
-        #
-        # self.solid_geometry = [drill_geometry, slot_geometry]
 
     def bounds(self):
         """
@@ -1022,9 +1003,10 @@ class Excellon(Geometry):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("camlib.Excellon.bounds()")
-        if self.solid_geometry is None:
-            log.debug("solid_geometry is None")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.bounds()")
+
+        if self.solid_geometry is None or not self.tools:
+            log.debug("flatcamParsers.ParseExcellon.Excellon -> solid_geometry is None")
             return 0, 0, 0, 0
 
         def bounds_rec(obj):
@@ -1065,7 +1047,7 @@ class Excellon(Geometry):
             maxx_list.append(maxx)
             maxy_list.append(maxy)
 
-        return (min(minx_list), min(miny_list), max(maxx_list), max(maxy_list))
+        return min(minx_list), min(miny_list), max(maxx_list), max(maxy_list)
 
     def convert_units(self, units):
         """
@@ -1082,16 +1064,29 @@ class Excellon(Geometry):
         :type str: IN or MM
         :return:
         """
-        log.debug("camlib.Excellon.convert_units()")
 
-        factor = Geometry.convert_units(self, units)
+        # factor = Geometry.convert_units(self, units)
+        obj_units = units
+        if obj_units.upper() == self.units.upper():
+            factor = 1.0
+        elif obj_units.upper() == "MM":
+            factor = 25.4
+        elif obj_units.upper() == "IN":
+            factor = 1 / 25.4
+        else:
+            log.error("Unsupported units: %s" % str(obj_units))
+            factor = 1.0
+        log.debug("flatcamParsers.ParseExcellon.Excellon.convert_units() --> Factor: %s" % str(factor))
+
+        self.units = obj_units
+        self.scale(factor, factor)
+        self.file_units_factor = factor
 
         # Tools
         for tname in self.tools:
             self.tools[tname]["C"] *= factor
 
         self.create_geometry()
-
         return factor
 
     def scale(self, xfactor, yfactor=None, point=None):
@@ -1106,7 +1101,7 @@ class Excellon(Geometry):
         :return: None
         :rtype: NOne
         """
-        log.debug("camlib.Excellon.scale()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.scale()")
 
         if yfactor is None:
             yfactor = xfactor
@@ -1116,6 +1111,9 @@ class Excellon(Geometry):
             py = 0
         else:
             px, py = point
+
+        if xfactor == 0 and yfactor == 0:
+            return
 
         def scale_geom(obj):
             if type(obj) is list:
@@ -1169,9 +1167,12 @@ class Excellon(Geometry):
         :type vect: tuple
         :return: None
         """
-        log.debug("camlib.Excellon.offset()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.offset()")
 
         dx, dy = vect
+
+        if dx == 0 and dy == 0:
+            return
 
         def offset_geom(obj):
             if type(obj) is list:
@@ -1227,7 +1228,7 @@ class Excellon(Geometry):
         :type point: list
         :return: None
         """
-        log.debug("camlib.Excellon.mirror()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -1294,13 +1295,16 @@ class Excellon(Geometry):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
-        log.debug("camlib.Excellon.skew()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.skew()")
 
         if angle_x is None:
             angle_x = 0.0
 
         if angle_y is None:
             angle_y = 0.0
+
+        if angle_x == 0 and angle_y == 0:
+            return
 
         def skew_geom(obj):
             if type(obj) is list:
@@ -1378,7 +1382,10 @@ class Excellon(Geometry):
         :param point: tuple of coordinates (x, y)
         :return:
         """
-        log.debug("camlib.Excellon.rotate()")
+        log.debug("flatcamParsers.ParseExcellon.Excellon.rotate()")
+
+        if angle == 0:
+            return
 
         def rotate_geom(obj, origin=None):
             if type(obj) is list:

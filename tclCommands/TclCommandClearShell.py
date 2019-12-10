@@ -6,7 +6,7 @@
 # ##########################################################
 
 from tclCommands.TclCommand import TclCommand
-from ObjectCollection import *
+import collections
 
 
 class TclCommandClearShell(TclCommand):

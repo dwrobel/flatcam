@@ -57,7 +57,61 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         # workspace lines; I didn't use the rectangle because I didn't want to add another VisPy Node,
         # which might decrease performance
-        self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
+        # self.b_line, self.r_line, self.t_line, self.l_line = None, None, None, None
+        self.workspace_line = None
+
+        self.pagesize_dict = dict()
+        self.pagesize_dict.update(
+            {
+                'A0': (841, 1189),
+                'A1': (594, 841),
+                'A2': (420, 594),
+                'A3': (297, 420),
+                'A4': (210, 297),
+                'A5': (148, 210),
+                'A6': (105, 148),
+                'A7': (74, 105),
+                'A8': (52, 74),
+                'A9': (37, 52),
+                'A10': (26, 37),
+
+                'B0': (1000, 1414),
+                'B1': (707, 1000),
+                'B2': (500, 707),
+                'B3': (353, 500),
+                'B4': (250, 353),
+                'B5': (176, 250),
+                'B6': (125, 176),
+                'B7': (88, 125),
+                'B8': (62, 88),
+                'B9': (44, 62),
+                'B10': (31, 44),
+
+                'C0': (917, 1297),
+                'C1': (648, 917),
+                'C2': (458, 648),
+                'C3': (324, 458),
+                'C4': (229, 324),
+                'C5': (162, 229),
+                'C6': (114, 162),
+                'C7': (81, 114),
+                'C8': (57, 81),
+                'C9': (40, 57),
+                'C10': (28, 40),
+
+                # American paper sizes
+                'LETTER': (8.5*25.4, 11*25.4),
+                'LEGAL': (8.5*25.4, 14*25.4),
+                'ELEVENSEVENTEEN': (11*25.4, 17*25.4),
+
+                # From https://en.wikipedia.org/wiki/Paper_size
+                'JUNIOR_LEGAL': (5*25.4, 8*25.4),
+                'HALF_LETTER': (5.5*25.4, 8*25.4),
+                'GOV_LETTER': (8*25.4, 10.5*25.4),
+                'GOV_LEGAL': (8.5*25.4, 13*25.4),
+                'LEDGER': (17*25.4, 11*25.4),
+            }
+        )
 
         # <VisPyCanvas>
         self.create_native()
@@ -67,16 +121,16 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.container.addWidget(self.native)
 
         # ## AXIS # ##
-        self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
+        self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=True,
                                    parent=self.view.scene)
 
-        self.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=False,
+        self.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=False,
                                    parent=self.view.scene)
 
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
-
-        self.draw_workspace()
+        if self.fcapp.defaults['global_workspace'] is True:
+            self.draw_workspace(workspace_size=self.fcapp.defaults["global_workspaceT"])
 
         self.line_parent = None
         self.cursor_v_line = InfiniteLine(pos=None, color=self.line_color, vertical=True,
@@ -105,73 +159,43 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
-    # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
-    # all CNC have a limited workspace
-    def draw_workspace(self):
-        a = np.empty((0, 0))
+    def draw_workspace(self, workspace_size):
+        """
+        Draw a rectangular shape on canvas to specify our valid workspace.
+        :param workspace_size: the workspace size; tuple
+        :return:
+        """
+        try:
+            if self.fcapp.defaults['units'].upper() == 'MM':
+                dims = self.pagesize_dict[workspace_size]
+            else:
+                dims = (self.pagesize_dict[workspace_size][0]/25.4, self.pagesize_dict[workspace_size][1]/25.4)
+        except Exception as e:
+            log.debug("PlotCanvas.draw_workspace() --> %s" % str(e))
+            return
 
-        a4p_in = np.array([(0, 0), (8.3, 0), (8.3, 11.7), (0, 11.7)])
-        a4l_in = np.array([(0, 0), (11.7, 0), (11.7, 8.3), (0, 8.3)])
-        a3p_in = np.array([(0, 0), (11.7, 0), (11.7, 16.5), (0, 16.5)])
-        a3l_in = np.array([(0, 0), (16.5, 0), (16.5, 11.7), (0, 11.7)])
+        if self.fcapp.defaults['global_workspace_orientation'] == 'l':
+            dims = (dims[1], dims[0])
 
-        a4p_mm = np.array([(0, 0), (210, 0), (210, 297), (0, 297)])
-        a4l_mm = np.array([(0, 0), (297, 0), (297, 210), (0, 210)])
-        a3p_mm = np.array([(0, 0), (297, 0), (297, 420), (0, 420)])
-        a3l_mm = np.array([(0, 0), (420, 0), (420, 297), (0, 297)])
+        a = np.array([(0, 0), (dims[0], 0), (dims[0], dims[1]), (0, dims[1])])
 
-        if self.fcapp.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
-            if self.fcapp.defaults['global_workspaceT'] == 'A4P':
-                a = a4p_mm
-            elif self.fcapp.defaults['global_workspaceT'] == 'A4L':
-                a = a4l_mm
-            elif self.fcapp.defaults['global_workspaceT'] == 'A3P':
-                a = a3p_mm
-            elif self.fcapp.defaults['global_workspaceT'] == 'A3L':
-                a = a3l_mm
+        if not self.workspace_line:
+            self.workspace_line = Line(pos=np.array((a[0], a[1], a[2], a[3], a[0])), color=(0.70, 0.3, 0.3, 0.7),
+                                       antialias=True, method='agg', parent=self.view.scene)
         else:
-            if self.fcapp.defaults['global_workspaceT'] == 'A4P':
-                a = a4p_in
-            elif self.fcapp.defaults['global_workspaceT'] == 'A4L':
-                a = a4l_in
-            elif self.fcapp.defaults['global_workspaceT'] == 'A3P':
-                a = a3p_in
-            elif self.fcapp.defaults['global_workspaceT'] == 'A3L':
-                a = a3l_in
+            self.workspace_line.parent = self.view.scene
 
-        self.delete_workspace()
-
-        self.b_line = Line(pos=a[0:2], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias=True, method='agg', parent=self.view.scene)
-        self.r_line = Line(pos=a[1:3], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias=True, method='agg', parent=self.view.scene)
-
-        self.t_line = Line(pos=a[2:4], color=(0.70, 0.3, 0.3, 1.0),
-                           antialias=True, method='agg', parent=self.view.scene)
-        self.l_line = Line(pos=np.array((a[0], a[3])), color=(0.70, 0.3, 0.3, 1.0),
-                           antialias=True, method='agg', parent=self.view.scene)
-
-        if self.fcapp.defaults['global_workspace'] is False:
-            self.delete_workspace()
-
-    # delete the workspace lines from the plot by removing the parent
     def delete_workspace(self):
         try:
-            self.b_line.parent = None
-            self.r_line.parent = None
-            self.t_line.parent = None
-            self.l_line.parent = None
-        except Exception as e:
+            self.workspace_line.parent = None
+        except Exception:
             pass
 
-    # redraw the workspace lines on the plot by readding them to the parent view.scene
+    # redraw the workspace lines on the plot by re adding them to the parent view.scene
     def restore_workspace(self):
         try:
-            self.b_line.parent = self.view.scene
-            self.r_line.parent = self.view.scene
-            self.t_line.parent = self.view.scene
-            self.l_line.parent = self.view.scene
-        except Exception as e:
+            self.workspace_line.parent = self.view.scene
+        except Exception:
             pass
 
     def graph_event_connect(self, event_name, callback):
@@ -310,12 +334,32 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             except TypeError:
                 pass
 
-        # adjust the view camera to be slightly bigger than the bounds so the shape colleaction can be seen clearly
+        # adjust the view camera to be slightly bigger than the bounds so the shape collection can be seen clearly
         # otherwise the shape collection boundary will have no border
-        rect.left *= 0.96
-        rect.bottom *= 0.96
-        rect.right *= 1.01
-        rect.top *= 1.01
+        dx = rect.right - rect.left
+        dy = rect.top - rect.bottom
+        x_factor = dx * 0.02
+        y_factor = dy * 0.02
+
+        rect.left -= x_factor
+        rect.bottom -= y_factor
+        rect.right += x_factor
+        rect.top += y_factor
+
+        # rect.left *= 0.96
+        # rect.bottom *= 0.96
+        # rect.right *= 1.04
+        # rect.top *= 1.04
+
+        # units = self.fcapp.defaults['units'].upper()
+        # if units == 'MM':
+        #     compensation = 0.5
+        # else:
+        #     compensation = 0.5 / 25.4
+        # rect.left -= compensation
+        # rect.bottom -= compensation
+        # rect.right += compensation
+        # rect.top += compensation
 
         self.view.camera.rect = rect
 

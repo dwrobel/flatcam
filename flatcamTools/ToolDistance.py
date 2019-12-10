@@ -11,7 +11,7 @@ from FlatCAMTool import FlatCAMTool
 from flatcamGUI.VisPyVisuals import *
 from flatcamGUI.GUIElements import FCEntry
 
-import copy
+from copy import copy
 import math
 import logging
 import gettext
@@ -33,8 +33,10 @@ class Distance(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         self.app = app
+        self.decimals = self.app.decimals
+
         self.canvas = self.app.plotcanvas
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.defaults['units'].lower()
 
         # ## Title
         title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
@@ -135,8 +137,6 @@ class Distance(FlatCAMTool):
         self.mm = None
         self.mr = None
 
-        self.decimals = 4
-
         # VisPy visuals
         if self.app.is_legacy is False:
             self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
@@ -182,7 +182,7 @@ class Distance(FlatCAMTool):
 
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.defaults['units'].lower()
 
         self.app.command_active = "Distance"
 
@@ -194,6 +194,12 @@ class Distance(FlatCAMTool):
         self.distance_y_entry.set_value('0.0')
         self.angle_entry.set_value('0.0')
         self.total_distance_entry.set_value('0.0')
+
+        # this is a hack; seems that triggering the grid will make the visuals better
+        # trigger it twice to return to the original state
+        self.app.ui.grid_snap_btn.trigger()
+        self.app.ui.grid_snap_btn.trigger()
+
         log.debug("Distance Tool --> tool initialized")
 
     def activate_measure_tool(self):
@@ -204,7 +210,7 @@ class Distance(FlatCAMTool):
         self.original_call_source = copy(self.app.call_source)
 
         self.app.inform.emit(_("MEASURING: Click on the Start point ..."))
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.defaults['units'].lower()
 
         # we can connect the app mouse events to the measurement tool
         # NEVER DISCONNECT THOSE before connecting some other handlers; it breaks something in VisPy

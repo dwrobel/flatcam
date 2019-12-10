@@ -39,8 +39,8 @@ class ToolOptimal(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
-        self.decimals = 4
+        self.units = self.app.defaults['units'].upper()
+        self.decimals = self.app.decimals
 
         # ############################################################################
         # ############################ GUI creation ##################################
@@ -116,6 +116,9 @@ class ToolOptimal(FlatCAMTool):
 
         # Locations where minimum was found
         self.locations_textb = FCTextArea(parent=self)
+        self.locations_textb.setPlaceholderText(
+            _("Coordinates for points where minimum distance was found.")
+        )
         self.locations_textb.setReadOnly(True)
         stylesheet = """
                         QTextEdit { selection-background-color:blue;
@@ -164,6 +167,10 @@ class ToolOptimal(FlatCAMTool):
 
         # Other distances
         self.distances_textb = FCTextArea(parent=self)
+        self.distances_textb.setPlaceholderText(
+            _("Other distances and the coordinates for points\n"
+              "where the distance was found.")
+        )
         self.distances_textb.setReadOnly(True)
         stylesheet = """
                         QTextEdit { selection-background-color:blue;
@@ -184,6 +191,10 @@ class ToolOptimal(FlatCAMTool):
 
         # Locations where minimum was found
         self.locations_sec_textb = FCTextArea(parent=self)
+        self.locations_sec_textb.setPlaceholderText(
+            _("Other distances and the coordinates for points\n"
+              "where the distance was found.")
+        )
         self.locations_sec_textb.setReadOnly(True)
         stylesheet = """
                         QTextEdit { selection-background-color:blue;
@@ -211,8 +222,29 @@ class ToolOptimal(FlatCAMTool):
               "this will allow the determination of the right tool to\n"
               "use for isolation or copper clearing.")
         )
+        self.calculate_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
         self.calculate_button.setMinimumWidth(60)
         self.layout.addWidget(self.calculate_button)
+
+        self.layout.addStretch()
+
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
 
         self.loc_ois = OptionalHideInputSection(self.locations_cb, [self.locations_textb, self.locate_button])
         self.sec_loc_ois = OptionalHideInputSection(self.sec_locations_cb, [self.sec_locations_frame])
@@ -242,7 +274,7 @@ class ToolOptimal(FlatCAMTool):
         self.distances_textb.cursorPositionChanged.connect(self.on_distances_textb_clicked)
         self.locations_sec_textb.cursorPositionChanged.connect(self.on_locations_sec_clicked)
 
-        self.layout.addStretch()
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+O', **kwargs)
@@ -297,7 +329,7 @@ class ToolOptimal(FlatCAMTool):
         self.reset_fields()
 
     def find_minimum_distance(self):
-        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.defaults['units'].upper()
         self.decimals = int(self.precision_spinner.get_value())
 
         selection_index = self.gerber_object_combo.currentIndex()

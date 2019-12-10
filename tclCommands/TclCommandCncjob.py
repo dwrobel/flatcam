@@ -1,5 +1,8 @@
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMGeometry
+
+import collections
+from copy import deepcopy
 
 
 class TclCommandCncjob(TclCommandSignaled):
@@ -60,7 +63,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('feedrate', 'Moving speed on X-Y plane when cutting.'),
             ('feedrate_z', 'Moving speed on Z plane when cutting.'),
             ('feedrate_rapid', 'Rapid moving at speed when cutting.'),
-            ('multidepth', 'Use or not multidepth cnccut. (True or False)'),
+            ('multidepth', 'Use or not multidepth cnc cut. (True or False)'),
             ('extracut', 'Use or not an extra cnccut over the first point in path,in the job end (example: True)'),
             ('depthperpass', 'Height of one layer for multidepth.'),
             ('toolchange', 'Enable tool changes (example: True).'),
@@ -72,10 +75,10 @@ class TclCommandCncjob(TclCommandSignaled):
             ('dwell', 'True or False; use (or not) the dwell'),
             ('dwelltime', 'Time to pause to allow the spindle to reach the full speed'),
             ('outname', 'Name of the resulting Geometry object.'),
-            ('pp', 'Name of the Geometry postprocessor. No quotes, case sensitive'),
+            ('pp', 'Name of the Geometry preprocessor. No quotes, case sensitive'),
             ('muted', 'It will not put errors in the Shell.')
         ]),
-        'examples': ['cncjob geo_name -tooldia 0.5 -z_cut -1.7 -z_move 2 -feedrate 120 -ppname_g default']
+        'examples': ['cncjob geo_name -dia 0.5 -z_cut -1.7 -z_move 2 -feedrate 120 -pp default']
     }
 
     def execute(self, args, unnamed_args):
@@ -131,9 +134,8 @@ class TclCommandCncjob(TclCommandSignaled):
         args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args and args["feedrate_rapid"] else \
             obj.options["feedrate_rapid"]
 
-        args["multidepth"] = args["multidepth"] if "multidepth" in args and args["multidepth"] else \
-            obj.options["multidepth"]
-        args["extracut"] = args["extracut"] if "extracut" in args and args["extracut"] else obj.options["extracut"]
+        args["multidepth"] = bool(args["multidepth"]) if "multidepth" in args else obj.options["multidepth"]
+        args["extracut"] = bool(args["extracut"]) if "extracut" in args else obj.options["extracut"]
         args["depthperpass"] = args["depthperpass"] if "depthperpass" in args and args["depthperpass"] else \
             obj.options["depthperpass"]
 
@@ -142,7 +144,7 @@ class TclCommandCncjob(TclCommandSignaled):
         args["endz"] = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
 
         args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] else None
-        args["dwell"] = args["dwell"] if "dwell" in args and args["dwell"] else obj.options["dwell"]
+        args["dwell"] = bool(args["dwell"]) if "dwell" in args else obj.options["dwell"]
         args["dwelltime"] = args["dwelltime"] if "dwelltime" in args and args["dwelltime"] else obj.options["dwelltime"]
 
         args["pp"] = args["pp"] if "pp" in args and args["pp"] else obj.options["ppname_g"]

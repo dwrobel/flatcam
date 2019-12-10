@@ -5,8 +5,11 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
+from FlatCAMObj import FlatCAMExcellon
+
+import collections
+import math
 
 
 class TclCommandMillSlots(TclCommandSignaled):
@@ -67,19 +70,22 @@ class TclCommandMillSlots(TclCommandSignaled):
 
         name = args['name']
 
+        try:
+            obj = self.app.collection.get_by_name(str(name))
+        except Exception:
+            obj = None
+            self.raise_tcl_error("Could not retrieve object: %s" % name)
+
         if 'outname' not in args:
             args['outname'] = name + "_mill_slots"
 
-        try:
-            obj = self.app.collection.get_by_name(str(name))
-        except:
-            obj = None
-            self.raise_tcl_error("Could not retrieve object: %s" % name)
+        if 'use_thread' in args:
+            args['use_thread'] = bool(args['use_thread'])
 
         if not obj.slots:
             self.raise_tcl_error("The Excellon object has no slots: %s" % name)
 
-        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        units = self.app.defaults['units'].upper()
         try:
             if 'milled_dias' in args and args['milled_dias'] != 'all':
                 diameters = [x.strip() for x in args['milled_dias'].split(",")]
@@ -88,10 +94,8 @@ class TclCommandMillSlots(TclCommandSignaled):
                 req_tools = set()
                 for tool in obj.tools:
                     for req_dia in diameters:
-                        obj_dia_form = float('%.2f' % float(obj.tools[tool]["C"])) if units == 'MM' else \
-                            float('%.4f' % float(obj.tools[tool]["C"]))
-                        req_dia_form = float('%.2f' % float(req_dia)) if units == 'MM' else \
-                            float('%.4f' % float(req_dia))
+                        obj_dia_form = float('%.*f' % (obj.decimals, float(obj.tools[tool]["C"])))
+                        req_dia_form = float('%.*f' % (obj.decimals, float(req_dia)))
 
                         if 'diatol' in args:
                             tolerance = args['diatol'] / 100

@@ -1,6 +1,7 @@
-from ObjectCollection import *
+import collections
 from tclCommands.TclCommand import TclCommandSignaled
 
+from shapely.geometry import Point
 
 class TclCommandAlignDrillGrid(TclCommandSignaled):
     """
