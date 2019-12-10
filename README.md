@@ -19,6 +19,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a cummulative error when using the Tool Offset for Excellon objects
 - added the display of the real depth of cut (cut z + offset_z) for CNC tools made out of an Excellon object
 - for OpenGL graphic mode added a fit_view() execution on canvas initialization
+- fixed Excellon scaling the UI values
+- replaced the SpindleSpeed entry with a FCSpinner() GUI element; if speed is set to 0 it will amount to None
 
 9.12.2019 
 

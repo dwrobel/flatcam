@@ -94,11 +94,11 @@ class Excellon(Geometry):
         Geometry.__init__(self, geo_steps_per_circle=int(geo_steps_per_circle))
 
         # dictionary to store tools, see above for description
-        self.tools = {}
+        self.tools = dict()
         # list to store the drills, see above for description
-        self.drills = []
+        self.drills = list()
         # self.slots (list) to store the slots; each is a dictionary
-        self.slots = []
+        self.slots = list()
 
         self.source_file = ''
 
@@ -109,8 +109,8 @@ class Excellon(Geometry):
         self.match_routing_start = None
         self.match_routing_stop = None
 
-        self.num_tools = []  # List for keeping the tools sorted
-        self.index_per_tool = {}  # Dictionary to store the indexed points for each tool
+        self.num_tools = list()  # List for keeping the tools sorted
+        self.index_per_tool = dict()  # Dictionary to store the indexed points for each tool
 
         # ## IN|MM -> Units are inherited from Geometry
         self.units = self.app.defaults['units']
@@ -118,8 +118,8 @@ class Excellon(Geometry):
         # Trailing "T" or leading "L" (default)
         # self.zeros = "T"
         self.zeros = zeros or self.defaults["zeros"]
-        self.zeros_found = self.zeros
-        self.units_found = self.units
+        self.zeros_found = deepcopy(self.zeros)
+        self.units_found = deepcopy(self.units)
 
         # this will serve as a default if the Excellon file has no info regarding of tool diameters (this info may be
         # in another file like for PCB WIzard ECAD software

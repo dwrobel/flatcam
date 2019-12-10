@@ -932,7 +932,9 @@ class ExcellonObjectUI(ObjectUI):
               "in RPM (optional)")
         )
         grid1.addWidget(spdlabel, 8, 0)
-        self.spindlespeed_entry = IntEntry(allow_empty=True)
+        self.spindlespeed_entry = FCSpinner()
+        self.spindlespeed_entry.set_range(0, 1000000)
+        self.spindlespeed_entry.setSingleStep(100)
         grid1.addWidget(self.spindlespeed_entry, 8, 1)
 
         # Dwell
@@ -1571,7 +1573,9 @@ class GeometryObjectUI(ObjectUI):
                 "this value is the power of laser."
             )
         )
-        self.cncspindlespeed_entry = IntEntry(allow_empty=True)
+        self.cncspindlespeed_entry = FCSpinner()
+        self.cncspindlespeed_entry.set_range(0, 1000000)
+        self.cncspindlespeed_entry.setSingleStep(100)
 
         self.grid3.addWidget(spdlabel, 14, 0)
         self.grid3.addWidget(self.cncspindlespeed_entry, 14, 1)

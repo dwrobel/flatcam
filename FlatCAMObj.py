@@ -2195,7 +2195,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "toolchangexy": "0.0, 0.0",
             "endz": 2.0,
             "startz": None,
-            "spindlespeed": None,
+            "spindlespeed": 0,
             "dwell": True,
             "dwelltime": 1000,
             "ppname_e": 'defaults',
@@ -3253,7 +3253,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.feedrate = float(self.options["feedrate"])
             job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
 
-            job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] else None
+            job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] != 0 else None
             job_obj.spindledir = self.app.defaults['excellon_spindledir']
             job_obj.dwell = self.options["dwell"]
             job_obj.dwelltime = float(self.options["dwelltime"])
@@ -3332,30 +3332,31 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def convert_units(self, units):
         log.debug("FlatCAMObj.FlatCAMExcellon.convert_units()")
 
-        factor = Excellon.convert_units(self, units)
+        Excellon.convert_units(self, units)
 
-        self.options['drillz'] = float(self.options['drillz']) * factor
-        self.options['travelz'] = float(self.options['travelz']) * factor
-        self.options['feedrate'] = float(self.options['feedrate']) * factor
-        self.options['feedrate_rapid'] = float(self.options['feedrate_rapid']) * factor
-        self.options['toolchangez'] = float(self.options['toolchangez']) * factor
-
-        if self.app.defaults["excellon_toolchangexy"] == '':
-            self.options['toolchangexy'] = "0.0, 0.0"
-        else:
-            coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
-            if len(coords_xy) < 2:
-                self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y field in Edit -> Preferences has to be "
-                                                      "in the format (x, y) \n"
-                                                      "but now there is only one value, not two. "))
-                return 'fail'
-            coords_xy[0] *= factor
-            coords_xy[1] *= factor
-            self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
-
-        if self.options['startz'] is not None:
-            self.options['startz'] = float(self.options['startz']) * factor
-        self.options['endz'] = float(self.options['endz']) * factor
+        # factor = Excellon.convert_units(self, units)
+        # self.options['drillz'] = float(self.options['drillz']) * factor
+        # self.options['travelz'] = float(self.options['travelz']) * factor
+        # self.options['feedrate'] = float(self.options['feedrate']) * factor
+        # self.options['feedrate_rapid'] = float(self.options['feedrate_rapid']) * factor
+        # self.options['toolchangez'] = float(self.options['toolchangez']) * factor
+        #
+        # if self.app.defaults["excellon_toolchangexy"] == '':
+        #     self.options['toolchangexy'] = "0.0, 0.0"
+        # else:
+        #     coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
+        #     if len(coords_xy) < 2:
+        #         self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y field in Edit -> Preferences has to be "
+        #                                               "in the format (x, y) \n"
+        #                                               "but now there is only one value, not two. "))
+        #         return 'fail'
+        #     coords_xy[0] *= factor
+        #     coords_xy[1] *= factor
+        #     self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
+        #
+        # if self.options['startz'] is not None:
+        #     self.options['startz'] = float(self.options['startz']) * factor
+        # self.options['endz'] = float(self.options['endz']) * factor
 
     def on_solid_cb_click(self, *args):
         if self.muted_ui:
@@ -3517,7 +3518,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "feedrate": 5.0,
             "feedrate_z": 5.0,
             "feedrate_rapid": 5.0,
-            "spindlespeed": None,
+            "spindlespeed": 0,
             "dwell": True,
             "dwelltime": 1000,
             "multidepth": False,
@@ -3806,7 +3807,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "toolchange": None,
             "toolchangez": None,
             "endz": None,
-            "spindlespeed": None,
+            "spindlespeed": 0,
             "toolchangexy": None,
             "startz": None
         })
@@ -5713,7 +5714,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         tooldia = self.ui.addtool_entry.get_value()
         if tooldia:
             tooldia *= factor
-            # limit the decimals to 2 for METRIC and 3 for INCH
             tooldia = float('%.*f' % (self.decimals, tooldia))
 
             self.ui.addtool_entry.set_value(tooldia)

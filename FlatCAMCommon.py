@@ -12,7 +12,7 @@
 # ##########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from flatcamGUI.GUIElements import FCTable, FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox
+from flatcamGUI.GUIElements import FCTable, FCEntry, FCButton, FCDoubleSpinner, FCComboBox, FCCheckBox, FCSpinner
 from camlib import to_dict
 
 import sys
@@ -908,8 +908,11 @@ class ToolsDB(QtWidgets.QWidget):
         frrapids_item.set_value(float(data['feedrate_rapid']))
         widget.setCellWidget(row, 15, frrapids_item)
 
-        spindlespeed_item = QtWidgets.QTableWidgetItem(str(data['spindlespeed']) if data['spindlespeed'] else '')
-        widget.setItem(row, 16, spindlespeed_item)
+        spindlespeed_item = FCSpinner()
+        spindlespeed_item.set_range(0, 1000000)
+        spindlespeed_item.set_range(int(data['spindlespeed']))
+        spindlespeed_item.setSingleStep(100)
+        widget.setCellWidget(row, 16, spindlespeed_item)
 
         dwell_item = FCCheckBox()
         dwell_item.set_value(data['dwell'])
@@ -1282,8 +1285,7 @@ class ToolsDB(QtWidgets.QWidget):
                     elif column_header_text == 'FR Rapids':
                         default_data['feedrate_rapid'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == 'Spindle Speed':
-                        default_data['spindlespeed'] = float(self.table_widget.item(row, col).text()) \
-                            if self.table_widget.item(row, col).text() is not '' else None
+                        default_data['spindlespeed'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == 'Dwell':
                         default_data['dwell'] = self.table_widget.cellWidget(row, col).get_value()
                     elif column_header_text == 'Dwelltime':

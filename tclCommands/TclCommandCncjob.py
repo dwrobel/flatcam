@@ -147,7 +147,7 @@ class TclCommandCncjob(TclCommandSignaled):
             self.app.defaults["geometry_startz"]
         args["endz"] = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
 
-        args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] else None
+        args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] != 0 else None
         args["dwell"] = bool(args["dwell"]) if "dwell" in args else obj.options["dwell"]
         args["dwelltime"] = args["dwelltime"] if "dwelltime" in args and args["dwelltime"] else obj.options["dwelltime"]
 

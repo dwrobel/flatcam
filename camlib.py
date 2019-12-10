@@ -3036,7 +3036,7 @@ class CNCjob(Geometry):
         self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
-        self.spindlespeed = int(spindlespeed) if spindlespeed else None
+        self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
         self.spindledir = spindledir
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime else None
@@ -3388,7 +3388,7 @@ class CNCjob(Geometry):
         self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
-        self.spindlespeed = int(spindlespeed) if spindlespeed else None
+        self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
         self.spindledir = spindledir
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime else None

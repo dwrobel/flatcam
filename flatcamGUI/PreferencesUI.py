@@ -2430,7 +2430,9 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "in RPM (optional)")
         )
         grid2.addWidget(spdlabel, 6, 0)
-        self.spindlespeed_entry = IntEntry(allow_empty=True)
+        self.spindlespeed_entry = FCSpinner()
+        self.spindlespeed_entry.set_range(0, 1000000)
+        self.spindlespeed_entry.setSingleStep(100)
         grid2.addWidget(self.spindlespeed_entry, 6, 1)
 
         # Dwell
@@ -3341,7 +3343,10 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             )
         )
         grid1.addWidget(spdlabel, 9, 0)
-        self.cncspindlespeed_entry = IntEntry(allow_empty=True)
+        self.cncspindlespeed_entry = FCSpinner()
+        self.cncspindlespeed_entry.set_range(0, 1000000)
+        self.cncspindlespeed_entry.setSingleStep(100)
+
         grid1.addWidget(self.cncspindlespeed_entry, 9, 1)
 
         # Dwell
