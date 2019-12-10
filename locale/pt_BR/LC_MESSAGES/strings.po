@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-12-09 13:38-0300\n"
-"PO-Revision-Date: 2019-12-09 18:30-0300\n"
+"PO-Revision-Date: 2019-12-09 21:18-0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -5960,7 +5960,7 @@ msgstr "Ferramenta de QRCode"
 #: flatcamGUI/FlatCAMGUI.py:754 flatcamGUI/FlatCAMGUI.py:2198
 #: flatcamTools/ToolCopperThieving.py:40 flatcamTools/ToolCopperThieving.py:566
 msgid "Copper Thieving Tool"
-msgstr "Ferramenta de Retirada de Cobre"
+msgstr "Ferramenta de Adição de Cobre"
 
 #: flatcamGUI/FlatCAMGUI.py:756 flatcamGUI/FlatCAMGUI.py:1463
 #: flatcamGUI/FlatCAMGUI.py:2200 flatcamTools/ToolFiducials.py:33
@@ -11885,14 +11885,14 @@ msgstr "Define a cor de fundo do QRCode."
 
 #: flatcamGUI/PreferencesUI.py:6043
 msgid "Copper Thieving Tool Options"
-msgstr "Opções da ferramenta Retirada de Cobre"
+msgstr "Opções da ferramenta Adição de Cobre"
 
 #: flatcamGUI/PreferencesUI.py:6055
 msgid ""
 "A tool to generate a Copper Thieving that can be added\n"
 "to a selected Gerber file."
 msgstr ""
-"Uma ferramenta para gerar uma Retirada de cobre que pode ser adicionada\n"
+"Uma ferramenta para gerar uma Adição de cobre que pode ser adicionada\n"
 "para um arquivo Gerber selecionado."
 
 #: flatcamGUI/PreferencesUI.py:6063
@@ -11910,7 +11910,7 @@ msgid ""
 "(the polygon fill may be split in multiple polygons)\n"
 "and the copper traces in the Gerber file."
 msgstr ""
-"Define a distância entre os componentes Retirada de cobre\n"
+"Define a distância entre os componentes Adição de cobre\n"
 "(o preenchimento de polígono pode ser dividido em vários polígonos)\n"
 "e os vestígios de cobre no arquivo Gerber."
 
@@ -11938,10 +11938,10 @@ msgid ""
 "- 'Reference Object' - will do copper thieving within the area specified by "
 "another object."
 msgstr ""
-"- 'Própria' - a retirada de cobre é baseada no próprio objeto a ser limpo.\n"
+"- 'Própria' - a adição de cobre é baseada no próprio objeto a ser limpo.\n"
 "- 'Seleção de Área' - clique com o botão esquerdo do mouse para iniciar a "
 "seleção da área a ser pintada.\n"
-"- 'Objeto de Referência' - retirará o cobre dentro da área do objeto "
+"- 'Objeto de Referência' - adicionará o cobre dentro da área do objeto "
 "especificado."
 
 #: flatcamGUI/PreferencesUI.py:6117 flatcamTools/ToolCopperThieving.py:170
@@ -11988,7 +11988,7 @@ msgid ""
 "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
 "- 'Lines Grid' - the empty area will be filled with a pattern of lines."
 msgstr ""
-"- 'Sólido' - o cobre será retirado como um polígono sólido.\n"
+"- 'Sólido' - o cobre será adicionado como um polígono sólido.\n"
 "- 'Pontos' - a área vazia será preenchida com um padrão de pontos.\n"
 "- 'Quadrados' - a área vazia será preenchida com um padrão de quadrados.\n"
 "- 'Linhas' - a área vazia será preenchida com um padrão de linhas."
@@ -12075,7 +12075,7 @@ msgid ""
 "The distance between the possible copper thieving elements\n"
 "and/or robber bar and the actual openings in the mask."
 msgstr ""
-"Distância entre os possíveis elementos de retirada de cobre\n"
+"Distância entre os possíveis elementos de adição de cobre\n"
 "e/ou barra e as aberturas reais na máscara."
 
 #: flatcamGUI/PreferencesUI.py:6298
@@ -12879,7 +12879,7 @@ msgstr "Não há nenhum objeto FlatCAM selecionado ..."
 
 #: flatcamTools/ToolCopperThieving.py:76 flatcamTools/ToolFiducials.py:260
 msgid "Gerber Object to which will be added a copper thieving."
-msgstr "Objeto Gerber ao qual será adicionada uma retirada de cobre."
+msgstr "Objeto Gerber ao qual será adicionada uma adição de cobre."
 
 #: flatcamTools/ToolCopperThieving.py:98
 msgid ""
@@ -12887,7 +12887,7 @@ msgid ""
 "(the polygon fill may be split in multiple polygons)\n"
 "and the copper traces in the Gerber file."
 msgstr ""
-"Define a distância entre os componentes de retirada de cobre\n"
+"Define a distância entre os componentes de adição de cobre\n"
 "(o preenchimento de polígono pode ser dividido em vários polígonos)\n"
 "e os vestígios de cobre no arquivo Gerber."
 
@@ -12900,10 +12900,10 @@ msgid ""
 "- 'Reference Object' - will do copper thieving within the area specified by "
 "another object."
 msgstr ""
-"- 'Própria' - a retirada de cobre é baseada no próprio objeto a ser limpo.\n"
+"- 'Própria' - a adição de cobre é baseada no próprio objeto a ser limpo.\n"
 "- 'Seleção de Área' - clique com o botão esquerdo do mouse para iniciar a "
 "seleção da área a ser pintada.\n"
-"- 'Objeto de Referência' - retirará o cobre dentro da área do objeto "
+"- 'Objeto de Referência' - adicionará o cobre dentro da área do objeto "
 "especificado."
 
 #: flatcamTools/ToolCopperThieving.py:138
@@ -12912,16 +12912,11 @@ msgid "Ref. Type"
 msgstr "Tipo de Ref."
 
 #: flatcamTools/ToolCopperThieving.py:140
-#, fuzzy
-#| msgid ""
-#| "The type of FlatCAM object to be used as non copper clearing reference.\n"
-#| "It can be Gerber, Excellon or Geometry."
 msgid ""
 "The type of FlatCAM object to be used as copper thieving reference.\n"
 "It can be Gerber, Excellon or Geometry."
 msgstr ""
-"O tipo de objeto FlatCAM a ser usado como referência para retirada de "
-"cobre.\n"
+"O tipo de objeto FlatCAM a ser usado como referência para adição de cobre.\n"
 "Pode ser Gerber, Excellon ou Geometria."
 
 #: flatcamTools/ToolCopperThieving.py:144 flatcamTools/ToolDblSided.py:213
@@ -12964,14 +12959,14 @@ msgid ""
 "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
 "- 'Lines Grid' - the empty area will be filled with a pattern of lines."
 msgstr ""
-"- 'Sólido' - a retirada de cobre será um polígono sólido.\n"
+"- 'Sólido' - a adição de cobre será um polígono sólido.\n"
 "- 'Pontos' - a área vazia será preenchida com um padrão de pontos.\n"
 "- 'Quadrados' - a área vazia será preenchida com um padrão de quadrados.\n"
 "- 'Linhas' - a área vazia será preenchida com um padrão de linhas."
 
 #: flatcamTools/ToolCopperThieving.py:326
 msgid "Insert Copper thieving"
-msgstr "Inserir retirada de cobre"
+msgstr "Inserir adição de cobre"
 
 #: flatcamTools/ToolCopperThieving.py:328
 msgid ""
@@ -13052,7 +13047,7 @@ msgid ""
 "the robber bar if those were generated."
 msgstr ""
 "Adicionará à geometria do gerber máscara de solda\n"
-"as geometrias da retirada de cobre e/ou\n"
+"as geometrias da adição de cobre e/ou\n"
 "a barra, se elas foram geradas."
 
 #: flatcamTools/ToolCopperThieving.py:620
@@ -13094,7 +13089,7 @@ msgstr "Anexar arquivo fonte"
 #: flatcamTools/ToolCopperThieving.py:727
 #: flatcamTools/ToolCopperThieving.py:1308
 msgid "Copper Thieving Tool done."
-msgstr "Área de Retirada de Cobre."
+msgstr "Área de Adição de Cobre."
 
 #: flatcamTools/ToolCopperThieving.py:754
 #: flatcamTools/ToolCopperThieving.py:787 flatcamTools/ToolCutOut.py:466
@@ -13131,20 +13126,20 @@ msgstr ""
 #: flatcamTools/ToolCopperThieving.py:940
 #: flatcamTools/ToolCopperThieving.py:1001
 msgid "Thieving"
-msgstr "Retirada"
+msgstr "Adição"
 
 #: flatcamTools/ToolCopperThieving.py:947
 msgid "Copper Thieving Tool started. Reading parameters."
-msgstr "Ferramenta de Retirada de Cobre iniciada. Lendo parâmetros."
+msgstr "Ferramenta de Adição de Cobre iniciada. Lendo parâmetros."
 
 #: flatcamTools/ToolCopperThieving.py:972
 msgid "Copper Thieving Tool. Preparing isolation polygons."
-msgstr "Ferramenta de Retirada de Cobre. Preparando polígonos de isolação."
+msgstr "Ferramenta de Adição de Cobre. Preparando polígonos de isolação."
 
 #: flatcamTools/ToolCopperThieving.py:1017
 msgid "Copper Thieving Tool. Preparing areas to fill with copper."
 msgstr ""
-"Ferramenta de Retirada de Cobre. Preparando áreas para preencher com cobre."
+"Ferramenta de Adição de Cobre. Preparando áreas para preencher com cobre."
 
 #: flatcamTools/ToolCopperThieving.py:1028 flatcamTools/ToolOptimal.py:349
 #: flatcamTools/ToolPanelize.py:798 flatcamTools/ToolRulesCheck.py:1118
@@ -13167,7 +13162,7 @@ msgstr "O tipo do objeto de referência não é suportado."
 
 #: flatcamTools/ToolCopperThieving.py:1103
 msgid "Copper Thieving Tool. Appending new geometry and buffering."
-msgstr "Ferramenta de Retirada de Cobre. Anexando nova geometria e buffer."
+msgstr "Ferramenta de Adição de Cobre. Anexando nova geometria e buffer."
 
 #: flatcamTools/ToolCopperThieving.py:1119
 msgid "Create geometry"
@@ -13188,7 +13183,7 @@ msgstr "Geração de Máscara de Revestimento Padrão concluída."
 
 #: flatcamTools/ToolCopperThieving.py:1543
 msgid "Copper Thieving Tool exit."
-msgstr "Sair da Ferramenta de Retirada de Cobre."
+msgstr "Sair da Ferramenta de Adição de Cobre."
 
 #: flatcamTools/ToolCutOut.py:42
 msgid "Cutout PCB"
