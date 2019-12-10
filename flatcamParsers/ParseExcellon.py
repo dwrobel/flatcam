@@ -790,7 +790,7 @@ class Excellon(Geometry):
                     # ## Units and number format # ##
                     match = self.units_re.match(eline)
                     if match:
-                        self.units = self.units = {"METRIC": "MM", "INCH": "IN"}[match.group(1)]
+                        self.units = {"METRIC": "MM", "INCH": "IN"}[match.group(1)]
                         self.zeros = match.group(2)  # "T" or "L". Might be empty
                         self.excellon_format = match.group(3)
                         if self.excellon_format:
