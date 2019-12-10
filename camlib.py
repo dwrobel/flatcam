@@ -4633,22 +4633,27 @@ class CNCjob(Geometry):
         # between point 0 and point 1 is more than the distance we set for the extra cut then make an interpolation
         # along the path and find the point at the distance extracut_length
 
-        if abs(distance(path[1], path[0])) > extracut_length:
-            i_point = LineString([path[0], path[1]]).interpolate(extracut_length)
-            gcode += self.doformat(p.linear_code, x=i_point.x, y=i_point.y)
+        if extracut_length == 0.0:
+            gcode += self.doformat(p.linear_code, x=path[1][0], y=path[1][1])
+            last_pt = path[1]
         else:
-            last_pt = path[0]
-            for pt in path[1:]:
-                extracut_distance = abs(distance(pt, last_pt))
-                if extracut_distance <= extracut_length:
-                    gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
-                    last_pt = pt
-                else:
-                    break
+            if abs(distance(path[1], path[0])) > extracut_length:
+                i_point = LineString([path[0], path[1]]).interpolate(extracut_length)
+                gcode += self.doformat(p.linear_code, x=i_point.x, y=i_point.y)
+                last_pt = (i_point.x, i_point.y)
+            else:
+                last_pt = path[0]
+                for pt in path[1:]:
+                    extracut_distance = abs(distance(pt, last_pt))
+                    if extracut_distance <= extracut_length:
+                        gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+                        last_pt = pt
+                    else:
+                        break
 
         # Up to travelling height.
         if up:
-            gcode += self.doformat(p.lift_code, x=pt[0], y=pt[1], z_move=z_move)  # Stop cutting
+            gcode += self.doformat(p.lift_code, x=last_pt[0], y=last_pt[1], z_move=z_move)  # Stop cutting
 
         return gcode
 
