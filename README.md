@@ -17,7 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - in Gerber isolation, when selection mode is checked, now area selection works too
 - in CNCJob UI, now the CNCJob objects made out of Excellon objects will display their CNC tools (drill bits)
 - fixed a cummulative error when using the Tool Offset for Excellon objects
-- added the dipaly of the real depth of cut (cut z + offset_z) for CNC tools made out of an Excellon object
+- added the display of the real depth of cut (cut z + offset_z) for CNC tools made out of an Excellon object
+- for OpenGL graphic mode added a fit_view() execution on canvas initialization
 
 9.12.2019 
 

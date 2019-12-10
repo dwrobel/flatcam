@@ -156,7 +156,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.big_cursor = None
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
-
+        self.fit_view()
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
     def draw_workspace(self, workspace_size):
