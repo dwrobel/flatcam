@@ -2206,10 +2206,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         })
 
         # TODO: Document this.
-        self.tool_cbs = {}
+        self.tool_cbs = dict()
 
         # dict to hold the tool number as key and tool offset as value
-        self.tool_offset = {}
+        self.tool_offset = dict()
 
         # variable to store the total amount of drills per job
         self.tot_drill_cnt = 0
@@ -6168,11 +6168,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
             nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
             nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
+            cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['offset_z']) + self.z_cut))
 
             id.setFlags(QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
             nr_drills_item.setFlags(QtCore.Qt.ItemIsEnabled)
             nr_slots_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            cutz_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             # hack so the checkbox stay centered in the table cell
             # used this:
@@ -6201,7 +6203,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
             # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
             self.ui.exc_cnc_tools_table.setItem(row_no, 4, tool_uid_item)  # Tool unique ID)
-            self.ui.exc_cnc_tools_table.setCellWidget(row_no, 5, plot_item)
+            self.ui.exc_cnc_tools_table.setItem(row_no, 5, cutz_item)
+            self.ui.exc_cnc_tools_table.setCellWidget(row_no, 6, plot_item)
 
         for row in range(tool_idx):
             self.ui.exc_cnc_tools_table.item(row, 0).setFlags(
@@ -6222,14 +6225,15 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.ResizeToContents)
 
-        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.setSectionResizeMode(6, QtWidgets.QHeaderView.Fixed)
 
         # horizontal_header.setStretchLastSection(True)
         self.ui.exc_cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
         self.ui.exc_cnc_tools_table.setColumnWidth(0, 20)
-        self.ui.exc_cnc_tools_table.setColumnWidth(5, 17)
+        self.ui.exc_cnc_tools_table.setColumnWidth(6, 17)
 
         self.ui.exc_cnc_tools_table.setMinimumHeight(self.ui.exc_cnc_tools_table.getHeight())
         self.ui.exc_cnc_tools_table.setMaximumHeight(self.ui.exc_cnc_tools_table.getHeight())

@@ -2158,7 +2158,7 @@ class CNCjob(Geometry):
         self.units = units
 
         self.z_cut = z_cut
-        self.tool_offset = {}
+        self.tool_offset = dict()
 
         self.z_move = z_move
 
@@ -2359,7 +2359,9 @@ class CNCjob(Geometry):
         self.exc_drills = deepcopy(exobj.drills)
         self.exc_tools = deepcopy(exobj.tools)
 
-        self.z_cut = drillz
+        self.z_cut = deepcopy(drillz)
+        old_zcut = deepcopy(drillz)
+
         if self.machinist_setting == 0:
             if drillz > 0:
                 self.app.inform.emit('[WARNING] %s' %
@@ -2441,10 +2443,16 @@ class CNCjob(Geometry):
                                 LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
                             )
 
+                    try:
+                        z_off = float(self.tool_offset[it[1]]) * (-1)
+                    except KeyError:
+                        z_off = 0
+
                     self.exc_cnc_tools[it[1]] = dict()
                     self.exc_cnc_tools[it[1]]['tool'] = it[0]
                     self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
                     self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
+                    self.exc_cnc_tools[it[1]]['offset_z'] = z_off
                     self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
@@ -2635,7 +2643,7 @@ class CNCjob(Geometry):
                                 z_offset = float(self.tool_offset[current_tooldia]) * (-1)
                             except KeyError:
                                 z_offset = 0
-                            self.z_cut += z_offset
+                            self.z_cut = z_offset + old_zcut
 
                             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
                             if self.coordinates_type == "G90":
@@ -2682,11 +2690,11 @@ class CNCjob(Geometry):
                             else:
                                 self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                                 return 'fail'
+                        self.z_cut = deepcopy(old_zcut)
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
-                    self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                         _('The loaded Excellon file has no drills'))
+                    self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
                     return 'fail'
 
                 log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
@@ -2778,7 +2786,7 @@ class CNCjob(Geometry):
                                 z_offset = float(self.tool_offset[current_tooldia]) * (-1)
                             except KeyError:
                                 z_offset = 0
-                            self.z_cut += z_offset
+                            self.z_cut = z_offset + old_zcut
 
                             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
                             if self.coordinates_type == "G90":
@@ -2825,6 +2833,7 @@ class CNCjob(Geometry):
                             else:
                                 self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                                 return 'fail'
+                        self.z_cut = deepcopy(old_zcut)
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
@@ -2879,7 +2888,7 @@ class CNCjob(Geometry):
                             z_offset = float(self.tool_offset[current_tooldia]) * (-1)
                         except KeyError:
                             z_offset = 0
-                        self.z_cut += z_offset
+                        self.z_cut = z_offset + old_zcut
 
                         self.coordinates_type = self.app.defaults["cncjob_coords_type"]
                         if self.coordinates_type == "G90":
@@ -2933,6 +2942,7 @@ class CNCjob(Geometry):
                         self.app.inform.emit('[ERROR_NOTCL] %s...' %
                                              _('The loaded Excellon file has no drills'))
                         return 'fail'
+                self.z_cut = deepcopy(old_zcut)
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
 
         gcode += self.doformat(p.spindle_stop_code)  # Spindle stop

@@ -1853,9 +1853,10 @@ class CNCObjectUI(ObjectUI):
         self.exc_cnc_tools_table = FCTable()
         self.custom_box.addWidget(self.exc_cnc_tools_table)
 
-        self.exc_cnc_tools_table.setColumnCount(6)
+        self.exc_cnc_tools_table.setColumnCount(7)
         self.exc_cnc_tools_table.setColumnWidth(0, 20)
-        self.exc_cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Drills'), _('Slots'), '', _('P')])
+        self.exc_cnc_tools_table.setHorizontalHeaderLabels(['#', _('Dia'), _('Drills'), _('Slots'), '', _("Cut Z"),
+                                                            _('P')])
         self.exc_cnc_tools_table.setColumnHidden(4, True)
 
         self.tooldia_entry = FCDoubleSpinner()
