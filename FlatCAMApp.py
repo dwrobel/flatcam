@@ -2478,6 +2478,7 @@ class App(QtCore.QObject):
 
         # variable to store coordinates
         self.pos = (0, 0)
+        self.pos_canvas = (0, 0)
         self.pos_jump = (0, 0)
 
         # variable to store mouse coordinates
@@ -8441,23 +8442,17 @@ class App(QtCore.QObject):
             was clicked, the pixel coordinates and the axes coordinates.
         :return: None
         """
-        self.pos = []
+        self.pos = list()
 
         if self.is_legacy is False:
             event_pos = event.pos
-            if self.defaults["global_pan_button"] == '2':
-                pan_button = 2
-            else:
-                pan_button = 3
+            pan_button = 2 if self.defaults["global_pan_button"] == '2'else 3
             # Set the mouse button for panning
             self.plotcanvas.view.camera.pan_button_setting = pan_button
         else:
             event_pos = (event.xdata, event.ydata)
             # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
-            if self.defaults["global_pan_button"] == '2':
-                pan_button = 3
-            else:
-                pan_button = 2
+            pan_button = 3 if self.defaults["global_pan_button"] == '2'else 2
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()

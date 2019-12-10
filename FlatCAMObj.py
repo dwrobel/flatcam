@@ -625,6 +625,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         # Mouse events
         self.mr = None
+        self.mm = None
+        self.mp = None
 
         # dict to store the polygons selected for isolation; key is the shape added to be plotted and value is the poly
         self.poly_dict = dict()
@@ -1066,11 +1068,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.app.is_legacy is False:
             event_pos = event.pos
             right_button = 2
-            event_is_dragging = self.app.event_is_dragging
+            self.app.event_is_dragging = self.app.event_is_dragging
         else:
             event_pos = (event.xdata, event.ydata)
             right_button = 3
-            event_is_dragging = self.app.ui.popMenu.mouse_is_panning
+            self.app.event_is_dragging = self.app.ui.popMenu.mouse_is_panning
 
         try:
             x = float(event_pos[0])
@@ -1080,11 +1082,18 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         event_pos = (x, y)
         curr_pos = self.app.plotcanvas.translate_coords(event_pos)
+        if self.app.grid_status():
+            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+        else:
+            curr_pos = (curr_pos[0], curr_pos[1])
 
         if event.button == 1:
             clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]))
 
-            if clicked_poly:
+            if self.app.selection_type is not None:
+                self.selection_area_handler(self.app.pos, curr_pos, self.app.selection_type)
+                self.app.selection_type = None
+            elif clicked_poly:
                 if clicked_poly not in self.poly_dict.values():
                     shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0, shape=clicked_poly,
                                                         color=self.app.defaults['global_sel_draw_color'] + 'AF',
@@ -1113,8 +1122,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 self.app.tool_shapes.redraw()
             else:
                 self.app.inform.emit(_("No polygon detected under click position."))
-
-        elif event.button == right_button and event_is_dragging is False:
+        elif event.button == right_button and self.app.event_is_dragging is False:
             # restore the Grid snapping if it was active before
             if self.grid_status_memory is True:
                 self.app.ui.grid_snap_btn.trigger()
@@ -1135,6 +1143,75 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 self.poly_dict.clear()
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
+
+    def selection_area_handler(self, start_pos, end_pos, sel_type):
+        """
+        :param start_pos: mouse position when the selection LMB click was done
+        :param end_pos: mouse position when the left mouse button is released
+        :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
+        :return:
+        """
+        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
+
+        # delete previous selection shape
+        self.app.delete_selection_shape()
+
+        added_poly_count = 0
+        try:
+            for geo in self.solid_geometry:
+                if geo not in self.poly_dict.values():
+                    if sel_type is True:
+                        if geo.within(poly_selection):
+                            shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
+                                                                shape=geo,
+                                                                color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                                face_color=self.app.defaults[
+                                                                               'global_sel_draw_color'] + 'AF',
+                                                                visible=True)
+                            self.poly_dict[shape_id] = geo
+                            added_poly_count += 1
+                    else:
+                        if poly_selection.intersects(geo):
+                            shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
+                                                                shape=geo,
+                                                                color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                                face_color=self.app.defaults[
+                                                                               'global_sel_draw_color'] + 'AF',
+                                                                visible=True)
+                            self.poly_dict[shape_id] = geo
+                            added_poly_count += 1
+        except TypeError:
+            if self.solid_geometry not in self.poly_dict.values():
+                if sel_type is True:
+                    if self.solid_geometry.within(poly_selection):
+                        shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
+                                                            shape=self.solid_geometry,
+                                                            color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                            face_color=self.app.defaults[
+                                                                           'global_sel_draw_color'] + 'AF',
+                                                            visible=True)
+                        self.poly_dict[shape_id] = self.solid_geometry
+                        added_poly_count += 1
+                else:
+                    if poly_selection.intersects(self.solid_geometry):
+                        shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
+                                                            shape=self.solid_geometry,
+                                                            color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                            face_color=self.app.defaults[
+                                                                           'global_sel_draw_color'] + 'AF',
+                                                            visible=True)
+                        self.poly_dict[shape_id] = self.solid_geometry
+                        added_poly_count += 1
+
+        if added_poly_count > 0:
+            self.app.tool_shapes.redraw()
+            self.app.inform.emit(
+                '%s: %d. %s' % (_("Added polygon"),
+                                int(added_poly_count),
+                                _("Click to add next polygon or right click to start isolation."))
+            )
+        else:
+            self.app.inform.emit(_("No polygon in selection."))
 
     def isolate(self, iso_type=None, geometry=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
                 milling_type=None, follow=None, plot=True):
