@@ -902,6 +902,8 @@ class App(QtCore.QObject):
             "tools_cal_verz": 0.1,
             "tools_cal_zeroz": False,
             "tools_cal_toolchangez": 15,
+            "tools_cal_toolchange_xy": '',
+            "tools_cal_sec_point": 'tl',
 
             # Utilities
             # file associations
@@ -1484,6 +1486,8 @@ class App(QtCore.QObject):
             "tools_cal_verz": self.ui.tools2_defaults_form.tools2_cal_group.verz_entry,
             "tools_cal_zeroz": self.ui.tools2_defaults_form.tools2_cal_group.zeroz_cb,
             "tools_cal_toolchangez": self.ui.tools2_defaults_form.tools2_cal_group.toolchangez_entry,
+            "tools_cal_toolchange_xy": self.ui.tools2_defaults_form.tools2_cal_group.toolchange_xy_entry,
+            "tools_cal_sec_point": self.ui.tools2_defaults_form.tools2_cal_group.second_point_radio,
 
             # Utilities
             # File associations
@@ -3151,6 +3155,7 @@ class App(QtCore.QObject):
 
         # Tools Toolbar Signals
         self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
+        self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
         self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
         self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
         self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))

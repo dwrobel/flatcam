@@ -199,6 +199,7 @@ class FlatCAMObj(QtCore.QObject):
         #     self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
         # except (TypeError, AttributeError):
         #     pass
+
         # self.ui.skew_button.clicked.connect(self.on_skew_button_click)
 
     def build_ui(self):
@@ -267,7 +268,7 @@ class FlatCAMObj(QtCore.QObject):
 
     def on_scale_button_click(self):
         self.read_form()
-        factor = self.ui.scale_entry.get_value()
+        factor = eval(self.ui.scale_entry.get_value())
         # if factor is 1.0 do nothing, there is no point in scaling with a factor of 1.0
         if factor == 1.0:
             return

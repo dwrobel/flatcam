@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+12.12.2019
+
+- finished the Calibration Tool
+- changed the Scale Entry in Object UI to FCEntry() GUI element in order to allow expressions to be entered. E.g: 1/25.4
+
 11.12.2019
 
 - started work in HPGL2 parser

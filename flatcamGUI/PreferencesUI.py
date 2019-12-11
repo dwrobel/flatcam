@@ -6513,6 +6513,33 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
         grid_lay.addWidget(toolchangez_lbl, 6, 0)
         grid_lay.addWidget(self.toolchangez_entry, 6, 1, 1, 2)
 
+        # Toolchange X-Y entry
+        toolchangexy_lbl = QtWidgets.QLabel('%s:' % _('Toolchange X-Y'))
+        toolchangexy_lbl.setToolTip(
+            _("Toolchange X,Y position.\n"
+              "If no value is entered then the current\n"
+              "(x, y) point will be used,")
+        )
+
+        self.toolchange_xy_entry = FCEntry()
+
+        grid_lay.addWidget(toolchangexy_lbl, 7, 0)
+        grid_lay.addWidget(self.toolchange_xy_entry, 7, 1, 1, 2)
+
+        # Second point choice
+        second_point_lbl = QtWidgets.QLabel('%s:' % _("Second point"))
+        second_point_lbl.setToolTip(
+            _("Second point in the Gcode verification can be:\n"
+              "- top-left -> the user will align the PCB vertically\n"
+              "- bottom-right -> the user will align the PCB horizontally")
+        )
+        self.second_point_radio = RadioSet([{'label': _('Top-Left'), 'value': 'tl'},
+                                            {'label': _('Bottom-Right'), 'value': 'br'}],
+                                           orientation='vertical')
+
+        grid_lay.addWidget(second_point_lbl, 8, 0)
+        grid_lay.addWidget(self.second_point_radio, 8, 1, 1, 2)
+
         self.layout.addStretch()
 
 

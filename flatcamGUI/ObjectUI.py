@@ -100,13 +100,10 @@ class ObjectUI(QtWidgets.QWidget):
             faclabel = QtWidgets.QLabel('%s:' % _('Factor'))
             faclabel.setToolTip(
                 _("Factor by which to multiply\n"
-                  "geometric features of this object.")
+                  "geometric features of this object.\n"
+                  "Expressions are allowed. E.g: 1/25.4")
             )
-            self.scale_entry = FCDoubleSpinner()
-            self.scale_entry.set_precision(self.decimals)
-            self.scale_entry.setRange(0.0, 9999.9999)
-            self.scale_entry.setSingleStep(0.1)
-
+            self.scale_entry = FCEntry()
             self.scale_entry.set_value(1.0)
 
             # GO Button

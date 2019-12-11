@@ -153,7 +153,7 @@ class DblSidedTool(FlatCAMTool):
         # ## Axis Location
         self.axis_location = RadioSet([{'label': _('Point'), 'value': 'point'},
                                        {'label': _('Box'), 'value': 'box'}])
-        self.axloc_label = QtWidgets.QLabel(_("Axis Ref:"))
+        self.axloc_label = QtWidgets.QLabel('%s:' % _("Axis Ref"))
         self.axloc_label.setToolTip(
             _("The axis should pass through a <b>point</b> or cut\n "
               "a specified <b>box</b> (in a FlatCAM object) through \n"
