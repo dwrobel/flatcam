@@ -26,7 +26,7 @@ CAD program, and create G-Code for Isolation routing.
 - if extracut_length is zero then the extracut will cut up until the first point in path no matter what the distance is
 - in Gerber isolation, when selection mode is checked, now area selection works too
 - in CNCJob UI, now the CNCJob objects made out of Excellon objects will display their CNC tools (drill bits)
-- fixed a cummulative error when using the Tool Offset for Excellon objects
+- fixed a cumulative error when using the Tool Offset for Excellon objects
 - added the display of the real depth of cut (cut z + offset_z) for CNC tools made out of an Excellon object
 - for OpenGL graphic mode added a fit_view() execution on canvas initialization
 - fixed Excellon scaling the UI values
