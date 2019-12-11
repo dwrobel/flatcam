@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.12.2019
+
+- started work in HPGL2 parser
+
 10.12.2019
 
 - small changes in the Geometry UI

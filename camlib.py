@@ -459,7 +459,7 @@ class Geometry(object):
 
     defaults = {
         "units": 'in',
-        "geo_steps_per_circle": 128
+        "geo_steps_per_circle": 64
     }
 
     def __init__(self, geo_steps_per_circle=None):
