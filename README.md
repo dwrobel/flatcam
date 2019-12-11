@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 11.12.2019
 
 - started work in HPGL2 parser
+- some more work in Calibration Tool
 
 10.12.2019
 

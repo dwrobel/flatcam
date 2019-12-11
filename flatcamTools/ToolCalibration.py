@@ -14,6 +14,7 @@ from flatcamEditors.FlatCAMTextEditor import TextEditor
 
 from shapely.geometry import Point
 from shapely.geometry.base import *
+from shapely.affinity import scale, skew
 
 import math
 from datetime import datetime
@@ -646,18 +647,36 @@ class ToolCalibration(FlatCAMTool):
         # calibrated object
         self.cal_object = None
 
+        # target values
+        self.bl_x = 0.0
+        self.bl_y = 0.0
+
+        self.br_x = 0.0
+        self.br_y = 0.0
+
+        self.tl_x = 0.0
+        self.tl_y = 0.0
+
+        self.tr_x = 0.0
+        self.tr_y = 0.0
+
         # ## Signals
-        self.start_button.clicked.connect(self.on_start_collect_points)
-        self.gcode_button.clicked.connect(self.generate_verification_gcode)
-        self.generate_factors_button.clicked.connect(self.calculate_factors)
-        self.reset_button.clicked.connect(self.set_tool_ui)
-
         self.cal_source_radio.activated_custom.connect(self.on_cal_source_radio)
-
         self.obj_type_combo.currentIndexChanged.connect(self.on_obj_type_combo)
         self.adj_object_type_combo.currentIndexChanged.connect(self.on_adj_obj_type_combo)
 
+        self.start_button.clicked.connect(self.on_start_collect_points)
+
+        self.gcode_button.clicked.connect(self.generate_verification_gcode)
+        self.adj_gcode_button.clicked.connect(self.generate_verification_gcode)
+
+        self.generate_factors_button.clicked.connect(self.calculate_factors)
+
+        self.scale_button.clicked.connect(self.on_scale_button)
+        self.skew_button.clicked.connect(self.on_skew_button)
+
         self.cal_button.clicked.connect(self.on_cal_button_click)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCalibration()")
@@ -1028,6 +1047,86 @@ class ToolCalibration(FlatCAMTool):
             skew_angle_y = math.degrees(math.atan(dy / dx))
 
             self.skewy_entry.set_value(skew_angle_y)
+
+    @property
+    def target_values_from_table(self):
+        self.bl_x = self.bottom_left_coordx_tgt.get_value()
+        self.bl_y = self.bottom_left_coordy_tgt.get_value()
+
+        self.br_x = self.bottom_right_coordx_tgt.get_value()
+        self.br_y = self.bottom_right_coordy_tgt.get_value()
+
+        self.tl_x = self.top_left_coordx_tgt.get_value()
+        self.tl_y = self.top_left_coordy_tgt.get_value()
+
+        self.tr_x = self.top_right_coordx_tgt.get_value()
+        self.tr_y = self.top_right_coordy_tgt.get_value()
+
+        return (self.bl_x, self.bl_y), (self.br_x, self.br_y), (self.tl_x, self.tl_y), (self.tr_x, self.tr_x)
+
+    @target_values_from_table.setter
+    def target_values_from_table(self, param):
+        bl_pt, br_pt, tl_pt, tr_pt = param
+
+        self.bl_x = bl_pt[0]
+        self.bl_y = bl_pt[1]
+
+        self.br_x = br_pt[0]
+        self.br_y = br_pt[1]
+
+        self.tl_x = tl_pt[0]
+        self.tl_y = tl_pt[1]
+
+        self.tr_x = tr_pt[0]
+        self.tr_y = tr_pt[1]
+
+        self.bottom_left_coordx_tgt.set_value(bl_pt[0])
+        self.bottom_left_coordy_tgt.set_value(bl_pt[1])
+
+        self.bottom_right_coordx_tgt.set_value(br_pt[0])
+        self.bottom_right_coordy_tgt.set_value(br_pt[1])
+
+        self.top_left_coordx_tgt.set_value(tl_pt[0])
+        self.top_left_coordy_tgt.set_value(tl_pt[1])
+
+        self.top_right_coordx_tgt.set_value(tr_pt[0])
+        self.top_right_coordy_tgt.set_value(tr_pt[1])
+
+    def on_scale_button(self):
+        scalex_fact = self.scalex_entry.get_value()
+        scaley_fact = self.scaley_entry.get_value()
+        bl, br, tl, tr = self.target_values_from_table
+
+        bl_scaled = scale(Point(bl), xfact=scalex_fact, yfact=scaley_fact, origin=bl)
+        br_scaled = scale(Point(br), xfact=scalex_fact, yfact=scaley_fact, origin=bl)
+        tl_scaled = scale(Point(tl), xfact=scalex_fact, yfact=scaley_fact, origin=bl)
+        tr_scaled = scale(Point(tr), xfact=scalex_fact, yfact=scaley_fact, origin=bl)
+
+        scaled_values = (
+            (bl_scaled.x, bl_scaled.y),
+            (br_scaled.x, br_scaled.y),
+            (tl_scaled.x, tl_scaled.y),
+            (tr_scaled.x, tr_scaled.y)
+        )
+        self.target_values_from_table = scaled_values
+
+    def on_skew_button(self):
+        skewx_angle = self.skewx_entry.get_value()
+        skewy_angle = self.skewy_entry.get_value()
+        bl, br, tl, tr = self.target_values_from_table
+
+        bl_skewed = skew(Point(bl), xs=skewx_angle, ys=skewy_angle, origin=bl)
+        br_skewed = skew(Point(br), xs=skewx_angle, ys=skewy_angle, origin=bl)
+        tl_skewed = skew(Point(tl), xs=skewx_angle, ys=skewy_angle, origin=bl)
+        tr_skewed = skew(Point(tr), xs=skewx_angle, ys=skewy_angle, origin=bl)
+
+        skewed_values = (
+            (bl_skewed.x, bl_skewed.y),
+            (br_skewed.x, br_skewed.y),
+            (tl_skewed.x, tl_skewed.y),
+            (tr_skewed.x, tr_skewed.y)
+        )
+        self.target_values_from_table = skewed_values
 
     def on_cal_button_click(self):
         # get the FlatCAM object to calibrate

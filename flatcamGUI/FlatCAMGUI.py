@@ -2530,7 +2530,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.dblsidedtool.run(toggle=True)
                     return
 
-                # Calibrate  Tool
+                # Calibration  Tool
                 if key == QtCore.Qt.Key_E:
                     self.app.cal_exc_tool.run(toggle=True)
                     return

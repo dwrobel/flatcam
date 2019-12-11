@@ -2982,7 +2982,7 @@ class App(QtCore.QObject):
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
         self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon('share/drill16.png'), pos=self.ui.menutool,
+        self.cal_exc_tool.install(icon=QtGui.QIcon('share/calibrate_16.png'), pos=self.ui.menutool,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)
         self.distance_tool = Distance(self)
@@ -4471,10 +4471,11 @@ class App(QtCore.QObject):
                 attributions_label = QtWidgets.QLabel(
                     _(
                         'Some of the icons used are from the following sources:<br>'
-                        '<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" '
+                        '<div>Icons by <a href="https://www.flaticon.com/authors/freepik" '
                         'title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/"             '
                         'title="Flaticon">www.flaticon.com</a></div>'
-                        'Icons by <a target="_blank" href="https://icons8.com">Icons8</a>'
+                        '<div>Icons by <a target="_blank" href="https://icons8.com">Icons8</a></div>'
+                        'Icons by <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>'
                     )
                 )
 
