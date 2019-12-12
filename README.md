@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished the Calibration Tool
 - changed the Scale Entry in Object UI to FCEntry() GUI element in order to allow expressions to be entered. E.g: 1/25.4
 - some small changes in the Scale button handler in FlatCAMObj() class
+- added option to save objects as PDF files in File -> Save menu
 
 11.12.2019
 

@@ -1824,7 +1824,7 @@ class Geometry(object):
         """
 
         # Make sure we see a Shapely Geometry class and not a list
-        if str(type(self)) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+        if self.kind.lower() == 'geometry':
             flat_geo = []
             if self.multigeo:
                 for tool in self.tools:

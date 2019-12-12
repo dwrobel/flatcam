@@ -250,6 +250,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                          _('Save Project C&opy ...'), self)
         self.menufile_save.addAction(self.menufilesaveprojectcopy)
 
+        self.menufile_save.addSeparator()
+
+        # Save Object PDF
+        self.menufilesave_object_pdf = QtWidgets.QAction(QtGui.QIcon('share/pdf32.png'),
+                                                         _('Save Object as PDF ...'), self)
+        self.menufile_save.addAction(self.menufilesave_object_pdf)
+
         # Separator
         self.menufile.addSeparator()
 

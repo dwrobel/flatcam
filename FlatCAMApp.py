@@ -23,8 +23,14 @@ from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
 import ctypes
 
-import tkinter as tk
-from PyQt5 import QtPrintSupport
+# import tkinter as tk
+# from PyQt5 import QtPrintSupport
+
+from reportlab.graphics import renderPDF
+from reportlab.pdfgen import canvas
+from reportlab.graphics import renderPM
+from reportlab.lib.units import inch, mm
+from reportlab.lib.pagesizes import landscape, portrait
 
 from contextlib import contextmanager
 import gc
@@ -1776,6 +1782,7 @@ class App(QtCore.QObject):
         self.ui.menufilesaveproject.triggered.connect(self.on_file_saveproject)
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
         self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
+        self.ui.menufilesave_object_pdf.triggered.connect(self.on_file_save_object_pdf)
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
 
         self.ui.menufileexportpref.triggered.connect(self.on_export_preferences)
@@ -10127,15 +10134,15 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Save Project cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Save Project cancelled."))
             return
 
         try:
             f = open(filename, 'r')
             f.close()
         except IOError:
-            pass
+            self.inform.emit('[ERROR_NOTCL] %s' % _("The object is used by another application."))
+            return
 
         if use_thread is True:
             self.worker_task.emit({'fcn': self.save_project,
@@ -10153,6 +10160,49 @@ class App(QtCore.QObject):
 
         self.set_ui_title(name=self.project_filename)
         self.should_we_save = False
+
+    def on_file_save_object_pdf(self, use_thread=True):
+        self.date = str(datetime.today()).rpartition('.')[0]
+        self.date = ''.join(c for c in self.date if c not in ':-')
+        self.date = self.date.replace(' ', '_')
+
+        try:
+            obj_active = self.collection.get_active()
+            obj_name = obj_active.options['name']
+        except AttributeError as err:
+            log.debug("App.on_file_save_object_pdf() --> %s" % str(err))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
+            return
+
+        filter_ = "PDF File (*.PDF);; All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Save Object as PDF ..."),
+                directory=_('{l_save}/{obj_name}_{date}').format(l_save=str(self.get_last_save_folder()),
+                                                                 obj_name=obj_name,
+                                                                 date=self.date),
+                filter=filter_)
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Object as PDF ..."), filter=filter_)
+
+        filename = str(filename)
+
+        if filename == '':
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Save Object PDF cancelled."))
+            return
+
+        if use_thread is True:
+            self.worker_task.emit({'fcn': self.save_pdf, 'params': [filename, obj_name]})
+        else:
+            self.save_pdf(filename, obj_name)
+
+        # self.save_project(filename)
+        if self.defaults["global_open_style"] is False:
+            self.file_opened.emit("pdf", filename)
+        self.file_saved.emit("pdf", filename)
+
+    def save_pdf(self, file_name, obj_name):
+        self.film_tool.export_positive(obj_name=obj_name, box_name=obj_name, filename=file_name, ftype='pdf')
 
     def export_svg(self, obj_name, filename, scale_stroke_factor=0.00):
         """
