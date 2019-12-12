@@ -1809,18 +1809,25 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param aperture: string; aperture for which to clear the mark shapes
         :return:
         """
-        try:
+
+        if self.mark_shapes:
             if aperture == 'all':
                 for apid in list(self.apertures.keys()):
-                    if self.app.is_legacy is True:
-                        self.mark_shapes[apid].clear(update=False)
-                    else:
-                        self.mark_shapes[apid].clear(update=True)
-
+                    try:
+                        if self.app.is_legacy is True:
+                            self.mark_shapes[apid].clear(update=False)
+                        else:
+                            self.mark_shapes[apid].clear(update=True)
+                    except Exception as e:
+                        log.debug("FlatCAMGerber.clear_plot_apertures() 'all' --> %s" % str(e))
             else:
-                self.mark_shapes[aperture].clear(update=True)
-        except Exception as e:
-            log.debug("FlatCAMGerber.clear_plot_apertures() --> %s" % str(e))
+                try:
+                    if self.app.is_legacy is True:
+                        self.mark_shapes[aperture].clear(update=False)
+                    else:
+                        self.mark_shapes[aperture].clear(update=True)
+                except Exception as e:
+                    log.debug("FlatCAMGerber.clear_plot_apertures() 'aperture' --> %s" % str(e))
 
     def clear_mark_all(self):
         self.ui.mark_all_cb.set_value(False)
