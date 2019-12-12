@@ -1078,7 +1078,7 @@ class Film(FlatCAMTool):
                         scale_stroke_factor=0.00,
                         scale_factor_x=None, scale_factor_y=None,
                         skew_factor_x=None, skew_factor_y=None, skew_reference='center',
-                        mirror=None,  orientation='p', pagesize='A4', color='black', opacity=1.0,
+                        mirror=None,  orientation_val='p', pagesize_val='A4', color_val='black', opacity_val=1.0,
                         use_thread=True, ftype='svg'):
         """
         Exports a Geometry Object to an SVG file in positive black.
@@ -1122,12 +1122,12 @@ class Film(FlatCAMTool):
             self.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
             box = obj
 
-        p_size = pagesize
-        orientation = orientation
-        color = color
-        transparency_level = opacity
+        p_size = pagesize_val
+        orientation = orientation_val
+        color = color_val
+        transparency_level = opacity_val
 
-        def make_positive_film():
+        def make_positive_film(p_size, orientation, color, transparency_level):
             log.debug("FilmTool.export_positive().make_positive_film()")
 
             exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
@@ -1239,7 +1239,8 @@ class Film(FlatCAMTool):
 
             def job_thread_film(app_obj):
                 try:
-                    make_positive_film()
+                    make_positive_film(p_size=p_size, orientation=orientation, color=color,
+                                       transparency_level=transparency_level)
                 except Exception:
                     proc.done()
                     return
@@ -1247,7 +1248,8 @@ class Film(FlatCAMTool):
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': [self]})
         else:
-            make_positive_film()
+            make_positive_film(p_size=p_size, orientation=orientation, color=color,
+                               transparency_level=transparency_level)
 
     def reset_fields(self):
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
