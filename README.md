@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - added option to save objects as PDF files in File -> Save menu
 - optimized the FlatCAMGerber.clear_plot_apertures() method
 - some changes in the ObjectUI and for the Geometry UI
+- finished a very rough and limited HPGL2 file import 
 
 11.12.2019
 

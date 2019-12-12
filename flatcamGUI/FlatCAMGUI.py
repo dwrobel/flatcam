@@ -168,6 +168,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                              _('&DXF as Gerber Object ...'), self)
         self.menufileimport.addAction(self.menufileimportdxf_as_gerber)
         self.menufileimport.addSeparator()
+        self.menufileimport_hpgl2_as_geo = QtWidgets.QAction(QtGui.QIcon('share/dxf16.png'),
+                                                             _('HPGL2 as Geometry Object ...'), self)
+        self.menufileimport.addAction(self.menufileimport_hpgl2_as_geo)
+        self.menufileimport.addSeparator()
 
         # Export ...
         self.menufileexport = self.menufile.addMenu(QtGui.QIcon('share/export.png'), _('Export'))

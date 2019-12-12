@@ -63,6 +63,8 @@ from flatcamEditors.FlatCAMExcEditor import FlatCAMExcEditor
 from flatcamEditors.FlatCAMGrbEditor import FlatCAMGrbEditor
 from flatcamEditors.FlatCAMTextEditor import TextEditor
 
+from flatcamParsers.ParseHPGL2 import HPGL2
+
 from FlatCAMProcess import *
 from FlatCAMWorkerStack import WorkerStack
 # from flatcamGUI.VisPyVisuals import Color
@@ -1771,7 +1773,7 @@ class App(QtCore.QObject):
 
         self.ui.menufileimportdxf.triggered.connect(lambda: self.on_file_importdxf("geometry"))
         self.ui.menufileimportdxf_as_gerber.triggered.connect(lambda: self.on_file_importdxf("gerber"))
-
+        self.ui.menufileimport_hpgl2_as_geo.triggered.connect(self.on_fileopenhpgl2)
         self.ui.menufileexportsvg.triggered.connect(self.on_file_exportsvg)
         self.ui.menufileexportpng.triggered.connect(self.on_file_exportpng)
         self.ui.menufileexportexcellon.triggered.connect(self.on_file_exportexcellon)
@@ -9295,6 +9297,44 @@ class App(QtCore.QObject):
             # thread safe. The new_project()
             self.open_project(filename)
 
+    def on_fileopenhpgl2(self, signal: bool = None, name=None):
+        """
+        File menu callback for opening a HPGL2.
+
+        :param signal: required because clicking the entry will generate a checked signal which needs a container
+        :return: None
+        """
+
+        self.report_usage("on_fileopenhpgl2")
+        App.log.debug("on_fileopenhpgl2()")
+
+        _filter_ = "HPGL2 Files (*.plt);;" \
+                   "All Files (*.*)"
+
+        if name is None:
+            try:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open HPGL2"),
+                                                                       directory=self.get_last_folder(),
+                                                                       filter=_filter_)
+            except TypeError:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open HPGL2"), filter=_filter_)
+
+            filenames = [str(filename) for filename in filenames]
+        else:
+            filenames = [name]
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening HPGL2 file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
+
+        if len(filenames) == 0:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Open HPGL2 file cancelled."))
+        else:
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_hpgl2, 'params': [filename]})
+
     def on_file_openconfig(self, signal: bool = None):
         """
         File menu callback for opening a config file.
@@ -10930,6 +10970,70 @@ class App(QtCore.QObject):
             # GUI feedback
             self.inform.emit('[success] %s: %s' %
                              (_("Opened"), filename))
+
+    def open_hpgl2(self, filename, outname=None):
+        """
+        Opens a HPGL2 file, parses it and creates a new object for
+        it in the program. Thread-safe.
+
+        :param outname: Name of the resulting object. None causes the
+            name to be that of the file.
+        :param filename: HPGL2 file filename
+        :type filename: str
+        :return: None
+        """
+        filename = filename
+
+        # How the object should be initialized
+        def obj_init(geo_obj, app_obj):
+
+            # assert isinstance(geo_obj, FlatCAMGeometry), \
+            #     "Expected to initialize a FlatCAMGeometry but got %s" % type(geo_obj)
+
+            # Opening the file happens here
+            obj = HPGL2()
+            try:
+                HPGL2.parse_file(obj, filename)
+            except IOError:
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open file"), filename))
+                return "fail"
+            except ParseError as err:
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s. %s' % (_("Failed to parse file"), filename, str(err)))
+                app_obj.log.error(str(err))
+                return "fail"
+            except Exception as e:
+                log.debug("App.open_hpgl2() --> %s" % str(e))
+                msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
+                msg += traceback.format_exc()
+                app_obj.inform.emit(msg)
+                return "fail"
+
+            geo_obj.multigeo = True
+            geo_obj.solid_geometry = obj.solid_geometry
+            geo_obj.tools = obj.tools
+
+            # if geo_obj.is_empty():
+            #     app_obj.inform.emit('[ERROR_NOTCL] %s' %
+            #                         _("Object is not HPGL2 file or empty. Aborting object creation."))
+            #     return "fail"
+
+        App.log.debug("open_hpgl2()")
+
+        with self.proc_container.new(_("Opening HPGL2")) as proc:
+            # Object name
+            name = outname or filename.split('/')[-1].split('\\')[-1]
+
+            # # ## Object creation # ##
+            ret = self.new_object("geometry", name, obj_init, autoselected=False)
+            if ret == 'fail':
+                self.inform.emit('[ERROR_NOTCL]%s' %  _(' Open HPGL2 failed. Probable not a HPGL2 file.'))
+                return 'fail'
+
+            # Register recent file
+            self.file_opened.emit("geometry", filename)
+
+            # GUI feedback
+            self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
     def open_script(self, filename, outname=None, silent=False):
         """

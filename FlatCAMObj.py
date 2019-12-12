@@ -5744,7 +5744,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def plot_element(self, element, color='#FF0000FF', visible=None):
 
         visible = visible if visible else self.options['plot']
-
         try:
             for sub_el in element:
                 self.plot_element(sub_el)
