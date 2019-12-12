@@ -4252,7 +4252,7 @@ class App(QtCore.QObject):
             commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
                             "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n"\
                             "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
-                            "ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n"\
+                            "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n"\
                             "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
                             "ListSys, MillDrills,\n"\
                             "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
