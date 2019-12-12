@@ -195,10 +195,10 @@ class FlatCAMObj(QtCore.QObject):
             pass
 
         # Creates problems on focusOut
-        # try:
-        #     self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
-        # except (TypeError, AttributeError):
-        #     pass
+        try:
+            self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+        except (TypeError, AttributeError):
+            pass
 
         # self.ui.skew_button.clicked.connect(self.on_skew_button_click)
 
@@ -3929,6 +3929,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
+        self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=False))
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
         self.ui.addtool_entry.returnPressed.connect(lambda: self.on_tool_add())
 

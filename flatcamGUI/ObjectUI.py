@@ -128,7 +128,8 @@ class ObjectUI(QtWidgets.QWidget):
             self.offset_vectorlabel = QtWidgets.QLabel('%s:' % _('Vector'))
             self.offset_vectorlabel.setToolTip(
                 _("Amount by which to move the object\n"
-                  "in the x and y axes in (x, y) format.")
+                  "in the x and y axes in (x, y) format.\n"
+                  "Expressions are allowed. E.g: (1/3.2, 0.5*3)")
             )
             self.offsetvector_entry = EvalEntry2()
             self.offsetvector_entry.setText("(0.0, 0.0)")
@@ -1676,13 +1677,22 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        self.geo_param_box.addWidget(self.generate_cnc_button)
+        self.grid3.addWidget(self.generate_cnc_button, 23, 0, 1, 2)
+
+        self.grid3.addWidget(QtWidgets.QLabel(''), 24, 0, 1, 2)
 
         # ##############
         # Paint area ##
         # ##############
-        self.paint_label = QtWidgets.QLabel('<b>%s</b>' % _('Paint Area'))
-        self.paint_label.setToolTip(
+        self.tools_label = QtWidgets.QLabel('<b>%s</b>' % _('TOOLS'))
+        self.tools_label.setToolTip(
+            _("Launch Paint Tool in Tools Tab.")
+        )
+        self.grid3.addWidget(self.tools_label, 25, 0, 1, 2)
+
+        # Paint Button
+        self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
+        self.paint_tool_button.setToolTip(
             _(
                 "Creates tool paths to cover the\n"
                 "whole area of a polygon (remove\n"
@@ -1690,20 +1700,27 @@ class GeometryObjectUI(ObjectUI):
                 "to click on the desired polygon."
             )
         )
-        self.geo_tools_box.addWidget(self.paint_label)
-
-        # GO Button
-        self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
-        self.paint_tool_button.setToolTip(
-            _("Launch Paint Tool in Tools Tab.")
-        )
         self.paint_tool_button.setStyleSheet("""
                         QPushButton
                         {
                             font-weight: bold;
                         }
                         """)
-        self.geo_tools_box.addWidget(self.paint_tool_button)
+        self.grid3.addWidget(self.paint_tool_button, 26, 0, 1, 2)
+
+        # NCC Tool
+        self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
+        self.generate_ncc_button.setToolTip(
+            _("Create the Geometry Object\n"
+              "for non-copper routing.")
+        )
+        self.generate_ncc_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.grid3.addWidget(self.generate_ncc_button, 27, 0, 1, 2)
 
 
 class CNCObjectUI(ObjectUI):
