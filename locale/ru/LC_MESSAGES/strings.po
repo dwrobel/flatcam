@@ -841,7 +841,7 @@ msgstr "Выбрать все"
 
 #: FlatCAMApp.py:8216 FlatCAMApp.py:8263 flatcamGUI/FlatCAMGUI.py:421
 msgid "Deselect All"
-msgstr "Выбери все"
+msgstr "Снять выделение"
 
 #: FlatCAMApp.py:8279
 msgid "All objects are selected."
@@ -3079,7 +3079,7 @@ msgstr "Линейный"
 #: flatcamGUI/PreferencesUI.py:3981 flatcamGUI/PreferencesUI.py:6378
 #: flatcamTools/ToolFiducials.py:220 flatcamTools/ToolNonCopperClear.py:221
 msgid "Circular"
-msgstr "Круглый"
+msgstr "Круг"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1642 flatcamGUI/PreferencesUI.py:2860
 msgid "Nr of drills"
@@ -5886,13 +5886,13 @@ msgstr "QR код"
 #: flatcamGUI/FlatCAMGUI.py:754 flatcamGUI/FlatCAMGUI.py:2198
 #: flatcamTools/ToolCopperThieving.py:40 flatcamTools/ToolCopperThieving.py:566
 msgid "Copper Thieving Tool"
-msgstr "Очистка от меди"
+msgstr "Copper Thieving"
 
 #: flatcamGUI/FlatCAMGUI.py:756 flatcamGUI/FlatCAMGUI.py:1463
 #: flatcamGUI/FlatCAMGUI.py:2200 flatcamTools/ToolFiducials.py:33
 #: flatcamTools/ToolFiducials.py:393
 msgid "Fiducials Tool"
-msgstr "Проверка"
+msgstr "Контрольные точки"
 
 #: flatcamGUI/FlatCAMGUI.py:761 flatcamGUI/FlatCAMGUI.py:780
 #: flatcamGUI/FlatCAMGUI.py:818 flatcamGUI/FlatCAMGUI.py:2203
@@ -7213,7 +7213,7 @@ msgstr "Внутр"
 
 #: flatcamGUI/ObjectUI.py:493
 msgid "Generate Isolation Geometry"
-msgstr "Создание изолирующей Геометрия"
+msgstr "Создать геометрию изоляции"
 
 #: flatcamGUI/ObjectUI.py:501
 msgid ""
@@ -10579,7 +10579,6 @@ msgstr ""
 "форма печатной платы из окружающего материала."
 
 #: flatcamGUI/PreferencesUI.py:4314 flatcamTools/ToolCutOut.py:104
-#, fuzzy
 msgid "Object kind"
 msgstr "Вид объекта"
 
@@ -11880,11 +11879,11 @@ msgid ""
 "- 'Reference Object' - will do copper thieving within the area specified by "
 "another object."
 msgstr ""
-"- «Самостоятельно» - степень очистки меди основан на объекте, который "
+"- «Самостоятельно» - степень Copper Thieving основан на объекте, который "
 "очищается от меди.\n"
 " - «Выбор области» - щелкните левой кнопкой мыши для начала выбора области "
 "для рисования.\n"
-"- «Контрольный объект» - будет выполнять очистку от меди в области указаной "
+"- «Контрольный объект» - будет выполнять Copper Thieving в области указанной "
 "другим объектом."
 
 #: flatcamGUI/PreferencesUI.py:6117 flatcamTools/ToolCopperThieving.py:170
@@ -12012,7 +12011,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:6298
 msgid "Fiducials Tool Options"
-msgstr "Параметры контроля"
+msgstr "Параметры контрольных точек"
 
 #: flatcamGUI/PreferencesUI.py:6309 flatcamGUI/PreferencesUI.py:6425
 #: flatcamTools/ToolCopperThieving.py:91 flatcamTools/ToolFiducials.py:151
@@ -12025,6 +12024,10 @@ msgid ""
 "otherwise is the size of the fiducial.\n"
 "The soldermask opening is double than that."
 msgstr ""
+"Этот параметр задает диаметр контрольного отверстия, если тип отверстия "
+"является круговым,\n"
+"в противном случае, размер контрольного отверстия\n"
+"вдвое больше отверстия паяльной маски."
 
 #: flatcamGUI/PreferencesUI.py:6344 flatcamTools/ToolFiducials.py:186
 msgid "Auto"
@@ -12044,18 +12047,21 @@ msgid ""
 "box.\n"
 " - 'Manual' - manual placement of fiducials."
 msgstr ""
+"- 'Авто' - автоматическое размещение контрольных точек по углам "
+"ограничительной рамки.\n"
+" - 'Вручную' - ручное размещение контрольных точек."
 
 #: flatcamGUI/PreferencesUI.py:6357 flatcamTools/ToolFiducials.py:199
 msgid "Up"
-msgstr "Вверх"
+msgstr "Вверху"
 
 #: flatcamGUI/PreferencesUI.py:6358 flatcamTools/ToolFiducials.py:200
 msgid "Down"
-msgstr "Вниз"
+msgstr "Внизу"
 
 #: flatcamGUI/PreferencesUI.py:6361 flatcamTools/ToolFiducials.py:203
 msgid "Second fiducial"
-msgstr ""
+msgstr "Вторичные контрольные точки"
 
 #: flatcamGUI/PreferencesUI.py:6363 flatcamTools/ToolFiducials.py:205
 msgid ""
@@ -12064,18 +12070,23 @@ msgid ""
 " - 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
 "- 'None' - there is no second fiducial. The order is: bottom-left, top-right."
 msgstr ""
+"Позиция вторичной контрольной точки.\n"
+"- 'Вверху' -порядок: снизу слева, сверху слева, сверху справа.\n"
+"-'Внизу' -порядок: снизу слева, снизу справа, сверху справа.\n"
+"-'Нет' - вторичная контрольная точка отсутствует. Порядок: снизу слева, "
+"сверху справа."
 
 #: flatcamGUI/PreferencesUI.py:6379 flatcamTools/ToolFiducials.py:221
 msgid "Cross"
-msgstr ""
+msgstr "Крест"
 
 #: flatcamGUI/PreferencesUI.py:6380 flatcamTools/ToolFiducials.py:222
 msgid "Chess"
-msgstr ""
+msgstr "Шахматный порядок"
 
 #: flatcamGUI/PreferencesUI.py:6383 flatcamTools/ToolFiducials.py:224
 msgid "Fiducial Type"
-msgstr "Тип проверки"
+msgstr "Тип контрольных точек"
 
 #: flatcamGUI/PreferencesUI.py:6385 flatcamTools/ToolFiducials.py:226
 msgid ""
@@ -12084,10 +12095,14 @@ msgid ""
 "- 'Cross' - cross lines fiducial.\n"
 "- 'Chess' - chess pattern fiducial."
 msgstr ""
+"Тип контрольных точек.\n"
+"- 'Круг' - это обычные контрольные точки.\n"
+"- 'Крест' - крестообразные.\n"
+"- 'Шахматный порядок' - точки в шахматном порядке."
 
 #: flatcamGUI/PreferencesUI.py:6394 flatcamTools/ToolFiducials.py:235
 msgid "Line thickness"
-msgstr ""
+msgstr "Толщина линии"
 
 #: flatcamGUI/PreferencesUI.py:6414
 msgid "Calibration Tool Options"
@@ -12792,7 +12807,7 @@ msgstr ""
 "очищается от меди.\n"
 "- «Выбор области» - щелкните левой кнопкой мыши для начала выбора области "
 "для рисования.\n"
-"- «Контрольный объект» - будет выполнять очистку от меди в области указаной "
+"- «Контрольный объект» - будет выполнять Copper Thieving в области указанной "
 "другим объектом."
 
 #: flatcamTools/ToolCopperThieving.py:138
@@ -12805,8 +12820,8 @@ msgid ""
 "The type of FlatCAM object to be used as copper thieving reference.\n"
 "It can be Gerber, Excellon or Geometry."
 msgstr ""
-"Тип объекта FlatCAM, который будет использоваться в качестве справочного "
-"материала для очистки от меди.\n"
+"Тип объекта FlatCAM, который будет использоваться в качестве шаблона для "
+"Copper Thieving.\n"
 "Это может быть Gerber, Excellon или Geometry."
 
 #: flatcamTools/ToolCopperThieving.py:144 flatcamTools/ToolDblSided.py:213
@@ -12996,11 +13011,11 @@ msgstr ""
 
 #: flatcamTools/ToolCopperThieving.py:947
 msgid "Copper Thieving Tool started. Reading parameters."
-msgstr "Очистка от меди. Чтение параметров."
+msgstr "Copper Thieving. Чтение параметров."
 
 #: flatcamTools/ToolCopperThieving.py:972
 msgid "Copper Thieving Tool. Preparing isolation polygons."
-msgstr "Очистка от меди. Подготовка безмедных полигонов."
+msgstr "Copper Thieving. Подготовка безмедных полигонов."
 
 #: flatcamTools/ToolCopperThieving.py:1017
 msgid "Copper Thieving Tool. Preparing areas to fill with copper."
@@ -13634,13 +13649,15 @@ msgstr "Выполнен переход к средней точке между 
 #: flatcamTools/ToolFiducials.py:56
 #| msgid "Points coordinates"
 msgid "Fiducials Coordinates"
-msgstr ""
+msgstr "Координаты контрольных точек"
 
 #: flatcamTools/ToolFiducials.py:58
 msgid ""
 "A table with the fiducial points coordinates,\n"
 "in the format (x, y)."
 msgstr ""
+"Таблица с координатами контрольных точек,\n"
+"в формате (x, y)."
 
 #: flatcamTools/ToolFiducials.py:74
 msgid "Coordinates"
@@ -13652,7 +13669,7 @@ msgstr "Верхний правый"
 
 #: flatcamTools/ToolFiducials.py:111
 msgid "Second Point"
-msgstr "Вторая точка"
+msgstr "Вторичная точка"
 
 #: flatcamTools/ToolFiducials.py:258
 msgid "Copper Gerber"
@@ -13661,11 +13678,13 @@ msgstr "Gerber медного слоя"
 #: flatcamTools/ToolFiducials.py:267
 #| msgid "Add Circle"
 msgid "Add Fiducial"
-msgstr ""
+msgstr "Добавить контрольные точки"
 
 #: flatcamTools/ToolFiducials.py:269
 msgid "Will add a polygon on the copper layer to serve as fiducial."
 msgstr ""
+"Добавляет на медный слой полигон, для того чтобы он служил контрольной "
+"точкой."
 
 #: flatcamTools/ToolFiducials.py:285
 msgid "Soldermask Gerber"
@@ -13686,27 +13705,33 @@ msgid ""
 "The diameter is always double of the diameter\n"
 "for the copper fiducial."
 msgstr ""
+"Добавляет полигон на слой паяльной маски.\n"
+"чтобы служить контрольной точкой.\n"
+"Диаметр всегда в два раза больше диаметра.\n"
+"для контрольных точек на медном слое."
 
 #: flatcamTools/ToolFiducials.py:514
 msgid "Click to add first Fiducial. Bottom Left..."
-msgstr ""
+msgstr "Нажмите, чтобы добавить первую контрольную точку. Внизу слева..."
 
 #: flatcamTools/ToolFiducials.py:778
 msgid "Click to add the last fiducial. Top Right..."
-msgstr ""
+msgstr "Нажмите, чтобы добавить следующую контрольную точку. Вверху справа..."
 
 #: flatcamTools/ToolFiducials.py:783
 msgid "Click to add the second fiducial. Top Left or Bottom Right..."
 msgstr ""
+"Нажмите, чтобы добавить вторичную контрольную точку. Вверху слева или внизу "
+"справа..."
 
 #: flatcamTools/ToolFiducials.py:786 flatcamTools/ToolFiducials.py:795
 msgid "Done. All fiducials have been added."
-msgstr ""
+msgstr "Готово. Все контрольные точки были успешно добавлены."
 
 #: flatcamTools/ToolFiducials.py:872
 #| msgid "Distance Tool exit..."
 msgid "Fiducials Tool exit."
-msgstr ""
+msgstr "Выход из инструмента контрольных точек."
 
 #: flatcamTools/ToolFilm.py:42
 msgid "Film PCB"
@@ -14173,6 +14198,9 @@ msgid ""
 "If the tool is V-shape type then this value is automatically\n"
 "calculated from the other parameters."
 msgstr ""
+"Диаметр нового инструмента для добавления в таблицу инструментов.\n"
+"Если инструмент имеет V-образную форму, то это значение автоматически\n"
+"вычисляется из других параметров."
 
 #: flatcamTools/ToolNonCopperClear.py:288 flatcamTools/ToolPaint.py:190
 msgid ""
@@ -15291,7 +15319,7 @@ msgstr "Параметры QRCode"
 
 #: flatcamTools/ToolQRCode.py:94
 msgid "The parameters used to shape the QRCode."
-msgstr ""
+msgstr "Параметры, используемые для формирования QRCode."
 
 #: flatcamTools/ToolQRCode.py:207
 msgid "Export QRCode"
@@ -15302,10 +15330,12 @@ msgid ""
 "Show a set of controls allowing to export the QRCode\n"
 "to a SVG file or an PNG file."
 msgstr ""
+"Отображает набор элементов управления, позволяющих экспортировать QRCode\n"
+"в файл SVG или PNG."
 
 #: flatcamTools/ToolQRCode.py:248
 msgid "Transparent back color"
-msgstr ""
+msgstr "Прозрачный фон"
 
 #: flatcamTools/ToolQRCode.py:273
 msgid "Export QRCode SVG"
@@ -15313,7 +15343,7 @@ msgstr "Экспорт QRCode SVG"
 
 #: flatcamTools/ToolQRCode.py:275
 msgid "Export a SVG file with the QRCode content."
-msgstr ""
+msgstr "Экспортируйте файл изображения PNG с содержимым QRCode."
 
 #: flatcamTools/ToolQRCode.py:286
 msgid "Export QRCode PNG"
@@ -15321,7 +15351,7 @@ msgstr "Экспорт QRCode PNG"
 
 #: flatcamTools/ToolQRCode.py:288
 msgid "Export a PNG image file with the QRCode content."
-msgstr ""
+msgstr "Экспорт файла SVG с содержимым QRCode."
 
 #: flatcamTools/ToolQRCode.py:299
 msgid "Insert QRCode"
@@ -15346,7 +15376,7 @@ msgstr "Нажмите на конечную точку ..."
 
 #: flatcamTools/ToolQRCode.py:587
 msgid "QRCode Tool done."
-msgstr ""
+msgstr "QRCode готов."
 
 #: flatcamTools/ToolQRCode.py:780 flatcamTools/ToolQRCode.py:784
 msgid "Export PNG"
