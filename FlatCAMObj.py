@@ -268,9 +268,19 @@ class FlatCAMObj(QtCore.QObject):
 
     def on_scale_button_click(self):
         self.read_form()
-        factor = eval(self.ui.scale_entry.get_value())
+        try:
+            factor = float(eval(self.ui.scale_entry.get_value()))
+        except Exception as e:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scaling could not be executed."))
+            log.debug("FlatCAMObj.on_scale_button_click() -- %s" % str(e))
+            return
+
+        if type(factor) != float:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scaling could not be executed."))
+
         # if factor is 1.0 do nothing, there is no point in scaling with a factor of 1.0
         if factor == 1.0:
+            self.app.inform.emit('[success] %s' % _("Scale done."))
             return
 
         log.debug("FlatCAMObj.on_scale_button_click()")
@@ -278,6 +288,8 @@ class FlatCAMObj(QtCore.QObject):
         def worker_task():
             with self.app.proc_container.new(_("Scaling...")):
                 self.scale(factor)
+                self.app.inform.emit('[success] %s' % _("Scale done."))
+
             self.app.proc_container.update_view_text('')
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 self.plot()
