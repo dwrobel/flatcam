@@ -316,6 +316,7 @@ class HPGL2(Geometry):
                                 geo = LineString(path)
                                 self.tools[current_tool]['solid_geometry'].append(geo)
                                 geo_buffer.append(geo)
+                                path[:] = []
 
                             # if linear_x or linear_y are None, ignore those
                             if linear_x is not None and linear_y is not None:
