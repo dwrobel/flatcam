@@ -3780,7 +3780,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.prepend_text = FCTextArea()
         self.prepend_text.setPlaceholderText(
-            _("Type here any G-Code commands you would "
+            _("Type here any G-Code commands you would\n"
               "like to add at the beginning of the G-Code file.")
         )
         self.layout.addWidget(self.prepend_text)
@@ -3797,8 +3797,8 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.append_text = FCTextArea()
         self.append_text.setPlaceholderText(
-            _("Type here any G-Code commands you would "
-              "like to append to the generated file. "
+            _("Type here any G-Code commands you would\n"
+              "like to append to the generated file.\n"
               "I.e.: M2 (End of program)")
         )
         self.layout.addWidget(self.append_text)
@@ -3850,12 +3850,12 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.toolchange_text = FCTextArea()
         self.toolchange_text.setPlaceholderText(
             _(
-                "Type here any G-Code commands you would "
-                "like to be executed when Toolchange event is encountered. "
-                "This will constitute a Custom Toolchange GCode, "
-                "or a Toolchange Macro. "
-                "The FlatCAM variables are surrounded by '%' symbol. \n"
-                "WARNING: it can be used only with a preprocessor file "
+                "Type here any G-Code commands you would\n"
+                "like to be executed when Toolchange event is encountered.\n"
+                "This will constitute a Custom Toolchange GCode,\n"
+                "or a Toolchange Macro.\n"
+                "The FlatCAM variables are surrounded by '%' symbol.\n"
+                "WARNING: it can be used only with a preprocessor file\n"
                 "that has 'toolchange_custom' in it's name."
             )
         )
@@ -4852,7 +4852,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.orientation_label = QtWidgets.QLabel('%s:' % _("Page Orientation"))
         self.orientation_label.setToolTip(_("Can be:\n"
                                             "- Portrait\n"
-                                            "- Lanscape"))
+                                            "- Landscape"))
 
         self.orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
                                            {'label': _('Landscape'), 'value': 'l'},
@@ -6123,7 +6123,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself' - the copper Thieving extent is based on the object that is copper cleared.\n "
+            _("- 'Itself' - the copper Thieving extent is based on the object that is copper cleared.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
               "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
@@ -6137,7 +6137,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         ], stretch=False)
         self.bbox_type_label = QtWidgets.QLabel(_("Box Type:"))
         self.bbox_type_label.setToolTip(
-            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n "
+            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n"
               "- 'Minimal' - the bounding box will be the convex hull shape.")
         )
         grid_lay.addWidget(self.bbox_type_label, 5, 0)
@@ -6157,7 +6157,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         ], orientation='vertical', stretch=False)
         self.fill_type_label = QtWidgets.QLabel(_("Fill Type:"))
         self.fill_type_label.setToolTip(
-            _("- 'Solid' - copper thieving will be a solid polygon.\n "
+            _("- 'Solid' - copper thieving will be a solid polygon.\n"
               "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
               "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
               "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")

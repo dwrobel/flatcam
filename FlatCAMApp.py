@@ -4314,23 +4314,41 @@ class App(QtCore.QObject):
         # self.inform.emit('[selected] %s created & selected: %s' %
         #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
         if obj.kind == 'gerber':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='green', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='green',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'excellon':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='brown', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='brown',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'cncjob':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='blue', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='blue',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'geometry':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='red', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='red',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'script':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='orange', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='orange',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'document':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='darkCyan', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='darkCyan',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
 
         # update the SHELL auto-completer model with the name of the new object
         self.shell._edit.set_model_data(self.myKeywords)
@@ -8856,17 +8874,29 @@ class App(QtCore.QObject):
     def selected_message(self, curr_sel_obj):
         if curr_sel_obj:
             if curr_sel_obj.kind == 'gerber':
-                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='green', name=str(curr_sel_obj.options['name'])))
+                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='green',
+                    name=str(curr_sel_obj.options['name']),
+                    tx=_("selected"))
+                )
             elif curr_sel_obj.kind == 'excellon':
-                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='brown', name=str(curr_sel_obj.options['name'])))
+                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='brown',
+                    name=str(curr_sel_obj.options['name']),
+                    tx=_("selected"))
+                )
             elif curr_sel_obj.kind == 'cncjob':
-                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='blue', name=str(curr_sel_obj.options['name'])))
+                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='blue',
+                    name=str(curr_sel_obj.options['name']),
+                    tx=_("selected"))
+                )
             elif curr_sel_obj.kind == 'geometry':
-                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='red', name=str(curr_sel_obj.options['name'])))
+                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='red',
+                    name=str(curr_sel_obj.options['name']),
+                    tx=_("selected"))
+                )
 
     def delete_hover_shape(self):
         self.hover_shapes.clear()
@@ -10166,8 +10196,10 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Project As ..."),
-                directory=_('{l_save}/Project_{date}').format(l_save=str(self.get_last_save_folder()), date=self.date),
-                filter=filter_)
+                directory=('{l_save}/{proj}_{date}').format(l_save=str(self.get_last_save_folder()), date=self.date,
+                                                             proj=_("Project")),
+                filter=filter_
+            )
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)
 
@@ -10208,7 +10240,7 @@ class App(QtCore.QObject):
 
         try:
             obj_active = self.collection.get_active()
-            obj_name = obj_active.options['name']
+            obj_name = _(str(obj_active.options['name']))
         except AttributeError as err:
             log.debug("App.on_file_save_object_pdf() --> %s" % str(err))
             self.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
@@ -10218,10 +10250,11 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Object as PDF ..."),
-                directory=_('{l_save}/{obj_name}_{date}').format(l_save=str(self.get_last_save_folder()),
+                directory=('{l_save}/{obj_name}_{date}').format(l_save=str(self.get_last_save_folder()),
                                                                  obj_name=obj_name,
                                                                  date=self.date),
-                filter=filter_)
+                filter=filter_
+            )
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Object as PDF ..."), filter=filter_)
 

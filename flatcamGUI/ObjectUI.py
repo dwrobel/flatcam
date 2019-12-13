@@ -1910,7 +1910,7 @@ class CNCObjectUI(ObjectUI):
 
         self.prepend_text = FCTextArea()
         self.prepend_text.setPlaceholderText(
-            _("Type here any G-Code commands you would "
+            _("Type here any G-Code commands you would\n"
               "like to add at the beginning of the G-Code file.")
         )
         self.custom_box.addWidget(self.prepend_text)
@@ -1926,8 +1926,8 @@ class CNCObjectUI(ObjectUI):
 
         self.append_text = FCTextArea()
         self.append_text.setPlaceholderText(
-            _("Type here any G-Code commands you would "
-              "like to append to the generated file. "
+            _("Type here any G-Code commands you would\n"
+              "like to append to the generated file.\n"
               "I.e.: M2 (End of program)")
         )
         self.custom_box.addWidget(self.append_text)
@@ -1958,12 +1958,12 @@ class CNCObjectUI(ObjectUI):
         self.toolchange_text = FCTextArea()
         self.toolchange_text.setPlaceholderText(
             _(
-                "Type here any G-Code commands you would "
-                "like to be executed when Toolchange event is encountered. "
-                "This will constitute a Custom Toolchange GCode, "
-                "or a Toolchange Macro. "
-                "The FlatCAM variables are surrounded by '%' symbol. \n"
-                "WARNING: it can be used only with a preprocessor file "
+                "Type here any G-Code commands you would\n"
+                "like to be executed when Toolchange event is encountered.\n"
+                "This will constitute a Custom Toolchange GCode,\n"
+                "or a Toolchange Macro.\n"
+                "The FlatCAM variables are surrounded by '%' symbol.\n"
+                "WARNING: it can be used only with a preprocessor file\n"
                 "that has 'toolchange_custom' in it's name."
             )
         )

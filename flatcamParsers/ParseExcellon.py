@@ -884,8 +884,9 @@ class Excellon(Geometry):
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
             msg = '[ERROR_NOTCL] %s' % \
                   _("An internal error has ocurred. See shell.\n")
-            msg += _('{e_code} Excellon Parser error.\nParsing Failed. Line {l_nr}: {line}\n').format(
+            msg += ('{e_code} {tx} {l_nr}: {line}\n').format(
                 e_code='[ERROR]',
+                tx=_("Excellon Parser error.\nParsing Failed. Line"),
                 l_nr=line_num,
                 line=eline)
             msg += traceback.format_exc()

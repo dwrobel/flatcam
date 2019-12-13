@@ -278,7 +278,10 @@ class DistanceMin(FlatCAMTool):
             )
 
         if d != 0:
-            self.app.inform.emit(_("MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}").format(
+            self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | (tx3} = {d_z}".format(
+                tx1=_("MEASURING"),
+                tx2=_("Result"),
+                tx3=_("Distance"),
                 d_x='%*f' % (self.decimals, abs(dx)),
                 d_y='%*f' % (self.decimals, abs(dy)),
                 d_z='%*f' % (self.decimals, abs(d)))
