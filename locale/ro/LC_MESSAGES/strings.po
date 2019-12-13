@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-12-13 17:59+0200\n"
-"PO-Revision-Date: 2019-12-13 18:04+0200\n"
+"POT-Creation-Date: 2019-12-13 21:18+0200\n"
+"PO-Revision-Date: 2019-12-14 00:03+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -12114,8 +12114,7 @@ msgstr "Referinţă:"
 
 #: flatcamGUI/PreferencesUI.py:6126
 msgid ""
-"- 'Itself' - the copper Thieving extent is based on the object that is "
-"copper cleared.\n"
+"- 'Itself' - the copper Thieving extent is based on the object extent.\n"
 "- 'Area Selection' - left mouse click to start selection of the area to be "
 "filled.\n"
 "- 'Reference Object' - will do copper thieving within the area specified by "
@@ -12259,19 +12258,17 @@ msgid ""
 "The distance between the possible copper thieving elements\n"
 "and/or robber bar and the actual openings in the mask."
 msgstr ""
+"Distanța dintre posibilele elemente Copper Thieving\n"
+"și / sau Robber Bar și deschiderile efective ale măștii."
 
 #: flatcamGUI/PreferencesUI.py:6316
-#, fuzzy
-#| msgid "Film Tool Options"
 msgid "Fiducials Tool Options"
-msgstr "Opțiuni Unealta Film"
+msgstr "Opțiuni Unealta Fiducials"
 
 #: flatcamGUI/PreferencesUI.py:6327 flatcamGUI/PreferencesUI.py:6443
 #: flatcamTools/ToolCopperThieving.py:91 flatcamTools/ToolFiducials.py:151
-#, fuzzy
-#| msgid "Diameter for the new tool."
 msgid "Parameters used for this tool."
-msgstr "Diametrul pt noua unealtă."
+msgstr "Parametrii folosiți pentru aceasta unealta."
 
 #: flatcamGUI/PreferencesUI.py:6334 flatcamTools/ToolFiducials.py:158
 msgid ""
@@ -12279,61 +12276,67 @@ msgid ""
 "otherwise is the size of the fiducial.\n"
 "The soldermask opening is double than that."
 msgstr ""
+"Aceasta setează diametrul pt fiducial dacă tipul fiducial-ul este circular,\n"
+"altfel este dimensiunea fiducial-ului.\n"
+"Deschiderea soldermask este dublă."
 
 #: flatcamGUI/PreferencesUI.py:6362 flatcamTools/ToolFiducials.py:186
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #: flatcamGUI/PreferencesUI.py:6363 flatcamTools/ToolFiducials.py:187
-#, fuzzy
-#| msgid "Manual Geo"
 msgid "Manual"
-msgstr "Geo manual"
+msgstr "Manual"
 
 #: flatcamGUI/PreferencesUI.py:6365 flatcamTools/ToolFiducials.py:189
 msgid "Mode:"
-msgstr ""
+msgstr "Mod:"
 
-#: flatcamGUI/PreferencesUI.py:6367 flatcamTools/ToolFiducials.py:191
+#: flatcamGUI/PreferencesUI.py:6367
 msgid ""
 "- 'Auto' - automatic placement of fiducials in the corners of the bounding "
 "box.\n"
-" - 'Manual' - manual placement of fiducials."
+"- 'Manual' - manual placement of fiducials."
 msgstr ""
+"- „Auto” - plasarea automată a fiducial în colțurile casetei de delimitare.\n"
+"- „Manual” - plasarea manuală a fiducial."
 
 #: flatcamGUI/PreferencesUI.py:6375 flatcamTools/ToolFiducials.py:199
 msgid "Up"
-msgstr ""
+msgstr "Sus"
 
 #: flatcamGUI/PreferencesUI.py:6376 flatcamTools/ToolFiducials.py:200
 msgid "Down"
-msgstr ""
+msgstr "Jos"
 
 #: flatcamGUI/PreferencesUI.py:6379 flatcamTools/ToolFiducials.py:203
 msgid "Second fiducial"
-msgstr ""
+msgstr "Al 2-lea Fiducial"
 
 #: flatcamGUI/PreferencesUI.py:6381 flatcamTools/ToolFiducials.py:205
 msgid ""
 "The position for the second fiducial.\n"
 "- 'Up' - the order is: bottom-left, top-left, top-right.\n"
-" - 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
+"- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
 "- 'None' - there is no second fiducial. The order is: bottom-left, top-right."
 msgstr ""
+"Poziția pentru cel de-al doilea fiducal.\n"
+"- „Sus” - ordinea este: jos-stânga, sus-stânga, sus-dreapta.\n"
+"- „Jos” - ordinea este: jos-stânga, jos-dreapta, sus-dreapta.\n"
+"- „Niciuna” - nu există un al doilea fiduțial. Ordinea este: jos-stânga, sus-"
+"dreapta."
 
 #: flatcamGUI/PreferencesUI.py:6397 flatcamTools/ToolFiducials.py:221
 msgid "Cross"
-msgstr ""
+msgstr "Cruce"
 
 #: flatcamGUI/PreferencesUI.py:6398 flatcamTools/ToolFiducials.py:222
 msgid "Chess"
-msgstr ""
+msgstr "Şah"
 
 #: flatcamGUI/PreferencesUI.py:6401 flatcamTools/ToolFiducials.py:224
-#, fuzzy
-#| msgid "Film Type"
 msgid "Fiducial Type"
-msgstr "Tip film"
+msgstr "Tip Fiducial"
 
 #: flatcamGUI/PreferencesUI.py:6403 flatcamTools/ToolFiducials.py:226
 msgid ""
@@ -12342,22 +12345,22 @@ msgid ""
 "- 'Cross' - cross lines fiducial.\n"
 "- 'Chess' - chess pattern fiducial."
 msgstr ""
+"Tipul de fiducial.\n"
+"- „Circular” - acesta este un Fiducial obișnuit.\n"
+"- „Cross” - linii încrucișate fiduciare.\n"
+"- „Șah” - model de șah fiduciar."
 
 #: flatcamGUI/PreferencesUI.py:6412 flatcamTools/ToolFiducials.py:235
 msgid "Line thickness"
-msgstr ""
+msgstr "Grosimea liniei"
 
 #: flatcamGUI/PreferencesUI.py:6432
-#, fuzzy
-#| msgid "Calculators Tool Options"
 msgid "Calibration Tool Options"
-msgstr "Opțiuni Unealta Calculatoare"
+msgstr "Opțiuni Unealta Calibrare"
 
 #: flatcamGUI/PreferencesUI.py:6448 flatcamTools/ToolCalibration.py:181
-#, fuzzy
-#| msgid "Source"
 msgid "Source Type"
-msgstr "Sursă"
+msgstr "Tipul sursei"
 
 #: flatcamGUI/PreferencesUI.py:6449 flatcamTools/ToolCalibration.py:182
 msgid ""
@@ -12366,46 +12369,43 @@ msgid ""
 "- Object -> click a hole geo for Excellon or a pad for Gerber\n"
 "- Free -> click freely on canvas to acquire the calibration points"
 msgstr ""
+"Sursa punctelor de calibrare.\n"
+"Poate fi:\n"
+"- Obiect -> faceți clic pe o geometrie gaură pentru Excellon sau pe un pad "
+"pentru Gerber\n"
+"- Liber -> faceți clic liber pe ecran pentru a obține punctele de calibrare"
 
 #: flatcamGUI/PreferencesUI.py:6454 flatcamTools/ToolCalibration.py:187
-#, fuzzy
-#| msgid "FreeForm"
 msgid "Free"
-msgstr "Formă liberă"
+msgstr "Liber"
 
 #: flatcamGUI/PreferencesUI.py:6468 flatcamTools/ToolCalibration.py:76
-#, fuzzy
-#| msgid ""
-#| "The height (Z) for travel between pads\n"
-#| "(without dispensing solder paste)."
 msgid "Height (Z) for travelling between the points."
-msgstr ""
-"Înălţimea (Z) când se face deplasare între pad-uri.\n"
-"(fără dispensare de pastă de fludor)."
+msgstr "Înălțime (Z) pentru deplasarea între puncte."
 
 #: flatcamGUI/PreferencesUI.py:6480 flatcamTools/ToolCalibration.py:88
-#, fuzzy
-#| msgid "Gerber Specification"
 msgid "Verification Z"
-msgstr "Specificatii Gerber"
+msgstr "Z Verificare"
 
 #: flatcamGUI/PreferencesUI.py:6482 flatcamTools/ToolCalibration.py:90
 msgid "Height (Z) for checking the point."
-msgstr ""
+msgstr "Înălțimea (Z) pentru verificarea punctului."
 
 #: flatcamGUI/PreferencesUI.py:6494 flatcamTools/ToolCalibration.py:102
 msgid "Zero Z tool"
-msgstr ""
+msgstr "Realizare Zero Z"
 
 #: flatcamGUI/PreferencesUI.py:6496 flatcamTools/ToolCalibration.py:104
 msgid ""
 "Include a sequence to zero the height (Z)\n"
 "of the verification tool."
 msgstr ""
+"Includeți o secvență pentru aliniere la zero a înălțimii (Z)\n"
+"uneltei de verificare."
 
 #: flatcamGUI/PreferencesUI.py:6505 flatcamTools/ToolCalibration.py:113
 msgid "Height (Z) for mounting the verification probe."
-msgstr ""
+msgstr "Înălțime (Z) pentru montarea sondei de verificare."
 
 #: flatcamGUI/PreferencesUI.py:6519 flatcamTools/ToolCalibration.py:127
 msgid ""
@@ -12413,10 +12413,11 @@ msgid ""
 "If no value is entered then the current\n"
 "(x, y) point will be used,"
 msgstr ""
+"Poziția X, Y pt schimbare unealtă.\n"
+"Dacă nu este introdusă nicio valoare, atunci poziția\n"
+"(x, y) curentă se va folosi,"
 
 #: flatcamGUI/PreferencesUI.py:6530 flatcamTools/ToolCalibration.py:153
-#, fuzzy
-#| msgid "Second object point"
 msgid "Second point"
 msgstr "Al doilea punct"
 
@@ -12426,16 +12427,15 @@ msgid ""
 "- top-left -> the user will align the PCB vertically\n"
 "- bottom-right -> the user will align the PCB horizontally"
 msgstr ""
+"Al doilea punct al verificării Gcode poate fi:\n"
+"- în stânga sus -> utilizatorul va alinia PCB-ul pe verticală\n"
+"- în jos-dreapta -> utilizatorul va alinia PCB-ul pe orizontală"
 
 #: flatcamGUI/PreferencesUI.py:6536 flatcamTools/ToolCalibration.py:159
-#, fuzzy
-#| msgid "Top Left"
 msgid "Top-Left"
-msgstr "Stânga sus"
+msgstr "Stânga-sus"
 
 #: flatcamGUI/PreferencesUI.py:6537 flatcamTools/ToolCalibration.py:160
-#, fuzzy
-#| msgid "Bottom Right"
 msgid "Bottom-Right"
 msgstr "Dreapta-jos"
 
@@ -12697,28 +12697,20 @@ msgid "Gerber Rotate done."
 msgstr "Rotatia Gerber efectuată."
 
 #: flatcamParsers/ParseHPGL2.py:176
-#, fuzzy
-#| msgid "Gerber processing. Parsing"
 msgid "HPGL2 processing. Parsing"
-msgstr "Prelucrare Gerber. Analizare"
+msgstr "Prelucrare HPGL2. Analizare"
 
 #: flatcamParsers/ParseHPGL2.py:408
-#, fuzzy
-#| msgid "Plot Line"
 msgid "HPGL2 Line"
-msgstr "Culoare contur"
+msgstr "Linie HPGL2"
 
 #: flatcamParsers/ParseHPGL2.py:408
-#, fuzzy
-#| msgid "Gerber Line Content"
 msgid "HPGL2 Line Content"
-msgstr "Continut linie Gerber"
+msgstr "Continut linie HPGL2"
 
 #: flatcamParsers/ParseHPGL2.py:409
-#, fuzzy
-#| msgid "Gerber Parser ERROR"
 msgid "HPGL2 Parser ERROR"
-msgstr "Eroare in parserul Gerber"
+msgstr "Eroare in parserul HPGL2"
 
 #: flatcamTools/ToolCalculators.py:24
 msgid "Calculators"
@@ -12812,25 +12804,26 @@ msgid "Calc. Tool"
 msgstr "Unealta Calc"
 
 #: flatcamTools/ToolCalibration.py:67
-#, fuzzy
-#| msgid "Slot Parameters"
 msgid "GCode Parameters"
-msgstr "Parametrii pt slot"
+msgstr "Parametrii GCode"
 
 #: flatcamTools/ToolCalibration.py:69
 msgid "Parameters used when creating the GCode in this tool."
-msgstr ""
+msgstr "Parametrii folosiți la crearea codului GC pentru aceasta unealta."
 
 #: flatcamTools/ToolCalibration.py:173
 msgid "STEP 1: Acquire Calibration Points"
-msgstr ""
+msgstr "PASUL 1: Obțineți punctele de calibrare"
 
 #: flatcamTools/ToolCalibration.py:175
 msgid ""
-"Pick four points by clicking inside the drill holes.\n"
+"Pick four points by clicking on canvas.\n"
 "Those four points should be in the four\n"
-"(as much as possible) corners of the Excellon object."
+"(as much as possible) corners of the object."
 msgstr ""
+"Alege patru puncte făcând clic pe ecran.\n"
+"Aceste patru puncte ar trebui să fie în cele patru\n"
+"(pe cât posibil) colțurile obiectului."
 
 #: flatcamTools/ToolCalibration.py:193 flatcamTools/ToolCutOut.py:80
 #: flatcamTools/ToolFilm.py:78 flatcamTools/ToolImage.py:55
@@ -12843,21 +12836,21 @@ msgid "Source object selection"
 msgstr "Selectarea obiectului sursă"
 
 #: flatcamTools/ToolCalibration.py:213
-#, fuzzy
-#| msgid "The FlatCAM object to be used as non copper clearing reference."
 msgid "FlatCAM Object to be used as a source for reference points."
 msgstr ""
-"Obiectul FlatCAM pentru a fi utilizat ca referință pt. curățarea de cupru."
+"Obiect FlatCAM care trebuie utilizat ca sursă pentru punctele de referință."
 
 #: flatcamTools/ToolCalibration.py:219
 msgid "Calibration Points"
-msgstr ""
+msgstr "Puncte de calibrare"
 
 #: flatcamTools/ToolCalibration.py:221
 msgid ""
 "Contain the expected calibration points and the\n"
 "ones measured."
 msgstr ""
+"Conține punctele de calibrare așteptate și\n"
+"cele măsurate."
 
 #: flatcamTools/ToolCalibration.py:236 flatcamTools/ToolSub.py:74
 #: flatcamTools/ToolSub.py:126
@@ -12866,67 +12859,47 @@ msgstr "Tintă"
 
 #: flatcamTools/ToolCalibration.py:237
 msgid "Found Delta"
-msgstr ""
+msgstr "Delta găsit"
 
 #: flatcamTools/ToolCalibration.py:249
-#, fuzzy
-#| msgid "Bottom Left"
 msgid "Bot Left X"
-msgstr "Stânga jos"
+msgstr "Stânga jos X"
 
 #: flatcamTools/ToolCalibration.py:258
-#, fuzzy
-#| msgid "Bottom Left"
 msgid "Bot Left Y"
-msgstr "Stânga jos"
+msgstr "Stânga jos Y"
 
 #: flatcamTools/ToolCalibration.py:266 flatcamTools/ToolCalibration.py:267
-#, fuzzy
-#| msgid "Origin set"
 msgid "Origin"
-msgstr "Originea a fost setată"
+msgstr "Originea"
 
 #: flatcamTools/ToolCalibration.py:278
-#, fuzzy
-#| msgid "Bottom Right"
 msgid "Bot Right X"
-msgstr "Dreapta-jos"
+msgstr "Dreapta-jos X"
 
 #: flatcamTools/ToolCalibration.py:288
-#, fuzzy
-#| msgid "Bottom Right"
 msgid "Bot Right Y"
-msgstr "Dreapta-jos"
+msgstr "Dreapta-jos Y"
 
 #: flatcamTools/ToolCalibration.py:303
-#, fuzzy
-#| msgid "Top Left"
 msgid "Top Left X"
-msgstr "Stânga sus"
+msgstr "Stânga sus X"
 
 #: flatcamTools/ToolCalibration.py:312
-#, fuzzy
-#| msgid "Top Left"
 msgid "Top Left Y"
-msgstr "Stânga sus"
+msgstr "Stânga sus Y"
 
 #: flatcamTools/ToolCalibration.py:327
-#, fuzzy
-#| msgid "Top right"
 msgid "Top Right X"
-msgstr "Dreapta-sus"
+msgstr "Dreapta-sus X"
 
 #: flatcamTools/ToolCalibration.py:337
-#, fuzzy
-#| msgid "Top right"
 msgid "Top Right Y"
-msgstr "Dreapta-sus"
+msgstr "Dreapta-sus Y"
 
 #: flatcamTools/ToolCalibration.py:370
-#, fuzzy
-#| msgid "Ref. Point"
 msgid "Get Points"
-msgstr "Pt. Ref"
+msgstr "Obține puncte"
 
 #: flatcamTools/ToolCalibration.py:372
 msgid ""
@@ -12935,12 +12908,14 @@ msgid ""
 "Those four points should be in the four squares of\n"
 "the object."
 msgstr ""
+"Alegeți patru puncte dând clic pe ecran dacă alegeți sursa\n"
+"„liber” sau în interiorul geometriei obiectului dacă sursa este „obiect”.\n"
+"Aceste patru puncte ar trebui să se afle în cele patru colțuri ale\n"
+"obiectului."
 
 #: flatcamTools/ToolCalibration.py:393
-#, fuzzy
-#| msgid "Generate GCode"
 msgid "STEP 2: Verification GCode"
-msgstr "Genereaa GCode"
+msgstr "PASUL 2: GCode de verificare"
 
 #: flatcamTools/ToolCalibration.py:395 flatcamTools/ToolCalibration.py:408
 msgid ""
@@ -12952,16 +12927,23 @@ msgid ""
 "- third point -> check point. Can be: top-left or bottom-right.\n"
 "- forth point -> final verification point. Just for evaluation."
 msgstr ""
+"Generați fișier GCode pentru a localiza și alinia PCB-ul utilizând\n"
+"cele patru puncte dobândite mai sus.\n"
+"Secvența punctelor este:\n"
+"- primul punct -> setați originea\n"
+"- al doilea punct -> punctul de aliniere. Poate fi: sus-stânga sau jos-"
+"dreapta.\n"
+"- al treilea punct -> punctul de verificare. Poate fi: sus-stânga sau jos-"
+"dreapta.\n"
+"- punctul înainte -> punctul de verificare final. Doar pentru evaluare."
 
 #: flatcamTools/ToolCalibration.py:406 flatcamTools/ToolSolderPaste.py:347
 msgid "Generate GCode"
-msgstr "Genereaa GCode"
+msgstr "Generează GCode"
 
 #: flatcamTools/ToolCalibration.py:432
-#, fuzzy
-#| msgid "Film Adjustments"
 msgid "STEP 3: Adjustments"
-msgstr "Reglarea filmelor"
+msgstr "PASUL 3: Reglaje"
 
 #: flatcamTools/ToolCalibration.py:434 flatcamTools/ToolCalibration.py:443
 msgid ""
@@ -12969,36 +12951,33 @@ msgid ""
 "found when checking the PCB pattern. The differences must be filled\n"
 "in the fields Found (Delta)."
 msgstr ""
+"Calculați factorii de Scalare și Deformare pe baza diferențelor (delta)\n"
+"găsite la verificarea modelului PCB. Diferențele trebuie completate\n"
+"în câmpurile găsite (Delta)."
 
 #: flatcamTools/ToolCalibration.py:441
-#, fuzzy
-#| msgid "Calculators"
 msgid "Calculate Factors"
-msgstr "Calculatoare"
+msgstr "Calculați factorii"
 
 #: flatcamTools/ToolCalibration.py:463
-#, fuzzy
-#| msgid "Generate GCode"
 msgid "STEP 4: Adjusted GCode"
-msgstr "Genereaa GCode"
+msgstr "PASUL 4: GCode ajustat"
 
 #: flatcamTools/ToolCalibration.py:465
 msgid ""
 "Generate verification GCode file adjusted with\n"
 "the factors above."
 msgstr ""
+"Generați fișierul GCode de verificare ajustat cu\n"
+"factorii de mai sus."
 
 #: flatcamTools/ToolCalibration.py:470
-#, fuzzy
-#| msgid "Scale Factor:"
 msgid "Scale Factor X:"
-msgstr "Factor scalare:"
+msgstr "Factor scalare X:"
 
 #: flatcamTools/ToolCalibration.py:482
-#, fuzzy
-#| msgid "Scale Factor:"
 msgid "Scale Factor Y:"
-msgstr "Factor scalare:"
+msgstr "Factor scalare Y:"
 
 #: flatcamTools/ToolCalibration.py:494
 msgid "Apply Scale Factors"
@@ -13006,19 +12985,15 @@ msgstr "Aplicați factorii de scalare"
 
 #: flatcamTools/ToolCalibration.py:496
 msgid "Apply Scale factors on the calibration points."
-msgstr ""
+msgstr "Aplicați factorii de Scalare asupra punctelor de calibrare."
 
 #: flatcamTools/ToolCalibration.py:506
-#, fuzzy
-#| msgid "Angle X:"
 msgid "Skew Angle X:"
-msgstr "Unghi X:"
+msgstr "Unghi X Deformare:"
 
 #: flatcamTools/ToolCalibration.py:519
-#, fuzzy
-#| msgid "Angle Y:"
 msgid "Skew Angle Y:"
-msgstr "Unghi Y:"
+msgstr "Unghi Y Deformare:"
 
 #: flatcamTools/ToolCalibration.py:532
 msgid "Apply Skew Factors"
@@ -13026,13 +13001,11 @@ msgstr "Aplicați factorii de deformare"
 
 #: flatcamTools/ToolCalibration.py:534
 msgid "Apply Skew factors on the calibration points."
-msgstr ""
+msgstr "Aplicați factorii de Deformare asupra punctelor de calibrare."
 
 #: flatcamTools/ToolCalibration.py:603
-#, fuzzy
-#| msgid "Generate GCode"
 msgid "Generate Adjusted GCode"
-msgstr "Genereaa GCode"
+msgstr "Generați GCode ajustat"
 
 #: flatcamTools/ToolCalibration.py:605
 msgid ""
@@ -13041,40 +13014,38 @@ msgid ""
 "The GCode parameters can be readjusted\n"
 "before clicking this button."
 msgstr ""
+"Generați fișierul GCode de verificare ajustat cu\n"
+"factorii stabiliți mai sus.\n"
+"Parametrii GCode pot fi reglați\n"
+"înainte de a face clic pe acest buton."
 
 #: flatcamTools/ToolCalibration.py:626
 msgid "STEP 5: Calibrate FlatCAM Objects"
-msgstr ""
+msgstr "PASUL 5: Calibrați obiectele FlatCAM"
 
 #: flatcamTools/ToolCalibration.py:628
 msgid ""
 "Adjust the FlatCAM objects\n"
 "with the factors determined and verified above."
 msgstr ""
+"Reglați obiectele FlatCAM\n"
+"cu factorii determinați și verificați mai sus."
 
 #: flatcamTools/ToolCalibration.py:641
-#, fuzzy
-#| msgid "Edit Object\tE"
 msgid "Adjusted object type"
-msgstr "Editare Obiect\tE"
+msgstr "Tipul obiectului ajustat"
 
 #: flatcamTools/ToolCalibration.py:643
-#, fuzzy
-#| msgid "Geometry Obj to be mirrored."
 msgid "Type of the FlatCAM Object to be adjusted."
-msgstr "Obiectul Geometrie care va fi oglindit."
+msgstr "Tipul obiectului FlatCAM care trebuie ajustat."
 
 #: flatcamTools/ToolCalibration.py:654
-#, fuzzy
-#| msgid "Edit Object\tE"
 msgid "Adjusted object selection"
-msgstr "Editare Obiect\tE"
+msgstr "Selectarea obiectului ajustat"
 
 #: flatcamTools/ToolCalibration.py:656
-#, fuzzy
-#| msgid "Excellon Object to be mirrored."
 msgid "The FlatCAM Object to be adjusted."
-msgstr "Obiectul Excellon care va fi oglindit."
+msgstr "Obiectul FlatCAM care trebuie ajustat."
 
 #: flatcamTools/ToolCalibration.py:663
 msgid "Calibrate"
@@ -13085,6 +13056,8 @@ msgid ""
 "Adjust (scale and/or skew) the objects\n"
 "with the factors determined above."
 msgstr ""
+"Reglați (Scalați și / sau Deformați) obiectele\n"
+"cu factorii determinați mai sus."
 
 #: flatcamTools/ToolCalibration.py:686 flatcamTools/ToolCopperThieving.py:482
 #: flatcamTools/ToolCutOut.py:360 flatcamTools/ToolDblSided.py:302
@@ -13093,10 +13066,8 @@ msgstr ""
 #: flatcamTools/ToolPaint.py:378 flatcamTools/ToolPanelize.py:266
 #: flatcamTools/ToolQRCode.py:314 flatcamTools/ToolRulesCheck.py:507
 #: flatcamTools/ToolSolderPaste.py:470 flatcamTools/ToolSub.py:170
-#, fuzzy
-#| msgid "Rules Tool"
 msgid "Reset Tool"
-msgstr "Unalta Verif. Reguli"
+msgstr "Resetați Unealta"
 
 #: flatcamTools/ToolCalibration.py:688 flatcamTools/ToolCopperThieving.py:484
 #: flatcamTools/ToolCutOut.py:362 flatcamTools/ToolDblSided.py:304
@@ -13105,78 +13076,62 @@ msgstr "Unalta Verif. Reguli"
 #: flatcamTools/ToolPaint.py:380 flatcamTools/ToolPanelize.py:268
 #: flatcamTools/ToolQRCode.py:316 flatcamTools/ToolRulesCheck.py:509
 #: flatcamTools/ToolSolderPaste.py:472 flatcamTools/ToolSub.py:172
-#, fuzzy
-#| msgid ""
-#| "Select tools.\n"
-#| "Modify parameters."
 msgid "Will reset the tool parameters."
-msgstr ""
-"Selectează unelte.\n"
-"Modifica parametri."
+msgstr "Va reseta parametrii uneltei."
 
 #: flatcamTools/ToolCalibration.py:792
 msgid "Tool initialized"
-msgstr ""
+msgstr "Unealtă initializată"
 
 #: flatcamTools/ToolCalibration.py:824
-#, fuzzy
-#| msgid "There is no Excellon object loaded ..."
 msgid "There is no source FlatCAM object selected..."
-msgstr "Nici-un obiect tip Excellon nu este incărcat ..."
+msgstr "Nu a fost selectat niciun obiect FlatCAM sursă ..."
 
 #: flatcamTools/ToolCalibration.py:845
-#, fuzzy
-#| msgid "Click inside the desired polygon."
 msgid "Get First calibration point. Bottom Left..."
-msgstr "Click in interiorul poligonului care se dorește să fie 'pictat'."
+msgstr "Obțineți primul punct de calibrare. Stânga jos..."
 
 #: flatcamTools/ToolCalibration.py:906
-#, fuzzy
-#| msgid "Copy cancelled. No shape selected."
 msgid "Cancelled by user request."
-msgstr "Copiere anulată. Nici-o forma geometrică nu este selectată."
+msgstr "Anulat prin solicitarea utilizatorului."
 
 #: flatcamTools/ToolCalibration.py:912
-msgid "Get Second calibration point. Bottom Right..."
+msgid "Get Second calibration point. Bottom Right (Top Left)..."
 msgstr ""
+"Obțineți al doilea punct de calibrare. Dreapta jos (sau în stânga sus) ..."
 
 #: flatcamTools/ToolCalibration.py:916
-#, fuzzy
-#| msgid "Click inside the desired polygon."
-msgid "Get Third calibration point. Top Left..."
-msgstr "Click in interiorul poligonului care se dorește să fie 'pictat'."
+msgid "Get Third calibration point. Top Left (Bottom Right)..."
+msgstr ""
+"Obțineți al treilea punct de calibrare. Sus stanga (sau în jos dreapta)..."
 
 #: flatcamTools/ToolCalibration.py:920
 msgid "Get Forth calibration point. Top Right..."
-msgstr ""
+msgstr "Obțineți punctul de calibrare Forth. Sus în dreapta..."
 
 #: flatcamTools/ToolCalibration.py:924
 msgid "Done. All four points have been acquired."
-msgstr ""
+msgstr "Terminat. Toate cele patru puncte au fost obținute."
 
 #: flatcamTools/ToolCalibration.py:955
 msgid "Verification GCode for FlatCAM Calibration Tool"
-msgstr ""
+msgstr "GCode de verificare pentru Unealta FlatCAM de Calibrare"
 
 #: flatcamTools/ToolCalibration.py:967 flatcamTools/ToolCalibration.py:1053
 msgid "Gcode Viewer"
-msgstr ""
+msgstr "Gcode Viewer"
 
 #: flatcamTools/ToolCalibration.py:983
 msgid "Cancelled. Four points are needed for GCode generation."
-msgstr ""
+msgstr "Anulat. Patru puncte sunt necesare pentru generarea GCode."
 
 #: flatcamTools/ToolCalibration.py:1239 flatcamTools/ToolCalibration.py:1335
-#, fuzzy
-#| msgid "There is no Box object loaded ..."
 msgid "There is no FlatCAM object selected..."
-msgstr "Nu este incărcat nici-un obiect container ..."
+msgstr "Nu a fost selectat niciun obiect FlatCAM ..."
 
 #: flatcamTools/ToolCopperThieving.py:76 flatcamTools/ToolFiducials.py:260
-#, fuzzy
-#| msgid "Gerber objects for which to check rules."
 msgid "Gerber Object to which will be added a copper thieving."
-msgstr "Obiecte Gerber pentru care trebuie verificate regulile."
+msgstr "Obiect Gerber căruia i se va adăuga Copper Thieving."
 
 #: flatcamTools/ToolCopperThieving.py:98
 msgid ""
@@ -13184,34 +13139,23 @@ msgid ""
 "(the polygon fill may be split in multiple polygons)\n"
 "and the copper traces in the Gerber file."
 msgstr ""
+"Aceasta stabileste distanța dintre componentele Copper Thieving\n"
+"(umplutura poligonului poate fi împărțită în mai multe poligoane)\n"
+"si traseele de cupru din fisierul Gerber."
 
 #: flatcamTools/ToolCopperThieving.py:131
-#, fuzzy
-#| msgid ""
-#| "- 'Itself' -  the non copper clearing extent\n"
-#| "is based on the object that is copper cleared.\n"
-#| " - 'Area Selection' - left mouse click to start selection of the area to "
-#| "be painted.\n"
-#| "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple "
-#| "areas.\n"
-#| "- 'Reference Object' -  will do non copper clearing within the area\n"
-#| "specified by another object."
 msgid ""
-"- 'Itself' - the copper thieving extent is based on the object that is "
-"copper cleared.\n"
+"- 'Itself' - the copper thieving extent is based on the object extent.\n"
 "- 'Area Selection' - left mouse click to start selection of the area to be "
 "filled.\n"
 "- 'Reference Object' - will do copper thieving within the area specified by "
 "another object."
 msgstr ""
-"- „Însuși” - suprafața de curățare a cuprului\n"
-"se bazează pe obiectul care este curățat de cupru.\n"
-"  - „Selecție zonă” - faceți clic stânga cu mouse-ul pentru a începe "
-"selecția zonei care va fi pictată.\n"
-"Menținerea unei taste de modificare apăsată (CTRL sau SHIFT) va permite "
-"adăugarea mai multor zone.\n"
-"- „Obiect de referință” - va face o curățare fără cupru în zona\n"
-"specificată de un alt obiect."
+"- „Însuși” - amploarea Copper Thieving se bazează pe suprafata obiectului.\n"
+"- „Selecție zonă” - faceți clic stânga cu mouse-ul pentru a începe selecția "
+"zonei.\n"
+"- „Obiect de referință” - va face Copper Thieving în zona specificată de un "
+"alt obiect."
 
 #: flatcamTools/ToolCopperThieving.py:138
 #: flatcamTools/ToolNonCopperClear.py:451 flatcamTools/ToolPaint.py:332
@@ -13219,38 +13163,28 @@ msgid "Ref. Type"
 msgstr "Tip Ref"
 
 #: flatcamTools/ToolCopperThieving.py:140
-#, fuzzy
-#| msgid ""
-#| "The type of FlatCAM object to be used as non copper clearing reference.\n"
-#| "It can be Gerber, Excellon or Geometry."
 msgid ""
 "The type of FlatCAM object to be used as copper thieving reference.\n"
 "It can be Gerber, Excellon or Geometry."
 msgstr ""
-"Tipul de obiect FlatCAM care trebuie utilizat ca referință pt. curățarea de "
-"non-cupru.\n"
-"Poate fi Gerber, Excellon sau Geometry."
+"Tipul obiectului FlatCAM care va fi utilizat ca referință la Copper "
+"Thieving.\n"
+"Poate fi Gerber, Excellon sau Geometrie."
 
 #: flatcamTools/ToolCopperThieving.py:144 flatcamTools/ToolDblSided.py:213
 #: flatcamTools/ToolNonCopperClear.py:457 flatcamTools/ToolPaint.py:338
-#, fuzzy
-#| msgid "Reference Object"
 msgid "Reference Gerber"
-msgstr "Obiect Ref"
+msgstr "Referință Gerber"
 
 #: flatcamTools/ToolCopperThieving.py:145 flatcamTools/ToolDblSided.py:214
 #: flatcamTools/ToolNonCopperClear.py:458 flatcamTools/ToolPaint.py:339
-#, fuzzy
-#| msgid "Open Excellon"
 msgid "Reference Excellon"
-msgstr "Încarcă Excellon"
+msgstr "Referință Excellon"
 
 #: flatcamTools/ToolCopperThieving.py:146 flatcamTools/ToolDblSided.py:215
 #: flatcamTools/ToolNonCopperClear.py:459 flatcamTools/ToolPaint.py:340
-#, fuzzy
-#| msgid "Generate Geometry"
 msgid "Reference Geometry"
-msgstr "Genereza Geometrie"
+msgstr "Referință Geometrie"
 
 #: flatcamTools/ToolCopperThieving.py:151
 #: flatcamTools/ToolNonCopperClear.py:462 flatcamTools/ToolPaint.py:343
@@ -13264,22 +13198,20 @@ msgstr ""
 "Obiectul FlatCAM pentru a fi utilizat ca referință pt. curățarea de cupru."
 
 #: flatcamTools/ToolCopperThieving.py:326
-#, fuzzy
-#| msgid "Non-Copper Clearing"
 msgid "Insert Copper thieving"
-msgstr "Curățăre Non-Cu"
+msgstr "Inserați Copper Thieving"
 
 #: flatcamTools/ToolCopperThieving.py:328
 msgid ""
 "Will add a polygon (may be split in multiple parts)\n"
 "that will surround the actual Gerber traces at a certain distance."
 msgstr ""
+"Se va adăuga un poligon (poate fi împărțit în mai multe părți)\n"
+"care va înconjura traseele Gerber la o anumită distanță."
 
 #: flatcamTools/ToolCopperThieving.py:387
-#, fuzzy
-#| msgid "Generate GCode"
 msgid "Insert Robber Bar"
-msgstr "Genereaa GCode"
+msgstr "Inserați Rober Bar"
 
 #: flatcamTools/ToolCopperThieving.py:389
 msgid ""
@@ -13288,12 +13220,14 @@ msgid ""
 "at a certain distance.\n"
 "Required when doing holes pattern plating."
 msgstr ""
+"Se va adăuga un poligon cu o grosime definită\n"
+"care va înconjura obiectul Gerber\n"
+"la o anumită distanță.\n"
+"Necesar atunci când faceți placare găuri cu model."
 
 #: flatcamTools/ToolCopperThieving.py:413
-#, fuzzy
-#| msgid "Delete objects"
 msgid "Select Soldermask object"
-msgstr "Șterge obiectele"
+msgstr "Selectați obiectul Soldermask"
 
 #: flatcamTools/ToolCopperThieving.py:415
 msgid ""
@@ -13301,10 +13235,13 @@ msgid ""
 "It will be used as a base for\n"
 "the pattern plating mask."
 msgstr ""
+"Obiect Gerber cu Soldermask.\n"
+"Acesta va fi folosit ca bază pentru\n"
+"generarea de masca pentru placare cu model."
 
 #: flatcamTools/ToolCopperThieving.py:443
 msgid "Plated area"
-msgstr ""
+msgstr "Zona placată"
 
 #: flatcamTools/ToolCopperThieving.py:445
 msgid ""
@@ -13316,20 +13253,26 @@ msgid ""
 "a bit larger than the copper pads, and this area is\n"
 "calculated from the soldermask openings."
 msgstr ""
+"Zona de placat prin placare cu model.\n"
+"Practic este realizată din deschiderile din masca de placare.\n"
+"\n"
+"<<AVERTISMENT>> - suprafața calculată este de fapt un pic mai mare\n"
+"datorită faptului că deschiderile de soldermask sunt prin design\n"
+"un pic mai mari decât padurile de cupru, iar această zonă este\n"
+"calculată din deschiderile soldermask."
 
 #: flatcamTools/ToolCopperThieving.py:456
 msgid "mm"
-msgstr ""
+msgstr "mm"
 
 #: flatcamTools/ToolCopperThieving.py:458
-#, fuzzy
 #| msgid "info"
 msgid "in"
-msgstr "informaţie"
+msgstr "in"
 
 #: flatcamTools/ToolCopperThieving.py:465
 msgid "Generate pattern plating mask"
-msgstr ""
+msgstr "Generați mască de placare cu model"
 
 #: flatcamTools/ToolCopperThieving.py:467
 msgid ""
@@ -13337,27 +13280,26 @@ msgid ""
 "the geometries of the copper thieving and/or\n"
 "the robber bar if those were generated."
 msgstr ""
+"Se va adăuga la geometria soldermask Gerber \n"
+"geometriile Copper Thieving și / sau\n"
+"Robber Bar dacă acestea au fost generate."
 
 #: flatcamTools/ToolCopperThieving.py:620
 #: flatcamTools/ToolCopperThieving.py:645
 msgid "Lines Grid works only for 'itself' reference ..."
-msgstr ""
+msgstr "Gridul de Linii funcționează numai pentru referința „în sine” ..."
 
 #: flatcamTools/ToolCopperThieving.py:631
-#, fuzzy
-#| msgid "Failed. Nothing selected."
 msgid "Solid fill selected."
-msgstr "Eșuat. Nu este nimic selectat."
+msgstr "Umplere solidă selectată."
 
 #: flatcamTools/ToolCopperThieving.py:636
-#, fuzzy
-#| msgid "Done. Drill(s) deleted."
 msgid "Dots grid fill selected."
-msgstr "Executat. Operatiile de găurire șterse."
+msgstr "Umplere Grila de Puncte selectată."
 
 #: flatcamTools/ToolCopperThieving.py:641
 msgid "Squares grid fill selected."
-msgstr ""
+msgstr "Umplere Grila de Pătrate selectată."
 
 #: flatcamTools/ToolCopperThieving.py:662
 #: flatcamTools/ToolCopperThieving.py:744
@@ -13375,10 +13317,8 @@ msgstr "Adăugați geometria"
 #: flatcamTools/ToolCopperThieving.py:719
 #: flatcamTools/ToolCopperThieving.py:1300
 #: flatcamTools/ToolCopperThieving.py:1453
-#, fuzzy
-#| msgid "Save Document source file"
 msgid "Append source file"
-msgstr "Salvează codul sursa Document ca fişier"
+msgstr "Adăugați fișierul sursă"
 
 #: flatcamTools/ToolCopperThieving.py:727
 #: flatcamTools/ToolCopperThieving.py:1308
@@ -13404,10 +13344,8 @@ msgid "Click the start point of the area."
 msgstr "Faceți clic pe punctul de pornire al zonei."
 
 #: flatcamTools/ToolCopperThieving.py:815
-#, fuzzy
-#| msgid "Click the end point of the paint area."
 msgid "Click the end point of the filling area."
-msgstr "Faceți clic pe punctul final al zonei de pictat."
+msgstr "Faceți clic pe punctul final al zonei de umplere."
 
 #: flatcamTools/ToolCopperThieving.py:821
 #: flatcamTools/ToolNonCopperClear.py:1266 flatcamTools/ToolPaint.py:1206
@@ -13420,25 +13358,19 @@ msgstr ""
 #: flatcamTools/ToolCopperThieving.py:940
 #: flatcamTools/ToolCopperThieving.py:1001
 msgid "Thieving"
-msgstr ""
+msgstr "Thieving"
 
 #: flatcamTools/ToolCopperThieving.py:947
-#, fuzzy
-#| msgid "NCC Tool started. Reading parameters."
 msgid "Copper Thieving Tool started. Reading parameters."
-msgstr "Unealta NCC a pornit. Se citesc parametrii."
+msgstr "Unealta Thieving Tool a pornit. Se citesc parametrii."
 
 #: flatcamTools/ToolCopperThieving.py:972
-#, fuzzy
-#| msgid "NCC Tool. Preparing non-copper polygons."
 msgid "Copper Thieving Tool. Preparing isolation polygons."
-msgstr "Unealta NCC. Se pregătesc poligoanele non-cupru."
+msgstr "Unealta Thieving Tool. Se pregătesc poligoanele de isolare."
 
 #: flatcamTools/ToolCopperThieving.py:1017
-#, fuzzy
-#| msgid "NCC Tool. Preparing non-copper polygons."
 msgid "Copper Thieving Tool. Preparing areas to fill with copper."
-msgstr "Unealta NCC. Se pregătesc poligoanele non-cupru."
+msgstr "Unealta Thieving Tool. Se pregătesc zonele de umplut cu cupru."
 
 #: flatcamTools/ToolCopperThieving.py:1028 flatcamTools/ToolOptimal.py:349
 #: flatcamTools/ToolPanelize.py:798 flatcamTools/ToolRulesCheck.py:1118
@@ -13446,10 +13378,8 @@ msgid "Working..."
 msgstr "Se lucrează..."
 
 #: flatcamTools/ToolCopperThieving.py:1055
-#, fuzzy
-#| msgid "Geometry not supported for cutout"
 msgid "Geometry not supported for bounding box"
-msgstr "Geometria nu este acceptată pentru decupaj"
+msgstr "Geometria nu este acceptată pentru caseta de delimitare"
 
 #: flatcamTools/ToolCopperThieving.py:1061
 #: flatcamTools/ToolNonCopperClear.py:1517 flatcamTools/ToolPaint.py:2571
@@ -13464,25 +13394,24 @@ msgstr "Tipul de obiect de referintă nu este acceptat."
 #: flatcamTools/ToolCopperThieving.py:1103
 msgid "Copper Thieving Tool. Appending new geometry and buffering."
 msgstr ""
+"Unealta Copper Thieving. Se adauga o noua geometrie si se fuzioneaza acestea."
 
 #: flatcamTools/ToolCopperThieving.py:1119
-#, fuzzy
-#| msgid "Create Paint Geometry"
 msgid "Create geometry"
-msgstr "Crează un obiect Geometrie tip 'Paint'"
+msgstr "Creați geometrie"
 
 #: flatcamTools/ToolCopperThieving.py:1319
 #: flatcamTools/ToolCopperThieving.py:1323
 msgid "P-Plating Mask"
-msgstr ""
+msgstr "Mască M-Placare"
 
 #: flatcamTools/ToolCopperThieving.py:1345
 msgid "Append PP-M geometry"
-msgstr ""
+msgstr "Adaugă geometrie mască PM"
 
 #: flatcamTools/ToolCopperThieving.py:1471
 msgid "Generating Pattern Plating Mask done."
-msgstr ""
+msgstr "Generarea măștii de placare cu model efectuată."
 
 #: flatcamTools/ToolCopperThieving.py:1543
 msgid "Copper Thieving Tool exit."
@@ -13548,10 +13477,8 @@ msgstr ""
 "- 8 = 2* stânga - 2* dreapta - 2* sus - 2* jos"
 
 #: flatcamTools/ToolCutOut.py:262
-#, fuzzy
-#| msgid "Generate Geometry"
 msgid "Generate Freeform Geometry"
-msgstr "Genereza Geometrie"
+msgstr "Generați geometrie cu formă liberă"
 
 #: flatcamTools/ToolCutOut.py:264
 msgid ""
@@ -13564,10 +13491,8 @@ msgstr ""
 "Folositor când PCB-ul are o forma neregulata."
 
 #: flatcamTools/ToolCutOut.py:276
-#, fuzzy
-#| msgid "Generate Geometry"
 msgid "Generate Rectangular Geometry"
-msgstr "Genereza Geometrie"
+msgstr "Generați geometrie dreptunghiulară"
 
 #: flatcamTools/ToolCutOut.py:278
 msgid ""
@@ -13600,10 +13525,8 @@ msgid "Geometry object used to create the manual cutout."
 msgstr "Obiect tip Geometrie folosit pentru crearea decupajului manual."
 
 #: flatcamTools/ToolCutOut.py:326
-#, fuzzy
-#| msgid "Generate Geometry"
 msgid "Generate Manual Geometry"
-msgstr "Genereza Geometrie"
+msgstr "Generați geometrie manuală"
 
 #: flatcamTools/ToolCutOut.py:328
 msgid ""
@@ -14001,19 +13924,15 @@ msgstr "Masoara: Click pe punctul Destinaţie..."
 
 #: flatcamTools/ToolDistance.py:353 flatcamTools/ToolDistanceMin.py:282
 msgid "MEASURING"
-msgstr ""
+msgstr "MĂSURARE"
 
 #: flatcamTools/ToolDistance.py:354 flatcamTools/ToolDistanceMin.py:283
-#, fuzzy
-#| msgid "Geo Result"
 msgid "Result"
-msgstr "Rezultat Geo"
+msgstr "Rezultat"
 
 #: flatcamTools/ToolDistance.py:355 flatcamTools/ToolDistanceMin.py:284
-#, fuzzy
-#| msgid "Distance Tool"
 msgid "Distance"
-msgstr "Unealta Distanță"
+msgstr "Distanță"
 
 #: flatcamTools/ToolDistanceMin.py:31 flatcamTools/ToolDistanceMin.py:152
 msgid "Minimum Distance Tool"
@@ -14081,69 +14000,63 @@ msgid "Jumped to the half point between the two selected objects"
 msgstr "A sărit la jumătatea punctului dintre cele două obiecte selectate"
 
 #: flatcamTools/ToolFiducials.py:56
-#, fuzzy
-#| msgid "Points coordinates"
 msgid "Fiducials Coordinates"
-msgstr "Coordonatele punctelor"
+msgstr "Coordonatele Fiducials"
 
 #: flatcamTools/ToolFiducials.py:58
 msgid ""
 "A table with the fiducial points coordinates,\n"
 "in the format (x, y)."
 msgstr ""
+"Un tabel cu coordonatele punctelor fiduțiale,\n"
+"în format (x, y)."
 
 #: flatcamTools/ToolFiducials.py:74
-#, fuzzy
-#| msgid "Coordinates type"
 msgid "Coordinates"
-msgstr "Tip coordinate"
+msgstr "Coordinate"
 
 #: flatcamTools/ToolFiducials.py:99
-#, fuzzy
-#| msgid "Top right"
 msgid "Top Right"
 msgstr "Dreapta-sus"
 
 #: flatcamTools/ToolFiducials.py:111
-#, fuzzy
-#| msgid "Second object point"
 msgid "Second Point"
 msgstr "Al doilea punct"
 
+#: flatcamTools/ToolFiducials.py:191
+msgid ""
+"- 'Auto' - automatic placement of fiducials in the corners of the bounding "
+"box.\n"
+" - 'Manual' - manual placement of fiducials."
+msgstr ""
+"- „Auto” - plasarea automată a fiduciarelor în colțurile casetei de "
+"delimitare.\n"
+"  - „Manual” - plasarea manuală a fiduciarelor."
+
 #: flatcamTools/ToolFiducials.py:258
-#, fuzzy
-#| msgid "Open Gerber"
 msgid "Copper Gerber"
-msgstr "Încarcă Gerber"
+msgstr "Gerber Cupru"
 
 #: flatcamTools/ToolFiducials.py:267
-#, fuzzy
-#| msgid "Add Circle"
 msgid "Add Fiducial"
-msgstr "Adaugă Cerc"
+msgstr "Adaugă Fiducial"
 
 #: flatcamTools/ToolFiducials.py:269
 msgid "Will add a polygon on the copper layer to serve as fiducial."
 msgstr ""
+"Va adăuga un poligon pe stratul de cupru pentru a servi drept fiduciar."
 
 #: flatcamTools/ToolFiducials.py:285
-#, fuzzy
-#| msgid "New Blank Gerber"
 msgid "Soldermask Gerber"
-msgstr "Gerber Nou (gol)"
+msgstr "Gerber Soldermask"
 
 #: flatcamTools/ToolFiducials.py:287
-#, fuzzy
-#| msgid "No SolderPaste mask Gerber object loaded."
 msgid "The Soldermask Gerber object."
-msgstr ""
-"Nu este incărcat ni-un obiect Gerber cu informatia măstii pt pasta de fludor."
+msgstr "Obiectul Soldermask Gerber."
 
 #: flatcamTools/ToolFiducials.py:298
-#, fuzzy
-#| msgid "Solder Paste Dispensing Tool"
 msgid "Add Soldermask Opening"
-msgstr "Unealta DispensorPF"
+msgstr "Adăugați deschidere Soldermask."
 
 #: flatcamTools/ToolFiducials.py:300
 msgid ""
@@ -14152,24 +14065,28 @@ msgid ""
 "The diameter is always double of the diameter\n"
 "for the copper fiducial."
 msgstr ""
+"Se va adăuga un poligon pe stratul de Soldermask\n"
+"pentru a servi drept deschidere fiduciară.\n"
+"Diametrul este întotdeauna dublu față de diametrul\n"
+"pentru fiduciarul de cupru."
 
 #: flatcamTools/ToolFiducials.py:514
-#, fuzzy
-#| msgid "Click inside the desired polygon."
 msgid "Click to add first Fiducial. Bottom Left..."
-msgstr "Click in interiorul poligonului care se dorește să fie 'pictat'."
+msgstr "Faceți clic pentru a adăuga primul Fiducial. Stânga jos..."
 
 #: flatcamTools/ToolFiducials.py:778
 msgid "Click to add the last fiducial. Top Right..."
-msgstr ""
+msgstr "Faceți clic pentru a adăuga ultimul Fiducial. Dreapta Sus..."
 
 #: flatcamTools/ToolFiducials.py:783
 msgid "Click to add the second fiducial. Top Left or Bottom Right..."
 msgstr ""
+"Faceți clic pentru a adăuga cel de-al doilea Fiducial. Stânga sus sau "
+"dreapta jos ..."
 
 #: flatcamTools/ToolFiducials.py:786 flatcamTools/ToolFiducials.py:795
 msgid "Done. All fiducials have been added."
-msgstr ""
+msgstr "Terminat. Au fost adăugate toate Fiducials."
 
 #: flatcamTools/ToolFiducials.py:872
 msgid "Fiducials Tool exit."
@@ -14227,10 +14144,8 @@ msgstr ""
 "se crează filmul."
 
 #: flatcamTools/ToolFilm.py:273
-#, fuzzy
-#| msgid "Slot Parameters"
 msgid "Film Parameters"
-msgstr "Parametrii pt slot"
+msgstr "Parametrii filmului"
 
 #: flatcamTools/ToolFilm.py:334
 msgid "Punch drill holes"
@@ -14289,12 +14204,6 @@ msgid "Save Film"
 msgstr "Salveaa filmul"
 
 #: flatcamTools/ToolFilm.py:502
-#, fuzzy
-#| msgid ""
-#| "Create a Film for the selected object, within\n"
-#| "the specified box. Does not create a new \n"
-#| " FlatCAM object, but directly save it in SVG format\n"
-#| "which can be opened with Inkscape."
 msgid ""
 "Create a Film for the selected object, within\n"
 "the specified box. Does not create a new \n"
@@ -14303,8 +14212,7 @@ msgid ""
 msgstr ""
 "Crează un film pt obiectul selectat, in cadrul obiectului\n"
 "container selectat. Nu crează un obiect nou FlatCAM ci\n"
-"salvează pe HDD un fişier in format SVG care poate fi \n"
-"deschis și prelucrat mai departe cu Inkscape."
+"salvează pe HDD un fişier in formatul selectat."
 
 #: flatcamTools/ToolFilm.py:652
 msgid ""
@@ -14327,8 +14235,6 @@ msgstr ""
 "încearcă din nou."
 
 #: flatcamTools/ToolFilm.py:673
-#, fuzzy
-#| msgid "No object selected."
 msgid "No FlatCAM object selected."
 msgstr "Nici-un obiect nu este selectat."
 
@@ -14337,16 +14243,12 @@ msgid "Generating Film ..."
 msgstr "Se generează Film-ul ..."
 
 #: flatcamTools/ToolFilm.py:733 flatcamTools/ToolFilm.py:737
-#, fuzzy
-#| msgid "Export SVG positive"
 msgid "Export positive film"
-msgstr "Exporta SVG pozitiv"
+msgstr "Export film pozitiv"
 
 #: flatcamTools/ToolFilm.py:742
-#, fuzzy
-#| msgid "Export SVG positive cancelled."
 msgid "Export positive film cancelled."
-msgstr "Exportul unui fişier SVG pozitiv este anulat."
+msgstr "Exportul filmului pozitiv a fost anulat."
 
 #: flatcamTools/ToolFilm.py:770
 msgid ""
@@ -14380,16 +14282,12 @@ msgstr ""
 "nou creat este aceeași cu cea din geometria obiectului sursă ..."
 
 #: flatcamTools/ToolFilm.py:879 flatcamTools/ToolFilm.py:883
-#, fuzzy
-#| msgid "Export SVG negative"
 msgid "Export negative film"
-msgstr "Exporta SVG negativ"
+msgstr "Export film negativ"
 
 #: flatcamTools/ToolFilm.py:888
-#, fuzzy
-#| msgid "Export SVG negative cancelled."
 msgid "Export negative film cancelled."
-msgstr "Exportul unui fişier SVG negativ este anulat."
+msgstr "Exportul filmului negativ a fost anulat."
 
 #: flatcamTools/ToolFilm.py:944 flatcamTools/ToolFilm.py:1122
 #: flatcamTools/ToolPanelize.py:421
@@ -14397,10 +14295,8 @@ msgid "No object Box. Using instead"
 msgstr "Nu exista container. Se foloseşte in schimb"
 
 #: flatcamTools/ToolFilm.py:1060 flatcamTools/ToolFilm.py:1235
-#, fuzzy
-#| msgid "DXF file exported to"
 msgid "Film file exported to"
-msgstr "Fişierul DXF exportat in"
+msgstr "Fișierul Film exportat în"
 
 #: flatcamTools/ToolFilm.py:1063 flatcamTools/ToolFilm.py:1238
 msgid "Generating Film ... Please wait."
@@ -14666,6 +14562,9 @@ msgid ""
 "If the tool is V-shape type then this value is automatically\n"
 "calculated from the other parameters."
 msgstr ""
+"Diametru pentru Unealta nouă de adăugat în Tabelul Uneltelor.\n"
+"Dacă instrumentul este în formă de V, atunci această valoare este automat\n"
+"calculată din ceilalți parametri."
 
 #: flatcamTools/ToolNonCopperClear.py:288 flatcamTools/ToolPaint.py:190
 msgid ""
@@ -14685,16 +14584,6 @@ msgstr ""
 "efectuata prin selectia liniilot din Tabela de Unelte."
 
 #: flatcamTools/ToolNonCopperClear.py:441
-#, fuzzy
-#| msgid ""
-#| "- 'Itself' -  the non copper clearing extent\n"
-#| "is based on the object that is copper cleared.\n"
-#| " - 'Area Selection' - left mouse click to start selection of the area to "
-#| "be painted.\n"
-#| "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple "
-#| "areas.\n"
-#| "- 'Reference Object' -  will do non copper clearing within the area\n"
-#| "specified by another object."
 msgid ""
 "- 'Itself' - the non copper clearing extent is based on the object that is "
 "copper cleared.\n"
@@ -14703,14 +14592,12 @@ msgid ""
 "- 'Reference Object' - will do non copper clearing within the area specified "
 "by another object."
 msgstr ""
-"- „Însuși” - suprafața de curățare a cuprului\n"
-"se bazează pe obiectul care este curățat de cupru.\n"
-"  - „Selecție zonă” - faceți clic stânga cu mouse-ul pentru a începe "
-"selecția zonei care va fi pictată.\n"
-"Menținerea unei taste de modificare apăsată (CTRL sau SHIFT) va permite "
-"adăugarea mai multor zone.\n"
-"- „Obiect de referință” - va face o curățare fără cupru în zona\n"
-"specificată de un alt obiect."
+"- „Însuși” - suprafața de curățare a cuprului se bazează pe obiectul care "
+"este curățat de cupru.\n"
+"- „Selecție zonă” - faceți clic stânga cu mouse-ul pentru a începe selecția "
+"zonei care va fi pictată.\n"
+"- „Obiect de referință” - va face o curățare fără cupru în zona specificată "
+"de un alt obiect."
 
 #: flatcamTools/ToolNonCopperClear.py:453
 msgid ""
@@ -15140,10 +15027,8 @@ msgstr ""
 "Daca nu este bifat, foloseşte algoritmul standard."
 
 #: flatcamTools/ToolPaint.py:313
-#, fuzzy
-#| msgid "Polygon Intersection"
 msgid "Polygon Selection"
-msgstr "Intersecţie Poligoane"
+msgstr "Selecție Poligon"
 
 #: flatcamTools/ToolPaint.py:315
 msgid "All Polygons"
@@ -15193,32 +15078,24 @@ msgid "Can't do Paint on MultiGeo geometries"
 msgstr "Nu se poate face 'pictare' pe geometrii MultiGeo"
 
 #: flatcamTools/ToolPaint.py:1040
-#, fuzzy
-#| msgid "Click on target point."
 msgid "Click on a polygon to paint it."
-msgstr "Click pe punctul tinta."
+msgstr "Faceți clic pe un poligon pentru a-l picta."
 
 #: flatcamTools/ToolPaint.py:1059
 msgid "Click the start point of the paint area."
 msgstr "Faceți clic pe punctul de pornire al zonei de pictat."
 
 #: flatcamTools/ToolPaint.py:1127
-#, fuzzy
-#| msgid ""
-#| "Zone added. Click to start adding next zone or right click to finish."
 msgid "Click to add next polygon or right click to start painting."
 msgstr ""
-"Zona adăugată. Faceți clic stanga pt a continua adăugarea de zone sau click "
-"dreapta pentru a termina."
+"Faceți clic pentru a adăuga următorul poligon sau faceți clic dreapta pentru "
+"a începe Paint."
 
 #: flatcamTools/ToolPaint.py:1140
-#, fuzzy
-#| msgid ""
-#| "Zone added. Click to start adding next zone or right click to finish."
 msgid "Click to add/remove next polygon or right click to start painting."
 msgstr ""
-"Zona adăugată. Faceți clic stanga pt a continua adăugarea de zone sau click "
-"dreapta pentru a termina."
+"Faceți clic pentru a adăuga / elimina următorul poligon sau faceți clic "
+"dreapta pentru a începe Paint."
 
 #: flatcamTools/ToolPaint.py:1348 flatcamTools/ToolPaint.py:1351
 #: flatcamTools/ToolPaint.py:1353 flatcamTools/ToolPaint.py:1885
@@ -15699,7 +15576,7 @@ msgstr "Dimensiuni"
 
 #: flatcamTools/ToolProperties.py:165
 msgid "Others"
-msgstr ""
+msgstr "Alții"
 
 #: flatcamTools/ToolProperties.py:172
 msgid "Geo Type"
@@ -15728,10 +15605,8 @@ msgid "Metric"
 msgstr "Metric"
 
 #: flatcamTools/ToolProperties.py:401 flatcamTools/ToolProperties.py:459
-#, fuzzy
-#| msgid "Workers number"
 msgid "Drills number"
-msgstr "Număr de worker's"
+msgstr "Numărul de găuri"
 
 #: flatcamTools/ToolProperties.py:402 flatcamTools/ToolProperties.py:461
 msgid "Slots number"
@@ -15752,38 +15627,28 @@ msgid "Present"
 msgstr "Prezent"
 
 #: flatcamTools/ToolProperties.py:427 flatcamTools/ToolProperties.py:457
-#, fuzzy
-#| msgid "Buffer Solid Geometry"
 msgid "Solid Geometry"
-msgstr "Creează Bufer Geometrie Solidă"
+msgstr "Geometrie Solidă"
 
 #: flatcamTools/ToolProperties.py:430
-#, fuzzy
-#| msgid "Add Text"
 msgid "GCode Text"
-msgstr "Adaugă Text"
+msgstr "Text GCode"
 
 #: flatcamTools/ToolProperties.py:433
-#, fuzzy
-#| msgid "New Geometry"
 msgid "GCode Geometry"
-msgstr "Geometrie Noua"
+msgstr "Geometrie GCode"
 
 #: flatcamTools/ToolProperties.py:435
-#, fuzzy
-#| msgid "Tool Data"
 msgid "Data"
-msgstr "Date unealtă"
+msgstr "Date"
 
 #: flatcamTools/ToolProperties.py:468
 msgid "Depth of Cut"
 msgstr "Adâncimea de Tăiere"
 
 #: flatcamTools/ToolProperties.py:480
-#, fuzzy
-#| msgid "Tolerance"
 msgid "Clearance Height"
-msgstr "Toleranta"
+msgstr "Înălțime Sigură"
 
 #: flatcamTools/ToolProperties.py:492
 msgid "Feedrate"
@@ -15791,11 +15656,9 @@ msgstr "Feedrate"
 
 #: flatcamTools/ToolProperties.py:512
 msgid "Routing time"
-msgstr ""
+msgstr "Timpul de rutare"
 
 #: flatcamTools/ToolProperties.py:519
-#, fuzzy
-#| msgid "Travelled dist."
 msgid "Travelled distance"
 msgstr "Distanța parcursă"
 
@@ -15812,74 +15675,60 @@ msgid "Convex_Hull Area"
 msgstr "Arie convexă"
 
 #: flatcamTools/ToolProperties.py:583 flatcamTools/ToolProperties.py:585
-#, fuzzy
-#| msgid "Copper Growth"
 msgid "Copper Area"
-msgstr "Grosime Cu"
+msgstr "Aria de Cupru"
 
 #: flatcamTools/ToolQRCode.py:79
-#, fuzzy
-#| msgid "Gerber objects for which to check rules."
 msgid "Gerber Object to which the QRCode will be added."
-msgstr "Obiecte Gerber pentru care trebuie verificate regulile."
+msgstr "Obiect Gerber la care se va adăuga codul QR."
 
 #: flatcamTools/ToolQRCode.py:92
-#, fuzzy
-#| msgid "Slot Parameters"
 msgid "QRCode Parameters"
-msgstr "Parametrii pt slot"
+msgstr "Parametrii QRCode"
 
 #: flatcamTools/ToolQRCode.py:94
 msgid "The parameters used to shape the QRCode."
-msgstr ""
+msgstr "Parametrii utilizați pentru modelarea codului QR."
 
 #: flatcamTools/ToolQRCode.py:207
-#, fuzzy
-#| msgid "Export G-Code"
 msgid "Export QRCode"
-msgstr "Exportă G-Code"
+msgstr "Exportă Codul QR"
 
 #: flatcamTools/ToolQRCode.py:209
 msgid ""
 "Show a set of controls allowing to export the QRCode\n"
 "to a SVG file or an PNG file."
 msgstr ""
+"Afișați un set de controale care permit exportul codului QR\n"
+"într-un fișier SVG sau într-un fișier PNG."
 
 #: flatcamTools/ToolQRCode.py:248
 msgid "Transparent back color"
-msgstr ""
+msgstr "Culoare de fundal transparentă"
 
 #: flatcamTools/ToolQRCode.py:273
-#, fuzzy
-#| msgid "Export SVG"
 msgid "Export QRCode SVG"
-msgstr "Exporta SVG"
+msgstr "Exporta QRCode SVG"
 
 #: flatcamTools/ToolQRCode.py:275
 msgid "Export a SVG file with the QRCode content."
-msgstr ""
+msgstr "Exportați un fișier SVG cu conținutul QRCode."
 
 #: flatcamTools/ToolQRCode.py:286
-#, fuzzy
-#| msgid "Export G-Code"
 msgid "Export QRCode PNG"
-msgstr "Exportă G-Code"
+msgstr "Exportă QRCode PNG"
 
 #: flatcamTools/ToolQRCode.py:288
 msgid "Export a PNG image file with the QRCode content."
-msgstr ""
+msgstr "Exportați un fișier imagine PNG cu conținutul QRCode."
 
 #: flatcamTools/ToolQRCode.py:299
-#, fuzzy
-#| msgid "Generate GCode"
 msgid "Insert QRCode"
-msgstr "Genereaa GCode"
+msgstr "Inserați codul QR"
 
 #: flatcamTools/ToolQRCode.py:301
-#, fuzzy
-#| msgid "Generate the CNC Job object."
 msgid "Create the QRCode object."
-msgstr "Generează un obiect CNCJob."
+msgstr "Creați obiectul QRCode."
 
 #: flatcamTools/ToolQRCode.py:413 flatcamTools/ToolQRCode.py:748
 #: flatcamTools/ToolQRCode.py:797
@@ -15887,26 +15736,20 @@ msgid "Cancelled. There is no QRCode Data in the text box."
 msgstr "Anulat. Nu există date QRCode în caseta de text."
 
 #: flatcamTools/ToolQRCode.py:432
-#, fuzzy
-#| msgid "Generate Geometry"
 msgid "Generating QRCode geometry"
-msgstr "Genereza Geometrie"
+msgstr "Generarea geometriei QRCode"
 
 #: flatcamTools/ToolQRCode.py:472
-#, fuzzy
-#| msgid "Click on the Destination point..."
 msgid "Click on the Destination point ..."
 msgstr "Click pe punctul de Destinaţie ..."
 
 #: flatcamTools/ToolQRCode.py:587
 msgid "QRCode Tool done."
-msgstr ""
+msgstr "Unealta QRCode efectuata."
 
 #: flatcamTools/ToolQRCode.py:780 flatcamTools/ToolQRCode.py:784
-#, fuzzy
-#| msgid "Export SVG"
 msgid "Export PNG"
-msgstr "Exporta SVG"
+msgstr "Exporta PNG"
 
 #: flatcamTools/ToolQRCode.py:789
 msgid " Export PNG cancelled."
@@ -16410,10 +16253,8 @@ msgid "ToolSolderPaste CNCjob created"
 msgstr "ToolSolderPaste CNCjob a fost creat"
 
 #: flatcamTools/ToolSolderPaste.py:1419
-#, fuzzy
-#| msgid "Code Editor"
 msgid "SP GCode Editor"
-msgstr "Editor Cod"
+msgstr "Editor GCode SP"
 
 #: flatcamTools/ToolSolderPaste.py:1431 flatcamTools/ToolSolderPaste.py:1436
 #: flatcamTools/ToolSolderPaste.py:1491
@@ -16531,24 +16372,16 @@ msgid "No Subtractor object loaded."
 msgstr "Nu este incărcat obiect Substractor (scăzător)."
 
 #: flatcamTools/ToolSub.py:325
-#, fuzzy
-#| msgid ""
-#| "Gerber object from which to subtract\n"
-#| "the subtractor Gerber object."
 msgid "Processing geometry from Subtractor Gerber object."
-msgstr ""
-"Obiectul Gerber din care se scade \n"
-"obiectul Gerber substractor."
+msgstr "Procesarea geometriei din obiectul Gerber Scăzător."
 
 #: flatcamTools/ToolSub.py:346
 msgid "Parsing geometry for aperture"
 msgstr "Se analizează Geometria pt apertura"
 
 #: flatcamTools/ToolSub.py:407
-#, fuzzy
-#| msgid "Parsing geometry for aperture"
 msgid "Finished parsing geometry for aperture"
-msgstr "Se analizează Geometria pt apertura"
+msgstr "S-a terminat analiza geometriei pt apertura"
 
 #: flatcamTools/ToolSub.py:452 flatcamTools/ToolSub.py:655
 msgid "Generating new object ..."

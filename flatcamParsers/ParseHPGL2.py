@@ -401,7 +401,7 @@ class HPGL2:
         except Exception as err:
             ex_type, ex, tb = sys.exc_info()
             traceback.print_tb(tb)
-            # print traceback.format_exc()
+            print(traceback.format_exc())
 
             log.error("HPGL2 PARSING FAILED. Line %d: %s" % (line_num, gline))
 

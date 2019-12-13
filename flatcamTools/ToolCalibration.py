@@ -172,9 +172,9 @@ class ToolCalibration(FlatCAMTool):
 
         step_1 = QtWidgets.QLabel('<b>%s</b>' % _("STEP 1: Acquire Calibration Points"))
         step_1.setToolTip(
-            _("Pick four points by clicking inside the drill holes.\n"
+            _("Pick four points by clicking on canvas.\n"
               "Those four points should be in the four\n"
-              "(as much as possible) corners of the Excellon object.")
+              "(as much as possible) corners of the object.")
         )
         grid_lay.addWidget(step_1, 10, 0, 1, 3)
 
@@ -909,11 +909,11 @@ class ToolCalibration(FlatCAMTool):
         if len(self.click_points) == 1:
             self.bottom_left_coordx_tgt.set_value(self.click_points[0][0])
             self.bottom_left_coordy_tgt.set_value(self.click_points[0][1])
-            self.app.inform.emit(_("Get Second calibration point. Bottom Right..."))
+            self.app.inform.emit(_("Get Second calibration point. Bottom Right (Top Left)..."))
         elif len(self.click_points) == 2:
             self.bottom_right_coordx_tgt.set_value(self.click_points[1][0])
             self.bottom_right_coordy_tgt.set_value(self.click_points[1][1])
-            self.app.inform.emit(_("Get Third calibration point. Top Left..."))
+            self.app.inform.emit(_("Get Third calibration point. Top Left (Bottom Right)..."))
         elif len(self.click_points) == 3:
             self.top_left_coordx_tgt.set_value(self.click_points[2][0])
             self.top_left_coordy_tgt.set_value(self.click_points[2][1])

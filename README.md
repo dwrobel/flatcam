@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - HPGL2 import: added support for circles, arcs and 3-point arcs. Everything works only for absolute coordinates.
 - removed the .plt extension from Gcode extensions
 - some strings updated; update on the Romanian translate
+- more strings updated; finished the Romanian translation update
 
 12.12.2019
 

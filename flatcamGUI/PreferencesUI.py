@@ -6123,7 +6123,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself' - the copper Thieving extent is based on the object that is copper cleared.\n"
+            _("- 'Itself' - the copper Thieving extent is based on the object extent.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
               "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
@@ -6364,7 +6364,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         ], stretch=False)
         self.mode_label = QtWidgets.QLabel(_("Mode:"))
         self.mode_label.setToolTip(
-            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n "
+            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
               "- 'Manual' - manual placement of fiducials.")
         )
         grid_lay.addWidget(self.mode_label, 3, 0)
@@ -6379,7 +6379,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.pos_label = QtWidgets.QLabel('%s:' % _("Second fiducial"))
         self.pos_label.setToolTip(
             _("The position for the second fiducial.\n"
-              "- 'Up' - the order is: bottom-left, top-left, top-right.\n "
+              "- 'Up' - the order is: bottom-left, top-left, top-right.\n"
               "- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
               "- 'None' - there is no second fiducial. The order is: bottom-left, top-right.")
         )
