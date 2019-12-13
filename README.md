@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - removed the .plt extension from Gcode extensions
 - some strings updated; update on the Romanian translate
 - more strings updated; finished the Romanian translation update
+- some work in updating the Spanish Google-translation
 
 12.12.2019
 
