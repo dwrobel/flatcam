@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - optimized the FlatCAMGerber.clear_plot_apertures() method
 - some changes in the ObjectUI and for the Geometry UI
 - finished a very rough and limited HPGL2 file import 
+- HPGL2 import: added support for circles, arcs and 3-point arcs. Everything works only for absolute coordinates.
 
 11.12.2019
 

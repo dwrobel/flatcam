@@ -10987,11 +10987,11 @@ class App(QtCore.QObject):
         # How the object should be initialized
         def obj_init(geo_obj, app_obj):
 
-            # assert isinstance(geo_obj, FlatCAMGeometry), \
-            #     "Expected to initialize a FlatCAMGeometry but got %s" % type(geo_obj)
+            assert isinstance(geo_obj, FlatCAMGeometry), \
+                "Expected to initialize a FlatCAMGeometry but got %s" % type(geo_obj)
 
             # Opening the file happens here
-            obj = HPGL2()
+            obj = HPGL2(self)
             try:
                 HPGL2.parse_file(obj, filename)
             except IOError:
@@ -11009,13 +11009,16 @@ class App(QtCore.QObject):
                 return "fail"
 
             geo_obj.multigeo = True
-            geo_obj.solid_geometry = obj.solid_geometry
-            geo_obj.tools = obj.tools
+            geo_obj.solid_geometry = deepcopy(obj.solid_geometry)
+            geo_obj.tools = deepcopy(obj.tools)
+            geo_obj.source_file = deepcopy(obj.source_file)
 
-            # if geo_obj.is_empty():
-            #     app_obj.inform.emit('[ERROR_NOTCL] %s' %
-            #                         _("Object is not HPGL2 file or empty. Aborting object creation."))
-            #     return "fail"
+            del obj
+
+            if not geo_obj.solid_geometry:
+                app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                    _("Object is not HPGL2 file or empty. Aborting object creation."))
+                return "fail"
 
         App.log.debug("open_hpgl2()")
 
