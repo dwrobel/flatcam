@@ -2099,6 +2099,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.lock_action.setText(_("Lock Toolbars"))
         self.lock_action.setCheckable(True)
 
+        settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("toolbar_lock"):
             lock_val = settings.value('toolbar_lock')
             if lock_val == 'true':

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.12.2019
+
+- fixed a bug that created a crash in special conditions; it's related to the QSettings in FlatCAMGui.py
+
 14.12.2019
 
 - finished the strings update in the Google-translated Spanish

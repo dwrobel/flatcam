@@ -886,6 +886,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             _("Enable display of the splash screen at application startup.")
         )
         self.splash_cb = FCCheckBox()
+
         settings = QSettings("Open Source", "FlatCAM")
         if settings.value("splash_screen"):
             self.splash_cb.set_value(True)
