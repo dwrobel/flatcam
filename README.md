@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.12.2019
+
+- finished the strings update in the Google-translated Spanish 
+
 13.12.2019
 
 - HPGL2 import: added support for circles, arcs and 3-point arcs. Everything works only for absolute coordinates.
