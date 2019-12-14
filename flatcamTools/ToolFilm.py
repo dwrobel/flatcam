@@ -19,7 +19,7 @@ from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
 from reportlab.graphics import renderPM
 from reportlab.lib.units import inch, mm
-from reportlab.lib.pagesizes import landscape, portrait, A4
+from reportlab.lib.pagesizes import landscape, portrait
 
 from svglib.svglib import svg2rlg
 from xml.dom.minidom import parseString as parse_xml_string
@@ -669,6 +669,10 @@ class Film(FlatCAMTool):
                                  _("No FlatCAM object selected. Load an object for Box and retry."))
             return
 
+        if name == '' or boxname == '':
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("No FlatCAM object selected."))
+            return
+
         scale_stroke_width = float(self.film_scale_stroke_entry.get_value())
         source = self.source_punch.get_value()
         file_type = self.file_type_radio.get_value()
@@ -738,12 +742,18 @@ class Film(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Export positive film cancelled."))
             return
         else:
+            pagesize = self.pagesize_combo.get_value()
+            orientation = self.orientation_radio.get_value()
+            color = self.app.defaults['tools_film_color']
+
             self.export_positive(name, boxname, filename,
                                  scale_stroke_factor=factor,
                                  scale_factor_x=scale_factor_x, scale_factor_y=scale_factor_y,
                                  skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
                                  skew_reference=skew_reference,
-                                 mirror=mirror, ftype=ftype
+                                 mirror=mirror,
+                                 pagesize=pagesize, orientation=orientation, color=color, opacity=1.0,
+                                 ftype=ftype
                                  )
 
     def generate_positive_punched_film(self, name, boxname, source, factor, ftype='svg'):
@@ -1068,7 +1078,7 @@ class Film(FlatCAMTool):
                         scale_stroke_factor=0.00,
                         scale_factor_x=None, scale_factor_y=None,
                         skew_factor_x=None, skew_factor_y=None, skew_reference='center',
-                        mirror=None,
+                        mirror=None,  orientation_val='p', pagesize_val='A4', color_val='black', opacity_val=1.0,
                         use_thread=True, ftype='svg'):
         """
         Exports a Geometry Object to an SVG file in positive black.
@@ -1112,7 +1122,12 @@ class Film(FlatCAMTool):
             self.inform.emit('[WARNING_NOTCL] %s: %s' % (_("No object Box. Using instead"), obj))
             box = obj
 
-        def make_positive_film():
+        p_size = pagesize_val
+        orientation = orientation_val
+        color = color_val
+        transparency_level = opacity_val
+
+        def make_positive_film(p_size, orientation, color, transparency_level):
             log.debug("FilmTool.export_positive().make_positive_film()")
 
             exported_svg = obj.export_svg(scale_stroke_factor=scale_stroke_factor,
@@ -1127,9 +1142,9 @@ class Film(FlatCAMTool):
             # We set the colour to WHITE
             root = ET.fromstring(exported_svg)
             for child in root:
-                child.set('fill', str(self.app.defaults['tools_film_color']))
-                child.set('opacity', '1.0')
-                child.set('stroke', str(self.app.defaults['tools_film_color']))
+                child.set('fill', str(color))
+                child.set('opacity', str(transparency_level))
+                child.set('stroke', str(color))
 
             exported_svg = ET.tostring(root)
 
@@ -1190,7 +1205,7 @@ class Film(FlatCAMTool):
                     return 'fail'
             else:
                 try:
-                    if self.units == 'INCH':
+                    if self.units == 'IN':
                         unit = inch
                     else:
                         unit = mm
@@ -1198,11 +1213,10 @@ class Film(FlatCAMTool):
                     doc_final = StringIO(doc_final)
                     drawing = svg2rlg(doc_final)
 
-                    p_size = self.pagesize_combo.get_value()
                     if p_size == 'Bounds':
                         renderPDF.drawToFile(drawing, filename)
                     else:
-                        if self.orientation_radio.get_value() == 'p':
+                        if orientation == 'p':
                             page_size = portrait(self.pagesize[p_size])
                         else:
                             page_size = landscape(self.pagesize[p_size])
@@ -1225,7 +1239,8 @@ class Film(FlatCAMTool):
 
             def job_thread_film(app_obj):
                 try:
-                    make_positive_film()
+                    make_positive_film(p_size=p_size, orientation=orientation, color=color,
+                                       transparency_level=transparency_level)
                 except Exception:
                     proc.done()
                     return
@@ -1233,7 +1248,8 @@ class Film(FlatCAMTool):
 
             self.app.worker_task.emit({'fcn': job_thread_film, 'params': [self]})
         else:
-            make_positive_film()
+            make_positive_film(p_size=p_size, orientation=orientation, color=color,
+                               transparency_level=transparency_level)
 
     def reset_fields(self):
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

@@ -9,19 +9,63 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.12.2019
+
+- finished the strings update in the Google-translated Spanish 
+
+13.12.2019
+
+- HPGL2 import: added support for circles, arcs and 3-point arcs. Everything works only for absolute coordinates.
+- removed the .plt extension from Gcode extensions
+- some strings updated; update on the Romanian translate
+- more strings updated; finished the Romanian translation update
+- some work in updating the Spanish Google-translation
+- small updates (Google Translate) in Russian and Brazilian-PT languages
+
+12.12.2019
+
+- finished the Calibration Tool
+- changed the Scale Entry in Object UI to FCEntry() GUI element in order to allow expressions to be entered. E.g: 1/25.4
+- some small changes in the Scale button handler in FlatCAMObj() class
+- added option to save objects as PDF files in File -> Save menu
+- optimized the FlatCAMGerber.clear_plot_apertures() method
+- some changes in the ObjectUI and for the Geometry UI
+- finished a very rough and limited HPGL2 file import 
+
+11.12.2019
+
+- started work in HPGL2 parser
+- some more work in Calibration Tool
+
+10.12.2019
+
+- small changes in the Geometry UI
+- now extracut option in the Geometry Object will recut as many points as many they are within the specified re-cut length
+- if extracut_length is zero then the extracut will cut up until the first point in path no matter what the distance is
+- in Gerber isolation, when selection mode is checked, now area selection works too
+- in CNCJob UI, now the CNCJob objects made out of Excellon objects will display their CNC tools (drill bits)
+- fixed a cumulative error when using the Tool Offset for Excellon objects
+- added the display of the real depth of cut (cut z + offset_z) for CNC tools made out of an Excellon object
+- for OpenGL graphic mode added a fit_view() execution on canvas initialization
+- fixed Excellon scaling the UI values
+- replaced the SpindleSpeed entry with a FCSpinner() GUI element; if speed is set to 0 it will amount to None
+
 9.12.2019 
 
 - updated the border for fit view on OpenGL graphic mode
 - Calibration Tool - added preferences values
 - Calibration Tool - more work on it
 - reverted this change: "selected object in Project used to ask twice for UI build" because it will not build the UI when a tab is closed for Document object and the object is selected
-- fixed issue after Geometry object edit; the GCode made from and edited object did not reflect the changes in the object
+- fixed issue after Geometry object edit; the GCode made from an edited object did not reflect the changes in the object
 - in Object UI, the Scale FCDoubleSpinner will no longer work for Return key press due of issues of unwanted scaling on focusOut event
 - in FlatCAMGeometry fixed the scale and offset methods to always process the self.solid_geometry
 - Calibration Tool - finished the calibrated object creation method
 - updated the POT file
 - fixed an error in the German PO file
 - updated the languages PO files
+- some fixes on the app.jump_to() method
+- made sure that the ToolFilm will not start saving a file if there are no objects loaded
+- some fixes on the app.jump_to() method for the Legacy(2D) graphic mode
 
 8.12.2019
 

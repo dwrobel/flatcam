@@ -23,8 +23,14 @@ from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
 import ctypes
 
-import tkinter as tk
-from PyQt5 import QtPrintSupport
+# import tkinter as tk
+# from PyQt5 import QtPrintSupport
+
+from reportlab.graphics import renderPDF
+from reportlab.pdfgen import canvas
+from reportlab.graphics import renderPM
+from reportlab.lib.units import inch, mm
+from reportlab.lib.pagesizes import landscape, portrait
 
 from contextlib import contextmanager
 import gc
@@ -56,6 +62,8 @@ from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
 from flatcamEditors.FlatCAMExcEditor import FlatCAMExcEditor
 from flatcamEditors.FlatCAMGrbEditor import FlatCAMGrbEditor
 from flatcamEditors.FlatCAMTextEditor import TextEditor
+
+from flatcamParsers.ParseHPGL2 import HPGL2
 
 from FlatCAMProcess import *
 from FlatCAMWorkerStack import WorkerStack
@@ -133,7 +141,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.99
-    version_date = "2019/12/12"
+    version_date = "2019/12/15"
     beta = True
     engine = '3D'
 
@@ -591,7 +599,7 @@ class App(QtCore.QObject):
             "excellon_travelz": 2,
             "excellon_endz": 0.5,
             "excellon_feedrate": 300,
-            "excellon_spindlespeed": None,
+            "excellon_spindlespeed": 0,
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
             "excellon_toolchange": False,
@@ -658,7 +666,7 @@ class App(QtCore.QObject):
             "geometry_endz": 15.0,
             "geometry_feedrate": 120,
             "geometry_feedrate_z": 60,
-            "geometry_spindlespeed": None,
+            "geometry_spindlespeed": 0,
             "geometry_dwell": False,
             "geometry_dwelltime": 1,
             "geometry_ppname_g": 'default',
@@ -668,6 +676,7 @@ class App(QtCore.QObject):
             "geometry_startz": None,
             "geometry_feedrate_rapid": 1500,
             "geometry_extracut": False,
+            "geometry_extracut_length": 0.1,
             "geometry_z_pdepth": -0.02,
             "geometry_f_plunge": False,
             "geometry_spindledir": 'CW',
@@ -901,12 +910,14 @@ class App(QtCore.QObject):
             "tools_cal_verz": 0.1,
             "tools_cal_zeroz": False,
             "tools_cal_toolchangez": 15,
+            "tools_cal_toolchange_xy": '',
+            "tools_cal_sec_point": 'tl',
 
             # Utilities
             # file associations
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
             "fa_gcode": 'cnc, din, dnc, ecs, eia, fan, fgc, fnc, gc, gcd, gcode, h, hnc, i, min, mpf, mpr, nc, ncc, '
-                        'ncg, ncp, ngc, out, plt, ply, rol, sbp, tap, xpi',
+                        'ncg, ncp, ngc, out, ply, rol, sbp, tap, xpi',
             "fa_gerber": 'art, bot, bsm, cmp, crc, crs, dim, gb0, gb1, gb2, gb3, gb4, gb5, gb6, gb7, gb8, gb9, gbd, '
                          'gbl, gbo, gbp, gbr, gbs, gdo, ger, gko, gm1, gm2, gm3, grb, gtl, gto, gtp, gts, ly15, ly2, '
                          'mil, pho, plc, pls, smb, smt, sol, spb, spt, ssb, sst, stc, sts, top, tsm',
@@ -1260,6 +1271,7 @@ class App(QtCore.QObject):
             "geometry_startz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
             "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.cncfeedrate_rapid_entry,
             "geometry_extracut": self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
+            "geometry_extracut_length": self.ui.geometry_defaults_form.geometry_adv_opt_group.e_cut_entry,
             "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
             "geometry_feedrate_probe": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
             "geometry_spindledir": self.ui.geometry_defaults_form.geometry_adv_opt_group.spindledir_radio,
@@ -1482,6 +1494,8 @@ class App(QtCore.QObject):
             "tools_cal_verz": self.ui.tools2_defaults_form.tools2_cal_group.verz_entry,
             "tools_cal_zeroz": self.ui.tools2_defaults_form.tools2_cal_group.zeroz_cb,
             "tools_cal_toolchangez": self.ui.tools2_defaults_form.tools2_cal_group.toolchangez_entry,
+            "tools_cal_toolchange_xy": self.ui.tools2_defaults_form.tools2_cal_group.toolchange_xy_entry,
+            "tools_cal_sec_point": self.ui.tools2_defaults_form.tools2_cal_group.second_point_radio,
 
             # Utilities
             # File associations
@@ -1759,7 +1773,7 @@ class App(QtCore.QObject):
 
         self.ui.menufileimportdxf.triggered.connect(lambda: self.on_file_importdxf("geometry"))
         self.ui.menufileimportdxf_as_gerber.triggered.connect(lambda: self.on_file_importdxf("gerber"))
-
+        self.ui.menufileimport_hpgl2_as_geo.triggered.connect(self.on_fileopenhpgl2)
         self.ui.menufileexportsvg.triggered.connect(self.on_file_exportsvg)
         self.ui.menufileexportpng.triggered.connect(self.on_file_exportpng)
         self.ui.menufileexportexcellon.triggered.connect(self.on_file_exportexcellon)
@@ -1770,6 +1784,7 @@ class App(QtCore.QObject):
         self.ui.menufilesaveproject.triggered.connect(self.on_file_saveproject)
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
         self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
+        self.ui.menufilesave_object_pdf.triggered.connect(self.on_file_save_object_pdf)
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
 
         self.ui.menufileexportpref.triggered.connect(self.on_export_preferences)
@@ -2476,6 +2491,7 @@ class App(QtCore.QObject):
 
         # variable to store coordinates
         self.pos = (0, 0)
+        self.pos_canvas = (0, 0)
         self.pos_jump = (0, 0)
 
         # variable to store mouse coordinates
@@ -2545,7 +2561,7 @@ class App(QtCore.QObject):
         self.exc_list = ['drd', 'drl', 'exc', 'ncd', 'tap', 'txt', 'xln']
 
         self.gcode_list = ['cnc', 'din', 'dnc', 'ecs', 'eia', 'fan', 'fgc', 'fnc', 'gc', 'gcd', 'gcode', 'h', 'hnc',
-                           'i', 'min', 'mpf', 'mpr', 'nc', 'ncc', 'ncg', 'ngc', 'ncp', 'out', 'plt', 'ply', 'rol',
+                           'i', 'min', 'mpf', 'mpr', 'nc', 'ncc', 'ncg', 'ngc', 'ncp', 'out', 'ply', 'rol',
                            'sbp', 'tap', 'xpi']
         self.svg_list = ['svg']
         self.dxf_list = ['dxf']
@@ -2979,7 +2995,7 @@ class App(QtCore.QObject):
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
         self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon('share/drill16.png'), pos=self.ui.menutool,
+        self.cal_exc_tool.install(icon=QtGui.QIcon('share/calibrate_16.png'), pos=self.ui.menutool,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)
         self.distance_tool = Distance(self)
@@ -3148,6 +3164,7 @@ class App(QtCore.QObject):
 
         # Tools Toolbar Signals
         self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
+        self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
         self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
         self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
         self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
@@ -4237,7 +4254,7 @@ class App(QtCore.QObject):
             commands_list = "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, " \
                             "AlignDrillGrid, Bbox, Bounds, ClearShell, CopperClear,\n"\
                             "# Cncjob, Cutout, Delete, Drillcncjob, ExportDXF, ExportExcellon, ExportGcode,\n" \
-                            "ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n"\
+                            "# ExportGerber, ExportSVG, Exteriors, Follow, GeoCutout, GeoUnion, GetNames,\n"\
                             "# GetSys, ImportSvg, Interiors, Isolate, JoinExcellon, JoinGeometry, " \
                             "ListSys, MillDrills,\n"\
                             "# MillSlots, Mirror, New, NewExcellon, NewGeometry, NewGerber, Nregions, " \
@@ -4297,23 +4314,41 @@ class App(QtCore.QObject):
         # self.inform.emit('[selected] %s created & selected: %s' %
         #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
         if obj.kind == 'gerber':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='green', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='green',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'excellon':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='brown', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='brown',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'cncjob':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='blue', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='blue',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'geometry':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='red', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='red',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'script':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='orange', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='orange',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
         elif obj.kind == 'document':
-            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
-                kind=obj.kind.capitalize(), color='darkCyan', name=str(obj.options['name'])))
+            self.inform.emit('[selected] {kind} {tx}: <span style="color:{color};">{name}</span>'.format(
+                kind=obj.kind.capitalize(),
+                color='darkCyan',
+                name=str(obj.options['name']), tx=_("created/selected"))
+            )
 
         # update the SHELL auto-completer model with the name of the new object
         self.shell._edit.set_model_data(self.myKeywords)
@@ -4468,10 +4503,11 @@ class App(QtCore.QObject):
                 attributions_label = QtWidgets.QLabel(
                     _(
                         'Some of the icons used are from the following sources:<br>'
-                        '<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" '
+                        '<div>Icons by <a href="https://www.flaticon.com/authors/freepik" '
                         'title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/"             '
                         'title="Flaticon">www.flaticon.com</a></div>'
-                        'Icons by <a target="_blank" href="https://icons8.com">Icons8</a>'
+                        '<div>Icons by <a target="_blank" href="https://icons8.com">Icons8</a></div>'
+                        'Icons by <a href="http://www.onlinewebfonts.com">oNline Web Fonts</a>'
                     )
                 )
 
@@ -7346,7 +7382,11 @@ class App(QtCore.QObject):
 
             canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
             jump_loc = self.plotcanvas.translate_coords_2((cal_location[0], cal_location[1]))
-            j_pos = (canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
+
+            j_pos = (
+                int(canvas_origin.x() + round(jump_loc[0])),
+                int(canvas_origin.y() + round(jump_loc[1]))
+            )
             cursor.setPos(j_pos[0], j_pos[1])
         else:
             # find the canvas origin which is in the top left corner
@@ -7358,10 +7398,15 @@ class App(QtCore.QObject):
             # in pixels where the origin 0,0 is in the lowest left point of the display window (in our case is the
             # canvas) and the point (width, height) is in the top-right location
             loc = self.plotcanvas.axes.transData.transform_point(location)
-            j_pos = (x0 + loc[0], y0 - loc[1])
+            j_pos = (
+                int(x0 + loc[0]),
+                int(y0 - loc[1])
+            )
             cursor.setPos(j_pos[0], j_pos[1])
+            self.plotcanvas.mouse = [location[0], location[1]]
+            self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1])
 
-        if self.grid_status() == True:
+        if self.grid_status():
             # Update cursor
             self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
                                      symbol='++', edge_color=self.cursor_color_3D,
@@ -7376,8 +7421,7 @@ class App(QtCore.QObject):
         self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        self.inform.emit('[success] %s' %
-                         _("Done."))
+        self.inform.emit('[success] %s' % _("Done."))
         return location
 
     def on_copy_object(self):
@@ -8431,23 +8475,17 @@ class App(QtCore.QObject):
             was clicked, the pixel coordinates and the axes coordinates.
         :return: None
         """
-        self.pos = []
+        self.pos = list()
 
         if self.is_legacy is False:
             event_pos = event.pos
-            if self.defaults["global_pan_button"] == '2':
-                pan_button = 2
-            else:
-                pan_button = 3
+            pan_button = 2 if self.defaults["global_pan_button"] == '2'else 3
             # Set the mouse button for panning
             self.plotcanvas.view.camera.pan_button_setting = pan_button
         else:
             event_pos = (event.xdata, event.ydata)
             # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
-            if self.defaults["global_pan_button"] == '2':
-                pan_button = 3
-            else:
-                pan_button = 2
+            pan_button = 3 if self.defaults["global_pan_button"] == '2'else 2
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
@@ -8836,17 +8874,29 @@ class App(QtCore.QObject):
     def selected_message(self, curr_sel_obj):
         if curr_sel_obj:
             if curr_sel_obj.kind == 'gerber':
-                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='green', name=str(curr_sel_obj.options['name'])))
+                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='green',
+                    name=str(curr_sel_obj.options['name']),
+                    tx=_("selected"))
+                )
             elif curr_sel_obj.kind == 'excellon':
-                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='brown', name=str(curr_sel_obj.options['name'])))
+                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='brown',
+                    name=str(curr_sel_obj.options['name']),
+                    tx=_("selected"))
+                )
             elif curr_sel_obj.kind == 'cncjob':
-                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='blue', name=str(curr_sel_obj.options['name'])))
+                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='blue',
+                    name=str(curr_sel_obj.options['name']),
+                    tx=_("selected"))
+                )
             elif curr_sel_obj.kind == 'geometry':
-                self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='red', name=str(curr_sel_obj.options['name'])))
+                self.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='red',
+                    name=str(curr_sel_obj.options['name']),
+                    tx=_("selected"))
+                )
 
     def delete_hover_shape(self):
         self.hover_shapes.clear()
@@ -9217,7 +9267,7 @@ class App(QtCore.QObject):
 
         # https://bobcadsupport.com/helpdesk/index.php?/Knowledgebase/Article/View/13/5/known-g-code-file-extensions
         _filter_ = "G-Code Files (*.txt *.nc *.ncc *.tap *.gcode *.cnc *.ecs *.fnc *.dnc *.ncg *.gc *.fan *.fgc" \
-                   " *.din *.xpi *.hnc *.h *.i *.ncp *.min *.gcd *.rol *.mpr *.ply *.out *.eia *.plt *.sbp *.mpf);;" \
+                   " *.din *.xpi *.hnc *.h *.i *.ncp *.min *.gcd *.rol *.mpr *.ply *.out *.eia *.sbp *.mpf);;" \
                    "All Files (*.*)"
 
         if name is None:
@@ -9276,6 +9326,44 @@ class App(QtCore.QObject):
             # The above was failing because open_project() is not
             # thread safe. The new_project()
             self.open_project(filename)
+
+    def on_fileopenhpgl2(self, signal: bool = None, name=None):
+        """
+        File menu callback for opening a HPGL2.
+
+        :param signal: required because clicking the entry will generate a checked signal which needs a container
+        :return: None
+        """
+
+        self.report_usage("on_fileopenhpgl2")
+        App.log.debug("on_fileopenhpgl2()")
+
+        _filter_ = "HPGL2 Files (*.plt);;" \
+                   "All Files (*.*)"
+
+        if name is None:
+            try:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open HPGL2"),
+                                                                       directory=self.get_last_folder(),
+                                                                       filter=_filter_)
+            except TypeError:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open HPGL2"), filter=_filter_)
+
+            filenames = [str(filename) for filename in filenames]
+        else:
+            filenames = [name]
+            self.splash.showMessage('%s: %ssec\n%s' % (_("Canvas initialization started.\n"
+                                                         "Canvas initialization finished in"), '%.2f' % self.used_time,
+                                                       _("Opening HPGL2 file.")),
+                                    alignment=Qt.AlignBottom | Qt.AlignLeft,
+                                    color=QtGui.QColor("gray"))
+
+        if len(filenames) == 0:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Open HPGL2 file cancelled."))
+        else:
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_hpgl2, 'params': [filename]})
 
     def on_file_openconfig(self, signal: bool = None):
         """
@@ -10108,23 +10196,25 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Project As ..."),
-                directory=_('{l_save}/Project_{date}').format(l_save=str(self.get_last_save_folder()), date=self.date),
-                filter=filter_)
+                directory=('{l_save}/{proj}_{date}').format(l_save=str(self.get_last_save_folder()), date=self.date,
+                                                             proj=_("Project")),
+                filter=filter_
+            )
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)
 
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Save Project cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Save Project cancelled."))
             return
 
         try:
             f = open(filename, 'r')
             f.close()
         except IOError:
-            pass
+            self.inform.emit('[ERROR_NOTCL] %s' % _("The object is used by another application."))
+            return
 
         if use_thread is True:
             self.worker_task.emit({'fcn': self.save_project,
@@ -10142,6 +10232,50 @@ class App(QtCore.QObject):
 
         self.set_ui_title(name=self.project_filename)
         self.should_we_save = False
+
+    def on_file_save_object_pdf(self, use_thread=True):
+        self.date = str(datetime.today()).rpartition('.')[0]
+        self.date = ''.join(c for c in self.date if c not in ':-')
+        self.date = self.date.replace(' ', '_')
+
+        try:
+            obj_active = self.collection.get_active()
+            obj_name = _(str(obj_active.options['name']))
+        except AttributeError as err:
+            log.debug("App.on_file_save_object_pdf() --> %s" % str(err))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
+            return
+
+        filter_ = "PDF File (*.PDF);; All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Save Object as PDF ..."),
+                directory=('{l_save}/{obj_name}_{date}').format(l_save=str(self.get_last_save_folder()),
+                                                                 obj_name=obj_name,
+                                                                 date=self.date),
+                filter=filter_
+            )
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Object as PDF ..."), filter=filter_)
+
+        filename = str(filename)
+
+        if filename == '':
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Save Object PDF cancelled."))
+            return
+
+        if use_thread is True:
+            self.worker_task.emit({'fcn': self.save_pdf, 'params': [filename, obj_name]})
+        else:
+            self.save_pdf(filename, obj_name)
+
+        # self.save_project(filename)
+        if self.defaults["global_open_style"] is False:
+            self.file_opened.emit("pdf", filename)
+        self.file_saved.emit("pdf", filename)
+
+    def save_pdf(self, file_name, obj_name):
+        self.film_tool.export_positive(obj_name=obj_name, box_name=obj_name, filename=file_name, ftype='pdf')
 
     def export_svg(self, obj_name, filename, scale_stroke_factor=0.00):
         """
@@ -10869,6 +11003,73 @@ class App(QtCore.QObject):
             # GUI feedback
             self.inform.emit('[success] %s: %s' %
                              (_("Opened"), filename))
+
+    def open_hpgl2(self, filename, outname=None):
+        """
+        Opens a HPGL2 file, parses it and creates a new object for
+        it in the program. Thread-safe.
+
+        :param outname: Name of the resulting object. None causes the
+            name to be that of the file.
+        :param filename: HPGL2 file filename
+        :type filename: str
+        :return: None
+        """
+        filename = filename
+
+        # How the object should be initialized
+        def obj_init(geo_obj, app_obj):
+
+            assert isinstance(geo_obj, FlatCAMGeometry), \
+                "Expected to initialize a FlatCAMGeometry but got %s" % type(geo_obj)
+
+            # Opening the file happens here
+            obj = HPGL2(self)
+            try:
+                HPGL2.parse_file(obj, filename)
+            except IOError:
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Failed to open file"), filename))
+                return "fail"
+            except ParseError as err:
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s. %s' % (_("Failed to parse file"), filename, str(err)))
+                app_obj.log.error(str(err))
+                return "fail"
+            except Exception as e:
+                log.debug("App.open_hpgl2() --> %s" % str(e))
+                msg = '[ERROR] %s' % _("An internal error has occurred. See shell.\n")
+                msg += traceback.format_exc()
+                app_obj.inform.emit(msg)
+                return "fail"
+
+            geo_obj.multigeo = True
+            geo_obj.solid_geometry = deepcopy(obj.solid_geometry)
+            geo_obj.tools = deepcopy(obj.tools)
+            geo_obj.source_file = deepcopy(obj.source_file)
+
+            del obj
+
+            if not geo_obj.solid_geometry:
+                app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                    _("Object is not HPGL2 file or empty. Aborting object creation."))
+                return "fail"
+
+        App.log.debug("open_hpgl2()")
+
+        with self.proc_container.new(_("Opening HPGL2")) as proc:
+            # Object name
+            name = outname or filename.split('/')[-1].split('\\')[-1]
+
+            # # ## Object creation # ##
+            ret = self.new_object("geometry", name, obj_init, autoselected=False)
+            if ret == 'fail':
+                self.inform.emit('[ERROR_NOTCL]%s' %  _(' Open HPGL2 failed. Probable not a HPGL2 file.'))
+                return 'fail'
+
+            # Register recent file
+            self.file_opened.emit("geometry", filename)
+
+            # GUI feedback
+            self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
 
     def open_script(self, filename, outname=None, silent=False):
         """

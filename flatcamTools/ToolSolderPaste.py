@@ -1283,8 +1283,7 @@ class SolderPaste(FlatCAMTool):
         obj = self.app.collection.get_by_name(name)
 
         if name == '':
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("There is no Geometry object available."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Geometry object available."))
             return 'fail'
 
         if obj.special_group != 'solder_paste_tool':
@@ -1298,8 +1297,7 @@ class SolderPaste(FlatCAMTool):
             if obj.tools[tooluid_key]['solid_geometry'] is None:
                 a += 1
         if a == len(obj.tools):
-            self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                 _('Cancelled. Empty file, it has no geometry'))
+            self.app.inform.emit('[ERROR_NOTCL] %s...' %  _('Cancelled. Empty file, it has no geometry'))
             return 'fail'
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia

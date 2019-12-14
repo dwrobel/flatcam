@@ -170,6 +170,7 @@ class TclCommandCopperClear(TclCommand):
             "ppname_g": self.app.defaults["geometry_ppname_g"],
             "depthperpass": self.app.defaults["geometry_depthperpass"],
             "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length": self.app.defaults["geometry_extracut_length"],
             "toolchange": self.app.defaults["geometry_toolchange"],
             "toolchangez": self.app.defaults["geometry_toolchangez"],
             "endz": self.app.defaults["geometry_endz"],

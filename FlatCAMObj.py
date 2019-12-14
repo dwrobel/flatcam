@@ -195,10 +195,11 @@ class FlatCAMObj(QtCore.QObject):
             pass
 
         # Creates problems on focusOut
-        # try:
-        #     self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
-        # except (TypeError, AttributeError):
-        #     pass
+        try:
+            self.ui.scale_entry.returnPressed.connect(self.on_scale_button_click)
+        except (TypeError, AttributeError):
+            pass
+
         # self.ui.skew_button.clicked.connect(self.on_skew_button_click)
 
     def build_ui(self):
@@ -267,9 +268,19 @@ class FlatCAMObj(QtCore.QObject):
 
     def on_scale_button_click(self):
         self.read_form()
-        factor = self.ui.scale_entry.get_value()
+        try:
+            factor = float(eval(self.ui.scale_entry.get_value()))
+        except Exception as e:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scaling could not be executed."))
+            log.debug("FlatCAMObj.on_scale_button_click() -- %s" % str(e))
+            return
+
+        if type(factor) != float:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scaling could not be executed."))
+
         # if factor is 1.0 do nothing, there is no point in scaling with a factor of 1.0
         if factor == 1.0:
+            self.app.inform.emit('[success] %s' % _("Scale done."))
             return
 
         log.debug("FlatCAMObj.on_scale_button_click()")
@@ -277,6 +288,8 @@ class FlatCAMObj(QtCore.QObject):
         def worker_task():
             with self.app.proc_container.new(_("Scaling...")):
                 self.scale(factor)
+                self.app.inform.emit('[success] %s' % _("Scale done."))
+
             self.app.proc_container.update_view_text('')
             with self.app.proc_container.new('%s...' % _("Plotting")):
                 self.plot()
@@ -625,6 +638,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         # Mouse events
         self.mr = None
+        self.mm = None
+        self.mp = None
 
         # dict to store the polygons selected for isolation; key is the shape added to be plotted and value is the poly
         self.poly_dict = dict()
@@ -1066,11 +1081,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.app.is_legacy is False:
             event_pos = event.pos
             right_button = 2
-            event_is_dragging = self.app.event_is_dragging
+            self.app.event_is_dragging = self.app.event_is_dragging
         else:
             event_pos = (event.xdata, event.ydata)
             right_button = 3
-            event_is_dragging = self.app.ui.popMenu.mouse_is_panning
+            self.app.event_is_dragging = self.app.ui.popMenu.mouse_is_panning
 
         try:
             x = float(event_pos[0])
@@ -1080,11 +1095,18 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         event_pos = (x, y)
         curr_pos = self.app.plotcanvas.translate_coords(event_pos)
+        if self.app.grid_status():
+            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+        else:
+            curr_pos = (curr_pos[0], curr_pos[1])
 
         if event.button == 1:
             clicked_poly = self.find_polygon(point=(curr_pos[0], curr_pos[1]))
 
-            if clicked_poly:
+            if self.app.selection_type is not None:
+                self.selection_area_handler(self.app.pos, curr_pos, self.app.selection_type)
+                self.app.selection_type = None
+            elif clicked_poly:
                 if clicked_poly not in self.poly_dict.values():
                     shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0, shape=clicked_poly,
                                                         color=self.app.defaults['global_sel_draw_color'] + 'AF',
@@ -1113,8 +1135,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 self.app.tool_shapes.redraw()
             else:
                 self.app.inform.emit(_("No polygon detected under click position."))
-
-        elif event.button == right_button and event_is_dragging is False:
+        elif event.button == right_button and self.app.event_is_dragging is False:
             # restore the Grid snapping if it was active before
             if self.grid_status_memory is True:
                 self.app.ui.grid_snap_btn.trigger()
@@ -1135,6 +1156,75 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 self.poly_dict.clear()
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("List of single polygons is empty. Aborting."))
+
+    def selection_area_handler(self, start_pos, end_pos, sel_type):
+        """
+        :param start_pos: mouse position when the selection LMB click was done
+        :param end_pos: mouse position when the left mouse button is released
+        :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
+        :return:
+        """
+        poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
+
+        # delete previous selection shape
+        self.app.delete_selection_shape()
+
+        added_poly_count = 0
+        try:
+            for geo in self.solid_geometry:
+                if geo not in self.poly_dict.values():
+                    if sel_type is True:
+                        if geo.within(poly_selection):
+                            shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
+                                                                shape=geo,
+                                                                color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                                face_color=self.app.defaults[
+                                                                               'global_sel_draw_color'] + 'AF',
+                                                                visible=True)
+                            self.poly_dict[shape_id] = geo
+                            added_poly_count += 1
+                    else:
+                        if poly_selection.intersects(geo):
+                            shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
+                                                                shape=geo,
+                                                                color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                                face_color=self.app.defaults[
+                                                                               'global_sel_draw_color'] + 'AF',
+                                                                visible=True)
+                            self.poly_dict[shape_id] = geo
+                            added_poly_count += 1
+        except TypeError:
+            if self.solid_geometry not in self.poly_dict.values():
+                if sel_type is True:
+                    if self.solid_geometry.within(poly_selection):
+                        shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
+                                                            shape=self.solid_geometry,
+                                                            color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                            face_color=self.app.defaults[
+                                                                           'global_sel_draw_color'] + 'AF',
+                                                            visible=True)
+                        self.poly_dict[shape_id] = self.solid_geometry
+                        added_poly_count += 1
+                else:
+                    if poly_selection.intersects(self.solid_geometry):
+                        shape_id = self.app.tool_shapes.add(tolerance=self.drawing_tolerance, layer=0,
+                                                            shape=self.solid_geometry,
+                                                            color=self.app.defaults['global_sel_draw_color'] + 'AF',
+                                                            face_color=self.app.defaults[
+                                                                           'global_sel_draw_color'] + 'AF',
+                                                            visible=True)
+                        self.poly_dict[shape_id] = self.solid_geometry
+                        added_poly_count += 1
+
+        if added_poly_count > 0:
+            self.app.tool_shapes.redraw()
+            self.app.inform.emit(
+                '%s: %d. %s' % (_("Added polygon"),
+                                int(added_poly_count),
+                                _("Click to add next polygon or right click to start isolation."))
+            )
+        else:
+            self.app.inform.emit(_("No polygon in selection."))
 
     def isolate(self, iso_type=None, geometry=None, dia=None, passes=None, overlap=None, outname=None, combine=None,
                 milling_type=None, follow=None, plot=True):
@@ -1242,6 +1332,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         "ppname_g": self.app.defaults['geometry_ppname_g'],
                         "depthperpass": self.app.defaults['geometry_depthperpass'],
                         "extracut": self.app.defaults['geometry_extracut'],
+                        "extracut_length": self.app.defaults['geometry_extracut_length'],
                         "toolchange": self.app.defaults['geometry_toolchange'],
                         "toolchangez": self.app.defaults['geometry_toolchangez'],
                         "endz": self.app.defaults['geometry_endz'],
@@ -1718,18 +1809,25 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param aperture: string; aperture for which to clear the mark shapes
         :return:
         """
-        try:
+
+        if self.mark_shapes:
             if aperture == 'all':
                 for apid in list(self.apertures.keys()):
-                    if self.app.is_legacy is True:
-                        self.mark_shapes[apid].clear(update=False)
-                    else:
-                        self.mark_shapes[apid].clear(update=True)
-
+                    try:
+                        if self.app.is_legacy is True:
+                            self.mark_shapes[apid].clear(update=False)
+                        else:
+                            self.mark_shapes[apid].clear(update=True)
+                    except Exception as e:
+                        log.debug("FlatCAMGerber.clear_plot_apertures() 'all' --> %s" % str(e))
             else:
-                self.mark_shapes[aperture].clear(update=True)
-        except Exception as e:
-            log.debug("FlatCAMGerber.clear_plot_apertures() --> %s" % str(e))
+                try:
+                    if self.app.is_legacy is True:
+                        self.mark_shapes[aperture].clear(update=False)
+                    else:
+                        self.mark_shapes[aperture].clear(update=True)
+                except Exception as e:
+                    log.debug("FlatCAMGerber.clear_plot_apertures() 'aperture' --> %s" % str(e))
 
     def clear_mark_all(self):
         self.ui.mark_all_cb.set_value(False)
@@ -2117,7 +2215,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "toolchangexy": "0.0, 0.0",
             "endz": 2.0,
             "startz": None,
-            "spindlespeed": None,
+            "spindlespeed": 0,
             "dwell": True,
             "dwelltime": 1000,
             "ppname_e": 'defaults',
@@ -2128,10 +2226,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         })
 
         # TODO: Document this.
-        self.tool_cbs = {}
+        self.tool_cbs = dict()
 
         # dict to hold the tool number as key and tool offset as value
-        self.tool_offset = {}
+        self.tool_offset = dict()
 
         # variable to store the total amount of drills per job
         self.tot_drill_cnt = 0
@@ -3175,7 +3273,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.feedrate = float(self.options["feedrate"])
             job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
 
-            job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] else None
+            job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] != 0 else None
             job_obj.spindledir = self.app.defaults['excellon_spindledir']
             job_obj.dwell = self.options["dwell"]
             job_obj.dwelltime = float(self.options["dwelltime"])
@@ -3254,30 +3352,31 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def convert_units(self, units):
         log.debug("FlatCAMObj.FlatCAMExcellon.convert_units()")
 
-        factor = Excellon.convert_units(self, units)
+        Excellon.convert_units(self, units)
 
-        self.options['drillz'] = float(self.options['drillz']) * factor
-        self.options['travelz'] = float(self.options['travelz']) * factor
-        self.options['feedrate'] = float(self.options['feedrate']) * factor
-        self.options['feedrate_rapid'] = float(self.options['feedrate_rapid']) * factor
-        self.options['toolchangez'] = float(self.options['toolchangez']) * factor
-
-        if self.app.defaults["excellon_toolchangexy"] == '':
-            self.options['toolchangexy'] = "0.0, 0.0"
-        else:
-            coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
-            if len(coords_xy) < 2:
-                self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y field in Edit -> Preferences has to be "
-                                                      "in the format (x, y) \n"
-                                                      "but now there is only one value, not two. "))
-                return 'fail'
-            coords_xy[0] *= factor
-            coords_xy[1] *= factor
-            self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
-
-        if self.options['startz'] is not None:
-            self.options['startz'] = float(self.options['startz']) * factor
-        self.options['endz'] = float(self.options['endz']) * factor
+        # factor = Excellon.convert_units(self, units)
+        # self.options['drillz'] = float(self.options['drillz']) * factor
+        # self.options['travelz'] = float(self.options['travelz']) * factor
+        # self.options['feedrate'] = float(self.options['feedrate']) * factor
+        # self.options['feedrate_rapid'] = float(self.options['feedrate_rapid']) * factor
+        # self.options['toolchangez'] = float(self.options['toolchangez']) * factor
+        #
+        # if self.app.defaults["excellon_toolchangexy"] == '':
+        #     self.options['toolchangexy'] = "0.0, 0.0"
+        # else:
+        #     coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
+        #     if len(coords_xy) < 2:
+        #         self.app.inform.emit('[ERROR] %s' % _("The Toolchange X,Y field in Edit -> Preferences has to be "
+        #                                               "in the format (x, y) \n"
+        #                                               "but now there is only one value, not two. "))
+        #         return 'fail'
+        #     coords_xy[0] *= factor
+        #     coords_xy[1] *= factor
+        #     self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
+        #
+        # if self.options['startz'] is not None:
+        #     self.options['startz'] = float(self.options['startz']) * factor
+        # self.options['endz'] = float(self.options['endz']) * factor
 
     def on_solid_cb_click(self, *args):
         if self.muted_ui:
@@ -3439,12 +3538,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "feedrate": 5.0,
             "feedrate_z": 5.0,
             "feedrate_rapid": 5.0,
-            "spindlespeed": None,
+            "spindlespeed": 0,
             "dwell": True,
             "dwelltime": 1000,
             "multidepth": False,
             "depthperpass": 0.002,
             "extracut": False,
+            "extracut_length": 0.1,
             "endz": 2.0,
             "startz": None,
             "toolchange": False,
@@ -3684,6 +3784,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "feedrate_probe": self.ui.feedrate_probe_entry,
             "depthperpass": self.ui.maxdepth_entry,
             "extracut": self.ui.extracut_cb,
+            "extracut_length": self.ui.e_cut_entry,
             "toolchange": self.ui.toolchangeg_cb,
             "toolchangez": self.ui.toolchangez_entry,
             "endz": self.ui.gendz_entry,
@@ -3722,10 +3823,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "ppname_g": None,
             "depthperpass": None,
             "extracut": None,
+            "extracut_length": None,
             "toolchange": None,
             "toolchangez": None,
             "endz": None,
-            "spindlespeed": None,
+            "spindlespeed": 0,
             "toolchangexy": None,
             "startz": None
         })
@@ -3814,6 +3916,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.fr_rapidlabel.hide()
             self.ui.cncfeedrate_rapid_entry.hide()
             self.ui.extracut_cb.hide()
+            self.ui.e_cut_entry.hide()
             self.ui.pdepth_label.hide()
             self.ui.pdepth_entry.hide()
             self.ui.feedrate_probe_label.hide()
@@ -3821,9 +3924,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
+        self.ui.e_cut_entry.setDisabled(True)
+
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
+        self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=False))
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
         self.ui.addtool_entry.returnPressed.connect(lambda: self.on_tool_add())
 
@@ -4975,6 +5081,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 feedrate_rapid = tools_dict[tooluid_key]['data']["feedrate_rapid"]
                 multidepth = tools_dict[tooluid_key]['data']["multidepth"]
                 extracut = tools_dict[tooluid_key]['data']["extracut"]
+                extracut_length = tools_dict[tooluid_key]['data']["extracut_length"]
                 depthpercut = tools_dict[tooluid_key]['data']["depthperpass"]
                 toolchange = tools_dict[tooluid_key]['data']["toolchange"]
                 toolchangez = tools_dict[tooluid_key]['data']["toolchangez"]
@@ -5006,7 +5113,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, startz=startz, endz=endz,
+                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
@@ -5127,6 +5234,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 feedrate_rapid = tools_dict[tooluid_key]['data']["feedrate_rapid"]
                 multidepth = tools_dict[tooluid_key]['data']["multidepth"]
                 extracut = tools_dict[tooluid_key]['data']["extracut"]
+                extracut_length = tools_dict[tooluid_key]['data']["extracut_length"]
                 depthpercut = tools_dict[tooluid_key]['data']["depthperpass"]
                 toolchange = tools_dict[tooluid_key]['data']["toolchange"]
                 toolchangez = tools_dict[tooluid_key]['data']["toolchangez"]
@@ -5158,7 +5266,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, startz=startz, endz=endz,
+                    extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
@@ -5226,7 +5334,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             spindlespeed=None, dwell=None, dwelltime=None,
             multidepth=None, depthperpass=None,
             toolchange=None, toolchangez=None, toolchangexy=None,
-            extracut=None, startz=None, endz=None,
+            extracut=None, extracut_length=None, startz=None, endz=None,
             pp=None,
             segx=None, segy=None,
             use_thread=True,
@@ -5266,6 +5374,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
         extracut = extracut if extracut is not None else float(self.options["extracut"])
+        extracut_length = extracut_length if extracut_length is not None else float(self.options["extracut_length"])
+
         startz = startz if startz is not None else self.options["startz"]
         endz = endz if endz is not None else float(self.options["endz"])
 
@@ -5320,7 +5430,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
                 multidepth=multidepth, depthpercut=depthperpass,
                 toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                extracut=extracut, startz=startz, endz=endz,
+                extracut=extracut, extracut_length=extracut_length, startz=startz, endz=endz,
                 pp_geometry_name=ppname_g
             )
 
@@ -5625,7 +5735,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         tooldia = self.ui.addtool_entry.get_value()
         if tooldia:
             tooldia *= factor
-            # limit the decimals to 2 for METRIC and 3 for INCH
             tooldia = float('%.*f' % (self.decimals, tooldia))
 
             self.ui.addtool_entry.set_value(tooldia)
@@ -5635,7 +5744,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def plot_element(self, element, color='#FF0000FF', visible=None):
 
         visible = visible if visible else self.options['plot']
-
         try:
             for sub_el in element:
                 self.plot_element(sub_el)
@@ -5951,15 +6059,22 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui_disconnect()
 
         FlatCAMObj.build_ui(self)
-
-        # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
-        if self.cnc_tools:
-            self.ui.cnc_tools_table.show()
-        else:
-            self.ui.cnc_tools_table.hide()
-
         self.units = self.app.defaults['units'].upper()
 
+        # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
+        self.ui.cnc_tools_table.hide()
+        if self.cnc_tools:
+            self.ui.cnc_tools_table.show()
+            self.build_cnc_tools_table()
+
+        self.ui.exc_cnc_tools_table.hide()
+        if self.exc_cnc_tools:
+            self.ui.exc_cnc_tools_table.show()
+            self.build_excellon_cnc_tools()
+        #
+        self.ui_connect()
+
+    def build_cnc_tools_table(self):
         offset = 0
         tool_idx = 0
 
@@ -6058,7 +6173,90 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui.cnc_tools_table.setMinimumHeight(self.ui.cnc_tools_table.getHeight())
         self.ui.cnc_tools_table.setMaximumHeight(self.ui.cnc_tools_table.getHeight())
 
-        self.ui_connect()
+    def build_excellon_cnc_tools(self):
+        tool_idx = 0
+
+        n = len(self.exc_cnc_tools)
+        self.ui.exc_cnc_tools_table.setRowCount(n)
+
+        for tooldia_key, dia_value in self.exc_cnc_tools.items():
+
+            tool_idx += 1
+            row_no = tool_idx - 1
+
+            id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
+            nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
+            nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
+            cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['offset_z']) + self.z_cut))
+
+            id.setFlags(QtCore.Qt.ItemIsEnabled)
+            dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            nr_drills_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            nr_slots_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            cutz_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            # hack so the checkbox stay centered in the table cell
+            # used this:
+            # https://stackoverflow.com/questions/32458111/pyqt-allign-checkbox-and-put-it-in-every-row
+            # plot_item = QtWidgets.QWidget()
+            # checkbox = FCCheckBox()
+            # checkbox.setCheckState(QtCore.Qt.Checked)
+            # qhboxlayout = QtWidgets.QHBoxLayout(plot_item)
+            # qhboxlayout.addWidget(checkbox)
+            # qhboxlayout.setAlignment(QtCore.Qt.AlignCenter)
+            # qhboxlayout.setContentsMargins(0, 0, 0, 0)
+
+            plot_item = FCCheckBox()
+            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            tool_uid_item = QtWidgets.QTableWidgetItem(str(dia_value['tool']))
+            if self.ui.plot_cb.isChecked():
+                plot_item.setChecked(True)
+
+            # TODO until the feature of individual plot for an Excellon tool is implemented
+            plot_item.setDisabled(True)
+
+            self.ui.exc_cnc_tools_table.setItem(row_no, 0, id)  # Tool name/id
+            self.ui.exc_cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
+            self.ui.exc_cnc_tools_table.setItem(row_no, 2, nr_drills_item)  # Nr of drills
+            self.ui.exc_cnc_tools_table.setItem(row_no, 3, nr_slots_item)  # Nr of slots
+
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
+            self.ui.exc_cnc_tools_table.setItem(row_no, 4, tool_uid_item)  # Tool unique ID)
+            self.ui.exc_cnc_tools_table.setItem(row_no, 5, cutz_item)
+            self.ui.exc_cnc_tools_table.setCellWidget(row_no, 6, plot_item)
+
+        for row in range(tool_idx):
+            self.ui.exc_cnc_tools_table.item(row, 0).setFlags(
+                self.ui.exc_cnc_tools_table.item(row, 0).flags() ^ QtCore.Qt.ItemIsSelectable)
+
+        self.ui.exc_cnc_tools_table.resizeColumnsToContents()
+        self.ui.exc_cnc_tools_table.resizeRowsToContents()
+
+        vertical_header = self.ui.exc_cnc_tools_table.verticalHeader()
+        vertical_header.hide()
+        self.ui.exc_cnc_tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        horizontal_header = self.ui.exc_cnc_tools_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.ResizeToContents)
+
+        horizontal_header.setSectionResizeMode(6, QtWidgets.QHeaderView.Fixed)
+
+        # horizontal_header.setStretchLastSection(True)
+        self.ui.exc_cnc_tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.ui.exc_cnc_tools_table.setColumnWidth(0, 20)
+        self.ui.exc_cnc_tools_table.setColumnWidth(6, 17)
+
+        self.ui.exc_cnc_tools_table.setMinimumHeight(self.ui.exc_cnc_tools_table.getHeight())
+        self.ui.exc_cnc_tools_table.setMaximumHeight(self.ui.exc_cnc_tools_table.getHeight())
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -6645,10 +6843,20 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.plot2(dia_plot, obj=self, visible=visible, kind=kind)
             else:
                 # multiple tools usage
-                for tooluid_key in self.cnc_tools:
-                    tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
-                    gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
-                    self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+                if self.cnc_tools:
+                    for tooluid_key in self.cnc_tools:
+                        tooldia = float('%.*f' % (self.decimals, float(self.cnc_tools[tooluid_key]['tooldia'])))
+                        gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
+                        self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+
+                # TODO: until the gcode parsed will be stored on each Excellon tool this will not get executed
+                if self.exc_cnc_tools:
+                    for tooldia_key in self.exc_cnc_tools:
+                        tooldia = float('%.*f' % (self.decimals, float(tooldia_key)))
+                        # gcode_parsed = self.cnc_tools[tooldia_key]['gcode_parsed']
+                        gcode_parsed = self.gcode_parsed
+                        self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
+
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)

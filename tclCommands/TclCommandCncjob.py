@@ -35,6 +35,7 @@ class TclCommandCncjob(TclCommandSignaled):
         ('feedrate_rapid', float),
         ('multidepth', bool),
         ('extracut', bool),
+        ('extracut_length', float),
         ('depthperpass', float),
         ('toolchange', int),
         ('toolchangez', float),
@@ -65,6 +66,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('feedrate_rapid', 'Rapid moving at speed when cutting.'),
             ('multidepth', 'Use or not multidepth cnc cut. (True or False)'),
             ('extracut', 'Use or not an extra cnccut over the first point in path,in the job end (example: True)'),
+            ('extracut', 'The value for extra cnccut over the first point in path,in the job end; float'),
             ('depthperpass', 'Height of one layer for multidepth.'),
             ('toolchange', 'Enable tool changes (example: True).'),
             ('toolchangez', 'Z distance for toolchange (example: 30.0).'),
@@ -136,6 +138,8 @@ class TclCommandCncjob(TclCommandSignaled):
 
         args["multidepth"] = bool(args["multidepth"]) if "multidepth" in args else obj.options["multidepth"]
         args["extracut"] = bool(args["extracut"]) if "extracut" in args else obj.options["extracut"]
+        args["extracut_length"] = float(args["extracut_length"]) if "extracut_length" in args else \
+            obj.options["extracut_length"]
         args["depthperpass"] = args["depthperpass"] if "depthperpass" in args and args["depthperpass"] else \
             obj.options["depthperpass"]
 
@@ -143,7 +147,7 @@ class TclCommandCncjob(TclCommandSignaled):
             self.app.defaults["geometry_startz"]
         args["endz"] = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
 
-        args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] else None
+        args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] != 0 else None
         args["dwell"] = bool(args["dwell"]) if "dwell" in args else obj.options["dwell"]
         args["dwelltime"] = args["dwelltime"] if "dwelltime" in args and args["dwelltime"] else obj.options["dwelltime"]
 
@@ -189,6 +193,7 @@ class TclCommandCncjob(TclCommandSignaled):
                     local_tools_dict[tool_uid]['data']['feedrate_rapid'] = args["feedrate_rapid"]
                     local_tools_dict[tool_uid]['data']['multidepth'] = args["multidepth"]
                     local_tools_dict[tool_uid]['data']['extracut'] = args["extracut"]
+                    local_tools_dict[tool_uid]['data']['extracut_length'] = args["extracut_length"]
                     local_tools_dict[tool_uid]['data']['depthperpass'] = args["depthperpass"]
                     local_tools_dict[tool_uid]['data']['toolchange'] = args["toolchange"]
                     local_tools_dict[tool_uid]['data']['toolchangez'] = args["toolchangez"]

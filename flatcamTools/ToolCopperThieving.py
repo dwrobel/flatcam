@@ -128,7 +128,7 @@ class ToolCopperThieving(FlatCAMTool):
         ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself' - the copper thieving extent is based on the object that is copper cleared.\n"
+            _("- 'Itself' - the copper thieving extent is based on the object extent.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
               "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
