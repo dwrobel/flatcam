@@ -11,7 +11,8 @@ CAD program, and create G-Code for Isolation routing.
 
 14.12.2019
 
-- finished the strings update in the Google-translated Spanish 
+- finished the strings update in the Google-translated Spanish
+- finished the strings update in the Google-translated French
 
 13.12.2019
 
