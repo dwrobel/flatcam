@@ -203,7 +203,7 @@ class ToolFiducials(FlatCAMTool):
         self.pos_label = QtWidgets.QLabel('%s:' % _("Second fiducial"))
         self.pos_label.setToolTip(
             _("The position for the second fiducial.\n"
-              "- 'Up' - the order is: bottom-left, top-left, top-right.\n "
+              "- 'Up' - the order is: bottom-left, top-left, top-right.\n"
               "- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
               "- 'None' - there is no second fiducial. The order is: bottom-left, top-right.")
         )

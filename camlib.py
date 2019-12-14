@@ -459,7 +459,7 @@ class Geometry(object):
 
     defaults = {
         "units": 'in',
-        "geo_steps_per_circle": 128
+        "geo_steps_per_circle": 64
     }
 
     def __init__(self, geo_steps_per_circle=None):
@@ -1824,7 +1824,7 @@ class Geometry(object):
         """
 
         # Make sure we see a Shapely Geometry class and not a list
-        if str(type(self)) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+        if self.kind.lower() == 'geometry':
             flat_geo = []
             if self.multigeo:
                 for tool in self.tools:
@@ -2158,7 +2158,7 @@ class CNCjob(Geometry):
         self.units = units
 
         self.z_cut = z_cut
-        self.tool_offset = {}
+        self.tool_offset = dict()
 
         self.z_move = z_move
 
@@ -2359,7 +2359,9 @@ class CNCjob(Geometry):
         self.exc_drills = deepcopy(exobj.drills)
         self.exc_tools = deepcopy(exobj.tools)
 
-        self.z_cut = drillz
+        self.z_cut = deepcopy(drillz)
+        old_zcut = deepcopy(drillz)
+
         if self.machinist_setting == 0:
             if drillz > 0:
                 self.app.inform.emit('[WARNING] %s' %
@@ -2441,10 +2443,16 @@ class CNCjob(Geometry):
                                 LineString([start, stop]).buffer((it[1] / 2.0), resolution=self.geo_steps_per_circle)
                             )
 
+                    try:
+                        z_off = float(self.tool_offset[it[1]]) * (-1)
+                    except KeyError:
+                        z_off = 0
+
                     self.exc_cnc_tools[it[1]] = dict()
                     self.exc_cnc_tools[it[1]]['tool'] = it[0]
                     self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
                     self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
+                    self.exc_cnc_tools[it[1]]['offset_z'] = z_off
                     self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
@@ -2635,7 +2643,7 @@ class CNCjob(Geometry):
                                 z_offset = float(self.tool_offset[current_tooldia]) * (-1)
                             except KeyError:
                                 z_offset = 0
-                            self.z_cut += z_offset
+                            self.z_cut = z_offset + old_zcut
 
                             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
                             if self.coordinates_type == "G90":
@@ -2682,11 +2690,11 @@ class CNCjob(Geometry):
                             else:
                                 self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                                 return 'fail'
+                        self.z_cut = deepcopy(old_zcut)
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
-                    self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                         _('The loaded Excellon file has no drills'))
+                    self.app.inform.emit('[ERROR_NOTCL] %s...' % _('The loaded Excellon file has no drills'))
                     return 'fail'
 
                 log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
@@ -2778,7 +2786,7 @@ class CNCjob(Geometry):
                                 z_offset = float(self.tool_offset[current_tooldia]) * (-1)
                             except KeyError:
                                 z_offset = 0
-                            self.z_cut += z_offset
+                            self.z_cut = z_offset + old_zcut
 
                             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
                             if self.coordinates_type == "G90":
@@ -2825,6 +2833,7 @@ class CNCjob(Geometry):
                             else:
                                 self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                                 return 'fail'
+                        self.z_cut = deepcopy(old_zcut)
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
@@ -2879,7 +2888,7 @@ class CNCjob(Geometry):
                             z_offset = float(self.tool_offset[current_tooldia]) * (-1)
                         except KeyError:
                             z_offset = 0
-                        self.z_cut += z_offset
+                        self.z_cut = z_offset + old_zcut
 
                         self.coordinates_type = self.app.defaults["cncjob_coords_type"]
                         if self.coordinates_type == "G90":
@@ -2933,6 +2942,7 @@ class CNCjob(Geometry):
                         self.app.inform.emit('[ERROR_NOTCL] %s...' %
                                              _('The loaded Excellon file has no drills'))
                         return 'fail'
+                self.z_cut = deepcopy(old_zcut)
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
 
         gcode += self.doformat(p.spindle_stop_code)  # Spindle stop
@@ -2962,7 +2972,7 @@ class CNCjob(Geometry):
             feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
             spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
             multidepth=False, depthpercut=None,
-            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False,
+            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False, extracut_length=0.2,
             startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
         """
         Algorithm to generate from multitool Geometry.
@@ -2992,6 +3002,7 @@ class CNCjob(Geometry):
         :param toolchangexy:
         :param extracut:            Adds (or not) an extra cut at the end of each path overlapping the
                                     first point in path to ensure complete copper removal
+        :param extracut_length:     Extra cut legth at the end of the path
         :param startz:
         :param endz:
         :param pp_geometry_name:
@@ -3025,7 +3036,7 @@ class CNCjob(Geometry):
         self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
-        self.spindlespeed = int(spindlespeed) if spindlespeed else None
+        self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
         self.spindledir = spindledir
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime else None
@@ -3213,7 +3224,8 @@ class CNCjob(Geometry):
                     # calculate the cut distance
                     total_cut = total_cut + geo.length
 
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance, old_point=current_pt)
+                    self.gcode += self.create_gcode_single_pass(geo, extracut, extracut_length, tolerance,
+                                                                old_point=current_pt)
 
                 # --------- Multi-pass ---------
                 else:
@@ -3227,7 +3239,7 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
+                    self.gcode += self.create_gcode_multi_pass(geo, extracut, extracut_length, tolerance,
                                                                postproc=p, old_point=current_pt)
 
                 # calculate the total distance
@@ -3270,7 +3282,7 @@ class CNCjob(Geometry):
             spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
             multidepth=False, depthpercut=None,
             toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0",
-            extracut=False, startz=None, endz=2.0,
+            extracut=False, extracut_length=0.1, startz=None, endz=2.0,
             pp_geometry_name=None, tool_no=1):
         """
         Second algorithm to generate from Geometry.
@@ -3288,6 +3300,7 @@ class CNCjob(Geometry):
         :param depthpercut: Maximum depth in each pass.
         :param extracut: Adds (or not) an extra cut at the end of each path
             overlapping the first point in path to ensure complete copper removal
+        :param extracut_length: The extra cut length
         :return: None
         """
 
@@ -3375,7 +3388,7 @@ class CNCjob(Geometry):
         self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
-        self.spindlespeed = int(spindlespeed) if spindlespeed else None
+        self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
         self.spindledir = spindledir
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime else None
@@ -3559,7 +3572,8 @@ class CNCjob(Geometry):
                 if not multidepth:
                     # calculate the cut distance
                     total_cut += geo.length
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance, old_point=current_pt)
+                    self.gcode += self.create_gcode_single_pass(geo, extracut, extracut_length, tolerance,
+                                                                old_point=current_pt)
 
                 # --------- Multi-pass ---------
                 else:
@@ -3573,7 +3587,7 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
+                    self.gcode += self.create_gcode_multi_pass(geo, extracut, extracut_length, tolerance,
                                                                postproc=p, old_point=current_pt)
 
                 # calculate the travel distance
@@ -3798,7 +3812,7 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.lift_code)
         return gcode
 
-    def create_gcode_single_pass(self, geometry, extracut, tolerance, old_point=(0, 0)):
+    def create_gcode_single_pass(self, geometry, extracut, extracut_length, tolerance, old_point=(0, 0)):
         # G-code. Note: self.linear2gcode() and self.point2gcode() will lower and raise the tool every time.
         gcode_single_pass = ''
 
@@ -3807,7 +3821,8 @@ class CNCjob(Geometry):
                 gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, old_point=old_point)
             else:
                 if geometry.is_ring:
-                    gcode_single_pass = self.linear2gcode_extra(geometry, tolerance=tolerance, old_point=old_point)
+                    gcode_single_pass = self.linear2gcode_extra(geometry, extracut_length, tolerance=tolerance,
+                                                                old_point=old_point)
                 else:
                     gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, old_point=old_point)
         elif type(geometry) == Point:
@@ -3818,7 +3833,7 @@ class CNCjob(Geometry):
 
         return gcode_single_pass
 
-    def create_gcode_multi_pass(self, geometry, extracut, tolerance, postproc, old_point=(0, 0)):
+    def create_gcode_multi_pass(self, geometry, extracut, extracut_length, tolerance, postproc, old_point=(0, 0)):
 
         gcode_multi_pass = ''
 
@@ -3851,8 +3866,8 @@ class CNCjob(Geometry):
                                                           old_point=old_point)
                 else:
                     if geometry.is_ring:
-                        gcode_multi_pass += self.linear2gcode_extra(geometry, tolerance=tolerance, z_cut=depth,
-                                                                    up=False, old_point=old_point)
+                        gcode_multi_pass += self.linear2gcode_extra(geometry, extracut_length, tolerance=tolerance,
+                                                                    z_cut=depth, up=False, old_point=old_point)
                     else:
                         gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False,
                                                               old_point=old_point)
@@ -4513,13 +4528,14 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.lift_code, x=prev_x, y=prev_y, z_move=z_move)  # Stop cutting
         return gcode
 
-    def linear2gcode_extra(self, linear, tolerance=0, down=True, up=True,
+    def linear2gcode_extra(self, linear, extracut_length, tolerance=0, down=True, up=True,
                      z_cut=None, z_move=None, zdownrate=None,
                      feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False, old_point=(0, 0)):
         """
         Generates G-code to cut along the linear feature.
 
         :param linear: The path to cut along.
+        :param extracut_length: how much to cut extra over the first point at the end of the path
         :type: Shapely.LinearRing or Shapely.Linear String
         :param tolerance: All points in the simplified object will be within the
             tolerance distance of the original geometry.
@@ -4602,8 +4618,7 @@ class CNCjob(Geometry):
                 # For Incremental coordinates type G91
                 # next_x = pt[0] - prev_x
                 # next_y = pt[1] - prev_y
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _('G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
                 next_x = pt[0]
                 next_y = pt[1]
 
@@ -4614,19 +4629,41 @@ class CNCjob(Geometry):
         # this line is added to create an extra cut over the first point in patch
         # to make sure that we remove the copper leftovers
         # Linear motion to the 1st point in the cut path
-        if self.coordinates_type == "G90":
-            # For Absolute coordinates type G90
-            last_x = path[1][0]
-            last_y = path[1][1]
+        # if self.coordinates_type == "G90":
+        #     # For Absolute coordinates type G90
+        #     last_x = path[1][0]
+        #     last_y = path[1][1]
+        # else:
+        #     # For Incremental coordinates type G91
+        #     last_x = path[1][0] - first_x
+        #     last_y = path[1][1] - first_y
+        # gcode += self.doformat(p.linear_code, x=last_x, y=last_y)
+
+        # the first point for extracut is always mandatory if the extracut is enabled. But if the length of distance
+        # between point 0 and point 1 is more than the distance we set for the extra cut then make an interpolation
+        # along the path and find the point at the distance extracut_length
+
+        if extracut_length == 0.0:
+            gcode += self.doformat(p.linear_code, x=path[1][0], y=path[1][1])
+            last_pt = path[1]
         else:
-            # For Incremental coordinates type G91
-            last_x = path[1][0] - first_x
-            last_y = path[1][1] - first_y
-        gcode += self.doformat(p.linear_code, x=last_x, y=last_y)
+            if abs(distance(path[1], path[0])) > extracut_length:
+                i_point = LineString([path[0], path[1]]).interpolate(extracut_length)
+                gcode += self.doformat(p.linear_code, x=i_point.x, y=i_point.y)
+                last_pt = (i_point.x, i_point.y)
+            else:
+                last_pt = path[0]
+                for pt in path[1:]:
+                    extracut_distance = abs(distance(pt, last_pt))
+                    if extracut_distance <= extracut_length:
+                        gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])
+                        last_pt = pt
+                    else:
+                        break
 
         # Up to travelling height.
         if up:
-            gcode += self.doformat(p.lift_code, x=last_x, y=last_y, z_move=z_move)  # Stop cutting
+            gcode += self.doformat(p.lift_code, x=last_pt[0], y=last_pt[1], z_move=z_move)  # Stop cutting
 
         return gcode
 

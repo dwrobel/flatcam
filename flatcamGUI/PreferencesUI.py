@@ -2430,7 +2430,9 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "in RPM (optional)")
         )
         grid2.addWidget(spdlabel, 6, 0)
-        self.spindlespeed_entry = IntEntry(allow_empty=True)
+        self.spindlespeed_entry = FCSpinner()
+        self.spindlespeed_entry.set_range(0, 1000000)
+        self.spindlespeed_entry.setSingleStep(100)
         grid2.addWidget(self.spindlespeed_entry, 6, 1)
 
         # Dwell
@@ -3341,7 +3343,10 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             )
         )
         grid1.addWidget(spdlabel, 9, 0)
-        self.cncspindlespeed_entry = IntEntry(allow_empty=True)
+        self.cncspindlespeed_entry = FCSpinner()
+        self.cncspindlespeed_entry.set_range(0, 1000000)
+        self.cncspindlespeed_entry.setSingleStep(100)
+
         grid1.addWidget(self.cncspindlespeed_entry, 9, 1)
 
         # Dwell
@@ -3440,14 +3445,27 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.cncfeedrate_rapid_entry, 4, 1)
 
         # End move extra cut
-        self.extracut_cb = FCCheckBox(label='%s' % _('Re-cut 1st pt.'))
+        self.extracut_cb = FCCheckBox('%s' % _('Re-cut'))
         self.extracut_cb.setToolTip(
             _("In order to remove possible\n"
               "copper leftovers where first cut\n"
               "meet with last cut, we generate an\n"
               "extended cut over the first cut section.")
         )
+
+        self.e_cut_entry = FCDoubleSpinner()
+        self.e_cut_entry.set_range(0, 99999)
+        self.e_cut_entry.set_precision(self.decimals)
+        self.e_cut_entry.setSingleStep(0.1)
+        self.e_cut_entry.setWrapping(True)
+        self.e_cut_entry.setToolTip(
+            _("In order to remove possible\n"
+              "copper leftovers where first cut\n"
+              "meet with last cut, we generate an\n"
+              "extended cut over the first cut section.")
+        )
         grid1.addWidget(self.extracut_cb, 5, 0)
+        grid1.addWidget(self.e_cut_entry, 5, 1)
 
         # Probe depth
         self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
@@ -3762,7 +3780,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.prepend_text = FCTextArea()
         self.prepend_text.setPlaceholderText(
-            _("Type here any G-Code commands you would "
+            _("Type here any G-Code commands you would\n"
               "like to add at the beginning of the G-Code file.")
         )
         self.layout.addWidget(self.prepend_text)
@@ -3779,8 +3797,8 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.append_text = FCTextArea()
         self.append_text.setPlaceholderText(
-            _("Type here any G-Code commands you would "
-              "like to append to the generated file. "
+            _("Type here any G-Code commands you would\n"
+              "like to append to the generated file.\n"
               "I.e.: M2 (End of program)")
         )
         self.layout.addWidget(self.append_text)
@@ -3832,12 +3850,12 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.toolchange_text = FCTextArea()
         self.toolchange_text.setPlaceholderText(
             _(
-                "Type here any G-Code commands you would "
-                "like to be executed when Toolchange event is encountered. "
-                "This will constitute a Custom Toolchange GCode, "
-                "or a Toolchange Macro. "
-                "The FlatCAM variables are surrounded by '%' symbol. \n"
-                "WARNING: it can be used only with a preprocessor file "
+                "Type here any G-Code commands you would\n"
+                "like to be executed when Toolchange event is encountered.\n"
+                "This will constitute a Custom Toolchange GCode,\n"
+                "or a Toolchange Macro.\n"
+                "The FlatCAM variables are surrounded by '%' symbol.\n"
+                "WARNING: it can be used only with a preprocessor file\n"
                 "that has 'toolchange_custom' in it's name."
             )
         )
@@ -4834,7 +4852,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.orientation_label = QtWidgets.QLabel('%s:' % _("Page Orientation"))
         self.orientation_label.setToolTip(_("Can be:\n"
                                             "- Portrait\n"
-                                            "- Lanscape"))
+                                            "- Landscape"))
 
         self.orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
                                            {'label': _('Landscape'), 'value': 'l'},
@@ -6105,7 +6123,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself' - the copper Thieving extent is based on the object that is copper cleared.\n "
+            _("- 'Itself' - the copper Thieving extent is based on the object extent.\n"
               "- 'Area Selection' - left mouse click to start selection of the area to be filled.\n"
               "- 'Reference Object' - will do copper thieving within the area specified by another object.")
         )
@@ -6119,7 +6137,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         ], stretch=False)
         self.bbox_type_label = QtWidgets.QLabel(_("Box Type:"))
         self.bbox_type_label.setToolTip(
-            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n "
+            _("- 'Rectangular' - the bounding box will be of rectangular shape.\n"
               "- 'Minimal' - the bounding box will be the convex hull shape.")
         )
         grid_lay.addWidget(self.bbox_type_label, 5, 0)
@@ -6139,7 +6157,7 @@ class Tools2CThievingPrefGroupUI(OptionsGroupUI):
         ], orientation='vertical', stretch=False)
         self.fill_type_label = QtWidgets.QLabel(_("Fill Type:"))
         self.fill_type_label.setToolTip(
-            _("- 'Solid' - copper thieving will be a solid polygon.\n "
+            _("- 'Solid' - copper thieving will be a solid polygon.\n"
               "- 'Dots Grid' - the empty area will be filled with a pattern of dots.\n"
               "- 'Squares Grid' - the empty area will be filled with a pattern of squares.\n"
               "- 'Lines Grid' - the empty area will be filled with a pattern of lines.")
@@ -6346,7 +6364,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         ], stretch=False)
         self.mode_label = QtWidgets.QLabel(_("Mode:"))
         self.mode_label.setToolTip(
-            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n "
+            _("- 'Auto' - automatic placement of fiducials in the corners of the bounding box.\n"
               "- 'Manual' - manual placement of fiducials.")
         )
         grid_lay.addWidget(self.mode_label, 3, 0)
@@ -6361,7 +6379,7 @@ class Tools2FiducialsPrefGroupUI(OptionsGroupUI):
         self.pos_label = QtWidgets.QLabel('%s:' % _("Second fiducial"))
         self.pos_label.setToolTip(
             _("The position for the second fiducial.\n"
-              "- 'Up' - the order is: bottom-left, top-left, top-right.\n "
+              "- 'Up' - the order is: bottom-left, top-left, top-right.\n"
               "- 'Down' - the order is: bottom-left, bottom-right, top-right.\n"
               "- 'None' - there is no second fiducial. The order is: bottom-left, top-right.")
         )
@@ -6494,6 +6512,33 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
 
         grid_lay.addWidget(toolchangez_lbl, 6, 0)
         grid_lay.addWidget(self.toolchangez_entry, 6, 1, 1, 2)
+
+        # Toolchange X-Y entry
+        toolchangexy_lbl = QtWidgets.QLabel('%s:' % _('Toolchange X-Y'))
+        toolchangexy_lbl.setToolTip(
+            _("Toolchange X,Y position.\n"
+              "If no value is entered then the current\n"
+              "(x, y) point will be used,")
+        )
+
+        self.toolchange_xy_entry = FCEntry()
+
+        grid_lay.addWidget(toolchangexy_lbl, 7, 0)
+        grid_lay.addWidget(self.toolchange_xy_entry, 7, 1, 1, 2)
+
+        # Second point choice
+        second_point_lbl = QtWidgets.QLabel('%s:' % _("Second point"))
+        second_point_lbl.setToolTip(
+            _("Second point in the Gcode verification can be:\n"
+              "- top-left -> the user will align the PCB vertically\n"
+              "- bottom-right -> the user will align the PCB horizontally")
+        )
+        self.second_point_radio = RadioSet([{'label': _('Top-Left'), 'value': 'tl'},
+                                            {'label': _('Bottom-Right'), 'value': 'br'}],
+                                           orientation='vertical')
+
+        grid_lay.addWidget(second_point_lbl, 8, 0)
+        grid_lay.addWidget(self.second_point_radio, 8, 1, 1, 2)
 
         self.layout.addStretch()
 

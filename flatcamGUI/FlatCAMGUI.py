@@ -168,6 +168,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                              _('&DXF as Gerber Object ...'), self)
         self.menufileimport.addAction(self.menufileimportdxf_as_gerber)
         self.menufileimport.addSeparator()
+        self.menufileimport_hpgl2_as_geo = QtWidgets.QAction(QtGui.QIcon('share/dxf16.png'),
+                                                             _('HPGL2 as Geometry Object ...'), self)
+        self.menufileimport.addAction(self.menufileimport_hpgl2_as_geo)
+        self.menufileimport.addSeparator()
 
         # Export ...
         self.menufileexport = self.menufile.addMenu(QtGui.QIcon('share/export.png'), _('Export'))
@@ -249,6 +253,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufilesaveprojectcopy = QtWidgets.QAction(QtGui.QIcon('share/floppy16.png'),
                                                          _('Save Project C&opy ...'), self)
         self.menufile_save.addAction(self.menufilesaveprojectcopy)
+
+        self.menufile_save.addSeparator()
+
+        # Save Object PDF
+        self.menufilesave_object_pdf = QtWidgets.QAction(QtGui.QIcon('share/pdf32.png'),
+                                                         _('Save Object as PDF ...'), self)
+        self.menufile_save.addAction(self.menufilesave_object_pdf)
 
         # Separator
         self.menufile.addSeparator()
@@ -754,6 +765,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                           _("Copper Thieving Tool"))
 
         self.fiducials_btn = self.toolbartools.addAction(QtGui.QIcon('share/fiducials_32.png'), _("Fiducials Tool"))
+        self.cal_btn = self.toolbartools.addAction(QtGui.QIcon('share/calibrate_32.png'), _("Calibration Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
@@ -2198,6 +2210,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                           _("Copper Thieving Tool"))
 
         self.fiducials_btn = self.toolbartools.addAction(QtGui.QIcon('share/fiducials_32.png'), _("Fiducials Tool"))
+        self.cal_btn = self.toolbartools.addAction(QtGui.QIcon('share/calibrate_32.png'), _("Calibration Tool"))
 
         # ## Excellon Editor Toolbar # ##
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
@@ -2530,7 +2543,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.dblsidedtool.run(toggle=True)
                     return
 
-                # Calibrate  Tool
+                # Calibration  Tool
                 if key == QtCore.Qt.Key_E:
                     self.app.cal_exc_tool.run(toggle=True)
                     return

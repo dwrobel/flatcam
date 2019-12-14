@@ -156,7 +156,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.big_cursor = None
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
-
+        self.fit_view()
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
     def draw_workspace(self, workspace_size):
@@ -303,7 +303,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             p2 = np.array(curr_pos)[:2]
             self.view.camera.pan(p2 - p1)
 
-        if self.fcapp.grid_status() == True:
+        if self.fcapp.grid_status():
             pos_canvas = self.translate_coords(curr_pos)
             pos = self.fcapp.geo_editor.snap(pos_canvas[0], pos_canvas[1])
 

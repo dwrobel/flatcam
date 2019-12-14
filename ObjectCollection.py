@@ -785,23 +785,41 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.item_selected.emit(obj.options['name'])
 
             if obj.kind == 'gerber':
-                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='green', name=str(obj.options['name'])))
+                self.app.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='green',
+                    name=str(obj.options['name']),
+                    tx=_("selected"))
+                )
             elif obj.kind == 'excellon':
-                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='brown', name=str(obj.options['name'])))
+                self.app.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='brown',
+                    name=str(obj.options['name']),
+                    tx=_("selected"))
+                )
             elif obj.kind == 'cncjob':
-                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='blue', name=str(obj.options['name'])))
+                self.app.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='blue',
+                    name=str(obj.options['name']),
+                    tx=_("selected"))
+                )
             elif obj.kind == 'geometry':
-                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='red', name=str(obj.options['name'])))
+                self.app.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='red',
+                    name=str(obj.options['name']),
+                    tx=_("selected"))
+                )
             elif obj.kind == 'script':
-                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='orange', name=str(obj.options['name'])))
+                self.app.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='orange',
+                    name=str(obj.options['name']),
+                    tx=_("selected"))
+                )
             elif obj.kind == 'document':
-                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
-                    color='darkCyan', name=str(obj.options['name'])))
+                self.app.inform.emit('[selected]<span style="color:{color};">{name}</span> {tx}'.format(
+                    color='darkCyan',
+                    name=str(obj.options['name']),
+                    tx=_("selected"))
+                )
         except IndexError:
             self.item_selected.emit('none')
             # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
