@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - some strings updated; update on the Romanian translate
 - more strings updated; finished the Romanian translation update
 - some work in updating the Spanish Google-translation
+- small updates (Google Translate) in Russian and Brazilian-PT languages
 
 12.12.2019
 
