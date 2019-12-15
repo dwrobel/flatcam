@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed some issues with the recent preparation for dark icons resource usage
 - added a new preprocessor file contributed by Daniel Friderich and added fixes for it
 - modified the export_gcode() method and the preprocessors such that the preprocessors now have the information if to include the gcode header
+- updated all the translation PO files and the POT file
 - RELEASE 8.99
 
 14.12.2019

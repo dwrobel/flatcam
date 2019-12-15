@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-12-15 17:23+0200\n"
+"POT-Creation-Date: 2019-12-16 00:20+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -190,7 +190,7 @@ msgstr "Экспорт настроек FlatCAM отменён."
 
 #: FlatCAMApp.py:3926 FlatCAMApp.py:10370 FlatCAMApp.py:10418
 #: FlatCAMApp.py:10541 FlatCAMApp.py:10680 FlatCAMCommon.py:378
-#: FlatCAMCommon.py:1094 FlatCAMObj.py:6753
+#: FlatCAMCommon.py:1094 FlatCAMObj.py:6822
 #: flatcamEditors/FlatCAMTextEditor.py:228 flatcamTools/ToolFilm.py:1019
 #: flatcamTools/ToolFilm.py:1195 flatcamTools/ToolSolderPaste.py:1544
 msgid ""
@@ -1143,7 +1143,7 @@ msgstr "Открытие DXF отменено."
 msgid "Viewing the source code of the selected object."
 msgstr "Просмотр исходного кода выбранного объекта."
 
-#: FlatCAMApp.py:9950 FlatCAMObj.py:6445 FlatCAMObj.py:7075
+#: FlatCAMApp.py:9950 FlatCAMObj.py:6445 FlatCAMObj.py:7144
 msgid "Loading..."
 msgstr "Загрузка..."
 
@@ -2618,11 +2618,11 @@ msgstr ""
 "y)\n"
 "но теперь есть только одно значение, а не два."
 
-#: FlatCAMObj.py:6338 FlatCAMObj.py:7025 FlatCAMObj.py:7221
+#: FlatCAMObj.py:6338 FlatCAMObj.py:7094 FlatCAMObj.py:7290
 msgid "<span style=\"color:green;\"><b>Basic</b></span>"
 msgstr "<span style=\"color:green;\"><b>Базовый</b></span>"
 
-#: FlatCAMObj.py:6344 FlatCAMObj.py:7029 FlatCAMObj.py:7225
+#: FlatCAMObj.py:6344 FlatCAMObj.py:7098 FlatCAMObj.py:7294
 msgid "<span style=\"color:red;\"><b>Advanced</b></span>"
 msgstr "<span style=\"color:red;\"><b>Расширенный</b></span>"
 
@@ -2646,49 +2646,53 @@ msgstr "Файл Machine Code сохранён в"
 msgid "Loaded Machine Code into Code Editor"
 msgstr "Машинный код загружен в редактор кода"
 
-#: FlatCAMObj.py:6632
+#: FlatCAMObj.py:6634
 msgid "This CNCJob object can't be processed because it is a"
 msgstr "CNCJob объект не может быть обработан, так как"
 
-#: FlatCAMObj.py:6634
+#: FlatCAMObj.py:6636
 msgid "CNCJob object"
 msgstr "CNCJob object"
 
-#: FlatCAMObj.py:6713
-msgid "G-code does not have a units code: either G20 or G21"
-msgstr "G-code не имеет кода единиц измерения: G20 или G21"
+#: FlatCAMObj.py:6785
+msgid ""
+"G-code does not have a G94 code and we will not include the code in the "
+"'Prepend to GCode' text box"
+msgstr ""
+"G-код не имеет кода G94, и мы не будем включать этот код в текстовое поле "
+"«Готовьтесь к G-код»"
 
-#: FlatCAMObj.py:6727
+#: FlatCAMObj.py:6796
 msgid "Cancelled. The Toolchange Custom code is enabled but it's empty."
 msgstr "Отмена. Пользовательский код смены инструмента включен, но он пуст."
 
-#: FlatCAMObj.py:6732
+#: FlatCAMObj.py:6801
 msgid "Toolchange G-code was replaced by a custom code."
 msgstr "G-code смены инструмента был заменен на пользовательский код."
 
-#: FlatCAMObj.py:6749 flatcamEditors/FlatCAMTextEditor.py:224
+#: FlatCAMObj.py:6818 flatcamEditors/FlatCAMTextEditor.py:224
 #: flatcamTools/ToolSolderPaste.py:1540
 msgid "No such file or directory"
 msgstr "Нет такого файла или каталога"
 
-#: FlatCAMObj.py:6763 flatcamEditors/FlatCAMTextEditor.py:236
+#: FlatCAMObj.py:6832 flatcamEditors/FlatCAMTextEditor.py:236
 msgid "Saved to"
 msgstr "Сохранено в"
 
-#: FlatCAMObj.py:6773 FlatCAMObj.py:6783
+#: FlatCAMObj.py:6842 FlatCAMObj.py:6852
 msgid ""
 "The used preprocessor file has to have in it's name: 'toolchange_custom'"
 msgstr "Используемый файл постпроцессора должен иметь имя: 'toolchange_custom'"
 
-#: FlatCAMObj.py:6787
+#: FlatCAMObj.py:6856
 msgid "There is no preprocessor file."
 msgstr "Это не файл постпроцессора."
 
-#: FlatCAMObj.py:7044
+#: FlatCAMObj.py:7113
 msgid "Script Editor"
 msgstr "Редактор сценариев"
 
-#: FlatCAMObj.py:7325
+#: FlatCAMObj.py:7394
 msgid "Document Editor"
 msgstr "Редактор Document"
 
@@ -2775,12 +2779,12 @@ msgstr ""
 "предполагая, что это опечатка, приложение преобразует значение в "
 "отрицательное. Проверьте полученный CNC code (Gcode и т. д.)."
 
-#: camlib.py:2376 camlib.py:3089 camlib.py:3436
+#: camlib.py:2376 camlib.py:3095 camlib.py:3442
 msgid "The Cut Z parameter is zero. There will be no cut, skipping file"
 msgstr ""
 "Параметр \"Глубина резания\" равен нулю. Обрезки не будет , пропускается файл"
 
-#: camlib.py:2389 camlib.py:3409
+#: camlib.py:2389 camlib.py:3415
 msgid ""
 "The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, "
 "y) \n"
@@ -2790,31 +2794,31 @@ msgstr ""
 "y)\n"
 "но теперь есть только одно значение, а не два. "
 
-#: camlib.py:2458
+#: camlib.py:2464
 msgid "Creating a list of points to drill..."
 msgstr "Создание списка точек для сверления ..."
 
-#: camlib.py:2540
+#: camlib.py:2546
 msgid "Starting G-Code"
 msgstr "Открытие G-Code"
 
-#: camlib.py:2635 camlib.py:2778 camlib.py:2880 camlib.py:3200 camlib.py:3547
+#: camlib.py:2641 camlib.py:2784 camlib.py:2886 camlib.py:3206 camlib.py:3553
 msgid "Starting G-Code for tool with diameter"
 msgstr "Запуск G-кода для инструмента с диаметром"
 
-#: camlib.py:2691 camlib.py:2834 camlib.py:2937
+#: camlib.py:2697 camlib.py:2840 camlib.py:2943
 msgid "G91 coordinates not implemented"
 msgstr "Координаты G91 не реализованы"
 
-#: camlib.py:2697 camlib.py:2841 camlib.py:2943
+#: camlib.py:2703 camlib.py:2847 camlib.py:2949
 msgid "The loaded Excellon file has no drills"
 msgstr "Загруженный файл Excellon не имеет отверстий"
 
-#: camlib.py:2966
+#: camlib.py:2972
 msgid "Finished G-Code generation..."
 msgstr "Создание G-кода завершено..."
 
-#: camlib.py:3061
+#: camlib.py:3067
 msgid ""
 "The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, "
 "y) \n"
@@ -2824,7 +2828,7 @@ msgstr ""
 "y)\n"
 "но теперь есть только одно значение, а не два."
 
-#: camlib.py:3074 camlib.py:3422
+#: camlib.py:3080 camlib.py:3428
 msgid ""
 "Cut_Z parameter is None or zero. Most likely a bad combinations of other "
 "parameters."
@@ -2832,7 +2836,7 @@ msgstr ""
 "Параметр \"Глубина резания\" равен None или пуст. Скорее всего неудачное "
 "сочетание других параметров."
 
-#: camlib.py:3081 camlib.py:3428
+#: camlib.py:3087 camlib.py:3434
 msgid ""
 "The Cut Z parameter has positive value. It is the depth value to cut into "
 "material.\n"
@@ -2846,11 +2850,11 @@ msgstr ""
 "предполагая, что это опечатка, приложение преобразует значение в "
 "отрицательное. Проверьте полученный CNC code (Gcode и т. д.)."
 
-#: camlib.py:3094 camlib.py:3442
+#: camlib.py:3100 camlib.py:3448
 msgid "Travel Z parameter is None or zero."
 msgstr "Параметр \"Отвод по Z\" равен None или пуст."
 
-#: camlib.py:3099 camlib.py:3447
+#: camlib.py:3105 camlib.py:3453
 msgid ""
 "The Travel Z parameter has negative value. It is the height value to travel "
 "between cuts.\n"
@@ -2864,36 +2868,36 @@ msgstr ""
 "что это опечатка, приложение преобразует значение в положительное. Проверьте "
 "полученный CNC code (Gcode и т. д.)."
 
-#: camlib.py:3107 camlib.py:3455
+#: camlib.py:3113 camlib.py:3461
 msgid "The Z Travel parameter is zero. This is dangerous, skipping file"
 msgstr "Параметр \"Отвод по Z\" равен нулю. Это опасно, файл пропускается"
 
-#: camlib.py:3126 camlib.py:3474
+#: camlib.py:3132 camlib.py:3480
 msgid "Indexing geometry before generating G-Code..."
 msgstr "Индексация геометрии перед созданием G-Code..."
 
-#: camlib.py:3187 camlib.py:3536
+#: camlib.py:3193 camlib.py:3542
 msgid "Starting G-Code..."
 msgstr "Открытие G-Code..."
 
-#: camlib.py:3270 camlib.py:3618
+#: camlib.py:3276 camlib.py:3624
 msgid "Finished G-Code generation"
 msgstr "Создание G-кода завершено"
 
-#: camlib.py:3272
+#: camlib.py:3278
 msgid "paths traced"
 msgstr "путей проложено"
 
-#: camlib.py:3309
+#: camlib.py:3315
 msgid "Expected a Geometry, got"
 msgstr "Ожидалась Geometry, получили"
 
-#: camlib.py:3316
+#: camlib.py:3322
 msgid ""
 "Trying to generate a CNC Job from a Geometry object without solid_geometry."
 msgstr "Попытка создать CNC Job из объекта Geometry без solid_geometry."
 
-#: camlib.py:3356
+#: camlib.py:3362
 msgid ""
 "The Tool Offset value is too negative to use for the current_geometry.\n"
 "Raise the value (in module) and try again."
@@ -2901,35 +2905,35 @@ msgstr ""
 "Значение смещения инструмента слишком отрицательно для current_geometry.\n"
 "Увеличте значение (в модуле) и повторите попытку."
 
-#: camlib.py:3618
+#: camlib.py:3624
 msgid " paths traced."
 msgstr " путей проложено."
 
-#: camlib.py:3646
+#: camlib.py:3652
 msgid "There is no tool data in the SolderPaste geometry."
 msgstr "В геометрии SolderPaste нет данных инструмента."
 
-#: camlib.py:3733
+#: camlib.py:3739
 msgid "Finished SolderPste G-Code generation"
 msgstr "Закончено создание G-кода паяльной пасты"
 
-#: camlib.py:3735
+#: camlib.py:3741
 msgid "paths traced."
 msgstr "путей проложено."
 
-#: camlib.py:3991
+#: camlib.py:3997
 msgid "Parsing GCode file. Number of lines"
 msgstr "Разбор файла GCode. Количество строк"
 
-#: camlib.py:4098
+#: camlib.py:4104
 msgid "Creating Geometry from the parsed GCode file. "
 msgstr "Создание геометрии из проанализированного файла GCode. "
 
-#: camlib.py:4234 camlib.py:4518 camlib.py:4621 camlib.py:4690
+#: camlib.py:4240 camlib.py:4524 camlib.py:4627 camlib.py:4696
 msgid "G91 coordinates not implemented ..."
 msgstr "Координаты G91 не реализованы ..."
 
-#: camlib.py:4365
+#: camlib.py:4371
 msgid "Unifying Geometry from parsed Geometry segments"
 msgstr "Объединение геометрии из разбираемых сегментов геометрии"
 
@@ -16473,6 +16477,9 @@ msgstr ""
 #: tclCommands/TclCommandSubtractRectangle.py:58
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Нет имени геометрии в аргументах. Укажите имя и попробуйте снова."
+
+#~ msgid "G-code does not have a units code: either G20 or G21"
+#~ msgstr "G-code не имеет кода единиц измерения: G20 или G21"
 
 #~ msgid "No shape selected. Select a shape to explode"
 #~ msgstr "Фигура не выбрана. Выберите фигуру для разделения"
