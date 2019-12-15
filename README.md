@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed layout on first launch of the app
 - fixed some issues with the recent preparation for dark icons resource usage
 - added a new preprocessor file contributed by Daniel Friderich and added fixes for it
+- modified the export_gcode() method and the preprocessors such that the preprocessors now have the information if to include the gcode header
 - RELEASE 8.99
 
 14.12.2019

@@ -14,6 +14,7 @@ from FlatCAMPostProc import *
 
 class grbl_laser(FlatCAMPostProc):
 
+    include_header = True
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
 
@@ -34,15 +35,15 @@ class grbl_laser(FlatCAMPostProc):
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
             gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
         else:
-            gcode += '(Preprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n'
-        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n" + '\n'
+            gcode += '(Preprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
 
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
+        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G90\n'
-        gcode += 'G94\n'
         gcode += 'G17\n'
+        gcode += 'G94\n'
 
         return gcode
 

@@ -13,6 +13,7 @@ from FlatCAMPostProc import *
 # the same) to contain the following keyword, case-sensitive: 'Roland' without the quotes.
 class Roland_MDX_20(FlatCAMPostProc):
 
+    include_header = False
     coordinate_format = "%.1f"
     feedrate_format = '%.1f'
     feedrate_rapid_format = '%.1f'

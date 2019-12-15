@@ -9,7 +9,10 @@
 from FlatCAMPostProc import *
 
 
-class ISEL_ICP_CNC(FlatCAMPostProc):    
+class ISEL_ICP_CNC(FlatCAMPostProc):
+
+    include_header = False
+
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']

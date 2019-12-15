@@ -2448,11 +2448,17 @@ class CNCjob(Geometry):
                     except KeyError:
                         z_off = 0
 
+                    default_data = dict()
+                    for k, v in list(self.options.items()):
+                        default_data[k] = deepcopy(v)
+
                     self.exc_cnc_tools[it[1]] = dict()
                     self.exc_cnc_tools[it[1]]['tool'] = it[0]
                     self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
                     self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
                     self.exc_cnc_tools[it[1]]['offset_z'] = z_off
+                    self.exc_cnc_tools[it[1]]['data'] = default_data
+
                     self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
 
         self.app.inform.emit(_("Creating a list of points to drill..."))

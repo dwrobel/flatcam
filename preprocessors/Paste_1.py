@@ -11,6 +11,7 @@ from FlatCAMPostProc import *
 
 class Paste_1(FlatCAMPostProc_Tools):
 
+    include_header = True
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
 

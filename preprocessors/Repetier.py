@@ -11,6 +11,7 @@ from FlatCAMPostProc import *
 
 class Repetier(FlatCAMPostProc):
 
+    include_header = True
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
     feedrate_rapid_format = feedrate_format
@@ -66,6 +67,7 @@ class Repetier(FlatCAMPostProc):
 
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G90\n'
+        gcode += 'G94\n'
 
         return gcode
 

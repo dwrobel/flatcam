@@ -10,7 +10,7 @@ from FlatCAMPostProc import *
 
 
 class ISEL_CNC(FlatCAMPostProc):
-
+    include_header = True
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
 

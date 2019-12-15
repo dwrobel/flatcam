@@ -11,6 +11,7 @@ from FlatCAMPostProc import *
 
 class grbl_11(FlatCAMPostProc):
 
+    include_header = True
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
 
@@ -63,8 +64,8 @@ class grbl_11(FlatCAMPostProc):
 
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G90\n'
-        gcode += 'G94\n'
         gcode += 'G17\n'
+        gcode += 'G94\n'
 
         return gcode
 
