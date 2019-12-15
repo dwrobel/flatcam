@@ -49,8 +49,8 @@ class ToolImage(FlatCAMTool):
         self.tf_type_obj_combo.addItem("Gerber")
         self.tf_type_obj_combo.addItem("Geometry")
 
-        self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon("share/geometry16.png"))
+        self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.tf_type_obj_combo_label.setToolTip(

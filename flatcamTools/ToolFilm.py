@@ -72,8 +72,8 @@ class Film(FlatCAMTool):
 
         # we get rid of item1 ("Excellon") as it is not suitable for creating film
         self.tf_type_obj_combo.view().setRowHidden(1, True)
-        self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        self.tf_type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+        self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.tf_type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.tf_type_obj_combo_label.setToolTip(
@@ -107,8 +107,8 @@ class Film(FlatCAMTool):
 
         # we get rid of item1 ("Excellon") as it is not suitable for box when creating film
         self.tf_type_box_combo.view().setRowHidden(1, True)
-        self.tf_type_box_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        self.tf_type_box_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+        self.tf_type_box_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.tf_type_box_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.tf_type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
         self.tf_type_box_combo_label.setToolTip(

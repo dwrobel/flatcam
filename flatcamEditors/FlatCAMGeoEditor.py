@@ -304,12 +304,12 @@ class TextInputTool(FlatCAMTool):
 
         self.font_bold_tb = QtWidgets.QToolButton()
         self.font_bold_tb.setCheckable(True)
-        self.font_bold_tb.setIcon(QtGui.QIcon('share/bold32.png'))
+        self.font_bold_tb.setIcon(QtGui.QIcon(self.app.resource_location + '/bold32.png'))
         hlay.addWidget(self.font_bold_tb)
 
         self.font_italic_tb = QtWidgets.QToolButton()
         self.font_italic_tb.setCheckable(True)
-        self.font_italic_tb.setIcon(QtGui.QIcon('share/italic32.png'))
+        self.font_italic_tb.setIcon(QtGui.QIcon(self.app.resource_location + '/italic32.png'))
         hlay.addWidget(self.font_italic_tb)
 
         self.form_layout.addRow(QtWidgets.QLabel('%s:' % "Size"), hlay)
@@ -1495,7 +1495,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_rotate']))
-        val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/rotate.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -1514,7 +1514,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']))
-        val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -1533,7 +1533,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']))
-        val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -1550,7 +1550,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_x']))
-        val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewX.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -1567,7 +1567,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_y']))
-        val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewY.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -1938,7 +1938,7 @@ class FCCircle(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle_geo.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_circle_geo.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
@@ -1990,7 +1990,7 @@ class FCArc(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_arc.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_arc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
@@ -2209,7 +2209,7 @@ class FCRectangle(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
@@ -2263,7 +2263,7 @@ class FCPolygon(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
@@ -2326,7 +2326,7 @@ class FCPath(FCPolygon):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_path5.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
     def make(self):
@@ -2686,7 +2686,7 @@ class FCText(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_text.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_text.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         # self.shape_buffer = self.draw_app.shape_buffer

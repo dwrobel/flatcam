@@ -65,7 +65,7 @@ class FCDrillAdd(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_drill.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_drill.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
@@ -171,7 +171,7 @@ class FCDrillArray(FCShapeTool):
         except Exception as e:
             pass
 
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_drill_array.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_drill_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
@@ -376,7 +376,7 @@ class FCSlot(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_slot.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_slot.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
@@ -566,7 +566,7 @@ class FCSlotArray(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_array.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
@@ -1471,7 +1471,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.tools_box.addLayout(self.title_box)
 
         # ## Page Title icon
-        pixmap = QtGui.QPixmap('share/flatcam_icon32.png')
+        pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)

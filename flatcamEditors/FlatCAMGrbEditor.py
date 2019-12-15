@@ -199,7 +199,7 @@ class FCPad(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_circle.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         try:
@@ -417,7 +417,7 @@ class FCPadArray(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_array.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
@@ -874,7 +874,7 @@ class FCRegion(FCShapeTool):
         except Exception as e:
             log.debug("FlatCAMGrbEditor.FCRegion --> %s" % str(e))
 
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_('Corner Mode 1: 45 degrees ...'))
@@ -1148,7 +1148,7 @@ class FCTrack(FCRegion):
         except Exception as e:
             log.debug("FlatCAMGrbEditor.FCTrack.__init__() --> %s" % str(e))
 
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path%s.png' % self.draw_app.bend_mode))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_path%s.png' % self.draw_app.bend_mode))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
@@ -1295,27 +1295,27 @@ class FCTrack(FCRegion):
 
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 2
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path2.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path2.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 2: Reverse 45 degrees ...')
             elif self.draw_app.bend_mode == 2:
                 self.draw_app.bend_mode = 3
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path3.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path3.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 3: 90 degrees ...')
             elif self.draw_app.bend_mode == 3:
                 self.draw_app.bend_mode = 4
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path4.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path4.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 4: Reverse 90 degrees ...')
             elif self.draw_app.bend_mode == 4:
                 self.draw_app.bend_mode = 5
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path5.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 5: Free angle ...')
             else:
                 self.draw_app.bend_mode = 1
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path1.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path1.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 1: 45 degrees ...')
 
@@ -1334,27 +1334,27 @@ class FCTrack(FCRegion):
 
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 5
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path5.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 5: Free angle ...')
             elif self.draw_app.bend_mode == 5:
                 self.draw_app.bend_mode = 4
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path4.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path4.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 4: Reverse 90 degrees ...')
             elif self.draw_app.bend_mode == 4:
                 self.draw_app.bend_mode = 3
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path3.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path3.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 3: 90 degrees ...')
             elif self.draw_app.bend_mode == 3:
                 self.draw_app.bend_mode = 2
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path2.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path2.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 2: Reverse 45 degrees ...')
             else:
                 self.draw_app.bend_mode = 1
-                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path1.png'))
+                self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path1.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 1: 45 degrees ...')
 
@@ -1379,7 +1379,7 @@ class FCDisc(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_disc.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_disc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
@@ -1461,7 +1461,7 @@ class FCSemiDisc(FCShapeTool):
         except Exception as e:
             log.debug("FlatCAMGrbEditor.FCSemiDisc --> %s" % str(e))
 
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_semidisc.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_semidisc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
@@ -2367,7 +2367,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         layout.addLayout(self.title_box)
 
         # Page Title icon
-        pixmap = QtGui.QPixmap('share/flatcam_icon32.png')
+        pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
@@ -5949,7 +5949,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_rotate']))
-        val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/rotate.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -5966,7 +5966,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_x']))
-        val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsetx32.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -5983,7 +5983,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s: (%s)' % (_('Enter a distance Value'), str(units)),
                                 min=-9999.9999, max=10000.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_offset_y']))
-        val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/offsety32.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -5998,7 +5998,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_x']))
-        val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewX.png'))
 
         val, ok = val_box.get_value()
         if ok:
@@ -6013,7 +6013,7 @@ class TransformEditorTool(FlatCAMTool):
                                 text='%s:' % _('Enter an Angle Value (degrees)'),
                                 min=-359.9999, max=360.0000, decimals=self.decimals,
                                 init_val=float(self.app.defaults['tools_transform_skew_y']))
-        val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))
+        val_box.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/skewY.png'))
 
         val, ok = val_box.get_value()
         if ok:

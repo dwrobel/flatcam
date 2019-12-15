@@ -80,6 +80,17 @@ def on_language_apply_click(app, restart=False):
     """
     name = app.ui.general_defaults_form.general_app_group.language_cb.currentText()
 
+    theme_settings = QSettings("Open Source", "FlatCAM")
+    if theme_settings.contains("theme"):
+        theme = theme_settings.value('theme', type=str)
+    else:
+        theme = 'white'
+
+    if theme == 'white':
+        resource_loc = 'share'
+    else:
+        resource_loc = 'share'
+
     # do nothing if trying to apply the language that is the current language (already applied).
     settings = QSettings("Open Source", "FlatCAM")
     if settings.contains("language"):
@@ -93,7 +104,7 @@ def on_language_apply_click(app, restart=False):
         msgbox.setInformativeText('%s %s?' %
                                   (_("Are you sure do you want to change the current language to"), name.capitalize()))
         msgbox.setWindowTitle(_("Apply Language ..."))
-        msgbox.setWindowIcon(QtGui.QIcon('share/language32.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/language32.png'))
         bt_yes = msgbox.addButton(_("Yes"), QtWidgets.QMessageBox.YesRole)
         bt_no = msgbox.addButton(_("No"), QtWidgets.QMessageBox.NoRole)
 
@@ -161,13 +172,24 @@ def restart_program(app, ask=None):
     saving data) must be done before calling this function.
     """
 
+    theme_settings = QSettings("Open Source", "FlatCAM")
+    if theme_settings.contains("theme"):
+        theme = theme_settings.value('theme', type=str)
+    else:
+        theme = 'white'
+
+    if theme == 'white':
+        resource_loc = 'share'
+    else:
+        resource_loc = 'share'
+
     if app.should_we_save and app.collection.get_list() or ask is True:
         msgbox = QtWidgets.QMessageBox()
         msgbox.setText(_("There are files/objects modified in FlatCAM. "
                          "\n"
                          "Do you want to Save the project?"))
         msgbox.setWindowTitle(_("Save changes"))
-        msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/save_as.png'))
         bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
         bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
