@@ -49,7 +49,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ######### ##
         self.menu = self.menuBar()
 
-        self.menu_toggle_nb = QtWidgets.QAction(QtGui.QIcon('share/notebook32.png'), _("Toggle Panel"))
+        self.menu_toggle_nb = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("Toggle Panel"))
         self.menu_toggle_nb.setToolTip(
             _("Toggle Panel")
         )
@@ -65,7 +65,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.setToolTipsVisible(True)
 
         # New Project
-        self.menufilenewproject = QtWidgets.QAction(QtGui.QIcon('share/file16.png'),
+        self.menufilenewproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/file16.png'),
                                                     _('&New Project ...\tCTRL+N'), self)
         self.menufilenewproject.setToolTip(
             _("Will create a new, blank project")
@@ -73,70 +73,71 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addAction(self.menufilenewproject)
 
         # New Category (Excellon, Geometry)
-        self.menufilenew = self.menufile.addMenu(QtGui.QIcon('share/file16.png'), _('&New'))
+        self.menufilenew = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/file16.png'), _('&New'))
         self.menufilenew.setToolTipsVisible(True)
 
-        self.menufilenewgeo = self.menufilenew.addAction(QtGui.QIcon('share/new_file_geo16.png'), _('Geometry\tN'))
+        self.menufilenewgeo = self.menufilenew.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_file_geo16.png'), _('Geometry\tN'))
         self.menufilenewgeo.setToolTip(
             _("Will create a new, empty Geometry Object.")
         )
-        self.menufilenewgrb = self.menufilenew.addAction(QtGui.QIcon('share/new_file_grb16.png'), _('Gerber\tB'))
+        self.menufilenewgrb = self.menufilenew.addAction(QtGui.QIcon(self.app.resource_location + '/new_file_grb16.png'), _('Gerber\tB'))
         self.menufilenewgrb.setToolTip(
             _("Will create a new, empty Gerber Object.")
         )
-        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon('share/new_file_exc16.png'), _('Excellon\tL'))
+        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon(self.app.resource_location + '/new_file_exc16.png'), _('Excellon\tL'))
         self.menufilenewexc.setToolTip(
             _("Will create a new, empty Excellon Object.")
         )
         self.menufilenew.addSeparator()
 
-        self.menufilenewdoc = self.menufilenew.addAction(QtGui.QIcon('share/notes16_1.png'), _('Document\tD'))
+        self.menufilenewdoc = self.menufilenew.addAction(QtGui.QIcon(self.app.resource_location + '/notes16_1.png'), _('Document\tD'))
         self.menufilenewdoc.setToolTip(
             _("Will create a new, empty Document Object.")
         )
 
-        self.menufile_open = self.menufile.addMenu(QtGui.QIcon('share/folder32_bis.png'), _('Open'))
+        self.menufile_open = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'), _('Open'))
         self.menufile_open.setToolTipsVisible(True)
 
         # Open Project ...
-        self.menufileopenproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), _('Open &Project ...'), self)
+        self.menufileopenproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'), _('Open &Project ...'), self)
         self.menufile_open.addAction(self.menufileopenproject)
         self.menufile_open.addSeparator()
 
         # Open Gerber ...
-        self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
+        self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
                                                     _('Open &Gerber ...\tCTRL+G'), self)
         self.menufile_open.addAction(self.menufileopengerber)
 
         # Open Excellon ...
-        self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'),
+        self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
                                                       _('Open &Excellon ...\tCTRL+E'), self)
         self.menufile_open.addAction(self.menufileopenexcellon)
 
         # Open G-Code ...
-        self.menufileopengcode = QtWidgets.QAction(QtGui.QIcon('share/code.png'), _('Open G-&Code ...'), self)
+        self.menufileopengcode = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/code.png'), _('Open G-&Code ...'), self)
         self.menufile_open.addAction(self.menufileopengcode)
 
         self.menufile_open.addSeparator()
 
         # Open Config File...
-        self.menufileopenconfig = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), _('Open Config ...'), self)
+        self.menufileopenconfig = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'), _('Open Config ...'), self)
         self.menufile_open.addAction(self.menufileopenconfig)
 
         # Recent
-        self.recent_projects = self.menufile.addMenu(QtGui.QIcon('share/recent_files.png'), _("Recent projects"))
-        self.recent = self.menufile.addMenu(QtGui.QIcon('share/recent_files.png'), _("Recent files"))
+        self.recent_projects = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/recent_files.png'), _("Recent projects"))
+        self.recent = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/recent_files.png'), _("Recent files"))
 
         # Separator
         self.menufile.addSeparator()
 
         # Scripting
-        self.menufile_scripting = self.menufile.addMenu(QtGui.QIcon('share/script16.png'), _('Scripting'))
+        self.menufile_scripting = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Scripting'))
         self.menufile_scripting.setToolTipsVisible(True)
 
-        self.menufilenewscript = QtWidgets.QAction(QtGui.QIcon('share/script_new16.png'), _('New Script ...'), self)
-        self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon('share/open_script32.png'), _('Open Script ...'), self)
-        self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'),
+        self.menufilenewscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/script_new16.png'), _('New Script ...'), self)
+        self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'), self)
+        self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/script16.png'),
                                                    '%s\tSHIFT+S' % _('Run Script ...'), self)
         self.menufilerunscript.setToolTip(
            _("Will run the opened Tcl Script thus\n"
@@ -152,40 +153,40 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addSeparator()
 
         # Import ...
-        self.menufileimport = self.menufile.addMenu(QtGui.QIcon('share/import.png'), _('Import'))
-        self.menufileimportsvg = QtWidgets.QAction(QtGui.QIcon('share/svg16.png'),
+        self.menufileimport = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/import.png'), _('Import'))
+        self.menufileimportsvg = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/svg16.png'),
                                                    _('&SVG as Geometry Object ...'), self)
         self.menufileimport.addAction(self.menufileimportsvg)
-        self.menufileimportsvg_as_gerber = QtWidgets.QAction(QtGui.QIcon('share/svg16.png'),
+        self.menufileimportsvg_as_gerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/svg16.png'),
                                                              _('&SVG as Gerber Object ...'), self)
         self.menufileimport.addAction(self.menufileimportsvg_as_gerber)
         self.menufileimport.addSeparator()
 
-        self.menufileimportdxf = QtWidgets.QAction(QtGui.QIcon('share/dxf16.png'),
+        self.menufileimportdxf = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/dxf16.png'),
                                                    _('&DXF as Geometry Object ...'), self)
         self.menufileimport.addAction(self.menufileimportdxf)
-        self.menufileimportdxf_as_gerber = QtWidgets.QAction(QtGui.QIcon('share/dxf16.png'),
+        self.menufileimportdxf_as_gerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/dxf16.png'),
                                                              _('&DXF as Gerber Object ...'), self)
         self.menufileimport.addAction(self.menufileimportdxf_as_gerber)
         self.menufileimport.addSeparator()
-        self.menufileimport_hpgl2_as_geo = QtWidgets.QAction(QtGui.QIcon('share/dxf16.png'),
+        self.menufileimport_hpgl2_as_geo = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/dxf16.png'),
                                                              _('HPGL2 as Geometry Object ...'), self)
         self.menufileimport.addAction(self.menufileimport_hpgl2_as_geo)
         self.menufileimport.addSeparator()
 
         # Export ...
-        self.menufileexport = self.menufile.addMenu(QtGui.QIcon('share/export.png'), _('Export'))
+        self.menufileexport = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export'))
         self.menufileexport.setToolTipsVisible(True)
 
-        self.menufileexportsvg = QtWidgets.QAction(QtGui.QIcon('share/export.png'), _('Export &SVG ...'), self)
+        self.menufileexportsvg = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export &SVG ...'), self)
         self.menufileexport.addAction(self.menufileexportsvg)
 
-        self.menufileexportdxf = QtWidgets.QAction(QtGui.QIcon('share/export.png'), _('Export DXF ...'), self)
+        self.menufileexportdxf = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export DXF ...'), self)
         self.menufileexport.addAction(self.menufileexportdxf)
 
         self.menufileexport.addSeparator()
 
-        self.menufileexportpng = QtWidgets.QAction(QtGui.QIcon('share/export_png32.png'), _('Export &PNG ...'), self)
+        self.menufileexportpng = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/export_png32.png'), _('Export &PNG ...'), self)
         self.menufileexportpng.setToolTip(
             _("Will export an image in PNG format,\n"
               "the saved image will contain the visual \n"
@@ -195,7 +196,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.menufileexport.addSeparator()
 
-        self.menufileexportexcellon = QtWidgets.QAction(QtGui.QIcon('share/drill32.png'),
+        self.menufileexportexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/drill32.png'),
                                                         _('Export &Excellon ...'), self)
         self.menufileexportexcellon.setToolTip(
            _("Will export an Excellon Object as Excellon file,\n"
@@ -204,7 +205,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         )
         self.menufileexport.addAction(self.menufileexportexcellon)
 
-        self.menufileexportgerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon32.png'),
+        self.menufileexportgerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'),
                                                       _('Export &Gerber ...'), self)
         self.menufileexportgerber.setToolTip(
             _("Will export an Gerber Object as Gerber file,\n"
@@ -217,47 +218,50 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addSeparator()
 
         # Save Defaults
-        self.menufilesavedefaults = QtWidgets.QAction(QtGui.QIcon('share/defaults.png'), _('Save Preferences'), self)
+        self.menufilesavedefaults = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/defaults.png'),
+                                                      _('Save Preferences'), self)
         self.menufile.addAction(self.menufilesavedefaults)
 
         # Separator
         self.menufile.addSeparator()
 
-        self.menufile_backup = self.menufile.addMenu(QtGui.QIcon('share/backup24.png'), _('Backup'))
+        self.menufile_backup = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/backup24.png'),
+                                                     _('Backup'))
 
         # Import Preferences
-        self.menufileimportpref = QtWidgets.QAction(QtGui.QIcon('share/backup_import24.png'),
+        self.menufileimportpref = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/backup_import24.png'),
                                                     _('Import Preferences from file ...'), self)
         self.menufile_backup.addAction(self.menufileimportpref)
 
         # Export Preferences
-        self.menufileexportpref = QtWidgets.QAction(QtGui.QIcon('share/backup_export24.png'),
+        self.menufileexportpref = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/backup_export24.png'),
                                                     _('Export Preferences to file ...'), self)
         self.menufile_backup.addAction(self.menufileexportpref)
 
         # Separator
         self.menufile.addSeparator()
 
-        self.menufile_save = self.menufile.addMenu(QtGui.QIcon('share/save_as.png'), _('Save'))
+        self.menufile_save = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save'))
 
         # Save Project
-        self.menufilesaveproject = QtWidgets.QAction(QtGui.QIcon('share/floppy16.png'), _('&Save Project ...'), self)
+        self.menufilesaveproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/floppy16.png'),
+                                                     _('&Save Project ...'), self)
         self.menufile_save.addAction(self.menufilesaveproject)
 
         # Save Project As ...
-        self.menufilesaveprojectas = QtWidgets.QAction(QtGui.QIcon('share/save_as.png'),
+        self.menufilesaveprojectas = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/save_as.png'),
                                                        _('Save Project &As ...\tCTRL+S'), self)
         self.menufile_save.addAction(self.menufilesaveprojectas)
 
         # Save Project Copy ...
-        self.menufilesaveprojectcopy = QtWidgets.QAction(QtGui.QIcon('share/floppy16.png'),
+        self.menufilesaveprojectcopy = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/floppy16.png'),
                                                          _('Save Project C&opy ...'), self)
         self.menufile_save.addAction(self.menufilesaveprojectcopy)
 
         self.menufile_save.addSeparator()
 
         # Save Object PDF
-        self.menufilesave_object_pdf = QtWidgets.QAction(QtGui.QIcon('share/pdf32.png'),
+        self.menufilesave_object_pdf = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/pdf32.png'),
                                                          _('Save Object as PDF ...'), self)
         self.menufile_save.addAction(self.menufilesave_object_pdf)
 
@@ -265,7 +269,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addSeparator()
 
         # Quit
-        self.menufile_exit = QtWidgets.QAction(QtGui.QIcon('share/power16.png'), _('E&xit'), self)
+        self.menufile_exit = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/power16.png'),
+                                               _('E&xit'), self)
         # exitAction.setShortcut('Ctrl+Q')
         # exitAction.setStatusTip('Exit application')
         self.menufile.addAction(self.menufile_exit)
@@ -276,8 +281,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuedit = self.menu.addMenu(_('Edit'))
         # Separator
         self.menuedit.addSeparator()
-        self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), _('Edit Object\tE'))
-        self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), _('Close Editor\tCTRL+S'))
+        self.menueditedit = self.menuedit.addAction(QtGui.QIcon(self.app.resource_location + '/edit16.png'),
+                                                    _('Edit Object\tE'))
+        self.menueditok = self.menuedit.addAction(QtGui.QIcon(self.app.resource_location + '/edit_ok16.png'),
+                                                  _('Close Editor\tCTRL+S'))
 
         # adjust the initial state of the menu entries related to the editor
         self.menueditedit.setDisabled(False)
@@ -285,9 +292,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Separator
         self.menuedit.addSeparator()
-        self.menuedit_convert = self.menuedit.addMenu(QtGui.QIcon('share/convert24.png'), _('Conversion'))
+        self.menuedit_convert = self.menuedit.addMenu(QtGui.QIcon(self.app.resource_location + '/convert24.png'),
+                                                      _('Conversion'))
         self.menuedit_convertjoin = self.menuedit_convert.addAction(
-            QtGui.QIcon('share/join16.png'), _('&Join Geo/Gerber/Exc -> Geo'))
+            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('&Join Geo/Gerber/Exc -> Geo'))
         self.menuedit_convertjoin.setToolTip(
            _("Merge a selection of objects, which can be of type:\n"
              "- Gerber\n"
@@ -296,88 +304,96 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
              "into a new combo Geometry object.")
         )
         self.menuedit_convertjoinexc = self.menuedit_convert.addAction(
-            QtGui.QIcon('share/join16.png'), _('Join Excellon(s) -> Excellon'))
+            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('Join Excellon(s) -> Excellon'))
         self.menuedit_convertjoinexc.setToolTip(
            _("Merge a selection of Excellon objects into a new combo Excellon object.")
         )
         self.menuedit_convertjoingrb = self.menuedit_convert.addAction(
-            QtGui.QIcon('share/join16.png'), _('Join Gerber(s) -> Gerber'))
+            QtGui.QIcon(self.app.resource_location + '/join16.png'), _('Join Gerber(s) -> Gerber'))
         self.menuedit_convertjoingrb.setToolTip(
             _("Merge a selection of Gerber objects into a new combo Gerber object.")
         )
         # Separator
         self.menuedit_convert.addSeparator()
         self.menuedit_convert_sg2mg = self.menuedit_convert.addAction(
-            QtGui.QIcon('share/convert24.png'), _('Convert Single to MultiGeo'))
+            QtGui.QIcon(self.app.resource_location + '/convert24.png'), _('Convert Single to MultiGeo'))
         self.menuedit_convert_sg2mg.setToolTip(
            _("Will convert a Geometry object from single_geometry type\n"
              "to a multi_geometry type.")
         )
         self.menuedit_convert_mg2sg = self.menuedit_convert.addAction(
-            QtGui.QIcon('share/convert24.png'), _('Convert Multi to SingleGeo'))
+            QtGui.QIcon(self.app.resource_location + '/convert24.png'), _('Convert Multi to SingleGeo'))
         self.menuedit_convert_mg2sg.setToolTip(
            _("Will convert a Geometry object from multi_geometry type\n"
              "to a single_geometry type.")
         )
         # Separator
         self.menuedit_convert.addSeparator()
-        self.menueditconvert_any2geo = self.menuedit_convert.addAction(QtGui.QIcon('share/copy_geo.png'),
-                                                                       _('Convert Any to Geo'))
-        self.menueditconvert_any2gerber = self.menuedit_convert.addAction(QtGui.QIcon('share/copy_geo.png'),
-                                                                          _('Convert Any to Gerber'))
+        self.menueditconvert_any2geo = self.menuedit_convert.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy_geo.png'),
+            _('Convert Any to Geo'))
+        self.menueditconvert_any2gerber = self.menuedit_convert.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy_geo.png'),
+            _('Convert Any to Gerber'))
         self.menuedit_convert.setToolTipsVisible(True)
 
         # Separator
         self.menuedit.addSeparator()
-        self.menueditcopyobject = self.menuedit.addAction(QtGui.QIcon('share/copy.png'), _('&Copy\tCTRL+C'))
+        self.menueditcopyobject = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy.png'), _('&Copy\tCTRL+C'))
 
         # Separator
         self.menuedit.addSeparator()
-        self.menueditdelete = self.menuedit.addAction(QtGui.QIcon('share/trash16.png'), _('&Delete\tDEL'))
+        self.menueditdelete = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/trash16.png'), _('&Delete\tDEL'))
 
         # Separator
         self.menuedit.addSeparator()
-        self.menueditorigin = self.menuedit.addAction(QtGui.QIcon('share/origin16.png'), _('Se&t Origin\tO'))
-        self.menueditjump = self.menuedit.addAction(QtGui.QIcon('share/jump_to16.png'), _('Jump to Location\tJ'))
+        self.menueditorigin = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin16.png'), _('Se&t Origin\tO'))
+        self.menueditjump = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location\tJ'))
 
         # Separator
         self.menuedit.addSeparator()
-        self.menuedittoggleunits = self.menuedit.addAction(QtGui.QIcon('share/toggle_units16.png'),
-                                                           _('Toggle Units\tQ'))
-        self.menueditselectall = self.menuedit.addAction(QtGui.QIcon('share/select_all.png'), _('&Select All\tCTRL+A'))
+        self.menuedittoggleunits = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/toggle_units16.png'), _('Toggle Units\tQ'))
+        self.menueditselectall = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/select_all.png'), _('&Select All\tCTRL+A'))
 
         # Separator
         self.menuedit.addSeparator()
-        self.menueditpreferences = self.menuedit.addAction(QtGui.QIcon('share/pref.png'), _('&Preferences\tSHIFT+P'))
+        self.menueditpreferences = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/pref.png'), _('&Preferences\tSHIFT+P'))
 
         # ########################################################################
         # ########################## OPTIONS # ###################################
         # ########################################################################
 
         self.menuoptions = self.menu.addMenu(_('Options'))
-        self.menuoptions_transform_rotate = self.menuoptions.addAction(QtGui.QIcon('share/rotate.png'),
-                                                                       _("&Rotate Selection\tSHIFT+(R)"))
+        self.menuoptions_transform_rotate = self.menuoptions.addAction(
+            QtGui.QIcon(self.app.resource_location + '/rotate.png'), _("&Rotate Selection\tSHIFT+(R)"))
         # Separator
         self.menuoptions.addSeparator()
 
-        self.menuoptions_transform_skewx = self.menuoptions.addAction(QtGui.QIcon('share/skewX.png'),
-                                                                      _("&Skew on X axis\tSHIFT+X"))
-        self.menuoptions_transform_skewy = self.menuoptions.addAction(QtGui.QIcon('share/skewY.png'),
-                                                                      _("S&kew on Y axis\tSHIFT+Y"))
+        self.menuoptions_transform_skewx = self.menuoptions.addAction(
+            QtGui.QIcon(self.app.resource_location + '/skewX.png'), _("&Skew on X axis\tSHIFT+X"))
+        self.menuoptions_transform_skewy = self.menuoptions.addAction(
+            QtGui.QIcon(self.app.resource_location + '/skewY.png'), _("S&kew on Y axis\tSHIFT+Y"))
 
         # Separator
         self.menuoptions.addSeparator()
-        self.menuoptions_transform_flipx = self.menuoptions.addAction(QtGui.QIcon('share/flipx.png'),
-                                                                      _("Flip on &X axis\tX"))
-        self.menuoptions_transform_flipy = self.menuoptions.addAction(QtGui.QIcon('share/flipy.png'),
-                                                                      _("Flip on &Y axis\tY"))
+        self.menuoptions_transform_flipx = self.menuoptions.addAction(
+            QtGui.QIcon(self.app.resource_location + '/flipx.png'), _("Flip on &X axis\tX"))
+        self.menuoptions_transform_flipy = self.menuoptions.addAction(
+            QtGui.QIcon(self.app.resource_location + '/flipy.png'), _("Flip on &Y axis\tY"))
         # Separator
         self.menuoptions.addSeparator()
 
-        self.menuoptions_view_source = self.menuoptions.addAction(QtGui.QIcon('share/source32.png'),
-                                                                  _("View source\tALT+S"))
-        self.menuoptions_tools_db = self.menuoptions.addAction(QtGui.QIcon('share/database32.png'),
-                                                               _("Tools DataBase\tCTRL+D"))
+        self.menuoptions_view_source = self.menuoptions.addAction(
+            QtGui.QIcon(self.app.resource_location + '/source32.png'), _("View source\tALT+S"))
+        self.menuoptions_tools_db = self.menuoptions.addAction(
+            QtGui.QIcon(self.app.resource_location + '/database32.png'), _("Tools DataBase\tCTRL+D"))
         # Separator
         self.menuoptions.addSeparator()
 
@@ -385,51 +401,56 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## View # ######################################
         # ########################################################################
         self.menuview = self.menu.addMenu(_('View'))
-        self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), _('Enable all plots\tALT+1'))
-        self.menuviewdisableall = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
-                                                          _('Disable all plots\tALT+2'))
-        self.menuviewdisableother = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
-                                                            _('Disable non-selected\tALT+3'))
+        self.menuviewenable = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/replot16.png'), _('Enable all plots\tALT+1'))
+        self.menuviewdisableall = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable all plots\tALT+2'))
+        self.menuviewdisableother = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/clear_plot16.png'), _('Disable non-selected\tALT+3'))
         # Separator
         self.menuview.addSeparator()
-        self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), _("&Zoom Fit\tV"))
-        self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), _("&Zoom In\t="))
-        self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), _("&Zoom Out\t-"))
+        self.menuview_zoom_fit = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("&Zoom Fit\tV"))
+        self.menuview_zoom_in = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_in32.png'), _("&Zoom In\t="))
+        self.menuview_zoom_out = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_out32.png'), _("&Zoom Out\t-"))
         self.menuview.addSeparator()
 
         # Replot all
-        self.menuview_replot = self.menuview.addAction(QtGui.QIcon('share/replot32.png'), _("Redraw All\tF5"))
+        self.menuview_replot = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("Redraw All\tF5"))
         self.menuview.addSeparator()
 
-        self.menuview_toggle_code_editor = self.menuview.addAction(QtGui.QIcon('share/code_editor32.png'),
-                                                                   _('Toggle Code Editor\tSHIFT+E'))
+        self.menuview_toggle_code_editor = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/code_editor32.png'), _('Toggle Code Editor\tSHIFT+E'))
         self.menuview.addSeparator()
         self.menuview_toggle_fscreen = self.menuview.addAction(
-            QtGui.QIcon('share/fscreen32.png'), _("&Toggle FullScreen\tALT+F10"))
+            QtGui.QIcon(self.app.resource_location + '/fscreen32.png'), _("&Toggle FullScreen\tALT+F10"))
         self.menuview_toggle_parea = self.menuview.addAction(
-            QtGui.QIcon('share/plot32.png'), _("&Toggle Plot Area\tCTRL+F10"))
+            QtGui.QIcon(self.app.resource_location + '/plot32.png'), _("&Toggle Plot Area\tCTRL+F10"))
         self.menuview_toggle_notebook = self.menuview.addAction(
-            QtGui.QIcon('share/notebook32.png'), _("&Toggle Project/Sel/Tool\t`"))
+            QtGui.QIcon(self.app.resource_location + '/notebook32.png'), _("&Toggle Project/Sel/Tool\t`"))
 
         self.menuview.addSeparator()
-        self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'),
-                                                            _("&Toggle Grid Snap\tG"))
-        self.menuview_toggle_grid_lines = self.menuview.addAction(QtGui.QIcon('share/grid32.png'),
-                                                                  _("&Toggle Grid Lines\tALT+G"))
-        self.menuview_toggle_axis = self.menuview.addAction(QtGui.QIcon('share/axis32.png'), _("&Toggle Axis\tSHIFT+G")
-                                                            )
-        self.menuview_toggle_workspace = self.menuview.addAction(QtGui.QIcon('share/workspace24.png'),
-                                                                 _("Toggle Workspace\tSHIFT+W"))
+        self.menuview_toggle_grid = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Snap\tG"))
+        self.menuview_toggle_grid_lines = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _("&Toggle Grid Lines\tALT+G"))
+        self.menuview_toggle_axis = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/axis32.png'), _("&Toggle Axis\tSHIFT+G"))
+        self.menuview_toggle_workspace = self.menuview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/workspace24.png'), _("Toggle Workspace\tSHIFT+W"))
 
         # ########################################################################
         # ########################## Objects # ###################################
         # ########################################################################
         self.menuobjects = self.menu.addMenu(_('Objects'))
         self.menuobjects.addSeparator()
-        self.menuobjects_selall = self.menuobjects.addAction(QtGui.QIcon('share/select_all.png'), _('Select All'))
+        self.menuobjects_selall = self.menuobjects.addAction(
+            QtGui.QIcon(self.app.resource_location + '/select_all.png'), _('Select All'))
         self.menuobjects_unselall = self.menuobjects.addAction(
-            QtGui.QIcon('share/deselect_all32.png'),
-            _('Deselect All')
+            QtGui.QIcon(self.app.resource_location + '/deselect_all32.png'), _('Deselect All')
         )
 
         # ########################################################################
@@ -437,34 +458,39 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.menutool = QtWidgets.QMenu(_('Tool'))
         self.menutoolaction = self.menu.addMenu(self.menutool)
-        self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), _('&Command Line\tS'))
+        self.menutoolshell = self.menutool.addAction(
+            QtGui.QIcon(self.app.resource_location + '/shell16.png'), _('&Command Line\tS'))
 
         # ########################################################################
         # ########################## Help # ######################################
         # ########################################################################
         self.menuhelp = self.menu.addMenu(_('Help'))
-        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), _('Online Help\tF1'))
+        self.menuhelp_manual = self.menuhelp.addAction(
+            QtGui.QIcon(self.app.resource_location + '/globe16.png'), _('Online Help\tF1'))
 
-        self.menuhelp_bookmarks = self.menuhelp.addMenu(QtGui.QIcon('share/bookmarks16.png'), _('Bookmarks'))
+        self.menuhelp_bookmarks = self.menuhelp.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/bookmarks16.png'), _('Bookmarks'))
         self.menuhelp_bookmarks.addSeparator()
         self.menuhelp_bookmarks_manager = self.menuhelp_bookmarks.addAction(
-            QtGui.QIcon('share/bookmarks16.png'), _('Bookmarks Manager'))
+            QtGui.QIcon(self.app.resource_location + '/bookmarks16.png'), _('Bookmarks Manager'))
 
         self.menuhelp.addSeparator()
-        self.menuhelp_report_bug = self.menuhelp.addAction(QtGui.QIcon('share/bug16.png'), _('Report a bug'))
+        self.menuhelp_report_bug = self.menuhelp.addAction(
+            QtGui.QIcon(self.app.resource_location + '/bug16.png'), _('Report a bug'))
         self.menuhelp.addSeparator()
-        self.menuhelp_exc_spec = self.menuhelp.addAction(QtGui.QIcon('share/pdf_link16.png'),
-                                                         _('Excellon Specification'))
-        self.menuhelp_gerber_spec = self.menuhelp.addAction(QtGui.QIcon('share/pdf_link16.png'),
-                                                            _('Gerber Specification'))
+        self.menuhelp_exc_spec = self.menuhelp.addAction(
+            QtGui.QIcon(self.app.resource_location + '/pdf_link16.png'), _('Excellon Specification'))
+        self.menuhelp_gerber_spec = self.menuhelp.addAction(
+            QtGui.QIcon(self.app.resource_location + '/pdf_link16.png'), _('Gerber Specification'))
 
         self.menuhelp.addSeparator()
 
-        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'),
-                                                              _('Shortcuts List\tF3'))
-        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), _('YouTube Channel\tF4')
-                                                          )
-        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/about32.png'), _('About FlatCAM'))
+        self.menuhelp_shortcut_list = self.menuhelp.addAction(
+            QtGui.QIcon(self.app.resource_location + '/shortcuts24.png'), _('Shortcuts List\tF3'))
+        self.menuhelp_videohelp = self.menuhelp.addAction(
+            QtGui.QIcon(self.app.resource_location + '/youtube32.png'), _('YouTube Channel\tF4'))
+        self.menuhelp_about = self.menuhelp.addAction(
+            QtGui.QIcon(self.app.resource_location + '/about32.png'), _('About FlatCAM'))
 
         # ########################################################################
         # ########################## GEOMETRY EDITOR # ###########################
@@ -473,49 +499,54 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menu.addMenu(self.geo_editor_menu)
 
         self.geo_add_circle_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/circle32.png'), _('Add Circle\tO')
+            QtGui.QIcon(self.app.resource_location + '/circle32.png'), _('Add Circle\tO')
         )
-        self.geo_add_arc_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/arc16.png'), _('Add Arc\tA'))
+        self.geo_add_arc_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/arc16.png'), _('Add Arc\tA'))
         self.geo_editor_menu.addSeparator()
         self.geo_add_rectangle_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/rectangle32.png'), _('Add Rectangle\tR')
+            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _('Add Rectangle\tR')
         )
         self.geo_add_polygon_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/polygon32.png'), _('Add Polygon\tN')
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _('Add Polygon\tN')
         )
-        self.geo_add_path_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/path32.png'), _('Add Path\tP'))
+        self.geo_add_path_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/path32.png'), _('Add Path\tP'))
         self.geo_editor_menu.addSeparator()
-        self.geo_add_text_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/text32.png'), _('Add Text\tT'))
+        self.geo_add_text_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Add Text\tT'))
         self.geo_editor_menu.addSeparator()
-        self.geo_union_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/union16.png'),
-                                                                 _('Polygon Union\tU'))
-        self.geo_intersection_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/intersection16.png'),
-                                                                        _('Polygon Intersection\tE'))
+        self.geo_union_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/union16.png'),_('Polygon Union\tU'))
+        self.geo_intersection_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/intersection16.png'), _('Polygon Intersection\tE'))
         self.geo_subtract_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/subtract16.png'), _('Polygon Subtraction\tS')
+            QtGui.QIcon(self.app.resource_location + '/subtract16.png'), _('Polygon Subtraction\tS')
         )
         self.geo_editor_menu.addSeparator()
-        self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/cutpath16.png'),
-                                                                   _('Cut Path\tX'))
-        # self.move_menuitem = self.menu.addAction(QtGui.QIcon('share/move16.png'), "Move Objects 'm'")
-        self.geo_copy_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/copy16.png'), _("Copy Geom\tC"))
+        self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/cutpath16.png'), _('Cut Path\tX'))
+        # self.move_menuitem = self.menu.addAction(QtGui.QIcon(self.app.resource_location + '/move16.png'), "Move Objects 'm'")
+        self.geo_copy_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy16.png'), _("Copy Geom\tC"))
         self.geo_delete_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/deleteshape16.png'), _("Delete Shape\tDEL")
+            QtGui.QIcon(self.app.resource_location + '/deleteshape16.png'), _("Delete Shape\tDEL")
         )
         self.geo_editor_menu.addSeparator()
-        self.geo_move_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/move32.png'), _("Move\tM"))
+        self.geo_move_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move\tM"))
         self.geo_buffer_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/buffer16.png'), _("Buffer Tool\tB")
+            QtGui.QIcon(self.app.resource_location + '/buffer16.png'), _("Buffer Tool\tB")
         )
         self.geo_paint_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/paint16.png'), _("Paint Tool\tI")
+            QtGui.QIcon(self.app.resource_location + '/paint16.png'), _("Paint Tool\tI")
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/transform.png'), _("Transform Tool\tALT+R")
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform Tool\tALT+R")
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/corner32.png'), _("Toggle Corner Snap\tK")
+            QtGui.QIcon(self.app.resource_location + '/corner32.png'), _("Toggle Corner Snap\tK")
         )
 
         # ########################################################################
@@ -525,28 +556,29 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menu.addMenu(self.exc_editor_menu)
 
         self.exc_add_array_drill_menuitem = self.exc_editor_menu.addAction(
-            QtGui.QIcon('share/rectangle32.png'), _('Add Drill Array\tA'))
-        self.exc_add_drill_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/plus16.png'),
-                                                                     _('Add Drill\tD'))
+            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _('Add Drill Array\tA'))
+        self.exc_add_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/plus16.png'), _('Add Drill\tD'))
         self.exc_editor_menu.addSeparator()
 
         self.exc_add_array_slot_menuitem = self.exc_editor_menu.addAction(
-            QtGui.QIcon('share/slot_array26.png'), _('Add Slot Array\tQ'))
-        self.exc_add_slot_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/slot26.png'),
-                                                                    _('Add Slot\tW'))
+            QtGui.QIcon(self.app.resource_location + '/slot_array26.png'), _('Add Slot Array\tQ'))
+        self.exc_add_slot_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/slot26.png'), _('Add Slot\tW'))
         self.exc_editor_menu.addSeparator()
 
         self.exc_resize_drill_menuitem = self.exc_editor_menu.addAction(
-            QtGui.QIcon('share/resize16.png'), _('Resize Drill(S)\tR')
+            QtGui.QIcon(self.app.resource_location + '/resize16.png'), _('Resize Drill(S)\tR')
         )
-        self.exc_copy_drill_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/copy32.png'), _('Copy\tC'))
+        self.exc_copy_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy\tC'))
         self.exc_delete_drill_menuitem = self.exc_editor_menu.addAction(
-            QtGui.QIcon('share/deleteshape32.png'), _('Delete\tDEL')
+            QtGui.QIcon(self.app.resource_location + '/deleteshape32.png'), _('Delete\tDEL')
         )
         self.exc_editor_menu.addSeparator()
 
-        self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/move32.png'),
-                                                                      _('Move Drill(s)\tM'))
+        self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _('Move Drill(s)\tM'))
 
         # ########################################################################
         # ########################## GERBER Editor # #############################
@@ -554,38 +586,42 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_editor_menu = QtWidgets.QMenu(_(">Gerber Editor<"))
         self.menu.addMenu(self.grb_editor_menu)
 
-        self.grb_add_pad_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/aperture16.png'),
-                                                                   _('Add Pad\tP'))
-        self.grb_add_pad_array_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/padarray32.png'),
-                                                                         _('Add Pad Array\tA'))
-        self.grb_add_track_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/track32.png'),
-                                                                     _('Add Track\tT'))
-        self.grb_add_region_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/rectangle32.png'),
-                                                                      _('Add Region\tN'))
+        self.grb_add_pad_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/aperture16.png'), _('Add Pad\tP'))
+        self.grb_add_pad_array_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/padarray32.png'), _('Add Pad Array\tA'))
+        self.grb_add_track_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/track32.png'), _('Add Track\tT'))
+        self.grb_add_region_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _('Add Region\tN'))
         self.grb_editor_menu.addSeparator()
 
-        self.grb_convert_poly_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/poligonize32.png'),
-                                                                        _("Poligonize\tALT+N"))
-        self.grb_add_semidisc_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/semidisc32.png'),
-                                                                        _("Add SemiDisc\tE"))
-        self.grb_add_disc_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/disc32.png'), _("Add Disc\tD"))
-        self.grb_add_buffer_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/buffer16-2.png'),
-                                                                      _('Buffer\tB'))
-        self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/scale32.png'), _('Scale\tS'))
-        self.grb_add_markarea_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/markarea32.png'),
-                                                                        _('Mark Area\tALT+A'))
-        self.grb_add_eraser_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/eraser26.png'),
-                                                                      _('Eraser\tCTRL+E'))
-        self.grb_transform_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/transform.png'),
-                                                                     _("Transform\tALT+R"))
+        self.grb_convert_poly_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize\tALT+N"))
+        self.grb_add_semidisc_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/semidisc32.png'), _("Add SemiDisc\tE"))
+        self.grb_add_disc_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/disc32.png'), _("Add Disc\tD"))
+        self.grb_add_buffer_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Buffer\tB'))
+        self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/scale32.png'), _('Scale\tS'))
+        self.grb_add_markarea_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area\tALT+A'))
+        self.grb_add_eraser_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser\tCTRL+E'))
+        self.grb_transform_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform\tALT+R"))
         self.grb_editor_menu.addSeparator()
 
-        self.grb_copy_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/copy32.png'), _('Copy\tC'))
-        self.grb_delete_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/deleteshape32.png'),
-                                                                  _('Delete\tDEL'))
+        self.grb_copy_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy\tC'))
+        self.grb_delete_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/deleteshape32.png'), _('Delete\tDEL'))
         self.grb_editor_menu.addSeparator()
 
-        self.grb_move_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/move32.png'), _('Move\tM'))
+        self.grb_move_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _('Move\tM'))
 
         self.grb_editor_menu.menuAction().setVisible(False)
         self.grb_editor_menu.setDisabled(True)
@@ -600,19 +636,28 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## Project Tab Context Menu # ##################
         # ########################################################################
         self.menuproject = QtWidgets.QMenu()
-        self.menuprojectenable = self.menuproject.addAction(QtGui.QIcon('share/replot32.png'), _('Enable Plot'))
-        self.menuprojectdisable = self.menuproject.addAction(QtGui.QIcon('share/clear_plot32.png'), _('Disable Plot'))
+        self.menuprojectenable = self.menuproject.addAction(
+            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _('Enable Plot'))
+        self.menuprojectdisable = self.menuproject.addAction(
+            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _('Disable Plot'))
         self.menuproject.addSeparator()
-        self.menuprojectgeneratecnc = self.menuproject.addAction(QtGui.QIcon('share/cnc32.png'), _('Generate CNC'))
-        self.menuprojectviewsource = self.menuproject.addAction(QtGui.QIcon('share/source32.png'), _('View Source'))
+        self.menuprojectgeneratecnc = self.menuproject.addAction(
+            QtGui.QIcon(self.app.resource_location + '/cnc32.png'), _('Generate CNC'))
+        self.menuprojectviewsource = self.menuproject.addAction(
+            QtGui.QIcon(self.app.resource_location + '/source32.png'), _('View Source'))
 
-        self.menuprojectedit = self.menuproject.addAction(QtGui.QIcon('share/edit_ok32.png'), _('Edit'))
-        self.menuprojectcopy = self.menuproject.addAction(QtGui.QIcon('share/copy32.png'), _('Copy'))
-        self.menuprojectdelete = self.menuproject.addAction(QtGui.QIcon('share/delete32.png'), _('Delete'))
-        self.menuprojectsave = self.menuproject.addAction(QtGui.QIcon('share/save_as.png'), _('Save'))
+        self.menuprojectedit = self.menuproject.addAction(
+            QtGui.QIcon(self.app.resource_location + '/edit_ok32.png'), _('Edit'))
+        self.menuprojectcopy = self.menuproject.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy'))
+        self.menuprojectdelete = self.menuproject.addAction(
+            QtGui.QIcon(self.app.resource_location + '/delete32.png'), _('Delete'))
+        self.menuprojectsave = self.menuproject.addAction(
+            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save'))
         self.menuproject.addSeparator()
 
-        self.menuprojectproperties = self.menuproject.addAction(QtGui.QIcon('share/properties32.png'), _('Properties'))
+        self.menuprojectproperties = self.menuproject.addAction(
+            QtGui.QIcon(self.app.resource_location + '/properties32.png'), _('Properties'))
 
         # ########################################################################
         # ####################### Central Widget -> Splitter # ##################
@@ -692,175 +737,245 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         # ########################## File Toolbar# ###############################
         # ########################################################################
-        self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
-                                                               _("Open Gerber"))
-        self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), _("Open Excellon"))
+        self.file_open_gerber_btn = self.toolbarfile.addAction(
+            QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _("Open Gerber"))
+        self.file_open_excellon_btn = self.toolbarfile.addAction(
+            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
-        self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), _("Open project"))
-        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/project_save32.png'), _("Save project"))
+        self.file_open_btn = self.toolbarfile.addAction(
+            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open project"))
+        self.file_save_btn = self.toolbarfile.addAction(
+            QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save project"))
 
         # ########################################################################
         # ########################## Edit Toolbar# ###############################
         # ########################################################################
-        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_geo32.png'), _("New Blank Geometry"))
-        self.newgrb_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_grb32.png'), _("New Blank Gerber"))
-        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_exc32.png'), _("New Blank Excellon"))
+        self.newgeo_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_file_geo32.png'), _("New Blank Geometry"))
+        self.newgrb_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_file_grb32.png'), _("New Blank Gerber"))
+        self.newexc_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_file_exc32.png'), _("New Blank Excellon"))
         self.toolbargeo.addSeparator()
-        self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit_file32.png'), _("Editor"))
+        self.editgeo_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/edit_file32.png'), _("Editor"))
         self.update_obj_btn = self.toolbargeo.addAction(
-            QtGui.QIcon('share/close_edit_file32.png'), _("Save Object and close the Editor")
+            QtGui.QIcon(self.app.resource_location + '/close_edit_file32.png'), _("Save Object and close the Editor")
         )
 
         self.toolbargeo.addSeparator()
-        self.copy_btn = self.toolbargeo.addAction(QtGui.QIcon('share/copy_file32.png'), _("Copy"))
-        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/delete_file32.png'), _("&Delete"))
+        self.copy_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
+        self.delete_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/delete_file32.png'), _("&Delete"))
         self.toolbargeo.addSeparator()
-        self.distance_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance32.png'), _("Distance Tool"))
-        self.distance_min_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance_min32.png'),
-                                                          _("Distance Min Tool"))
-        self.origin_btn = self.toolbargeo.addAction(QtGui.QIcon('share/origin32.png'), _('Set Origin'))
-        self.jmp_btn = self.toolbargeo.addAction(QtGui.QIcon('share/jump_to16.png'), _('Jump to Location'))
+        self.distance_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))
+        self.distance_min_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
+        self.origin_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
+        self.jmp_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
 
         # ########################################################################
         # ########################## View Toolbar# ###############################
         # ########################################################################
-        self.replot_btn = self.toolbarview.addAction(QtGui.QIcon('share/replot32.png'), _("&Replot"))
-        self.clear_plot_btn = self.toolbarview.addAction(QtGui.QIcon('share/clear_plot32.png'), _("&Clear plot"))
-        self.zoom_in_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_in32.png'), _("Zoom In"))
-        self.zoom_out_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_out32.png'), _("Zoom Out"))
-        self.zoom_fit_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_fit32.png'), _("Zoom Fit"))
+        self.replot_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("&Replot"))
+        self.clear_plot_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("&Clear plot"))
+        self.zoom_in_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_in32.png'), _("Zoom In"))
+        self.zoom_out_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_out32.png'), _("Zoom Out"))
+        self.zoom_fit_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("Zoom Fit"))
 
         # self.toolbarview.setVisible(False)
 
         # ########################################################################
         # ########################## Shell Toolbar# ##############################
         # ########################################################################
-        self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), _("&Command Line"))
-        self.new_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_new24.png'), _('New Script ...'))
-        self.open_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/open_script32.png'), _('Open Script ...'))
-        self.run_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script16.png'), _('Run Script ...'))
+        self.shell_btn = self.toolbarshell.addAction(
+            QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("&Command Line"))
+        self.new_script_btn = self.toolbarshell.addAction(
+            QtGui.QIcon(self.app.resource_location + '/script_new24.png'), _('New Script ...'))
+        self.open_script_btn = self.toolbarshell.addAction(
+            QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'))
+        self.run_script_btn = self.toolbarshell.addAction(
+            QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Run Script ...'))
 
         # ########################################################################
         # ########################## Tools Toolbar# ##############################
         # ########################################################################
-        self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), _("2Sided Tool"))
-        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16_bis.png'), _("Cutout Tool"))
-        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/ncc16.png'), _("NCC Tool"))
-        self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint Tool"))
+        self.dblsided_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
+        self.cutout_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))
+        self.ncc_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/ncc16.png'), _("NCC Tool"))
+        self.paint_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
         self.toolbartools.addSeparator()
 
-        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panelize32.png'), _("Panel Tool"))
-        self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
-        self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
-        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Subtract Tool"))
-        self.rules_btn = self.toolbartools.addAction(QtGui.QIcon('share/rules32.png'), _("Rules Tool"))
-        self.optimal_btn = self.toolbartools.addAction(QtGui.QIcon('share/open_excellon32.png'), _("Optimal Tool"))
+        self.panelize_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/panelize32.png'), _("Panel Tool"))
+        self.film_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/film16.png'), _("Film Tool"))
+        self.solder_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'), _("SolderPaste Tool"))
+        self.sub_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
+        self.rules_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/rules32.png'), _("Rules Tool"))
+        self.optimal_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Optimal Tool"))
 
         self.toolbartools.addSeparator()
 
-        self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), _("Calculators Tool"))
-        self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
-        self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
-        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'),
-                                                          _("Copper Thieving Tool"))
+        self.calculators_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/calculator24.png'), _("Calculators Tool"))
+        self.transform_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform Tool"))
+        self.qrcode_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/qrcode32.png'), _("QRCode Tool"))
+        self.copperfill_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving Tool"))
 
-        self.fiducials_btn = self.toolbartools.addAction(QtGui.QIcon('share/fiducials_32.png'), _("Fiducials Tool"))
-        self.cal_btn = self.toolbartools.addAction(QtGui.QIcon('share/calibrate_32.png'), _("Calibration Tool"))
+        self.fiducials_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials Tool"))
+        self.cal_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################
         # ########################################################################
-        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
-        self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Drill Hole'))
+        self.select_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
+        self.add_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/plus16.png'), _('Add Drill Hole'))
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon('share/addarray16.png'), _('Add Drill Hole Array'))
-        self.add_slot_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/slot26.png'), _('Add Slot'))
+            QtGui.QIcon(self.app.resource_location + '/addarray16.png'), _('Add Drill Hole Array'))
+        self.add_slot_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/slot26.png'), _('Add Slot'))
         self.add_slot_array_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon('share/slot_array26.png'), _('Add Slot Array'))
-        self.resize_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/resize16.png'), _('Resize Drill'))
+            QtGui.QIcon(self.app.resource_location + '/slot_array26.png'), _('Add Slot Array'))
+        self.resize_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/resize16.png'), _('Resize Drill'))
         self.exc_edit_toolbar.addSeparator()
 
-        self.copy_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _('Copy Drill'))
-        self.delete_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'), _("Delete Drill"))
+        self.copy_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy Drill'))
+        self.delete_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Drill"))
 
         self.exc_edit_toolbar.addSeparator()
-        self.move_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move Drill"))
+        self.move_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Drill"))
 
         # ########################################################################
         # ########################## Geometry Editor Toolbar# ####################
         # ########################################################################
-        self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
-        self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/circle32.png'), _('Add Circle'))
-        self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/arc32.png'), _('Add Arc'))
-        self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'),
-                                                                     _('Add Rectangle'))
+        self.geo_select_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
+        self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/circle32.png'), _('Add Circle'))
+        self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/arc32.png'), _('Add Arc'))
+        self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _('Add Rectangle'))
 
         self.geo_edit_toolbar.addSeparator()
-        self.geo_add_path_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/path32.png'), _('Add Path'))
-        self.geo_add_polygon_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _('Add Polygon'))
+        self.geo_add_path_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/path32.png'), _('Add Path'))
+        self.geo_add_polygon_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _('Add Polygon'))
         self.geo_edit_toolbar.addSeparator()
-        self.geo_add_text_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/text32.png'), _('Add Text'))
-        self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Add Buffer'))
-        self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/paint20_1.png'), _('Paint Shape'))
-        self.geo_eraser_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
+        self.geo_add_text_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Add Text'))
+        self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Add Buffer'))
+        self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _('Paint Shape'))
+        self.geo_eraser_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
 
         self.geo_edit_toolbar.addSeparator()
-        self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), _('Polygon Union'))
-        self.geo_explode_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/explode32.png'), _('Polygon Explode'))
+        self.geo_union_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/union32.png'), _('Polygon Union'))
+        self.geo_explode_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/explode32.png'), _('Polygon Explode'))
 
-        self.geo_intersection_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/intersection32.png'),
-                                                                    _('Polygon Intersection'))
-        self.geo_subtract_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/subtract32.png'),
-                                                                _('Polygon Subtraction'))
+        self.geo_intersection_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _('Polygon Intersection'))
+        self.geo_subtract_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _('Polygon Subtraction'))
 
         self.geo_edit_toolbar.addSeparator()
-        self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), _('Cut Path'))
-        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy Shape(s)"))
+        self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/cutpath32.png'), _('Cut Path'))
+        self.geo_copy_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy Shape(s)"))
 
-        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
-                                                              _("Delete Shape '-'"))
-        self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'),
-                                                                 _("Transformations"))
+        self.geo_delete_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Shape '-'"))
+        self.geo_transform_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
         self.geo_edit_toolbar.addSeparator()
-        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move Objects "))
+        self.geo_move_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects "))
 
         # ########################################################################
         # ########################## Gerber Editor Toolbar# ######################
         # ########################################################################
-        self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
-        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture32.png'), _("Add Pad"))
-        self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/padarray32.png'), _('Add Pad Array'))
-        self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
-        self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
-        self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/poligonize32.png'),
-                                                                    _("Poligonize"))
+        self.grb_select_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
+        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/aperture32.png'), _("Add Pad"))
+        self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/padarray32.png'), _('Add Pad Array'))
+        self.grb_add_track_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/track32.png'), _("Add Track"))
+        self.grb_add_region_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _("Add Region"))
+        self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize"))
 
-        self.grb_add_semidisc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/semidisc32.png'), _("SemiDisc"))
-        self.grb_add_disc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/disc32.png'), _("Disc"))
+        self.grb_add_semidisc_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/semidisc32.png'), _("SemiDisc"))
+        self.grb_add_disc_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/disc32.png'), _("Disc"))
         self.grb_edit_toolbar.addSeparator()
 
-        self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
-        self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
-        self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/markarea32.png'),
-                                                                     _('Mark Area'))
+        self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Buffer'))
+        self.aperture_scale_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/scale32.png'), _('Scale'))
+        self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area'))
 
-        self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
+        self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
 
         self.grb_edit_toolbar.addSeparator()
-        self.aperture_copy_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
-        self.aperture_delete_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
-                                                                   _("Delete"))
-        self.grb_transform_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'),
-                                                                 _("Transformations"))
+        self.aperture_copy_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy"))
+        self.aperture_delete_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
+        self.grb_transform_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
         self.grb_edit_toolbar.addSeparator()
-        self.aperture_move_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
+        self.aperture_move_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
         # ########################################################################
         # ########################## Snap Toolbar# ###############################
         # ########################################################################
 
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
-        self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/grid32.png'), _('Snap to grid'))
+        self.grid_snap_btn = self.snap_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _('Snap to grid'))
         self.grid_gap_x_entry = FCEntry2()
         self.grid_gap_x_entry.setMaximumWidth(70)
         self.grid_gap_x_entry.setToolTip(_("Grid X snapping distance"))
@@ -880,7 +995,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
 
-        self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/corner32.png'), _('Snap to corner'))
+        self.corner_snap_btn = self.snap_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/corner32.png'), _('Snap to corner'))
 
         self.snap_max_dist_entry = FCEntry()
         self.snap_max_dist_entry.setMaximumWidth(70)
@@ -1887,97 +2003,148 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.popMenu = FCMenu()
 
-        self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/disable32.png'), _("Toggle Visibility"))
-        self.popmenu_panel_toggle = self.popMenu.addAction(QtGui.QIcon('share/notebook16.png'), _("Toggle Panel"))
+        self.popmenu_disable = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/disable32.png'), _("Toggle Visibility"))
+        self.popmenu_panel_toggle = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/notebook16.png'), _("Toggle Panel"))
 
         self.popMenu.addSeparator()
-        self.cmenu_newmenu = self.popMenu.addMenu(QtGui.QIcon('share/file32.png'), _("New"))
-        self.popmenu_new_geo = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_geo32_bis.png'), _("Geometry"))
-        self.popmenu_new_grb = self.cmenu_newmenu.addAction(QtGui.QIcon('share/flatcam_icon32.png'), "Gerber")
-        self.popmenu_new_exc = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_exc32.png'), _("Excellon"))
+        self.cmenu_newmenu = self.popMenu.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/file32.png'), _("New"))
+        self.popmenu_new_geo = self.cmenu_newmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_geo32_bis.png'), _("Geometry"))
+        self.popmenu_new_grb = self.cmenu_newmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), "Gerber")
+        self.popmenu_new_exc = self.cmenu_newmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_exc32.png'), _("Excellon"))
         self.cmenu_newmenu.addSeparator()
-        self.popmenu_new_prj = self.cmenu_newmenu.addAction(QtGui.QIcon('share/file16.png'), _("Project"))
+        self.popmenu_new_prj = self.cmenu_newmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/file16.png'), _("Project"))
         self.popMenu.addSeparator()
 
-        self.cmenu_gridmenu = self.popMenu.addMenu(QtGui.QIcon('share/grid32_menu.png'), _("Grids"))
+        self.cmenu_gridmenu = self.popMenu.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/grid32_menu.png'), _("Grids"))
 
-        self.cmenu_viewmenu = self.popMenu.addMenu(QtGui.QIcon('share/view64.png'), _("View"))
-        self.zoomfit = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/zoom_fit32.png'), _("Zoom Fit"))
-        self.clearplot = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/clear_plot32.png'), _("Clear Plot"))
-        self.replot = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/replot32.png'), _("Replot"))
+        self.cmenu_viewmenu = self.popMenu.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/view64.png'), _("View"))
+        self.zoomfit = self.cmenu_viewmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("Zoom Fit"))
+        self.clearplot = self.cmenu_viewmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("Clear Plot"))
+        self.replot = self.cmenu_viewmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("Replot"))
         self.popMenu.addSeparator()
 
-        self.g_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Geo Editor"))
-        self.draw_line = self.g_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), _("Path"))
-        self.draw_rect = self.g_editor_cmenu.addAction(QtGui.QIcon('share/rectangle32.png'), _("Rectangle"))
+        self.g_editor_cmenu = self.popMenu.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/draw32.png'), _("Geo Editor"))
+        self.draw_line = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/path32.png'), _("Path"))
+        self.draw_rect = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _("Rectangle"))
         self.g_editor_cmenu.addSeparator()
-        self.draw_circle = self.g_editor_cmenu.addAction(QtGui.QIcon('share/circle32.png'), _("Circle"))
-        self.draw_poly = self.g_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Polygon"))
-        self.draw_arc = self.g_editor_cmenu.addAction(QtGui.QIcon('share/arc32.png'), _("Arc"))
+        self.draw_circle = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/circle32.png'), _("Circle"))
+        self.draw_poly = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _("Polygon"))
+        self.draw_arc = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/arc32.png'), _("Arc"))
         self.g_editor_cmenu.addSeparator()
 
-        self.draw_text = self.g_editor_cmenu.addAction(QtGui.QIcon('share/text32.png'), _("Text"))
-        self.draw_buffer = self.g_editor_cmenu.addAction(QtGui.QIcon('share/buffer16-2.png'), _("Buffer"))
-        self.draw_paint = self.g_editor_cmenu.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint"))
-        self.draw_eraser = self.g_editor_cmenu.addAction(QtGui.QIcon('share/eraser26.png'), _("Eraser"))
+        self.draw_text = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/text32.png'), _("Text"))
+        self.draw_buffer = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _("Buffer"))
+        self.draw_paint = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint"))
+        self.draw_eraser = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _("Eraser"))
         self.g_editor_cmenu.addSeparator()
 
-        self.draw_union = self.g_editor_cmenu.addAction(QtGui.QIcon('share/union32.png'), _("Union"))
-        self.draw_intersect = self.g_editor_cmenu.addAction(QtGui.QIcon('share/intersection32.png'), _("Intersection"))
-        self.draw_substract = self.g_editor_cmenu.addAction(QtGui.QIcon('share/subtract32.png'), _("Subtraction"))
-        self.draw_cut = self.g_editor_cmenu.addAction(QtGui.QIcon('share/cutpath32.png'), _("Cut"))
-        self.draw_transform = self.g_editor_cmenu.addAction(QtGui.QIcon('share/transform.png'), _("Transformations"))
+        self.draw_union = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/union32.png'), _("Union"))
+        self.draw_intersect = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _("Intersection"))
+        self.draw_substract = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _("Subtraction"))
+        self.draw_cut = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/cutpath32.png'), _("Cut"))
+        self.draw_transform = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
 
         self.g_editor_cmenu.addSeparator()
-        self.draw_move = self.g_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
+        self.draw_move = self.g_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
-        self.grb_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Gerber Editor"))
-        self.grb_draw_pad = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/aperture32.png'), _("Pad"))
-        self.grb_draw_pad_array = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/padarray32.png'), _("Pad Array"))
+        self.grb_editor_cmenu = self.popMenu.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/draw32.png'), _("Gerber Editor"))
+        self.grb_draw_pad = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/aperture32.png'), _("Pad"))
+        self.grb_draw_pad_array = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/padarray32.png'), _("Pad Array"))
         self.grb_editor_cmenu.addSeparator()
 
-        self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/track32.png'), _("Track"))
-        self.grb_draw_region = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
-        self.grb_draw_poligonize = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/poligonize32.png'),
-                                                                   _("Poligonize"))
-        self.grb_draw_semidisc = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/semidisc32.png'), _("SemiDisc"))
-        self.grb_draw_disc = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/disc32.png'), _("Disc"))
+        self.grb_draw_track = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/track32.png'), _("Track"))
+        self.grb_draw_region = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _("Region"))
+        self.grb_draw_poligonize = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize"))
+        self.grb_draw_semidisc = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/semidisc32.png'), _("SemiDisc"))
+        self.grb_draw_disc = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/disc32.png'), _("Disc"))
         self.grb_editor_cmenu.addSeparator()
 
-        self.grb_draw_buffer = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/buffer16-2.png'), _("Buffer"))
-        self.grb_draw_scale = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/scale32.png'), _("Scale"))
-        self.grb_draw_markarea = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/markarea32.png'), _("Mark Area"))
-        self.grb_draw_eraser = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/eraser26.png'), _("Eraser"))
+        self.grb_draw_buffer = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _("Buffer"))
+        self.grb_draw_scale = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/scale32.png'), _("Scale"))
+        self.grb_draw_markarea = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _("Mark Area"))
+        self.grb_draw_eraser = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _("Eraser"))
         self.grb_editor_cmenu.addSeparator()
 
-        self.grb_draw_transformations = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/transform.png'),
-                                                                        _("Transformations"))
+        self.grb_draw_transformations = self.grb_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
 
-        self.e_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/drill32.png'), _("Exc Editor"))
-        self.drill = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), _("Add Drill"))
-        self.drill_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/addarray32.png'), _("Add Drill Array"))
+        self.e_editor_cmenu = self.popMenu.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Exc Editor"))
+        self.drill = self.e_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Add Drill"))
+        self.drill_array = self.e_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/addarray32.png'), _("Add Drill Array"))
         self.e_editor_cmenu.addSeparator()
-        self.slot = self.e_editor_cmenu.addAction(QtGui.QIcon('share/slot26.png'), _("Add Slot"))
-        self.slot_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/slot_array26.png'), _("Add Slot Array"))
+        self.slot = self.e_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/slot26.png'), _("Add Slot"))
+        self.slot_array = self.e_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/slot_array26.png'), _("Add Slot Array"))
         self.e_editor_cmenu.addSeparator()
-        self.drill_resize = self.e_editor_cmenu.addAction(QtGui.QIcon('share/resize16.png'), _("Resize Drill"))
+        self.drill_resize = self.e_editor_cmenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/resize16.png'), _("Resize Drill"))
 
         self.popMenu.addSeparator()
-        self.popmenu_copy = self.popMenu.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
-        self.popmenu_delete = self.popMenu.addAction(QtGui.QIcon('share/delete32.png'), _("Delete"))
-        self.popmenu_edit = self.popMenu.addAction(QtGui.QIcon('share/edit32.png'), _("Edit"))
-        self.popmenu_save = self.popMenu.addAction(QtGui.QIcon('share/floppy32.png'), _("Close Editor"))
+        self.popmenu_copy = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy"))
+        self.popmenu_delete = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/delete32.png'), _("Delete"))
+        self.popmenu_edit = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/edit32.png'), _("Edit"))
+        self.popmenu_save = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/floppy32.png'), _("Close Editor"))
         self.popmenu_save.setVisible(False)
         self.popMenu.addSeparator()
 
-        self.popmenu_move = self.popMenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
-        self.popmenu_properties = self.popMenu.addAction(QtGui.QIcon('share/properties32.png'), _("Properties"))
+        self.popmenu_move = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
+        self.popmenu_properties = self.popMenu.addAction(
+            QtGui.QIcon(self.app.resource_location + '/properties32.png'), _("Properties"))
 
         # ########################################################################
         # ########################## INFO BAR # ##################################
         # ########################################################################
         self.infobar = self.statusBar()
-        self.fcinfo = FlatCAMInfoBar()
+        self.fcinfo = FlatCAMInfoBar(app=self.app)
         self.infobar.addWidget(self.fcinfo, stretch=1)
 
         self.rel_position_label = QtWidgets.QLabel(
@@ -2006,12 +2173,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## SET GUI Elements # ##########################
         # ########################################################################
         self.app_icon = QtGui.QIcon()
-        self.app_icon.addFile('share/flatcam_icon16.png', QtCore.QSize(16, 16))
-        self.app_icon.addFile('share/flatcam_icon24.png', QtCore.QSize(24, 24))
-        self.app_icon.addFile('share/flatcam_icon32.png', QtCore.QSize(32, 32))
-        self.app_icon.addFile('share/flatcam_icon48.png', QtCore.QSize(48, 48))
-        self.app_icon.addFile('share/flatcam_icon128.png', QtCore.QSize(128, 128))
-        self.app_icon.addFile('share/flatcam_icon256.png', QtCore.QSize(256, 256))
+        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon16.png', QtCore.QSize(16, 16))
+        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon24.png', QtCore.QSize(24, 24))
+        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon32.png', QtCore.QSize(32, 32))
+        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon48.png', QtCore.QSize(48, 48))
+        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon128.png', QtCore.QSize(128, 128))
+        self.app_icon.addFile(self.app.resource_location + '/flatcam_icon256.png', QtCore.QSize(256, 256))
         self.setWindowIcon(self.app_icon)
 
         self.setGeometry(100, 100, 1024, 650)
@@ -2146,161 +2313,227 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         """
 
         # ## File Toolbar # ##
-        self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
-                                                               _("Open Gerber"))
-        self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), _("Open Excellon"))
+        self.file_open_gerber_btn = self.toolbarfile.addAction(
+            QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _("Open Gerber"))
+        self.file_open_excellon_btn = self.toolbarfile.addAction(
+            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _("Open Excellon"))
         self.toolbarfile.addSeparator()
-        self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), _("Open project"))
-        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/project_save32.png'), _("Save project"))
+        self.file_open_btn = self.toolbarfile.addAction(
+            QtGui.QIcon(self.app.resource_location + '/folder32.png'), _("Open project"))
+        self.file_save_btn = self.toolbarfile.addAction(
+            QtGui.QIcon(self.app.resource_location + '/project_save32.png'), _("Save project"))
 
         # ## Edit Toolbar # ##
-        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_geo32.png'), _("New Blank Geometry"))
-        self.newgrb_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_grb32.png'), _("New Blank Gerber"))
-        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_file_exc32.png'), _("New Blank Excellon"))
+        self.newgeo_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_file_geo32.png'), _("New Blank Geometry"))
+        self.newgrb_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_file_grb32.png'), _("New Blank Gerber"))
+        self.newexc_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_file_exc32.png'), _("New Blank Excellon"))
         self.toolbargeo.addSeparator()
-        self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit32.png'), _("Editor"))
+        self.editgeo_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/edit32.png'), _("Editor"))
         self.update_obj_btn = self.toolbargeo.addAction(
-            QtGui.QIcon('share/close_edit_file32.png'), _("Save Object and close the Editor")
+            QtGui.QIcon(self.app.resource_location + '/close_edit_file32.png'),
+            _("Save Object and close the Editor")
         )
 
         self.toolbargeo.addSeparator()
-        self.copy_btn = self.toolbargeo.addAction(QtGui.QIcon('share/copy_file32.png'), _("Copy"))
-        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/delete_file32.png'), _("&Delete"))
+        self.copy_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy_file32.png'), _("Copy"))
+        self.delete_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/delete_file32.png'), _("&Delete"))
         self.toolbargeo.addSeparator()
-        self.distance_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance32.png'), _("Distance Tool"))
-        self.distance_min_btn = self.toolbargeo.addAction(QtGui.QIcon('share/distance_min32.png'),
-                                                          _("Distance Min Tool"))
-        self.origin_btn = self.toolbargeo.addAction(QtGui.QIcon('share/origin32.png'), _('Set Origin'))
-        self.jmp_btn = self.toolbargeo.addAction(QtGui.QIcon('share/jump_to16.png'), _('Jump to Location'))
+        self.distance_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/distance32.png'), _("Distance Tool"))
+        self.distance_min_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
+        self.origin_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
+        self.jmp_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
 
         # ## View Toolbar # ##
-        self.replot_btn = self.toolbarview.addAction(QtGui.QIcon('share/replot32.png'), _("&Replot"))
-        self.clear_plot_btn = self.toolbarview.addAction(QtGui.QIcon('share/clear_plot32.png'), _("&Clear plot"))
-        self.zoom_in_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_in32.png'), _("Zoom In"))
-        self.zoom_out_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_out32.png'), _("Zoom Out"))
-        self.zoom_fit_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_fit32.png'), _("Zoom Fit"))
+        self.replot_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("&Replot"))
+        self.clear_plot_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _("&Clear plot"))
+        self.zoom_in_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_in32.png'), _("Zoom In"))
+        self.zoom_out_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_out32.png'), _("Zoom Out"))
+        self.zoom_fit_btn = self.toolbarview.addAction(
+            QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("Zoom Fit"))
 
         # self.toolbarview.setVisible(False)
 
         # ## Shell Toolbar # ##
-        self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), _("&Command Line"))
-        self.new_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script_new24.png'), _('New Script ...'))
-        self.open_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/open_script32.png'), _('Open Script ...'))
-        self.run_script_btn = self.toolbarshell.addAction(QtGui.QIcon('share/script16.png'), _('Run Script ...'))
+        self.shell_btn = self.toolbarshell.addAction(
+            QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("&Command Line"))
+        self.new_script_btn = self.toolbarshell.addAction(
+            QtGui.QIcon(self.app.resource_location + '/script_new24.png'), _('New Script ...'))
+        self.open_script_btn = self.toolbarshell.addAction(
+            QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'))
+        self.run_script_btn = self.toolbarshell.addAction(
+            QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Run Script ...'))
 
         # ## Tools Toolbar # ##
-        self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), _("2Sided Tool"))
-        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16_bis.png'), _("&Cutout Tool"))
-        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/ncc16.png'), _("NCC Tool"))
-        self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint Tool"))
+        self.dblsided_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
+        self.cutout_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("&Cutout Tool"))
+        self.ncc_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/ncc16.png'), _("NCC Tool"))
+        self.paint_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _("Paint Tool"))
         self.toolbartools.addSeparator()
 
-        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panelize32.png'), _("Panel Tool"))
-        self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
-        self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'),
+        self.panelize_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/panelize32.png'), _("Panel Tool"))
+        self.film_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/film16.png'), _("Film Tool"))
+        self.solder_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'),
                                                       _("SolderPaste Tool"))
-        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Subtract Tool"))
+        self.sub_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
 
         self.toolbartools.addSeparator()
 
-        self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'),
-                                                           _("Calculators Tool"))
-        self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
-        self.qrcode_btn = self.toolbartools.addAction(QtGui.QIcon('share/qrcode32.png'), _("QRCode Tool"))
-        self.copperfill_btn = self.toolbartools.addAction(QtGui.QIcon('share/copperfill32.png'),
-                                                          _("Copper Thieving Tool"))
+        self.calculators_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/calculator24.png'), _("Calculators Tool"))
+        self.transform_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transform Tool"))
+        self.qrcode_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/qrcode32.png'), _("QRCode Tool"))
+        self.copperfill_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copperfill32.png'), _("Copper Thieving Tool"))
 
-        self.fiducials_btn = self.toolbartools.addAction(QtGui.QIcon('share/fiducials_32.png'), _("Fiducials Tool"))
-        self.cal_btn = self.toolbartools.addAction(QtGui.QIcon('share/calibrate_32.png'), _("Calibration Tool"))
+        self.fiducials_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/fiducials_32.png'), _("Fiducials Tool"))
+        self.cal_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
 
         # ## Excellon Editor Toolbar # ##
-        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
-        self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Drill Hole'))
+        self.select_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
+        self.add_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/plus16.png'), _('Add Drill Hole'))
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon('share/addarray16.png'), _('Add Drill Hole Array'))
-        self.resize_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/resize16.png'), _('Resize Drill'))
-        self.add_slot_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/slot26.png'), _('Add Slot'))
+            QtGui.QIcon(self.app.resource_location + '/addarray16.png'), _('Add Drill Hole Array'))
+        self.resize_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/resize16.png'), _('Resize Drill'))
+        self.add_slot_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/slot26.png'), _('Add Slot'))
         self.add_slot_array_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon('share/slot_array26.png'), _('Add Slot Array'))
+            QtGui.QIcon(self.app.resource_location + '/slot_array26.png'), _('Add Slot Array'))
         self.exc_edit_toolbar.addSeparator()
 
-        self.copy_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _('Copy Drill'))
-        self.delete_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
-                                                                _("Delete Drill"))
+        self.copy_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _('Copy Drill'))
+        self.delete_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Drill"))
 
         self.exc_edit_toolbar.addSeparator()
-        self.move_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move Drill"))
+        self.move_drill_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Drill"))
 
         # ## Geometry Editor Toolbar # ##
-        self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select 'Esc'"))
-        self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/circle32.png'), _('Add Circle'))
-        self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/arc32.png'), _('Add Arc'))
-        self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'),
-                                                                     _('Add Rectangle'))
+        self.geo_select_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select 'Esc'"))
+        self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/circle32.png'), _('Add Circle'))
+        self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/arc32.png'), _('Add Arc'))
+        self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/rectangle32.png'), _('Add Rectangle'))
 
         self.geo_edit_toolbar.addSeparator()
-        self.geo_add_path_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/path32.png'), _('Add Path'))
-        self.geo_add_polygon_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'),
-                                                                   _('Add Polygon'))
+        self.geo_add_path_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/path32.png'), _('Add Path'))
+        self.geo_add_polygon_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _('Add Polygon'))
         self.geo_edit_toolbar.addSeparator()
-        self.geo_add_text_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/text32.png'), _('Add Text'))
-        self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Add Buffer'))
-        self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/paint20_1.png'), _('Paint Shape'))
-        self.geo_eraser_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
+        self.geo_add_text_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/text32.png'), _('Add Text'))
+        self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Add Buffer'))
+        self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/paint20_1.png'), _('Paint Shape'))
+        self.geo_eraser_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
 
         self.geo_edit_toolbar.addSeparator()
-        self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), _('Polygon Union'))
-        self.geo_explode_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/explode32.png'), _('Polygon Explode'))
+        self.geo_union_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/union32.png'), _('Polygon Union'))
+        self.geo_explode_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/explode32.png'), _('Polygon Explode'))
 
-        self.geo_intersection_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/intersection32.png'),
-                                                                    _('Polygon Intersection'))
-        self.geo_subtract_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/subtract32.png'),
-                                                                _('Polygon Subtraction'))
-
-        self.geo_edit_toolbar.addSeparator()
-        self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), _('Cut Path'))
-        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy Objects"))
-        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
-                                                              _("Delete Shape"))
-        self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'),
-                                                                 _("Transformations"))
+        self.geo_intersection_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/intersection32.png'), _('Polygon Intersection'))
+        self.geo_subtract_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/subtract32.png'), _('Polygon Subtraction'))
 
         self.geo_edit_toolbar.addSeparator()
-        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move Objects"))
+        self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/cutpath32.png'), _('Cut Path'))
+        self.geo_copy_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy Objects"))
+        self.geo_delete_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete Shape"))
+        self.geo_transform_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
+
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_move_btn = self.geo_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move Objects"))
 
         # ## Gerber Editor Toolbar # ##
-        self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
-        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture32.png'), _("Add Pad"))
-        self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/padarray32.png'), _('Add Pad Array'))
-        self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
-        self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
-        self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/poligonize32.png'),
-                                                                    _("Poligonize"))
+        self.grb_select_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/pointer32.png'), _("Select"))
+        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/aperture32.png'), _("Add Pad"))
+        self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/padarray32.png'), _('Add Pad Array'))
+        self.grb_add_track_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/track32.png'), _("Add Track"))
+        self.grb_add_region_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/polygon32.png'), _("Add Region"))
+        self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/poligonize32.png'), _("Poligonize"))
 
-        self.grb_add_semidisc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/semidisc32.png'), _("SemiDisc"))
-        self.grb_add_disc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/disc32.png'), _("Disc"))
+        self.grb_add_semidisc_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/semidisc32.png'), _("SemiDisc"))
+        self.grb_add_disc_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/disc32.png'), _("Disc"))
         self.grb_edit_toolbar.addSeparator()
 
-        self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
-        self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
-        self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/markarea32.png'),
-                                                                     _('Mark Area'))
-        self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
+        self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/buffer16-2.png'), _('Buffer'))
+        self.aperture_scale_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/scale32.png'), _('Scale'))
+        self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/markarea32.png'), _('Mark Area'))
+        self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/eraser26.png'), _('Eraser'))
 
         self.grb_edit_toolbar.addSeparator()
-        self.aperture_copy_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
-        self.aperture_delete_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
-                                                                   _("Delete"))
-        self.grb_transform_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'),
-                                                                 _("Transformations"))
+        self.aperture_copy_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/copy32.png'), _("Copy"))
+        self.aperture_delete_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/trash32.png'), _("Delete"))
+        self.grb_transform_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/transform.png'), _("Transformations"))
         self.grb_edit_toolbar.addSeparator()
-        self.aperture_move_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
+        self.aperture_move_btn = self.grb_edit_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/move32.png'), _("Move"))
 
         # ## Snap Toolbar # ##
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
         # self.addToolBar(self.snap_toolbar)
 
-        self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/grid32.png'), _('Snap to grid'))
+        self.grid_snap_btn = self.snap_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/grid32.png'), _('Snap to grid'))
         self.grid_gap_x_entry = FCEntry2()
         self.grid_gap_x_entry.setMaximumWidth(70)
         self.grid_gap_x_entry.setToolTip(_("Grid X snapping distance"))
@@ -2314,13 +2547,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grid_space_label = QtWidgets.QLabel("  ")
         self.snap_toolbar.addWidget(self.grid_space_label)
         self.grid_gap_link_cb = FCCheckBox()
-        self.grid_gap_link_cb.setToolTip(_("When active, value on Grid_X\n"
-                                         "is copied to the Grid_Y value."))
+        self.grid_gap_link_cb.setToolTip(_("When active, value on Grid_X\n" 
+                                           "is copied to the Grid_Y value."))
         self.snap_toolbar.addWidget(self.grid_gap_link_cb)
 
         self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
 
-        self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/corner32.png'), _('Snap to corner'))
+        self.corner_snap_btn = self.snap_toolbar.addAction(
+            QtGui.QIcon(self.app.resource_location + '/corner32.png'), _('Snap to corner'))
 
         self.snap_max_dist_entry = FCEntry()
         self.snap_max_dist_entry.setMaximumWidth(70)
@@ -2819,7 +3053,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         messagebox = QtWidgets.QMessageBox()
                         messagebox.setText(msg)
                         messagebox.setWindowTitle(_("Warning"))
-                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                        messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
                         messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                         messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                         messagebox.exec_()
@@ -2963,7 +3197,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             messagebox = QtWidgets.QMessageBox()
                             messagebox.setText(msg)
                             messagebox.setWindowTitle(_("Warning"))
-                            messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                             messagebox.exec_()
@@ -3022,7 +3256,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             messagebox = QtWidgets.QMessageBox()
                             messagebox.setText(msg)
                             messagebox.setWindowTitle(_("Warning"))
-                            messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                             messagebox.exec_()
@@ -3042,7 +3276,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             messagebox = QtWidgets.QMessageBox()
                             messagebox.setText(msg)
                             messagebox.setWindowTitle(_("Warning"))
-                            messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                            messagebox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/warning.png'))
                             messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                             messagebox.exec_()
@@ -3482,7 +3716,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     tool_add_popup = FCInputDialog(title=_("New Tool ..."),
                                                    text='%s:' % _('Enter a Tool Diameter'),
                                                    min=0.0000, max=99.9999, decimals=4)
-                    tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+                    tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
                     val, ok = tool_add_popup.get_value()
                     if ok:
@@ -3712,20 +3946,20 @@ class FlatCAMActivityView(QtWidgets.QWidget):
         self.app = app
 
         if self.app.defaults["global_activity_icon"] == "Ball green":
-            icon = 'share/active_2_static.png'
-            movie = "share/active_2.gif"
+            icon = self.app.resource_location + '/active_2_static.png'
+            movie = self.app.resource_location + "/active_2.gif"
         elif self.app.defaults["global_activity_icon"] == "Ball black":
-            icon = 'share/active_static.png'
-            movie = "share/active.gif"
+            icon = self.app.resource_location + '/active_static.png'
+            movie = self.app.resource_location + "/active.gif"
         elif self.app.defaults["global_activity_icon"] == "Arrow green":
-            icon = 'share/active_3_static.png'
-            movie = "share/active_3.gif"
+            icon = self.app.resource_location + '/active_3_static.png'
+            movie = self.app.resource_location + "/active_3.gif"
         elif self.app.defaults["global_activity_icon"] == "Eclipse green":
-            icon = 'share/active_4_static.png'
-            movie = "share/active_4.gif"
+            icon = self.app.resource_location + '/active_4_static.png'
+            movie = self.app.resource_location + "/active_4.gif"
         else:
-            icon = 'share/active_static.png'
-            movie = "share/active.gif"
+            icon = self.app.resource_location + '/active_static.png'
+            movie = self.app.resource_location + "/active.gif"
 
         self.setMinimumWidth(200)
         self.movie_path = movie
@@ -3766,12 +4000,14 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
     This class create a place to display the App messages in the Status Bar
     """
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, app=None):
         super(FlatCAMInfoBar, self).__init__(parent=parent)
+
+        self.app = app
 
         self.icon = QtWidgets.QLabel(self)
         self.icon.setGeometry(0, 0, 12, 12)
-        self.pmap = QtGui.QPixmap('share/graylight12.png')
+        self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
         self.icon.setPixmap(self.pmap)
 
         layout = QtWidgets.QHBoxLayout()
@@ -3798,15 +4034,15 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
         level = str(level)
         self.pmap.fill()
         if level == "ERROR" or level == "ERROR_NOTCL":
-            self.pmap = QtGui.QPixmap('share/redlight12.png')
+            self.pmap = QtGui.QPixmap(self.app.resource_location + '/redlight12.png')
         elif level == "success" or level == "SUCCESS":
-            self.pmap = QtGui.QPixmap('share/greenlight12.png')
+            self.pmap = QtGui.QPixmap(self.app.resource_location + '/greenlight12.png')
         elif level == "WARNING" or level == "WARNING_NOTCL":
-            self.pmap = QtGui.QPixmap('share/yellowlight12.png')
+            self.pmap = QtGui.QPixmap(self.app.resource_location + '/yellowlight12.png')
         elif level == "selected" or level == "SELECTED":
-            self.pmap = QtGui.QPixmap('share/bluelight12.png')
+            self.pmap = QtGui.QPixmap(self.app.resource_location + '/bluelight12.png')
         else:
-            self.pmap = QtGui.QPixmap('share/graylight12.png')
+            self.pmap = QtGui.QPixmap(self.app.resource_location + '/graylight12.png')
 
         self.set_text_(text)
         self.icon.setPixmap(self.pmap)
@@ -3824,7 +4060,8 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
 
         menu = QtWidgets.QMenu(parent)
 
-        menu_runscript = QtWidgets.QAction(QtGui.QIcon('share/script14.png'), '%s' % _('Run Script ...'), self)
+        menu_runscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/script14.png'),
+                                           '%s' % _('Run Script ...'), self)
         menu_runscript.setToolTip(
             _("Will run the opened Tcl Script thus\n"
               "enabling the automation of certain\n"
@@ -3835,25 +4072,27 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
         menu.addSeparator()
 
         if headless is None:
-            self.menu_open = menu.addMenu(QtGui.QIcon('share/folder32_bis.png'), _('Open'))
+            self.menu_open = menu.addMenu(QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'), _('Open'))
 
             # Open Project ...
-            menu_openproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), _('Open Project ...'), self)
+            menu_openproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'),
+                                                 _('Open Project ...'), self)
             self.menu_open.addAction(menu_openproject)
             self.menu_open.addSeparator()
 
             # Open Gerber ...
-            menu_opengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
+            menu_opengerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon24.png'),
                                                 _('Open &Gerber ...\tCTRL+G'), self)
             self.menu_open.addAction(menu_opengerber)
 
             # Open Excellon ...
-            menu_openexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'),
+            menu_openexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'),
                                                   _('Open &Excellon ...\tCTRL+E'), self)
             self.menu_open.addAction(menu_openexcellon)
 
             # Open G-Code ...
-            menu_opengcode = QtWidgets.QAction(QtGui.QIcon('share/code.png'), _('Open G-&Code ...'), self)
+            menu_opengcode = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/code.png'),
+                                               _('Open G-&Code ...'), self)
             self.menu_open.addAction(menu_opengcode)
 
             self.menu_open.addSeparator()
@@ -3864,7 +4103,7 @@ class FlatCAMSystemTray(QtWidgets.QSystemTrayIcon):
             menu_opengcode.triggered.connect(self.app.on_fileopengcode)
 
         exitAction = menu.addAction(_("Exit"))
-        exitAction.setIcon(QtGui.QIcon('share/power16.png'))
+        exitAction.setIcon(QtGui.QIcon(self.app.resource_location + '/power16.png'))
         self.setContextMenu(menu)
 
         menu_runscript.triggered.connect(lambda: self.app.on_filerunscript(

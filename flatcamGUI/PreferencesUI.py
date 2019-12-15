@@ -1031,7 +1031,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
                          "\n")
                        )
         msgbox.setWindowTitle(_("Clear GUI Settings"))
-        msgbox.setWindowIcon(QtGui.QIcon('share/trash32.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
         bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
         bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 

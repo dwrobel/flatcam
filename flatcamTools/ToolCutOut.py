@@ -73,9 +73,9 @@ class CutOut(FlatCAMTool):
 
         # we get rid of item1 ("Excellon") as it is not suitable for creating film
         self.type_obj_combo.view().setRowHidden(1, True)
-        self.type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        # self.type_obj_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
-        self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        # self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.type_obj_combo_label.setToolTip(

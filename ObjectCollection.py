@@ -234,7 +234,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # ## Icons for the list view
         self.icons = {}
         for kind in ObjectCollection.icon_files:
-            self.icons[kind] = QtGui.QPixmap(ObjectCollection.icon_files[kind])
+            self.icons[kind] = QtGui.QPixmap(
+                ObjectCollection.icon_files[kind].replace('share', self.app.resource_location))
 
         # Create root tree view item
         self.root_item = TreeItem(["root"])

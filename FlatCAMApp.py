@@ -962,6 +962,11 @@ class App(QtCore.QObject):
         else:
             self.decimals = int(self.defaults['decimals_inch'])
 
+        if self.defaults["global_theme"] == 'white':
+            self.resource_location = 'share'
+        else:
+            self.resource_location = 'share'
+
         self.current_units = self.defaults['units']
 
         # #############################################################################
@@ -985,7 +990,7 @@ class App(QtCore.QObject):
             show_splash = 1
 
         if show_splash and self.cmd_line_headless != 1:
-            splash_pix = QtGui.QPixmap('share/splash.png')
+            splash_pix = QtGui.QPixmap(self.resource_location + '/splash.png')
             self.splash = QtWidgets.QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
             # self.splash.setMask(splash_pix.mask())
 
@@ -1702,11 +1707,13 @@ class App(QtCore.QObject):
             self.parent_w = QtWidgets.QWidget()
 
             if self.cmd_line_headless == 1:
-                self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
+                self.trayIcon = FlatCAMSystemTray(app=self,
+                                                  icon=QtGui.QIcon(self.resource_location + '/flatcam_icon32_green.png'),
                                                   headless=True,
                                                   parent=self.parent_w)
             else:
-                self.trayIcon = FlatCAMSystemTray(app=self, icon=QtGui.QIcon('share/flatcam_icon32_green.png'),
+                self.trayIcon = FlatCAMSystemTray(app=self,
+                                                  icon=QtGui.QIcon(self.resource_location + '/flatcam_icon32_green.png'),
                                                   parent=self.parent_w)
 
         # #############################################################################
@@ -2992,84 +2999,96 @@ class App(QtCore.QObject):
         :return: None
         """
         self.dblsidedtool = DblSidedTool(self)
-        self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
+        self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=True)
 
         self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon('share/calibrate_16.png'), pos=self.ui.menutool,
+        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menutool,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)
         self.distance_tool = Distance(self)
-        self.distance_tool.install(icon=QtGui.QIcon('share/distance16.png'), pos=self.ui.menuedit,
+        self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
                                    before=self.ui.menueditorigin,
                                    separator=False)
 
         self.distance_min_tool = DistanceMin(self)
-        self.distance_min_tool.install(icon=QtGui.QIcon('share/distance_min16.png'), pos=self.ui.menuedit,
+        self.distance_min_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance_min16.png'),
+                                       pos=self.ui.menuedit,
                                        before=self.ui.menueditorigin,
                                        separator=True)
 
         self.panelize_tool = Panelize(self)
-        self.panelize_tool.install(icon=QtGui.QIcon('share/panelize16.png'))
+        self.panelize_tool.install(icon=QtGui.QIcon(self.resource_location + '/panelize16.png'))
 
         self.film_tool = Film(self)
-        self.film_tool.install(icon=QtGui.QIcon('share/film16.png'))
+        self.film_tool.install(icon=QtGui.QIcon(self.resource_location + '/film16.png'))
 
         self.paste_tool = SolderPaste(self)
-        self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'))
+        self.paste_tool.install(icon=QtGui.QIcon(self.resource_location + '/solderpastebis32.png'))
 
         self.calculator_tool = ToolCalculator(self)
-        self.calculator_tool.install(icon=QtGui.QIcon('share/calculator16.png'), separator=True)
+        self.calculator_tool.install(icon=QtGui.QIcon(self.resource_location + '/calculator16.png'), separator=True)
 
         self.sub_tool = ToolSub(self)
-        self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menutool, separator=True)
+        self.sub_tool.install(icon=QtGui.QIcon(self.resource_location + '/sub32.png'),
+                              pos=self.ui.menutool, separator=True)
 
         self.rules_tool = RulesCheck(self)
-        self.rules_tool.install(icon=QtGui.QIcon('share/rules32.png'), pos=self.ui.menutool, separator=False)
+        self.rules_tool.install(icon=QtGui.QIcon(self.resource_location + '/rules32.png'),
+                                pos=self.ui.menutool, separator=False)
 
         self.optimal_tool = ToolOptimal(self)
-        self.optimal_tool.install(icon=QtGui.QIcon('share/open_excellon32.png'), pos=self.ui.menutool, separator=True)
+        self.optimal_tool.install(icon=QtGui.QIcon(self.resource_location + '/open_excellon32.png'),
+                                  pos=self.ui.menutool, separator=True)
 
         self.move_tool = ToolMove(self)
-        self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
+        self.move_tool.install(icon=QtGui.QIcon(self.resource_location + '/move16.png'), pos=self.ui.menuedit,
                                before=self.ui.menueditorigin, separator=True)
 
         self.cutout_tool = CutOut(self)
-        self.cutout_tool.install(icon=QtGui.QIcon('share/cut16_bis.png'), pos=self.ui.menutool,
+        self.cutout_tool.install(icon=QtGui.QIcon(self.resource_location + '/cut16_bis.png'), pos=self.ui.menutool,
                                  before=self.sub_tool.menuAction)
 
         self.ncclear_tool = NonCopperClear(self)
-        self.ncclear_tool.install(icon=QtGui.QIcon('share/ncc16.png'), pos=self.ui.menutool,
+        self.ncclear_tool.install(icon=QtGui.QIcon(self.resource_location + '/ncc16.png'), pos=self.ui.menutool,
                                   before=self.sub_tool.menuAction, separator=True)
 
         self.paint_tool = ToolPaint(self)
-        self.paint_tool.install(icon=QtGui.QIcon('share/paint16.png'), pos=self.ui.menutool,
+        self.paint_tool.install(icon=QtGui.QIcon(self.resource_location + '/paint16.png'), pos=self.ui.menutool,
                                 before=self.sub_tool.menuAction, separator=True)
 
         self.copper_thieving_tool = ToolCopperThieving(self)
-        self.copper_thieving_tool.install(icon=QtGui.QIcon('share/copperfill32.png'), pos=self.ui.menutool)
+        self.copper_thieving_tool.install(icon=QtGui.QIcon(self.resource_location + '/copperfill32.png'),
+                                          pos=self.ui.menutool)
 
         self.fiducial_tool = ToolFiducials(self)
-        self.fiducial_tool.install(icon=QtGui.QIcon('share/fiducials_32.png'), pos=self.ui.menutool)
+        self.fiducial_tool.install(icon=QtGui.QIcon(self.resource_location + '/fiducials_32.png'),
+                                   pos=self.ui.menutool)
 
         self.qrcode_tool = QRCode(self)
-        self.qrcode_tool.install(icon=QtGui.QIcon('share/qrcode32.png'), pos=self.ui.menutool)
+        self.qrcode_tool.install(icon=QtGui.QIcon(self.resource_location + '/qrcode32.png'),
+                                 pos=self.ui.menutool)
 
         self.transform_tool = ToolTransform(self)
-        self.transform_tool.install(icon=QtGui.QIcon('share/transform.png'), pos=self.ui.menuoptions, separator=True)
+        self.transform_tool.install(icon=QtGui.QIcon(self.resource_location + '/transform.png'),
+                                    pos=self.ui.menuoptions, separator=True)
 
         self.properties_tool = Properties(self)
-        self.properties_tool.install(icon=QtGui.QIcon('share/properties32.png'), pos=self.ui.menuoptions)
+        self.properties_tool.install(icon=QtGui.QIcon(self.resource_location + '/properties32.png'),
+                                     pos=self.ui.menuoptions)
 
         self.pdf_tool = ToolPDF(self)
-        self.pdf_tool.install(icon=QtGui.QIcon('share/pdf32.png'), pos=self.ui.menufileimport,
+        self.pdf_tool.install(icon=QtGui.QIcon(self.resource_location + '/pdf32.png'),
+                              pos=self.ui.menufileimport,
                               separator=True)
 
         self.image_tool = ToolImage(self)
-        self.image_tool.install(icon=QtGui.QIcon('share/image32.png'), pos=self.ui.menufileimport,
+        self.image_tool.install(icon=QtGui.QIcon(self.resource_location + '/image32.png'),
+                                pos=self.ui.menufileimport,
                                 separator=True)
 
         self.pcb_wizard_tool = PcbWizard(self)
-        self.pcb_wizard_tool.install(icon=QtGui.QIcon('share/drill32.png'), pos=self.ui.menufileimport)
+        self.pcb_wizard_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill32.png'),
+                                     pos=self.ui.menufileimport)
 
         self.log.debug("Tools are installed.")
 
@@ -3112,7 +3131,8 @@ class App(QtCore.QObject):
         self.remove_tools()
 
         # re-add the TCL Shell action to the Tools menu and reconnect it to ist slot function
-        self.ui.menutoolshell = self.ui.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line\tS')
+        self.ui.menutoolshell = self.ui.menutool.addAction(QtGui.QIcon(self.resource_location + '/shell16.png'),
+                                                           '&Command Line\tS')
         self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
 
         # third install all of them
@@ -3293,7 +3313,7 @@ class App(QtCore.QObject):
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setText(_("Do you want to save the edited object?"))
                 msgbox.setWindowTitle(_("Close Editor"))
-                msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
                 bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
@@ -4418,8 +4438,10 @@ class App(QtCore.QObject):
         beta = self.beta
 
         class AboutDialog(QtWidgets.QDialog):
-            def __init__(self, parent=None):
+            def __init__(self, app, parent=None):
                 QtWidgets.QDialog.__init__(self, parent)
+
+                self.app = app
 
                 # Icon and title
                 self.setWindowIcon(parent.app_icon)
@@ -4431,14 +4453,14 @@ class App(QtCore.QObject):
                 #     "background-attachment: fixed"
                 # )
 
-                # bgimage = QtGui.QImage('share/flatcam_icon256.png')
+                # bgimage = QtGui.QImage(self.resource_location + '/flatcam_icon256.png')
                 # s_bgimage = bgimage.scaled(QtCore.QSize(self.frameGeometry().width(), self.frameGeometry().height()))
                 # palette = QtGui.QPalette()
                 # palette.setBrush(10, QtGui.QBrush(bgimage))  # 10 = Windowrole
                 # self.setPalette(palette)
 
                 logo = QtWidgets.QLabel()
-                logo.setPixmap(QtGui.QPixmap('share/flatcam_icon256.png'))
+                logo.setPixmap(QtGui.QPixmap(self.app.resource_location + '/flatcam_icon256.png'))
 
                 title = QtWidgets.QLabel(
                     "<font size=8><B>FlatCAM</B></font><BR>"
@@ -4630,6 +4652,8 @@ class App(QtCore.QObject):
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Breneman"), 30, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Eric Varsanyi"), 31, 0)
 
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 34, 0)
+
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Idechix"), 100, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@SM"), 101, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@grbf"), 102, 0)
@@ -4664,12 +4688,12 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Carlos Stein"), 1, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<carlos.stein@gmail.com>"),  1, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "French"), 2, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 2, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "(Google-Translation)"), 2, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 2, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 2, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 3, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 3, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt"), 3, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 3, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt, @detlefeckardt"), 3, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 4, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 1)
@@ -4678,8 +4702,8 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 5, 1)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "<camellan@yandex.ru>"), 5, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Spanish"), 6, 0)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 6, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "(Google-Translation)"), 6, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 6, 1)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % ""), 6, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 6, 3)
                 self.translator_grid_lay.setColumnStretch(0, 0)
                 self.translators_tab_layout.addStretch()
@@ -4697,7 +4721,7 @@ class App(QtCore.QObject):
 
                 closebtn.clicked.connect(self.accept)
 
-        AboutDialog(self.ui).exec_()
+        AboutDialog(app=self, parent=self.ui).exec_()
 
     def install_bookmarks(self, book_dict=None):
         """
@@ -4751,7 +4775,7 @@ class App(QtCore.QObject):
                 act = QtWidgets.QAction(parent=self.ui.menuhelp_bookmarks)
                 act.setText(title)
 
-                act.setIcon(QtGui.QIcon('share/link16.png'))
+                act.setIcon(QtGui.QIcon(self.resource_location + '/link16.png'))
                 # from here: https://stackoverflow.com/questions/20390323/pyqt-dynamic-generate-qmenu-action-and-connect
                 if title == 'Backup Site' and weblink == "":
                     act.triggered.connect(self.on_backup_site)
@@ -4784,8 +4808,7 @@ class App(QtCore.QObject):
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.book_dialog_tab)
 
-    @staticmethod
-    def on_backup_site():
+    def on_backup_site(self):
         msgbox = QtWidgets.QMessageBox()
         msgbox.setText(_("This entry will resolve to another website if:\n\n"
                          "1. FlatCAM.org website is down\n"
@@ -4795,7 +4818,7 @@ class App(QtCore.QObject):
                          "use the YouTube channel link from the Help menu."))
 
         msgbox.setWindowTitle(_("Alternative website"))
-        msgbox.setWindowIcon(QtGui.QIcon('share/globe16.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/globe16.png'))
         bt_yes = msgbox.addButton(_('Close'), QtWidgets.QMessageBox.YesRole)
 
         msgbox.setDefaultButton(bt_yes)
@@ -4822,7 +4845,7 @@ class App(QtCore.QObject):
     #                        "\n"
     #                        "Do you want to Save the project?")
     #         msgbox.setWindowTitle("Save changes")
-    #         msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+    #         msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
     #         msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
     #                                   QtWidgets.QMessageBox.Cancel)
     #         msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
@@ -5002,7 +5025,7 @@ class App(QtCore.QObject):
                              "\n"
                              "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
-            msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
@@ -5836,7 +5859,7 @@ class App(QtCore.QObject):
         # Changing project units. Warn user.
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
-        msgbox.setWindowIcon(QtGui.QIcon('share/toggle_units32.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/toggle_units32.png'))
         msgbox.setText(_("Changing the units of the project\n"
                          "will scale all objects.\n\n"
                          "Do you want to continue?"))
@@ -7064,7 +7087,7 @@ class App(QtCore.QObject):
                     tool_add_popup = FCInputDialog(title="New Tool ...",
                                                    text='Enter a Tool Diameter:',
                                                    min=0.0000, max=99.9999, decimals=4)
-                    tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+                    tool_add_popup.setWindowIcon(QtGui.QIcon(self.resource_location + '/letter_t_32.png'))
 
                     val, ok = tool_add_popup.get_value()
                     if ok:
@@ -7081,7 +7104,7 @@ class App(QtCore.QObject):
                     msgbox.setText(_("Adding Tool works only when Advanced is checked.\n"
                                    "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
-                    msgbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                    msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/warning.png'))
                     bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
 
                     msgbox.setDefaultButton(bt_ok)
@@ -7154,7 +7177,7 @@ class App(QtCore.QObject):
             if self.defaults["global_delete_confirmation"] is True:
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
-                msgbox.setWindowIcon(QtGui.QIcon('share/deleteshape32.png'))
+                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/deleteshape32.png'))
                 # msgbox.setText("<B>%s</B>" % _("Change project units ..."))
                 msgbox.setText(_("Are you sure you want to permanently delete\n"
                                  "the selected objects?"))
@@ -7351,7 +7374,7 @@ class App(QtCore.QObject):
 
             dia_box = Dialog_box(title=_("Jump to ..."),
                                  label=_("Enter the coordinates in format X,Y:"),
-                                 icon=QtGui.QIcon('share/jump_to16.png'),
+                                 icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
                                  initial_text=dia_box_location)
 
             if dia_box.ok is True:
@@ -7861,7 +7884,7 @@ class App(QtCore.QObject):
                 msgbox.setText(_("One or more values are changed.\n"
                                  "Do you want to save the Preferences?"))
                 msgbox.setWindowTitle(_("Save Preferences"))
-                msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
                 msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
@@ -7887,7 +7910,7 @@ class App(QtCore.QObject):
                 msgbox.setText(_("One or more Tools are edited.\n"
                                  "Do you want to update the Tools Database?"))
                 msgbox.setWindowTitle(_("Save Tools Database"))
-                msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+                msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
 
                 bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
                 msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
@@ -8183,12 +8206,12 @@ class App(QtCore.QObject):
         :return: None
         """
         icon_files = {
-            "gerber": "share/flatcam_icon16.png",
-            "excellon": "share/drill16.png",
-            "cncjob": "share/cnc16.png",
-            "geometry": "share/geometry16.png",
-            "script": "share/script_new16.png",
-            "document": "share/notes16_1.png"
+            "gerber": self.resource_location + "/flatcam_icon16.png",
+            "excellon": self.resource_location + "/drill16.png",
+            "cncjob": self.resource_location + "/cnc16.png",
+            "geometry": self.resource_location + "/geometry16.png",
+            "script": self.resource_location + "/script_new16.png",
+            "document": self.resource_location + "/notes16_1.png"
         }
 
         if state == 'append':
@@ -8257,11 +8280,11 @@ class App(QtCore.QObject):
 
             self.ui.menuobjects.addSeparator()
             self.ui.menuobjects_selall = self.ui.menuobjects.addAction(
-                QtGui.QIcon('share/select_all.png'),
+                QtGui.QIcon(self.resource_location + '/select_all.png'),
                 _('Select All')
             )
             self.ui.menuobjects_unselall = self.ui.menuobjects.addAction(
-                QtGui.QIcon('share/deselect_all32.png'),
+                QtGui.QIcon(self.resource_location + '/deselect_all32.png'),
                 _('Deselect All')
             )
             self.ui.menuobjects_selall.triggered.connect(lambda: self.on_objects_selection(True))
@@ -8304,11 +8327,11 @@ class App(QtCore.QObject):
 
             self.ui.menuobjects.addSeparator()
             self.ui.menuobjects_selall = self.ui.menuobjects.addAction(
-                QtGui.QIcon('share/select_all.png'),
+                QtGui.QIcon(self.resource_location + '/select_all.png'),
                 _('Select All')
             )
             self.ui.menuobjects_unselall = self.ui.menuobjects.addAction(
-                QtGui.QIcon('share/deselect_all32.png'),
+                QtGui.QIcon(self.resource_location + '/deselect_all32.png'),
                 _('Deselect All')
             )
             self.ui.menuobjects_selall.triggered.connect(lambda: self.on_objects_selection(True))
@@ -8351,7 +8374,8 @@ class App(QtCore.QObject):
         self.ui.cmenu_gridmenu.clear()
         sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
 
-        grid_toggle = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), _("Grid On/Off"))
+        grid_toggle = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon(self.resource_location + '/grid32_menu.png'),
+                                                       _("Grid On/Off"))
         grid_toggle.setCheckable(True)
         if self.grid_status() == True:
             grid_toggle.setChecked(True)
@@ -8360,12 +8384,15 @@ class App(QtCore.QObject):
 
         self.ui.cmenu_gridmenu.addSeparator()
         for grid in sorted_list:
-            action = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "%s" % str(grid))
+            action = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon(self.resource_location + '/grid32_menu.png'),
+                                                      "%s" % str(grid))
             action.triggered.connect(self.set_grid)
 
         self.ui.cmenu_gridmenu.addSeparator()
-        grid_add = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/plus32.png'), _("Add"))
-        grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/delete32.png'), _("Delete"))
+        grid_add = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon(self.resource_location + '/plus32.png'),
+                                                    _("Add"))
+        grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon(self.resource_location + '/delete32.png'),
+                                                       _("Delete"))
         grid_add.triggered.connect(self.on_grid_add)
         grid_delete.triggered.connect(self.on_grid_delete)
         grid_toggle.triggered.connect(lambda: self.ui.grid_snap_btn.trigger())
@@ -8381,7 +8408,7 @@ class App(QtCore.QObject):
         grid_add_popup = FCInputDialog(title=_("New Grid ..."),
                                        text=_('Enter a Grid Value:'),
                                        min=0.0000, max=99.9999, decimals=4)
-        grid_add_popup.setWindowIcon(QtGui.QIcon('share/plus32.png'))
+        grid_add_popup.setWindowIcon(QtGui.QIcon(self.resource_location + '/plus32.png'))
 
         val, ok = grid_add_popup.get_value()
         if ok:
@@ -8408,7 +8435,7 @@ class App(QtCore.QObject):
         grid_del_popup = FCInputDialog(title="Delete Grid ...",
                                        text='Enter a Grid Value:',
                                        min=0.0000, max=99.9999, decimals=4)
-        grid_del_popup.setWindowIcon(QtGui.QIcon('share/delete32.png'))
+        grid_del_popup.setWindowIcon(QtGui.QIcon(self.resource_location + '/delete32.png'))
 
         val, ok = grid_del_popup.get_value()
         if ok:
@@ -9046,7 +9073,7 @@ class App(QtCore.QObject):
                              "Creating a New project will delete them.\n"
                              "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
-            msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+            msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/save_as.png'))
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
             bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
             bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
@@ -11532,17 +11559,17 @@ class App(QtCore.QObject):
 
         # TODO: Move this to constructor
         icons = {
-            "gerber": "share/flatcam_icon16.png",
-            "excellon": "share/drill16.png",
-            'geometry': "share/geometry16.png",
-            "cncjob": "share/cnc16.png",
-            "script": "share/script_new24.png",
-            "document": "share/notes16_1.png",
-            "project": "share/project16.png",
-            "svg": "share/geometry16.png",
-            "dxf": "share/dxf16.png",
-            "pdf": "share/pdf32.png",
-            "image": "share/image16.png"
+            "gerber": self.resource_location + "/flatcam_icon16.png",
+            "excellon": self.resource_location + "/drill16.png",
+            'geometry': self.resource_location + "/geometry16.png",
+            "cncjob": self.resource_location + "/cnc16.png",
+            "script": self.resource_location + "/script_new24.png",
+            "document": self.resource_location + "/notes16_1.png",
+            "project": self.resource_location + "/project16.png",
+            "svg": self.resource_location + "/geometry16.png",
+            "dxf": self.resource_location + "/dxf16.png",
+            "pdf": self.resource_location + "/pdf32.png",
+            "image": self.resource_location + "/image16.png"
 
         }
 
@@ -11652,7 +11679,8 @@ class App(QtCore.QObject):
                     App.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
-        clear_action_proj = QtWidgets.QAction(QtGui.QIcon('share/trash32.png'), (_("Clear Recent projects")), self)
+        clear_action_proj = QtWidgets.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
+                                              (_("Clear Recent projects")), self)
         clear_action_proj.triggered.connect(reset_recent_projects)
         self.ui.recent_projects.addSeparator()
         self.ui.recent_projects.addAction(clear_action_proj)
@@ -11675,7 +11703,8 @@ class App(QtCore.QObject):
                     App.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
-        clear_action = QtWidgets.QAction(QtGui.QIcon('share/trash32.png'), (_("Clear Recent files")), self)
+        clear_action = QtWidgets.QAction(QtGui.QIcon(self.resource_location + '/trash32.png'),
+                                         (_("Clear Recent files")), self)
         clear_action.triggered.connect(reset_recent_files)
         self.ui.recent.addSeparator()
         self.ui.recent.addAction(clear_action)

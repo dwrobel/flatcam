@@ -13,6 +13,9 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed a bug that created a crash in special conditions; it's related to the QSettings in FlatCAMGui.py
 - added a script to remove the bad profiles from resource pictures. From here: https://stackoverflow.com/questions/22745076/libpng-warning-iccp-known-incorrect-srgb-profile/43415650, link mentioned by @camellan (Andrey Kultyapov)
+- prepared the application for usage of dark icons in case of using the dark theme
+- updated the languages
+- RELEASE 8.99
 
 14.12.2019
 
