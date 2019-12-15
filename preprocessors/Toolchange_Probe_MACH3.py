@@ -11,6 +11,7 @@ from FlatCAMPostProc import *
 
 class Toolchange_Probe_MACH3(FlatCAMPostProc):
 
+    include_header = True
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
 
@@ -69,14 +70,14 @@ class Toolchange_Probe_MACH3(FlatCAMPostProc):
         gcode += 'G90\n'
         gcode += 'G17\n'
         gcode += 'G94\n'
-        gcode += '(MSG, WARNING: Make sure you do zero on all axis. ' \
-                 'For Z axis, since it will be probed, make a rough estimate and do a zero.)\n'
-        gcode += 'M0'
 
         return gcode
 
     def startz_code(self, p):
-        return ''
+        g = '(MSG, WARNING: Make sure you do zero on all axis. ' \
+            'For Z axis, since it will be probed, make a rough estimate and do a zero.)\n'
+        g += 'M0'
+        return g
 
     def lift_code(self, p):
         return 'G00 Z' + self.coordinate_format%(p.coords_decimals, p.z_move)
