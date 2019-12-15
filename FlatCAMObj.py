@@ -6624,6 +6624,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         gcode = ''
         roland = False
         hpgl = False
+        isel_icp = False
 
         try:
             if self.special_group:
@@ -6641,20 +6642,47 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 if self.cnc_tools[key]['data']['ppname_g'] == 'Roland_MDX_20':
                     roland = True
                     break
-                if self.cnc_tools[key]['data']['ppname_g'] == 'hpgl':
-                    hpgl = True
-                    break
-        except Exception as e:
+        except Exception:
             try:
                 for key in self.cnc_tools:
                     if self.cnc_tools[key]['data']['ppname_e'] == 'Roland_MDX_20':
                         roland = True
                         break
-            except Exception as e:
+            except Exception:
+                pass
+
+        # detect if using HPGL preprocessor
+        try:
+            for key in self.cnc_tools:
+                if self.cnc_tools[key]['data']['ppname_g'] == 'hpgl':
+                    hpgl = True
+                    break
+        except Exception:
+            try:
+                for key in self.cnc_tools:
+                    if self.cnc_tools[key]['data']['ppname_e'] == 'hpgl':
+                        hpgl = True
+                        break
+            except Exception:
+                pass
+
+        # detect if using ISEL_ICP_CNC preprocessor
+        try:
+            for key in self.cnc_tools:
+                if 'ISEL_ICP' in self.cnc_tools[key]['data']['ppname_g'].upper():
+                    isel_icp = True
+                    break
+        except Exception:
+            try:
+                for key in self.cnc_tools:
+                    if 'ISEL_ICP' in self.cnc_tools[key]['data']['ppname_e'].upper():
+                        isel_icp = True
+                        break
+            except Exception:
                 pass
 
         # do not add gcode_header when using the Roland preprocessor, add it for every other preprocessor
-        if roland is False and hpgl is False:
+        if roland is False and hpgl is False and isel_icp is False:
             gcode = self.gcode_header()
 
         # detect if using multi-tool and make the Gcode summation correctly for each case
@@ -6680,7 +6708,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 g_idx = gcode.rfind('G21')
 
             # if it did not find 'G20' and it did not find 'G21' then there is an error and return
-            if g_idx == -1:
+            # but only when the preprocessor is not ISEL_ICP who is allowed not to have the G20/G21 command
+            if g_idx == -1 and isel_icp is False:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("G-code does not have a units code: either G20 or G21"))
                 return
 

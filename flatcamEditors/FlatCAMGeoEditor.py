@@ -1934,11 +1934,13 @@ class FCCircle(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'circle'
 
+        self.draw_app = draw_app
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_circle_geo.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_circle_geo.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
@@ -1986,11 +1988,13 @@ class FCArc(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'arc'
 
+        self.draw_app = draw_app
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_arc.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.resource_location + '/aero_arc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
@@ -2204,12 +2208,13 @@ class FCRectangle(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'rectangle'
+        self.draw_app = draw_app
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
@@ -2258,12 +2263,13 @@ class FCPolygon(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'polygon'
+        self.draw_app = draw_app
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
@@ -2321,12 +2327,13 @@ class FCPath(FCPolygon):
     """
     def __init__(self, draw_app):
         FCPolygon.__init__(self, draw_app)
+        self.draw_app = draw_app
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_path5.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path5.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
     def make(self):
@@ -2365,6 +2372,7 @@ class FCSelect(DrawTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'select'
+        self.draw_app = draw_app
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -2443,12 +2451,11 @@ class FCExplode(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
         self.name = 'explode'
-
         self.draw_app = draw_app
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         self.storage = self.draw_app.storage
@@ -2457,8 +2464,7 @@ class FCExplode(FCShapeTool):
 
         self.draw_app.active_tool = self
         if len(self.draw_app.get_selected()) == 0:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' %
-                                          _("No shape selected. Select a shape to explode"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' % ("No shape selected. Select a shape to explode"))
         else:
             self.make()
 
@@ -2498,6 +2504,7 @@ class FCMove(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
         self.name = 'move'
+        self.draw_app = draw_app
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -2673,24 +2680,22 @@ class FCCopy(FCMove):
         self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
                          for geom in self.draw_app.get_selected()]
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Geometry(s) Copy completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Copy completed."))
 
 
 class FCText(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
         self.name = 'text'
+        self.draw_app = draw_app
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_text.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_text.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        # self.shape_buffer = self.draw_app.shape_buffer
-        self.draw_app = draw_app
         self.app = draw_app.app
 
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
@@ -2762,8 +2767,7 @@ class FCBuffer(FCShapeTool):
 
     def on_buffer(self):
         if not self.draw_app.selected:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Buffer cancelled. No shape selected."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Buffer cancelled. No shape selected."))
             return
 
         try:
@@ -2876,6 +2880,7 @@ class FCEraser(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'eraser'
+        self.draw_app = draw_app
 
         self.origin = None
         self.destination = None
@@ -2982,8 +2987,6 @@ class FCPaint(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
         self.name = 'paint'
-
-        # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
 
@@ -2997,7 +3000,6 @@ class FCTransform(FCShapeTool):
         FCShapeTool.__init__(self, draw_app)
         self.name = 'transformation'
 
-        # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
 

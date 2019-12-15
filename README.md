@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - updated the languages
 - fixed a typo
 - fixed layout on first launch of the app
+- fixed some issues with the recent preparation for dark icons resource usage
+- added a new preprocessor file contributed by Daniel Friderich and added fixes for it
 - RELEASE 8.99
 
 14.12.2019
