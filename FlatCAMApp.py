@@ -2616,7 +2616,7 @@ class App(QtCore.QObject):
         factory_defaults = json.loads(fac_def_from_file)
 
         # if the file contain an empty dictionary then save the factory defaults into the file
-        if not factory_defaults:
+        if self.defaults["first_run"] is True:
             self.save_factory_defaults(silent_message=False)
 
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'

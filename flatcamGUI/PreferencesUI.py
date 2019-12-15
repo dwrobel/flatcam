@@ -698,7 +698,18 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("GUI Settings")))
         self.decimals = decimals
-        
+
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.resource_loc = 'share'
+        else:
+            self.resource_loc = 'share'
+
         # Create a form layout for the Application general settings
         self.form_box = QtWidgets.QFormLayout()
 
@@ -1031,7 +1042,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
                          "\n")
                        )
         msgbox.setWindowTitle(_("Clear GUI Settings"))
-        msgbox.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/trash32.png'))
+        msgbox.setWindowIcon(QtGui.QIcon(self.resource_loc + '/trash32.png'))
         bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
         bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 

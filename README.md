@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - added a script to remove the bad profiles from resource pictures. From here: https://stackoverflow.com/questions/22745076/libpng-warning-iccp-known-incorrect-srgb-profile/43415650, link mentioned by @camellan (Andrey Kultyapov)
 - prepared the application for usage of dark icons in case of using the dark theme
 - updated the languages
+- fixed a typo
+- fixed layout on first launch of the app
 - RELEASE 8.99
 
 14.12.2019
