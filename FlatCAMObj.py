@@ -3893,11 +3893,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.ui.geo_tools_table.setupContextMenu()
         self.ui.geo_tools_table.addContextMenu(
-            _("Add from Tool DB"), self.on_tool_add_from_db_clicked, icon=QtGui.QIcon("share/plus16.png"))
+            _("Add from Tool DB"), self.on_tool_add_from_db_clicked,
+            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
         self.ui.geo_tools_table.addContextMenu(
-            _("Copy"), self.on_tool_copy, icon=QtGui.QIcon("share/copy16.png"))
+            _("Copy"), self.on_tool_copy,
+            icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
         self.ui.geo_tools_table.addContextMenu(
-            _("Delete"), lambda: self.on_tool_delete(all=None), icon=QtGui.QIcon("share/delete32.png"))
+            _("Delete"), lambda: self.on_tool_delete(all=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png"))
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':

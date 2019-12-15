@@ -500,7 +500,7 @@ class SolderPaste(FlatCAMTool):
         self.flat_geometry = []
 
         # action to be added in the combobox context menu
-        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon('share/trash16.png'), _("Delete Object"))
+        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/trash16.png'), _("Delete Object"))
 
         # ## Signals
         self.combo_context_del_action.triggered.connect(self.on_delete_object)
@@ -553,7 +553,7 @@ class SolderPaste(FlatCAMTool):
         tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
                                        text='%s:' % _('Enter a Tool Diameter'),
                                        min=0.0000, max=99.9999, decimals=4)
-        tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
         val, ok = tool_add_popup.get_value()
         if ok:
@@ -588,10 +588,13 @@ class SolderPaste(FlatCAMTool):
 
         self.tools_table.setupContextMenu()
         self.tools_table.addContextMenu(
-            _("Add"), lambda: self.on_tool_add(dia=None, muted=None), icon=QtGui.QIcon("share/plus16.png"))
+            _("Add"), lambda: self.on_tool_add(dia=None, muted=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
         self.tools_table.addContextMenu(
             _("Delete"), lambda:
-            self.on_tool_delete(rows_to_delete=None, all=None), icon=QtGui.QIcon("share/delete32.png"))
+            self.on_tool_delete(rows_to_delete=None, all=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
+        )
 
         try:
             dias = [float(eval(dia)) for dia in self.app.defaults["tools_solderpaste_tools"].split(",") if dia != '']

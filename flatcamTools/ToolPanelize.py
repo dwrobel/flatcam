@@ -59,9 +59,9 @@ class Panelize(FlatCAMTool):
         self.type_obj_combo.addItem("Excellon")
         self.type_obj_combo.addItem("Geometry")
 
-        self.type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        self.type_obj_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
-        self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.type_obj_combo_label.setToolTip(
@@ -115,8 +115,8 @@ class Panelize(FlatCAMTool):
 
         # we get rid of item1 ("Excellon") as it is not suitable for use as a "box" for panelizing
         self.type_box_combo.view().setRowHidden(1, True)
-        self.type_box_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        self.type_box_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+        self.type_box_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.type_box_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_box_combo_label = QtWidgets.QLabel('%s:' % _("Box Type"))
         self.type_box_combo_label.setToolTip(

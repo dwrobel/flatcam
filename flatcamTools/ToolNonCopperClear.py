@@ -76,8 +76,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # we get rid of item1 ("Excellon") as it is not suitable
         self.type_obj_combo.view().setRowHidden(1, True)
-        self.type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
@@ -508,10 +508,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # #############################################################################
         self.tools_table.setupContextMenu()
         self.tools_table.addContextMenu(
-            "Add", self.on_add_tool_by_key, icon=QtGui.QIcon("share/plus16.png"))
+            "Add", self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
         self.tools_table.addContextMenu(
             "Delete", lambda:
-            self.on_tool_delete(rows_to_delete=None, all_tools=None), icon=QtGui.QIcon("share/delete32.png"))
+            self.on_tool_delete(rows_to_delete=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png"))
 
         # #############################################################################
         # ########################## VARIABLES ########################################
@@ -587,7 +588,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
                                        text='%s:' % _('Enter a Tool Diameter'),
                                        min=0.0001, max=9999.9999, decimals=self.decimals)
-        tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
 
         val, ok = tool_add_popup.get_value()
         if ok:

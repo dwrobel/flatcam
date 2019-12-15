@@ -197,8 +197,8 @@ class ToolCalibration(FlatCAMTool):
         self.obj_type_combo.addItem(_("Excellon"))
         self.obj_type_combo.setCurrentIndex(1)
 
-        self.obj_type_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        self.obj_type_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
+        self.obj_type_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.obj_type_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
 
         grid_lay.addWidget(self.obj_type_label, 12, 0)
         grid_lay.addWidget(self.obj_type_combo, 12, 1, 1, 2)
@@ -634,9 +634,9 @@ class ToolCalibration(FlatCAMTool):
         self.adj_object_type_combo.addItems([_("Gerber"), _("Excellon"), _("Geometry")])
         self.adj_object_type_combo.setCurrentIndex(0)
 
-        self.adj_object_type_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        self.adj_object_type_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
-        self.adj_object_type_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+        self.adj_object_type_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        self.adj_object_type_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
+        self.adj_object_type_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.adj_object_type_label = QtWidgets.QLabel("%s:" % _("Adjusted object type"))
         self.adj_object_type_label.setToolTip(
