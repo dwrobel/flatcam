@@ -4623,13 +4623,18 @@ class App(QtCore.QObject):
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Lubos Medovarsky"), 25, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Steve Martina"), 26, 0)
                 self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Thomas Duffin"), 27, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 28, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Andrey Kultyapov"), 28, 0)
 
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Idechix"), 29, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@SM"), 30, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@grbf"), 31, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Symonty"), 32, 0)
-                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@mgix"), 33, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel(''), 29, 0)
+
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Chris Breneman"), 30, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Eric Varsanyi"), 31, 0)
+
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Idechix"), 100, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@SM"), 101, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@grbf"), 102, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@Symonty"), 103, 0)
+                self.prog_grid_lay.addWidget(QtWidgets.QLabel('%s' % "@mgix"), 104, 0)
 
                 self.translator_grid_lay = QtWidgets.QGridLayout()
                 self.translator_grid_lay.setColumnStretch(0, 0)
