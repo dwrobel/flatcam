@@ -41,6 +41,17 @@ class ObjectUI(QtWidgets.QWidget):
 
         self.decimals = decimals
 
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.resource_loc = 'share'
+        else:
+            self.resource_loc = 'share'
+
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
@@ -49,7 +60,7 @@ class ObjectUI(QtWidgets.QWidget):
         layout.addLayout(self.title_box)
 
         # ## Page Title icon
-        pixmap = QtGui.QPixmap(icon_file)
+        pixmap = QtGui.QPixmap(icon_file.replace('share', self.resource_loc))
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
@@ -436,8 +447,8 @@ class GerberObjectUI(ObjectUI):
 
         # we get rid of item1 ("Excellon") as it is not suitable
         self.type_obj_combo.view().setRowHidden(1, True)
-        self.type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
-        self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.resource_loc + "/flatcam_icon16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.resource_loc + "/geometry16.png"))
 
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
@@ -682,14 +693,27 @@ class GerberObjectUI(ObjectUI):
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid2.addWidget(separator_line2, 11, 0, 1, 2)
 
+
 class ExcellonObjectUI(ObjectUI):
     """
     User interface for Excellon objects.
     """
 
     def __init__(self, decimals, parent=None):
+
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.resource_loc = 'share'
+        else:
+            self.resource_loc = 'share'
+
         ObjectUI.__init__(self, title=_('Excellon Object'),
-                          icon_file='share/drill32.png',
+                          icon_file=self.resource_loc + '/drill32.png',
                           parent=parent,
                           decimals=decimals)
 
@@ -1112,8 +1136,23 @@ class GeometryObjectUI(ObjectUI):
     """
 
     def __init__(self, decimals, parent=None):
-        super(GeometryObjectUI, self).__init__(title=_('Geometry Object'),
-                                               icon_file='share/geometry32.png', parent=parent, decimals=decimals)
+
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.resource_loc = 'share'
+        else:
+            self.resource_loc = 'share'
+
+        super(GeometryObjectUI, self).__init__(
+            title=_('Geometry Object'),
+            icon_file=self.resource_loc + '/geometry32.png', parent=parent, decimals=decimals
+        )
+
         self.decimals = decimals
 
         # Plot options
@@ -1733,9 +1772,22 @@ class CNCObjectUI(ObjectUI):
         Creates the user interface for CNCJob objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
         """
-        
-        ObjectUI.__init__(self, title=_('CNC Job Object'), icon_file='share/cnc32.png', parent=parent, 
-                          decimals=decimals)
+
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.resource_loc = 'share'
+        else:
+            self.resource_loc = 'share'
+
+        ObjectUI.__init__(
+            self, title=_('CNC Job Object'),
+            icon_file=self.resource_loc + '/cnc32.png', parent=parent,
+            decimals=decimals)
         self.decimals = decimals
 
         for i in range(0, self.common_grid.count()):
@@ -2052,8 +2104,19 @@ class ScriptObjectUI(ObjectUI):
         be placed in ``self.custom_box`` to preserve the layout.
         """
 
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.resource_loc = 'share'
+        else:
+            self.resource_loc = 'share'
+
         ObjectUI.__init__(self, title=_('Script Object'),
-                          icon_file='share/script_new24.png',
+                          icon_file=self.resource_loc + '/script_new24.png',
                           parent=parent,
                           common=False,
                           decimals=decimals)
@@ -2107,8 +2170,19 @@ class DocumentObjectUI(ObjectUI):
         be placed in ``self.custom_box`` to preserve the layout.
         """
 
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            self.resource_loc = 'share'
+        else:
+            self.resource_loc = 'share'
+
         ObjectUI.__init__(self, title=_('Document Object'),
-                          icon_file='share/notes16_1.png',
+                          icon_file=self.resource_loc + '/notes16_1.png',
                           parent=parent,
                           common=False,
                           decimals=decimals)
@@ -2194,16 +2268,16 @@ class DocumentObjectUI(ObjectUI):
 
         self.font_bold_tb = QtWidgets.QToolButton()
         self.font_bold_tb.setCheckable(True)
-        self.font_bold_tb.setIcon(QtGui.QIcon('share/bold32.png'))
+        self.font_bold_tb.setIcon(QtGui.QIcon(self.resource_loc + '/bold32.png'))
         size_hlay.addWidget(self.font_bold_tb)
 
         self.font_italic_tb = QtWidgets.QToolButton()
         self.font_italic_tb.setCheckable(True)
-        self.font_italic_tb.setIcon(QtGui.QIcon('share/italic32.png'))
+        self.font_italic_tb.setIcon(QtGui.QIcon(self.resource_loc + '/italic32.png'))
         size_hlay.addWidget(self.font_italic_tb)
         self.font_under_tb = QtWidgets.QToolButton()
         self.font_under_tb.setCheckable(True)
-        self.font_under_tb.setIcon(QtGui.QIcon('share/underline32.png'))
+        self.font_under_tb.setIcon(QtGui.QIcon(self.resource_loc + '/underline32.png'))
         size_hlay.addWidget(self.font_under_tb)
 
         self.form_box.addRow(self.font_size_label, size_hlay)
@@ -2215,22 +2289,22 @@ class DocumentObjectUI(ObjectUI):
 
         self.al_left_tb = QtWidgets.QToolButton()
         self.al_left_tb.setToolTip(_("Align Left"))
-        self.al_left_tb.setIcon(QtGui.QIcon('share/align_left32.png'))
+        self.al_left_tb.setIcon(QtGui.QIcon(self.resource_loc + '/align_left32.png'))
         al_hlay.addWidget(self.al_left_tb)
 
         self.al_center_tb = QtWidgets.QToolButton()
         self.al_center_tb.setToolTip(_("Center"))
-        self.al_center_tb.setIcon(QtGui.QIcon('share/align_center32.png'))
+        self.al_center_tb.setIcon(QtGui.QIcon(self.resource_loc + '/align_center32.png'))
         al_hlay.addWidget(self.al_center_tb)
 
         self.al_right_tb = QtWidgets.QToolButton()
         self.al_right_tb.setToolTip(_("Align Right"))
-        self.al_right_tb.setIcon(QtGui.QIcon('share/align_right32.png'))
+        self.al_right_tb.setIcon(QtGui.QIcon(self.resource_loc + '/align_right32.png'))
         al_hlay.addWidget(self.al_right_tb)
 
         self.al_justify_tb = QtWidgets.QToolButton()
         self.al_justify_tb.setToolTip(_("Justify"))
-        self.al_justify_tb.setIcon(QtGui.QIcon('share/align_justify32.png'))
+        self.al_justify_tb.setIcon(QtGui.QIcon(self.resource_loc + '/align_justify32.png'))
         al_hlay.addWidget(self.al_justify_tb)
 
         self.form_box.addRow(self.alignment_label, al_hlay)

@@ -290,7 +290,7 @@ class BookmarkManager(QtWidgets.QWidget):
         if len(self.bm_dict) < bm_limit:
             act = QtWidgets.QAction(parent=self.app.ui.menuhelp_bookmarks)
             act.setText(title)
-            act.setIcon(QtGui.QIcon('share/link16.png'))
+            act.setIcon(QtGui.QIcon(self.app.resource_location + '/link16.png'))
             act.triggered.connect(lambda: webbrowser.open(link))
             self.app.ui.menuhelp_bookmarks.insertAction(self.app.ui.menuhelp_bookmarks_manager, act)
 
@@ -749,11 +749,11 @@ class ToolsDB(QtWidgets.QWidget):
 
         self.table_widget.setupContextMenu()
         self.table_widget.addContextMenu(
-            _("Add to DB"), self.on_tool_add, icon=QtGui.QIcon("share/plus16.png"))
+            _("Add to DB"), self.on_tool_add, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
         self.table_widget.addContextMenu(
-            _("Copy from DB"), self.on_tool_copy, icon=QtGui.QIcon("share/copy16.png"))
+            _("Copy from DB"), self.on_tool_copy, icon=QtGui.QIcon(self.app.resource_location + "/copy16.png"))
         self.table_widget.addContextMenu(
-            _("Delete from DB"), self.on_tool_delete, icon=QtGui.QIcon("share/delete32.png"))
+            _("Delete from DB"), self.on_tool_delete, icon=QtGui.QIcon(self.app.resource_location + "/delete32.png"))
 
     def build_db_ui(self):
         self.ui_disconnect()
