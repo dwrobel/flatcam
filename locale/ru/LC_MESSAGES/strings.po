@@ -13,7 +13,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: build\n"
@@ -3110,7 +3110,7 @@ msgstr "Диаметр нового инструмента"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1539
 msgid "Add Tool"
-msgstr "Добавить инструмент"
+msgstr "Добавить"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1541
 msgid ""
@@ -12017,7 +12017,7 @@ msgstr "Прямоугольная"
 
 #: flatcamGUI/PreferencesUI.py:6136 flatcamTools/ToolCopperThieving.py:171
 msgid "Minimal"
-msgstr "Минимальный"
+msgstr "Минимальная"
 
 #: flatcamGUI/PreferencesUI.py:6138 flatcamTools/ToolCopperThieving.py:173
 #: flatcamTools/ToolFilm.py:113
@@ -12029,8 +12029,8 @@ msgid ""
 "- 'Rectangular' - the bounding box will be of rectangular shape.\n"
 "- 'Minimal' - the bounding box will be the convex hull shape."
 msgstr ""
-"- 'Прямоугольник' - ограничительная рамка будет иметь прямоугольную форму.\n"
-"- 'Минимальный' - ограничительная рамка будет повторять форму корпуса."
+"- 'Прямоугольная' - ограничительная рамка будет иметь прямоугольную форму.\n"
+"- 'Минимальная' - ограничительная рамка будет повторять форму корпуса."
 
 #: flatcamGUI/PreferencesUI.py:6154 flatcamTools/ToolCopperThieving.py:191
 msgid "Dots Grid"
@@ -12042,7 +12042,7 @@ msgstr "Сетка квадратов"
 
 #: flatcamGUI/PreferencesUI.py:6156 flatcamTools/ToolCopperThieving.py:193
 msgid "Lines Grid"
-msgstr "Линии сетки"
+msgstr "Сетка линий"
 
 #: flatcamGUI/PreferencesUI.py:6158 flatcamTools/ToolCopperThieving.py:195
 msgid "Fill Type:"
@@ -16478,7 +16478,6 @@ msgstr ""
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Нет имени геометрии в аргументах. Укажите имя и попробуйте снова."
 
-#, python-brace-format
 #~ msgid ""
 #~ "[selected] {kind} created/selected: <span style=\"color:{color};\">{name}"
 #~ "</span>"
@@ -16486,15 +16485,12 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ "[selected] {kind} создан/выбран: <span style=\"color:{color};\">{name}</"
 #~ "span>"
 
-#, python-brace-format
 #~ msgid "[selected]<span style=\"color:{color};\">{name}</span> selected"
 #~ msgstr "[selected]<span style=\"color:{color};\">{name}</span> выбран"
 
-#, python-brace-format
 #~ msgid "{l_save}/Project_{date}"
 #~ msgstr "{l_save}/Project_{date}"
 
-#, python-format
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
 #~ "Example:\n"
@@ -16582,7 +16578,6 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ msgid "Axis Ref:"
 #~ msgstr "Указатель оси:"
 
-#, python-brace-format
 #~ msgid "MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}"
 #~ msgstr ""
 #~ "ИЗМЕРИТЕЛЬ: Результат расстояние(x) = {d_x} | расстояние(y) = {d_y} | "
