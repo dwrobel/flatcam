@@ -1682,7 +1682,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.cutz_spinner = FCDoubleSpinner()
         self.cutz_spinner.set_precision(self.decimals)
-        self.cutz_spinner.set_range(-99.9999, -0.0001)
+        self.cutz_spinner.set_range(-99.9999, 0.0000)
         self.cutz_spinner.setSingleStep(0.1)
         self.cutz_spinner.setWrapping(True)
 
@@ -2352,7 +2352,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.cutz_entry = FCDoubleSpinner()
 
         if machinist_setting == 0:
-            self.cutz_entry.set_range(-9999.9999, -0.000001)
+            self.cutz_entry.set_range(-9999.9999, 0.0000)
         else:
             self.cutz_entry.set_range(-9999.9999, 9999.9999)
 
@@ -2617,7 +2617,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.pdepth_entry = FCDoubleSpinner()
         self.pdepth_entry.set_precision(self.decimals)
-        self.pdepth_entry.set_range(-99999, -0.000001)
+        self.pdepth_entry.set_range(-99999.9999, 0.0000)
 
         grid1.addWidget(self.pdepth_label, 4, 0)
         grid1.addWidget(self.pdepth_entry, 4, 1)
@@ -3196,7 +3196,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.cutz_entry = FCDoubleSpinner()
 
         if machinist_setting == 0:
-            self.cutz_entry.set_range(-9999.9999, -0.000001)
+            self.cutz_entry.set_range(-9999.9999, 0.0000)
         else:
             self.cutz_entry.set_range(-9999.9999, 9999.9999)
 
@@ -3486,7 +3486,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "to probe. Negative value, in current units.")
         )
         self.pdepth_entry = FCDoubleSpinner()
-        self.pdepth_entry.set_range(-99999, -0.000001)
+        self.pdepth_entry.set_range(-99999, 0.0000)
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.setSingleStep(0.1)
         self.pdepth_entry.setWrapping(True)
@@ -4052,7 +4052,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-9999.9999, -0.000001)
+        self.cutz_entry.set_range(-9999.9999, 0.0000)
         self.cutz_entry.setSingleStep(0.1)
 
         self.cutz_entry.setToolTip(
@@ -4310,7 +4310,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.cutz_entry.setRange(-9999.9999, -0.00001)
+            self.cutz_entry.setRange(-9999.9999, 0.0000)
         else:
             self.cutz_entry.setRange(-9999.9999, 9999.9999)
 
@@ -5119,7 +5119,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
 
         # ## Depth-of-cut Cut Z
         self.cut_z_entry = FCDoubleSpinner()
-        self.cut_z_entry.set_range(-9999.9999, -0.00001)
+        self.cut_z_entry.set_range(-9999.9999, 0.0000)
         self.cut_z_entry.set_precision(self.decimals)
         self.cut_z_entry.setSingleStep(0.01)
 

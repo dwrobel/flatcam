@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.12.2019
+
+- more optimizations in NCC Tool
+- optimizations in Paint Tool
+- maximum range for Cut Z is now zero to deal with the situation when using V-shape with tip-dia same value with cut width
+- modified QValidator in FCDoubleSpinner() GUI element to allow entering the minus sign when the range maximum is set as 0.0; also for positive numbers allowed entering the symbol plus
+
 16.12.2019
 
 - in Geometry Editor added support for Jump To function such as that it works within the Editor Tools themselves. For now it works only in absolute jumps
@@ -22,6 +29,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the CNCJob geometry created with HPGL preprocessor
 - fixed GCode generated with HPGL preprocessor to output only integer coordinates
 - fixed the HPGL2 import parsing for absolute linear movements
+- fixed the line endings for setup_ubuntu.sh
 
 15.12.2019
 

@@ -1450,8 +1450,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     geo_obj.solid_geometry += list(cpoly.get_objects())
                     return cpoly
                 else:
-                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                        _('Geometry could not be painted completely'))
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %  _('Geometry could not be painted completely'))
                     return None
 
             current_uid = int(1)
@@ -1769,62 +1768,162 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 pol_nr = 0
                 for geo in painted_area:
-                    try:
-                        # Polygons are the only really paintable geometries, lines in theory have no area to be painted
-                        if not isinstance(geo, Polygon):
+
+                    # provide the app with a way to process the GUI events when in a blocking loop
+                    QtWidgets.QApplication.processEvents()
+
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise FlatCAMApp.GracefulException
+
+                    # try to clean the Polygon but it may result into a MultiPolygon
+                    geo = geo.buffer(0)
+                    poly_buf = geo.buffer(-paint_margin)
+
+                    if geo is not None and geo.is_valid:
+                        poly_processed = list()
+                        try:
+                            for pol in poly_buf:
+                                if pol is not None and isinstance(pol, Polygon):
+                                    if paint_method == 'standard':
+                                        cp = self.clear_polygon(pol,
+                                                                tooldia=tool_dia,
+                                                                steps_per_circle=self.app.defaults[
+                                                                    "geometry_circle_steps"],
+                                                                overlap=over,
+                                                                contour=cont,
+                                                                connect=conn,
+                                                                prog_plot=prog_plot)
+                                    elif paint_method == 'seed':
+                                        cp = self.clear_polygon2(pol,
+                                                                 tooldia=tool_dia,
+                                                                 steps_per_circle=self.app.defaults[
+                                                                     "geometry_circle_steps"],
+                                                                 overlap=over,
+                                                                 contour=cont,
+                                                                 connect=conn,
+                                                                 prog_plot=prog_plot)
+                                    else:
+                                        cp = self.clear_polygon3(pol,
+                                                                 tooldia=tool_dia,
+                                                                 steps_per_circle=self.app.defaults[
+                                                                     "geometry_circle_steps"],
+                                                                 overlap=over,
+                                                                 contour=cont,
+                                                                 connect=conn,
+                                                                 prog_plot=prog_plot)
+                                    if cp:
+                                        total_geometry += list(cp.get_objects())
+                                        poly_processed.append(True)
+                                    else:
+                                        poly_processed.append(False)
+                                        log.warning("Polygon in MultiPolygon can not be cleared.")
+                                else:
+                                    log.warning("Geo in Iterable can not be cleared because it is not Polygon. "
+                                                "It is: %s" % str(type(pol)))
+                        except TypeError:
+                            if isinstance(poly_buf, Polygon):
+                                if paint_method == 'standard':
+                                    cp = self.clear_polygon(poly_buf,
+                                                            tooldia=tool_dia,
+                                                            steps_per_circle=self.app.defaults[
+                                                                "geometry_circle_steps"],
+                                                            overlap=over,
+                                                            contour=cont,
+                                                            connect=conn,
+                                                            prog_plot=prog_plot)
+                                elif paint_method == 'seed':
+                                    cp = self.clear_polygon2(poly_buf,
+                                                             tooldia=tool_dia,
+                                                             steps_per_circle=self.app.defaults[
+                                                                 "geometry_circle_steps"],
+                                                             overlap=over,
+                                                             contour=cont,
+                                                             connect=conn,
+                                                             prog_plot=prog_plot)
+                                else:
+                                    cp = self.clear_polygon3(poly_buf,
+                                                             tooldia=tool_dia,
+                                                             steps_per_circle=self.app.defaults[
+                                                                 "geometry_circle_steps"],
+                                                             overlap=over,
+                                                             contour=cont,
+                                                             connect=conn,
+                                                             prog_plot=prog_plot)
+                                if cp:
+                                    total_geometry += list(cp.get_objects())
+                                    poly_processed.append(True)
+                                else:
+                                    poly_processed.append(False)
+                                    log.warning("Polygon can not be cleared.")
+                            else:
+                                log.warning("Geo can not be cleared because it is: %s" % str(type(poly_buf)))
+
+                        p_cleared = poly_processed.count(True)
+                        p_not_cleared = poly_processed.count(False)
+
+                        if p_not_cleared:
+                            app_obj.poly_not_cleared = True
+
+                        if p_cleared == 0:
                             continue
-                        poly_buf = geo.buffer(-paint_margin)
 
-                        if paint_method == "seed":
-                            # Type(cp) == FlatCAMRTreeStorage | None
-                            cp = self.clear_polygon2(poly_buf,
-                                                     tooldia=tool_dia,
-                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over,
-                                                     contour=cont,
-                                                     connect=conn,
-                                                     prog_plot=prog_plot)
+                    # try:
+                    #     # Polygons are the only really paintable geometries, lines in theory have no area to be painted
+                    #     if not isinstance(geo, Polygon):
+                    #         continue
+                    #     poly_buf = geo.buffer(-paint_margin)
+                    #
+                    #     if paint_method == "seed":
+                    #         # Type(cp) == FlatCAMRTreeStorage | None
+                    #         cp = self.clear_polygon2(poly_buf,
+                    #                                  tooldia=tool_dia,
+                    #                                  steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                    #                                  overlap=over,
+                    #                                  contour=cont,
+                    #                                  connect=conn,
+                    #                                  prog_plot=prog_plot)
+                    #
+                    #     elif paint_method == "lines":
+                    #         # Type(cp) == FlatCAMRTreeStorage | None
+                    #         cp = self.clear_polygon3(poly_buf,
+                    #                                  tooldia=tool_dia,
+                    #                                  steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                    #                                  overlap=over,
+                    #                                  contour=cont,
+                    #                                  connect=conn,
+                    #                                  prog_plot=prog_plot)
+                    #
+                    #     else:
+                    #         # Type(cp) == FlatCAMRTreeStorage | None
+                    #         cp = self.clear_polygon(poly_buf,
+                    #                                 tooldia=tool_dia,
+                    #                                 steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                    #                                 overlap=over,
+                    #                                 contour=cont,
+                    #                                 connect=conn,
+                    #                                 prog_plot=prog_plot)
+                    #
+                    #     if cp is not None:
+                    #         total_geometry += list(cp.get_objects())
+                    # except FlatCAMApp.GracefulException:
+                    #     return "fail"
+                    # except Exception as e:
+                    #     log.debug("Could not Paint the polygons. %s" % str(e))
+                    #     self.app.inform.emit('[ERROR] %s\n%s' %
+                    #                          (_("Could not do Paint All. Try a different combination of parameters. "
+                    #                             "Or a different Method of paint"),
+                    #                           str(e)))
+                    #     return "fail"
 
-                        elif paint_method == "lines":
-                            # Type(cp) == FlatCAMRTreeStorage | None
-                            cp = self.clear_polygon3(poly_buf,
-                                                     tooldia=tool_dia,
-                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over,
-                                                     contour=cont,
-                                                     connect=conn,
-                                                     prog_plot=prog_plot)
+                        pol_nr += 1
+                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                        # log.debug("Polygons cleared: %d" % pol_nr)
 
-                        else:
-                            # Type(cp) == FlatCAMRTreeStorage | None
-                            cp = self.clear_polygon(poly_buf,
-                                                    tooldia=tool_dia,
-                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                    overlap=over,
-                                                    contour=cont,
-                                                    connect=conn,
-                                                    prog_plot=prog_plot)
-
-                        if cp is not None:
-                            total_geometry += list(cp.get_objects())
-                    except FlatCAMApp.GracefulException:
-                        return "fail"
-                    except Exception as e:
-                        log.debug("Could not Paint the polygons. %s" % str(e))
-                        self.app.inform.emit('[ERROR] %s\n%s' %
-                                             (_("Could not do Paint All. Try a different combination of parameters. "
-                                                "Or a different Method of paint"),
-                                              str(e)))
-                        return "fail"
-
-                    pol_nr += 1
-                    disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-                    # log.debug("Polygons cleared: %d" % pol_nr)
-
-                    if old_disp_number < disp_number <= 100:
-                        app_obj.proc_container.update_view_text(' %d%%' % disp_number)
-                        old_disp_number = disp_number
-                        # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
+                        if old_disp_number < disp_number <= 100:
+                            app_obj.proc_container.update_view_text(' %d%%' % disp_number)
+                            old_disp_number = disp_number
+                            # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
 
                 # add the solid_geometry to the current too in self.paint_tools (tools_storage)
                 # dictionary and then reset the temporary list that stored that solid_geometry
@@ -1837,17 +1936,24 @@ class ToolPaint(FlatCAMTool, Gerber):
             if self.app.defaults["tools_paint_plotting"] == 'progressive':
                 self.temp_shapes.clear(update=True)
 
+            # # delete tools with empty geometry
+            # keys_to_delete = []
+            # # look for keys in the tools_storage dict that have 'solid_geometry' values empty
+            # for uid in tools_storage:
+            #     # if the solid_geometry (type=list) is empty
+            #     if not tools_storage[uid]['solid_geometry']:
+            #         keys_to_delete.append(uid)
+            #
+            # # actual delete of keys from the tools_storage dict
+            # for k in keys_to_delete:
+            #     tools_storage.pop(k, None)
+
             # delete tools with empty geometry
-            keys_to_delete = []
             # look for keys in the tools_storage dict that have 'solid_geometry' values empty
-            for uid in tools_storage:
+            for uid in list(tools_storage.keys()):
                 # if the solid_geometry (type=list) is empty
                 if not tools_storage[uid]['solid_geometry']:
-                    keys_to_delete.append(uid)
-
-            # actual delete of keys from the tools_storage dict
-            for k in keys_to_delete:
-                tools_storage.pop(k, None)
+                    tools_storage.pop(uid, None)
 
             geo_obj.options["cnctooldia"] = str(tool_dia)
             # this turn on the FlatCAMCNCJob plot for multiple tools
