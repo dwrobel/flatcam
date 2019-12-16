@@ -3945,8 +3945,8 @@ class CNCjob(Geometry):
             match_pa = re.search(r"^PA(\s*-?\d+\.\d+?),(\s*\s*-?\d+\.\d+?)*;$", gline)
             if match_pa:
                 command['G'] = 0
-                command['X'] = float(match_pa.group(1).replace(" ", ""))
-                command['Y'] = float(match_pa.group(2).replace(" ", ""))
+                command['X'] = float(match_pa.group(1).replace(" ", "")) / 40
+                command['Y'] = float(match_pa.group(2).replace(" ", "")) / 40
             match_pen = re.search(r"^(P[U|D])", gline)
             if match_pen:
                 if match_pen.group(1) == 'PU':

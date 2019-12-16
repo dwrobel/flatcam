@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - made sure that in Geometry Editor the self.app.mouse attribute is updated with the current mouse position (x, y)
 - updated the preprocessor files
 - fixed the HPGL preprocessor
+- fixed the CNCJob geometry created with HPGL preprocessor
 
 
 15.12.2019
