@@ -111,9 +111,9 @@ class HPGL2:
         self.initialize_re = re.compile(r'^(IN);?$')
 
         # Absolute linear interpolation
-        self.abs_move_re = re.compile(r"^PA\s*(-?\d+\.?\d+?),?\s*(-?\d+\.?\d+?)*;?$")
+        self.abs_move_re = re.compile(r"^PA\s*(-?\d+\.?\d*),?\s*(-?\d+\.?\d*)*;?$")
         # Relative linear interpolation
-        self.rel_move_re = re.compile(r"^PR\s*(-?\d+\.\d+?),?\s*(-?\d+\.\d+?)*;?$")
+        self.rel_move_re = re.compile(r"^PR\s*(-?\d+\.?\d*),?\s*(-?\d+\.?\d*)*;?$")
 
         # Circular interpolation with radius
         self.circ_re = re.compile(r"^CI\s*(\+?\d+\.?\d+?)?\s*;?\s*$")
