@@ -22,6 +22,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the CNCJob geometry created with HPGL preprocessor
 - fixed GCode generated with HPGL preprocessor to output only integer coordinates
 - fixed the HPGL2 import parsing for absolute linear movements
+- fixed the line endings for setup_ubuntu.sh
 
 15.12.2019
 
