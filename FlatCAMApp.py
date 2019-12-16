@@ -237,6 +237,9 @@ class App(QtCore.QObject):
     # should be disconnected after use so it can be reused
     replot_signal = pyqtSignal(list)
 
+    # signal emitted when jumping
+    jump_signal = pyqtSignal(tuple)
+
     def __init__(self, user_defaults=True):
         """
         Starts the application.
@@ -7389,6 +7392,8 @@ class App(QtCore.QObject):
                 return
         else:
             location = custom_location
+
+        self.jump_signal.emit(location)
 
         units = self.defaults['units'].upper()
 

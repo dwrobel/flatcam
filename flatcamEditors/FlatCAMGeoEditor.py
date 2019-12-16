@@ -1880,7 +1880,10 @@ class DrawTool(object):
         return ""
 
     def on_key(self, key):
-        return None
+
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
 
     def utility_geometry(self, data=None):
         return None
@@ -1943,6 +1946,8 @@ class FCCircle(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_circle_geo.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -1979,8 +1984,10 @@ class FCCircle(FCShapeTool):
         radius = distance(p1, p2)
         self.geometry = DrawToolShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Adding Circle completed."))
+
+        self.draw_app.app.jump_signal.disconnect()
+
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Circle completed."))
 
 
 class FCArc(FCShapeTool):
@@ -1994,7 +2001,7 @@ class FCArc(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.resource_location + '/aero_arc.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_arc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
@@ -2009,6 +2016,8 @@ class FCArc(FCShapeTool):
         # 12C = p1, p2, Center
         # 132 = p1, p3, p2
         self.mode = "c12"  # Center, p1, p2
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -2043,6 +2052,10 @@ class FCArc(FCShapeTool):
         if key == 'D' or key == QtCore.Qt.Key_D:
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
             return _('Direction: %s') % self.direction.upper()
+
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
 
         if key == 'M' or key == QtCore.Qt.Key_M:
             # delete the possible points made before this action; we want to start anew
@@ -2196,8 +2209,10 @@ class FCArc(FCShapeTool):
             self.geometry = DrawToolShape(LineString(arc(center, radius, startangle, stopangle,
                                                          self.direction, self.steps_per_circ)))
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Arc completed."))
+
+        self.draw_app.app.jump_signal.disconnect()
+
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Arc completed."))
 
 
 class FCRectangle(FCShapeTool):
@@ -2216,6 +2231,8 @@ class FCRectangle(FCShapeTool):
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
 
@@ -2251,8 +2268,9 @@ class FCRectangle(FCShapeTool):
         # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
         self.geometry = DrawToolShape(Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Rectangle completed."))
+
+        self.draw_app.app.jump_signal.disconnect()
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Rectangle completed."))
 
 
 class FCPolygon(FCShapeTool):
@@ -2271,6 +2289,8 @@ class FCPolygon(FCShapeTool):
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
 
@@ -2307,10 +2327,16 @@ class FCPolygon(FCShapeTool):
         self.geometry = DrawToolShape(Polygon(self.points))
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Polygon completed."))
+
+        self.draw_app.app.jump_signal.disconnect()
+
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Polygon completed."))
 
     def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
@@ -2336,6 +2362,8 @@ class FCPath(FCPolygon):
         self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_path5.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
     def make(self):
         self.geometry = DrawToolShape(LineString(self.points))
         self.name = 'path'
@@ -2347,6 +2375,9 @@ class FCPath(FCPolygon):
 
         self.draw_app.in_action = False
         self.complete = True
+
+        self.draw_app.app.jump_signal.disconnect()
+
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Path completed."))
 
     def utility_geometry(self, data=None):
@@ -2358,6 +2389,10 @@ class FCPath(FCPolygon):
         return None
 
     def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
@@ -3817,12 +3852,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if event.button == 1 and event_is_dragging and isinstance(self.active_tool, FCEraser):
             pass
         else:
-            # ### Utility geometry (animated) ###
-            geo = self.active_tool.utility_geometry(data=(x, y))
-            if isinstance(geo, DrawToolShape) and geo.geo is not None:
-                # Remove any previous utility shape
-                self.tool_shape.clear(update=True)
-                self.draw_utility_geometry(geo=geo)
+            self.update_utility_geometry(data=(x, y))
 
         # ### Selection area on canvas section ###
         dx = pos[0] - self.pos[0]
@@ -3838,6 +3868,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 self.app.selection_type = True
         else:
             self.app.selection_type = None
+
+    def update_utility_geometry(self, data):
+        # ### Utility geometry (animated) ###
+        geo = self.active_tool.utility_geometry(data=data)
+        if isinstance(geo, DrawToolShape) and geo.geo is not None:
+            # Remove any previous utility shape
+            self.tool_shape.clear(update=True)
+            self.draw_utility_geometry(geo=geo)
 
     def on_geo_click_release(self, event):
         if self.app.is_legacy is False:

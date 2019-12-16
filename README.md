@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.12.2019
+
+- in Geometry Editor added support for Jump To function such as that it works within the Editor Tools themselves. For now it works only in absolute jumps
+
 15.12.2019
 
 - fixed a bug that created a crash in special conditions; it's related to the QSettings in FlatCAMGui.py
