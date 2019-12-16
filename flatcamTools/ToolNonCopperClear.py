@@ -258,7 +258,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         )
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
-        self.cutz_entry.set_range(-99999, -0.00000000000001)
+        self.cutz_entry.set_range(-99999.9999, 0.0000)
 
         self.cutz_entry.setToolTip(
            _("Depth of cut into material. Negative value.\n"
@@ -1810,7 +1810,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             if self.app.abort_flag:
                                 # graceful abort requested by the user
                                 raise FlatCAMApp.GracefulException
-                            if p is not None:
+
+                            # clean the polygon
+                            p = p.buffer(0)
+
+                            if p is not None and p.is_valid:
                                 poly_processed = list()
                                 try:
                                     for pol in p:
@@ -2201,7 +2205,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 # graceful abort requested by the user
                                 raise FlatCAMApp.GracefulException
 
-                            if p is not None:
+                            # clean the polygon
+                            p = p.buffer(0)
+
+                            if p is not None and p.is_valid:
                                 # provide the app with a way to process the GUI events when in a blocking loop
                                 QtWidgets.QApplication.processEvents()
 

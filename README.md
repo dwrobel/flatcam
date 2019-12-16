@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.12.2019
+
+- more optimizations in NCC Tool
+- optimizations in Paint Tool
+- maximum range for Cut Z is now zero to deal with the situation when using V-shape with tip-dia same value with cut width
+
 16.12.2019
 
 - in Geometry Editor added support for Jump To function such as that it works within the Editor Tools themselves. For now it works only in absolute jumps

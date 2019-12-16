@@ -348,7 +348,7 @@ class GerberObjectUI(ObjectUI):
               "below the copper surface.")
         )
         self.cutz_spinner = FCDoubleSpinner()
-        self.cutz_spinner.set_range(-9999.9999, -0.0001)
+        self.cutz_spinner.set_range(-9999.9999, 0.0000)
         self.cutz_spinner.set_precision(self.decimals)
         self.cutz_spinner.setSingleStep(0.1)
         self.cutz_spinner.setWrapping(True)
