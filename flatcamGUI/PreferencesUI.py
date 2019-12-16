@@ -2584,7 +2584,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         self.toolchangexy_entry = FCEntry()
         grid1.addWidget(self.toolchangexy_entry, 1, 1)
 
-        startzlabel = QtWidgets.QLabel('%s:' % _('Start move Z'))
+        startzlabel = QtWidgets.QLabel('%s:' % _('Start Z'))
         startzlabel.setToolTip(
             _("Height of the tool just after start.\n"
               "Delete the value if you don't need this feature.")
@@ -3429,7 +3429,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.toolchangexy_entry, 1, 1)
 
         # Start move Z
-        startzlabel = QtWidgets.QLabel('%s:' % _('Start move Z'))
+        startzlabel = QtWidgets.QLabel('%s:' % _('Start Z'))
         startzlabel.setToolTip(
             _("Height of the tool just after starting the work.\n"
               "Delete the value if you don't need this feature.")

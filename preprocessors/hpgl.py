@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMPostProc import *
 
@@ -49,8 +49,19 @@ class hpgl(FlatCAMPostProc):
             y = p.y
 
         # we need to have the coordinates as multiples of 0.025mm
-        x = round(x / 0.025) * 25 / 1000
-        y = round(y / 0.025) * 25 / 1000
+        x = round(x * 40)
+        y = round(y * 40)
+
+        # constrain the x and y values within the domain of valid values: [-32767 ... 32768]
+        if x <= -32767:
+            x = -32767
+        if x >= 32768:
+            x = 32768
+
+        if y <= -32767:
+            y = -32767
+        if y >= 32768:
+            y = 32768
 
         return ('PA' + self.coordinate_format + ',' + self.coordinate_format + ';') % \
                (p.coords_decimals, x, p.coords_decimals, y)
@@ -80,5 +91,5 @@ class hpgl(FlatCAMPostProc):
     def dwell_code(self, p):
         return ''
 
-    def spindle_stop_code(self,p):
+    def spindle_stop_code(self, p):
         return ''

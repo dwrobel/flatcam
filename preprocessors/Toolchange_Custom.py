@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMPostProc import *
 
@@ -75,10 +75,10 @@ class Toolchange_Custom(FlatCAMPostProc):
         return ''
 
     def lift_code(self, p):
-        return 'G00 Z' + self.coordinate_format%(p.coords_decimals, p.z_move)
+        return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
 
     def down_code(self, p):
-        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, p.z_cut)
+        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
 
     def toolchange_code(self, p):
         z_toolchange = p.z_toolchange
@@ -89,6 +89,9 @@ class Toolchange_Custom(FlatCAMPostProc):
         if toolchangexy is not None:
             x_toolchange = toolchangexy[0]
             y_toolchange = toolchangexy[1]
+        else:
+            x_toolchange = 0.0
+            y_toolchange = 0.0
 
         no_drills = 1
 
@@ -143,17 +146,17 @@ M6
 
     def end_code(self, p):
         coords_xy = p['xy_toolchange']
-        gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.z_end) + "\n")
+        gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
         if coords_xy is not None:
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
     def feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def z_feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.z_feedrate))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
         sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
@@ -166,5 +169,5 @@ M6
         if p.dwelltime:
             return 'G4 P' + str(p.dwelltime)
 
-    def spindle_stop_code(self,p):
+    def spindle_stop_code(self, p):
         return 'M05'
