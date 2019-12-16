@@ -1811,7 +1811,38 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 # graceful abort requested by the user
                                 raise FlatCAMApp.GracefulException
                             if p is not None:
+                                poly_processed = list()
                                 try:
+                                    for pol in p:
+                                        if pol is not None and isinstance(pol, Polygon):
+                                            if ncc_method == 'standard':
+                                                cp = self.clear_polygon(pol, tool,
+                                                                        self.grb_circle_steps,
+                                                                        overlap=overlap, contour=contour,
+                                                                        connect=connect,
+                                                                        prog_plot=prog_plot)
+                                            elif ncc_method == 'seed':
+                                                cp = self.clear_polygon2(pol, tool,
+                                                                         self.grb_circle_steps,
+                                                                         overlap=overlap, contour=contour,
+                                                                         connect=connect,
+                                                                         prog_plot=prog_plot)
+                                            else:
+                                                cp = self.clear_polygon3(pol, tool,
+                                                                         self.grb_circle_steps,
+                                                                         overlap=overlap, contour=contour,
+                                                                         connect=connect,
+                                                                         prog_plot=prog_plot)
+                                            if cp:
+                                                cleared_geo += list(cp.get_objects())
+                                                poly_processed.append(True)
+                                            else:
+                                                poly_processed.append(False)
+                                                log.warning("Polygon in MultiPolygon can not be cleared.")
+                                        else:
+                                            log.warning("Geo in Iterable can not be cleared beacuse it is not Polygon. "
+                                                        "It is: %s" % str(type(pol)))
+                                except TypeError:
                                     if isinstance(p, Polygon):
                                         if ncc_method == 'standard':
                                             cp = self.clear_polygon(p, tool, self.grb_circle_steps,
@@ -1827,32 +1858,20 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                                      prog_plot=prog_plot)
                                         if cp:
                                             cleared_geo += list(cp.get_objects())
-                                    elif isinstance(p, MultiPolygon):
-                                        for pol in p:
-                                            if pol is not None:
-                                                if ncc_method == 'standard':
-                                                    cp = self.clear_polygon(pol, tool,
-                                                                            self.grb_circle_steps,
-                                                                            overlap=overlap, contour=contour,
-                                                                            connect=connect,
-                                                                            prog_plot=prog_plot)
-                                                elif ncc_method == 'seed':
-                                                    cp = self.clear_polygon2(pol, tool,
-                                                                             self.grb_circle_steps,
-                                                                             overlap=overlap, contour=contour,
-                                                                             connect=connect,
-                                                                             prog_plot=prog_plot)
-                                                else:
-                                                    cp = self.clear_polygon3(pol, tool,
-                                                                             self.grb_circle_steps,
-                                                                             overlap=overlap, contour=contour,
-                                                                             connect=connect,
-                                                                             prog_plot=prog_plot)
-                                                if cp:
-                                                    cleared_geo += list(cp.get_objects())
-                                except Exception as e:
-                                    log.warning("Polygon can not be cleared. %s" % str(e))
+                                            poly_processed.append(True)
+                                        else:
+                                            poly_processed.append(False)
+                                            log.warning("Polygon can not be cleared.")
+                                    else:
+                                        log.warning("Geo can not be cleared because it is: %s" % str(type(p)))
+
+                                p_cleared = poly_processed.count(True)
+                                p_not_cleared = poly_processed.count(False)
+
+                                if p_not_cleared:
                                     app_obj.poly_not_cleared = True
+
+                                if p_cleared == 0:
                                     continue
 
                                 pol_nr += 1

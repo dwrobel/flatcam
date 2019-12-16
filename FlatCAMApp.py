@@ -140,8 +140,8 @@ class App(QtCore.QObject):
     # ##########################################################################
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
-    version = 8.99
-    version_date = "2019/12/15"
+    version = 8.991
+    version_date = "2019/12/30"
     beta = True
     engine = '3D'
 
@@ -3813,7 +3813,7 @@ class App(QtCore.QObject):
 
         if 'version' not in defaults or defaults['version'] != self.defaults['version']:
             for k, v in defaults.items():
-                if k in self.defaults:
+                if k in self.defaults and k != 'version':
                     self.defaults[k] = v
 
             # delete old factory defaults

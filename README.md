@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - in Geometry Editor added support for Jump To function such as that it works within the Editor Tools themselves. For now it works only in absolute jumps
 - modified the Jump To method such that now allows relative jump from the current mouse location
+- fixed the Defaults upgrade overwrting the new version number with the old one
+- fixed issue with clear_polygon3() - the one who makes 'lines' and fixed the NCC Tool
 
 15.12.2019
 

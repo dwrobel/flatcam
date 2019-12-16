@@ -1381,9 +1381,10 @@ class Geometry(object):
                     inner_edges.append(y)
             # geoms += outer_edges + inner_edges
             for g in outer_edges + inner_edges:
-                geoms.insert(g)
-                if prog_plot:
-                    self.plot_temp_shapes(g)
+                if g and not g.is_empty:
+                    geoms.insert(g)
+                    if prog_plot:
+                        self.plot_temp_shapes(g)
 
         if prog_plot:
             self.temp_shapes.redraw()
@@ -1395,7 +1396,9 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            geoms = Geometry.paint_connect(geoms, polygon_to_clear, tooldia, steps_per_circle)
+            geoms_conn = Geometry.paint_connect(geoms, polygon_to_clear, tooldia, steps_per_circle)
+            if geoms_conn:
+                return geoms_conn
 
         return geoms
 
@@ -1419,6 +1422,9 @@ class Geometry(object):
         """
 
         # log.debug("camlib.clear_polygon3()")
+        if not isinstance(polygon, Polygon):
+            log.debug("camlib.Geometry.clear_polygon3() --> Not a Polygon but %s" % str(type(polygon)))
+            return None
 
         # ## The toolpaths
         # Index first and last points in paths
@@ -1433,41 +1439,43 @@ class Geometry(object):
         # Bounding box
         left, bot, right, top = polygon.bounds
 
-        margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
+        try:
+            margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
+        except Exception as e:
+            log.debug("camlib.Geometry.clear_polygon3() --> Could not buffer the Polygon")
+            return None
 
         # First line
-        y = top - tooldia / 1.99999999
-        while y > bot + tooldia / 1.999999999:
-            if self.app.abort_flag:
-                # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+        try:
+            y = top - tooldia / 1.99999999
+            while y > bot + tooldia / 1.999999999:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
 
-            # provide the app with a way to process the GUI events when in a blocking loop
-            QtWidgets.QApplication.processEvents()
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
 
+                line = LineString([(left, y), (right, y)])
+                line = line.intersection(margin_poly)
+                lines_trimmed.append(line)
+                y -= tooldia * (1 - overlap)
+                if prog_plot:
+                    self.plot_temp_shapes(line)
+                    self.temp_shapes.redraw()
+
+            # Last line
+            y = bot + tooldia / 2
             line = LineString([(left, y), (right, y)])
             line = line.intersection(margin_poly)
-            lines_trimmed.append(line)
-            y -= tooldia * (1 - overlap)
-            if prog_plot:
-                self.plot_temp_shapes(line)
-                self.temp_shapes.redraw()
 
-        # Last line
-        y = bot + tooldia / 2
-        line = LineString([(left, y), (right, y)])
-        line = line.intersection(margin_poly)
-        for ll in line:
-            lines_trimmed.append(ll)
-            if prog_plot:
-                self.plot_temp_shapes(line)
-
-        # Combine
-        # linesgeo = unary_union(lines)
-
-        # Trim to the polygon
-        # margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
-        # lines_trimmed = linesgeo.intersection(margin_poly)
+            for ll in line:
+                lines_trimmed.append(ll)
+                if prog_plot:
+                    self.plot_temp_shapes(line)
+        except Exception as e:
+            log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+            return None
 
         if prog_plot:
             self.temp_shapes.redraw()
@@ -1477,27 +1485,33 @@ class Geometry(object):
         # Add lines to storage
         try:
             for line in lines_trimmed:
-                geoms.insert(line)
+                if isinstance(line, LineString) or isinstance(line, LinearRing):
+                    geoms.insert(line)
+                else:
+                    log.debug("camlib.Geometry.clear_polygon3(). Not a line: %s" % str(type(line)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
             geoms.insert(lines_trimmed)
 
         # Add margin (contour) to storage
         if contour:
-            if isinstance(margin_poly, Polygon):
-                geoms.insert(margin_poly.exterior)
-                if prog_plot:
-                    self.plot_temp_shapes(margin_poly.exterior)
-                for ints in margin_poly.interiors:
-                    geoms.insert(ints)
-                    if prog_plot:
-                        self.plot_temp_shapes(ints)
-            elif isinstance(margin_poly, MultiPolygon):
+            try:
                 for poly in margin_poly:
-                    geoms.insert(poly.exterior)
+                    if isinstance(poly, Polygon) and not poly.is_empty:
+                        geoms.insert(poly.exterior)
+                        if prog_plot:
+                            self.plot_temp_shapes(poly.exterior)
+                        for ints in poly.interiors:
+                            geoms.insert(ints)
+                            if prog_plot:
+                                self.plot_temp_shapes(ints)
+            except TypeError:
+                if isinstance(margin_poly, Polygon) and not margin_poly.is_empty:
+                    marg_ext = margin_poly.exterior
+                    geoms.insert(marg_ext)
                     if prog_plot:
-                        self.plot_temp_shapes(poly.exterior)
-                    for ints in poly.interiors:
+                        self.plot_temp_shapes(margin_poly.exterior)
+                    for ints in margin_poly.interiors:
                         geoms.insert(ints)
                         if prog_plot:
                             self.plot_temp_shapes(ints)
@@ -1508,7 +1522,9 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            geoms = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
+            geoms_conn = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
+            if geoms_conn:
+                return geoms_conn
 
         return geoms
 
@@ -1581,8 +1597,14 @@ class Geometry(object):
         optimized_paths.get_points = get_pts
         path_count = 0
         current_pt = (0, 0)
-        pt, geo = storage.nearest(current_pt)
+        try:
+            pt, geo = storage.nearest(current_pt)
+        except StopIteration:
+            log.debug("camlib.Geometry.paint_connect(). Storage empty")
+            return None
+
         storage.remove(geo)
+
         geo = LineString(geo)
         current_pt = geo.coords[-1]
         try:
@@ -1592,6 +1614,7 @@ class Geometry(object):
 
                 pt, candidate = storage.nearest(current_pt)
                 storage.remove(candidate)
+
                 candidate = LineString(candidate)
 
                 # If last point in geometry is the nearest
