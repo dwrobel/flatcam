@@ -16,7 +16,8 @@ class hpgl(FlatCAMPostProc):
     coordinate_format = "%.*f"
 
     def start_code(self, p):
-        gcode = 'IN;'
+        gcode = 'IN;\n'
+        gcode += 'PU;'
         return gcode
 
     def startz_code(self, p):
