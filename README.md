@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified the Jump To method such that now allows relative jump from the current mouse location
 - fixed the Defaults upgrade overwrting the new version number with the old one
 - fixed issue with clear_polygon3() - the one who makes 'lines' and fixed the NCC Tool
+- some small changes in the FlatCAMGeoemtry.on_tool_add() method
 
 15.12.2019
 

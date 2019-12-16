@@ -3745,11 +3745,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setColumnHidden(6, False)
 
         self.set_tool_offset_visibility(selected_row)
-        self.ui_connect()
 
         # HACK: for whatever reasons the name in Selected tab is reverted to the original one after a successful rename
         # done in the collection view but only for Geometry objects. Perhaps some references remains. Should be fixed.
         self.ui.name_entry.set_value(self.options['name'])
+        self.ui_connect()
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -3883,7 +3883,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()
 
-        # used to store the state of the mpass_cb if the selected postproc for geometry is hpgl
+        # used to store the state of the mpass_cb if the selected preprocessor for geometry is hpgl
         self.old_pp_state = self.default_data['multidepth']
         self.old_toolchangeg_state = self.default_data['toolchange']
 
@@ -3934,7 +3934,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=False))
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
-        self.ui.addtool_entry.returnPressed.connect(lambda: self.on_tool_add())
 
         self.ui.tipdia_entry.valueChanged.connect(self.update_cutz)
         self.ui.tipangle_entry.valueChanged.connect(self.update_cutz)
@@ -4010,6 +4009,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # I use lambda's because the connected functions have parameters that could be used in certain scenarios
         self.ui.addtool_btn.clicked.connect(lambda: self.on_tool_add())
+        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
 
         self.ui.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
@@ -4063,6 +4063,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
 
         try:
+            self.ui.addtool_entry.returnPressed.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
             self.ui.copytool_btn.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
@@ -4103,59 +4108,26 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.units = self.app.defaults['units'].upper()
 
-        # if a Tool diameter entered is a char instead a number the final message of Tool adding is changed
-        # because the Default value for Tool is used.
-        change_message = False
-
         if dia is not None:
             tooldia = dia
         else:
-            try:
-                tooldia = float(self.ui.addtool_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    tooldia = float(self.ui.addtool_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    change_message = True
-                    tooldia = float(self.options["cnctooldia"][0])
-
-            if tooldia is None:
-                self.build_ui()
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Please enter the desired tool diameter in Float format."))
-                return
+            tooldia = float(self.ui.addtool_entry.get_value())
 
         # construct a list of all 'tooluid' in the self.tools
-        tool_uid_list = []
-        for tooluid_key in self.tools:
-            tool_uid_item = int(tooluid_key)
-            tool_uid_list.append(tool_uid_item)
+        # tool_uid_list = list()
+        # for tooluid_key in self.tools:
+        #     tool_uid_list.append(int(tooluid_key))
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
-        if not tool_uid_list:
-            max_uid = 0
-        else:
-            max_uid = max(tool_uid_list)
+        max_uid = max(tool_uid_list) if tool_uid_list else 0
         self.tooluid = max_uid + 1
 
         tooldia = float('%.*f' % (self.decimals, tooldia))
 
         # here we actually add the new tool; if there is no tool in the tool table we add a tool with default data
         # otherwise we add a tool with data copied from last tool
-        if not self.tools:
-            self.tools.update({
-                self.tooluid: {
-                    'tooldia': tooldia,
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': _('Rough'),
-                    'tool_type': 'C1',
-                    'data': deepcopy(self.default_data),
-                    'solid_geometry': self.solid_geometry
-                }
-            })
-        else:
+        if self.tools:
             last_data = self.tools[max_uid]['data']
             last_offset = self.tools[max_uid]['offset']
             last_offset_value = self.tools[max_uid]['offset_value']
@@ -4179,6 +4151,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'solid_geometry': deepcopy(last_solid_geometry)
                 }
             })
+        else:
+            self.tools.update({
+                self.tooluid: {
+                    'tooldia': tooldia,
+                    'offset': 'Path',
+                    'offset_value': 0.0,
+                    'type': _('Rough'),
+                    'tool_type': 'C1',
+                    'data': deepcopy(self.default_data),
+                    'solid_geometry': self.solid_geometry
+                }
+            })
 
         self.tools[self.tooluid]['data']['name'] = self.options['name']
 
@@ -4192,12 +4176,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
-        if change_message is False:
-            self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
-        else:
-            change_message = False
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Default Tool added. Wrong value format entered."))
+        self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
         self.build_ui()
 
         # if there is no tool left in the Tools Table, enable the parameters GUI
@@ -5735,12 +5714,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.tools = deepcopy(temp_tools_dict)
 
         # if there is a value in the new tool field then convert that one too
+        try:
+            self.ui.addtool_entry.returnPressed.disconnect()
+        except TypeError:
+            pass
         tooldia = self.ui.addtool_entry.get_value()
         if tooldia:
             tooldia *= factor
             tooldia = float('%.*f' % (self.decimals, tooldia))
 
             self.ui.addtool_entry.set_value(tooldia)
+        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
 
         return factor
 
