@@ -20,7 +20,8 @@ CAD program, and create G-Code for Isolation routing.
 - updated the preprocessor files
 - fixed the HPGL preprocessor
 - fixed the CNCJob geometry created with HPGL preprocessor
-
+- fixed GCode generated with HPGL preprocessor to output only integer coordinates
+- fixed the HPGL2 import parsing for absolute linear movements
 
 15.12.2019
 

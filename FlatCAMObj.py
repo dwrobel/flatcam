@@ -6760,15 +6760,46 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
             end_gcode = self.gcode_footer() if self.app.defaults['cncjob_footer'] is True else ''
 
-            try:
-                g_idx = gcode.index('G94')
-                g = self.gcode_header() + gcode[:g_idx + 3] + '\n\n' + preamble + '\n' + \
-                    gcode[(g_idx + 3):] + postamble + end_gcode
-            except ValueError:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("G-code does not have a G94 code and we will not include the code in the "
-                                       "'Prepend to GCode' text box"))
-                g = self.gcode_header() + '\n' + gcode + postamble + end_gcode
+            # detect if using a HPGL preprocessor
+            hpgl = False
+            if self.cnc_tools:
+                for key in self.cnc_tools:
+                    if 'ppname_g' in self.cnc_tools[key]['data']:
+                        if 'hpgl' in self.cnc_tools[key]['data']['ppname_g']:
+                            hpgl = True
+                            break
+            elif self.exc_cnc_tools:
+                for key in self.cnc_tools:
+                    if 'ppname_e' in self.cnc_tools[key]['data']:
+                        if 'hpgl' in self.cnc_tools[key]['data']['ppname_e']:
+                            hpgl = True
+                            break
+
+            if hpgl:
+                processed_gcode = ''
+                pa_re = re.compile(r"^PA\s*(-?\d+\.\d*),?\s*(-?\d+\.\d*)*;?$")
+                for gline in gcode.splitlines():
+                    match = pa_re.search(gline)
+                    if match:
+                        x_int = int(float(match.group(1)))
+                        y_int = int(float(match.group(2)))
+                        new_line = 'PA%d,%d;\n' % (x_int, y_int)
+                        processed_gcode += new_line
+                    else:
+                        processed_gcode += gline + '\n'
+
+                gcode = processed_gcode
+                g = self.gcode_header() + '\n' + preamble + '\n' + gcode + postamble + end_gcode
+            else:
+                try:
+                    g_idx = gcode.index('G94')
+                    g = self.gcode_header() + gcode[:g_idx + 3] + '\n\n' + preamble + '\n' + \
+                        gcode[(g_idx + 3):] + postamble + end_gcode
+                except ValueError:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("G-code does not have a G94 code and we will not include the code in the "
+                                           "'Prepend to GCode' text box"))
+                    g = self.gcode_header() + '\n' + gcode + postamble + end_gcode
 
         # if toolchange custom is used, replace M6 code with the code from the Toolchange Custom Text box
         if self.ui.toolchange_cb.get_value() is True:
