@@ -3835,6 +3835,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.snap_x = x
         self.snap_y = y
+        self.app.mouse = [x, y]
 
         # update the position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
