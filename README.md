@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - more optimizations in NCC Tool
 - optimizations in Paint Tool
 - maximum range for Cut Z is now zero to deal with the situation when using V-shape with tip-dia same value with cut width
+- modified QValidator in FCDoubleSpinner() GUI element to allow entering the minus sign when the range maximum is set as 0.0; also for positive numbers allowed entering the symbol plus
 
 16.12.2019
 

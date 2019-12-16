@@ -21,7 +21,15 @@ import re
 import logging
 import html
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
 log = logging.getLogger('base')
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 EDIT_SIZE_HINT = 70
 
@@ -624,7 +632,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         # by default don't allow the minus sign to be entered as the default for QDoubleSpinBox is the positive range
         # between 0.00 and 99.00 (2 decimals)
         self.lineEdit().setValidator(
-            QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+            QtGui.QRegExpValidator(QtCore.QRegExp("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
         if suffix:
             self.setSuffix(' %s' % str(suffix))
@@ -710,15 +718,15 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.setDecimals(val)
 
         # make sure that the user can't type more decimals than the set precision
-        if self.minimum() < 0 or self.maximum() < 0:
+        if self.minimum() < 0 or self.maximum() <= 0:
             self.lineEdit().setValidator(
                 QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
         else:
             self.lineEdit().setValidator(
-                QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                QtGui.QRegExpValidator(QtCore.QRegExp("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
     def set_range(self, min_val, max_val):
-        if min_val < 0 or max_val < 0:
+        if min_val < 0 or max_val <= 0:
             self.lineEdit().setValidator(
                 QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
