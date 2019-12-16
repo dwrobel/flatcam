@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMPostProc import *
 
@@ -57,21 +57,20 @@ class Paste_1(FlatCAMPostProc_Tools):
         return gcode
 
     def lift_code(self, p):
-        return 'G00 Z' + self.coordinate_format%(p.coords_decimals, float(p['z_travel']))
+        return 'G00 Z' + self.coordinate_format % (p.coords_decimals, float(p['z_travel']))
 
     def down_z_start_code(self, p):
-        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, float(p['z_start']))
+        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, float(p['z_start']))
 
     def lift_z_dispense_code(self, p):
-        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, float(p['z_dispense']))
+        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, float(p['z_dispense']))
 
     def down_z_stop_code(self, p):
-        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, float(p['z_stop']))
+        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, float(p['z_stop']))
 
     def toolchange_code(self, p):
         z_toolchange = float(p['z_toolchange'])
         toolchangexy = [float(eval(a)) for a in p['xy_toolchange'].split(",") if a != '']
-        gcode = ''
 
         if toolchangexy is not None:
             x_toolchange = toolchangexy[0]
@@ -117,27 +116,27 @@ G00 Z{z_toolchange}
 
     def rapid_code(self, p):
         return ('G00 ' + self.position_code(p)).format(**p) + '\nG00 Z' + \
-               self.coordinate_format%(p.coords_decimals, float(p['z_travel']))
+               self.coordinate_format % (p.coords_decimals, float(p['z_travel']))
 
     def linear_code(self, p):
         return ('G01 ' + self.position_code(p)).format(**p)
 
     def end_code(self, p):
         coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",") if a != '']
-        gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, float(p['z_toolchange'])) + "\n")
+        gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, float(p['z_toolchange'])) + "\n")
 
         if coords_xy is not None:
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
     def feedrate_xy_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, float(p['frxy'])))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, float(p['frxy'])))
 
     def z_feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, float(p['frz'])))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, float(p['frz'])))
 
     def feedrate_z_dispense_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, float(p['frz_dispense'])))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, float(p['frz_dispense'])))
 
     def spindle_fwd_code(self, p):
         if p.spindlespeed:
@@ -151,7 +150,7 @@ G00 Z{z_toolchange}
         else:
             return 'M04'
 
-    def spindle_off_code(self,p):
+    def spindle_off_code(self, p):
         return 'M05'
 
     def dwell_fwd_code(self, p):

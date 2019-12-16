@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue with clear_polygon3() - the one who makes 'lines' and fixed the NCC Tool
 - some small changes in the FlatCAMGeoemtry.on_tool_add() method
 - made sure that in Geometry Editor the self.app.mouse attribute is updated with the current mouse position (x, y)
+- updated the preprocessor files
 
 15.12.2019
 

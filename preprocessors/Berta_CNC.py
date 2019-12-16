@@ -100,7 +100,6 @@ class Berta_CNC(FlatCAMPostProc):
         z_toolchange = p.z_toolchange
         toolchangexy = p.xy_toolchange
         f_plunge = p.f_plunge
-        gcode = ''
 
         if toolchangexy is not None:
             x_toolchange = toolchangexy[0]
