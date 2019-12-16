@@ -883,7 +883,7 @@ class ExcellonObjectUI(ObjectUI):
         self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
 
         # Start move Z:
-        self.estartz_label = QtWidgets.QLabel('%s:' % _("Start move Z"))
+        self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
         self.estartz_label.setToolTip(
             _("Height of the tool just after start.\n"
               "Delete the value if you don't need this feature.")
