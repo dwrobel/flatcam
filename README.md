@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 16.12.2019
 
 - in Geometry Editor added support for Jump To function such as that it works within the Editor Tools themselves. For now it works only in absolute jumps
+- modified the Jump To method such that now allows relative jump from the current mouse location
 
 15.12.2019
 

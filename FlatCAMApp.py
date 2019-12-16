@@ -7358,10 +7358,6 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        # if self.is_legacy is True:
-        #     self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
-        #     return
-
         if not custom_location:
             dia_box_location = None
 
@@ -7375,17 +7371,29 @@ class App(QtCore.QObject):
             else:
                 dia_box_location = None
 
-            dia_box = Dialog_box(title=_("Jump to ..."),
-                                 label=_("Enter the coordinates in format X,Y:"),
-                                 icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
-                                 initial_text=dia_box_location)
+            # dia_box = Dialog_box(title=_("Jump to ..."),
+            #                      label=_("Enter the coordinates in format X,Y:"),
+            #                      icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
+            #                      initial_text=dia_box_location)
+
+            dia_box = DialogBoxRadio(title=_("Jump to ..."),
+                                     label=_("Enter the coordinates in format X,Y:"),
+                                     icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
+                                     initial_text=dia_box_location)
 
             if dia_box.ok is True:
                 try:
                     location = eval(dia_box.location)
+
                     if not isinstance(location, tuple):
                         self.inform.emit(_("Wrong coordinates. Enter coordinates in format: X,Y"))
                         return
+
+                    if dia_box.reference == 'rel':
+                        rel_x = self.mouse[0] + location[0]
+                        rel_y = self.mouse[1] + location[1]
+                        location = (rel_x, rel_y)
+
                 except Exception:
                     return
             else:
