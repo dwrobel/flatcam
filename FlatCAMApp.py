@@ -9975,11 +9975,11 @@ class App(QtCore.QObject):
 
         flt = "All Files (*.*)"
         if obj.kind == 'gerber':
-            flt = "Gerber Files (*.GBR);;All Files (*.*)"
+            flt = "Gerber Files (*.GBR);;PDF Files (*.PDF);;All Files (*.*)"
         elif obj.kind == 'excellon':
-            flt = "Excellon Files (*.DRL);;All Files (*.*)"
+            flt = "Excellon Files (*.DRL);;PDF Files (*.PDF);;All Files (*.*)"
         elif obj.kind == 'cncjob':
-            "GCode Files (*.NC);;All Files (*.*)"
+            flt = "GCode Files (*.NC);;PDF Files (*.PDF);;All Files (*.*)"
 
         self.source_editor_tab = TextEditor(app=self, plain_text=True)
 
@@ -10252,13 +10252,6 @@ class App(QtCore.QObject):
 
         if filename == '':
             self.inform.emit('[WARNING_NOTCL] %s' % _("Save Project cancelled."))
-            return
-
-        try:
-            f = open(filename, 'r')
-            f.close()
-        except IOError:
-            self.inform.emit('[ERROR_NOTCL] %s' % _("The object is used by another application."))
             return
 
         if use_thread is True:
@@ -12167,14 +12160,14 @@ class App(QtCore.QObject):
                     g = json.dumps(d, default=to_dict, indent=2, sort_keys=True).encode('utf-8')
                     # # Write
                     f.write(g)
-                self.inform.emit('[success] %s: %s' %
-                                 (_("Project saved to"), filename))
+                self.inform.emit('[success] %s: %s' % (_("Project saved to"), filename))
             else:
                 # Open file
                 try:
                     f = open(filename, 'w')
                 except IOError:
                     App.log.error("Failed to open file for saving: %s", filename)
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("The object is used by another application."))
                     return
 
                 # Write
@@ -12188,8 +12181,7 @@ class App(QtCore.QObject):
                 except IOError:
                     if silent is False:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to verify project file"), filename, _("Retry to save it."))
-                                         )
+                                         (_("Failed to verify project file"), filename, _("Retry to save it.")))
                     return
 
                 try:
@@ -12197,8 +12189,7 @@ class App(QtCore.QObject):
                 except Exception:
                     if silent is False:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to parse saved project file"), filename, _("Retry to save it."))
-                                         )
+                                         (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
                     f.close()
                     return
                 saved_f.close()
@@ -12209,8 +12200,7 @@ class App(QtCore.QObject):
                                          (_("Project saved to"), filename))
                     else:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to parse saved project file"), filename, _("Retry to save it."))
-                                         )
+                                         (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
 
                 tb_settings = QSettings("Open Source", "FlatCAM")
                 lock_state = self.ui.lock_action.isChecked()
