@@ -1381,9 +1381,10 @@ class Geometry(object):
                     inner_edges.append(y)
             # geoms += outer_edges + inner_edges
             for g in outer_edges + inner_edges:
-                geoms.insert(g)
-                if prog_plot:
-                    self.plot_temp_shapes(g)
+                if g and not g.is_empty:
+                    geoms.insert(g)
+                    if prog_plot:
+                        self.plot_temp_shapes(g)
 
         if prog_plot:
             self.temp_shapes.redraw()
@@ -1395,7 +1396,9 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            geoms = Geometry.paint_connect(geoms, polygon_to_clear, tooldia, steps_per_circle)
+            geoms_conn = Geometry.paint_connect(geoms, polygon_to_clear, tooldia, steps_per_circle)
+            if geoms_conn:
+                return geoms_conn
 
         return geoms
 
@@ -1419,6 +1422,9 @@ class Geometry(object):
         """
 
         # log.debug("camlib.clear_polygon3()")
+        if not isinstance(polygon, Polygon):
+            log.debug("camlib.Geometry.clear_polygon3() --> Not a Polygon but %s" % str(type(polygon)))
+            return None
 
         # ## The toolpaths
         # Index first and last points in paths
@@ -1433,41 +1439,43 @@ class Geometry(object):
         # Bounding box
         left, bot, right, top = polygon.bounds
 
-        margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
+        try:
+            margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
+        except Exception as e:
+            log.debug("camlib.Geometry.clear_polygon3() --> Could not buffer the Polygon")
+            return None
 
         # First line
-        y = top - tooldia / 1.99999999
-        while y > bot + tooldia / 1.999999999:
-            if self.app.abort_flag:
-                # graceful abort requested by the user
-                raise FlatCAMApp.GracefulException
+        try:
+            y = top - tooldia / 1.99999999
+            while y > bot + tooldia / 1.999999999:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
 
-            # provide the app with a way to process the GUI events when in a blocking loop
-            QtWidgets.QApplication.processEvents()
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
 
+                line = LineString([(left, y), (right, y)])
+                line = line.intersection(margin_poly)
+                lines_trimmed.append(line)
+                y -= tooldia * (1 - overlap)
+                if prog_plot:
+                    self.plot_temp_shapes(line)
+                    self.temp_shapes.redraw()
+
+            # Last line
+            y = bot + tooldia / 2
             line = LineString([(left, y), (right, y)])
             line = line.intersection(margin_poly)
-            lines_trimmed.append(line)
-            y -= tooldia * (1 - overlap)
-            if prog_plot:
-                self.plot_temp_shapes(line)
-                self.temp_shapes.redraw()
 
-        # Last line
-        y = bot + tooldia / 2
-        line = LineString([(left, y), (right, y)])
-        line = line.intersection(margin_poly)
-        for ll in line:
-            lines_trimmed.append(ll)
-            if prog_plot:
-                self.plot_temp_shapes(line)
-
-        # Combine
-        # linesgeo = unary_union(lines)
-
-        # Trim to the polygon
-        # margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
-        # lines_trimmed = linesgeo.intersection(margin_poly)
+            for ll in line:
+                lines_trimmed.append(ll)
+                if prog_plot:
+                    self.plot_temp_shapes(line)
+        except Exception as e:
+            log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+            return None
 
         if prog_plot:
             self.temp_shapes.redraw()
@@ -1477,27 +1485,33 @@ class Geometry(object):
         # Add lines to storage
         try:
             for line in lines_trimmed:
-                geoms.insert(line)
+                if isinstance(line, LineString) or isinstance(line, LinearRing):
+                    geoms.insert(line)
+                else:
+                    log.debug("camlib.Geometry.clear_polygon3(). Not a line: %s" % str(type(line)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
             geoms.insert(lines_trimmed)
 
         # Add margin (contour) to storage
         if contour:
-            if isinstance(margin_poly, Polygon):
-                geoms.insert(margin_poly.exterior)
-                if prog_plot:
-                    self.plot_temp_shapes(margin_poly.exterior)
-                for ints in margin_poly.interiors:
-                    geoms.insert(ints)
-                    if prog_plot:
-                        self.plot_temp_shapes(ints)
-            elif isinstance(margin_poly, MultiPolygon):
+            try:
                 for poly in margin_poly:
-                    geoms.insert(poly.exterior)
+                    if isinstance(poly, Polygon) and not poly.is_empty:
+                        geoms.insert(poly.exterior)
+                        if prog_plot:
+                            self.plot_temp_shapes(poly.exterior)
+                        for ints in poly.interiors:
+                            geoms.insert(ints)
+                            if prog_plot:
+                                self.plot_temp_shapes(ints)
+            except TypeError:
+                if isinstance(margin_poly, Polygon) and not margin_poly.is_empty:
+                    marg_ext = margin_poly.exterior
+                    geoms.insert(marg_ext)
                     if prog_plot:
-                        self.plot_temp_shapes(poly.exterior)
-                    for ints in poly.interiors:
+                        self.plot_temp_shapes(margin_poly.exterior)
+                    for ints in margin_poly.interiors:
                         geoms.insert(ints)
                         if prog_plot:
                             self.plot_temp_shapes(ints)
@@ -1508,7 +1522,9 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            geoms = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
+            geoms_conn = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
+            if geoms_conn:
+                return geoms_conn
 
         return geoms
 
@@ -1581,8 +1597,14 @@ class Geometry(object):
         optimized_paths.get_points = get_pts
         path_count = 0
         current_pt = (0, 0)
-        pt, geo = storage.nearest(current_pt)
+        try:
+            pt, geo = storage.nearest(current_pt)
+        except StopIteration:
+            log.debug("camlib.Geometry.paint_connect(). Storage empty")
+            return None
+
         storage.remove(geo)
+
         geo = LineString(geo)
         current_pt = geo.coords[-1]
         try:
@@ -1592,6 +1614,7 @@ class Geometry(object):
 
                 pt, candidate = storage.nearest(current_pt)
                 storage.remove(candidate)
+
                 candidate = LineString(candidate)
 
                 # If last point in geometry is the nearest
@@ -2448,11 +2471,17 @@ class CNCjob(Geometry):
                     except KeyError:
                         z_off = 0
 
+                    default_data = dict()
+                    for k, v in list(self.options.items()):
+                        default_data[k] = deepcopy(v)
+
                     self.exc_cnc_tools[it[1]] = dict()
                     self.exc_cnc_tools[it[1]]['tool'] = it[0]
                     self.exc_cnc_tools[it[1]]['nr_drills'] = drill_no
                     self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
                     self.exc_cnc_tools[it[1]]['offset_z'] = z_off
+                    self.exc_cnc_tools[it[1]]['data'] = default_data
+
                     self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
@@ -3275,14 +3304,12 @@ class CNCjob(Geometry):
         return self.gcode
 
     def generate_from_geometry_2(
-            self, geometry, append=True,
-            tooldia=None, offset=0.0, tolerance=0,
-            z_cut=1.0, z_move=2.0,
-            feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
+            self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None, z_move=None,
+            feedrate=None, feedrate_z=None, feedrate_rapid=None,
+            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=None,
             multidepth=False, depthpercut=None,
-            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0",
-            extracut=False, extracut_length=0.1, startz=None, endz=2.0,
+            toolchange=False, toolchangez=None, toolchangexy="0.0, 0.0",
+            extracut=False, extracut_length=None, startz=None, endz=None,
             pp_geometry_name=None, tool_no=1):
         """
         Second algorithm to generate from Geometry.
@@ -3377,27 +3404,31 @@ class CNCjob(Geometry):
         log.debug("%d paths" % len(flat_geometry))
 
         try:
-            self.tooldia = float(tooldia) if tooldia else None
+            self.tooldia = float(tooldia) if tooldia else self.app.defaults["geometry_cnctooldia"]
         except ValueError:
-            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia else None
+            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia is not None else \
+                self.app.defaults["geometry_cnctooldia"]
 
-        self.z_cut = float(z_cut) if z_cut is not None else None
-        self.z_move = float(z_move) if z_move is not None else None
+        self.z_cut = float(z_cut) if z_cut is not None else self.app.defaults["geometry_cutz"]
+        self.z_move = float(z_move) if z_move is not None else self.app.defaults["geometry_travelz"]
 
-        self.feedrate = float(feedrate) if feedrate else None
-        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
-        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
+        self.feedrate = float(feedrate) if feedrate is not None else self.app.defaults["geometry_feedrate"]
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else self.app.defaults["geometry_feedrate_z"]
+        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid is not None else \
+            self.app.defaults["geometry_feedrate_rapid"]
 
         self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
         self.spindledir = spindledir
         self.dwell = dwell
-        self.dwelltime = float(dwelltime) if dwelltime else None
+        self.dwelltime = float(dwelltime) if dwelltime is not None else self.app.defaults["geometry_dwelltime"]
 
-        self.startz = float(startz) if startz is not None else None
-        self.z_end = float(endz) if endz is not None else None
-        self.z_depthpercut = float(depthpercut) if depthpercut else None
+        self.startz = float(startz) if startz is not None else self.app.defaults["geometry_startz"]
+        self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
+        self.z_depthpercut = float(depthpercut) if depthpercut is not None else 0.0
         self.multidepth = multidepth
-        self.z_toolchange = float(toolchangez) if toolchangez is not None else None
+        self.z_toolchange = float(toolchangez) if toolchangez is not None else self.app.defaults["geometry_toolchangez"]
+        self.extracut_length = float(extracut_length) if extracut_length is not None else \
+            self.app.defaults["geometry_extracut_length"]
 
         try:
             if toolchangexy == '':
@@ -3457,7 +3488,10 @@ class CNCjob(Geometry):
                 return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
-        if abs(self.z_cut) < self.z_depthpercut:
+        try:
+            if abs(self.z_cut) < self.z_depthpercut:
+                self.z_depthpercut = abs(self.z_cut)
+        except TypeError:
             self.z_depthpercut = abs(self.z_cut)
 
         # ## Index first and last points in paths
@@ -3572,7 +3606,7 @@ class CNCjob(Geometry):
                 if not multidepth:
                     # calculate the cut distance
                     total_cut += geo.length
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, extracut_length, tolerance,
+                    self.gcode += self.create_gcode_single_pass(geo, extracut, self.extracut_length, tolerance,
                                                                 old_point=current_pt)
 
                 # --------- Multi-pass ---------
@@ -3587,7 +3621,7 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, extracut, extracut_length, tolerance,
+                    self.gcode += self.create_gcode_multi_pass(geo, extracut, self.extracut_length, tolerance,
                                                                postproc=p, old_point=current_pt)
 
                 # calculate the travel distance
@@ -3916,8 +3950,8 @@ class CNCjob(Geometry):
             match_pa = re.search(r"^PA(\s*-?\d+\.\d+?),(\s*\s*-?\d+\.\d+?)*;$", gline)
             if match_pa:
                 command['G'] = 0
-                command['X'] = float(match_pa.group(1).replace(" ", ""))
-                command['Y'] = float(match_pa.group(2).replace(" ", ""))
+                command['X'] = float(match_pa.group(1).replace(" ", "")) / 40
+                command['Y'] = float(match_pa.group(2).replace(" ", "")) / 40
             match_pen = re.search(r"^(P[U|D])", gline)
             if match_pen:
                 if match_pen.group(1) == 'PU':

@@ -1,16 +1,17 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMPostProc import *
 
 
 class line_xyz(FlatCAMPostProc):
 
+    include_header = True
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
 
@@ -69,9 +70,9 @@ class line_xyz(FlatCAMPostProc):
 
     def startz_code(self, p):
         if p.startz is not None:
-            g = 'G00 ' + 'X' + self.coordinate_format%(p.coords_decimals, p.x) + \
-                ' Y' + self.coordinate_format%(p.coords_decimals, p.y) + \
-                ' Z' + self.coordinate_format%(p.coords_decimals, p.startz)
+            g = 'G00 ' + 'X' + self.coordinate_format % (p.coords_decimals, p.x) + \
+                ' Y' + self.coordinate_format % (p.coords_decimals, p.y) + \
+                ' Z' + self.coordinate_format % (p.coords_decimals, p.startz)
             return g
         else:
             return ''
@@ -92,7 +93,6 @@ class line_xyz(FlatCAMPostProc):
         z_toolchange = p.z_toolchange
         xy_toolchange = p.xy_toolchange
         f_plunge = p.f_plunge
-        gcode = ''
 
         if xy_toolchange is not None:
             x_toolchange = xy_toolchange[0]
@@ -122,7 +122,7 @@ G00 X{x_toolchange} Y{x_toolchange} Z{z_toolchange}
 T{tool}
 M6
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0""".format(x_toolchange=self.coordinate_format%(p.coords_decimals, x_toolchange),
+M0""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
              y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
              z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
              tool=int(p.tool),
@@ -131,7 +131,7 @@ M0""".format(x_toolchange=self.coordinate_format%(p.coords_decimals, x_toolchang
 
             if f_plunge is True:
                 gcode += """\nG00 X{x_toolchange} Y{x_toolchange} Z{z_move}""".format(
-                    x_toolchange=self.coordinate_format%(p.coords_decimals, x_toolchange),
+                    x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
                     y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
                     z_move=self.coordinate_format % (p.coords_decimals, p.z_move))
             return gcode
@@ -142,7 +142,7 @@ G00 X{x_toolchange} Y{x_toolchange} Z{z_toolchange}
 T{tool}
 M6    
 (MSG, Change to Tool Dia = {toolC})
-M0""".format(x_toolchange=self.coordinate_format%(p.coords_decimals, x_toolchange),
+M0""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
              y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
              z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
              tool=int(p.tool),
@@ -185,10 +185,10 @@ M0""".format(x_toolchange=self.coordinate_format%(p.coords_decimals, x_toolchang
         return g
 
     def feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def z_feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.z_feedrate))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
         sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
@@ -201,5 +201,5 @@ M0""".format(x_toolchange=self.coordinate_format%(p.coords_decimals, x_toolchang
         if p.dwelltime:
             return 'G4 P' + str(p.dwelltime)
 
-    def spindle_stop_code(self,p):
+    def spindle_stop_code(self, p):
         return 'M05'

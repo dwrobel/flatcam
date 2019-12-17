@@ -1,16 +1,16 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Matthieu Berthomé                           #
 # Date: 5/26/2017                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMPostProc import *
 
 
 class ISEL_CNC(FlatCAMPostProc):
-
+    include_header = True
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
 
@@ -71,15 +71,15 @@ class ISEL_CNC(FlatCAMPostProc):
 
     def startz_code(self, p):
         if p.startz is not None:
-            return 'G00 Z' + self.coordinate_format%(p.coords_decimals, p.startz)
+            return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.startz)
         else:
             return ''
 
     def lift_code(self, p):
-        return 'G00 Z' + self.coordinate_format%(p.coords_decimals, p.z_move)
+        return 'G00 Z' + self.coordinate_format % (p.coords_decimals, p.z_move)
 
     def down_code(self, p):
-        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, p.z_cut)
+        return 'G01 Z' + self.coordinate_format % (p.coords_decimals, p.z_cut)
 
     def toolchange_code(self, p):
         f_plunge = p.f_plunge
@@ -130,17 +130,17 @@ M01""".format(tool=int(p.tool), toolC=toolC_formatted)
 
     def end_code(self, p):
         coords_xy = p['xy_toolchange']
-        gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.z_end) + "\n")
+        gcode = ('G00 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + "\n")
 
         if coords_xy is not None:
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
     def feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def z_feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.z_feedrate))
+        return 'G01 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
         sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
@@ -153,5 +153,5 @@ M01""".format(tool=int(p.tool), toolC=toolC_formatted)
         if p.dwelltime:
             return 'G4 P' + str(p.dwelltime)
 
-    def spindle_stop_code(self,p):
+    def spindle_stop_code(self, p):
         return 'M05'

@@ -11,6 +11,7 @@ from FlatCAMPostProc import *
 
 class marlin(FlatCAMPostProc):
 
+    include_header = True
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
     feedrate_rapid_format = feedrate_format
@@ -66,6 +67,7 @@ class marlin(FlatCAMPostProc):
 
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G90\n'
+        gcode += 'G94\n'
 
         return gcode
 
@@ -76,20 +78,22 @@ class marlin(FlatCAMPostProc):
             return ''
 
     def lift_code(self, p):
-        return 'G0 Z' + self.coordinate_format%(p.coords_decimals, p.z_move) + " " + self.feedrate_rapid_code(p)
+        return 'G0 Z' + self.coordinate_format % (p.coords_decimals, p.z_move) + " " + self.feedrate_rapid_code(p)
 
     def down_code(self, p):
-        return 'G1 Z' + self.coordinate_format%(p.coords_decimals, p.z_cut) + " " + self.inline_z_feedrate_code(p)
+        return 'G1 Z' + self.coordinate_format % (p.coords_decimals, p.z_cut) + " " + self.inline_z_feedrate_code(p)
 
     def toolchange_code(self, p):
         z_toolchange = p.z_toolchange
         toolchangexy = p.xy_toolchange
         f_plunge = p.f_plunge
-        gcode = ''
 
         if toolchangexy is not None:
             x_toolchange = toolchangexy[0]
             y_toolchange = toolchangexy[1]
+        else:
+            x_toolchange = 0.0
+            y_toolchange = 0.0
 
         no_drills = 1
 
@@ -162,7 +166,7 @@ M6
 ;MSG, Change to Tool Dia = {toolC}
 M0
 G0 Z{z_toolchange}
-""".format(z_toolchange=self.coordinate_format%(p.coords_decimals, z_toolchange),
+""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
            tool=int(p.tool),
            toolC=toolC_formatted)
 
@@ -185,7 +189,7 @@ G0 Z{z_toolchange}
 
     def end_code(self, p):
         coords_xy = p['xy_toolchange']
-        gcode = ('G0 Z' + self.feedrate_format %(p.fr_decimals, p.z_end) + " " + self.feedrate_rapid_code(p) + "\n")
+        gcode = ('G0 Z' + self.feedrate_format % (p.fr_decimals, p.z_end) + " " + self.feedrate_rapid_code(p) + "\n")
 
         if coords_xy is not None:
             gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
@@ -193,16 +197,16 @@ G0 Z{z_toolchange}
         return gcode
 
     def feedrate_code(self, p):
-        return 'G1 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
+        return 'G1 F' + str(self.feedrate_format % (p.fr_decimals, p.feedrate))
 
     def inline_feedrate_code(self, p):
-        return 'F' + self.feedrate_format %(p.fr_decimals, p.feedrate)
+        return 'F' + self.feedrate_format % (p.fr_decimals, p.feedrate)
 
     def inline_z_feedrate_code(self, p):
-        return 'F' + self.feedrate_format %(p.fr_decimals, p.z_feedrate)
+        return 'F' + self.feedrate_format % (p.fr_decimals, p.z_feedrate)
 
     def z_feedrate_code(self, p):
-        return 'G1 F' + str(self.feedrate_format %(p.fr_decimals, p.z_feedrate))
+        return 'G1 F' + str(self.feedrate_format % (p.fr_decimals, p.z_feedrate))
 
     def feedrate_rapid_code(self, p):
         return 'F' + self.feedrate_rapid_format % (p.fr_decimals, p.feedrate_rapid)
@@ -218,5 +222,5 @@ G0 Z{z_toolchange}
         if p.dwelltime:
             return 'G4 P' + str(p.dwelltime)
 
-    def spindle_stop_code(self,p):
+    def spindle_stop_code(self, p):
         return 'M5'

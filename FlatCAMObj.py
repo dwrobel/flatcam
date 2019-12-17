@@ -1288,6 +1288,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             def iso_init(geo_obj, app_obj):
                 # Propagate options
                 geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
+                geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
+
                 geo_obj.solid_geometry = []
                 for i in range(passes):
                     iso_offset = dia * ((2 * i + 1) / 2.0) - (i * (overlap / 100) * dia)
@@ -1417,6 +1419,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
+                    geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_t = 1 if milling_type == 'cl' else 0
@@ -3603,6 +3606,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.old_toolchangeg_state = self.app.defaults["geometry_toolchange"]
         self.units_found = self.app.defaults['units']
 
+        # this variable can be updated by the Object that generates the geometry
+        self.tool_type = 'C1'
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -3745,11 +3751,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setColumnHidden(6, False)
 
         self.set_tool_offset_visibility(selected_row)
-        self.ui_connect()
 
         # HACK: for whatever reasons the name in Selected tab is reverted to the original one after a successful rename
         # done in the collection view but only for Geometry objects. Perhaps some references remains. Should be fixed.
         self.ui.name_entry.set_value(self.options['name'])
+        self.ui_connect()
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
@@ -3859,7 +3865,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         'offset': 'Path',
                         'offset_value': 0.0,
                         'type': _('Rough'),
-                        'tool_type': 'C1',
+                        'tool_type': self.tool_type,
                         'data': new_data,
                         'solid_geometry': self.solid_geometry
                     }
@@ -3883,7 +3889,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()
 
-        # used to store the state of the mpass_cb if the selected postproc for geometry is hpgl
+        # used to store the state of the mpass_cb if the selected preprocessor for geometry is hpgl
         self.old_pp_state = self.default_data['multidepth']
         self.old_toolchangeg_state = self.default_data['toolchange']
 
@@ -3934,7 +3940,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.generate_ncc_button.clicked.connect(lambda: self.app.ncclear_tool.run(toggle=False))
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
-        self.ui.addtool_entry.returnPressed.connect(lambda: self.on_tool_add())
 
         self.ui.tipdia_entry.valueChanged.connect(self.update_cutz)
         self.ui.tipangle_entry.valueChanged.connect(self.update_cutz)
@@ -4010,6 +4015,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # I use lambda's because the connected functions have parameters that could be used in certain scenarios
         self.ui.addtool_btn.clicked.connect(lambda: self.on_tool_add())
+        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
 
         self.ui.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
@@ -4063,6 +4069,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
 
         try:
+            self.ui.addtool_entry.returnPressed.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
             self.ui.copytool_btn.clicked.disconnect()
         except (TypeError, AttributeError):
             pass
@@ -4103,59 +4114,26 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.units = self.app.defaults['units'].upper()
 
-        # if a Tool diameter entered is a char instead a number the final message of Tool adding is changed
-        # because the Default value for Tool is used.
-        change_message = False
-
         if dia is not None:
             tooldia = dia
         else:
-            try:
-                tooldia = float(self.ui.addtool_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    tooldia = float(self.ui.addtool_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    change_message = True
-                    tooldia = float(self.options["cnctooldia"][0])
-
-            if tooldia is None:
-                self.build_ui()
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Please enter the desired tool diameter in Float format."))
-                return
+            tooldia = float(self.ui.addtool_entry.get_value())
 
         # construct a list of all 'tooluid' in the self.tools
-        tool_uid_list = []
-        for tooluid_key in self.tools:
-            tool_uid_item = int(tooluid_key)
-            tool_uid_list.append(tool_uid_item)
+        # tool_uid_list = list()
+        # for tooluid_key in self.tools:
+        #     tool_uid_list.append(int(tooluid_key))
+        tool_uid_list = [int(tooluid_key) for tooluid_key in self.tools]
 
         # find maximum from the temp_uid, add 1 and this is the new 'tooluid'
-        if not tool_uid_list:
-            max_uid = 0
-        else:
-            max_uid = max(tool_uid_list)
+        max_uid = max(tool_uid_list) if tool_uid_list else 0
         self.tooluid = max_uid + 1
 
         tooldia = float('%.*f' % (self.decimals, tooldia))
 
         # here we actually add the new tool; if there is no tool in the tool table we add a tool with default data
         # otherwise we add a tool with data copied from last tool
-        if not self.tools:
-            self.tools.update({
-                self.tooluid: {
-                    'tooldia': tooldia,
-                    'offset': 'Path',
-                    'offset_value': 0.0,
-                    'type': _('Rough'),
-                    'tool_type': 'C1',
-                    'data': deepcopy(self.default_data),
-                    'solid_geometry': self.solid_geometry
-                }
-            })
-        else:
+        if self.tools:
             last_data = self.tools[max_uid]['data']
             last_offset = self.tools[max_uid]['offset']
             last_offset_value = self.tools[max_uid]['offset_value']
@@ -4179,6 +4157,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'solid_geometry': deepcopy(last_solid_geometry)
                 }
             })
+        else:
+            self.tools.update({
+                self.tooluid: {
+                    'tooldia': tooldia,
+                    'offset': 'Path',
+                    'offset_value': 0.0,
+                    'type': _('Rough'),
+                    'tool_type': 'C1',
+                    'data': deepcopy(self.default_data),
+                    'solid_geometry': self.solid_geometry
+                }
+            })
 
         self.tools[self.tooluid]['data']['name'] = self.options['name']
 
@@ -4192,12 +4182,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
-        if change_message is False:
-            self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
-        else:
-            change_message = False
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Default Tool added. Wrong value format entered."))
+        self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
         self.build_ui()
 
         # if there is no tool left in the Tools Table, enable the parameters GUI
@@ -5735,12 +5720,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.tools = deepcopy(temp_tools_dict)
 
         # if there is a value in the new tool field then convert that one too
+        try:
+            self.ui.addtool_entry.returnPressed.disconnect()
+        except TypeError:
+            pass
         tooldia = self.ui.addtool_entry.get_value()
         if tooldia:
             tooldia *= factor
             tooldia = float('%.*f' % (self.decimals, tooldia))
 
             self.ui.addtool_entry.set_value(tooldia)
+        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
 
         return factor
 
@@ -6621,9 +6611,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         :param to_file: if False then no actual file is saved but the app will know that a file was created
         :return: None
         """
-        gcode = ''
-        roland = False
-        hpgl = False
+        # gcode = ''
+        # roland = False
+        # hpgl = False
+        # isel_icp = False
+
+        include_header = True
 
         try:
             if self.special_group:
@@ -6635,58 +6628,184 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         except AttributeError:
             pass
 
-        # detect if using Roland preprocessor
-        try:
-            for key in self.cnc_tools:
-                if self.cnc_tools[key]['data']['ppname_g'] == 'Roland_MDX_20':
-                    roland = True
-                    break
-                if self.cnc_tools[key]['data']['ppname_g'] == 'hpgl':
-                    hpgl = True
-                    break
-        except Exception as e:
-            try:
-                for key in self.cnc_tools:
-                    if self.cnc_tools[key]['data']['ppname_e'] == 'Roland_MDX_20':
-                        roland = True
-                        break
-            except Exception as e:
-                pass
+        # if this dict is not empty then the object is a Geometry object
+        if self.cnc_tools:
+            first_key = next(iter(self.cnc_tools))
+            include_header = self.app.preprocessors[self.cnc_tools[first_key]['data']['ppname_g']].include_header
+
+        # if this dict is not empty then the object is an Excellon object
+        if self.exc_cnc_tools:
+            first_key = next(iter(self.exc_cnc_tools))
+            include_header = self.app.preprocessors[self.exc_cnc_tools[first_key]['data']['ppname_e']].include_header
+
+        # # detect if using Roland preprocessor
+        # try:
+        #     for key in self.cnc_tools:
+        #         if self.cnc_tools[key]['data']['ppname_g'] == 'Roland_MDX_20':
+        #             roland = True
+        #             break
+        # except Exception:
+        #     try:
+        #         for key in self.cnc_tools:
+        #             if self.cnc_tools[key]['data']['ppname_e'] == 'Roland_MDX_20':
+        #                 roland = True
+        #                 break
+        #     except Exception:
+        #         pass
+        #
+        # # detect if using HPGL preprocessor
+        # try:
+        #     for key in self.cnc_tools:
+        #         if self.cnc_tools[key]['data']['ppname_g'] == 'hpgl':
+        #             hpgl = True
+        #             break
+        # except Exception:
+        #     try:
+        #         for key in self.cnc_tools:
+        #             if self.cnc_tools[key]['data']['ppname_e'] == 'hpgl':
+        #                 hpgl = True
+        #                 break
+        #     except Exception:
+        #         pass
+        #
+        # # detect if using ISEL_ICP_CNC preprocessor
+        # try:
+        #     for key in self.cnc_tools:
+        #         if 'ISEL_ICP' in self.cnc_tools[key]['data']['ppname_g'].upper():
+        #             isel_icp = True
+        #             break
+        # except Exception:
+        #     try:
+        #         for key in self.cnc_tools:
+        #             if 'ISEL_ICP' in self.cnc_tools[key]['data']['ppname_e'].upper():
+        #                 isel_icp = True
+        #                 break
+        #     except Exception:
+        #         pass
 
         # do not add gcode_header when using the Roland preprocessor, add it for every other preprocessor
-        if roland is False and hpgl is False:
-            gcode = self.gcode_header()
+        # if roland is False and hpgl is False and isel_icp is False:
+        #     gcode = self.gcode_header()
 
-        # detect if using multi-tool and make the Gcode summation correctly for each case
-        if self.multitool is True:
-            for tooluid_key in self.cnc_tools:
-                for key, value in self.cnc_tools[tooluid_key].items():
-                    if key == 'gcode':
-                        gcode += value
-                        break
-        else:
-            gcode += self.gcode
+        # do not add gcode_header when using the Roland, HPGL or ISEP_ICP_CNC preprocessor (or any other preprocessor
+        # that has the include_header attribute set as False, add it for every other preprocessor
+        # if include_header:
+        #     gcode = self.gcode_header()
+        # else:
+        #     gcode = ''
 
-        if roland is True:
-            g = preamble + gcode + postamble
-        elif hpgl is True:
-            g = self.gcode_header() + preamble + gcode + postamble
+        # # detect if using multi-tool and make the Gcode summation correctly for each case
+        # if self.multitool is True:
+        #     for tooluid_key in self.cnc_tools:
+        #         for key, value in self.cnc_tools[tooluid_key].items():
+        #             if key == 'gcode':
+        #                 gcode += value
+        #                 break
+        # else:
+        #     gcode += self.gcode
+
+        # if roland is True:
+        #     g = preamble + gcode + postamble
+        # elif hpgl is True:
+        #     g = self.gcode_header() + preamble + gcode + postamble
+        # else:
+        #     # fix so the preamble gets inserted in between the comments header and the actual start of GCODE
+        #     g_idx = gcode.rfind('G20')
+        #
+        #     # if it did not find 'G20' then search for 'G21'
+        #     if g_idx == -1:
+        #         g_idx = gcode.rfind('G21')
+        #
+        #     # if it did not find 'G20' and it did not find 'G21' then there is an error and return
+        #     # but only when the preprocessor is not ISEL_ICP who is allowed not to have the G20/G21 command
+        #     if g_idx == -1 and isel_icp is False:
+        #         self.app.inform.emit('[ERROR_NOTCL] %s' % _("G-code does not have a units code: either G20 or G21"))
+        #         return
+        #
+        #     footer = self.app.defaults['cncjob_footer']
+        #     end_gcode = self.gcode_footer() if footer is True else ''
+        #     g = gcode[:g_idx] + preamble + '\n' + gcode[g_idx:] + postamble + end_gcode
+
+        gcode = ''
+        if include_header is False:
+            g = preamble
+            # detect if using multi-tool and make the Gcode summation correctly for each case
+            if self.multitool is True:
+                for tooluid_key in self.cnc_tools:
+                    for key, value in self.cnc_tools[tooluid_key].items():
+                        if key == 'gcode':
+                            gcode += value
+                            break
+            else:
+                gcode += self.gcode
+
+            g = g + gcode + postamble
         else:
+            # search for the GCode beginning which is usually a G20 or G21
             # fix so the preamble gets inserted in between the comments header and the actual start of GCODE
-            g_idx = gcode.rfind('G20')
+            # g_idx = gcode.rfind('G20')
+            #
+            # # if it did not find 'G20' then search for 'G21'
+            # if g_idx == -1:
+            #     g_idx = gcode.rfind('G21')
+            #
+            # # if it did not find 'G20' and it did not find 'G21' then there is an error and return
+            # if g_idx == -1:
+            #     self.app.inform.emit('[ERROR_NOTCL] %s' % _("G-code does not have a units code: either G20 or G21"))
+            #     return
 
-            # if it did not find 'G20' then search for 'G21'
-            if g_idx == -1:
-                g_idx = gcode.rfind('G21')
+            # detect if using multi-tool and make the Gcode summation correctly for each case
+            if self.multitool is True:
+                for tooluid_key in self.cnc_tools:
+                    for key, value in self.cnc_tools[tooluid_key].items():
+                        if key == 'gcode':
+                            gcode += value
+                            break
+            else:
+                gcode += self.gcode
 
-            # if it did not find 'G20' and it did not find 'G21' then there is an error and return
-            if g_idx == -1:
-                self.app.inform.emit('[ERROR_NOTCL] %s' % _("G-code does not have a units code: either G20 or G21"))
-                return
+            end_gcode = self.gcode_footer() if self.app.defaults['cncjob_footer'] is True else ''
 
-            footer = self.app.defaults['cncjob_footer']
-            end_gcode = self.gcode_footer() if footer is True else ''
-            g = gcode[:g_idx] + preamble + '\n' + gcode[g_idx:] + postamble + end_gcode
+            # detect if using a HPGL preprocessor
+            hpgl = False
+            if self.cnc_tools:
+                for key in self.cnc_tools:
+                    if 'ppname_g' in self.cnc_tools[key]['data']:
+                        if 'hpgl' in self.cnc_tools[key]['data']['ppname_g']:
+                            hpgl = True
+                            break
+            elif self.exc_cnc_tools:
+                for key in self.cnc_tools:
+                    if 'ppname_e' in self.cnc_tools[key]['data']:
+                        if 'hpgl' in self.cnc_tools[key]['data']['ppname_e']:
+                            hpgl = True
+                            break
+
+            if hpgl:
+                processed_gcode = ''
+                pa_re = re.compile(r"^PA\s*(-?\d+\.\d*),?\s*(-?\d+\.\d*)*;?$")
+                for gline in gcode.splitlines():
+                    match = pa_re.search(gline)
+                    if match:
+                        x_int = int(float(match.group(1)))
+                        y_int = int(float(match.group(2)))
+                        new_line = 'PA%d,%d;\n' % (x_int, y_int)
+                        processed_gcode += new_line
+                    else:
+                        processed_gcode += gline + '\n'
+
+                gcode = processed_gcode
+                g = self.gcode_header() + '\n' + preamble + '\n' + gcode + postamble + end_gcode
+            else:
+                try:
+                    g_idx = gcode.index('G94')
+                    g = self.gcode_header() + gcode[:g_idx + 3] + '\n\n' + preamble + '\n' + \
+                        gcode[(g_idx + 3):] + postamble + end_gcode
+                except ValueError:
+                    self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                         _("G-code does not have a G94 code and we will not include the code in the "
+                                           "'Prepend to GCode' text box"))
+                    g = self.gcode_header() + '\n' + gcode + postamble + end_gcode
 
         # if toolchange custom is used, replace M6 code with the code from the Toolchange Custom Text box
         if self.ui.toolchange_cb.get_value() is True:

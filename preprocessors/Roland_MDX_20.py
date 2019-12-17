@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMPostProc import *
 
@@ -13,6 +13,7 @@ from FlatCAMPostProc import *
 # the same) to contain the following keyword, case-sensitive: 'Roland' without the quotes.
 class Roland_MDX_20(FlatCAMPostProc):
 
+    include_header = False
     coordinate_format = "%.1f"
     feedrate_format = '%.1f'
     feedrate_rapid_format = '%.1f'
@@ -123,5 +124,5 @@ class Roland_MDX_20(FlatCAMPostProc):
     def dwell_code(self, p):
         return''
 
-    def spindle_stop_code(self,p):
+    def spindle_stop_code(self, p):
         return '!MC0'

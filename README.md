@@ -9,6 +9,34 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.12.2019
+
+- more optimizations in NCC Tool
+- optimizations in Paint Tool
+- maximum range for Cut Z is now zero to deal with the situation when using V-shape with tip-dia same value with cut width
+- modified QValidator in FCDoubleSpinner() GUI element to allow entering the minus sign when the range maximum is set as 0.0; also for positive numbers allowed entering the symbol plus
+- made sure that if in Gerber UI the isolation is made with a V-Shape tool then the tool type is automatically updated on the generated Geometry Object
+- added ability to save the Source File as PDF (still have to adjust the page size)
+- fixed the generate_from_geometry_2() method to use the default values in case the parameters are None
+- added ability to save the Source File as PDF - fixed page size and added line breaks
+- more mods to generate_from_geometry_2() method
+- fixed bug saving the FlatCAM project saying the file is used by another application
+
+16.12.2019
+
+- in Geometry Editor added support for Jump To function such as that it works within the Editor Tools themselves. For now it works only in absolute jumps
+- modified the Jump To method such that now allows relative jump from the current mouse location
+- fixed the Defaults upgrade overwriting the new version number with the old one
+- fixed issue with clear_polygon3() - the one who makes 'lines' and fixed the NCC Tool
+- some small changes in the FlatCAMGeometry.on_tool_add() method
+- made sure that in Geometry Editor the self.app.mouse attribute is updated with the current mouse position (x, y)
+- updated the preprocessor files
+- fixed the HPGL preprocessor
+- fixed the CNCJob geometry created with HPGL preprocessor
+- fixed GCode generated with HPGL preprocessor to output only integer coordinates
+- fixed the HPGL2 import parsing for absolute linear movements
+- fixed the line endings for setup_ubuntu.sh
+
 15.12.2019
 
 - fixed a bug that created a crash in special conditions; it's related to the QSettings in FlatCAMGui.py
@@ -17,6 +45,10 @@ CAD program, and create G-Code for Isolation routing.
 - updated the languages
 - fixed a typo
 - fixed layout on first launch of the app
+- fixed some issues with the recent preparation for dark icons resource usage
+- added a new preprocessor file contributed by Daniel Friderich and added fixes for it
+- modified the export_gcode() method and the preprocessors such that the preprocessors now have the information if to include the gcode header
+- updated all the translation PO files and the POT file
 - RELEASE 8.99
 
 14.12.2019

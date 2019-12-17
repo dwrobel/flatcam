@@ -21,7 +21,15 @@ import re
 import logging
 import html
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
 log = logging.getLogger('base')
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 EDIT_SIZE_HINT = 70
 
@@ -624,7 +632,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         # by default don't allow the minus sign to be entered as the default for QDoubleSpinBox is the positive range
         # between 0.00 and 99.00 (2 decimals)
         self.lineEdit().setValidator(
-            QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+            QtGui.QRegExpValidator(QtCore.QRegExp("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
         if suffix:
             self.setSuffix(' %s' % str(suffix))
@@ -710,15 +718,15 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.setDecimals(val)
 
         # make sure that the user can't type more decimals than the set precision
-        if self.minimum() < 0 or self.maximum() < 0:
+        if self.minimum() < 0 or self.maximum() <= 0:
             self.lineEdit().setValidator(
                 QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
         else:
             self.lineEdit().setValidator(
-                QtGui.QRegExpValidator(QtCore.QRegExp("[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
+                QtGui.QRegExpValidator(QtCore.QRegExp("\+?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
     def set_range(self, min_val, max_val):
-        if min_val < 0 or max_val < 0:
+        if min_val < 0 or max_val <= 0:
             self.lineEdit().setValidator(
                 QtGui.QRegExpValidator(QtCore.QRegExp("-?[0-9]*[.,]?[0-9]{%d}" % self.decimals()), self))
 
@@ -2228,6 +2236,72 @@ class Dialog_box(QtWidgets.QWidget):
             super(Dialog_box, self).focusOutEvent(e)  # required to remove cursor on focusOut
             self.lineEdit().deselect()
             self.readyToEdit = True
+
+
+class DialogBoxRadio(QtWidgets.QDialog):
+    def __init__(self, title=None, label=None, icon=None, initial_text=None):
+        """
+
+        :param title: string with the window title
+        :param label: string with the message inside the dialog box
+        """
+        super(DialogBoxRadio, self).__init__()
+        if initial_text is None:
+            self.location = str((0, 0))
+        else:
+            self.location = initial_text
+
+        self.ok = False
+
+        self.setWindowIcon(icon)
+        self.setWindowTitle(str(title))
+
+        self.form = QtWidgets.QFormLayout(self)
+
+        self.form.addRow(QtWidgets.QLabel(''))
+
+        self.wdg_label = QtWidgets.QLabel('<b>%s</b>' % str(label))
+        self.form.addRow(self.wdg_label)
+
+        self.ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
+        self.ref_label.setToolTip(
+            _("The reference can be:\n"
+              "- Absolute -> the reference point is point (0,0)\n"
+              "- Relative -> the reference point is the mouse position before Jump")
+        )
+        self.ref_radio = RadioSet([
+            {"label": _("Abs"), "value": "abs"},
+            {"label": _("Relative"), "value": "rel"}
+        ], orientation='horizontal', stretch=False)
+        self.ref_radio.set_value('abs')
+        self.form.addRow(self.ref_label, self.ref_radio)
+
+        self.loc_label = QtWidgets.QLabel('<b>%s:</b>' % _("Location"))
+        self.loc_label.setToolTip(
+            _("The Location value is a tuple (x,y).\n"
+              "If the reference is Absolute then the Jump will be at the position (x,y).\n"
+              "If the reference is Relative then the Jump will be at the (x,y) distance\n"
+              "from the current mouse location point.")
+        )
+        self.lineEdit = EvalEntry()
+        self.lineEdit.setText(str(self.location).replace('(', '').replace(')', ''))
+        self.form.addRow(self.loc_label, self.lineEdit)
+
+        self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
+                                                     Qt.Horizontal, parent=self)
+        self.form.addRow(self.button_box)
+
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
+
+        self.readyToEdit = True
+
+        if self.exec_() == QtWidgets.QDialog.Accepted:
+            self.ok = True
+            self.location = self.lineEdit.text()
+            self.reference = self.ref_radio.get_value()
+        else:
+            self.ok = False
 
 
 class _BrowserTextEdit(QTextEdit):

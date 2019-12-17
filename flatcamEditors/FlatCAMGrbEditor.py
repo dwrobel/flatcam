@@ -4530,13 +4530,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: " 
                                                "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        # # ## Utility geometry (animated)
-        geo = self.active_tool.utility_geometry(data=(x, y))
-
-        if isinstance(geo, DrawToolShape) and geo.geo is not None:
-            # Remove any previous utility shape
-            self.tool_shape.clear(update=True)
-            self.draw_utility_geometry(geo=geo)
+        self.update_utility_geometry(data=(x, y))
 
         # # ## Selection area on canvas section # ##
         if event_is_dragging == 1 and event.button == 1:
@@ -4557,6 +4551,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.app.selection_type = True
         else:
             self.app.selection_type = None
+
+    def update_utility_geometry(self, data):
+        # # ## Utility geometry (animated)
+        geo = self.active_tool.utility_geometry(data=data)
+
+        if isinstance(geo, DrawToolShape) and geo.geo is not None:
+            # Remove any previous utility shape
+            self.tool_shape.clear(update=True)
+            self.draw_utility_geometry(geo=geo)
 
     def draw_utility_geometry(self, geo):
         if type(geo.geo) == list:

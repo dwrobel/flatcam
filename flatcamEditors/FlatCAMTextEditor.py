@@ -8,6 +8,12 @@
 from flatcamGUI.GUIElements import *
 from PyQt5 import QtPrintSupport
 
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch, mm
+
+from io import StringIO
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -217,9 +223,38 @@ class TextEditor(QtWidgets.QWidget):
         else:
             try:
                 my_gcode = self.code_editor.toPlainText()
-                with open(filename, 'w') as f:
-                    for line in my_gcode:
-                        f.write(line)
+                if filename.rpartition('.')[2].lower() == 'pdf':
+                    page_size = (
+                        self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][0] * mm,
+                        self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][1] * mm
+                    )
+
+                    # add new line after each line
+                    lined_gcode = my_gcode.replace("\n", "<br />")
+
+                    styles = getSampleStyleSheet()
+                    styleN = styles['Normal']
+                    styleH = styles['Heading1']
+                    story = []
+
+                    doc = SimpleDocTemplate(
+                        filename,
+                        pagesize=page_size,
+                        bottomMargin=0.4 * inch,
+                        topMargin=0.6 * inch,
+                        rightMargin=0.8 * inch,
+                        leftMargin=0.8 * inch)
+
+                    P = Paragraph(lined_gcode, styleN)
+                    story.append(P)
+
+                    doc.build(
+                        story,
+                    )
+                else:
+                    with open(filename, 'w') as f:
+                        for line in my_gcode:
+                            f.write(line)
             except FileNotFoundError:
                 self.app.inform.emit('[WARNING] %s' % _("No such file or directory"))
                 return

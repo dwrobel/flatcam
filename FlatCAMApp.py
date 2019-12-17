@@ -140,8 +140,8 @@ class App(QtCore.QObject):
     # ##########################################################################
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
-    version = 8.99
-    version_date = "2019/12/15"
+    version = 8.991
+    version_date = "2019/12/30"
     beta = True
     engine = '3D'
 
@@ -236,6 +236,9 @@ class App(QtCore.QObject):
     # a reusable signal to replot a list of objects
     # should be disconnected after use so it can be reused
     replot_signal = pyqtSignal(list)
+
+    # signal emitted when jumping
+    jump_signal = pyqtSignal(tuple)
 
     def __init__(self, user_defaults=True):
         """
@@ -3810,7 +3813,7 @@ class App(QtCore.QObject):
 
         if 'version' not in defaults or defaults['version'] != self.defaults['version']:
             for k, v in defaults.items():
-                if k in self.defaults:
+                if k in self.defaults and k != 'version':
                     self.defaults[k] = v
 
             # delete old factory defaults
@@ -7355,10 +7358,6 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        # if self.is_legacy is True:
-        #     self.inform.emit(_("Not available with the current Graphic Engine Legacy(2D)."))
-        #     return
-
         if not custom_location:
             dia_box_location = None
 
@@ -7372,23 +7371,37 @@ class App(QtCore.QObject):
             else:
                 dia_box_location = None
 
-            dia_box = Dialog_box(title=_("Jump to ..."),
-                                 label=_("Enter the coordinates in format X,Y:"),
-                                 icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
-                                 initial_text=dia_box_location)
+            # dia_box = Dialog_box(title=_("Jump to ..."),
+            #                      label=_("Enter the coordinates in format X,Y:"),
+            #                      icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
+            #                      initial_text=dia_box_location)
+
+            dia_box = DialogBoxRadio(title=_("Jump to ..."),
+                                     label=_("Enter the coordinates in format X,Y:"),
+                                     icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
+                                     initial_text=dia_box_location)
 
             if dia_box.ok is True:
                 try:
                     location = eval(dia_box.location)
+
                     if not isinstance(location, tuple):
                         self.inform.emit(_("Wrong coordinates. Enter coordinates in format: X,Y"))
                         return
+
+                    if dia_box.reference == 'rel':
+                        rel_x = self.mouse[0] + location[0]
+                        rel_y = self.mouse[1] + location[1]
+                        location = (rel_x, rel_y)
+
                 except Exception:
                     return
             else:
                 return
         else:
             location = custom_location
+
+        self.jump_signal.emit(location)
 
         units = self.defaults['units'].upper()
 
@@ -9962,11 +9975,11 @@ class App(QtCore.QObject):
 
         flt = "All Files (*.*)"
         if obj.kind == 'gerber':
-            flt = "Gerber Files (*.GBR);;All Files (*.*)"
+            flt = "Gerber Files (*.GBR);;PDF Files (*.PDF);;All Files (*.*)"
         elif obj.kind == 'excellon':
-            flt = "Excellon Files (*.DRL);;All Files (*.*)"
+            flt = "Excellon Files (*.DRL);;PDF Files (*.PDF);;All Files (*.*)"
         elif obj.kind == 'cncjob':
-            "GCode Files (*.NC);;All Files (*.*)"
+            flt = "GCode Files (*.NC);;PDF Files (*.PDF);;All Files (*.*)"
 
         self.source_editor_tab = TextEditor(app=self, plain_text=True)
 
@@ -10239,13 +10252,6 @@ class App(QtCore.QObject):
 
         if filename == '':
             self.inform.emit('[WARNING_NOTCL] %s' % _("Save Project cancelled."))
-            return
-
-        try:
-            f = open(filename, 'r')
-            f.close()
-        except IOError:
-            self.inform.emit('[ERROR_NOTCL] %s' % _("The object is used by another application."))
             return
 
         if use_thread is True:
@@ -12154,14 +12160,14 @@ class App(QtCore.QObject):
                     g = json.dumps(d, default=to_dict, indent=2, sort_keys=True).encode('utf-8')
                     # # Write
                     f.write(g)
-                self.inform.emit('[success] %s: %s' %
-                                 (_("Project saved to"), filename))
+                self.inform.emit('[success] %s: %s' % (_("Project saved to"), filename))
             else:
                 # Open file
                 try:
                     f = open(filename, 'w')
                 except IOError:
                     App.log.error("Failed to open file for saving: %s", filename)
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("The object is used by another application."))
                     return
 
                 # Write
@@ -12175,8 +12181,7 @@ class App(QtCore.QObject):
                 except IOError:
                     if silent is False:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to verify project file"), filename, _("Retry to save it."))
-                                         )
+                                         (_("Failed to verify project file"), filename, _("Retry to save it.")))
                     return
 
                 try:
@@ -12184,8 +12189,7 @@ class App(QtCore.QObject):
                 except Exception:
                     if silent is False:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to parse saved project file"), filename, _("Retry to save it."))
-                                         )
+                                         (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
                     f.close()
                     return
                 saved_f.close()
@@ -12196,8 +12200,7 @@ class App(QtCore.QObject):
                                          (_("Project saved to"), filename))
                     else:
                         self.inform.emit('[ERROR_NOTCL] %s: %s %s' %
-                                         (_("Failed to parse saved project file"), filename, _("Retry to save it."))
-                                         )
+                                         (_("Failed to parse saved project file"), filename, _("Retry to save it.")))
 
                 tb_settings = QSettings("Open Source", "FlatCAM")
                 lock_state = self.ui.lock_action.isChecked()
