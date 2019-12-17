@@ -217,9 +217,42 @@ class TextEditor(QtWidgets.QWidget):
         else:
             try:
                 my_gcode = self.code_editor.toPlainText()
-                with open(filename, 'w') as f:
-                    for line in my_gcode:
-                        f.write(line)
+                if filename.rpartition('.')[2].lower() == 'pdf':
+                    from reportlab.platypus import SimpleDocTemplate, Paragraph
+                    from reportlab.lib.styles import getSampleStyleSheet
+                    from reportlab.lib.units import inch
+
+                    if self.app.defaults['units'].upper() == 'MM':
+                        dims = self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']]
+                    else:
+                        dims = (
+                            self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][0] / 25.4,
+                            self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][1] / 25.4
+                        )
+
+                    styles = getSampleStyleSheet()
+                    styleN = styles['Normal']
+                    styleH = styles['Heading1']
+                    story = []
+
+                    doc = SimpleDocTemplate(
+                        filename,
+                        pagesize=dims,
+                        bottomMargin=0.4 * 72,
+                        topMargin=0.6 * 72,
+                        rightMargin=0.8 * 72,
+                        leftMargin=0.8 * 72)
+
+                    P = Paragraph(my_gcode, styleN)
+                    story.append(P)
+
+                    doc.build(
+                        story,
+                    )
+                else:
+                    with open(filename, 'w') as f:
+                        for line in my_gcode:
+                            f.write(line)
             except FileNotFoundError:
                 self.app.inform.emit('[WARNING] %s' % _("No such file or directory"))
                 return

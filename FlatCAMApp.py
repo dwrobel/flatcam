@@ -9975,11 +9975,11 @@ class App(QtCore.QObject):
 
         flt = "All Files (*.*)"
         if obj.kind == 'gerber':
-            flt = "Gerber Files (*.GBR);;All Files (*.*)"
+            flt = "Gerber Files (*.GBR);;PDF Files (*.PDF);;All Files (*.*)"
         elif obj.kind == 'excellon':
-            flt = "Excellon Files (*.DRL);;All Files (*.*)"
+            flt = "Excellon Files (*.DRL);;PDF Files (*.PDF);;All Files (*.*)"
         elif obj.kind == 'cncjob':
-            "GCode Files (*.NC);;All Files (*.*)"
+            flt = "GCode Files (*.NC);;PDF Files (*.PDF);;All Files (*.*)"
 
         self.source_editor_tab = TextEditor(app=self, plain_text=True)
 
