@@ -3304,14 +3304,12 @@ class CNCjob(Geometry):
         return self.gcode
 
     def generate_from_geometry_2(
-            self, geometry, append=True,
-            tooldia=None, offset=0.0, tolerance=0,
-            z_cut=1.0, z_move=2.0,
-            feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
+            self, geometry, append=True, tooldia=None, offset=0.0, tolerance=0, z_cut=None, z_move=None,
+            feedrate=None, feedrate_z=None, feedrate_rapid=None,
+            spindlespeed=None, spindledir='CW', dwell=False, dwelltime=None,
             multidepth=False, depthpercut=None,
-            toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0",
-            extracut=False, extracut_length=0.1, startz=None, endz=2.0,
+            toolchange=False, toolchangez=None, toolchangexy="0.0, 0.0",
+            extracut=False, extracut_length=None, startz=None, endz=None,
             pp_geometry_name=None, tool_no=1):
         """
         Second algorithm to generate from Geometry.
@@ -3406,27 +3404,31 @@ class CNCjob(Geometry):
         log.debug("%d paths" % len(flat_geometry))
 
         try:
-            self.tooldia = float(tooldia) if tooldia else None
+            self.tooldia = float(tooldia) if tooldia else self.app.defaults["geometry_cnctooldia"]
         except ValueError:
-            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia else None
+            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia is not None else \
+                self.app.defaults["geometry_cnctooldia"]
 
-        self.z_cut = float(z_cut) if z_cut is not None else None
-        self.z_move = float(z_move) if z_move is not None else None
+        self.z_cut = float(z_cut) if z_cut is not None else self.app.defaults["geometry_cutz"]
+        self.z_move = float(z_move) if z_move is not None else self.app.defaults["geometry_travelz"]
 
-        self.feedrate = float(feedrate) if feedrate else None
-        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else None
-        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
+        self.feedrate = float(feedrate) if feedrate is not None else self.app.defaults["geometry_feedrate"]
+        self.z_feedrate = float(feedrate_z) if feedrate_z is not None else self.app.defaults["geometry_feedrate_z"]
+        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid is not None else \
+            self.app.defaults["geometry_feedrate_rapid"]
 
         self.spindlespeed = int(spindlespeed) if spindlespeed != 0 else None
         self.spindledir = spindledir
         self.dwell = dwell
-        self.dwelltime = float(dwelltime) if dwelltime else None
+        self.dwelltime = float(dwelltime) if dwelltime is not None else self.app.defaults["geometry_dwelltime"]
 
-        self.startz = float(startz) if startz is not None else None
-        self.z_end = float(endz) if endz is not None else None
-        self.z_depthpercut = float(depthpercut) if depthpercut else None
+        self.startz = float(startz) if startz is not None else self.app.defaults["geometry_startz"]
+        self.z_end = float(endz) if endz is not None else self.app.defaults["geometry_endz"]
+        self.z_depthpercut = float(depthpercut) if depthpercut is not None else 0.0
         self.multidepth = multidepth
-        self.z_toolchange = float(toolchangez) if toolchangez is not None else None
+        self.z_toolchange = float(toolchangez) if toolchangez is not None else self.app.defaults["geometry_toolchangez"]
+        self.extracut_length = float(extracut_length) if extracut_length is not None else \
+            self.app.defaults["geometry_extracut_length"]
 
         try:
             if toolchangexy == '':
@@ -3601,7 +3603,7 @@ class CNCjob(Geometry):
                 if not multidepth:
                     # calculate the cut distance
                     total_cut += geo.length
-                    self.gcode += self.create_gcode_single_pass(geo, extracut, extracut_length, tolerance,
+                    self.gcode += self.create_gcode_single_pass(geo, extracut, self.extracut_length, tolerance,
                                                                 old_point=current_pt)
 
                 # --------- Multi-pass ---------
@@ -3616,7 +3618,7 @@ class CNCjob(Geometry):
 
                     total_cut += (geo.length * nr_cuts)
 
-                    self.gcode += self.create_gcode_multi_pass(geo, extracut, extracut_length, tolerance,
+                    self.gcode += self.create_gcode_multi_pass(geo, extracut, self.extracut_length, tolerance,
                                                                postproc=p, old_point=current_pt)
 
                 # calculate the travel distance

@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified QValidator in FCDoubleSpinner() GUI element to allow entering the minus sign when the range maximum is set as 0.0; also for positive numbers allowed entering the symbol plus
 - made sure that if in Gerber UI the isolation is made with a V-Shape tool then the tool type is automatically updated on the generated Geometry Object
 - added ability to save the Source File as PDF (still have to adjust the page size)
+- fixed the generate_from_geometry_2() method to use the default values in case the parameters are None
 
 16.12.2019
 
