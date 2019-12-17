@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the generate_from_geometry_2() method to use the default values in case the parameters are None
 - added ability to save the Source File as PDF - fixed page size and added line breaks
 - more mods to generate_from_geometry_2() method
+- fixed bug saving the FlatCAM project saying the file is used by another application
 
 16.12.2019
 
