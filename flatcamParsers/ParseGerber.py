@@ -465,11 +465,12 @@ class Gerber(Geometry):
                             geo_dict['follow'] = geo_f
 
                         geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
-                        if not geo_s.is_empty:
+                        if not geo_s.is_empty and geo_s.is_valid:
                             if self.app.defaults['gerber_simplification']:
                                 poly_buffer.append(geo_s.simplify(s_tol))
                             else:
                                 poly_buffer.append(geo_s)
+
                             if self.is_lpc is True:
                                 geo_dict['clear'] = geo_s
                             else:
@@ -1411,7 +1412,14 @@ class Gerber(Geometry):
             if current_polarity == 'D':
                 self.app.inform.emit('%s' % _("Gerber processing. Applying Gerber polarity."))
                 if new_poly.is_valid:
-                    self.solid_geometry = self.solid_geometry.union(new_poly)
+                    # self.solid_geometry = self.solid_geometry.union(new_poly)
+                    # FIX for issue #347 - Sprint Layout generate strange Gerber files when the copper pour is enabled
+                    # it use a filled bounding box polygon to which add clear polygons (negative) to isolate the copper
+                    # features
+                    candidate_geo = list()
+                    for p in self.solid_geometry.union(new_poly):
+                        candidate_geo.append(p.buffer(-0.0000001))
+                    self.solid_geometry = candidate_geo
                 else:
                     # I do this so whenever the parsed geometry of the file is not valid (intersections) it is still
                     # loaded. Instead of applying a union I add to a list of polygons.
