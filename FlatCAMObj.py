@@ -1288,6 +1288,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             def iso_init(geo_obj, app_obj):
                 # Propagate options
                 geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
+                geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
+
                 geo_obj.solid_geometry = []
                 for i in range(passes):
                     iso_offset = dia * ((2 * i + 1) / 2.0) - (i * (overlap / 100) * dia)
@@ -1417,6 +1419,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
+                    geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_t = 1 if milling_type == 'cl' else 0
@@ -3603,6 +3606,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.old_toolchangeg_state = self.app.defaults["geometry_toolchange"]
         self.units_found = self.app.defaults['units']
 
+        # this variable can be updated by the Object that generates the geometry
+        self.tool_type = 'C1'
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -3859,7 +3865,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         'offset': 'Path',
                         'offset_value': 0.0,
                         'type': _('Rough'),
-                        'tool_type': 'C1',
+                        'tool_type': self.tool_type,
                         'data': new_data,
                         'solid_geometry': self.solid_geometry
                     }
