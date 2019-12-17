@@ -3488,7 +3488,10 @@ class CNCjob(Geometry):
                 return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
-        if abs(self.z_cut) < self.z_depthpercut:
+        try:
+            if abs(self.z_cut) < self.z_depthpercut:
+                self.z_depthpercut = abs(self.z_cut)
+        except TypeError:
             self.z_depthpercut = abs(self.z_cut)
 
         # ## Index first and last points in paths

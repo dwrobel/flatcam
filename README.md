@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - added ability to save the Source File as PDF (still have to adjust the page size)
 - fixed the generate_from_geometry_2() method to use the default values in case the parameters are None
 - added ability to save the Source File as PDF - fixed page size and added line breaks
+- more mods to generate_from_geometry_2() method
 
 16.12.2019
 
