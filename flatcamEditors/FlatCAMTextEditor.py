@@ -8,6 +8,12 @@
 from flatcamGUI.GUIElements import *
 from PyQt5 import QtPrintSupport
 
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch, mm
+
+from io import StringIO
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -218,17 +224,13 @@ class TextEditor(QtWidgets.QWidget):
             try:
                 my_gcode = self.code_editor.toPlainText()
                 if filename.rpartition('.')[2].lower() == 'pdf':
-                    from reportlab.platypus import SimpleDocTemplate, Paragraph
-                    from reportlab.lib.styles import getSampleStyleSheet
-                    from reportlab.lib.units import inch
+                    page_size = (
+                        self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][0] * mm,
+                        self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][1] * mm
+                    )
 
-                    if self.app.defaults['units'].upper() == 'MM':
-                        dims = self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']]
-                    else:
-                        dims = (
-                            self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][0] / 25.4,
-                            self.app.plotcanvas.pagesize_dict[self.app.defaults['global_workspaceT']][1] / 25.4
-                        )
+                    # add new line after each line
+                    lined_gcode = my_gcode.replace("\n", "<br />")
 
                     styles = getSampleStyleSheet()
                     styleN = styles['Normal']
@@ -237,13 +239,13 @@ class TextEditor(QtWidgets.QWidget):
 
                     doc = SimpleDocTemplate(
                         filename,
-                        pagesize=dims,
-                        bottomMargin=0.4 * 72,
-                        topMargin=0.6 * 72,
-                        rightMargin=0.8 * 72,
-                        leftMargin=0.8 * 72)
+                        pagesize=page_size,
+                        bottomMargin=0.4 * inch,
+                        topMargin=0.6 * inch,
+                        rightMargin=0.8 * inch,
+                        leftMargin=0.8 * inch)
 
-                    P = Paragraph(my_gcode, styleN)
+                    P = Paragraph(lined_gcode, styleN)
                     story.append(P)
 
                     doc.build(

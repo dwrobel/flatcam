@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - made sure that if in Gerber UI the isolation is made with a V-Shape tool then the tool type is automatically updated on the generated Geometry Object
 - added ability to save the Source File as PDF (still have to adjust the page size)
 - fixed the generate_from_geometry_2() method to use the default values in case the parameters are None
+- added ability to save the Source File as PDF - fixed page size and added line breaks
 
 16.12.2019
 
