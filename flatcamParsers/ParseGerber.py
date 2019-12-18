@@ -72,6 +72,8 @@ class Gerber(Geometry):
     #     "use_buffer_for_union": True
     # }
 
+    app = None
+
     def __init__(self, steps_per_circle=None):
         """
         The constructor takes no parameters. Use ``gerber.parse_files()``
@@ -1412,14 +1414,7 @@ class Gerber(Geometry):
             if current_polarity == 'D':
                 self.app.inform.emit('%s' % _("Gerber processing. Applying Gerber polarity."))
                 if new_poly.is_valid:
-                    # self.solid_geometry = self.solid_geometry.union(new_poly)
-                    # FIX for issue #347 - Sprint Layout generate strange Gerber files when the copper pour is enabled
-                    # it use a filled bounding box polygon to which add clear polygons (negative) to isolate the copper
-                    # features
-                    candidate_geo = list()
-                    for p in self.solid_geometry.union(new_poly):
-                        candidate_geo.append(p.buffer(-0.0000001))
-                    self.solid_geometry = candidate_geo
+                    self.solid_geometry = self.solid_geometry.union(new_poly)
                 else:
                     # I do this so whenever the parsed geometry of the file is not valid (intersections) it is still
                     # loaded. Instead of applying a union I add to a list of polygons.
@@ -1438,6 +1433,15 @@ class Gerber(Geometry):
 
                     self.solid_geometry = final_poly
 
+                # FIX for issue #347 - Sprint Layout generate strange Gerber files when the copper pour is enabled
+                # it use a filled bounding box polygon to which add clear polygons (negative) to isolate the copper
+                # features
+                if self.app.defaults['gerber_extra_buffering']:
+                    candidate_geo = list()
+                    for p in self.solid_geometry:
+                        candidate_geo.append(p.buffer(0.0000001))
+                    self.solid_geometry = candidate_geo
+
                 # try:
                 #     self.solid_geometry = self.solid_geometry.union(new_poly)
                 # except Exception as e:
@@ -1449,6 +1453,12 @@ class Gerber(Geometry):
                 #             pass
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
+
+            if self.app.defaults['gerber_clean_apertures']:
+                # clean the Gerber file of apertures with no geometry
+                for apid, apvalue in list(self.apertures.items()):
+                    if 'geometry' not in apvalue:
+                        self.apertures.pop(apid)
 
             # init this for the following operations
             self.conversion_done = False

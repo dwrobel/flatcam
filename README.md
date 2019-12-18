@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+18.12.2019
+
+- added new parameters to improve Gerber parsing
+- small optimizations in the Preferences UI
+
 17.12.2019
 
 - more optimizations in NCC Tool

@@ -511,6 +511,9 @@ class App(QtCore.QObject):
             "gerber_multicolored": False,
             "gerber_circle_steps": 64,
             "gerber_use_buffer_for_union": True,
+            "gerber_clean_apertures": True,
+            "gerber_extra_buffering": True,
+
             "gerber_def_units": 'IN',
             "gerber_def_zeros": 'L',
             "gerber_save_filters": "Gerber File (*.gbr);;Gerber File (*.bot);;Gerber File (*.bsm);;"
@@ -1121,6 +1124,8 @@ class App(QtCore.QObject):
             "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
             "gerber_def_units": self.ui.gerber_defaults_form.gerber_gen_group.gerber_units_radio,
             "gerber_def_zeros": self.ui.gerber_defaults_form.gerber_gen_group.gerber_zeros_radio,
+            "gerber_clean_apertures": self.ui.gerber_defaults_form.gerber_gen_group.gerber_clean_cb,
+            "gerber_extra_buffering": self.ui.gerber_defaults_form.gerber_gen_group.gerber_extra_buffering,
 
             # Gerber Options
             "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
