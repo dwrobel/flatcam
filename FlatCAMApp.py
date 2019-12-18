@@ -9940,7 +9940,7 @@ class App(QtCore.QObject):
 
     def init_code_editor(self, name):
 
-        self.text_editor_tab = TextEditor(app=self)
+        self.text_editor_tab = TextEditor(app=self, plain_text=True)
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.text_editor_tab, '%s' % name)
