@@ -1438,8 +1438,11 @@ class Gerber(Geometry):
                 # features
                 if self.app.defaults['gerber_extra_buffering']:
                     candidate_geo = list()
-                    for p in self.solid_geometry:
-                        candidate_geo.append(p.buffer(0.0000001))
+                    try:
+                        for p in self.solid_geometry:
+                            candidate_geo.append(p.buffer(0.0000001))
+                    except TypeError:
+                        candidate_geo.append(self.solid_geometry.buffer(0.0000001))
                     self.solid_geometry = candidate_geo
 
                 # try:

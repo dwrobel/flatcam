@@ -5291,10 +5291,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         if use_thread:
             # To be run in separate thread
-            # The idea is that if there is a solid_geometry in the file "root" then most likely thare are no
-            # separate solid_geometry in the self.tools dictionary
             def job_thread(app_obj):
-                if self.solid_geometry:
+                if self.multigeo is False:
                     with self.app.proc_container.new(_("Generating CNC Code")):
                         if app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot) != 'fail':
                             app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))
