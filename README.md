@@ -15,6 +15,10 @@ CAD program, and create G-Code for Isolation routing.
 - small optimizations in the Preferences UI
 - the Jump To function reference is now saving it's last used value
 - added the ability to use the Jump To method in the Gerber Editor
+- improved the loading of Config File by using the advanced code editor
+- fixed a bug in the new feature 'extra buffering'
+- fixed the creation of CNCJob objects out of multigeo Geometry objects (objects with multiple tools)
+- optimized the NCC Tool
 
 17.12.2019
 
