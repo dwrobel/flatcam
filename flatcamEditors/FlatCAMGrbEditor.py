@@ -4594,19 +4594,21 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.shapes.clear(update=True)
 
             for storage in self.storage_dict:
-                for elem in self.storage_dict[storage]['geometry']:
-                    if 'solid' in elem.geo:
-                        geometric_data = elem.geo['solid']
-                        if geometric_data is None:
-                            continue
+                # fix for apertures with now geometry inside
+                if 'geometry' in self.storage_dict[storage]:
+                    for elem in self.storage_dict[storage]['geometry']:
+                        if 'solid' in elem.geo:
+                            geometric_data = elem.geo['solid']
+                            if geometric_data is None:
+                                continue
 
-                        if elem in self.selected:
-                            self.plot_shape(geometry=geometric_data,
-                                            color=self.app.defaults['global_sel_draw_color'] + 'FF',
-                                            linewidth=2)
-                        else:
-                            self.plot_shape(geometry=geometric_data,
-                                            color=self.app.defaults['global_draw_color'] + 'FF')
+                            if elem in self.selected:
+                                self.plot_shape(geometry=geometric_data,
+                                                color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                                                linewidth=2)
+                            else:
+                                self.plot_shape(geometry=geometric_data,
+                                                color=self.app.defaults['global_draw_color'] + 'FF')
 
             if self.utility:
                 for elem in self.utility:

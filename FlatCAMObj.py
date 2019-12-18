@@ -5173,8 +5173,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     if self.tools[tooluid_key]['solid_geometry'] is None:
                         a += 1
                 if a == len(self.tools):
-                    self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                         _('Cancelled. Empty file, it has no geometry'))
+                    self.app.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled. Empty file, it has no geometry'))
                     return 'fail'
 
             for tooluid_key in list(tools_dict.keys()):
