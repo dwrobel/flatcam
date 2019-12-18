@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - added new parameters to improve Gerber parsing
 - small optimizations in the Preferences UI
+- the Jump To function reference is now saving it's last used value
+- added the ability to use the Jump To method in the Gerber Editor
 
 17.12.2019
 

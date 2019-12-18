@@ -1880,7 +1880,6 @@ class DrawTool(object):
         return ""
 
     def on_key(self, key):
-
         # Jump to coords
         if key == QtCore.Qt.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
