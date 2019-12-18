@@ -2239,7 +2239,7 @@ class Dialog_box(QtWidgets.QWidget):
 
 
 class DialogBoxRadio(QtWidgets.QDialog):
-    def __init__(self, title=None, label=None, icon=None, initial_text=None):
+    def __init__(self, title=None, label=None, icon=None, initial_text=None, reference='abs'):
         """
 
         :param title: string with the window title
@@ -2258,11 +2258,6 @@ class DialogBoxRadio(QtWidgets.QDialog):
 
         self.form = QtWidgets.QFormLayout(self)
 
-        self.form.addRow(QtWidgets.QLabel(''))
-
-        self.wdg_label = QtWidgets.QLabel('<b>%s</b>' % str(label))
-        self.form.addRow(self.wdg_label)
-
         self.ref_label = QtWidgets.QLabel('%s:' % _("Reference"))
         self.ref_label.setToolTip(
             _("The reference can be:\n"
@@ -2273,10 +2268,15 @@ class DialogBoxRadio(QtWidgets.QDialog):
             {"label": _("Abs"), "value": "abs"},
             {"label": _("Relative"), "value": "rel"}
         ], orientation='horizontal', stretch=False)
-        self.ref_radio.set_value('abs')
+        self.ref_radio.set_value(reference)
         self.form.addRow(self.ref_label, self.ref_radio)
 
-        self.loc_label = QtWidgets.QLabel('<b>%s:</b>' % _("Location"))
+        self.form.addRow(QtWidgets.QLabel(''))
+
+        self.wdg_label = QtWidgets.QLabel('<b>%s</b>' % str(label))
+        self.form.addRow(self.wdg_label)
+
+        self.loc_label = QtWidgets.QLabel('%s:' % _("Location"))
         self.loc_label.setToolTip(
             _("The Location value is a tuple (x,y).\n"
               "If the reference is Absolute then the Jump will be at the position (x,y).\n"

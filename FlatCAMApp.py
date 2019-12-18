@@ -415,6 +415,9 @@ class App(QtCore.QObject):
             "global_serial": 0,
             "global_stats": dict(),
             "global_tabs_detachable": True,
+            "global_jump_ref": 'abs',
+
+            # General
             "global_graphic_engine": '3D',
             "global_app_level": 'b',
             "global_portable": False,
@@ -1678,6 +1681,7 @@ class App(QtCore.QObject):
         self.mr = None
         self.mdc = None
         self.mp_zc = None
+        self.kp = None
 
         # Matplotlib axis
         self.axes = None
@@ -7384,7 +7388,8 @@ class App(QtCore.QObject):
             dia_box = DialogBoxRadio(title=_("Jump to ..."),
                                      label=_("Enter the coordinates in format X,Y:"),
                                      icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
-                                     initial_text=dia_box_location)
+                                     initial_text=dia_box_location,
+                                     reference=self.defaults['global_jump_ref'])
 
             if dia_box.ok is True:
                 try:
@@ -7398,7 +7403,7 @@ class App(QtCore.QObject):
                         rel_x = self.mouse[0] + location[0]
                         rel_y = self.mouse[1] + location[1]
                         location = (rel_x, rel_y)
-
+                    self.defaults['global_jump_ref'] = dia_box.reference
                 except Exception:
                     return
             else:
