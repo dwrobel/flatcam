@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.12.2019
+
+- in 2-Sided Tool added a way to calculate the bounding box values for a selection of objects, and also the centroid
+
 18.12.2019
 
 - added new parameters to improve Gerber parsing
