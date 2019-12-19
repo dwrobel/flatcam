@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.12.2019
+
+- fixed a rare issue in the generation of non-copper-region geometry started from the Gerber Object UI (selected tab)
+
 19.12.2019
 
 - in 2-Sided Tool added a way to calculate the bounding box values for a selection of objects, and also the centroid

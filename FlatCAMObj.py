@@ -981,6 +981,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry)
+            if isinstance(self.solid_geometry, list):
+                self.solid_geometry = cascaded_union(self.solid_geometry)
+
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["noncoppermargin"]))
             if not self.options["noncopperrounded"]:
                 bounding_box = bounding_box.envelope
