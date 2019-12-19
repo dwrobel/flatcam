@@ -416,6 +416,10 @@ class App(QtCore.QObject):
             "global_stats": dict(),
             "global_tabs_detachable": True,
             "global_jump_ref": 'abs',
+            "global_tpdf_tmargin": 15.0,
+            "global_tpdf_bmargin": 10.0,
+            "global_tpdf_lmargin": 20.0,
+            "global_tpdf_rmargin": 20.0,
 
             # General
             "global_graphic_engine": '3D',
@@ -978,6 +982,10 @@ class App(QtCore.QObject):
 
         self.current_units = self.defaults['units']
 
+        # store here the current self.defaults so it can be restored if Preferences changes are cancelled
+        self.current_defaults = dict()
+        self.current_defaults.update(self.defaults)
+
         # #############################################################################
         # ##################### CREATE MULTIPROCESSING POOL ###########################
         # #############################################################################
@@ -1084,6 +1092,11 @@ class App(QtCore.QObject):
 
             "global_bookmarks_limit": self.ui.general_defaults_form.general_app_group.bm_limit_spinner,
             "global_machinist_setting": self.ui.general_defaults_form.general_app_group.machinist_cb,
+
+            "global_tpdf_tmargin": self.ui.general_defaults_form.general_app_group.tmargin_entry,
+            "global_tpdf_bmargin": self.ui.general_defaults_form.general_app_group.bmargin_entry,
+            "global_tpdf_lmargin": self.ui.general_defaults_form.general_app_group.lmargin_entry,
+            "global_tpdf_rmargin": self.ui.general_defaults_form.general_app_group.rmargin_entry,
 
             # General GUI Preferences
             "global_gridx": self.ui.general_defaults_form.general_gui_group.gridx_entry,
@@ -2940,17 +2953,25 @@ class App(QtCore.QObject):
             except Exception as e:
                 log.debug("App.defaults_read_form() --> %s" % str(e))
 
-    def defaults_write_form(self, factor=None, fl_units=None):
+    def defaults_write_form(self, factor=None, fl_units=None, source_dict=None):
         """
         Will set the values for all the GUI elements in Preferences GUI based on the values found in the
         self.defaults dictionary.
 
         :param factor: will apply a factor to the values that written in the GUI elements
         :param fl_units: current measuring units in FlatCAM: Metric or Inch
+        :param source_dict: the repository of options, usually is the self.defaults
         :return: None
         """
-        for option in self.defaults:
-            self.defaults_write_form_field(option, factor=factor, units=fl_units)
+
+        options_storage = self.defaults if source_dict is None else source_dict
+
+        for option in options_storage:
+            if source_dict:
+                self.defaults_write_form_field(option, factor=factor, units=fl_units, defaults_dict=source_dict)
+            else:
+                self.defaults_write_form_field(option, factor=factor, units=fl_units)
+
             # try:
             #     self.defaults_form_fields[option].set_value(self.defaults[option])
             # except KeyError:
@@ -2958,7 +2979,7 @@ class App(QtCore.QObject):
             #     # TODO: Rethink this?
             #     pass
 
-    def defaults_write_form_field(self, field, factor=None, units=None):
+    def defaults_write_form_field(self, field, factor=None, units=None, defaults_dict=None):
         """
         Basically it is the worker in the self.defaults_write_form()
 
@@ -2967,21 +2988,23 @@ class App(QtCore.QObject):
         :param units: current FLatCAM measuring units
         :return: None, it updates GUI elements
         """
+
+        def_dict = self.defaults if defaults_dict is None else defaults_dict
         try:
             if factor is None:
                 if units is None:
-                    self.defaults_form_fields[field].set_value(self.defaults[field])
+                    self.defaults_form_fields[field].set_value(def_dict[field])
                 elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value(self.defaults[field])
+                    self.defaults_form_fields[field].set_value(def_dict[field])
                 elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value(self.defaults[field])
+                    self.defaults_form_fields[field].set_value(def_dict[field])
             else:
                 if units is None:
-                    self.defaults_form_fields[field].set_value(self.defaults[field] * factor)
+                    self.defaults_form_fields[field].set_value(def_dict[field] * factor)
                 elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value((self.defaults[field] * factor))
+                    self.defaults_form_fields[field].set_value((def_dict[field] * factor))
                 elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
-                    self.defaults_form_fields[field].set_value((self.defaults[field] * factor))
+                    self.defaults_form_fields[field].set_value((def_dict[field] * factor))
         except KeyError:
             # self.log.debug("defaults_write_form(): No field for: %s" % option)
             # TODO: Rethink this?
@@ -3891,6 +3914,10 @@ class App(QtCore.QObject):
                                  _("Failed to parse defaults file."))
                 return
             self.defaults.update(defaults_from_file)
+            # update the dict that is used to restore the values in the defaults form if Cancel is clicked in the
+            # Preferences window
+            self.current_defaults.update(defaults_from_file)
+
             self.on_preferences_edited()
             self.inform.emit('[success] %s: %s' %
                              (_("Imported Defaults from"), filename))
@@ -5764,14 +5791,15 @@ class App(QtCore.QObject):
                       "tools_cr_trace_size_val", "tools_cr_c2c_val", "tools_cr_c2o_val", "tools_cr_s2s_val",
                       "tools_cr_s2sm_val", "tools_cr_s2o_val", "tools_cr_sm2sm_val", "tools_cr_ri_val",
                       "tools_cr_h2h_val", "tools_cr_dh_val", "tools_fiducials_dia", "tools_fiducials_margin",
-                      "tools_fiducials_mode", "tools_fiducials_second_pos", "tools_fiducials_type",
                       "tools_fiducials_line_thickness",
                       "tools_copper_thieving_clearance", "tools_copper_thieving_margin",
                       "tools_copper_thieving_dots_dia", "tools_copper_thieving_dots_spacing",
                       "tools_copper_thieving_squares_size", "tools_copper_thieving_squares_spacing",
                       "tools_copper_thieving_lines_size", "tools_copper_thieving_lines_spacing",
                       "tools_copper_thieving_rb_margin", "tools_copper_thieving_rb_thickness",
-                      'global_gridx', 'global_gridy', 'global_snap_max', "global_tolerance"]
+
+                      'global_gridx', 'global_gridy', 'global_snap_max', "global_tolerance",
+                      'global_tpdf_bmargin', 'global_tpdf_tmargin', 'global_tpdf_rmargin', 'global_tpdf_lmargin']
 
         def scale_defaults(sfactor):
             for dim in dimensions:
@@ -5796,6 +5824,7 @@ class App(QtCore.QObject):
                         tools_diameters = [eval(a) for a in tools_string if a != '']
                     except Exception as e:
                         log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+                        continue
 
                     self.defaults['geometry_cnctooldia'] = ''
                     for t in range(len(tools_diameters)):
@@ -5808,6 +5837,7 @@ class App(QtCore.QObject):
                         ncctools = [eval(a) for a in tools_string if a != '']
                     except Exception as e:
                         log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+                        continue
 
                     self.defaults['tools_ncctools'] = ''
                     for t in range(len(ncctools)):
@@ -5820,6 +5850,7 @@ class App(QtCore.QObject):
                         sptools = [eval(a) for a in tools_string if a != '']
                     except Exception as e:
                         log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+                        continue
 
                     self.defaults['tools_solderpaste_tools'] = ""
                     for t in range(len(sptools)):
@@ -5839,6 +5870,7 @@ class App(QtCore.QObject):
                             val = float(self.defaults[dim]) * sfactor
                         except Exception as e:
                             log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+                            continue
 
                         self.defaults[dim] = float('%.*f' % (self.decimals, val))
                     else:
@@ -5847,6 +5879,7 @@ class App(QtCore.QObject):
                             val = float(self.defaults[dim]) * sfactor
                         except Exception as e:
                             log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+                            continue
 
                         self.defaults[dim] = float('%.*f' % (self.decimals, val))
                 else:
@@ -5855,7 +5888,8 @@ class App(QtCore.QObject):
                         try:
                             val = float(self.defaults[dim]) * sfactor
                         except Exception as e:
-                            log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+                            log.debug('App.on_toggle_units().scale_defaults() --> Value: %s %s' % (str(dim), str(e)))
+                            continue
 
                         self.defaults[dim] = val
 
@@ -7029,6 +7063,9 @@ class App(QtCore.QObject):
 
         self.inform.emit('%s' % _("Preferences applied."))
 
+        # make sure we update the self.current_defaults dict used to undo changes to self.defaults
+        self.current_defaults.update(self.defaults)
+
         if save_to_file:
             self.save_defaults(silent=False)
             # load the defaults so they are updated into the app
@@ -7067,7 +7104,18 @@ class App(QtCore.QObject):
         except TypeError:
             pass
 
-        self.defaults_write_form()
+        try:
+            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        self.defaults_write_form(source_dict=self.current_defaults)
+        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+            lambda: self.on_toggle_units(no_pref=False))
+        self.defaults.update(self.current_defaults)
+
+        # shared_items = {k: self.defaults[k] for k in self.defaults if k in self.current_defaults and
+        #                 self.defaults[k] == self.current_defaults[k]}
+        # print(len(self.defaults), len(shared_items))
 
         # Preferences save, update the color of the Preferences Tab text
         for idx in range(self.ui.plot_tab_area.count()):
@@ -7797,8 +7845,7 @@ class App(QtCore.QObject):
                     pass
 
     def on_preferences_edited(self):
-        self.inform.emit('[WARNING_NOTCL] %s' %
-                         _("Preferences edited but not saved."))
+        self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
 
         for idx in range(self.ui.plot_tab_area.count()):
             if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):

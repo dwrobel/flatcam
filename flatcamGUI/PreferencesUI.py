@@ -1330,6 +1330,76 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.machinist_cb, 21, 0, 1, 2)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.layout.addWidget(separator_line)
+
+        self.layout.addWidget(QtWidgets.QLabel(''))
+
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+
+        self.pdf_param_label = QtWidgets.QLabel('<B>%s:</b>' % _("Text to PDF parameters"))
+        self.pdf_param_label.setToolTip(
+            _("Used when saving text in Code Editor or in FlatCAM Document objects.")
+        )
+        grid1.addWidget(self.pdf_param_label, 0, 0, 1, 2)
+
+        # Top Margin value
+        self.tmargin_entry = FCDoubleSpinner()
+        self.tmargin_entry.set_precision(self.decimals)
+        self.tmargin_entry.set_range(0.0000, 9999.9999)
+
+        self.tmargin_label = QtWidgets.QLabel('%s:' % _("Top Margin"))
+        self.tmargin_label.setToolTip(
+            _("Distance between text body and the top of the PDF file.")
+        )
+
+        grid1.addWidget(self.tmargin_label, 1, 0)
+        grid1.addWidget(self.tmargin_entry, 1, 1)
+
+        # Bottom Margin value
+        self.bmargin_entry = FCDoubleSpinner()
+        self.bmargin_entry.set_precision(self.decimals)
+        self.bmargin_entry.set_range(0.0000, 9999.9999)
+
+        self.bmargin_label = QtWidgets.QLabel('%s:' % _("Bottom Margin"))
+        self.bmargin_label.setToolTip(
+            _("Distance between text body and the bottom of the PDF file.")
+        )
+
+        grid1.addWidget(self.bmargin_label, 2, 0)
+        grid1.addWidget(self.bmargin_entry, 2, 1)
+
+        # Left Margin value
+        self.lmargin_entry = FCDoubleSpinner()
+        self.lmargin_entry.set_precision(self.decimals)
+        self.lmargin_entry.set_range(0.0000, 9999.9999)
+
+        self.lmargin_label = QtWidgets.QLabel('%s:' % _("Left Margin"))
+        self.lmargin_label.setToolTip(
+            _("Distance between text body and the left of the PDF file.")
+        )
+
+        grid1.addWidget(self.lmargin_label, 3, 0)
+        grid1.addWidget(self.lmargin_entry, 3, 1)
+
+        # Right Margin value
+        self.rmargin_entry = FCDoubleSpinner()
+        self.rmargin_entry.set_precision(self.decimals)
+        self.rmargin_entry.set_range(0.0000, 9999.9999)
+
+        self.rmargin_label = QtWidgets.QLabel('%s:' % _("Right Margin"))
+        self.rmargin_label.setToolTip(
+            _("Distance between text body and the right of the PDF file.")
+        )
+
+        grid1.addWidget(self.rmargin_label, 4, 0)
+        grid1.addWidget(self.rmargin_entry, 4, 1)
+
         self.layout.addStretch()
 
         if sys.platform != 'win32':
