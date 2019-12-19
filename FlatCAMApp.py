@@ -1813,10 +1813,11 @@ class App(QtCore.QObject):
 
         self.ui.menufileexportdxf.triggered.connect(self.on_file_exportdxf)
 
+        self.ui.menufile_print.triggered.connect(lambda: self.on_file_save_objects_pdf(use_thread=True))
+
         self.ui.menufilesaveproject.triggered.connect(self.on_file_saveproject)
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
         self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
-        self.ui.menufilesave_object_pdf.triggered.connect(self.on_file_save_object_pdf)
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
 
         self.ui.menufileexportpref.triggered.connect(self.on_export_preferences)
@@ -10322,16 +10323,23 @@ class App(QtCore.QObject):
         self.set_ui_title(name=self.project_filename)
         self.should_we_save = False
 
-    def on_file_save_object_pdf(self, use_thread=True):
+    def on_file_save_objects_pdf(self, use_thread=True):
         self.date = str(datetime.today()).rpartition('.')[0]
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
         try:
-            obj_active = self.collection.get_active()
-            obj_name = _(str(obj_active.options['name']))
+            obj_selection = self.collection.get_selected()
+            if len(obj_selection) == 1:
+                obj_name = str(obj_selection[0].options['name'])
+            else:
+                obj_name = _("FlatCAM objects print")
         except AttributeError as err:
             log.debug("App.on_file_save_object_pdf() --> %s" % str(err))
+            self.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
+            return
+
+        if not obj_selection:
             self.inform.emit('[ERROR_NOTCL] %s' % _("No object selected."))
             return
 
@@ -10354,17 +10362,20 @@ class App(QtCore.QObject):
             return
 
         if use_thread is True:
-            self.worker_task.emit({'fcn': self.save_pdf, 'params': [filename, obj_name]})
+            self.worker_task.emit({'fcn': self.save_pdf, 'params': [filename, obj_name, obj_selection]})
         else:
-            self.save_pdf(filename, obj_name)
+            self.save_pdf(filename, obj_name, obj_selection)
 
         # self.save_project(filename)
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("pdf", filename)
         self.file_saved.emit("pdf", filename)
 
-    def save_pdf(self, file_name, obj_name):
-        self.film_tool.export_positive(obj_name=obj_name, box_name=obj_name, filename=file_name, ftype='pdf')
+    def save_pdf(self, file_name, obj_name, obj_selection):
+        if len(obj_selection) == 1:
+            self.film_tool.export_positive(obj_name=obj_name, box_name=obj_name, filename=file_name, ftype='pdf')
+        else:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Multiple objects print not implemented yet."))
 
     def export_svg(self, obj_name, filename, scale_stroke_factor=0.00):
         """
