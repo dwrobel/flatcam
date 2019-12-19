@@ -4170,16 +4170,10 @@ class App(QtCore.QObject):
         try:
             return_value = initialize(obj, self)
         except Exception as e:
-            msg = '[ERROR_NOTCL] %s' % \
-                  _("An internal error has ocurred. See shell.\n")
+            msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
             msg += _("Object ({kind}) failed because: {error} \n\n").format(kind=kind, error=str(e))
             msg += traceback.format_exc()
             self.inform.emit(msg)
-
-            # if str(e) == "Empty Geometry":
-            #     self.inform.emit("[ERROR_NOTCL] )
-            # else:
-            #     self.inform.emit("[ERROR] Object (%s) failed because: %s" % (kind, str(e)))
             return "fail"
 
         t2 = time.time()
@@ -11271,6 +11265,7 @@ class App(QtCore.QObject):
 
         # Project options
         self.options.update(d['options'])
+
         self.project_filename = filename
 
         # for some reason, setting ui_title does not work when this method is called from Tcl Shell
@@ -11283,6 +11278,7 @@ class App(QtCore.QObject):
 
         for obj in d['objs']:
             def obj_init(obj_inst, app_inst):
+
                 obj_inst.from_dict(obj)
 
             App.log.debug("Recreating from opened project an %s object: %s" %
