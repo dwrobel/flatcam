@@ -3612,6 +3612,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # this variable can be updated by the Object that generates the geometry
         self.tool_type = 'C1'
 
+        # save here the old value for the Cut Z before it is changed by selecting a V-shape type tool in the tool table
+        self.old_cutz = self.app.defaults["geometry_cutz"]
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -3949,6 +3952,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.ui.addtool_from_db_btn.clicked.connect(self.on_tool_add_from_db_clicked)
         self.ui.apply_param_to_all.clicked.connect(self.on_apply_param_to_all_clicked)
+        self.ui.cutz_entry.returnPressed.connect(self.on_cut_z_changed)
+
+    def on_cut_z_changed(self):
+        self.old_cutz = self.ui.cutz_entry.get_value()
 
     def set_tool_offset_visibility(self, current_row):
         if current_row is None:
@@ -4589,6 +4596,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     if cb_txt == 'V':
                         idx = self.ui.geo_tools_table.cellWidget(cw_row, 3).findText(_('Iso'))
                         self.ui.geo_tools_table.cellWidget(cw_row, 3).setCurrentIndex(idx)
+                    else:
+                        self.ui.cutz_entry.set_value(self.old_cutz)
+
                 self.ui_update_v_shape(tool_type_txt=self.ui.geo_tools_table.cellWidget(cw_row, 4).currentText())
 
     def update_form(self, dict_storage):
