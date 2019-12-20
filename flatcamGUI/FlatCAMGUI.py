@@ -240,6 +240,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Separator
         self.menufile.addSeparator()
+        self.menufile_print = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/printer32.png'), '%s\tCTRL+P' % _('Print (PDF)'))
+        self.menufile.addAction(self.menufile_print)
 
         self.menufile_save = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save'))
 
@@ -259,11 +262,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile_save.addAction(self.menufilesaveprojectcopy)
 
         self.menufile_save.addSeparator()
-
-        # Save Object PDF
-        self.menufilesave_object_pdf = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/pdf32.png'),
-                                                         _('Save Object as PDF ...'), self)
-        self.menufile_save.addAction(self.menufilesave_object_pdf)
 
         # Separator
         self.menufile.addSeparator()
@@ -1382,17 +1380,21 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>CTRL+N</strong></td>
-                        <td>&nbsp;%s</td>
-                    </tr>
-                    <tr height="20">
                         <td height="20"><strong>CTRL+M</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>CTRL+N</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>                   
+                    <tr height="20">
                         <td height="20"><strong>CTRL+O</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
+                    <tr height="20">
+                        <td height="20"><strong>CTRL+P</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr> 
                     <tr height="20">
                         <td height="20"><strong>CTRL+Q</strong></td>
                         <td>&nbsp;%s</td>
@@ -1579,8 +1581,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # CTRL section
                 _("Select All"), _("Copy Obj"), _("Open Tools Database"),
-                _("Open Excellon File"), _("Open Gerber File"), _("New Project"), _("Distance Tool"),
-                _("Open Project"), _("PDF Import Tool"), _("Save Project As"), _("Toggle Plot Area"),
+                _("Open Excellon File"), _("Open Gerber File"), _("Distance Tool"), _("New Project"),
+                _("Open Project"), _("Print (PDF)"), _("PDF Import Tool"), _("Save Project As"), _("Toggle Plot Area"),
 
                 # SHIFT section
                 _("Copy Obj_Name"),
@@ -2671,17 +2673,21 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_G:
                     self.app.on_fileopengerber()
 
-                # Create New Project
-                if key == QtCore.Qt.Key_N:
-                    self.app.on_file_new_click()
-
                 # Distance Tool
                 if key == QtCore.Qt.Key_M:
                     self.app.distance_tool.run()
 
+                # Create New Project
+                if key == QtCore.Qt.Key_N:
+                    self.app.on_file_new_click()
+
                 # Open Project
                 if key == QtCore.Qt.Key_O:
                     self.app.on_file_openproject()
+
+                # Open Project
+                if key == QtCore.Qt.Key_P:
+                    self.app.on_file_save_objects_pdf(use_thread=True)
 
                 # PDF Import
                 if key == QtCore.Qt.Key_Q:

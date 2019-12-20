@@ -281,13 +281,12 @@ class DblSidedTool(FlatCAMTool):
         self.drill_dia.set_precision(self.decimals)
         self.drill_dia.set_range(0.0000, 9999.9999)
 
-        self.dd_label = QtWidgets.QLabel('%s:' % _("Drill dia"))
-        self.dd_label.setToolTip(
+        self.drill_dia.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")
         )
-        grid0.addWidget(self.dd_label, 1, 0)
-        grid0.addWidget(self.drill_dia, 1, 1)
+
+        grid0.addWidget(self.drill_dia, 1, 0, 1, 2)
 
         # ## Buttons
         self.create_alignment_hole_button = QtWidgets.QPushButton(_("Create Excellon Object"))
@@ -308,6 +307,8 @@ class DblSidedTool(FlatCAMTool):
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.layout.addWidget(separator_line)
+
+        self.layout.addWidget(QtWidgets.QLabel(''))
 
         grid1 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid1)
@@ -384,7 +385,7 @@ class DblSidedTool(FlatCAMTool):
         grid1.addWidget(self.center_entry, 5, 1)
 
         # Calculate Bounding box
-        self.calculate_bb_button = QtWidgets.QPushButton(_("Calculate Bounding Box"))
+        self.calculate_bb_button = QtWidgets.QPushButton(_("Calculate Bounds Values"))
         self.calculate_bb_button.setToolTip(
             _("Calculate the enveloping rectangular shape coordinates,\n"
               "for the selection of objects.\n"
@@ -419,13 +420,14 @@ class DblSidedTool(FlatCAMTool):
         self.mirror_geo_button.clicked.connect(self.on_mirror_geo)
         self.add_point_button.clicked.connect(self.on_point_add)
         self.add_drill_point_button.clicked.connect(self.on_drill_add)
-        self.reset_button.clicked.connect(self.reset_fields)
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
 
         self.axis_location.group_toggle_fn = self.on_toggle_pointbox
 
         self.create_alignment_hole_button.clicked.connect(self.on_create_alignment_holes)
         self.calculate_bb_button.clicked.connect(self.on_bbox_coordinates)
+
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
         self.drill_values = ""
 
@@ -468,6 +470,12 @@ class DblSidedTool(FlatCAMTool):
         self.mirror_axis.set_value(self.app.defaults["tools_2sided_mirror_axis"])
         self.axis_location.set_value(self.app.defaults["tools_2sided_axis_loc"])
         self.drill_dia.set_value(self.app.defaults["tools_2sided_drilldia"])
+
+        self.xmin_entry.set_value(0.0)
+        self.ymin_entry.set_value(0.0)
+        self.xmax_entry.set_value(0.0)
+        self.ymax_entry.set_value(0.0)
+        self.center_entry.set_value('')
 
     def on_combo_box_type(self):
         obj_type = self.box_combo_type.currentIndex()

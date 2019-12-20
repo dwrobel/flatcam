@@ -9,9 +9,19 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.12.2019
+
+- fixed a rare issue in the generation of non-copper-region geometry started from the Gerber Object UI (selected tab)
+- Print function is now printing a PDF file for a selection of objects in the colors from canvas 
+
 19.12.2019
 
 - in 2-Sided Tool added a way to calculate the bounding box values for a selection of objects, and also the centroid
+- in 2-Sided Tool fixed the Reset Tool button handler to reset the bounds value too; changed a string
+- added Preferences values for PDF margins when saving text in Code Editor as PDF
+- when clicking Cancel in Preferences now the values are reverted to what they used to be before opening Preferences tab and start changing values
+- starting to work to a general Print function; for now it will generate PDF files; currently it works only for one object not for a selection
+- added shortcut key CTRL+P for printing to PDF method
 
 18.12.2019
 
