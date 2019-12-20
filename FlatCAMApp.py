@@ -1038,6 +1038,7 @@ class App(QtCore.QObject):
         QtCore.QObject.__init__(self)
 
         self.ui = FlatCAMGUI(self)
+        self.on_grid_snap_triggered(state=True)
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -2152,6 +2153,8 @@ class App(QtCore.QObject):
 
         # signal emitted when a tab is closed in the Plot Area
         self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
+
+        self.ui.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
 
         # #####################################################################################
         # ########### FINISHED CONNECTING SIGNALS #############################################
@@ -6079,6 +6082,7 @@ class App(QtCore.QObject):
         self.report_usage("on_toggle_grid()")
 
         self.ui.grid_snap_btn.trigger()
+        self.on_grid_snap_triggered(state=True)
 
     def on_toggle_grid_lines(self):
         self.report_usage("on_toggle_grd_lines()")
@@ -7019,6 +7023,8 @@ class App(QtCore.QObject):
         self.connect_toolbar_signals()
 
         self.ui.grid_snap_btn.setChecked(True)
+        self.on_grid_snap_triggered(state=True)
+
         self.ui.grid_gap_x_entry.setText(str(self.defaults["global_gridx"]))
         self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
         self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
@@ -12349,6 +12355,12 @@ class App(QtCore.QObject):
 
         # Clear pool to free memory
         self.clear_pool()
+
+    def on_grid_snap_triggered(self, state):
+        if state:
+            self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_filled_16.png'))
+        else:
+            self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_16.png'))
 
     def generate_cnc_job(self, objects):
         self.report_usage("generate_cnc_job()")
