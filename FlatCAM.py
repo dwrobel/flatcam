@@ -47,6 +47,14 @@ if __name__ == '__main__':
     else:
         os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "0"
 
+    # if hdpi_support == 2:
+    #     tst_screen = QtWidgets.QApplication(sys.argv)
+    #     if tst_screen.screens()[0].geometry().width() > 1930 or tst_screen.screens()[1].geometry().width() > 1930:
+    #         QGuiApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    #         del tst_screen
+    # else:
+    #     QGuiApplication.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+
     app = QtWidgets.QApplication(sys.argv)
 
     # apply style

@@ -196,7 +196,7 @@ class TextEditor(QtWidgets.QWidget):
             _filter_ = filt
         else:
             _filter_ = "G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
-                       "All Files (*.*)"
+                       "PDF Files (*.pdf);;All Files (*.*)"
 
         if name:
             obj_name = name
@@ -206,7 +206,7 @@ class TextEditor(QtWidgets.QWidget):
             except AttributeError:
                 obj_name = 'file'
                 if filt is None:
-                    _filter_ = "FlatConfig Files (*.FlatConfig);;All Files (*.*)"
+                    _filter_ = "FlatConfig Files (*.FlatConfig);;PDF Files (*.pdf);;All Files (*.*)"
 
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
@@ -237,13 +237,24 @@ class TextEditor(QtWidgets.QWidget):
                     styleH = styles['Heading1']
                     story = []
 
+                    if self.app.defaults['units'].lower() == 'mm':
+                        bmargin = self.app.defaults['global_tpdf_bmargin'] * mm
+                        tmargin = self.app.defaults['global_tpdf_tmargin'] * mm
+                        rmargin = self.app.defaults['global_tpdf_rmargin'] * mm
+                        lmargin = self.app.defaults['global_tpdf_lmargin'] * mm
+                    else:
+                        bmargin = self.app.defaults['global_tpdf_bmargin'] * inch
+                        tmargin = self.app.defaults['global_tpdf_tmargin'] * inch
+                        rmargin = self.app.defaults['global_tpdf_rmargin'] * inch
+                        lmargin = self.app.defaults['global_tpdf_lmargin'] * inch
+
                     doc = SimpleDocTemplate(
                         filename,
                         pagesize=page_size,
-                        bottomMargin=0.4 * inch,
-                        topMargin=0.6 * inch,
-                        rightMargin=0.8 * inch,
-                        leftMargin=0.8 * inch)
+                        bottomMargin=bmargin,
+                        topMargin=tmargin,
+                        rightMargin=rmargin,
+                        leftMargin=lmargin)
 
                     P = Paragraph(lined_gcode, styleN)
                     story.append(P)

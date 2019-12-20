@@ -2,8 +2,10 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry
+from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry
 from FlatCAMObj import FlatCAMGerber, FlatCAMExcellon, FlatCAMGeometry
+
+from numpy import Inf
 
 from shapely.geometry import Point
 from shapely import affinity
@@ -219,6 +221,11 @@ class DblSidedTool(FlatCAMTool):
         self.box_combo.hide()
         self.box_combo_type.hide()
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay2.addWidget(separator_line, 12, 0, 1, 2)
+
         # ## Alignment holes
         self.ah_label = QtWidgets.QLabel("<b>%s:</b>" % _('Alignment Drill Coordinates'))
         self.ah_label.setToolTip(
@@ -272,14 +279,14 @@ class DblSidedTool(FlatCAMTool):
         # Drill diameter value
         self.drill_dia = FCDoubleSpinner()
         self.drill_dia.set_precision(self.decimals)
+        self.drill_dia.set_range(0.0000, 9999.9999)
 
-        self.dd_label = QtWidgets.QLabel('%s:' % _("Drill dia"))
-        self.dd_label.setToolTip(
+        self.drill_dia.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")
         )
-        grid0.addWidget(self.dd_label, 1, 0)
-        grid0.addWidget(self.drill_dia, 1, 1)
+
+        grid0.addWidget(self.drill_dia, 1, 0, 1, 2)
 
         # ## Buttons
         self.create_alignment_hole_button = QtWidgets.QPushButton(_("Create Excellon Object"))
@@ -295,6 +302,102 @@ class DblSidedTool(FlatCAMTool):
                         }
                         """)
         self.layout.addWidget(self.create_alignment_hole_button)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.layout.addWidget(separator_line)
+
+        self.layout.addWidget(QtWidgets.QLabel(''))
+
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+
+        # Xmin value
+        self.xmin_entry = FCDoubleSpinner()
+        self.xmin_entry.set_precision(self.decimals)
+        self.xmin_entry.set_range(-9999.9999, 9999.9999)
+
+        self.xmin_label = QtWidgets.QLabel('%s:' % _("X min"))
+        self.xmin_label.setToolTip(
+            _("Minimum location.")
+        )
+        self.xmin_entry.setReadOnly(True)
+
+        grid1.addWidget(self.xmin_label, 1, 0)
+        grid1.addWidget(self.xmin_entry, 1, 1)
+
+        # Ymin value
+        self.ymin_entry = FCDoubleSpinner()
+        self.ymin_entry.set_precision(self.decimals)
+        self.ymin_entry.set_range(-9999.9999, 9999.9999)
+
+        self.ymin_label = QtWidgets.QLabel('%s:' % _("Y min"))
+        self.ymin_label.setToolTip(
+            _("Minimum location.")
+        )
+        self.ymin_entry.setReadOnly(True)
+
+        grid1.addWidget(self.ymin_label, 2, 0)
+        grid1.addWidget(self.ymin_entry, 2, 1)
+
+        # Xmax value
+        self.xmax_entry = FCDoubleSpinner()
+        self.xmax_entry.set_precision(self.decimals)
+        self.xmax_entry.set_range(-9999.9999, 9999.9999)
+
+        self.xmax_label = QtWidgets.QLabel('%s:' % _("X max"))
+        self.xmax_label.setToolTip(
+            _("Maximum location.")
+        )
+        self.xmax_entry.setReadOnly(True)
+
+        grid1.addWidget(self.xmax_label, 3, 0)
+        grid1.addWidget(self.xmax_entry, 3, 1)
+
+        # Ymax value
+        self.ymax_entry = FCDoubleSpinner()
+        self.ymax_entry.set_precision(self.decimals)
+        self.ymax_entry.set_range(-9999.9999, 9999.9999)
+
+        self.ymax_label = QtWidgets.QLabel('%s:' % _("Y max"))
+        self.ymax_label.setToolTip(
+            _("Maximum location.")
+        )
+        self.ymax_entry.setReadOnly(True)
+
+        grid1.addWidget(self.ymax_label, 4, 0)
+        grid1.addWidget(self.ymax_entry, 4, 1)
+
+        # Center point value
+        self.center_entry = FCEntry()
+
+        self.center_label = QtWidgets.QLabel('%s:' % _("Centroid"))
+        self.center_label.setToolTip(
+            _("The center point location for the rectangular\n"
+              "bounding shape. Centroid. Format is (x, y).")
+        )
+        self.center_entry.setReadOnly(True)
+
+        grid1.addWidget(self.center_label, 5, 0)
+        grid1.addWidget(self.center_entry, 5, 1)
+
+        # Calculate Bounding box
+        self.calculate_bb_button = QtWidgets.QPushButton(_("Calculate Bounds Values"))
+        self.calculate_bb_button.setToolTip(
+            _("Calculate the enveloping rectangular shape coordinates,\n"
+              "for the selection of objects.\n"
+              "The envelope shape is parallel with the X, Y axis.")
+        )
+        self.calculate_bb_button.setStyleSheet("""
+                                QPushButton
+                                {
+                                    font-weight: bold;
+                                }
+                                """)
+        self.layout.addWidget(self.calculate_bb_button)
 
         self.layout.addStretch()
 
@@ -312,17 +415,19 @@ class DblSidedTool(FlatCAMTool):
         self.layout.addWidget(self.reset_button)
 
         # ## Signals
-        self.create_alignment_hole_button.clicked.connect(self.on_create_alignment_holes)
         self.mirror_gerber_button.clicked.connect(self.on_mirror_gerber)
         self.mirror_exc_button.clicked.connect(self.on_mirror_exc)
         self.mirror_geo_button.clicked.connect(self.on_mirror_geo)
         self.add_point_button.clicked.connect(self.on_point_add)
         self.add_drill_point_button.clicked.connect(self.on_drill_add)
-        self.reset_button.clicked.connect(self.reset_fields)
-
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
 
         self.axis_location.group_toggle_fn = self.on_toggle_pointbox
+
+        self.create_alignment_hole_button.clicked.connect(self.on_create_alignment_holes)
+        self.calculate_bb_button.clicked.connect(self.on_bbox_coordinates)
+
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
         self.drill_values = ""
 
@@ -365,6 +470,12 @@ class DblSidedTool(FlatCAMTool):
         self.mirror_axis.set_value(self.app.defaults["tools_2sided_mirror_axis"])
         self.axis_location.set_value(self.app.defaults["tools_2sided_axis_loc"])
         self.drill_dia.set_value(self.app.defaults["tools_2sided_drilldia"])
+
+        self.xmin_entry.set_value(0.0)
+        self.ymin_entry.set_value(0.0)
+        self.xmax_entry.set_value(0.0)
+        self.ymax_entry.set_value(0.0)
+        self.center_entry.set_value('')
 
     def on_combo_box_type(self):
         obj_type = self.box_combo_type.currentIndex()
@@ -588,6 +699,41 @@ class DblSidedTool(FlatCAMTool):
             self.box_combo.show()
             self.box_combo_type.show()
             self.add_point_button.setDisabled(True)
+
+    def on_bbox_coordinates(self):
+
+        xmin = Inf
+        ymin = Inf
+        xmax = -Inf
+        ymax = -Inf
+
+        obj_list = self.app.collection.get_selected()
+
+        if not obj_list:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
+            return
+
+        for obj in obj_list:
+            try:
+                gxmin, gymin, gxmax, gymax = obj.bounds()
+                xmin = min([xmin, gxmin])
+                ymin = min([ymin, gymin])
+                xmax = max([xmax, gxmax])
+                ymax = max([ymax, gymax])
+            except Exception as e:
+                log.warning("DEV WARNING: Tried to get bounds of empty geometry in DblSidedTool. %s" % str(e))
+
+        self.xmin_entry.set_value(xmin)
+        self.ymin_entry.set_value(ymin)
+        self.xmax_entry.set_value(xmax)
+        self.ymax_entry.set_value(ymax)
+        cx = '%.*f' % (self.decimals, (((xmax - xmin) / 2.0) + xmin))
+        cy = '%.*f' % (self.decimals, (((ymax - ymin) / 2.0) + ymin))
+        val_txt = '(%s, %s)' % (cx, cy)
+
+        self.center_entry.set_value(val_txt)
+        self.axis_location.set_value('point')
+        self.point_entry.set_value(val_txt)
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

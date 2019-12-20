@@ -981,6 +981,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry)
+            if isinstance(self.solid_geometry, list):
+                self.solid_geometry = cascaded_union(self.solid_geometry)
+
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["noncoppermargin"]))
             if not self.options["noncopperrounded"]:
                 bounding_box = bounding_box.envelope
@@ -5173,8 +5176,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     if self.tools[tooluid_key]['solid_geometry'] is None:
                         a += 1
                 if a == len(self.tools):
-                    self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                         _('Cancelled. Empty file, it has no geometry'))
+                    self.app.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled. Empty file, it has no geometry'))
                     return 'fail'
 
             for tooluid_key in list(tools_dict.keys()):
@@ -5292,10 +5294,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         if use_thread:
             # To be run in separate thread
-            # The idea is that if there is a solid_geometry in the file "root" then most likely thare are no
-            # separate solid_geometry in the self.tools dictionary
             def job_thread(app_obj):
-                if self.solid_geometry:
+                if self.multigeo is False:
                     with self.app.proc_container.new(_("Generating CNC Code")):
                         if app_obj.new_object("cncjob", outname, job_init_single_geometry, plot=plot) != 'fail':
                             app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created"), outname))

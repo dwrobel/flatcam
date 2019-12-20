@@ -1723,11 +1723,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 sol_geo = cascaded_union(isolated_geo)
                 if has_offset is True:
-                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' %
-                                        _("Buffering"))
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %
-                                        _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
@@ -1760,6 +1758,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             log.debug("NCC Tool. Finished calculation of 'empty' area.")
             self.app.inform.emit(_("NCC Tool. Finished calculation of 'empty' area."))
 
+            # COPPER CLEARING #
             cp = None
             for tool in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
@@ -1916,17 +1915,27 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if self.app.defaults["tools_ncc_plotting"] == 'progressive':
                 self.temp_shapes.clear(update=True)
 
-            # delete tools with empty geometry
-            keys_to_delete = []
-            # look for keys in the tools_storage dict that have 'solid_geometry' values empty
-            for uid in tools_storage:
-                # if the solid_geometry (type=list) is empty
-                if not tools_storage[uid]['solid_geometry']:
-                    keys_to_delete.append(uid)
+            # # delete tools with empty geometry
+            # keys_to_delete = []
+            # # look for keys in the tools_storage dict that have 'solid_geometry' values empty
+            # for uid in tools_storage:
+            #     # if the solid_geometry (type=list) is empty
+            #     if not tools_storage[uid]['solid_geometry']:
+            #         keys_to_delete.append(uid)
+            #
+            # # actual delete of keys from the tools_storage dict
+            # for k in keys_to_delete:
+            #     tools_storage.pop(k, None)
 
-            # actual delete of keys from the tools_storage dict
-            for k in keys_to_delete:
-                tools_storage.pop(k, None)
+            # delete tools with empty geometry
+            # look for keys in the tools_storage dict that have 'solid_geometry' values empty
+            for uid, uid_val in list(tools_storage.items()):
+                try:
+                    # if the solid_geometry (type=list) is empty
+                    if not uid_val['solid_geometry']:
+                        tools_storage.pop(uid, None)
+                except KeyError:
+                    tools_storage.pop(uid, None)
 
             geo_obj.options["cnctooldia"] = str(tool)
 

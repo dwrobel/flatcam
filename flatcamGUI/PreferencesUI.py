@@ -1330,6 +1330,76 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.machinist_cb, 21, 0, 1, 2)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.layout.addWidget(separator_line)
+
+        self.layout.addWidget(QtWidgets.QLabel(''))
+
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
+
+        self.pdf_param_label = QtWidgets.QLabel('<B>%s:</b>' % _("Text to PDF parameters"))
+        self.pdf_param_label.setToolTip(
+            _("Used when saving text in Code Editor or in FlatCAM Document objects.")
+        )
+        grid1.addWidget(self.pdf_param_label, 0, 0, 1, 2)
+
+        # Top Margin value
+        self.tmargin_entry = FCDoubleSpinner()
+        self.tmargin_entry.set_precision(self.decimals)
+        self.tmargin_entry.set_range(0.0000, 9999.9999)
+
+        self.tmargin_label = QtWidgets.QLabel('%s:' % _("Top Margin"))
+        self.tmargin_label.setToolTip(
+            _("Distance between text body and the top of the PDF file.")
+        )
+
+        grid1.addWidget(self.tmargin_label, 1, 0)
+        grid1.addWidget(self.tmargin_entry, 1, 1)
+
+        # Bottom Margin value
+        self.bmargin_entry = FCDoubleSpinner()
+        self.bmargin_entry.set_precision(self.decimals)
+        self.bmargin_entry.set_range(0.0000, 9999.9999)
+
+        self.bmargin_label = QtWidgets.QLabel('%s:' % _("Bottom Margin"))
+        self.bmargin_label.setToolTip(
+            _("Distance between text body and the bottom of the PDF file.")
+        )
+
+        grid1.addWidget(self.bmargin_label, 2, 0)
+        grid1.addWidget(self.bmargin_entry, 2, 1)
+
+        # Left Margin value
+        self.lmargin_entry = FCDoubleSpinner()
+        self.lmargin_entry.set_precision(self.decimals)
+        self.lmargin_entry.set_range(0.0000, 9999.9999)
+
+        self.lmargin_label = QtWidgets.QLabel('%s:' % _("Left Margin"))
+        self.lmargin_label.setToolTip(
+            _("Distance between text body and the left of the PDF file.")
+        )
+
+        grid1.addWidget(self.lmargin_label, 3, 0)
+        grid1.addWidget(self.lmargin_entry, 3, 1)
+
+        # Right Margin value
+        self.rmargin_entry = FCDoubleSpinner()
+        self.rmargin_entry.set_precision(self.decimals)
+        self.rmargin_entry.set_range(0.0000, 9999.9999)
+
+        self.rmargin_label = QtWidgets.QLabel('%s:' % _("Right Margin"))
+        self.rmargin_label.setToolTip(
+            _("Distance between text body and the right of the PDF file.")
+        )
+
+        grid1.addWidget(self.rmargin_label, 4, 0)
+        grid1.addWidget(self.rmargin_entry, 4, 1)
+
         self.layout.addStretch()
 
         if sys.platform != 'win32':
@@ -1435,6 +1505,29 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.gerber_zeros_label, 5, 0)
         grid0.addWidget(self.gerber_zeros_radio, 5, 1, 1, 2)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 6, 0, 1, 3)
+
+        # Apertures Cleaning
+        self.gerber_clean_cb = FCCheckBox(label='%s' % _('Clean Apertures'))
+        self.gerber_clean_cb.setToolTip(
+            _("Will remove apertures that do not have geometry\n"
+              "thus lowering the number of apertures in the Gerber object.")
+        )
+        grid0.addWidget(self.gerber_clean_cb, 7, 0, 1, 3)
+
+        # Apply Extra Buffering
+        self.gerber_extra_buffering = FCCheckBox(label='%s' % _('Polarity change buffer'))
+        self.gerber_extra_buffering.setToolTip(
+            _("Will apply extra buffering for the\n"
+              "solid geometry when we have polarity changes.\n"
+              "May help loading Gerber files that otherwise\n"
+              "do not load correctly.")
+        )
+        grid0.addWidget(self.gerber_extra_buffering, 8, 0, 1, 3)
+
         self.layout.addStretch()
 
 
@@ -1528,6 +1621,11 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.combine_passes_cb, 5, 0, 1, 2)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 6, 0, 1, 2)
+
         # ## Clear non-copper regions
         self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Non-copper regions"))
         self.clearcopper_label.setToolTip(
@@ -1563,6 +1661,11 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
             _("Resulting geometry will have rounded corners.")
         )
         grid1.addWidget(self.noncopper_rounded_cb, 1, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid1.addWidget(separator_line, 2, 0, 1, 2)
 
         # ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel('<b>%s:</b>' % _('Bounding Box'))
@@ -1634,6 +1737,11 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.aperture_table_visibility_cb, 1, 0, 1, 2)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 2, 0, 1, 2)
+
         # Tool Type
         self.tool_type_label = QtWidgets.QLabel('<b>%s</b>' % _('Tool Type'))
         self.tool_type_label.setToolTip(
@@ -1645,8 +1753,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.tool_type_radio = RadioSet([{'label': 'Circular', 'value': 'circular'},
                                          {'label': 'V-Shape', 'value': 'v'}])
 
-        grid0.addWidget(self.tool_type_label, 2, 0)
-        grid0.addWidget(self.tool_type_radio, 2, 1, 1, 2)
+        grid0.addWidget(self.tool_type_label, 3, 0)
+        grid0.addWidget(self.tool_type_radio, 3, 1, 1, 2)
 
         # Tip Dia
         self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
@@ -1658,8 +1766,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.tipdia_spinner.set_range(-99.9999, 99.9999)
         self.tipdia_spinner.setSingleStep(0.1)
         self.tipdia_spinner.setWrapping(True)
-        grid0.addWidget(self.tipdialabel, 3, 0)
-        grid0.addWidget(self.tipdia_spinner, 3, 1, 1, 2)
+        grid0.addWidget(self.tipdialabel, 4, 0)
+        grid0.addWidget(self.tipdia_spinner, 4, 1, 1, 2)
 
         # Tip Angle
         self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
@@ -1671,8 +1779,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.tipangle_spinner.set_range(0, 180)
         self.tipangle_spinner.setSingleStep(5)
         self.tipangle_spinner.setWrapping(True)
-        grid0.addWidget(self.tipanglelabel, 4, 0)
-        grid0.addWidget(self.tipangle_spinner, 4, 1, 1, 2)
+        grid0.addWidget(self.tipanglelabel, 5, 0)
+        grid0.addWidget(self.tipangle_spinner, 5, 1, 1, 2)
 
         # Cut Z
         self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -1686,8 +1794,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.cutz_spinner.setSingleStep(0.1)
         self.cutz_spinner.setWrapping(True)
 
-        grid0.addWidget(self.cutzlabel, 5, 0)
-        grid0.addWidget(self.cutz_spinner, 5, 1, 1, 2)
+        grid0.addWidget(self.cutzlabel, 6, 0)
+        grid0.addWidget(self.cutz_spinner, 6, 1, 1, 2)
 
         # Isolation Type
         self.iso_type_label = QtWidgets.QLabel('%s:' % _('Isolation Type'))
@@ -1705,8 +1813,13 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
                                         {'label': _('Exterior'), 'value': 'ext'},
                                         {'label': _('Interior'), 'value': 'int'}])
 
-        grid0.addWidget(self.iso_type_label, 6, 0,)
-        grid0.addWidget(self.iso_type_radio, 6, 1, 1, 2)
+        grid0.addWidget(self.iso_type_label, 7, 0,)
+        grid0.addWidget(self.iso_type_radio, 7, 1, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Buffering Type
         buffering_label = QtWidgets.QLabel('%s:' % _('Buffering'))
@@ -1718,8 +1831,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.buffering_radio = RadioSet([{'label': _('None'), 'value': 'no'},
                                          {'label': _('Full'), 'value': 'full'}])
-        grid0.addWidget(buffering_label, 7, 0)
-        grid0.addWidget(self.buffering_radio, 7, 1)
+        grid0.addWidget(buffering_label, 9, 0)
+        grid0.addWidget(self.buffering_radio, 9, 1)
 
         # Simplification
         self.simplify_cb = FCCheckBox(label=_('Simplify'))
@@ -1728,7 +1841,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
               "loaded with simplification having a set tolerance.\n"
               "<<WARNING>>: Don't change this unless you know what you are doing !!!")
                                     )
-        grid0.addWidget(self.simplify_cb, 8, 0, 1, 2)
+        grid0.addWidget(self.simplify_cb, 10, 0, 1, 2)
 
         # Simplification tolerance
         self.simplification_tol_label = QtWidgets.QLabel(_('Tolerance'))
@@ -1740,8 +1853,8 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.simplification_tol_spinner.setRange(0.00000, 0.01000)
         self.simplification_tol_spinner.setSingleStep(0.0001)
 
-        grid0.addWidget(self.simplification_tol_label, 9, 0)
-        grid0.addWidget(self.simplification_tol_spinner, 9, 1)
+        grid0.addWidget(self.simplification_tol_label, 11, 0)
+        grid0.addWidget(self.simplification_tol_spinner, 11, 1)
         self.ois_simplif = OptionalInputSection(
             self.simplify_cb,
             [

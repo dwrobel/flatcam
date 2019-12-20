@@ -139,7 +139,9 @@ class DrawTool(object):
         return ""
 
     def on_key(self, key):
-        return None
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
 
     def utility_geometry(self, data=None):
         return None
@@ -874,8 +876,10 @@ class FCRegion(FCShapeTool):
         except Exception as e:
             log.debug("FlatCAMGrbEditor.FCRegion --> %s" % str(e))
 
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.app.inform.emit(_('Corner Mode 1: 45 degrees ...'))
 
@@ -1064,8 +1068,10 @@ class FCRegion(FCShapeTool):
             self.geometry = DrawToolShape(new_geo_el)
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done."))
+
+        self.draw_app.app.jump_signal.disconnect()
+
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1073,6 +1079,10 @@ class FCRegion(FCShapeTool):
         self.draw_app.plot_all()
 
     def on_key(self, key):
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
                 if self.draw_app.bend_mode == 5:
@@ -1148,8 +1158,11 @@ class FCTrack(FCRegion):
         except Exception as e:
             log.debug("FlatCAMGrbEditor.FCTrack.__init__() --> %s" % str(e))
 
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_path%s.png' % self.draw_app.bend_mode))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location +
+                                                  '/aero_path%s.png' % self.draw_app.bend_mode))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
 
@@ -1168,8 +1181,10 @@ class FCTrack(FCRegion):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done."))
+
+        self.draw_app.app.jump_signal.disconnect()
+
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1287,6 +1302,10 @@ class FCTrack(FCRegion):
                 self.draw_app.draw_utility_geometry(geo=geo)
                 return _("Backtracked one point ...")
 
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
+
         if key == 'T' or key == QtCore.Qt.Key_T:
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
@@ -1396,6 +1415,8 @@ class FCDisc(FCShapeTool):
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
 
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
 
     def click(self, point):
@@ -1442,8 +1463,10 @@ class FCDisc(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done."))
+
+        self.draw_app.app.jump_signal.disconnect()
+
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -1490,6 +1513,7 @@ class FCSemiDisc(FCShapeTool):
             self.storage_obj = self.draw_app.storage_dict['0']['geometry']
 
         self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def click(self, point):
         self.points.append(point)
@@ -1522,6 +1546,10 @@ class FCSemiDisc(FCShapeTool):
         if key == 'D' or key == QtCore.Qt.Key_D:
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
             return '%s: %s' % (_('Direction'), self.direction.upper())
+
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            self.draw_app.app.on_jump_to()
 
         if key == 'M' or key == QtCore.Qt.Key_M:
             # delete the possible points made before this action; we want to start anew
@@ -1700,8 +1728,10 @@ class FCSemiDisc(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done."))
+
+        self.draw_app.app.jump_signal.disconnect()
+
+        self.draw_app.app.inform.emit('[success] %s' % _("Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -4517,6 +4547,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.snap_x = x
         self.snap_y = y
 
+        self.app.mouse = [x, y]
+
         # update the position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   " 
                                            "<b>Y</b>: %.4f" % (x, y))
@@ -4594,19 +4626,21 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.shapes.clear(update=True)
 
             for storage in self.storage_dict:
-                for elem in self.storage_dict[storage]['geometry']:
-                    if 'solid' in elem.geo:
-                        geometric_data = elem.geo['solid']
-                        if geometric_data is None:
-                            continue
+                # fix for apertures with now geometry inside
+                if 'geometry' in self.storage_dict[storage]:
+                    for elem in self.storage_dict[storage]['geometry']:
+                        if 'solid' in elem.geo:
+                            geometric_data = elem.geo['solid']
+                            if geometric_data is None:
+                                continue
 
-                        if elem in self.selected:
-                            self.plot_shape(geometry=geometric_data,
-                                            color=self.app.defaults['global_sel_draw_color'] + 'FF',
-                                            linewidth=2)
-                        else:
-                            self.plot_shape(geometry=geometric_data,
-                                            color=self.app.defaults['global_draw_color'] + 'FF')
+                            if elem in self.selected:
+                                self.plot_shape(geometry=geometric_data,
+                                                color=self.app.defaults['global_sel_draw_color'] + 'FF',
+                                                linewidth=2)
+                            else:
+                                self.plot_shape(geometry=geometric_data,
+                                                color=self.app.defaults['global_draw_color'] + 'FF')
 
             if self.utility:
                 for elem in self.utility:
