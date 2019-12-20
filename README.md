@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+21.12.2019
+
+- fixed a typo in Distance Tool
+
 20.12.2019
 
 - fixed a rare issue in the generation of non-copper-region geometry started from the Gerber Object UI (selected tab)
