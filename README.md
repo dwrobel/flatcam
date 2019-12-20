@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - Print function is now printing a PDF file for a selection of objects in the colors from canvas 
 - added an icon in the infobar that will show more clearly the status of the grid snapping
 - in Geometry Object UI (selected tab) when a tool type is changed from no matter what to V-shape, the cut_z value is saved and when the tool type is changed back to something different than V-shape, this saved cut-z value is restored
+- fixed re-cut length entry not staying disabled when the re-cut cb is not checked
 
 19.12.2019
 

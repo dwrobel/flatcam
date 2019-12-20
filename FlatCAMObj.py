@@ -3763,6 +3763,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.name_entry.set_value(self.options['name'])
         self.ui_connect()
 
+        self.ui.e_cut_entry.setDisabled(False) if self.ui.extracut_cb.get_value() else \
+            self.ui.e_cut_entry.setDisabled(True)
+
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
 
@@ -3939,7 +3942,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
-        self.ui.e_cut_entry.setDisabled(True)
+        self.ui.e_cut_entry.setDisabled(False) if self.app.defaults['geometry_extracut'] else \
+            self.ui.e_cut_entry.setDisabled(True)
+        self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
