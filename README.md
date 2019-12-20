@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 20.12.2019
 
 - fixed a rare issue in the generation of non-copper-region geometry started from the Gerber Object UI (selected tab)
+- Print function is now printing a PDF file for a selection of objects in the colors from canvas 
 
 19.12.2019
 

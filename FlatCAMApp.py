@@ -31,6 +31,7 @@ from reportlab.pdfgen import canvas
 from reportlab.graphics import renderPM
 from reportlab.lib.units import inch, mm
 from reportlab.lib.pagesizes import landscape, portrait
+from svglib.svglib import svg2rlg
 
 from contextlib import contextmanager
 import gc
@@ -10362,20 +10363,185 @@ class App(QtCore.QObject):
             return
 
         if use_thread is True:
-            self.worker_task.emit({'fcn': self.save_pdf, 'params': [filename, obj_name, obj_selection]})
+            proc = self.proc_container.new(_("Printing PDF ... Please wait."))
+            self.worker_task.emit({'fcn': self.save_pdf, 'params': [filename, obj_selection]})
         else:
-            self.save_pdf(filename, obj_name, obj_selection)
+            self.save_pdf(filename, obj_selection)
 
         # self.save_project(filename)
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("pdf", filename)
         self.file_saved.emit("pdf", filename)
 
-    def save_pdf(self, file_name, obj_name, obj_selection):
-        if len(obj_selection) == 1:
-            self.film_tool.export_positive(obj_name=obj_name, box_name=obj_name, filename=file_name, ftype='pdf')
+    def save_pdf(self, file_name, obj_selection):
+
+        p_size = self.defaults['global_workspaceT']
+        orientation = self.defaults['global_workspace_orientation']
+        color = 'black'
+        transparency_level = 1.0
+
+        self.pagesize = dict()
+        self.pagesize.update(
+            {
+                'Bounds': None,
+                'A0': (841*mm, 1189*mm),
+                'A1': (594*mm, 841*mm),
+                'A2': (420*mm, 594*mm),
+                'A3': (297*mm, 420*mm),
+                'A4': (210*mm, 297*mm),
+                'A5': (148*mm, 210*mm),
+                'A6': (105*mm, 148*mm),
+                'A7': (74*mm, 105*mm),
+                'A8': (52*mm, 74*mm),
+                'A9': (37*mm, 52*mm),
+                'A10': (26*mm, 37*mm),
+
+                'B0': (1000*mm, 1414*mm),
+                'B1': (707*mm, 1000*mm),
+                'B2': (500*mm, 707*mm),
+                'B3': (353*mm, 500*mm),
+                'B4': (250*mm, 353*mm),
+                'B5': (176*mm, 250*mm),
+                'B6': (125*mm, 176*mm),
+                'B7': (88*mm, 125*mm),
+                'B8': (62*mm, 88*mm),
+                'B9': (44*mm, 62*mm),
+                'B10': (31*mm, 44*mm),
+
+                'C0': (917*mm, 1297*mm),
+                'C1': (648*mm, 917*mm),
+                'C2': (458*mm, 648*mm),
+                'C3': (324*mm, 458*mm),
+                'C4': (229*mm, 324*mm),
+                'C5': (162*mm, 229*mm),
+                'C6': (114*mm, 162*mm),
+                'C7': (81*mm, 114*mm),
+                'C8': (57*mm, 81*mm),
+                'C9': (40*mm, 57*mm),
+                'C10': (28*mm, 40*mm),
+
+                # American paper sizes
+                'LETTER': (8.5*inch, 11*inch),
+                'LEGAL': (8.5*inch, 14*inch),
+                'ELEVENSEVENTEEN': (11*inch, 17*inch),
+
+                # From https://en.wikipedia.org/wiki/Paper_size
+                'JUNIOR_LEGAL': (5*inch, 8*inch),
+                'HALF_LETTER': (5.5*inch, 8*inch),
+                'GOV_LETTER': (8*inch, 10.5*inch),
+                'GOV_LEGAL': (8.5*inch, 13*inch),
+                'LEDGER': (17*inch, 11*inch),
+            }
+        )
+
+        exported_svg = list()
+        for obj in obj_selection:
+            svg_obj = obj.export_svg(scale_stroke_factor=0.0,
+                                     scale_factor_x=None, scale_factor_y=None,
+                                     skew_factor_x=None, skew_factor_y=None,
+                                     mirror=None)
+
+            if obj.kind.lower() == 'gerber':
+                color = self.defaults["global_plot_fill"][:-2]
+            elif obj.kind.lower() == 'excellon':
+                color = '#C40000'
+            elif obj.kind.lower() == 'geometry':
+                color = self.defaults["global_draw_color"]
+
+            # Change the attributes of the exported SVG
+            # We don't need stroke-width
+            # We set opacity to maximum
+            # We set the colour to WHITE
+            root = ET.fromstring(svg_obj)
+            for child in root:
+                child.set('fill', str(color))
+                child.set('opacity', str(transparency_level))
+                child.set('stroke', str(color))
+
+            exported_svg.append(ET.tostring(root))
+
+        xmin = Inf
+        ymin = Inf
+        xmax = -Inf
+        ymax = -Inf
+
+        for obj in obj_selection:
+            try:
+                gxmin, gymin, gxmax, gymax = obj.bounds()
+                xmin = min([xmin, gxmin])
+                ymin = min([ymin, gymin])
+                xmax = max([xmax, gxmax])
+                ymax = max([ymax, gymax])
+            except Exception as e:
+                log.warning("DEV WARNING: Tried to get bounds of empty geometry in App.save_pdf(). %s" % str(e))
+
+        # Determine bounding area for svg export
+        bounds = [xmin, ymin, xmax, ymax]
+        size = bounds[2] - bounds[0], bounds[3] - bounds[1]
+
+        # This contain the measure units
+        uom = obj_selection[0].units.lower()
+
+        # Define a boundary around SVG of about 1.0mm (~39mils)
+        if uom in "mm":
+            boundary = 1.0
         else:
-            self.inform.emit('[WARNING_NOTCL] %s' % _("Multiple objects print not implemented yet."))
+            boundary = 0.0393701
+
+        # Convert everything to strings for use in the xml doc
+        svgwidth = str(size[0] + (2 * boundary))
+        svgheight = str(size[1] + (2 * boundary))
+        minx = str(bounds[0] - boundary)
+        miny = str(bounds[1] + boundary + size[1])
+
+        # Add a SVG Header and footer to the svg output from shapely
+        # The transform flips the Y Axis so that everything renders
+        # properly within svg apps such as inkscape
+        svg_header = '<svg xmlns="http://www.w3.org/2000/svg" ' \
+                     'version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" '
+        svg_header += 'width="' + svgwidth + uom + '" '
+        svg_header += 'height="' + svgheight + uom + '" '
+        svg_header += 'viewBox="' + minx + ' -' + miny + ' ' + svgwidth + ' ' + svgheight + '" '
+        svg_header += '>'
+        svg_header += '<g transform="scale(1,-1)">'
+        svg_footer = '</g> </svg>'
+
+        svg_elem = str(svg_header)
+        for svg_item in exported_svg:
+            svg_elem += str(svg_item)
+        svg_elem += str(svg_footer)
+
+        # Parse the xml through a xml parser just to add line feeds
+        # and to make it look more pretty for the output
+        doc = parse_xml_string(svg_elem)
+        doc_final = doc.toprettyxml()
+
+        try:
+            if self.defaults['units'].upper() == 'IN':
+                unit = inch
+            else:
+                unit = mm
+
+            doc_final = StringIO(doc_final)
+            drawing = svg2rlg(doc_final)
+
+            if p_size == 'Bounds':
+                renderPDF.drawToFile(drawing, file_name)
+            else:
+                if orientation == 'p':
+                    page_size = portrait(self.pagesize[p_size])
+                else:
+                    page_size = landscape(self.pagesize[p_size])
+
+                my_canvas = canvas.Canvas(file_name, pagesize=page_size)
+                my_canvas.translate(bounds[0] * unit, bounds[1] * unit)
+                renderPDF.draw(drawing, my_canvas, 0, 0)
+                my_canvas.save()
+        except Exception as e:
+            log.debug("App.save_pdf() --> PDF output --> %s" % str(e))
+            return 'fail'
+
+        self.inform.emit('[success] %s: %s' % (_("PDF file saved to"), file_name))
 
     def export_svg(self, obj_name, filename, scale_stroke_factor=0.00):
         """
