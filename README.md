@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 22.12.2019
 
 - added a new option for the Gerber objects: on the project context menu now can be chosen a color for the selected Gerber object
+- fixed issue in Gerber UI where a label was not hidden when in Basic mode
+- added the color parameters of the objects to the serializable attributes
 
 21.12.2019
 

@@ -660,7 +660,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind']
+        self.ser_attrs += ['options', 'kind', 'fill_color', 'outline_color']
 
     def set_ui(self, ui):
         """
@@ -744,6 +744,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.aperture_table_visibility_cb.hide()
             self.ui.milling_type_label.hide()
             self.ui.milling_type_radio.hide()
+            self.ui.iso_type_label.hide()
             self.ui.iso_type_radio.hide()
 
             self.ui.follow_cb.hide()
