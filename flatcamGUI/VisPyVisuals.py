@@ -329,27 +329,40 @@ class ShapeCollectionVisual(CompoundVisual):
         # Merge shapes buffers
 
         if indexes is None:
-            for data in self.data.values():
+            for k, data in list(self.data.items()):
                 if data['visible'] and 'line_pts' in data:
                     if new_mesh_color and new_mesh_color != '':
                         dim_mesh_tris = (len(data['mesh_tris']) // 3)
                         if dim_mesh_tris != 0:
                             try:
                                 mesh_colors[data['layer']] += [Color(new_mesh_color).rgba] * dim_mesh_tris
+                                self.data[k]['face_color'] = new_mesh_color
+
+                                new_temp = list()
+                                for i in range(len(data['mesh_colors'])):
+                                    new_temp.append(Color(new_mesh_color).rgba)
+                                data['mesh_colors'] = new_temp
                             except Exception as e:
                                 print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
                                       "Create mesh colors --> Data error. %s" % str(e))
+
                     if new_line_color and new_line_color != '':
                         dim_line_pts = (len(data['line_pts']))
                         if dim_line_pts != 0:
                             try:
                                 line_pts[data['layer']] += data['line_pts']
                                 line_colors[data['layer']] += [Color(new_line_color).rgba] * dim_line_pts
+                                self.data[k]['color'] = new_line_color
+
+                                new_temp = list()
+                                for i in range(len(data['line_colors'])):
+                                    new_temp.append(Color(new_line_color).rgba)
+                                data['line_colors'] = new_temp
                             except Exception as e:
                                 print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
                                       "Create line colors --> Data error. %s" % str(e))
         else:
-            for k, data in self.data.items():
+            for k, data in list(self.data.items()):
                 if data['visible'] and 'line_pts' in data:
                     dim_mesh_tris = (len(data['mesh_tris']) // 3)
                     dim_line_pts = (len(data['line_pts']))
@@ -360,6 +373,11 @@ class ShapeCollectionVisual(CompoundVisual):
                                 try:
                                     mesh_colors[data['layer']] += [Color(new_mesh_color).rgba] * dim_mesh_tris
                                     self.data[k]['face_color'] = new_mesh_color
+
+                                    new_temp = list()
+                                    for i in range(len(data['mesh_colors'])):
+                                        new_temp.append(Color(new_mesh_color).rgba)
+                                    data['mesh_colors'] = new_temp
                                 except Exception as e:
                                     print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
                                           "Create mesh colors --> Data error. %s" % str(e))
@@ -369,6 +387,11 @@ class ShapeCollectionVisual(CompoundVisual):
                                     line_pts[data['layer']] += data['line_pts']
                                     line_colors[data['layer']] += [Color(new_line_color).rgba] * dim_line_pts
                                     self.data[k]['color'] = new_line_color
+
+                                    new_temp = list()
+                                    for i in range(len(data['line_colors'])):
+                                        new_temp.append(Color(new_line_color).rgba)
+                                    data['line_colors'] = new_temp
                                 except Exception as e:
                                     print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
                                           "Create line colors --> Data error. %s" % str(e))
@@ -481,8 +504,8 @@ class ShapeCollectionVisual(CompoundVisual):
         # Only one thread can update data
         self.results_lock.acquire(True)
 
-        for i in list(self.data.copy().keys()) if not indexes else indexes:
-            if i in list(self.results.copy().keys()):
+        for i in list(self.data.keys()) if not indexes else indexes:
+            if i in list(self.results.keys()):
                 try:
                     self.results[i].wait()                                  # Wait for process results
                     if i in self.data:

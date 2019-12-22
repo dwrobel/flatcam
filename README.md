@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue in Gerber UI where a label was not hidden when in Basic mode
 - added the color parameters of the objects to the serializable attributes
 - fixed Gerber object color set for Legacy(2D) graphic engine; glitch on the OpenGL(3D) graphic engine
+- fixed the above mentioned glitch in the OpenGL(3D) graphic engine when an Gerber object has been set with a color
 
 21.12.2019
 
