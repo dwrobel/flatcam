@@ -1940,6 +1940,10 @@ class App(QtCore.QObject):
 
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
 
+        # Project Context Menu -> Color Setting
+        for act in self.ui.menuprojectcolor.actions():
+            act.triggered.connect(self.on_set_color_action_triggered)
+
         # Preferences Plot Area TAB
         self.ui.pref_save_button.clicked.connect(lambda: self.on_save_button(save_to_file=True))
         self.ui.pref_apply_button.clicked.connect(lambda: self.on_save_button(save_to_file=False))
@@ -2024,7 +2028,7 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.clicked.connect(
             self.on_proj_color_dis_button)
 
-        # ############################# workspace setting signals #####################
+        # ############################# Workspace Setting Signals #####################
         self.ui.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.ui.general_defaults_form.general_gui_group.wk_orientation_radio.activated_custom.connect(
             self.on_workspace_modified
@@ -4731,7 +4735,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 3, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 3, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt, @detlefeckardt"), 3, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt, Detlef Eckardt"), 3, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 4, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 1)
@@ -8443,16 +8447,16 @@ class App(QtCore.QObject):
     def populate_cmenu_grids(self):
         units = self.defaults['units'].lower()
 
+        for act in self.ui.cmenu_gridmenu.actions():
+            act.triggered.disconnect()
         self.ui.cmenu_gridmenu.clear()
+
         sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
 
         grid_toggle = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon(self.resource_location + '/grid32_menu.png'),
                                                        _("Grid On/Off"))
         grid_toggle.setCheckable(True)
-        if self.grid_status() == True:
-            grid_toggle.setChecked(True)
-        else:
-            grid_toggle.setChecked(False)
+        grid_toggle.setChecked(True) if self.grid_status() else grid_toggle.setChecked(False)
 
         self.ui.cmenu_gridmenu.addSeparator()
         for grid in sorted_list:
@@ -12355,6 +12359,59 @@ class App(QtCore.QObject):
 
         # Clear pool to free memory
         self.clear_pool()
+
+    def on_set_color_action_triggered(self):
+        new_color = self.defaults['global_plot_fill']
+        act_name = self.sender().text().lower()
+
+        sel_obj = self.collection.get_active()
+
+        if act_name == 'red':
+            new_color = '#FF0000' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'blue':
+            new_color = '#0000FF' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'yellow':
+            new_color = '#FFDF00' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'green':
+            new_color = '#00FF00' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'violet':
+            new_color = '#FF00FF' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'brown':
+            new_color = '#A52A2A' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+
+        if act_name == 'custom':
+            new_color = QtGui.QColor(self.defaults['global_plot_fill'][:7])
+            c_dialog = QtWidgets.QColorDialog()
+            plot_fill_color = c_dialog.getColor(initial=new_color)
+
+            if plot_fill_color.isValid() is False:
+                return
+
+            new_color = str(plot_fill_color.name()) + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+
+        if self.is_legacy is False:
+            new_line_color = new_color[:-2]
+            sel_obj.fill_color = new_color
+            sel_obj.outline_color = new_line_color
+
+            sel_obj.shapes.redraw(
+                update_colors=(new_color, new_line_color)
+            )
+        else:
+            new_line_color = new_color
+
+            sel_obj.fill_color = new_color
+            sel_obj.outline_color = new_line_color
+            sel_obj.shapes.redraw(
+                update_colors=(new_color, new_line_color)
+            )
 
     def on_grid_snap_triggered(self, state):
         if state:

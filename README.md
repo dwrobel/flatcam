@@ -9,12 +9,25 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.12.2019
+
+- added a new option for the Gerber objects: on the project context menu now can be chosen a color for the selected Gerber object
+- fixed issue in Gerber UI where a label was not hidden when in Basic mode
+- added the color parameters of the objects to the serializable attributes
+- fixed Gerber object color set for Legacy(2D) graphic engine; glitch on the OpenGL(3D) graphic engine
+- fixed the above mentioned glitch in the OpenGL(3D) graphic engine when an Gerber object has been set with a color
+
+21.12.2019
+
+- fixed a typo in Distance Tool
+
 20.12.2019
 
 - fixed a rare issue in the generation of non-copper-region geometry started from the Gerber Object UI (selected tab)
 - Print function is now printing a PDF file for a selection of objects in the colors from canvas 
 - added an icon in the infobar that will show more clearly the status of the grid snapping
 - in Geometry Object UI (selected tab) when a tool type is changed from no matter what to V-shape, the cut_z value is saved and when the tool type is changed back to something different than V-shape, this saved cut-z value is restored
+- fixed re-cut length entry not staying disabled when the re-cut cb is not checked
 
 19.12.2019
 

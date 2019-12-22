@@ -15,7 +15,9 @@ from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString, Line
 from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
-from copy import deepcopy, copy
+from copy import deepcopy
+from copy import copy
+
 from io import StringIO
 import traceback
 import inspect  # TODO: For debugging only.
@@ -29,6 +31,8 @@ from flatcamParsers.ParseExcellon import Excellon
 from flatcamParsers.ParseGerber import Gerber
 from camlib import Geometry, CNCjob
 import FlatCAMApp
+
+from flatcamGUI.VisPyVisuals import ShapeCollection
 
 import tkinter as tk
 import os, sys, itertools
@@ -104,6 +108,7 @@ class FlatCAMObj(QtCore.QObject):
 
         if self.app.is_legacy is False:
             self.shapes = self.app.plotcanvas.new_shape_group()
+            # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, pool=self.app.pool, layers=2)
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
 
@@ -649,10 +654,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.units_found = self.app.defaults['units']
 
+        self.fill_color = self.app.defaults['global_plot_fill']
+        self.outline_color = self.app.defaults['global_plot_line']
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind']
+        self.ser_attrs += ['options', 'kind', 'fill_color', 'outline_color']
 
     def set_ui(self, ui):
         """
@@ -736,6 +744,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.aperture_table_visibility_cb.hide()
             self.ui.milling_type_label.hide()
             self.ui.milling_type_radio.hide()
+            self.ui.iso_type_label.hide()
             self.ui.iso_type_radio.hide()
 
             self.ui.follow_cb.hide()
@@ -1665,12 +1674,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_plot_line']
+            color = self.outline_color
 
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
-            face_color = self.app.defaults['global_plot_fill']
+            face_color = self.fill_color
 
         if 'visible' not in kwargs:
             visible = self.options['plot']
@@ -1740,7 +1749,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         for el in g:
                             self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
                                            visible=visible)
-            self.shapes.redraw()
+            self.shapes.redraw(
+                # update_colors=(self.fill_color, self.outline_color),
+                # indexes=self.app.plotcanvas.shape_collection.data.keys()
+            )
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
         except Exception as e:
@@ -3763,6 +3775,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.name_entry.set_value(self.options['name'])
         self.ui_connect()
 
+        self.ui.e_cut_entry.setDisabled(False) if self.ui.extracut_cb.get_value() else \
+            self.ui.e_cut_entry.setDisabled(True)
+
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
 
@@ -3939,7 +3954,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.ui.level.setText('<span style="color:red;"><b>%s</b></span>' % _('Advanced'))
 
-        self.ui.e_cut_entry.setDisabled(True)
+        self.ui.e_cut_entry.setDisabled(False) if self.app.defaults['geometry_extracut'] else \
+            self.ui.e_cut_entry.setDisabled(True)
+        self.ui.extracut_cb.toggled.connect(lambda state: self.ui.e_cut_entry.setDisabled(not state))
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)

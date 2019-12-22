@@ -1577,7 +1577,7 @@ class GeometryObjectUI(ObjectUI):
         self.cncfeedrate_rapid_entry.hide()
 
         # Cut over 1st point in path
-        self.extracut_cb = FCCheckBox('%s' % _('Re-cut'))
+        self.extracut_cb = FCCheckBox('%s:' % _('Re-cut'))
         self.extracut_cb.setToolTip(
             _("In order to remove possible\n"
               "copper leftovers where first cut\n"
@@ -1598,8 +1598,6 @@ class GeometryObjectUI(ObjectUI):
         )
         self.grid3.addWidget(self.extracut_cb, 13, 0)
         self.grid3.addWidget(self.e_cut_entry, 13, 1)
-
-        self.ois_e_cut = OptionalInputSection(self.extracut_cb, [self.e_cut_entry])
 
         # Spindlespeed
         spdlabel = QtWidgets.QLabel('%s:' % _('Spindle speed'))
