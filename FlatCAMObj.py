@@ -112,9 +112,6 @@ class FlatCAMObj(QtCore.QObject):
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
 
-        self.fill_color = self.app.defaults['global_plot_fill']
-        self.outline_color = self.app.defaults['global_plot_line']
-
         self.mark_shapes = dict()
 
         self.item = None  # Link with project view item
@@ -656,6 +653,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.grid_status_memory = None
 
         self.units_found = self.app.defaults['units']
+
+        self.fill_color = self.app.defaults['global_plot_fill']
+        self.outline_color = self.app.defaults['global_plot_line']
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents

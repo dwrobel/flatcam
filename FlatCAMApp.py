@@ -12396,13 +12396,22 @@ class App(QtCore.QObject):
             new_color = str(plot_fill_color.name()) + \
                         str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
 
-        new_line_color = new_color[:-2]
-        sel_obj.fill_color = new_color
-        sel_obj.outline_color = new_line_color
+        if self.is_legacy is False:
+            new_line_color = new_color[:-2]
+            sel_obj.fill_color = new_color
+            sel_obj.outline_color = new_line_color
 
-        sel_obj.shapes.redraw(
-            update_colors=(new_color, new_line_color)
-        )
+            sel_obj.shapes.redraw(
+                update_colors=(new_color, new_line_color)
+            )
+        else:
+            new_line_color = new_color
+
+            sel_obj.fill_color = new_color
+            sel_obj.outline_color = new_line_color
+            sel_obj.shapes.redraw(
+                update_colors=(new_color, new_line_color)
+            )
 
     def on_grid_snap_triggered(self, state):
         if state:
