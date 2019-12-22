@@ -15,7 +15,9 @@ from shapely.geometry import Point, Polygon, MultiPolygon, MultiLineString, Line
 from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
-from copy import deepcopy, copy
+from copy import deepcopy
+from copy import copy
+
 from io import StringIO
 import traceback
 import inspect  # TODO: For debugging only.
@@ -29,6 +31,8 @@ from flatcamParsers.ParseExcellon import Excellon
 from flatcamParsers.ParseGerber import Gerber
 from camlib import Geometry, CNCjob
 import FlatCAMApp
+
+from flatcamGUI.VisPyVisuals import ShapeCollection
 
 import tkinter as tk
 import os, sys, itertools
@@ -104,8 +108,12 @@ class FlatCAMObj(QtCore.QObject):
 
         if self.app.is_legacy is False:
             self.shapes = self.app.plotcanvas.new_shape_group()
+            # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, pool=self.app.pool, layers=2)
         else:
             self.shapes = ShapeCollectionLegacy(obj=self, app=self.app, name=name)
+
+        self.fill_color = self.app.defaults['global_plot_fill']
+        self.outline_color = self.app.defaults['global_plot_line']
 
         self.mark_shapes = dict()
 
@@ -1665,12 +1673,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_plot_line']
+            color = self.outline_color
 
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
-            face_color = self.app.defaults['global_plot_fill']
+            face_color = self.fill_color
 
         if 'visible' not in kwargs:
             visible = self.options['plot']
@@ -1740,7 +1748,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         for el in g:
                             self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
                                            visible=visible)
-            self.shapes.redraw()
+            self.shapes.redraw(
+                # update_colors=(self.fill_color, self.outline_color),
+                # indexes=self.app.plotcanvas.shape_collection.data.keys()
+            )
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
         except Exception as e:

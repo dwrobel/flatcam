@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.12.2019
+
+- added a new option for the Gerber objects: on the project context menu now can be chosen a color for the selected Gerber object
+
 21.12.2019
 
 - fixed a typo in Distance Tool
