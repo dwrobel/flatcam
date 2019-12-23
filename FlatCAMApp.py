@@ -11531,26 +11531,28 @@ class App(QtCore.QObject):
         App.log.debug(" **************** Started PROEJCT loading... **************** ")
 
         for obj in d['objs']:
-            def obj_init(obj_inst, app_inst):
+            try:
+                def obj_init(obj_inst, app_inst):
 
-                obj_inst.from_dict(obj)
+                    obj_inst.from_dict(obj)
 
-            App.log.debug("Recreating from opened project an %s object: %s" %
-                          (obj['kind'].capitalize(), obj['options']['name']))
+                App.log.debug("Recreating from opened project an %s object: %s" %
+                              (obj['kind'].capitalize(), obj['options']['name']))
 
-            # for some reason, setting ui_title does not work when this method is called from Tcl Shell
-            # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
-            if cli is None:
-                self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
-                                                          obj['kind'].upper(),
-                                                          obj['options']['name']
-                                                          )
-                                  )
+                # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+                # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+                if cli is None:
+                    self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
+                                                              obj['kind'].upper(),
+                                                              obj['options']['name']
+                                                              )
+                                      )
 
-            self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
+                self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
+            except Exception as e:
+                print('App.open_project() --> ' + str(e))
 
-        self.inform.emit('[success] %s: %s' %
-                         (_("Project loaded from"), filename))
+        self.inform.emit('[success] %s: %s' % (_("Project loaded from"), filename))
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
