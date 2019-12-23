@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - some fixes in the Legacy(2D) graphic mode regarding the possibility of changing the color of the Gerber objects
 - added a method to darken the outline color for Gerber objects when they have the color set
 - when Printing as PDF Gerber objects now the rendered color is the print color
+- speed up the plotting in OpenGL(3D) graphic mode
+- spped up the color setting for Gerber object when using the OpenGL(3D) graphic mode
 
 22.12.2019
 

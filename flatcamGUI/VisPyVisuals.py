@@ -45,44 +45,48 @@ def _update_shape_buffers(data, triangulation='glu'):
     geo, color, face_color, tolerance = data['geometry'], data['color'], data['face_color'], data['tolerance']
 
     if geo is not None and not geo.is_empty:
-        simple = geo.simplify(tolerance) if tolerance else geo      # Simplified shape
-        pts = []                                                    # Shape line points
-        tri_pts = []                                                # Mesh vertices
-        tri_tris = []                                               # Mesh faces
+        simplified_geo = geo.simplify(tolerance) if tolerance else geo      # Simplified shape
+        pts = []                                                            # Shape line points
+        tri_pts = []                                                        # Mesh vertices
+        tri_tris = []                                                       # Mesh faces
 
         if type(geo) == LineString:
             # Prepare lines
-            pts = _linestring_to_segments(list(simple.coords))
+            pts = _linestring_to_segments(list(simplified_geo.coords))
 
         elif type(geo) == LinearRing:
             # Prepare lines
-            pts = _linearring_to_segments(list(simple.coords))
+            pts = _linearring_to_segments(list(simplified_geo.coords))
 
         elif type(geo) == Polygon:
             # Prepare polygon faces
             if face_color is not None:
                 if triangulation == 'glu':
                     gt = GLUTess()
-                    tri_tris, tri_pts = gt.triangulate(simple)
+                    tri_tris, tri_pts = gt.triangulate(simplified_geo)
                 else:
                     print("Triangulation type '%s' isn't implemented. Drawing only edges." % triangulation)
 
             # Prepare polygon edges
             if color is not None:
-                pts = _linearring_to_segments(list(simple.exterior.coords))
-                for ints in simple.interiors:
+                pts = _linearring_to_segments(list(simplified_geo.exterior.coords))
+                for ints in simplified_geo.interiors:
                     pts += _linearring_to_segments(list(ints.coords))
 
         # Appending data for mesh
         if len(tri_pts) > 0 and len(tri_tris) > 0:
             mesh_tris += tri_tris
             mesh_vertices += tri_pts
-            mesh_colors += [Color(face_color).rgba] * (len(tri_tris) // 3)
+            face_color_rgba = Color(face_color).rgba
+            # mesh_colors += [face_color_rgba] * (len(tri_tris) // 3)
+            mesh_colors += [face_color_rgba for __ in range(len(tri_tris) // 3)]
 
         # Appending data for line
         if len(pts) > 0:
             line_pts += pts
-            line_colors += [Color(color).rgba] * len(pts)
+            colo_rgba = Color(color).rgba
+            # line_colors += [colo_rgba] * len(pts)
+            line_colors += [colo_rgba for __ in range(len(pts))]
 
     # Store buffers
     data['line_pts'] = line_pts
@@ -314,11 +318,26 @@ class ShapeCollectionVisual(CompoundVisual):
             self.__update()
 
     def update_color(self, new_mesh_color=None, new_line_color=None, indexes=None):
-        if (new_mesh_color is None or new_mesh_color == '') and (new_line_color is None or new_line_color == ''):
+        if new_mesh_color is None and new_line_color is None:
             return
 
         if not self.data:
             return
+
+        # if a new color is empty string then make it None so it will not be updated
+        # if a new color is valid then transform it here in a format palatable
+        mesh_color_rgba = None
+        line_color_rgba = None
+        if new_mesh_color:
+            if new_mesh_color != '':
+                mesh_color_rgba = Color(new_mesh_color).rgba
+            else:
+                new_mesh_color = None
+        if new_line_color:
+            if new_line_color != '':
+                line_color_rgba = Color(new_line_color).rgba
+            else:
+                new_line_color = None
 
         mesh_colors = [[] for _ in range(0, len(self._meshes))]     # Face colors
         line_colors = [[] for _ in range(0, len(self._meshes))]     # Line colors
@@ -335,13 +354,10 @@ class ShapeCollectionVisual(CompoundVisual):
                         dim_mesh_tris = (len(data['mesh_tris']) // 3)
                         if dim_mesh_tris != 0:
                             try:
-                                mesh_colors[data['layer']] += [Color(new_mesh_color).rgba] * dim_mesh_tris
+                                mesh_colors[data['layer']] += [mesh_color_rgba] * dim_mesh_tris
                                 self.data[k]['face_color'] = new_mesh_color
 
-                                new_temp = list()
-                                for i in range(len(data['mesh_colors'])):
-                                    new_temp.append(Color(new_mesh_color).rgba)
-                                data['mesh_colors'] = new_temp
+                                data['mesh_colors'] = [mesh_color_rgba for __ in range(len(data['mesh_colors']))]
                             except Exception as e:
                                 print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
                                       "Create mesh colors --> Data error. %s" % str(e))
@@ -351,13 +367,10 @@ class ShapeCollectionVisual(CompoundVisual):
                         if dim_line_pts != 0:
                             try:
                                 line_pts[data['layer']] += data['line_pts']
-                                line_colors[data['layer']] += [Color(new_line_color).rgba] * dim_line_pts
+                                line_colors[data['layer']] += [line_color_rgba] * dim_line_pts
                                 self.data[k]['color'] = new_line_color
 
-                                new_temp = list()
-                                for i in range(len(data['line_colors'])):
-                                    new_temp.append(Color(new_line_color).rgba)
-                                data['line_colors'] = new_temp
+                                data['line_colors'] = [mesh_color_rgba for __ in range(len(data['line_colors']))]
                             except Exception as e:
                                 print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
                                       "Create line colors --> Data error. %s" % str(e))
@@ -371,13 +384,10 @@ class ShapeCollectionVisual(CompoundVisual):
                         if new_mesh_color and new_mesh_color != '':
                             if dim_mesh_tris != 0:
                                 try:
-                                    mesh_colors[data['layer']] += [Color(new_mesh_color).rgba] * dim_mesh_tris
+                                    mesh_colors[data['layer']] += [mesh_color_rgba] * dim_mesh_tris
                                     self.data[k]['face_color'] = new_mesh_color
 
-                                    new_temp = list()
-                                    for i in range(len(data['mesh_colors'])):
-                                        new_temp.append(Color(new_mesh_color).rgba)
-                                    data['mesh_colors'] = new_temp
+                                    data['mesh_colors'] = [mesh_color_rgba for __ in range(len(data['mesh_colors']))]
                                 except Exception as e:
                                     print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
                                           "Create mesh colors --> Data error. %s" % str(e))
@@ -385,13 +395,10 @@ class ShapeCollectionVisual(CompoundVisual):
                             if dim_line_pts != 0:
                                 try:
                                     line_pts[data['layer']] += data['line_pts']
-                                    line_colors[data['layer']] += [Color(new_line_color).rgba] * dim_line_pts
+                                    line_colors[data['layer']] += [line_color_rgba] * dim_line_pts
                                     self.data[k]['color'] = new_line_color
 
-                                    new_temp = list()
-                                    for i in range(len(data['line_colors'])):
-                                        new_temp.append(Color(new_line_color).rgba)
-                                    data['line_colors'] = new_temp
+                                    data['line_colors'] = [mesh_color_rgba for __ in range(len(data['line_colors']))]
                                 except Exception as e:
                                     print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
                                           "Create line colors --> Data error. %s" % str(e))
