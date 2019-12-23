@@ -27,6 +27,7 @@ class ToolTransform(FlatCAMTool):
     scaleName = _("Scale")
     flipName = _("Mirror (Flip)")
     offsetName = _("Offset")
+    bufferName = _("Buffer")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -255,11 +256,11 @@ class ToolTransform(FlatCAMTool):
         grid0.addWidget(self.offy_entry, 14, 1)
         grid0.addWidget(self.offy_button, 14, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''))
+        grid0.addWidget(QtWidgets.QLabel(''), 15, 0, 1, 3)
 
         # ## Flip Title
         flip_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
-        self.transform_lay.addWidget(flip_title_label)
+        grid0.addWidget(flip_title_label, 16, 0, 1, 3)
 
         self.flipx_button = FCButton()
         self.flipx_button.set_value(_("Flip on X"))
@@ -274,7 +275,7 @@ class ToolTransform(FlatCAMTool):
         )
 
         hlay0 = QtWidgets.QHBoxLayout()
-        self.transform_lay.addLayout(hlay0)
+        grid0.addLayout(hlay0, 17, 0, 1, 3)
 
         hlay0.addWidget(self.flipx_button)
         hlay0.addWidget(self.flipy_button)
@@ -293,7 +294,7 @@ class ToolTransform(FlatCAMTool):
               "Or enter the coords in format (x, y) in the\n"
               "Point Entry field and click Flip on X(Y)"))
 
-        self.transform_lay.addWidget(self.flip_ref_cb)
+        grid0.addWidget(self.flip_ref_cb, 18, 0, 1, 3)
 
         self.flip_ref_label = QtWidgets.QLabel('%s:' % _("Ref. Point"))
         self.flip_ref_label.setToolTip(
@@ -315,12 +316,60 @@ class ToolTransform(FlatCAMTool):
         self.ois_flip = OptionalInputSection(self.flip_ref_cb, [self.flip_ref_entry, self.flip_ref_button], logic=True)
 
         hlay1 = QtWidgets.QHBoxLayout()
-        self.transform_lay.addLayout(hlay1)
+        grid0.addLayout(hlay1, 19, 0, 1, 3)
 
         hlay1.addWidget(self.flip_ref_label)
         hlay1.addWidget(self.flip_ref_entry)
 
-        self.transform_lay.addWidget(self.flip_ref_button)
+        grid0.addWidget(self.flip_ref_button, 20, 0, 1, 3)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 21, 0, 1, 3)
+
+        # ## Buffer Title
+        buffer_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.bufferName)
+        grid0.addWidget(buffer_title_label, 22, 0, 1, 3)
+
+        self.buffer_label = QtWidgets.QLabel('%s:' % _("Distance"))
+        self.buffer_label.setToolTip(
+            _("A positive value will create the effect of dilation,\n"
+              "while a negative value will create the effect of erosion.\n"
+              "Each geometry element of the object will be increased\n"
+              "or decreased with the 'distance'.")
+        )
+
+        self.buffer_entry = FCDoubleSpinner()
+        self.buffer_entry.set_precision(self.decimals)
+        self.buffer_entry.setSingleStep(0.1)
+        self.buffer_entry.setWrapping(True)
+        self.buffer_entry.set_range(-9999.9999, 9999.9999)
+
+        # self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self.buffer_button = FCButton()
+        self.buffer_button.set_value(_("Buffer"))
+        self.buffer_button.setToolTip(
+            _("Create the buffer effect on each geometry,\n"
+              "element from the selected object.")
+        )
+        self.buffer_button.setMinimumWidth(90)
+
+        grid0.addWidget(self.buffer_label, 23, 0)
+        grid0.addWidget(self.buffer_entry, 23, 1)
+        grid0.addWidget(self.buffer_button, 23, 2)
+
+        self.buffer_rounded_cb = FCCheckBox()
+        self.buffer_rounded_cb.setText('%s' % _("Rounded"))
+        self.buffer_rounded_cb.setToolTip(
+            _("If checked then the buffer will surround the buffered shape,\n"
+              "every corner will be rounded.\n"
+              "If not checked then the buffer will follow the exact geometry\n"
+              "of the buffered shape.")
+        )
+
+        grid0.addWidget(self.buffer_rounded_cb, 24, 0, 1, 3)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 25, 0, 1, 3)
+
         self.transform_lay.addStretch()
 
         # ## Signals
@@ -334,14 +383,16 @@ class ToolTransform(FlatCAMTool):
         self.flipx_button.clicked.connect(self.on_flipx)
         self.flipy_button.clicked.connect(self.on_flipy)
         self.flip_ref_button.clicked.connect(self.on_flip_add_coords)
+        self.buffer_button.clicked.connect(self.on_buffer)
 
-        self.rotate_entry.returnPressed.connect(self.on_rotate)
-        self.skewx_entry.returnPressed.connect(self.on_skewx)
-        self.skewy_entry.returnPressed.connect(self.on_skewy)
-        self.scalex_entry.returnPressed.connect(self.on_scalex)
-        self.scaley_entry.returnPressed.connect(self.on_scaley)
-        self.offx_entry.returnPressed.connect(self.on_offx)
-        self.offy_entry.returnPressed.connect(self.on_offy)
+        # self.rotate_entry.returnPressed.connect(self.on_rotate)
+        # self.skewx_entry.returnPressed.connect(self.on_skewx)
+        # self.skewy_entry.returnPressed.connect(self.on_skewy)
+        # self.scalex_entry.returnPressed.connect(self.on_scalex)
+        # self.scaley_entry.returnPressed.connect(self.on_scaley)
+        # self.offx_entry.returnPressed.connect(self.on_offx)
+        # self.offy_entry.returnPressed.connect(self.on_offy)
+        # self.buffer_entry.returnPressed.connect(self.on_buffer)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolTransform()")
@@ -430,6 +481,16 @@ class ToolTransform(FlatCAMTool):
         else:
             self.flip_ref_entry.set_value((0, 0))
 
+        if self.app.defaults["tools_transform_buffer_dis"]:
+            self.buffer_entry.set_value(self.app.defaults["tools_transform_buffer_dis"])
+        else:
+            self.buffer_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_buffer_corner"]:
+            self.buffer_rounded_cb.set_value(self.app.defaults["tools_transform_buffer_corner"])
+        else:
+            self.buffer_rounded_cb.set_value(True)
+
     def on_rotate(self):
         value = float(self.rotate_entry.get_value())
         if value == 0:
@@ -511,8 +572,7 @@ class ToolTransform(FlatCAMTool):
     def on_offx(self):
         value = float(self.offx_entry.get_value())
         if value == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Offset transformation can not be done for a value of 0."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset transformation can not be done for a value of 0."))
             return
         axis = 'X'
 
@@ -522,12 +582,18 @@ class ToolTransform(FlatCAMTool):
     def on_offy(self):
         value = float(self.offy_entry.get_value())
         if value == 0:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Offset transformation can not be done for a value of 0."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Offset transformation can not be done for a value of 0."))
             return
         axis = 'Y'
 
         self.app.worker_task.emit({'fcn': self.on_offset, 'params': [axis, value]})
+        return
+
+    def on_buffer(self):
+        value = self.buffer_entry.get_value()
+        join = 1 if self.buffer_rounded_cb.get_value() else 2
+
+        self.app.worker_task.emit({'fcn': self.on_buffer_action, 'params': [value, join]})
         return
 
     def on_rotate_action(self, num):
@@ -804,6 +870,42 @@ class ToolTransform(FlatCAMTool):
                     self.app.progress.emit(100)
 
                 except Exception as e:
+                    self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
+                                         (_("Due of"), str(e),  _("action was not executed.")))
+                    return
+
+    def on_buffer_action(self, value, join):
+        obj_list = self.app.collection.get_selected()
+
+        if not obj_list:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No object selected. Please Select an object to buffer!"))
+            return
+        else:
+            with self.app.proc_container.new(_("Applying Buffer")):
+                try:
+                    for sel_obj in obj_list:
+                        if isinstance(sel_obj, FlatCAMCNCjob):
+                            self.app.inform.emit(_("CNCJob objects can't be buffered."))
+                        elif sel_obj.kind.lower() == 'gerber':
+                            sel_obj.buffer(value, join)
+                            sel_obj.source_file = self.app.export_gerber(obj_name=sel_obj.options['name'],
+                                                                         filename=None, local_use=sel_obj,
+                                                                         use_thread=False)
+                        elif sel_obj.kind.lower() == 'excellon':
+                            sel_obj.buffer(value, join)
+                            sel_obj.source_file = self.app.export_excellon(obj_name=sel_obj.options['name'],
+                                                                           filename=None, local_use=sel_obj,
+                                                                           use_thread=False)
+                        elif sel_obj.kind.lower() == 'geometry':
+                            sel_obj.buffer(value, join)
+
+                        self.app.object_changed.emit(sel_obj)
+                        sel_obj.plot()
+
+                    self.app.inform.emit('[success] %s...' % _('Buffer done'))
+
+                except Exception as e:
+                    self.app.log.debug("ToolTransform.on_buffer_action() --> %s" % str(e))
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
                                          (_("Due of"), str(e),  _("action was not executed.")))
                     return

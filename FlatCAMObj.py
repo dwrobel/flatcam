@@ -128,6 +128,9 @@ class FlatCAMObj(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
+        # Flag to show if a selection shape is drawn
+        self.selection_shape_drawn = False
+
         # self.units = 'IN'
         self.units = self.app.defaults['units']
 
@@ -596,7 +599,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        Gerber.__init__(self, steps_per_circle=int(self.app.defaults["gerber_circle_steps"]))
+        self.circle_steps = int(self.app.defaults["gerber_circle_steps"])
+
+        Gerber.__init__(self, steps_per_circle=self.circle_steps)
         FlatCAMObj.__init__(self, name)
 
         self.kind = "gerber"
@@ -2196,6 +2201,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         Gerber.skew(self, angle_x=angle_x, angle_y=angle_y, point=point)
         self.replotApertures.emit()
 
+    def buffer(self, distance, join):
+        Gerber.buffer(self, distance=distance, join=join)
+        self.replotApertures.emit()
+
     def serialize(self):
         return {
             "options": self.options,
@@ -2214,7 +2223,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        Excellon.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
+        self.circle_steps = int(self.app.defaults["geometry_circle_steps"])
+
+        Excellon.__init__(self, geo_steps_per_circle=self.circle_steps)
         FlatCAMObj.__init__(self, name)
 
         self.kind = "excellon"
@@ -3542,8 +3553,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
     def __init__(self, name):
         self.decimals = self.app.decimals
+
+        self.circle_steps = int(self.app.defaults["geometry_circle_steps"])
+
         FlatCAMObj.__init__(self, name)
-        Geometry.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
+        Geometry.__init__(self, geo_steps_per_circle=self.circle_steps)
 
         self.kind = "geometry"
 
@@ -3865,15 +3879,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if def_key == opt_key:
                     self.default_data[def_key] = deepcopy(opt_val)
 
-        try:
-            temp_tools = self.options["cnctooldia"].split(",")
-            tools_list = [
-                float(eval(dia)) for dia in temp_tools if dia != ''
-            ]
-        except Exception as e:
-            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Geometry General -> "
-                      "Tool dia. %s" % str(e))
-            return
+        if type(self.options["cnctooldia"]) == float:
+            tools_list = [self.options["cnctooldia"]]
+        else:
+            try:
+                temp_tools = self.options["cnctooldia"].split(",")
+                tools_list = [
+                    float(eval(dia)) for dia in temp_tools if dia != ''
+                ]
+            except Exception as e:
+                log.error("FlatCAMGeometry.set_ui() -> At least one tool diameter needed. "
+                          "Verify in Edit -> Preferences -> Geometry General -> Tool dia. %s" % str(e))
+                return
 
         self.tooluid += 1
 

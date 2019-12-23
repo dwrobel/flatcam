@@ -830,6 +830,8 @@ class App(QtCore.QObject):
             "tools_transform_offset_y": 0.0,
             "tools_transform_mirror_reference": False,
             "tools_transform_mirror_point": (0, 0),
+            "tools_transform_buffer_dis": 0.0,
+            "tools_transform_buffer_corner": True,
 
             # SolderPaste Tool
             "tools_solderpaste_tools": "1.0, 0.3",
@@ -1432,6 +1434,8 @@ class App(QtCore.QObject):
             "tools_transform_offset_y": self.ui.tools_defaults_form.tools_transform_group.offy_entry,
             "tools_transform_mirror_reference": self.ui.tools_defaults_form.tools_transform_group.mirror_reference_cb,
             "tools_transform_mirror_point": self.ui.tools_defaults_form.tools_transform_group.flip_ref_entry,
+            "tools_transform_buffer_dis": self.ui.tools_defaults_form.tools_transform_group.buffer_entry,
+            "tools_transform_buffer_corner": self.ui.tools_defaults_form.tools_transform_group.buffer_rounded_cb,
 
             # SolderPaste Dispensing Tool
             "tools_solderpaste_tools": self.ui.tools_defaults_form.tools_solderpaste_group.nozzle_tool_dia_entry,
@@ -8852,12 +8856,14 @@ class App(QtCore.QObject):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
+                                obj.selection_shape_drawn = True
                             self.collection.set_active(obj.options['name'])
                     else:
                         if poly_selection.intersects(poly_obj):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
+                                obj.selection_shape_drawn = True
                             self.collection.set_active(obj.options['name'])
             except Exception as e:
                 # the Exception here will happen if we try to select on screen and we have an newly (and empty)
@@ -8904,20 +8910,26 @@ class App(QtCore.QObject):
                         # create the selection box around the selected object
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
+                            curr_sel_obj.selection_shape_drawn = True
 
-                    elif self.collection.get_active().options['name'] not in objects_under_the_click_list:
+                    elif curr_sel_obj.options['name'] not in objects_under_the_click_list:
                         self.on_objects_selection(False)
                         self.delete_selection_shape()
+                        curr_sel_obj.selection_shape_drawn = False
 
                         self.collection.set_active(objects_under_the_click_list[0])
                         curr_sel_obj = self.collection.get_active()
-
                         # create the selection box around the selected object
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
+                            curr_sel_obj.selection_shape_drawn = True
 
                         self.selected_message(curr_sel_obj=curr_sel_obj)
 
+                    elif curr_sel_obj.selection_shape_drawn is False:
+                        if self.defaults['global_selection_shape'] is True:
+                            self.draw_selection_shape(curr_sel_obj)
+                            curr_sel_obj.selection_shape_drawn = True
                     else:
                         self.on_objects_selection(False)
                         self.delete_selection_shape()
@@ -8932,6 +8944,7 @@ class App(QtCore.QObject):
                     # make active the first element of the overlapped objects list
                     if self.collection.get_active() is None:
                         self.collection.set_active(objects_under_the_click_list[0])
+                        objects_under_the_click_list[0].selection_shape_drawn = True
 
                     name_sel_obj = self.collection.get_active().options['name']
                     # In case that there is a selected object but it is not in the overlapped object list
@@ -8949,9 +8962,12 @@ class App(QtCore.QObject):
                     curr_sel_obj = self.collection.get_active()
                     # delete the possible selection box around a possible selected object
                     self.delete_selection_shape()
+                    curr_sel_obj.selection_shape_drawn = False
+
                     # create the selection box around the selected object
                     if self.defaults['global_selection_shape'] is True:
                         self.draw_selection_shape(curr_sel_obj)
+                        curr_sel_obj.selection_shape_drawn = True
 
                     self.selected_message(curr_sel_obj=curr_sel_obj)
 
@@ -8960,6 +8976,9 @@ class App(QtCore.QObject):
                 self.on_objects_selection(False)
                 # delete the possible selection box around a possible selected object
                 self.delete_selection_shape()
+
+                for o in self.collection.get_list():
+                    o.selection_shape_drawn = False
 
                 # and as a convenience move the focus to the Project tab because Selected tab is now empty but
                 # only when working on App
@@ -11512,26 +11531,28 @@ class App(QtCore.QObject):
         App.log.debug(" **************** Started PROEJCT loading... **************** ")
 
         for obj in d['objs']:
-            def obj_init(obj_inst, app_inst):
+            try:
+                def obj_init(obj_inst, app_inst):
 
-                obj_inst.from_dict(obj)
+                    obj_inst.from_dict(obj)
 
-            App.log.debug("Recreating from opened project an %s object: %s" %
-                          (obj['kind'].capitalize(), obj['options']['name']))
+                App.log.debug("Recreating from opened project an %s object: %s" %
+                              (obj['kind'].capitalize(), obj['options']['name']))
 
-            # for some reason, setting ui_title does not work when this method is called from Tcl Shell
-            # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
-            if cli is None:
-                self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
-                                                          obj['kind'].upper(),
-                                                          obj['options']['name']
-                                                          )
-                                  )
+                # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+                # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+                if cli is None:
+                    self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
+                                                              obj['kind'].upper(),
+                                                              obj['options']['name']
+                                                              )
+                                      )
 
-            self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
+                self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
+            except Exception as e:
+                print('App.open_project() --> ' + str(e))
 
-        self.inform.emit('[success] %s: %s' %
-                         (_("Project loaded from"), filename))
+        self.inform.emit('[success] %s: %s' % (_("Project loaded from"), filename))
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
@@ -12365,7 +12386,10 @@ class App(QtCore.QObject):
         new_color = self.defaults['global_plot_fill']
         act_name = self.sender().text().lower()
 
-        sel_obj = self.collection.get_active()
+        sel_obj_list = self.collection.get_selected()
+
+        if not sel_obj_list:
+            return
 
         if act_name == 'red':
             new_color = '#FF0000' + \
@@ -12397,22 +12421,22 @@ class App(QtCore.QObject):
             new_color = str(plot_fill_color.name()) + \
                         str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
 
-        if self.is_legacy is False:
-            new_line_color = color_variant(new_color[:7], 0.7)
-            sel_obj.fill_color = new_color
-            sel_obj.outline_color = new_line_color
+        new_line_color = color_variant(new_color[:7], 0.7)
 
-            sel_obj.shapes.redraw(
-                update_colors=(new_color, new_line_color)
-            )
-        else:
-            new_line_color = color_variant(new_color[:7], 0.7)
+        for sel_obj in sel_obj_list:
+            if self.is_legacy is False:
+                sel_obj.fill_color = new_color
+                sel_obj.outline_color = new_line_color
 
-            sel_obj.fill_color = new_color
-            sel_obj.outline_color = new_line_color
-            sel_obj.shapes.redraw(
-                update_colors=(new_color, new_line_color)
-            )
+                sel_obj.shapes.redraw(
+                    update_colors=(new_color, new_line_color)
+                )
+            else:
+                sel_obj.fill_color = new_color
+                sel_obj.outline_color = new_line_color
+                sel_obj.shapes.redraw(
+                    update_colors=(new_color, new_line_color)
+                )
 
     def on_grid_snap_triggered(self, state):
         if state:
