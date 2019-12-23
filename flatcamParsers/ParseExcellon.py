@@ -1458,3 +1458,34 @@ class Excellon(Geometry):
 
         self.create_geometry()
         self.app.proc_container.new_text = ''
+
+    def buffer(self, distance, join):
+        """
+
+        :param distance:
+        :param join:
+        :return:
+        """
+        log.debug("flatcamParsers.ParseExcellon.Excellon.buffer()")
+
+        if distance == 0:
+            return
+
+        def buffer_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(buffer_geom(g))
+                return new_obj
+            else:
+                try:
+                    return obj.buffer(distance, resolution=self.geo_steps_per_circle)
+                except AttributeError:
+                    return obj
+
+        # buffer solid_geometry
+        for tool, tool_dict in list(self.tools.items()):
+            self.tools[tool]['solid_geometry'] = buffer_geom(tool_dict['solid_geometry'])
+            self.tools[tool]['C'] += distance
+
+        self.create_geometry()

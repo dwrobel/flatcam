@@ -599,7 +599,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        Gerber.__init__(self, steps_per_circle=int(self.app.defaults["gerber_circle_steps"]))
+        self.circle_steps = int(self.app.defaults["gerber_circle_steps"])
+
+        Gerber.__init__(self, steps_per_circle=self.circle_steps)
         FlatCAMObj.__init__(self, name)
 
         self.kind = "gerber"
@@ -2199,6 +2201,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         Gerber.skew(self, angle_x=angle_x, angle_y=angle_y, point=point)
         self.replotApertures.emit()
 
+    def buffer(self, distance, join):
+        Gerber.buffer(self, distance=distance, join=join)
+        self.replotApertures.emit()
+
     def serialize(self):
         return {
             "options": self.options,
@@ -2217,7 +2223,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def __init__(self, name):
         self.decimals = self.app.decimals
 
-        Excellon.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
+        self.circle_steps = int(self.app.defaults["geometry_circle_steps"])
+
+        Excellon.__init__(self, geo_steps_per_circle=self.circle_steps)
         FlatCAMObj.__init__(self, name)
 
         self.kind = "excellon"
@@ -3545,8 +3553,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
     def __init__(self, name):
         self.decimals = self.app.decimals
+
+        self.circle_steps = int(self.app.defaults["geometry_circle_steps"])
+
         FlatCAMObj.__init__(self, name)
-        Geometry.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
+        Geometry.__init__(self, geo_steps_per_circle=self.circle_steps)
 
         self.kind = "geometry"
 

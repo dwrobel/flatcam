@@ -787,11 +787,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # FlatCAMApp.App.log.debug("Current: %s, Previous %s" % (str(current), str(previous)))
 
         try:
-            # delete selection shape
-            self.app.delete_selection_shape()
-            for o in self.get_list():
-                o.selection_shape_drawn = False
-
             obj = current.indexes()[0].internalPointer().obj
             self.item_selected.emit(obj.options['name'])
 
