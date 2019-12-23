@@ -16,6 +16,9 @@ CAD program, and create G-Code for Isolation routing.
 - when Printing as PDF Gerber objects now the rendered color is the print color
 - speed up the plotting in OpenGL(3D) graphic mode
 - spped up the color setting for Gerber object when using the OpenGL(3D) graphic mode
+- setting color for Gerber objects work on a selection of Gerber objects
+- when the selection is changed in the Project Tree the selection shape on canvas is deleted
+- if an object is selected on Project Tree and it does not have the selection shape drawn, first click on canvas over it will draw the selection shape 
 
 22.12.2019
 

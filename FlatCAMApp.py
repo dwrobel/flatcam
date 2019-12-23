@@ -8904,20 +8904,26 @@ class App(QtCore.QObject):
                         # create the selection box around the selected object
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
+                            curr_sel_obj.selection_shape_drawn = True
 
-                    elif self.collection.get_active().options['name'] not in objects_under_the_click_list:
+                    elif curr_sel_obj.options['name'] not in objects_under_the_click_list:
                         self.on_objects_selection(False)
                         self.delete_selection_shape()
+                        curr_sel_obj.selection_shape_drawn = False
 
                         self.collection.set_active(objects_under_the_click_list[0])
                         curr_sel_obj = self.collection.get_active()
-
                         # create the selection box around the selected object
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
+                            curr_sel_obj.selection_shape_drawn = True
 
                         self.selected_message(curr_sel_obj=curr_sel_obj)
 
+                    elif curr_sel_obj.selection_shape_drawn is False:
+                        if self.defaults['global_selection_shape'] is True:
+                            self.draw_selection_shape(curr_sel_obj)
+                            curr_sel_obj.selection_shape_drawn = True
                     else:
                         self.on_objects_selection(False)
                         self.delete_selection_shape()
@@ -8932,6 +8938,7 @@ class App(QtCore.QObject):
                     # make active the first element of the overlapped objects list
                     if self.collection.get_active() is None:
                         self.collection.set_active(objects_under_the_click_list[0])
+                        objects_under_the_click_list[0].selection_shape_drawn = True
 
                     name_sel_obj = self.collection.get_active().options['name']
                     # In case that there is a selected object but it is not in the overlapped object list
@@ -8949,9 +8956,12 @@ class App(QtCore.QObject):
                     curr_sel_obj = self.collection.get_active()
                     # delete the possible selection box around a possible selected object
                     self.delete_selection_shape()
+                    curr_sel_obj.selection_shape_drawn = False
+
                     # create the selection box around the selected object
                     if self.defaults['global_selection_shape'] is True:
                         self.draw_selection_shape(curr_sel_obj)
+                        curr_sel_obj.selection_shape_drawn = True
 
                     self.selected_message(curr_sel_obj=curr_sel_obj)
 
@@ -8960,6 +8970,9 @@ class App(QtCore.QObject):
                 self.on_objects_selection(False)
                 # delete the possible selection box around a possible selected object
                 self.delete_selection_shape()
+
+                for o in self.collection.get_list():
+                    o.selection_shape_drawn = False
 
                 # and as a convenience move the focus to the Project tab because Selected tab is now empty but
                 # only when working on App
@@ -12365,7 +12378,10 @@ class App(QtCore.QObject):
         new_color = self.defaults['global_plot_fill']
         act_name = self.sender().text().lower()
 
-        sel_obj = self.collection.get_active()
+        sel_obj_list = self.collection.get_selected()
+
+        if not sel_obj_list:
+            return
 
         if act_name == 'red':
             new_color = '#FF0000' + \
@@ -12397,22 +12413,22 @@ class App(QtCore.QObject):
             new_color = str(plot_fill_color.name()) + \
                         str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
 
-        if self.is_legacy is False:
-            new_line_color = color_variant(new_color[:7], 0.7)
-            sel_obj.fill_color = new_color
-            sel_obj.outline_color = new_line_color
+        new_line_color = color_variant(new_color[:7], 0.7)
 
-            sel_obj.shapes.redraw(
-                update_colors=(new_color, new_line_color)
-            )
-        else:
-            new_line_color = color_variant(new_color[:7], 0.7)
+        for sel_obj in sel_obj_list:
+            if self.is_legacy is False:
+                sel_obj.fill_color = new_color
+                sel_obj.outline_color = new_line_color
 
-            sel_obj.fill_color = new_color
-            sel_obj.outline_color = new_line_color
-            sel_obj.shapes.redraw(
-                update_colors=(new_color, new_line_color)
-            )
+                sel_obj.shapes.redraw(
+                    update_colors=(new_color, new_line_color)
+                )
+            else:
+                sel_obj.fill_color = new_color
+                sel_obj.outline_color = new_line_color
+                sel_obj.shapes.redraw(
+                    update_colors=(new_color, new_line_color)
+                )
 
     def on_grid_snap_triggered(self, state):
         if state:

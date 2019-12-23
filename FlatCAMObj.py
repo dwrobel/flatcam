@@ -128,6 +128,9 @@ class FlatCAMObj(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
+        # Flag to show if a selection shape is drawn
+        self.selection_shape_drawn = False
+
         # self.units = 'IN'
         self.units = self.app.defaults['units']
 
