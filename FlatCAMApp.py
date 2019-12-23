@@ -8852,12 +8852,14 @@ class App(QtCore.QObject):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
+                                obj.selection_shape_drawn = True
                             self.collection.set_active(obj.options['name'])
                     else:
                         if poly_selection.intersects(poly_obj):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
+                                obj.selection_shape_drawn = True
                             self.collection.set_active(obj.options['name'])
             except Exception as e:
                 # the Exception here will happen if we try to select on screen and we have an newly (and empty)
