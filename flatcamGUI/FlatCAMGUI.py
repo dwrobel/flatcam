@@ -656,8 +656,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuproject_green = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/green32.png'), _('Green'))
 
-        self.menuproject_violet = self.menuprojectcolor.addAction(
-            QtGui.QIcon(self.app.resource_location + '/violet32.png'), _('Violet'))
+        self.menuproject_purple = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/violet32.png'), _('Purple'))
 
         self.menuproject_brown = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/brown32.png'), _('Brown'))

@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.12.2019
+
+- some fixes in the Legacy(2D) graphic mode regarding the possibility of changing the color of the Gerber objects
+- added a method to darken the outline color for Gerber objects when they have the color set
+- when Printing as PDF Gerber objects now the rendered color is the print color
+
 22.12.2019
 
 - added a new option for the Gerber objects: on the project context menu now can be chosen a color for the selected Gerber object

@@ -1355,3 +1355,33 @@ class ToolsDB(QtWidgets.QWidget):
 
     def closeEvent(self, QCloseEvent):
         super().closeEvent(QCloseEvent)
+
+
+def color_variant(hex_color, bright_factor=1):
+    """
+    Takes a color in HEX format #FF00FF and produces a lighter or darker variant
+
+    :param hex_color:           color to change
+    :param bright_factor:   factor to change the color brightness [0 ... 1]
+    :return:                    modified color
+    """
+
+    if len(hex_color) != 7:
+        print("Color is %s, but needs to be in #FF00FF format. Returning original color." % hex_color)
+        return hex_color
+
+    if bright_factor > 1.0:
+        bright_factor = 1.0
+    if bright_factor < 0.0:
+        bright_factor = 0.0
+
+    rgb_hex = [hex_color[x:x + 2] for x in [1, 3, 5]]
+    new_rgb = list()
+    for hex_value in rgb_hex:
+        # adjust each color channel and turn it into a INT suitable as argument for hex()
+        mod_color = round(int(hex_value, 16) * bright_factor)
+        # make sure that each color channel has two digits without the 0x prefix
+        mod_color_hex = str(hex(mod_color)[2:]).zfill(2)
+        new_rgb.append(mod_color_hex)
+
+    return "#" + "".join([i for i in new_rgb])
