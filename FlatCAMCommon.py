@@ -1007,7 +1007,16 @@ class ToolsDB(QtWidgets.QWidget):
 
         dict_elem = dict()
         dict_elem['name'] = 'new_tool'
-        dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
+        if type(self.app.defaults["geometry_cnctooldia"]) == float:
+            dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
+        else:
+            try:
+                tools_string = self.defaults["geometry_cnctooldia"].split(",")
+                tools_diameters = [eval(a) for a in tools_string if a != '']
+                dict_elem['tooldia'] = tools_diameters[0] if tools_diameters else 0.0
+            except Exception as e:
+                self.app.log.debug("ToolDB.build_db_ui.on_tool_add() --> %s" % str(e))
+
         dict_elem['offset'] = 'Path'
         dict_elem['offset_value'] = 0.0
         dict_elem['type'] = 'Rough'

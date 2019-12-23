@@ -3588,7 +3588,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         })
 
         if "cnctooldia" not in self.options:
-            self.options["cnctooldia"] = self.app.defaults["geometry_cnctooldia"]
+            if type(self.app.defaults["geometry_cnctooldia"]) == float:
+                self.options["cnctooldia"] = self.app.defaults["geometry_cnctooldia"]
+            else:
+                try:
+                    tools_string = self.app.defaults["geometry_cnctooldia"].split(",")
+                    tools_diameters = [eval(a) for a in tools_string if a != '']
+                    self.options["cnctooldia"] = tools_diameters[0] if tools_diameters else 0.0
+                except Exception as e:
+                    log.debug("FlatCAMObj.FlatCAMGeometry.init() --> %s" % str(e))
 
         self.options["startz"] = self.app.defaults["geometry_startz"]
 

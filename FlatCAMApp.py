@@ -5831,51 +5831,64 @@ class App(QtCore.QObject):
                     self.defaults['geometry_toolchangexy'] = "%.*f, %.*f" % (self.decimals, coords_xy[0],
                                                                              self.decimals, coords_xy[1])
                 elif dim == 'geometry_cnctooldia':
-                    tools_diameters = []
-                    try:
-                        tools_string = self.defaults["geometry_cnctooldia"].split(",")
-                        tools_diameters = [eval(a) for a in tools_string if a != '']
-                    except Exception as e:
-                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
-                        continue
+                    if type(self.defaults["geometry_cnctooldia"]) == float:
+                        tools_diameters = [self.defaults["geometry_cnctooldia"]]
+                    else:
+                        try:
+                            tools_string = self.defaults["geometry_cnctooldia"].split(",")
+                            tools_diameters = [eval(a) for a in tools_string if a != '']
+                        except Exception as e:
+                            log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+                            continue
 
                     self.defaults['geometry_cnctooldia'] = ''
                     for t in range(len(tools_diameters)):
                         tools_diameters[t] *= sfactor
                         self.defaults['geometry_cnctooldia'] += "%.*f," % (self.decimals, tools_diameters[t])
                 elif dim == 'tools_ncctools':
-                    ncctools = []
-                    try:
-                        tools_string = self.defaults["tools_ncctools"].split(",")
-                        ncctools = [eval(a) for a in tools_string if a != '']
-                    except Exception as e:
-                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
-                        continue
+                    ncctools = list()
+                    if type(self.defaults["tools_ncctools"]) == float:
+                        ncctools = [self.defaults["tools_ncctools"]]
+                    else:
+                        try:
+                            tools_string = self.defaults["tools_ncctools"].split(",")
+                            ncctools = [eval(a) for a in tools_string if a != '']
+                        except Exception as e:
+                            log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+                            continue
 
                     self.defaults['tools_ncctools'] = ''
                     for t in range(len(ncctools)):
                         ncctools[t] *= sfactor
                         self.defaults['tools_ncctools'] += "%.*f," % (self.decimals, ncctools[t])
                 elif dim == 'tools_solderpaste_tools':
-                    sptools = []
-                    try:
-                        tools_string = self.defaults["tools_solderpaste_tools"].split(",")
-                        sptools = [eval(a) for a in tools_string if a != '']
-                    except Exception as e:
-                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
-                        continue
+                    sptools = list()
+                    if type(self.defaults["tools_solderpaste_tools"]) == float:
+                        sptools = [self.defaults["tools_solderpaste_tools"]]
+                    else:
+                        try:
+                            tools_string = self.defaults["tools_solderpaste_tools"].split(",")
+                            sptools = [eval(a) for a in tools_string if a != '']
+                        except Exception as e:
+                            log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+                            continue
 
                     self.defaults['tools_solderpaste_tools'] = ""
                     for t in range(len(sptools)):
                         sptools[t] *= sfactor
                         self.defaults['tools_solderpaste_tools'] += "%.*f," % (self.decimals, sptools[t])
                 elif dim == 'tools_solderpaste_xy_toolchange':
-                    coordinates = self.defaults["tools_solderpaste_xy_toolchange"].split(",")
-                    sp_coords = [float(eval(a)) for a in coordinates if a != '']
-                    sp_coords[0] *= sfactor
-                    sp_coords[1] *= sfactor
-                    self.defaults['tools_solderpaste_xy_toolchange'] = "%.*f, %.*f" % (self.decimals, sp_coords[0],
-                                                                                       self.decimals, sp_coords[1])
+                    try:
+                        coordinates = self.defaults["tools_solderpaste_xy_toolchange"].split(",")
+                        sp_coords = [float(eval(a)) for a in coordinates if a != '']
+                        sp_coords[0] *= sfactor
+                        sp_coords[1] *= sfactor
+                        self.defaults['tools_solderpaste_xy_toolchange'] = "%.*f, %.*f" % (self.decimals, sp_coords[0],
+                                                                                           self.decimals, sp_coords[1])
+                    except Exception as e:
+                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+                        continue
+
                 elif dim == 'global_gridx' or dim == 'global_gridy':
                     if new_units == 'IN':
                         val = 0.1

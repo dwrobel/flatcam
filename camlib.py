@@ -3466,11 +3466,20 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
+        if type(self.app.defaults["geometry_cnctooldia"]) == float:
+            default_dia = self.app.defaults["geometry_cnctooldia"]
+        else:
+            try:
+                tools_string = self.defaults["geometry_cnctooldia"].split(",")
+                tools_diameters = [eval(a) for a in tools_string if a != '']
+                default_dia = tools_diameters[0] if tools_diameters else 0.0
+            except Exception as e:
+                self.app.log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
+
         try:
-            self.tooldia = float(tooldia) if tooldia else self.app.defaults["geometry_cnctooldia"]
+            self.tooldia = float(tooldia) if tooldia else default_dia
         except ValueError:
-            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia is not None else \
-                self.app.defaults["geometry_cnctooldia"]
+            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia is not None else default_dia
 
         self.z_cut = float(z_cut) if z_cut is not None else self.app.defaults["geometry_cutz"]
         self.z_move = float(z_move) if z_move is not None else self.app.defaults["geometry_travelz"]
