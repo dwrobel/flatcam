@@ -957,9 +957,17 @@ class ShapeCollectionLegacy:
         :param linewidth: the width of the line
         :return:
         """
-        self._color = color[:-2] if color is not None else None
-        self._face_color = face_color[:-2] if face_color is not None else None
-        self._alpha = int(face_color[-2:], 16) / 255 if face_color is not None else 0.75
+        self._color = color if color is not None else "#006E20"
+        self._face_color = face_color if face_color is not None else "#BBF268"
+
+        if len(self._color) > 7:
+            self._color = self._color[:7]
+
+        if len(self._face_color) > 7:
+            self._face_color = self._face_color[:7]
+            # self._alpha = int(self._face_color[-2:], 16) / 255
+
+        self._alpha = 0.75
 
         if alpha is not None:
             self._alpha = alpha

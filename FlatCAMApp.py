@@ -56,7 +56,7 @@ from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
 
-from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB
+from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB, color_variant
 from FlatCAMPostProc import load_preprocessors
 
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
@@ -10452,7 +10452,8 @@ class App(QtCore.QObject):
                                      mirror=None)
 
             if obj.kind.lower() == 'gerber':
-                color = self.defaults["global_plot_fill"][:-2]
+                # color = self.defaults["global_plot_fill"][:-2]
+                color = obj.fill_color[:-2]
             elif obj.kind.lower() == 'excellon':
                 color = '#C40000'
             elif obj.kind.lower() == 'geometry':
@@ -12378,7 +12379,7 @@ class App(QtCore.QObject):
         if act_name == 'green':
             new_color = '#00FF00' + \
                         str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'violet':
+        if act_name == 'purple':
             new_color = '#FF00FF' + \
                         str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
         if act_name == 'brown':
@@ -12397,7 +12398,7 @@ class App(QtCore.QObject):
                         str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
 
         if self.is_legacy is False:
-            new_line_color = new_color[:-2]
+            new_line_color = color_variant(new_color[:7], 0.7)
             sel_obj.fill_color = new_color
             sel_obj.outline_color = new_line_color
 
@@ -12405,7 +12406,7 @@ class App(QtCore.QObject):
                 update_colors=(new_color, new_line_color)
             )
         else:
-            new_line_color = new_color
+            new_line_color = color_variant(new_color[:7], 0.7)
 
             sel_obj.fill_color = new_color
             sel_obj.outline_color = new_line_color
