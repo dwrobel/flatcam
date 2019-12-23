@@ -21,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - if an object is selected on Project Tree and it does not have the selection shape drawn, first click on canvas over it will draw the selection shape 
 - in Tool Transform added a new feature named 'Buffer'. For Geometry and Gerber objects will create (and replace) a geometry at a distance from the original geometry and for Excellon will adjust the Tool diameters
 - solved issue #355 - when the tool diameter field in the Edit → Preferences → Geometry → Geometry General → Tools → Tool dia is only one the app failed to read it
+- solved issue #356 - in Tools DB can not be added more than one tool if a translation is active 
 
 22.12.2019
 
