@@ -321,6 +321,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         sel = len(self.view.selectedIndexes()) > 0
         self.app.ui.menuprojectenable.setEnabled(sel)
         self.app.ui.menuprojectdisable.setEnabled(sel)
+        self.app.ui.menuprojectcolor.setEnabled(sel)
         self.app.ui.menuprojectviewsource.setEnabled(sel)
 
         self.app.ui.menuprojectcopy.setEnabled(sel)
@@ -334,8 +335,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.ui.menuprojectedit.setVisible(True)
             self.app.ui.menuprojectsave.setVisible(True)
             self.app.ui.menuprojectviewsource.setVisible(True)
+            self.app.ui.menuprojectcolor.setEnabled(False)
 
             for obj in self.get_selected():
+                if type(obj) == FlatCAMGerber:
+                    self.app.ui.menuprojectcolor.setEnabled(True)
+
                 if type(obj) != FlatCAMGeometry:
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
                 if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMGerber:

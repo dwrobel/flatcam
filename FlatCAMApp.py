@@ -56,7 +56,7 @@ from flatcamGUI.PlotCanvas import *
 from flatcamGUI.PlotCanvasLegacy import *
 from flatcamGUI.FlatCAMGUI import *
 
-from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB
+from FlatCAMCommon import LoudDict, BookmarkManager, ToolsDB, color_variant
 from FlatCAMPostProc import load_preprocessors
 
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
@@ -830,6 +830,8 @@ class App(QtCore.QObject):
             "tools_transform_offset_y": 0.0,
             "tools_transform_mirror_reference": False,
             "tools_transform_mirror_point": (0, 0),
+            "tools_transform_buffer_dis": 0.0,
+            "tools_transform_buffer_corner": True,
 
             # SolderPaste Tool
             "tools_solderpaste_tools": "1.0, 0.3",
@@ -1038,6 +1040,7 @@ class App(QtCore.QObject):
         QtCore.QObject.__init__(self)
 
         self.ui = FlatCAMGUI(self)
+        self.on_grid_snap_triggered(state=True)
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -1431,6 +1434,8 @@ class App(QtCore.QObject):
             "tools_transform_offset_y": self.ui.tools_defaults_form.tools_transform_group.offy_entry,
             "tools_transform_mirror_reference": self.ui.tools_defaults_form.tools_transform_group.mirror_reference_cb,
             "tools_transform_mirror_point": self.ui.tools_defaults_form.tools_transform_group.flip_ref_entry,
+            "tools_transform_buffer_dis": self.ui.tools_defaults_form.tools_transform_group.buffer_entry,
+            "tools_transform_buffer_corner": self.ui.tools_defaults_form.tools_transform_group.buffer_rounded_cb,
 
             # SolderPaste Dispensing Tool
             "tools_solderpaste_tools": self.ui.tools_defaults_form.tools_solderpaste_group.nozzle_tool_dia_entry,
@@ -1939,6 +1944,10 @@ class App(QtCore.QObject):
 
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
 
+        # Project Context Menu -> Color Setting
+        for act in self.ui.menuprojectcolor.actions():
+            act.triggered.connect(self.on_set_color_action_triggered)
+
         # Preferences Plot Area TAB
         self.ui.pref_save_button.clicked.connect(lambda: self.on_save_button(save_to_file=True))
         self.ui.pref_apply_button.clicked.connect(lambda: self.on_save_button(save_to_file=False))
@@ -2023,7 +2032,7 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.clicked.connect(
             self.on_proj_color_dis_button)
 
-        # ############################# workspace setting signals #####################
+        # ############################# Workspace Setting Signals #####################
         self.ui.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.ui.general_defaults_form.general_gui_group.wk_orientation_radio.activated_custom.connect(
             self.on_workspace_modified
@@ -2152,6 +2161,8 @@ class App(QtCore.QObject):
 
         # signal emitted when a tab is closed in the Plot Area
         self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
+
+        self.ui.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
 
         # #####################################################################################
         # ########### FINISHED CONNECTING SIGNALS #############################################
@@ -4728,7 +4739,7 @@ class App(QtCore.QObject):
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 2, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "German"), 3, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu (Google-Tr)"), 3, 1)
-                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt, @detlefeckardt"), 3, 2)
+                self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Jens Karstedt, Detlef Eckardt"), 3, 2)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % " "), 3, 3)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Romanian"), 4, 0)
                 self.translator_grid_lay.addWidget(QtWidgets.QLabel('%s' % "Marius Stanciu"), 4, 1)
@@ -6079,6 +6090,7 @@ class App(QtCore.QObject):
         self.report_usage("on_toggle_grid()")
 
         self.ui.grid_snap_btn.trigger()
+        self.on_grid_snap_triggered(state=True)
 
     def on_toggle_grid_lines(self):
         self.report_usage("on_toggle_grd_lines()")
@@ -7019,6 +7031,8 @@ class App(QtCore.QObject):
         self.connect_toolbar_signals()
 
         self.ui.grid_snap_btn.setChecked(True)
+        self.on_grid_snap_triggered(state=True)
+
         self.ui.grid_gap_x_entry.setText(str(self.defaults["global_gridx"]))
         self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
         self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
@@ -8437,16 +8451,16 @@ class App(QtCore.QObject):
     def populate_cmenu_grids(self):
         units = self.defaults['units'].lower()
 
+        for act in self.ui.cmenu_gridmenu.actions():
+            act.triggered.disconnect()
         self.ui.cmenu_gridmenu.clear()
+
         sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
 
         grid_toggle = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon(self.resource_location + '/grid32_menu.png'),
                                                        _("Grid On/Off"))
         grid_toggle.setCheckable(True)
-        if self.grid_status() == True:
-            grid_toggle.setChecked(True)
-        else:
-            grid_toggle.setChecked(False)
+        grid_toggle.setChecked(True) if self.grid_status() else grid_toggle.setChecked(False)
 
         self.ui.cmenu_gridmenu.addSeparator()
         for grid in sorted_list:
@@ -8842,12 +8856,14 @@ class App(QtCore.QObject):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
+                                obj.selection_shape_drawn = True
                             self.collection.set_active(obj.options['name'])
                     else:
                         if poly_selection.intersects(poly_obj):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
+                                obj.selection_shape_drawn = True
                             self.collection.set_active(obj.options['name'])
             except Exception as e:
                 # the Exception here will happen if we try to select on screen and we have an newly (and empty)
@@ -8894,20 +8910,26 @@ class App(QtCore.QObject):
                         # create the selection box around the selected object
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
+                            curr_sel_obj.selection_shape_drawn = True
 
-                    elif self.collection.get_active().options['name'] not in objects_under_the_click_list:
+                    elif curr_sel_obj.options['name'] not in objects_under_the_click_list:
                         self.on_objects_selection(False)
                         self.delete_selection_shape()
+                        curr_sel_obj.selection_shape_drawn = False
 
                         self.collection.set_active(objects_under_the_click_list[0])
                         curr_sel_obj = self.collection.get_active()
-
                         # create the selection box around the selected object
                         if self.defaults['global_selection_shape'] is True:
                             self.draw_selection_shape(curr_sel_obj)
+                            curr_sel_obj.selection_shape_drawn = True
 
                         self.selected_message(curr_sel_obj=curr_sel_obj)
 
+                    elif curr_sel_obj.selection_shape_drawn is False:
+                        if self.defaults['global_selection_shape'] is True:
+                            self.draw_selection_shape(curr_sel_obj)
+                            curr_sel_obj.selection_shape_drawn = True
                     else:
                         self.on_objects_selection(False)
                         self.delete_selection_shape()
@@ -8922,6 +8944,7 @@ class App(QtCore.QObject):
                     # make active the first element of the overlapped objects list
                     if self.collection.get_active() is None:
                         self.collection.set_active(objects_under_the_click_list[0])
+                        objects_under_the_click_list[0].selection_shape_drawn = True
 
                     name_sel_obj = self.collection.get_active().options['name']
                     # In case that there is a selected object but it is not in the overlapped object list
@@ -8939,9 +8962,12 @@ class App(QtCore.QObject):
                     curr_sel_obj = self.collection.get_active()
                     # delete the possible selection box around a possible selected object
                     self.delete_selection_shape()
+                    curr_sel_obj.selection_shape_drawn = False
+
                     # create the selection box around the selected object
                     if self.defaults['global_selection_shape'] is True:
                         self.draw_selection_shape(curr_sel_obj)
+                        curr_sel_obj.selection_shape_drawn = True
 
                     self.selected_message(curr_sel_obj=curr_sel_obj)
 
@@ -8950,6 +8976,9 @@ class App(QtCore.QObject):
                 self.on_objects_selection(False)
                 # delete the possible selection box around a possible selected object
                 self.delete_selection_shape()
+
+                for o in self.collection.get_list():
+                    o.selection_shape_drawn = False
 
                 # and as a convenience move the focus to the Project tab because Selected tab is now empty but
                 # only when working on App
@@ -10442,7 +10471,8 @@ class App(QtCore.QObject):
                                      mirror=None)
 
             if obj.kind.lower() == 'gerber':
-                color = self.defaults["global_plot_fill"][:-2]
+                # color = self.defaults["global_plot_fill"][:-2]
+                color = obj.fill_color[:-2]
             elif obj.kind.lower() == 'excellon':
                 color = '#C40000'
             elif obj.kind.lower() == 'geometry':
@@ -11501,26 +11531,28 @@ class App(QtCore.QObject):
         App.log.debug(" **************** Started PROEJCT loading... **************** ")
 
         for obj in d['objs']:
-            def obj_init(obj_inst, app_inst):
+            try:
+                def obj_init(obj_inst, app_inst):
 
-                obj_inst.from_dict(obj)
+                    obj_inst.from_dict(obj)
 
-            App.log.debug("Recreating from opened project an %s object: %s" %
-                          (obj['kind'].capitalize(), obj['options']['name']))
+                App.log.debug("Recreating from opened project an %s object: %s" %
+                              (obj['kind'].capitalize(), obj['options']['name']))
 
-            # for some reason, setting ui_title does not work when this method is called from Tcl Shell
-            # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
-            if cli is None:
-                self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
-                                                          obj['kind'].upper(),
-                                                          obj['options']['name']
-                                                          )
-                                  )
+                # for some reason, setting ui_title does not work when this method is called from Tcl Shell
+                # it's because the TclCommand is run in another thread (it inherit TclCommandSignaled)
+                if cli is None:
+                    self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"),
+                                                              obj['kind'].upper(),
+                                                              obj['options']['name']
+                                                              )
+                                      )
 
-            self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
+                self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=plot)
+            except Exception as e:
+                print('App.open_project() --> ' + str(e))
 
-        self.inform.emit('[success] %s: %s' %
-                         (_("Project loaded from"), filename))
+        self.inform.emit('[success] %s: %s' % (_("Project loaded from"), filename))
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
@@ -12349,6 +12381,68 @@ class App(QtCore.QObject):
 
         # Clear pool to free memory
         self.clear_pool()
+
+    def on_set_color_action_triggered(self):
+        new_color = self.defaults['global_plot_fill']
+        act_name = self.sender().text().lower()
+
+        sel_obj_list = self.collection.get_selected()
+
+        if not sel_obj_list:
+            return
+
+        if act_name == 'red':
+            new_color = '#FF0000' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'blue':
+            new_color = '#0000FF' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'yellow':
+            new_color = '#FFDF00' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'green':
+            new_color = '#00FF00' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'purple':
+            new_color = '#FF00FF' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+        if act_name == 'brown':
+            new_color = '#A52A2A' + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+
+        if act_name == 'custom':
+            new_color = QtGui.QColor(self.defaults['global_plot_fill'][:7])
+            c_dialog = QtWidgets.QColorDialog()
+            plot_fill_color = c_dialog.getColor(initial=new_color)
+
+            if plot_fill_color.isValid() is False:
+                return
+
+            new_color = str(plot_fill_color.name()) + \
+                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+
+        new_line_color = color_variant(new_color[:7], 0.7)
+
+        for sel_obj in sel_obj_list:
+            if self.is_legacy is False:
+                sel_obj.fill_color = new_color
+                sel_obj.outline_color = new_line_color
+
+                sel_obj.shapes.redraw(
+                    update_colors=(new_color, new_line_color)
+                )
+            else:
+                sel_obj.fill_color = new_color
+                sel_obj.outline_color = new_line_color
+                sel_obj.shapes.redraw(
+                    update_colors=(new_color, new_line_color)
+                )
+
+    def on_grid_snap_triggered(self, state):
+        if state:
+            self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_filled_16.png'))
+        else:
+            self.ui.snap_infobar_label.setPixmap(QtGui.QPixmap(self.resource_location + '/snap_16.png'))
 
     def generate_cnc_job(self, objects):
         self.report_usage("generate_cnc_job()")

@@ -17,10 +17,9 @@ from flatcamGUI.VisPyTesselators import GLUTess
 
 
 class FlatCAMLineVisual(LineVisual):
-    def __init__(self, pos=None, color=(0.5, 0.5, 0.5, 1), width=1, connect='strip',
-                            method='gl', antialias=False):
-        LineVisual.__init__(self, pos=None, color=(0.5, 0.5, 0.5, 1), width=1, connect='strip',
-                            method='gl', antialias=True)
+    def __init__(self, pos=None, color=(0.5, 0.5, 0.5, 1), width=1, connect='strip', method='gl', antialias=False):
+        LineVisual.__init__(self, pos=pos, color=color, width=width, connect=connect,
+                            method=method, antialias=True)
 
     def clear_data(self):
         self._bounds = None
@@ -46,44 +45,48 @@ def _update_shape_buffers(data, triangulation='glu'):
     geo, color, face_color, tolerance = data['geometry'], data['color'], data['face_color'], data['tolerance']
 
     if geo is not None and not geo.is_empty:
-        simple = geo.simplify(tolerance) if tolerance else geo      # Simplified shape
-        pts = []                                                    # Shape line points
-        tri_pts = []                                                # Mesh vertices
-        tri_tris = []                                               # Mesh faces
+        simplified_geo = geo.simplify(tolerance) if tolerance else geo      # Simplified shape
+        pts = []                                                            # Shape line points
+        tri_pts = []                                                        # Mesh vertices
+        tri_tris = []                                                       # Mesh faces
 
         if type(geo) == LineString:
             # Prepare lines
-            pts = _linestring_to_segments(list(simple.coords))
+            pts = _linestring_to_segments(list(simplified_geo.coords))
 
         elif type(geo) == LinearRing:
             # Prepare lines
-            pts = _linearring_to_segments(list(simple.coords))
+            pts = _linearring_to_segments(list(simplified_geo.coords))
 
         elif type(geo) == Polygon:
             # Prepare polygon faces
             if face_color is not None:
                 if triangulation == 'glu':
                     gt = GLUTess()
-                    tri_tris, tri_pts = gt.triangulate(simple)
+                    tri_tris, tri_pts = gt.triangulate(simplified_geo)
                 else:
                     print("Triangulation type '%s' isn't implemented. Drawing only edges." % triangulation)
 
             # Prepare polygon edges
             if color is not None:
-                pts = _linearring_to_segments(list(simple.exterior.coords))
-                for ints in simple.interiors:
+                pts = _linearring_to_segments(list(simplified_geo.exterior.coords))
+                for ints in simplified_geo.interiors:
                     pts += _linearring_to_segments(list(ints.coords))
 
         # Appending data for mesh
         if len(tri_pts) > 0 and len(tri_tris) > 0:
             mesh_tris += tri_tris
             mesh_vertices += tri_pts
-            mesh_colors += [Color(face_color).rgba] * (len(tri_tris) // 3)
+            face_color_rgba = Color(face_color).rgba
+            # mesh_colors += [face_color_rgba] * (len(tri_tris) // 3)
+            mesh_colors += [face_color_rgba for __ in range(len(tri_tris) // 3)]
 
         # Appending data for line
         if len(pts) > 0:
             line_pts += pts
-            line_colors += [Color(color).rgba] * len(pts)
+            colo_rgba = Color(color).rgba
+            # line_colors += [colo_rgba] * len(pts)
+            line_colors += [colo_rgba for __ in range(len(pts))]
 
     # Store buffers
     data['line_pts'] = line_pts
@@ -158,11 +161,14 @@ class ShapeGroup(object):
         if update:
             self._collection.redraw([])             # Skip waiting results
 
-    def redraw(self):
+    def redraw(self, update_colors=None):
         """
         Redraws shape collection
         """
-        self._collection.redraw(self._indexes)
+        if update_colors:
+            self._collection.redraw(self._indexes, update_colors=update_colors)
+        else:
+            self._collection.redraw(self._indexes)
 
     @property
     def visible(self):
@@ -228,9 +234,9 @@ class ShapeCollectionVisual(CompoundVisual):
             pass
             m.set_gl_state(polygon_offset_fill=True, polygon_offset=(1, 1), cull_face=False)
 
-        for l in self._lines:
+        for lne in self._lines:
             pass
-            l.set_gl_state(blend=True)
+            lne.set_gl_state(blend=True)
 
         self.freeze()
 
@@ -245,6 +251,8 @@ class ShapeCollectionVisual(CompoundVisual):
             Line/edge color
         :param face_color: str, tuple
             Polygon face color
+        :param alpha: str
+            Polygon transparency
         :param visible: bool
             Shape visibility
         :param update: bool
@@ -271,11 +279,11 @@ class ShapeCollectionVisual(CompoundVisual):
         # Add data to process pool if pool exists
         try:
             self.results[key] = self.pool.map_async(_update_shape_buffers, [self.data[key]])
-        except Exception as e:
+        except Exception:
             self.data[key] = _update_shape_buffers(self.data[key])
 
         if update:
-            self.redraw()                       # redraw() waits for pool process end
+            self.redraw()   # redraw() waits for pool process end
 
         return key
 
@@ -309,6 +317,134 @@ class ShapeCollectionVisual(CompoundVisual):
         if update:
             self.__update()
 
+    def update_color(self, new_mesh_color=None, new_line_color=None, indexes=None):
+        if new_mesh_color is None and new_line_color is None:
+            return
+
+        if not self.data:
+            return
+
+        # if a new color is empty string then make it None so it will not be updated
+        # if a new color is valid then transform it here in a format palatable
+        mesh_color_rgba = None
+        line_color_rgba = None
+        if new_mesh_color:
+            if new_mesh_color != '':
+                mesh_color_rgba = Color(new_mesh_color).rgba
+            else:
+                new_mesh_color = None
+        if new_line_color:
+            if new_line_color != '':
+                line_color_rgba = Color(new_line_color).rgba
+            else:
+                new_line_color = None
+
+        mesh_colors = [[] for _ in range(0, len(self._meshes))]     # Face colors
+        line_colors = [[] for _ in range(0, len(self._meshes))]     # Line colors
+        line_pts = [[] for _ in range(0, len(self._lines))]         # Vertices for line
+
+        # Lock sub-visuals updates
+        self.update_lock.acquire(True)
+        # Merge shapes buffers
+
+        if indexes is None:
+            for k, data in list(self.data.items()):
+                if data['visible'] and 'line_pts' in data:
+                    if new_mesh_color and new_mesh_color != '':
+                        dim_mesh_tris = (len(data['mesh_tris']) // 3)
+                        if dim_mesh_tris != 0:
+                            try:
+                                mesh_colors[data['layer']] += [mesh_color_rgba] * dim_mesh_tris
+                                self.data[k]['face_color'] = new_mesh_color
+
+                                data['mesh_colors'] = [mesh_color_rgba for __ in range(len(data['mesh_colors']))]
+                            except Exception as e:
+                                print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
+                                      "Create mesh colors --> Data error. %s" % str(e))
+
+                    if new_line_color and new_line_color != '':
+                        dim_line_pts = (len(data['line_pts']))
+                        if dim_line_pts != 0:
+                            try:
+                                line_pts[data['layer']] += data['line_pts']
+                                line_colors[data['layer']] += [line_color_rgba] * dim_line_pts
+                                self.data[k]['color'] = new_line_color
+
+                                data['line_colors'] = [mesh_color_rgba for __ in range(len(data['line_colors']))]
+                            except Exception as e:
+                                print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
+                                      "Create line colors --> Data error. %s" % str(e))
+        else:
+            for k, data in list(self.data.items()):
+                if data['visible'] and 'line_pts' in data:
+                    dim_mesh_tris = (len(data['mesh_tris']) // 3)
+                    dim_line_pts = (len(data['line_pts']))
+
+                    if k in indexes:
+                        if new_mesh_color and new_mesh_color != '':
+                            if dim_mesh_tris != 0:
+                                try:
+                                    mesh_colors[data['layer']] += [mesh_color_rgba] * dim_mesh_tris
+                                    self.data[k]['face_color'] = new_mesh_color
+
+                                    data['mesh_colors'] = [mesh_color_rgba for __ in range(len(data['mesh_colors']))]
+                                except Exception as e:
+                                    print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
+                                          "Create mesh colors --> Data error. %s" % str(e))
+                        if new_line_color and new_line_color != '':
+                            if dim_line_pts != 0:
+                                try:
+                                    line_pts[data['layer']] += data['line_pts']
+                                    line_colors[data['layer']] += [line_color_rgba] * dim_line_pts
+                                    self.data[k]['color'] = new_line_color
+
+                                    data['line_colors'] = [mesh_color_rgba for __ in range(len(data['line_colors']))]
+                                except Exception as e:
+                                    print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
+                                          "Create line colors --> Data error. %s" % str(e))
+                    else:
+                        if dim_mesh_tris != 0:
+                            try:
+                                mesh_colors[data['layer']] += [Color(data['face_color']).rgba] * dim_mesh_tris
+                            except Exception as e:
+                                print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
+                                      "Create mesh colors --> Data error. %s" % str(e))
+
+                        if dim_line_pts != 0:
+                            try:
+                                line_pts[data['layer']] += data['line_pts']
+                                line_colors[data['layer']] += [Color(data['color']).rgba] * dim_line_pts
+                            except Exception as e:
+                                print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
+                                      "Create line colors --> Data error. %s" % str(e))
+
+        # Updating meshes
+        if new_mesh_color and new_mesh_color != '':
+            for i, mesh in enumerate(self._meshes):
+                if mesh_colors[i]:
+                    try:
+                        mesh._meshdata.set_face_colors(colors=np.asarray(mesh_colors[i]))
+                        mesh.mesh_data_changed()
+                    except Exception as e:
+                        print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
+                              "Apply mesh colors --> Data error. %s" % str(e))
+
+        # Updating lines
+        if new_line_color and new_line_color != '':
+            for i, line in enumerate(self._lines):
+                if len(line_pts[i]) > 0:
+                    try:
+                        line._color = np.asarray(line_colors[i])
+                        line._changed['color'] = True
+                        line.update()
+                    except Exception as e:
+                        print("VisPyVisuals.ShapeCollectionVisual.update_color(). "
+                              "Apply line colors --> Data error. %s" % str(e))
+                else:
+                    line.clear_data()
+
+        self.update_lock.release()
+
     def __update(self):
         """
         Merges internal buffers, sets data to visuals, redraws collection on scene
@@ -328,20 +464,23 @@ class ShapeCollectionVisual(CompoundVisual):
                 try:
                     line_pts[data['layer']] += data['line_pts']
                     line_colors[data['layer']] += data['line_colors']
-                    mesh_tris[data['layer']] += [x + len(mesh_vertices[data['layer']])
-                                                 for x in data['mesh_tris']]
 
+                    mesh_tris[data['layer']] += [x + len(mesh_vertices[data['layer']]) for x in data['mesh_tris']]
                     mesh_vertices[data['layer']] += data['mesh_vertices']
                     mesh_colors[data['layer']] += data['mesh_colors']
                 except Exception as e:
-                    print("Data error", e)
+                    print("VisPyVisuals.ShapeCollectionVisual._update() --> Data error. %s" % str(e))
 
         # Updating meshes
         for i, mesh in enumerate(self._meshes):
             if len(mesh_vertices[i]) > 0:
                 set_state(polygon_offset_fill=False)
-                mesh.set_data(np.asarray(mesh_vertices[i]), np.asarray(mesh_tris[i], dtype=np.uint32)
-                              .reshape((-1, 3)), face_colors=np.asarray(mesh_colors[i]))
+                faces_array = np.asarray(mesh_tris[i], dtype=np.uint32)
+                mesh.set_data(
+                    vertices=np.asarray(mesh_vertices[i]),
+                    faces=faces_array.reshape((-1, 3)),
+                    face_colors=np.asarray(mesh_colors[i])
+                )
             else:
                 mesh.set_data()
 
@@ -350,17 +489,20 @@ class ShapeCollectionVisual(CompoundVisual):
         # Updating lines
         for i, line in enumerate(self._lines):
             if len(line_pts[i]) > 0:
-                line.set_data(np.asarray(line_pts[i]), np.asarray(line_colors[i]), self._line_width, 'segments')
+                line.set_data(
+                    pos=np.asarray(line_pts[i]),
+                    color=np.asarray(line_colors[i]),
+                    width=self._line_width,
+                    connect='segments')
             else:
                 line.clear_data()
 
             line._bounds_changed()
 
         self._bounds_changed()
-
         self.update_lock.release()
 
-    def redraw(self, indexes=None):
+    def redraw(self, indexes=None, update_colors=None):
         """
         Redraws collection
         :param indexes: list
@@ -369,19 +511,30 @@ class ShapeCollectionVisual(CompoundVisual):
         # Only one thread can update data
         self.results_lock.acquire(True)
 
-        for i in list(self.data.copy().keys()) if not indexes else indexes:
-            if i in list(self.results.copy().keys()):
+        for i in list(self.data.keys()) if not indexes else indexes:
+            if i in list(self.results.keys()):
                 try:
                     self.results[i].wait()                                  # Wait for process results
                     if i in self.data:
                         self.data[i] = self.results[i].get()[0]             # Store translated data
                         del self.results[i]
                 except Exception as e:
-                    print(e, indexes)
+                    print("VisPyVisuals.ShapeCollectionVisual.redraw() --> Data error = %s. Indexes = %s" %
+                          (str(e), str(indexes)))
 
         self.results_lock.release()
 
-        self.__update()
+        if update_colors is None:
+            self.__update()
+        else:
+            try:
+                self.update_color(
+                    new_mesh_color=update_colors[0],
+                    new_line_color=update_colors[1],
+                    indexes=indexes
+                )
+            except Exception as e:
+                print("VisPyVisuals.ShapeCollectionVisual.redraw() --> Update colors error = %s." % str(e))
 
     def lock_updates(self):
         self.update_lock.acquire(True)
@@ -489,7 +642,7 @@ class TextCollectionVisual(TextVisual):
         self.lock.release()
 
         # Prepare data for translation
-        self.data[key] = {'text': text, 'pos': pos, 'visible': visible,'font_size': font_size, 'color': color}
+        self.data[key] = {'text': text, 'pos': pos, 'visible': visible, 'font_size': font_size, 'color': color}
 
         if update:
             self.redraw()
@@ -537,7 +690,7 @@ class TextCollectionVisual(TextVisual):
                     font_s = data['font_size']
                     color = data['color']
                 except Exception as e:
-                    print("Data error", e)
+                    print("VisPyVisuals.TextCollectionVisual._update() --> Data error. %s" % str(e))
 
         # Updating text
         if len(labels) > 0:

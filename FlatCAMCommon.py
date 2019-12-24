@@ -474,7 +474,7 @@ class ToolsDB(QtWidgets.QWidget):
         self.on_tool_request = callback_on_tool_request
 
         self.offset_item_options = ["Path", "In", "Out", "Custom"]
-        self.type_item_options = [_("Iso"), _("Rough"), _("Finish")]
+        self.type_item_options = ["Iso", "Rough", "Finish"]
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
         '''
@@ -760,13 +760,16 @@ class ToolsDB(QtWidgets.QWidget):
         self.table_widget.setRowCount(len(self.db_tool_dict))
 
         nr_crt = 0
+
         for toolid, dict_val in self.db_tool_dict.items():
             row = nr_crt
             nr_crt += 1
 
             t_name = dict_val['name']
-            self.add_tool_table_line(row, name=t_name, widget=self.table_widget, tooldict=dict_val)
-
+            try:
+                self.add_tool_table_line(row, name=t_name, widget=self.table_widget, tooldict=dict_val)
+            except Exception as e:
+                self.app.log.debug("ToolDB.build_db_ui.add_tool_table_line() --> %s" % str(e))
             vertical_header = self.table_widget.verticalHeader()
             vertical_header.hide()
 
@@ -920,7 +923,7 @@ class ToolsDB(QtWidgets.QWidget):
 
         dwelltime_item = FCDoubleSpinner()
         dwelltime_item.set_precision(self.decimals)
-        dwelltime_item.set_range(0.0, 9999.9999)
+        dwelltime_item.set_range(0.0000, 9999.9999)
         dwelltime_item.set_value(float(data['dwelltime']))
         widget.setCellWidget(row, 18, dwelltime_item)
 
@@ -936,7 +939,7 @@ class ToolsDB(QtWidgets.QWidget):
 
         ecut_length_item = FCDoubleSpinner()
         ecut_length_item.set_precision(self.decimals)
-        ecut_length_item.set_range(0.0, 9999.9999)
+        ecut_length_item.set_range(0.0000, 9999.9999)
         ecut_length_item.set_value(data['extracut_length'])
         widget.setCellWidget(row, 21, ecut_length_item)
 
@@ -977,11 +980,8 @@ class ToolsDB(QtWidgets.QWidget):
         Add a tool in the DB Tool Table
         :return: None
         """
-        new_toolid = len(self.db_tool_dict) + 1
 
-        dict_elem = dict()
         default_data = dict()
-
         default_data.update({
             "cutz": float(self.app.defaults["geometry_cutz"]),
             "multidepth": self.app.defaults["geometry_multidepth"],
@@ -997,7 +997,7 @@ class ToolsDB(QtWidgets.QWidget):
             "dwelltime": float(self.app.defaults["geometry_dwelltime"]),
             "ppname_g": self.app.defaults["geometry_ppname_g"],
             "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
+            "extracut_length": float(self.app.defaults["geometry_extracut_length"]),
             "toolchange": self.app.defaults["geometry_toolchange"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "toolchangez": float(self.app.defaults["geometry_toolchangez"]),
@@ -1005,20 +1005,17 @@ class ToolsDB(QtWidgets.QWidget):
             "endz": float(self.app.defaults["geometry_endz"])
         })
 
+        dict_elem = dict()
         dict_elem['name'] = 'new_tool'
         dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
         dict_elem['offset'] = 'Path'
         dict_elem['offset_value'] = 0.0
-        dict_elem['type'] = _('Rough')
+        dict_elem['type'] = 'Rough'
         dict_elem['tool_type'] = 'C1'
-
         dict_elem['data'] = default_data
 
-        self.db_tool_dict.update(
-            {
-                new_toolid: deepcopy(dict_elem)
-            }
-        )
+        new_toolid = len(self.db_tool_dict) + 1
+        self.db_tool_dict[new_toolid] = deepcopy(dict_elem)
 
         # add the new entry to the Tools DB table
         self.build_db_ui()
@@ -1253,59 +1250,59 @@ class ToolsDB(QtWidgets.QWidget):
             new_toolid = row + 1
             for col in range(self.table_widget.columnCount()):
                 column_header_text = self.table_widget.horizontalHeaderItem(col).text()
-                if column_header_text == 'Tool Name':
+                if column_header_text == _('Tool Name'):
                     dict_elem['name'] = self.table_widget.item(row, col).text()
-                elif column_header_text == 'Tool Dia':
+                elif column_header_text == _('Tool Dia'):
                     dict_elem['tooldia'] = self.table_widget.cellWidget(row, col).get_value()
-                elif column_header_text == 'Tool Offset':
+                elif column_header_text == _('Tool Offset'):
                     dict_elem['offset'] = self.table_widget.cellWidget(row, col).get_value()
-                elif column_header_text == 'Custom Offset':
+                elif column_header_text == _('Custom Offset'):
                     dict_elem['offset_value'] = self.table_widget.cellWidget(row, col).get_value()
-                elif column_header_text == 'Tool Type':
+                elif column_header_text == _('Tool Type'):
                     dict_elem['type'] = self.table_widget.cellWidget(row, col).get_value()
-                elif column_header_text == 'Tool Shape':
+                elif column_header_text == _('Tool Shape'):
                     dict_elem['tool_type'] = self.table_widget.cellWidget(row, col).get_value()
                 else:
-                    if column_header_text == 'Cut Z':
+                    if column_header_text == _('Cut Z'):
                         default_data['cutz'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'MultiDepth':
+                    elif column_header_text == _('MultiDepth'):
                         default_data['multidepth'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'DPP':
+                    elif column_header_text == _('DPP'):
                         default_data['depthperpass'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'V-Dia':
+                    elif column_header_text == _('V-Dia'):
                         default_data['vtipdia'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'V-Angle':
+                    elif column_header_text == _('V-Angle'):
                         default_data['vtipangle'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'Travel Z':
+                    elif column_header_text == _('Travel Z'):
                         default_data['travelz'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'FR':
+                    elif column_header_text == _('FR'):
                         default_data['feedrate'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'FR Z':
+                    elif column_header_text == _('FR Z'):
                         default_data['feedrate_z'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'FR Rapids':
+                    elif column_header_text == _('FR Rapids'):
                         default_data['feedrate_rapid'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'Spindle Speed':
+                    elif column_header_text == _('Spindle Speed'):
                         default_data['spindlespeed'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'Dwell':
+                    elif column_header_text == _('Dwell'):
                         default_data['dwell'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'Dwelltime':
+                    elif column_header_text == _('Dwelltime'):
                         default_data['dwelltime'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'Preprocessor':
+                    elif column_header_text == _('Preprocessor'):
                         default_data['ppname_g'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'ExtraCut':
+                    elif column_header_text == _('ExtraCut'):
                         default_data['extracut'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == "E-Cut Length":
+                    elif column_header_text == _("E-Cut Length"):
                         default_data['extracut_length'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'Toolchange':
+                    elif column_header_text == _('Toolchange'):
                         default_data['toolchange'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'Toolchange XY':
+                    elif column_header_text == _('Toolchange XY'):
                         default_data['toolchangexy'] = self.table_widget.item(row, col).text()
-                    elif column_header_text == 'Toolchange Z':
+                    elif column_header_text == _('Toolchange Z'):
                         default_data['toolchangez'] = self.table_widget.cellWidget(row, col).get_value()
-                    elif column_header_text == 'Start Z':
+                    elif column_header_text == _('Start Z'):
                         default_data['startz'] = float(self.table_widget.item(row, col).text()) \
                             if self.table_widget.item(row, col).text() is not '' else None
-                    elif column_header_text == 'End Z':
+                    elif column_header_text == _('End Z'):
                         default_data['endz'] = self.table_widget.cellWidget(row, col).get_value()
 
             dict_elem['data'] = default_data
@@ -1355,3 +1352,33 @@ class ToolsDB(QtWidgets.QWidget):
 
     def closeEvent(self, QCloseEvent):
         super().closeEvent(QCloseEvent)
+
+
+def color_variant(hex_color, bright_factor=1):
+    """
+    Takes a color in HEX format #FF00FF and produces a lighter or darker variant
+
+    :param hex_color:           color to change
+    :param bright_factor:   factor to change the color brightness [0 ... 1]
+    :return:                    modified color
+    """
+
+    if len(hex_color) != 7:
+        print("Color is %s, but needs to be in #FF00FF format. Returning original color." % hex_color)
+        return hex_color
+
+    if bright_factor > 1.0:
+        bright_factor = 1.0
+    if bright_factor < 0.0:
+        bright_factor = 0.0
+
+    rgb_hex = [hex_color[x:x + 2] for x in [1, 3, 5]]
+    new_rgb = list()
+    for hex_value in rgb_hex:
+        # adjust each color channel and turn it into a INT suitable as argument for hex()
+        mod_color = round(int(hex_value, 16) * bright_factor)
+        # make sure that each color channel has two digits without the 0x prefix
+        mod_color_hex = str(hex(mod_color)[2:]).zfill(2)
+        new_rgb.append(mod_color_hex)
+
+    return "#" + "".join([i for i in new_rgb])

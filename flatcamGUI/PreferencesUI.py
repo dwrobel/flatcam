@@ -5378,7 +5378,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.skewy_label, 4, 0)
         grid0.addWidget(self.skewy_entry, 4, 1)
 
-        # ## Scale factor on X axis
+        # ## Scale
         scale_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Scale"))
         grid0.addWidget(scale_title_lbl, 5, 0, 1, 2)
 
@@ -5425,7 +5425,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.reference_cb, 8, 1)
 
-        # ## Offset distance on X axis
+        # ## Offset
         offset_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Offset"))
         grid0.addWidget(offset_title_lbl, 9, 0, 1, 2)
 
@@ -5454,6 +5454,10 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.offy_label, 11, 0)
         grid0.addWidget(self.offy_entry, 11, 1)
 
+        # ## Mirror
+        mirror_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Mirror"))
+        grid0.addWidget(mirror_title_lbl, 12, 0, 1, 2)
+
         # ## Mirror (Flip) Reference Point
         self.mirror_reference_cb = FCCheckBox('%s' % _("Mirror Reference"))
         self.mirror_reference_cb.setToolTip(
@@ -5466,9 +5470,9 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "Then click Add button to insert coordinates.\n"
               "Or enter the coords in format (x, y) in the\n"
               "Point Entry field and click Flip on X(Y)"))
-        grid0.addWidget(self.mirror_reference_cb, 12, 0, 1, 2)
+        grid0.addWidget(self.mirror_reference_cb, 13, 0, 1, 2)
 
-        self.flip_ref_label = QtWidgets.QLabel('<b>%s</b>' % _("Mirror Reference point"))
+        self.flip_ref_label = QtWidgets.QLabel('%s' % _("Mirror Reference point"))
         self.flip_ref_label.setToolTip(
             _("Coordinates in format (x, y) used as reference for mirroring.\n"
               "The 'x' in (x, y) will be used when using Flip on X and\n"
@@ -5476,8 +5480,42 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         )
         self.flip_ref_entry = EvalEntry2("(0, 0)")
 
-        grid0.addWidget(self.flip_ref_label, 13, 0, 1, 2)
-        grid0.addWidget(self.flip_ref_entry, 14, 0, 1, 2)
+        grid0.addWidget(self.flip_ref_label, 14, 0, 1, 2)
+        grid0.addWidget(self.flip_ref_entry, 15, 0, 1, 2)
+
+        # ## Buffer
+        buffer_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _("Buffer"))
+        grid0.addWidget(buffer_title_lbl, 16, 0, 1, 2)
+
+        self.buffer_label = QtWidgets.QLabel('%s:' % _("Distance"))
+        self.buffer_label.setToolTip(
+            _("A positive value will create the effect of dilation,\n"
+              "while a negative value will create the effect of erosion.\n"
+              "Each geometry element of the object will be increased\n"
+              "or decreased with the 'distance'.")
+        )
+
+        self.buffer_entry = FCDoubleSpinner()
+        self.buffer_entry.set_precision(self.decimals)
+        self.buffer_entry.setSingleStep(0.1)
+        self.buffer_entry.setWrapping(True)
+        self.buffer_entry.set_range(-9999.9999, 9999.9999)
+
+        grid0.addWidget(self.buffer_label, 17, 0)
+        grid0.addWidget(self.buffer_entry, 17, 1)
+
+        self.buffer_rounded_cb = FCCheckBox()
+        self.buffer_rounded_cb.setText('%s' % _("Rounded"))
+        self.buffer_rounded_cb.setToolTip(
+            _("If checked then the buffer will surround the buffered shape,\n"
+              "every corner will be rounded.\n"
+              "If not checked then the buffer will follow the exact geometry\n"
+              "of the buffered shape.")
+        )
+
+        grid0.addWidget(self.buffer_rounded_cb, 18, 0, 1, 2)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 19, 0, 1, 2)
 
         self.layout.addStretch()
 

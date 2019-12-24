@@ -957,9 +957,17 @@ class ShapeCollectionLegacy:
         :param linewidth: the width of the line
         :return:
         """
-        self._color = color[:-2] if color is not None else None
-        self._face_color = face_color[:-2] if face_color is not None else None
-        self._alpha = int(face_color[-2:], 16) / 255 if face_color is not None else 0.75
+        self._color = color if color is not None else "#006E20"
+        self._face_color = face_color if face_color is not None else "#BBF268"
+
+        if len(self._color) > 7:
+            self._color = self._color[:7]
+
+        if len(self._face_color) > 7:
+            self._face_color = self._face_color[:7]
+            # self._alpha = int(self._face_color[-2:], 16) / 255
+
+        self._alpha = 0.75
 
         if alpha is not None:
             self._alpha = alpha
@@ -1033,7 +1041,7 @@ class ShapeCollectionLegacy:
         if update is True:
             self.redraw()
 
-    def redraw(self):
+    def redraw(self, update_colors=None):
         """
         This draw the shapes in the shapes collection, on canvas
 
@@ -1087,7 +1095,6 @@ class ShapeCollectionLegacy:
                         self.axes.plot(x, y, local_shapes[element]['color'],
                                        linestyle='-',
                                        linewidth=local_shapes[element]['linewidth'])
-
                 elif obj_type == 'gerber':
                     if self.obj.options["multicolored"]:
                         linespec = '-'
@@ -1095,16 +1102,25 @@ class ShapeCollectionLegacy:
                         linespec = 'k-'
 
                     if self.obj.options["solid"]:
+                        if update_colors:
+                            gerber_fill_color = update_colors[0]
+                            gerber_outline_color = update_colors[1]
+                        else:
+                            gerber_fill_color = local_shapes[element]['face_color']
+                            gerber_outline_color = local_shapes[element]['color']
+
                         try:
                             patch = PolygonPatch(local_shapes[element]['shape'],
-                                                 facecolor=local_shapes[element]['face_color'],
-                                                 edgecolor=local_shapes[element]['color'],
+                                                 facecolor=gerber_fill_color,
+                                                 edgecolor=gerber_outline_color,
                                                  alpha=local_shapes[element]['alpha'],
                                                  zorder=2)
                             self.axes.add_patch(patch)
                         except AssertionError:
                             FlatCAMApp.App.log.warning("A geometry component was not a polygon:")
                             FlatCAMApp.App.log.warning(str(element))
+                        except Exception as e:
+                            FlatCAMApp.App.log.debug("PlotCanvasLegacy.ShepeCollectionLegacy.redraw() --> %s" % str(e))
                     else:
                         x, y = local_shapes[element]['shape'].exterior.xy
                         self.axes.plot(x, y, linespec)

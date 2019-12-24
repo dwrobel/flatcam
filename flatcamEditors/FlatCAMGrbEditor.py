@@ -3530,6 +3530,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
+            self.app.on_grid_snap_triggered(state=True)
 
         # adjust the visibility of some of the canvas context menu
         self.app.ui.popmenu_edit.setVisible(False)

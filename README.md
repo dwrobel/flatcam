@@ -9,10 +9,39 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.12.2019
+
+- some fixes in the Legacy(2D) graphic mode regarding the possibility of changing the color of the Gerber objects
+- added a method to darken the outline color for Gerber objects when they have the color set
+- when Printing as PDF Gerber objects now the rendered color is the print color
+- speed up the plotting in OpenGL(3D) graphic mode
+- spped up the color setting for Gerber object when using the OpenGL(3D) graphic mode
+- setting color for Gerber objects work on a selection of Gerber objects
+- ~~when the selection is changed in the Project Tree the selection shape on canvas is deleted~~
+- if an object is selected on Project Tree and it does not have the selection shape drawn, first click on canvas over it will draw the selection shape 
+- in Tool Transform added a new feature named 'Buffer'. For Geometry and Gerber objects will create (and replace) a geometry at a distance from the original geometry and for Excellon will adjust the Tool diameters
+- solved issue #355 - when the tool diameter field in the Edit → Preferences → Geometry → Geometry General → Tools → Tool dia is only one the app failed to read it
+- solved issue #356 - in Tools DB can not be added more than one tool if a translation is active 
+
+22.12.2019
+
+- added a new option for the Gerber objects: on the project context menu now can be chosen a color for the selected Gerber object
+- fixed issue in Gerber UI where a label was not hidden when in Basic mode
+- added the color parameters of the objects to the serializable attributes
+- fixed Gerber object color set for Legacy(2D) graphic engine; glitch on the OpenGL(3D) graphic engine
+- fixed the above mentioned glitch in the OpenGL(3D) graphic engine when an Gerber object has been set with a color
+
+21.12.2019
+
+- fixed a typo in Distance Tool
+
 20.12.2019
 
 - fixed a rare issue in the generation of non-copper-region geometry started from the Gerber Object UI (selected tab)
 - Print function is now printing a PDF file for a selection of objects in the colors from canvas 
+- added an icon in the infobar that will show more clearly the status of the grid snapping
+- in Geometry Object UI (selected tab) when a tool type is changed from no matter what to V-shape, the cut_z value is saved and when the tool type is changed back to something different than V-shape, this saved cut-z value is restored
+- fixed re-cut length entry not staying disabled when the re-cut cb is not checked
 
 19.12.2019
 

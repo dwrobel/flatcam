@@ -2118,6 +2118,69 @@ class Geometry(object):
         #     self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y,
         #                                         origin=(px, py))
 
+    def buffer(self, distance, join):
+        """
+
+        :param distance:
+        :param join:
+        :return:
+        """
+
+        log.debug("camlib.Geometry.buffer()")
+
+        if distance == 0:
+            return
+
+        def buffer_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(buffer_geom(g))
+                return new_obj
+            else:
+                try:
+                    self.el_count += 1
+                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
+                    if self.old_disp_number < disp_number <= 100:
+                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                        self.old_disp_number = disp_number
+
+                    return obj.buffer(distance, resolution=self.geo_steps_per_circle, join_style=join)
+                except AttributeError:
+                    return obj
+
+        try:
+            if self.multigeo is True:
+                for tool in self.tools:
+                    # variables to display the percentage of work done
+                    self.geo_len = 0
+                    try:
+                        for __ in self.tools[tool]['solid_geometry']:
+                            self.geo_len += 1
+                    except TypeError:
+                        self.geo_len = 1
+                    self.old_disp_number = 0
+                    self.el_count = 0
+
+                    self.tools[tool]['solid_geometry'] = buffer_geom(self.tools[tool]['solid_geometry'])
+
+            # variables to display the percentage of work done
+            self.geo_len = 0
+            try:
+                for __ in self.solid_geometry:
+                    self.geo_len += 1
+            except TypeError:
+                self.geo_len = 1
+            self.old_disp_number = 0
+            self.el_count = 0
+
+            self.solid_geometry = buffer_geom(self.solid_geometry)
+
+            self.app.inform.emit('[success] %s...' %  _('Object was buffered'))
+        except AttributeError:
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to buffer. No object selected"))
+
+        self.app.proc_container.new_text = ''
 
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):

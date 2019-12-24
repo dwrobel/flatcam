@@ -634,11 +634,39 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################## Project Tab Context Menu # ##################
         # ########################################################################
         self.menuproject = QtWidgets.QMenu()
+
         self.menuprojectenable = self.menuproject.addAction(
             QtGui.QIcon(self.app.resource_location + '/replot32.png'), _('Enable Plot'))
         self.menuprojectdisable = self.menuproject.addAction(
             QtGui.QIcon(self.app.resource_location + '/clear_plot32.png'), _('Disable Plot'))
         self.menuproject.addSeparator()
+
+        self.menuprojectcolor = self.menuproject.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Set Color'))
+
+        self.menuproject_red = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/red32.png'), _('Red'))
+
+        self.menuproject_blue = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/blue32.png'), _('Blue'))
+
+        self.menuproject_yellow = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/yellow32.png'), _('Yellow'))
+
+        self.menuproject_green = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/green32.png'), _('Green'))
+
+        self.menuproject_purple = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/violet32.png'), _('Purple'))
+
+        self.menuproject_brown = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/brown32.png'), _('Brown'))
+
+        self.menuproject_custom = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Custom'))
+
+        self.menuproject.addSeparator()
+
         self.menuprojectgeneratecnc = self.menuproject.addAction(
             QtGui.QIcon(self.app.resource_location + '/cnc32.png'), _('Generate CNC'))
         self.menuprojectviewsource = self.menuproject.addAction(
@@ -2148,6 +2176,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.infobar = self.statusBar()
         self.fcinfo = FlatCAMInfoBar(app=self.app)
         self.infobar.addWidget(self.fcinfo, stretch=1)
+
+        self.snap_infobar_label = QtWidgets.QLabel()
+        self.snap_infobar_label.setPixmap(QtGui.QPixmap(self.app.resource_location + '/snap_16.png'))
+        self.infobar.addWidget(self.snap_infobar_label)
 
         self.rel_position_label = QtWidgets.QLabel(
             "<b>Dx</b>: 0.0000&nbsp;&nbsp;   <b>Dy</b>: 0.0000&nbsp;&nbsp;&nbsp;&nbsp;")
