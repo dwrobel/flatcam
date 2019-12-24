@@ -8869,15 +8869,14 @@ class App(QtCore.QObject):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
-                                obj.selection_shape_drawn = True
                             self.collection.set_active(obj.options['name'])
                     else:
                         if poly_selection.intersects(poly_obj):
                             # create the selection box around the selected object
                             if self.defaults['global_selection_shape'] is True:
                                 self.draw_selection_shape(obj)
-                                obj.selection_shape_drawn = True
                             self.collection.set_active(obj.options['name'])
+                    obj.selection_shape_drawn = True
             except Exception as e:
                 # the Exception here will happen if we try to select on screen and we have an newly (and empty)
                 # just created Geometry or Excellon object that do not have the xmin, xmax, ymin, ymax options.
@@ -8957,7 +8956,7 @@ class App(QtCore.QObject):
                     # make active the first element of the overlapped objects list
                     if self.collection.get_active() is None:
                         self.collection.set_active(objects_under_the_click_list[0])
-                        objects_under_the_click_list[0].selection_shape_drawn = True
+                        self.collection.get_by_name(objects_under_the_click_list[0]).selection_shape_drawn = True
 
                     name_sel_obj = self.collection.get_active().options['name']
                     # In case that there is a selected object but it is not in the overlapped object list

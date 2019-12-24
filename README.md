@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+24.12.2019
+
+- edited some icons so they don't contain white background
+- fixed an incorrect usage of object in the app.select_objects() method
+
 23.12.2019
 
 - some fixes in the Legacy(2D) graphic mode regarding the possibility of changing the color of the Gerber objects
