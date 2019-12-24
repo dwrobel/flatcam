@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - edited some icons so they don't contain white background
 - fixed an incorrect usage of object in the app.select_objects() method
+- fixed a typo in ToolDB.on_tool_add()
 
 23.12.2019
 
