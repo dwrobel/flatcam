@@ -3151,15 +3151,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # TODO: ...?
                     # self.on_tool_select("select")
-                    self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                         _("Cancelled."))
+                    self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
                     self.app.geo_editor.delete_utility_geometry()
 
-                    # deselect any shape that might be selected
-                    self.app.geo_editor.selected = []
+                    self.app.geo_editor.active_tool.clean_up()
 
-                    self.app.geo_editor.replot()
                     self.app.geo_editor.select_tool('select')
 
                     # hide the notebook
@@ -3197,6 +3194,25 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_3 or key == '3':
                     self.app.on_select_tab('tool')
 
+                # Grid Snap
+                if key == QtCore.Qt.Key_G or key == 'G':
+                    self.app.ui.grid_snap_btn.trigger()
+
+                    # make sure that the cursor shape is enabled/disabled, too
+                    if self.app.geo_editor.options['grid_snap'] is True:
+                        self.app.app_cursor.enabled = True
+                    else:
+                        self.app.app_cursor.enabled = False
+
+                # Corner Snap
+                if key == QtCore.Qt.Key_K or key == 'K':
+                    self.app.geo_editor.on_corner_snap()
+
+                if key == QtCore.Qt.Key_V or key == 'V':
+                    self.app.on_zoom_fit(None)
+
+                # we do this so we can reuse the following keys while inside a Tool
+                # the above keys are general enough so were left outside
                 if self.app.geo_editor.active_tool is not None and self.geo_select_btn.isChecked() is False:
                     response = self.app.geo_editor.active_tool.on_key(key=key)
                     if response is not None:
@@ -3230,16 +3246,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                             messagebox.exec_()
 
-                    # Grid Snap
-                    if key == QtCore.Qt.Key_G or key == 'G':
-                        self.app.ui.grid_snap_btn.trigger()
-
-                        # make sure that the cursor shape is enabled/disabled, too
-                        if self.app.geo_editor.options['grid_snap'] is True:
-                            self.app.app_cursor.enabled = True
-                        else:
-                            self.app.app_cursor.enabled = False
-
                     # Paint
                     if key == QtCore.Qt.Key_I or key == 'I':
                         self.app.geo_editor.select_tool('paint')
@@ -3247,10 +3253,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     # Jump to coords
                     if key == QtCore.Qt.Key_J or key == 'J':
                         self.app.on_jump_to()
-
-                    # Corner Snap
-                    if key == QtCore.Qt.Key_K or key == 'K':
-                        self.app.geo_editor.on_corner_snap()
 
                     # Move
                     if key == QtCore.Qt.Key_M or key == 'M':
@@ -3309,9 +3311,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                             messagebox.exec_()
 
-                    if key == QtCore.Qt.Key_V or key == 'V':
-                        self.app.on_zoom_fit(None)
-
                     # Flip on X axis
                     if key == QtCore.Qt.Key_X or key == 'X':
                         self.app.geo_editor.transform_tool.on_flipx()
@@ -3341,7 +3340,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_tool.run()
                     return
-
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
@@ -3569,7 +3567,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_M or key == 'M':
                     self.app.distance_tool.run()
                     return
-
             elif modifiers == QtCore.Qt.ShiftModifier:
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M or key == 'M':
@@ -3580,15 +3577,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.NoModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
-                    # TODO: ...?
-                    # self.on_tool_select("select")
                     self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled."))
 
                     self.app.exc_editor.delete_utility_geometry()
 
-                    self.app.exc_editor.replot()
-                    # self.select_btn.setChecked(True)
-                    # self.on_tool_select('select')
+                    self.app.exc_editor.active_tool.clean_up()
+
                     self.app.exc_editor.select_tool('drill_select')
                     return
 
@@ -3645,44 +3639,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_select_tab('tool')
                     return
 
-                # Add Array of Drill Hole Tool
-                if key == QtCore.Qt.Key_A or key == 'A':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.inform.emit("Click on target point.")
-                    self.app.ui.add_drill_array_btn.setChecked(True)
-
-                    self.app.exc_editor.x = self.app.mouse[0]
-                    self.app.exc_editor.y = self.app.mouse[1]
-
-                    self.app.exc_editor.select_tool('drill_array')
-                    return
-
-                # Copy
-                if key == QtCore.Qt.Key_C or key == 'C':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    if self.app.exc_editor.selected:
-                        self.app.inform.emit(_("Click on target point."))
-                        self.app.ui.copy_drill_btn.setChecked(True)
-                        self.app.exc_editor.on_tool_select('drill_copy')
-                        self.app.exc_editor.active_tool.set_origin(
-                            (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
-                    else:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Cancelled. Nothing selected to copy."))
-                    return
-
-                # Add Drill Hole Tool
-                if key == QtCore.Qt.Key_D or key == 'D':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.inform.emit(_("Click on target point."))
-                    self.app.ui.add_drill_btn.setChecked(True)
-
-                    self.app.exc_editor.x = self.app.mouse[0]
-                    self.app.exc_editor.y = self.app.mouse[1]
-
-                    self.app.exc_editor.select_tool('drill_add')
-                    return
-
                 # Grid Snap
                 if key == QtCore.Qt.Key_G or key == 'G':
                     self.app.exc_editor.launched_from_shortcuts = True
@@ -3694,67 +3650,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.ui.grid_snap_btn.trigger()
                     return
 
-                # Jump to coords
-                if key == QtCore.Qt.Key_J or key == 'J':
-                    self.app.on_jump_to()
-
                 # Corner Snap
                 if key == QtCore.Qt.Key_K or key == 'K':
                     self.app.exc_editor.launched_from_shortcuts = True
                     self.app.ui.corner_snap_btn.trigger()
-                    return
-
-                # Move
-                if key == QtCore.Qt.Key_M or key == 'M':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    if self.app.exc_editor.selected:
-                        self.app.inform.emit(_("Click on target point."))
-                        self.app.ui.move_drill_btn.setChecked(True)
-                        self.app.exc_editor.on_tool_select('drill_move')
-                        self.app.exc_editor.active_tool.set_origin(
-                            (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
-                    else:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Cancelled. Nothing selected to move."))
-                    return
-
-                # Add Array of Slote Hole Tool
-                if key == QtCore.Qt.Key_Q or key == 'Q':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.inform.emit("Click on target point.")
-                    self.app.ui.add_slot_array_btn.setChecked(True)
-
-                    self.app.exc_editor.x = self.app.mouse[0]
-                    self.app.exc_editor.y = self.app.mouse[1]
-
-                    self.app.exc_editor.select_tool('slot_array')
-                    return
-
-                # Resize Tool
-                if key == QtCore.Qt.Key_R or key == 'R':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.exc_editor.select_tool('drill_resize')
-                    return
-
-                # Add Tool
-                if key == QtCore.Qt.Key_T or key == 'T':
-                    self.app.exc_editor.launched_from_shortcuts = True
-                    # ## Current application units in Upper Case
-                    self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
-                    tool_add_popup = FCInputDialog(title=_("New Tool ..."),
-                                                   text='%s:' % _('Enter a Tool Diameter'),
-                                                   min=0.0000, max=99.9999, decimals=4)
-                    tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
-
-                    val, ok = tool_add_popup.get_value()
-                    if ok:
-                        self.app.exc_editor.on_tool_add(tooldia=val)
-                        formated_val = '%.*f' % (self.decimals, float(val))
-                        self.app.inform.emit(
-                            '[success] %s: %s %s' % (_("Added new tool with dia"), formated_val, str(self.units))
-                        )
-                    else:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding Tool cancelled ..."))
                     return
 
                 # Zoom Fit
@@ -3777,15 +3676,113 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Propagate to tool
                 response = None
-                if self.app.exc_editor.active_tool is not None:
-                    response = self.app.exc_editor.active_tool.on_key(key=key)
-                if response is not None:
-                    self.app.inform.emit(response)
 
                 # Show Shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
                     self.app.on_shortcut_list()
                     return
+
+                # we do this so we can reuse the following keys while inside a Tool
+                # the above keys are general enough so were left outside
+                if self.app.exc_editor.active_tool is not None and self.select_drill_btn.isChecked() is False:
+                    response = self.app.exc_editor.active_tool.on_key(key=key)
+                    if response is not None:
+                        self.app.inform.emit(response)
+                else:
+                    # Add Array of Drill Hole Tool
+                    if key == QtCore.Qt.Key_A or key == 'A':
+                        self.app.exc_editor.launched_from_shortcuts = True
+                        self.app.inform.emit("Click on target point.")
+                        self.app.ui.add_drill_array_btn.setChecked(True)
+
+                        self.app.exc_editor.x = self.app.mouse[0]
+                        self.app.exc_editor.y = self.app.mouse[1]
+
+                        self.app.exc_editor.select_tool('drill_array')
+                        return
+
+                    # Copy
+                    if key == QtCore.Qt.Key_C or key == 'C':
+                        self.app.exc_editor.launched_from_shortcuts = True
+                        if self.app.exc_editor.selected:
+                            self.app.inform.emit(_("Click on target point."))
+                            self.app.ui.copy_drill_btn.setChecked(True)
+                            self.app.exc_editor.on_tool_select('drill_copy')
+                            self.app.exc_editor.active_tool.set_origin(
+                                (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
+                        else:
+                            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                 _("Cancelled. Nothing selected to copy."))
+                        return
+
+                    # Add Drill Hole Tool
+                    if key == QtCore.Qt.Key_D or key == 'D':
+                        self.app.exc_editor.launched_from_shortcuts = True
+                        self.app.inform.emit(_("Click on target point."))
+                        self.app.ui.add_drill_btn.setChecked(True)
+
+                        self.app.exc_editor.x = self.app.mouse[0]
+                        self.app.exc_editor.y = self.app.mouse[1]
+
+                        self.app.exc_editor.select_tool('drill_add')
+                        return
+
+                    # Jump to coords
+                    if key == QtCore.Qt.Key_J or key == 'J':
+                        self.app.on_jump_to()
+
+                    # Move
+                    if key == QtCore.Qt.Key_M or key == 'M':
+                        self.app.exc_editor.launched_from_shortcuts = True
+                        if self.app.exc_editor.selected:
+                            self.app.inform.emit(_("Click on target point."))
+                            self.app.ui.move_drill_btn.setChecked(True)
+                            self.app.exc_editor.on_tool_select('drill_move')
+                            self.app.exc_editor.active_tool.set_origin(
+                                (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
+                        else:
+                            self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                                 _("Cancelled. Nothing selected to move."))
+                        return
+
+                    # Add Array of Slots Hole Tool
+                    if key == QtCore.Qt.Key_Q or key == 'Q':
+                        self.app.exc_editor.launched_from_shortcuts = True
+                        self.app.inform.emit("Click on target point.")
+                        self.app.ui.add_slot_array_btn.setChecked(True)
+
+                        self.app.exc_editor.x = self.app.mouse[0]
+                        self.app.exc_editor.y = self.app.mouse[1]
+
+                        self.app.exc_editor.select_tool('slot_array')
+                        return
+
+                    # Resize Tool
+                    if key == QtCore.Qt.Key_R or key == 'R':
+                        self.app.exc_editor.launched_from_shortcuts = True
+                        self.app.exc_editor.select_tool('drill_resize')
+                        return
+
+                    # Add Tool
+                    if key == QtCore.Qt.Key_T or key == 'T':
+                        self.app.exc_editor.launched_from_shortcuts = True
+                        # ## Current application units in Upper Case
+                        self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
+                        tool_add_popup = FCInputDialog(title=_("New Tool ..."),
+                                                       text='%s:' % _('Enter a Tool Diameter'),
+                                                       min=0.0000, max=99.9999, decimals=4)
+                        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+
+                        val, ok = tool_add_popup.get_value()
+                        if ok:
+                            self.app.exc_editor.on_tool_add(tooldia=val)
+                            formated_val = '%.*f' % (self.decimals, float(val))
+                            self.app.inform.emit(
+                                '[success] %s: %s %s' % (_("Added new tool with dia"), formated_val, str(self.units))
+                            )
+                        else:
+                            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding Tool cancelled ..."))
+                        return
         elif self.app.call_source == 'measurement':
             if modifiers == QtCore.Qt.ControlModifier:
                 pass

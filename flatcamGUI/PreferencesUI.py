@@ -26,6 +26,8 @@ else:
 
 
 class OptionsGroupUI(QtWidgets.QGroupBox):
+    app = None
+
     def __init__(self, title, parent=None):
         # QtGui.QGroupBox.__init__(self, title, parent=parent)
         super(OptionsGroupUI, self).__init__()
@@ -322,11 +324,17 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("GUI Preferences")))
         self.decimals = decimals
         
-        # Create a form layout for the Application general settings
-        self.form_box = QtWidgets.QFormLayout()
+        # Create a grid layout for the Application general settings
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+
+        self.grid_label = QtWidgets.QLabel('<b>%s</b>' % _('Grid Settings'))
+        grid0.addWidget(self.grid_label, 0, 0, 1, 2)
 
         # Grid X Entry
-        self.gridx_label = QtWidgets.QLabel('%s:' % _('Grid X value'))
+        self.gridx_label = QtWidgets.QLabel('%s:' % _('X value'))
         self.gridx_label.setToolTip(
            _("This is the Grid snap value on X axis.")
         )
@@ -334,14 +342,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.gridx_entry.set_precision(self.decimals)
         self.gridx_entry.setSingleStep(0.1)
 
+        grid0.addWidget(self.gridx_label, 1, 0)
+        grid0.addWidget(self.gridx_entry, 1, 1)
+
         # Grid Y Entry
-        self.gridy_label = QtWidgets.QLabel('%s:' % _('Grid Y value'))
+        self.gridy_label = QtWidgets.QLabel('%s:' % _('Y value'))
         self.gridy_label.setToolTip(
             _("This is the Grid snap value on Y axis.")
         )
         self.gridy_entry = FCDoubleSpinner()
         self.gridy_entry.set_precision(self.decimals)
         self.gridy_entry.setSingleStep(0.1)
+
+        grid0.addWidget(self.gridy_label, 2, 0)
+        grid0.addWidget(self.gridy_entry, 2, 1)
 
         # Snap Max Entry
         self.snap_max_label = QtWidgets.QLabel('%s:' % _('Snap Max'))
@@ -350,19 +364,35 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.snap_max_dist_entry.set_precision(self.decimals)
         self.snap_max_dist_entry.setSingleStep(0.1)
 
+        grid0.addWidget(self.snap_max_label, 3, 0)
+        grid0.addWidget(self.snap_max_dist_entry, 3, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 4, 0, 1, 2)
+
         # Workspace
-        self.workspace_lbl = QtWidgets.QLabel('%s:' % _('Workspace'))
-        self.workspace_lbl.setToolTip(
+        self.workspace_label = QtWidgets.QLabel('<b>%s</b>' % _('Workspace Settings'))
+        grid0.addWidget(self.workspace_label, 5, 0, 1, 2)
+
+        self.workspace_cb = FCCheckBox('%s' % _('Active'))
+        self.workspace_cb.setToolTip(
            _("Draw a delimiting rectangle on canvas.\n"
              "The purpose is to illustrate the limits for our work.")
         )
-        self.workspace_type_lbl = QtWidgets.QLabel('%s:' % _('Wk. size'))
+
+        grid0.addWidget(self.workspace_cb, 6, 0, 1, 2)
+
+        self.workspace_type_lbl = QtWidgets.QLabel('%s:' % _('Size'))
         self.workspace_type_lbl.setToolTip(
            _("Select the type of rectangle to be used on canvas,\n"
              "as valid workspace.")
         )
-        self.workspace_cb = FCCheckBox()
         self.wk_cb = FCComboBox()
+
+        grid0.addWidget(self.workspace_type_lbl, 7, 0)
+        grid0.addWidget(self.wk_cb, 7, 1)
 
         self.pagesize = dict()
         self.pagesize.update(
@@ -420,13 +450,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         page_size_list = list(self.pagesize.keys())
 
         self.wk_cb.addItems(page_size_list)
-        # self.wk_cb.addItem('A4P')
-        # self.wk_cb.addItem('A4L')
-        # self.wk_cb.addItem('A3P')
-        # self.wk_cb.addItem('A3L')
 
         # Page orientation
-        self.wk_orientation_label = QtWidgets.QLabel('%s:' % _("Wk. Orientation"))
+        self.wk_orientation_label = QtWidgets.QLabel('%s:' % _("Orientation"))
         self.wk_orientation_label.setToolTip(_("Can be:\n"
                                                "- Portrait\n"
                                                "- Landscape"))
@@ -443,12 +469,40 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
                                             self.wk_orientation_radio
                                         ])
 
+        grid0.addWidget(self.wk_orientation_label, 8, 0)
+        grid0.addWidget(self.wk_orientation_radio, 8, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 9, 0, 1, 2)
+
+        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Gerber Object Color'))
+        grid0.addWidget(self.gerber_color_label, 10, 0, 1, 2)
+
+        # Plot Line Color
+        self.pl_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.pl_color_label.setToolTip(
+           _("Set the line color for plotted objects.")
+        )
+        self.pl_color_entry = FCEntry()
+        self.pl_color_button = QtWidgets.QPushButton()
+        self.pl_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_2 = QtWidgets.QHBoxLayout()
+        self.form_box_child_2.addWidget(self.pl_color_entry)
+        self.form_box_child_2.addWidget(self.pl_color_button)
+        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.pl_color_label, 11, 0)
+        grid0.addLayout(self.form_box_child_2, 11, 1)
+
         # Plot Fill Color
-        self.pf_color_label = QtWidgets.QLabel('%s:' % _('Plot Fill'))
+        self.pf_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
         self.pf_color_label.setToolTip(
-           _("Set the fill color for plotted objects.\n"
-             "First 6 digits are the color and the last 2\n"
-             "digits are for alpha (transparency) level.")
+            _("Set the fill color for plotted objects.\n"
+              "First 6 digits are the color and the last 2\n"
+              "digits are for alpha (transparency) level.")
         )
         self.pf_color_entry = FCEntry()
         self.pf_color_button = QtWidgets.QPushButton()
@@ -459,8 +513,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_1.addWidget(self.pf_color_button)
         self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        grid0.addWidget(self.pf_color_label, 12, 0)
+        grid0.addLayout(self.form_box_child_1, 12, 1)
+
         # Plot Fill Transparency Level
-        self.pf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha Level'))
+        self.pf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
         self.pf_alpha_label.setToolTip(
            _("Set the fill transparency for plotted objects.")
         )
@@ -473,26 +530,39 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.pf_color_alpha_spinner.setMinimumWidth(70)
         self.pf_color_alpha_spinner.set_range(0, 255)
 
-        self.form_box_child_2 = QtWidgets.QHBoxLayout()
-        self.form_box_child_2.addWidget(self.pf_color_alpha_slider)
-        self.form_box_child_2.addWidget(self.pf_color_alpha_spinner)
-
-        # Plot Line Color
-        self.pl_color_label = QtWidgets.QLabel('%s:' % _('Plot Line'))
-        self.pl_color_label.setToolTip(
-           _("Set the line color for plotted objects.")
-        )
-        self.pl_color_entry = FCEntry()
-        self.pl_color_button = QtWidgets.QPushButton()
-        self.pl_color_button.setFixedSize(15, 15)
-
         self.form_box_child_3 = QtWidgets.QHBoxLayout()
-        self.form_box_child_3.addWidget(self.pl_color_entry)
-        self.form_box_child_3.addWidget(self.pl_color_button)
-        self.form_box_child_3.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.form_box_child_3.addWidget(self.pf_color_alpha_slider)
+        self.form_box_child_3.addWidget(self.pf_color_alpha_spinner)
 
-        # Plot Selection (left - right) Fill Color
-        self.sf_color_label = QtWidgets.QLabel('%s:' % _('Sel. Fill'))
+        grid0.addWidget(self.pf_alpha_label, 13, 0)
+        grid0.addLayout(self.form_box_child_3, 13, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 14, 0, 1, 2)
+
+        # Plot Selection (left - right) Color
+        self.sel_lr_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Left-Right Selection Color'))
+        grid0.addWidget(self.sel_lr_label, 15, 0, 1, 2)
+
+        self.sl_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.sl_color_label.setToolTip(
+            _("Set the line color for the 'left to right' selection box.")
+        )
+        self.sl_color_entry = FCEntry()
+        self.sl_color_button = QtWidgets.QPushButton()
+        self.sl_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_4 = QtWidgets.QHBoxLayout()
+        self.form_box_child_4.addWidget(self.sl_color_entry)
+        self.form_box_child_4.addWidget(self.sl_color_button)
+        self.form_box_child_4.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.sl_color_label, 16, 0)
+        grid0.addLayout(self.form_box_child_4, 16, 1)
+
+        self.sf_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
         self.sf_color_label.setToolTip(
             _("Set the fill color for the selection box\n"
               "in case that the selection is done from left to right.\n"
@@ -503,13 +573,16 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.sf_color_button = QtWidgets.QPushButton()
         self.sf_color_button.setFixedSize(15, 15)
 
-        self.form_box_child_4 = QtWidgets.QHBoxLayout()
-        self.form_box_child_4.addWidget(self.sf_color_entry)
-        self.form_box_child_4.addWidget(self.sf_color_button)
-        self.form_box_child_4.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.form_box_child_5 = QtWidgets.QHBoxLayout()
+        self.form_box_child_5.addWidget(self.sf_color_entry)
+        self.form_box_child_5.addWidget(self.sf_color_button)
+        self.form_box_child_5.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.sf_color_label, 17, 0)
+        grid0.addLayout(self.form_box_child_5, 17, 1)
 
         # Plot Selection (left - right) Fill Transparency Level
-        self.sf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha Level'))
+        self.sf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
         self.sf_alpha_label.setToolTip(
             _("Set the fill transparency for the 'left to right' selection box.")
         )
@@ -522,26 +595,41 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.sf_color_alpha_spinner.setMinimumWidth(70)
         self.sf_color_alpha_spinner.set_range(0, 255)
 
-        self.form_box_child_5 = QtWidgets.QHBoxLayout()
-        self.form_box_child_5.addWidget(self.sf_color_alpha_slider)
-        self.form_box_child_5.addWidget(self.sf_color_alpha_spinner)
-
-        # Plot Selection (left - right) Line Color
-        self.sl_color_label = QtWidgets.QLabel('%s:' % _('Sel. Line'))
-        self.sl_color_label.setToolTip(
-            _("Set the line color for the 'left to right' selection box.")
-        )
-        self.sl_color_entry = FCEntry()
-        self.sl_color_button = QtWidgets.QPushButton()
-        self.sl_color_button.setFixedSize(15, 15)
-
         self.form_box_child_6 = QtWidgets.QHBoxLayout()
-        self.form_box_child_6.addWidget(self.sl_color_entry)
-        self.form_box_child_6.addWidget(self.sl_color_button)
-        self.form_box_child_6.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.form_box_child_6.addWidget(self.sf_color_alpha_slider)
+        self.form_box_child_6.addWidget(self.sf_color_alpha_spinner)
+
+        grid0.addWidget(self.sf_alpha_label, 18, 0)
+        grid0.addLayout(self.form_box_child_6, 18, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 19, 0, 1, 2)
+
+        # Plot Selection (left - right) Color
+        self.sel_rl_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Right-Left Selection Color'))
+        grid0.addWidget(self.sel_rl_label, 20, 0, 1, 2)
+
+        # Plot Selection (right - left) Line Color
+        self.alt_sl_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.alt_sl_color_label.setToolTip(
+            _("Set the line color for the 'right to left' selection box.")
+        )
+        self.alt_sl_color_entry = FCEntry()
+        self.alt_sl_color_button = QtWidgets.QPushButton()
+        self.alt_sl_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_7 = QtWidgets.QHBoxLayout()
+        self.form_box_child_7.addWidget(self.alt_sl_color_entry)
+        self.form_box_child_7.addWidget(self.alt_sl_color_button)
+        self.form_box_child_7.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.alt_sl_color_label, 21, 0)
+        grid0.addLayout(self.form_box_child_7, 21, 1)
 
         # Plot Selection (right - left) Fill Color
-        self.alt_sf_color_label = QtWidgets.QLabel('%s:' % _('Sel2. Fill'))
+        self.alt_sf_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
         self.alt_sf_color_label.setToolTip(
             _("Set the fill color for the selection box\n"
               "in case that the selection is done from right to left.\n"
@@ -552,13 +640,16 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.alt_sf_color_button = QtWidgets.QPushButton()
         self.alt_sf_color_button.setFixedSize(15, 15)
 
-        self.form_box_child_7 = QtWidgets.QHBoxLayout()
-        self.form_box_child_7.addWidget(self.alt_sf_color_entry)
-        self.form_box_child_7.addWidget(self.alt_sf_color_button)
-        self.form_box_child_7.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.form_box_child_8 = QtWidgets.QHBoxLayout()
+        self.form_box_child_8.addWidget(self.alt_sf_color_entry)
+        self.form_box_child_8.addWidget(self.alt_sf_color_button)
+        self.form_box_child_8.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.alt_sf_color_label, 22, 0)
+        grid0.addLayout(self.form_box_child_8, 22, 1)
 
         # Plot Selection (right - left) Fill Transparency Level
-        self.alt_sf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha Level'))
+        self.alt_sf_alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
         self.alt_sf_alpha_label.setToolTip(
             _("Set the fill transparency for selection 'right to left' box.")
         )
@@ -571,26 +662,27 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.alt_sf_color_alpha_spinner.setMinimumWidth(70)
         self.alt_sf_color_alpha_spinner.set_range(0, 255)
 
-        self.form_box_child_8 = QtWidgets.QHBoxLayout()
-        self.form_box_child_8.addWidget(self.alt_sf_color_alpha_slider)
-        self.form_box_child_8.addWidget(self.alt_sf_color_alpha_spinner)
-
-        # Plot Selection (right - left) Line Color
-        self.alt_sl_color_label = QtWidgets.QLabel('%s:' % _('Sel2. Line'))
-        self.alt_sl_color_label.setToolTip(
-            _("Set the line color for the 'right to left' selection box.")
-        )
-        self.alt_sl_color_entry = FCEntry()
-        self.alt_sl_color_button = QtWidgets.QPushButton()
-        self.alt_sl_color_button.setFixedSize(15, 15)
-
         self.form_box_child_9 = QtWidgets.QHBoxLayout()
-        self.form_box_child_9.addWidget(self.alt_sl_color_entry)
-        self.form_box_child_9.addWidget(self.alt_sl_color_button)
-        self.form_box_child_9.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.form_box_child_9.addWidget(self.alt_sf_color_alpha_slider)
+        self.form_box_child_9.addWidget(self.alt_sf_color_alpha_spinner)
+
+        grid0.addWidget(self.alt_sf_alpha_label, 23, 0)
+        grid0.addLayout(self.form_box_child_9, 23, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 24, 0, 1, 2)
+
+        # ------------------------------------------------------------------
+        # ----------------------- Editor Color -----------------------------
+        # ------------------------------------------------------------------
+
+        self.editor_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Editor Color'))
+        grid0.addWidget(self.editor_color_label, 25, 0, 1, 2)
 
         # Editor Draw Color
-        self.draw_color_label = QtWidgets.QLabel('%s:' % _('Editor Draw'))
+        self.draw_color_label = QtWidgets.QLabel('%s:' % _('Drawing'))
         self.alt_sf_color_label.setToolTip(
             _("Set the color for the shape.")
         )
@@ -603,8 +695,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_10.addWidget(self.draw_color_button)
         self.form_box_child_10.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        grid0.addWidget(self.draw_color_label, 26, 0)
+        grid0.addLayout(self.form_box_child_10, 26, 1)
+
         # Editor Draw Selection Color
-        self.sel_draw_color_label = QtWidgets.QLabel('%s:' % _('Editor Draw Sel.'))
+        self.sel_draw_color_label = QtWidgets.QLabel('%s:' % _('Selection'))
         self.sel_draw_color_label.setToolTip(
             _("Set the color of the shape when selected.")
         )
@@ -617,8 +712,23 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.addWidget(self.sel_draw_color_button)
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        grid0.addWidget(self.sel_draw_color_label, 27, 0)
+        grid0.addLayout(self.form_box_child_11, 27, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 28, 0, 1, 2)
+
+        # ------------------------------------------------------------------
+        # ----------------------- Project Settings -----------------------------
+        # ------------------------------------------------------------------
+
+        self.proj_settings_label = QtWidgets.QLabel('<b>%s</b>' % _('Project Items Color'))
+        grid0.addWidget(self.proj_settings_label, 29, 0, 1, 2)
+
         # Project Tab items color
-        self.proj_color_label = QtWidgets.QLabel('%s:' % _('Project Items'))
+        self.proj_color_label = QtWidgets.QLabel('%s:' % _('Enabled'))
         self.proj_color_label.setToolTip(
             _("Set the color of the items in Project Tab Tree.")
         )
@@ -631,7 +741,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_12.addWidget(self.proj_color_button)
         self.form_box_child_12.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        self.proj_color_dis_label = QtWidgets.QLabel('%s:' % _('Proj. Dis. Items'))
+        grid0.addWidget(self.proj_color_label, 30, 0)
+        grid0.addLayout(self.form_box_child_12, 30, 1)
+
+        self.proj_color_dis_label = QtWidgets.QLabel('%s:' % _('Disabled'))
         self.proj_color_dis_label.setToolTip(
             _("Set the color of the items in Project Tab Tree,\n"
               "for the case when the items are disabled.")
@@ -645,51 +758,23 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_13.addWidget(self.proj_color_dis_button)
         self.form_box_child_13.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        # Activity monitor icon
-        self.activity_label = QtWidgets.QLabel('%s:' % _("Activity Icon"))
-        self.activity_label.setToolTip(
-            _("Select the GIF that show activity when FlatCAM is active.")
+        grid0.addWidget(self.proj_color_dis_label, 31, 0)
+        grid0.addLayout(self.form_box_child_13, 31, 1)
+
+        # Project autohide CB
+        self.project_autohide_cb = FCCheckBox(label='Project AutoHide')
+        self.project_autohide_cb.setToolTip(
+            _("Check this box if you want the project/selected/tool tab area to\n"
+              "hide automatically when there are no objects loaded and\n"
+              "to show whenever a new object is created.")
         )
-        self.activity_combo = FCComboBox()
-        self.activity_combo.addItems(['Ball black', 'Ball green', 'Arrow green', 'Eclipse green'])
+
+        grid0.addWidget(self.project_autohide_cb, 32, 0, 1, 2)
 
         # Just to add empty rows
-        self.spacelabel = QtWidgets.QLabel('')
+        grid0.addWidget(QtWidgets.QLabel(''), 33, 0, 1, 2)
 
-        # Add (label - input field) pair to the QFormLayout
-        self.form_box.addRow(self.spacelabel, self.spacelabel)
-
-        self.form_box.addRow(self.gridx_label, self.gridx_entry)
-        self.form_box.addRow(self.gridy_label, self.gridy_entry)
-        self.form_box.addRow(self.snap_max_label, self.snap_max_dist_entry)
-
-        self.form_box.addRow(self.workspace_lbl, self.workspace_cb)
-        self.form_box.addRow(self.workspace_type_lbl, self.wk_cb)
-        self.form_box.addRow(self.wk_orientation_label, self.wk_orientation_radio)
-
-        self.form_box.addRow(self.spacelabel, self.spacelabel)
-        self.form_box.addRow(self.pf_color_label, self.form_box_child_1)
-        self.form_box.addRow(self.pf_alpha_label, self.form_box_child_2)
-        self.form_box.addRow(self.pl_color_label, self.form_box_child_3)
-        self.form_box.addRow(self.sf_color_label, self.form_box_child_4)
-        self.form_box.addRow(self.sf_alpha_label, self.form_box_child_5)
-        self.form_box.addRow(self.sl_color_label, self.form_box_child_6)
-        self.form_box.addRow(self.alt_sf_color_label, self.form_box_child_7)
-        self.form_box.addRow(self.alt_sf_alpha_label, self.form_box_child_8)
-        self.form_box.addRow(self.alt_sl_color_label, self.form_box_child_9)
-        self.form_box.addRow(self.draw_color_label, self.form_box_child_10)
-        self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
-        self.form_box.addRow(QtWidgets.QLabel(""))
-        self.form_box.addRow(self.proj_color_label, self.form_box_child_12)
-        self.form_box.addRow(self.proj_color_dis_label, self.form_box_child_13)
-
-        self.form_box.addRow(self.activity_label, self.activity_combo)
-
-        self.form_box.addRow(self.spacelabel, self.spacelabel)
-
-        # Add the QFormLayout that holds the Application general defaults
-        # to the main layout of this TAB
-        self.layout.addLayout(self.form_box)
+        self.layout.addStretch()
 
 
 class GeneralGUISetGroupUI(OptionsGroupUI):
@@ -710,9 +795,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.resource_loc = 'share'
 
-        # Create a form layout for the Application general settings
-        self.form_box = QtWidgets.QFormLayout()
-
+        # Create a grid layout for the Application general settings
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
         grid0.setColumnStretch(0, 0)
@@ -891,12 +974,23 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         # Just to add empty rows
         grid0.addWidget(QtWidgets.QLabel(''), 12, 0)
 
+        # -----------------------------------------------------------
+        # ----------- APPLICATION STARTUP SETTINGS ------------------
+        # -----------------------------------------------------------
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 13, 0, 1, 2)
+
+        self.startup_label = QtWidgets.QLabel('<b>%s</b>' % _('Startup Settings'))
+        grid0.addWidget(self.startup_label, 14, 0, 1, 2)
+
         # Splash Screen
-        self.splash_label = QtWidgets.QLabel('%s:' % _('Splash Screen'))
-        self.splash_label.setToolTip(
+        self.splash_cb = FCCheckBox('%s' % _('Splash Screen'))
+        self.splash_cb.setToolTip(
             _("Enable display of the splash screen at application startup.")
         )
-        self.splash_cb = FCCheckBox()
 
         settings = QSettings("Open Source", "FlatCAM")
         if settings.value("splash_screen"):
@@ -904,85 +998,46 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.splash_cb.set_value(False)
 
-        grid0.addWidget(self.splash_label, 13, 0)
-        grid0.addWidget(self.splash_cb, 13, 1)
+        grid0.addWidget(self.splash_cb, 15, 0, 1, 2)
 
         # Sys Tray Icon
-        self.systray_label = QtWidgets.QLabel('%s:' % _('Sys Tray Icon'))
-        self.systray_label.setToolTip(
+        self.systray_cb = FCCheckBox('%s' % _('Sys Tray Icon'))
+        self.systray_cb.setToolTip(
             _("Enable display of FlatCAM icon in Sys Tray.")
         )
-        self.systray_cb = FCCheckBox()
-
-        grid0.addWidget(self.systray_label, 14, 0)
-        grid0.addWidget(self.systray_cb, 14, 1)
+        grid0.addWidget(self.systray_cb, 16, 0, 1, 2)
 
         # Shell StartUp CB
-        self.shell_startup_label = QtWidgets.QLabel('%s:' % _('Shell at StartUp'))
-        self.shell_startup_label.setToolTip(
-            _("Check this box if you want the shell to\n"
-              "start automatically at startup.")
-        )
-        self.shell_startup_cb = FCCheckBox(label='')
+        self.shell_startup_cb = FCCheckBox(label='%s' % _('Show Shell'))
         self.shell_startup_cb.setToolTip(
             _("Check this box if you want the shell to\n"
               "start automatically at startup.")
         )
 
-        grid0.addWidget(self.shell_startup_label, 15, 0)
-        grid0.addWidget(self.shell_startup_cb, 15, 1)
+        grid0.addWidget(self.shell_startup_cb, 17, 0, 1, 2)
 
         # Project at StartUp CB
-        self.project_startup_label = QtWidgets.QLabel('%s:' % _('Project at StartUp'))
-        self.project_startup_label.setToolTip(
-            _("Check this box if you want the project/selected/tool tab area to\n"
-              "to be shown automatically at startup.")
-        )
-        self.project_startup_cb = FCCheckBox(label='')
+        self.project_startup_cb = FCCheckBox(label='%s' % _('Show Project'))
         self.project_startup_cb.setToolTip(
             _("Check this box if you want the project/selected/tool tab area to\n"
               "to be shown automatically at startup.")
         )
+        grid0.addWidget(self.project_startup_cb, 18, 0, 1, 2)
 
-        grid0.addWidget(self.project_startup_label, 16, 0)
-        grid0.addWidget(self.project_startup_cb, 16, 1)
+        # -----------------------------------------------------------
+        # -------------- MOUSE SETTINGS -----------------------------
+        # -----------------------------------------------------------
 
-        # Project autohide CB
-        self.project_autohide_label = QtWidgets.QLabel('%s:' % _('Project AutoHide'))
-        self.project_autohide_label.setToolTip(
-            _("Check this box if you want the project/selected/tool tab area to\n"
-              "hide automatically when there are no objects loaded and\n"
-              "to show whenever a new object is created.")
-        )
-        self.project_autohide_cb = FCCheckBox(label='')
-        self.project_autohide_cb.setToolTip(
-            _("Check this box if you want the project/selected/tool tab area to\n"
-              "hide automatically when there are no objects loaded and\n"
-              "to show whenever a new object is created.")
-        )
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 20, 0, 1, 2)
 
-        grid0.addWidget(self.project_autohide_label, 17, 0)
-        grid0.addWidget(self.project_autohide_cb, 17, 1)
-
-        grid0.addWidget(QtWidgets.QLabel(''), 18, 0)
-
-        # Enable/Disable ToolTips globally
-        self.toggle_tooltips_label = QtWidgets.QLabel('<b>%s:</b>' % _('Enable ToolTips'))
-        self.toggle_tooltips_label.setToolTip(
-            _("Check this box if you want to have toolTips displayed\n"
-              "when hovering with mouse over items throughout the App.")
-        )
-        self.toggle_tooltips_cb = FCCheckBox(label='')
-        self.toggle_tooltips_cb.setToolTip(
-            _("Check this box if you want to have toolTips displayed\n"
-              "when hovering with mouse over items throughout the App.")
-        )
-
-        grid0.addWidget(self.toggle_tooltips_label, 19, 0)
-        grid0.addWidget(self.toggle_tooltips_cb, 19, 1)
+        self.mouse_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Mouse Settings'))
+        grid0.addWidget(self.mouse_lbl, 21, 0, 1, 2)
 
         # Mouse Cursor Shape
-        self.cursor_lbl = QtWidgets.QLabel('%s:' % _('Mouse Cursor'))
+        self.cursor_lbl = QtWidgets.QLabel('%s:' % _('Cursor Shape'))
         self.cursor_lbl.setToolTip(
            _("Choose a mouse cursor shape.\n"
              "- Small -> with a customizable size.\n"
@@ -994,10 +1049,11 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             {"label": _("Big"), "value": "big"}
         ], orientation='horizontal', stretch=False)
 
-        grid0.addWidget(self.cursor_lbl, 20, 0)
-        grid0.addWidget(self.cursor_radio, 20, 1)
+        grid0.addWidget(self.cursor_lbl, 22, 0)
+        grid0.addWidget(self.cursor_radio, 22, 1)
 
-        self.cursor_size_lbl = QtWidgets.QLabel('%s:' % _('Mouse Cursor Size'))
+        # Mouse Cursor Size
+        self.cursor_size_lbl = QtWidgets.QLabel('%s:' % _('Cursor Size'))
         self.cursor_size_lbl.setToolTip(
            _("Set the size of the mouse cursor, in pixels.")
         )
@@ -1006,10 +1062,11 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.cursor_size_entry.set_range(10, 70)
         self.cursor_size_entry.setWrapping(True)
 
-        grid0.addWidget(self.cursor_size_lbl, 21, 0)
-        grid0.addWidget(self.cursor_size_entry, 21, 1)
+        grid0.addWidget(self.cursor_size_lbl, 23, 0)
+        grid0.addWidget(self.cursor_size_entry, 23, 1)
 
-        self.cursor_width_lbl = QtWidgets.QLabel('%s:' % _('Mouse Cursor Width'))
+        # Cursor Width
+        self.cursor_width_lbl = QtWidgets.QLabel('%s:' % _('Cursor Width'))
         self.cursor_width_lbl.setToolTip(
            _("Set the line width of the mouse cursor, in pixels.")
         )
@@ -1018,8 +1075,69 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.cursor_width_entry.set_range(1, 10)
         self.cursor_width_entry.setWrapping(True)
 
-        grid0.addWidget(self.cursor_width_lbl, 22, 0)
-        grid0.addWidget(self.cursor_width_entry, 22, 1)
+        grid0.addWidget(self.cursor_width_lbl, 24, 0)
+        grid0.addWidget(self.cursor_width_entry, 24, 1)
+
+        # Cursor Color Enable
+        self.mouse_cursor_color_cb = FCCheckBox(label='%s' % _('Cursor Color'))
+        self.mouse_cursor_color_cb.setToolTip(
+            _("Check this box to color mouse cursor.")
+        )
+        grid0.addWidget(self.mouse_cursor_color_cb, 25, 0, 1, 2)
+
+        # Cursor Color
+        self.mouse_color_label = QtWidgets.QLabel('%s:' % _('Cursor Color'))
+        self.mouse_color_label.setToolTip(
+            _("Set the color of the mouse cursor.")
+        )
+        self.mouse_cursor_entry = FCEntry()
+        self.mouse_cursor_button = QtWidgets.QPushButton()
+        self.mouse_cursor_button.setFixedSize(15, 15)
+
+        self.form_box_child_1 = QtWidgets.QHBoxLayout()
+        self.form_box_child_1.addWidget(self.mouse_cursor_entry)
+        self.form_box_child_1.addWidget(self.mouse_cursor_button)
+        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.mouse_color_label, 26, 0)
+        grid0.addLayout(self.form_box_child_1, 26, 1)
+
+        self.mois = OptionalInputSection(
+            self.mouse_cursor_color_cb,
+            [
+                self.mouse_color_label,
+                self.mouse_cursor_entry,
+                self.mouse_cursor_button
+            ]
+        )
+        # Select mouse pan button
+        self.panbuttonlabel = QtWidgets.QLabel('%s:' % _('Pan Button'))
+        self.panbuttonlabel.setToolTip(
+            _("Select the mouse button to use for panning:\n"
+              "- MMB --> Middle Mouse Button\n"
+              "- RMB --> Right Mouse Button")
+        )
+        self.pan_button_radio = RadioSet([{'label': _('MMB'), 'value': '3'},
+                                          {'label': _('RMB'), 'value': '2'}])
+
+        grid0.addWidget(self.panbuttonlabel, 27, 0)
+        grid0.addWidget(self.pan_button_radio, 27, 1)
+
+        # Multiple Selection Modifier Key
+        self.mselectlabel = QtWidgets.QLabel('%s:' % _('Multiple Selection'))
+        self.mselectlabel.setToolTip(
+            _("Select the key used for multiple selection.")
+        )
+        self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
+                                       {'label': _('SHIFT'), 'value': 'Shift'}])
+
+        grid0.addWidget(self.mselectlabel, 28, 0)
+        grid0.addWidget(self.mselect_radio, 28, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 29, 0, 1, 2)
 
         # Delete confirmation
         self.delete_conf_cb = FCCheckBox(_('Delete object confirmation'))
@@ -1028,9 +1146,72 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "whenever the Delete object(s) event is triggered, either by\n"
               "menu shortcut or key shortcut.")
         )
-        grid0.addWidget(self.delete_conf_cb, 23, 0, 1, 2)
+        grid0.addWidget(self.delete_conf_cb, 30, 0, 1, 2)
+
+        # Enable/Disable ToolTips globally
+        self.toggle_tooltips_cb = FCCheckBox(label='Enable ToolTips')
+        self.toggle_tooltips_cb.setToolTip(
+            _("Check this box if you want to have toolTips displayed\n"
+              "when hovering with mouse over items throughout the App.")
+        )
+
+        grid0.addWidget(self.toggle_tooltips_cb, 31, 0, 1, 2)
+
+        # Activity monitor icon
+        self.activity_label = QtWidgets.QLabel('%s:' % _("Activity Icon"))
+        self.activity_label.setToolTip(
+            _("Select the GIF that show activity when FlatCAM is active.")
+        )
+        self.activity_combo = FCComboBox()
+        self.activity_combo.addItems(['Ball black', 'Ball green', 'Arrow green', 'Eclipse green'])
+
+        grid0.addWidget(self.activity_label, 32, 0)
+        grid0.addWidget(self.activity_combo, 32, 1)
 
         self.layout.addStretch()
+
+        self.mouse_cursor_color_cb.stateChanged.connect(self.on_mouse_cursor_color_enable)
+
+        self.mouse_cursor_entry.editingFinished.connect(self.on_mouse_cursor_entry)
+        self.mouse_cursor_button.clicked.connect(self.on_mouse_cursor_button)
+
+    def on_mouse_cursor_color_enable(self, val):
+        if val:
+            self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
+        else:
+            theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+            if theme_settings.contains("theme"):
+                theme = theme_settings.value('theme', type=str)
+            else:
+                theme = 'white'
+
+            if theme == 'white':
+                self.app.cursor_color_3D = 'black'
+            else:
+                self.app.cursor_color_3D = 'gray'
+
+    def on_mouse_cursor_entry(self):
+        self.app.defaults['global_cursor_color'] = self.mouse_cursor_entry.get_value()
+        self.mouse_cursor_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_cursor_color']))
+
+        self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
+
+    def on_mouse_cursor_button(self):
+        current_color = QtGui.QColor(self.app.defaults['global_cursor_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        proj_color = c_dialog.getColor(initial=current_color)
+
+        if proj_color.isValid() is False:
+            return
+
+        self.mouse_cursor_button.setStyleSheet("background-color:%s" % str(proj_color.name()))
+
+        new_val_sel = str(proj_color.name())
+        self.mouse_cursor_entry.set_value(new_val_sel)
+        self.app.defaults['global_cursor_color'] = new_val_sel
+
+        self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
 
     def handle_style(self, style):
         # set current style
@@ -1212,26 +1393,6 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.send_stats_cb, 11, 1)
 
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
-
-        # Select mouse pan button
-        self.panbuttonlabel = QtWidgets.QLabel('<b>%s:</b>' % _('Pan Button'))
-        self.panbuttonlabel.setToolTip(_("Select the mouse button to use for panning:\n"
-                                         "- MMB --> Middle Mouse Button\n"
-                                         "- RMB --> Right Mouse Button"))
-        self.pan_button_radio = RadioSet([{'label': _('MMB'), 'value': '3'},
-                                          {'label': _('RMB'), 'value': '2'}])
-
-        grid0.addWidget(self.panbuttonlabel, 12, 0)
-        grid0.addWidget(self.pan_button_radio, 12, 1)
-
-        # Multiple Selection Modifier Key
-        self.mselectlabel = QtWidgets.QLabel('<b>%s:</b>' % _('Multiple Sel'))
-        self.mselectlabel.setToolTip(_("Select the key used for multiple selection."))
-        self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
-                                       {'label': _('SHIFT'), 'value': 'Shift'}])
-
-        grid0.addWidget(self.mselectlabel, 13, 0)
-        grid0.addWidget(self.mselect_radio, 13, 1)
 
         # Worker Numbers
         self.worker_number_label = QtWidgets.QLabel('%s:' % _('Workers number'))

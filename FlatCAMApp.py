@@ -338,13 +338,13 @@ class App(QtCore.QObject):
             os.makedirs(self.preprocessorpaths)
             App.log.debug('Created preprocessors folder: ' + self.preprocessorpaths)
 
-        # create tools_db.FlatConfig file if there is none
+        # create tools_db.FlatDB file if there is none
         try:
-            f = open(self.data_path + '/tools_db.FlatConfig')
+            f = open(self.data_path + '/tools_db.FlatDB')
             f.close()
         except IOError:
-            App.log.debug('Creating empty tool_db.FlatConfig')
-            f = open(self.data_path + '/tools_db.FlatConfig', 'w')
+            App.log.debug('Creating empty tool_db.FlatDB')
+            f = open(self.data_path + '/tools_db.FlatDB', 'w')
             json.dump({}, f)
             f.close()
 
@@ -513,6 +513,8 @@ class App(QtCore.QObject):
             "global_cursor_type": "small",
             "global_cursor_size": 20,
             "global_cursor_width": 2,
+            "global_cursor_color": '#000000',
+            "global_cursor_color_enabled": False,
 
             # Gerber General
             "gerber_plot": True,
@@ -990,10 +992,14 @@ class App(QtCore.QObject):
         self.current_defaults = dict()
         self.current_defaults.update(self.defaults)
 
-        # #############################################################################
-        # ##################### CREATE MULTIPROCESSING POOL ###########################
-        # #############################################################################
+        # ##########################################################################
+        # ##################### SETUP OBJECT CLASSES ###############################
+        # ##########################################################################
+        self.setup_obj_classes()
 
+        # ##########################################################################
+        # ##################### CREATE MULTIPROCESSING POOL ########################
+        # ##########################################################################
         self.pool = Pool()
 
         # ##########################################################################
@@ -1049,10 +1055,13 @@ class App(QtCore.QObject):
         else:
             theme = 'white'
 
-        if theme == 'white':
-            self.cursor_color_3D = 'black'
+        if self.defaults["global_cursor_color_enabled"]:
+            self.cursor_color_3D = self.defaults["global_cursor_color"]
         else:
-            self.cursor_color_3D = 'gray'
+            if theme == 'white':
+                self.cursor_color_3D = 'black'
+            else:
+                self.cursor_color_3D = 'gray'
 
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
@@ -1084,8 +1093,6 @@ class App(QtCore.QObject):
 
             "global_version_check": self.ui.general_defaults_form.general_app_group.version_check_cb,
             "global_send_stats": self.ui.general_defaults_form.general_app_group.send_stats_cb,
-            "global_pan_button": self.ui.general_defaults_form.general_app_group.pan_button_radio,
-            "global_mselect_key": self.ui.general_defaults_form.general_app_group.mselect_radio,
 
             "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
             "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
@@ -1122,7 +1129,7 @@ class App(QtCore.QObject):
 
             "global_proj_item_color": self.ui.general_defaults_form.general_gui_group.proj_color_entry,
             "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
-            "global_activity_icon": self.ui.general_defaults_form.general_gui_group.activity_combo,
+            "global_project_autohide": self.ui.general_defaults_form.general_gui_group.project_autohide_cb,
 
             # General GUI Settings
             "global_theme": self.ui.general_defaults_form.general_gui_set_group.theme_radio,
@@ -1132,12 +1139,17 @@ class App(QtCore.QObject):
             "global_systray_icon": self.ui.general_defaults_form.general_gui_set_group.systray_cb,
             "global_shell_at_startup": self.ui.general_defaults_form.general_gui_set_group.shell_startup_cb,
             "global_project_at_startup": self.ui.general_defaults_form.general_gui_set_group.project_startup_cb,
-            "global_project_autohide": self.ui.general_defaults_form.general_gui_set_group.project_autohide_cb,
-            "global_toggle_tooltips": self.ui.general_defaults_form.general_gui_set_group.toggle_tooltips_cb,
-            "global_delete_confirmation": self.ui.general_defaults_form.general_gui_set_group.delete_conf_cb,
             "global_cursor_type": self.ui.general_defaults_form.general_gui_set_group.cursor_radio,
             "global_cursor_size": self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry,
             "global_cursor_width": self.ui.general_defaults_form.general_gui_set_group.cursor_width_entry,
+            "global_cursor_color_enabled": self.ui.general_defaults_form.general_gui_set_group.mouse_cursor_color_cb,
+            "global_cursor_color": self.ui.general_defaults_form.general_gui_set_group.mouse_cursor_entry,
+            "global_pan_button": self.ui.general_defaults_form.general_gui_set_group.pan_button_radio,
+            "global_mselect_key": self.ui.general_defaults_form.general_gui_set_group.mselect_radio,
+            "global_delete_confirmation": self.ui.general_defaults_form.general_gui_set_group.delete_conf_cb,
+
+            "global_toggle_tooltips": self.ui.general_defaults_form.general_gui_set_group.toggle_tooltips_cb,
+            "global_activity_icon": self.ui.general_defaults_form.general_gui_set_group.activity_combo,
 
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
@@ -2212,7 +2224,6 @@ class App(QtCore.QObject):
             self.ui.splitter.setSizes([0, 1])
 
         # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
-        self.setup_obj_classes()
         self.setup_component_editor()
 
         # #####################################################################################
@@ -6326,11 +6337,19 @@ class App(QtCore.QObject):
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['global_proj_item_color'])[:7])
 
+        # Init Project Disabled Items color
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(
             self.defaults['global_proj_item_dis_color'])
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['global_proj_item_dis_color'])[:7])
+
+        # Init Project Disabled Items color
+        self.ui.general_defaults_form.general_gui_set_group.mouse_cursor_entry.set_value(
+            self.defaults['global_cursor_color'])
+        self.ui.general_defaults_form.general_gui_set_group.mouse_cursor_button.setStyleSheet(
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['global_cursor_color'])[:7])
 
         # Init the Annotation CNC Job color
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(
@@ -6766,7 +6785,7 @@ class App(QtCore.QObject):
             "background-color:%s" % str(proj_color.name()))
 
         new_val_sel = str(proj_color.name())
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(new_val_sel)
+        self.ui.general_defaults_form.general_gui_set_group.proj_color_dis_entry.set_value(new_val_sel)
         self.defaults['global_proj_item_dis_color'] = new_val_sel
 
     def on_annotation_fontcolor_entry(self):
@@ -12155,6 +12174,7 @@ class App(QtCore.QObject):
         CNCjob.app = self
         FCProcess.app = self
         FCProcessContainer.app = self
+        OptionsGroupUI.app = self
 
     def version_check(self):
         """

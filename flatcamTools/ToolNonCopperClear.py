@@ -698,11 +698,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "paintcontour": self.app.defaults["tools_paintcontour"],
             "paintoverlap": self.app.defaults["tools_paintoverlap"],
 
-            "nccoverlap": self.app.defaults["tools_nccoverlap"],
             "nccmargin": self.app.defaults["tools_nccmargin"],
             "nccmethod": self.app.defaults["tools_nccmethod"],
             "nccconnect": self.app.defaults["tools_nccconnect"],
             "ncccontour": self.app.defaults["tools_ncccontour"],
+            "nccoverlap": self.app.defaults["tools_nccoverlap"],
             "nccrest": self.app.defaults["tools_nccrest"]
         })
 

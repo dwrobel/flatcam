@@ -240,6 +240,8 @@ class FCPad(FCShapeTool):
 
         self.draw_app.app.inform.emit(_("Click to place ..."))
 
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
 
@@ -378,13 +380,17 @@ class FCPad(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Adding Pad completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Pad completed."))
+        self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.apertures_table.clearSelection()
         self.draw_app.plot_all()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCPadArray(FCShapeTool):
@@ -463,6 +469,8 @@ class FCPadArray(FCShapeTool):
             self.draw_app.draw_utility_geometry(geo=geo)
 
         self.draw_app.app.inform.emit(_("Click on target location ..."))
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
@@ -726,12 +734,16 @@ class FCPadArray(FCShapeTool):
                                       _("Done. Pad Array added."))
         self.draw_app.in_action = False
         self.draw_app.array_frame.hide()
-        return
+        self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.apertures_table.clearSelection()
         self.draw_app.plot_all()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCPoligonize(FCShapeTool):
@@ -1077,6 +1089,10 @@ class FCRegion(FCShapeTool):
         self.draw_app.selected = []
         self.draw_app.apertures_table.clearSelection()
         self.draw_app.plot_all()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def on_key(self, key):
         # Jump to coords
@@ -1190,6 +1206,10 @@ class FCTrack(FCRegion):
         self.draw_app.selected = []
         self.draw_app.apertures_table.clearSelection()
         self.draw_app.plot_all()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def click(self, point):
         self.draw_app.in_action = True
@@ -1472,6 +1492,10 @@ class FCDisc(FCShapeTool):
         self.draw_app.selected = []
         self.draw_app.apertures_table.clearSelection()
         self.draw_app.plot_all()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCSemiDisc(FCShapeTool):
@@ -1737,6 +1761,10 @@ class FCSemiDisc(FCShapeTool):
         self.draw_app.selected = []
         self.draw_app.apertures_table.clearSelection()
         self.draw_app.plot_all()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCScale(FCShapeTool):
@@ -1921,6 +1949,8 @@ class FCApertureMove(FCShapeTool):
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
 
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
+
         self.sel_limit = self.draw_app.app.defaults["gerber_editor_sel_limit"]
         self.selection_shape = self.selection_bbox()
 
@@ -2021,13 +2051,18 @@ class FCApertureMove(FCShapeTool):
 
         self.draw_app.plot_all()
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Apertures Move completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Apertures Move completed."))
+        self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.apertures_table.clearSelection()
         self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def utility_geometry(self, data=None):
         """
@@ -2098,8 +2133,8 @@ class FCApertureCopy(FCApertureMove):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Apertures copied."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Apertures copied."))
+        self.draw_app.app.jump_signal.disconnect()
 
 
 class FCEraser(FCShapeTool):
@@ -2129,6 +2164,8 @@ class FCEraser(FCShapeTool):
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         self.sel_limit = self.draw_app.app.defaults["gerber_editor_sel_limit"]
 
@@ -2206,13 +2243,17 @@ class FCEraser(FCShapeTool):
 
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Eraser tool action completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Eraser tool action completed."))
+        self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
         self.draw_app.selected = []
         self.draw_app.apertures_table.clearSelection()
         self.draw_app.plot_all()
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def utility_geometry(self, data=None):
         """
@@ -3757,6 +3798,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
             pass
         try:
             self.app.ui.grb_draw_transformations.triggered.disconnect(self.on_transform)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.jump_signal.disconnect()
         except (TypeError, AttributeError):
             pass
 

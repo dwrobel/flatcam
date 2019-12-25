@@ -9,6 +9,16 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+26.12.2019
+
+- modified the ToolDB class and changed some strings
+- Preferences classes now have access to the App attributes through app.setup_obj_classes() method
+- moved app.setup_obj_classes() upper in the App.__init__()
+- added a new Preferences setting allowing to modify the mouse cursor color
+- remade the GUI in Preferences -> General grouping the settings in a more clear way
+- made available the Jump To function in Excellon Editor
+- added a clean_up() method in all the Editor Tools that need it, to be run when aborting using the ESC key
+
 25.12.2019
 
 - fixed an issue in old default file detection and in saving the factory defaults file
@@ -16,6 +26,7 @@ CAD program, and create G-Code for Isolation routing.
 - when in Basic mode the Tool type of the tool in the Geometry UI Tool Table after isolating a Gerber object is automatically selected as 'C1'
 - let the multiprocessing Pool have as many processes as needed
 - added a new Preferences setting allowing a custom mouse line width (to make it thicker or thinner)
+- changed the extension of the Tool Database file to FlatDB for easy recognition (in the future double clicking such a file might import the new tools in the FC database)
 
 24.12.2019
 
