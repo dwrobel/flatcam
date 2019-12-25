@@ -1211,23 +1211,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_tab_bottom_layout_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.pref_tab_bottom_layout.addLayout(self.pref_tab_bottom_layout_1)
 
-        self.pref_import_button = QtWidgets.QPushButton()
-        self.pref_import_button.setText(_("Import Preferences"))
-        self.pref_import_button.setMinimumWidth(130)
-        self.pref_import_button.setToolTip(
-            _("Import a full set of FlatCAM settings from a file\n"
-              "previously saved on HDD.\n\n"
-              "FlatCAM automatically save a 'factory_defaults' file\n"
-              "on the first start. Do not delete that file."))
-        self.pref_tab_bottom_layout_1.addWidget(self.pref_import_button)
-
-        self.pref_export_button = QtWidgets.QPushButton()
-        self.pref_export_button.setText(_("Export Preferences"))
-        self.pref_export_button.setMinimumWidth(130)
-        self.pref_export_button.setToolTip(
-           _("Export a full set of FlatCAM settings in a file\n"
-             "that is saved on HDD."))
-        self.pref_tab_bottom_layout_1.addWidget(self.pref_export_button)
+        self.pref_defaults_button = QtWidgets.QPushButton()
+        self.pref_defaults_button.setText(_("Restore Defaults"))
+        self.pref_defaults_button.setMinimumWidth(130)
+        self.pref_defaults_button.setToolTip(
+            _("Restore the entire set of default valaues\n"
+              "to the initial values loaded after first launch."))
+        self.pref_tab_bottom_layout_1.addWidget(self.pref_defaults_button)
 
         self.pref_open_button = QtWidgets.QPushButton()
         self.pref_open_button.setText(_("Open Pref Folder"))

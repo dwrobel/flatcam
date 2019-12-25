@@ -50,7 +50,7 @@ def apply_patches():
         try:
             self._update_child_widget_dim()
         except Exception as e:
-            print(e)
+            print("VisPyPatches.apply_patches._update_clipper() -> %s" % str(e))
 
     Grid._prepare_draw = _prepare_draw
     Grid._update_clipper = _update_clipper
@@ -72,7 +72,7 @@ def apply_patches():
 
         if GL:
             GL.glDisable(GL.GL_LINE_SMOOTH)
-            GL.glLineWidth(1.0)
+            GL.glLineWidth(2.0)
 
         if self._changed['pos']:
             self.pos_buf.set_data(self._pos)

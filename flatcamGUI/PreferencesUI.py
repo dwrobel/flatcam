@@ -1009,6 +1009,18 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cursor_size_lbl, 21, 0)
         grid0.addWidget(self.cursor_size_entry, 21, 1)
 
+        self.cursor_width_lbl = QtWidgets.QLabel('%s:' % _('Mouse Cursor Width'))
+        self.cursor_width_lbl.setToolTip(
+           _("Set the line width of the mouse cursor, in pixels.")
+        )
+
+        self.cursor_width_entry = FCSpinner()
+        self.cursor_width_entry.set_range(1, 10)
+        self.cursor_width_entry.setWrapping(True)
+
+        grid0.addWidget(self.cursor_width_lbl, 22, 0)
+        grid0.addWidget(self.cursor_width_entry, 22, 1)
+
         # Delete confirmation
         self.delete_conf_cb = FCCheckBox(_('Delete object confirmation'))
         self.delete_conf_cb.setToolTip(
@@ -1016,7 +1028,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "whenever the Delete object(s) event is triggered, either by\n"
               "menu shortcut or key shortcut.")
         )
-        grid0.addWidget(self.delete_conf_cb, 22, 0, 1, 2)
+        grid0.addWidget(self.delete_conf_cb, 23, 0, 1, 2)
 
         self.layout.addStretch()
 

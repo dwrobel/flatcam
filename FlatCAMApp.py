@@ -512,6 +512,7 @@ class App(QtCore.QObject):
             "global_layout": "compact",
             "global_cursor_type": "small",
             "global_cursor_size": 20,
+            "global_cursor_width": 2,
 
             # Gerber General
             "gerber_plot": True,
@@ -993,7 +994,7 @@ class App(QtCore.QObject):
         # ##################### CREATE MULTIPROCESSING POOL ###########################
         # #############################################################################
 
-        self.pool = Pool(processes=cpu_count())
+        self.pool = Pool()
 
         # ##########################################################################
         # ################## Setting the Splash Screen #############################
@@ -1136,6 +1137,7 @@ class App(QtCore.QObject):
             "global_delete_confirmation": self.ui.general_defaults_form.general_gui_set_group.delete_conf_cb,
             "global_cursor_type": self.ui.general_defaults_form.general_gui_set_group.cursor_radio,
             "global_cursor_size": self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry,
+            "global_cursor_width": self.ui.general_defaults_form.general_gui_set_group.cursor_width_entry,
 
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
@@ -1548,6 +1550,30 @@ class App(QtCore.QObject):
         # When the self.defaults dictionary changes will update the Preferences GUI forms
         self.defaults.set_change_callback(self.on_defaults_dict_change)
 
+        # ##############################################################################
+        # ########################## FIRST RUN SECTION #################################
+        # ##################### It's done only once after install   ####################
+        # ##############################################################################
+
+        if self.defaults["first_run"] is True:
+
+            self.save_factory_defaults(silent_message=False)
+            # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
+            filename_factory = self.data_path + '/factory_defaults.FlatConfig'
+            os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
+
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
+            initial_lay = 'compact'
+            self.on_layout(lay=initial_lay)
+
+            # Set the combobox in Preferences to the current layout
+            idx = self.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(initial_lay)
+            self.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
+
+            # after the first run, this object should be False
+            self.defaults["first_run"] = False
+            self.save_defaults(silent=True)
+
         # #############################################################################
         # ############################## Data #########################################
         # #############################################################################
@@ -1953,8 +1979,7 @@ class App(QtCore.QObject):
         self.ui.pref_apply_button.clicked.connect(lambda: self.on_save_button(save_to_file=False))
         self.ui.pref_close_button.clicked.connect(self.on_pref_close_button)
 
-        self.ui.pref_import_button.clicked.connect(self.on_import_preferences)
-        self.ui.pref_export_button.clicked.connect(self.on_export_preferences)
+        self.ui.pref_defaults_button.clicked.connect(self.on_restore_defaults_preferences)
         self.ui.pref_open_button.clicked.connect(self.on_preferences_open_folder)
 
         # #############################################################################
@@ -2644,35 +2669,6 @@ class App(QtCore.QObject):
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
-
-        # ###############################################################################
-        # ############# Save defaults to factory_defaults.FlatConfig file ###############
-        # ############# It's done only once after install                 ###############
-        # ###############################################################################
-        factory_file = open(self.data_path + '/factory_defaults.FlatConfig')
-        fac_def_from_file = factory_file.read()
-        factory_defaults = json.loads(fac_def_from_file)
-
-        # if the file contain an empty dictionary then save the factory defaults into the file
-        if self.defaults["first_run"] is True:
-            self.save_factory_defaults(silent_message=False)
-
-            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            initial_lay = 'compact'
-            self.on_layout(lay=initial_lay)
-
-            # Set the combobox in Preferences to the current layout
-            idx = self.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(initial_lay)
-            self.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
-
-        factory_file.close()
-
-        # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
-        filename_factory = self.data_path + '/factory_defaults.FlatConfig'
-        os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
-
-        # after the first run, this object should be False
-        self.defaults["first_run"] = False
 
         # ###############################################################################
         # ################# ADDING FlatCAM EDITORS section ##############################
@@ -3856,42 +3852,84 @@ class App(QtCore.QObject):
             self.inform.emit('[ERROR] %s' % _("Failed to parse defaults file."))
             return
 
-        if 'version' not in defaults or defaults['version'] != self.defaults['version']:
-            for k, v in defaults.items():
-                if k in self.defaults and k != 'version':
-                    self.defaults[k] = v
+        if defaults:
+            if 'version' not in defaults or defaults['version'] != self.defaults['version']:
+                for k, v in defaults.items():
+                    if k in self.defaults and k != 'version':
+                        self.defaults[k] = v
 
-            # delete old factory defaults
-            try:
-                fact_def_file_path = os.path.join(self.data_path, 'factory_defaults.FlatConfig')
-                os.chmod(fact_def_file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
-                os.remove(fact_def_file_path)
+                # delete old factory defaults
+                try:
+                    fact_def_file_path = os.path.join(self.data_path, 'factory_defaults.FlatConfig')
+                    os.chmod(fact_def_file_path, stat.S_IRWXO | stat.S_IWRITE | stat.S_IWGRP)
+                    os.remove(fact_def_file_path)
 
-                # recreate a new factory defaults file and save the factory defaults data into it
-                f_f_def_s = open(self.data_path + "/factory_defaults.FlatConfig", "w")
-                json.dump(self.defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
-                f_f_def_s.close()
+                    # recreate a new factory defaults file and save the factory defaults data into it
+                    f_f_def_s = open(self.data_path + "/factory_defaults.FlatConfig", "w")
+                    json.dump(self.defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
+                    f_f_def_s.close()
 
-                # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
-                os.chmod(fact_def_file_path, S_IREAD | S_IRGRP | S_IROTH)
-            except Exception as e:
-                log.debug("App.load_defaults() -> deleting old factory defaults file -> %s" % str(e))
+                    # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
+                    os.chmod(fact_def_file_path, S_IREAD | S_IRGRP | S_IROTH)
+                except Exception as e:
+                    log.debug("App.load_defaults() -> deleting old factory defaults file -> %s" % str(e))
 
-            self.old_defaults_found = True
-        else:
-            self.defaults.update(defaults)
+                self.old_defaults_found = True
+            else:
+                self.old_defaults_found = False
+                self.defaults.update(defaults)
+
         log.debug("FlatCAM defaults loaded from: %s" % filename)
 
-    def on_import_preferences(self):
+    def on_restore_defaults_preferences(self):
         """
-        Loads the aplication's factory default settings from factory_defaults.FlatConfig into
+        Loads the application's factory default settings from factory_defaults.FlatConfig into
         ``self.defaults``.
 
         :return: None
         """
 
+        App.log.debug("App.on_restore_defaults_preferences()")
+
+        filename = self.data_path + '/factory_defaults.FlatConfig'
+
+        if filename == "":
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences default restore was cancelled."))
+        else:
+            try:
+                f = open(filename)
+                options = f.read()
+                f.close()
+            except IOError:
+                self.log.error("Could not load factory defaults file.")
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load factory defaults file."))
+                return
+
+            try:
+                defaults_from_file = json.loads(options)
+            except Exception:
+                e = sys.exc_info()[0]
+                App.log.error(str(e))
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse factory defaults file."))
+                return
+            self.defaults.update(defaults_from_file)
+            # update the dict that is used to restore the values in the defaults form if Cancel is clicked in the
+            # Preferences window
+            self.current_defaults.update(defaults_from_file)
+
+            self.on_preferences_edited()
+            self.inform.emit('[success] %s' % _("Preferences default values are restored."))
+
+    def on_import_preferences(self):
+        """
+        Loads the application default settings from a saved file into
+        ``self.defaults`` dictionary.
+
+        :return: None
+        """
+
         self.report_usage("on_import_preferences")
-        App.log.debug("on_import_preferences()")
+        App.log.debug("App.on_import_preferences()")
 
         filter_ = "Config File (*.FlatConfig);;All Files (*.*)"
         try:
@@ -3905,8 +3943,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("FlatCAM preferences import cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM preferences import cancelled."))
         else:
             try:
                 f = open(filename)
@@ -3914,8 +3951,7 @@ class App(QtCore.QObject):
                 f.close()
             except IOError:
                 self.log.error("Could not load defaults file.")
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Could not load defaults file."))
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load defaults file."))
                 return
 
             try:
@@ -3923,8 +3959,7 @@ class App(QtCore.QObject):
             except Exception:
                 e = sys.exc_info()[0]
                 App.log.error(str(e))
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to parse defaults file."))
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to parse defaults file."))
                 return
             self.defaults.update(defaults_from_file)
             # update the dict that is used to restore the values in the defaults form if Cancel is clicked in the
@@ -3932,8 +3967,7 @@ class App(QtCore.QObject):
             self.current_defaults.update(defaults_from_file)
 
             self.on_preferences_edited()
-            self.inform.emit('[success] %s: %s' %
-                             (_("Imported Defaults from"), filename))
+            self.inform.emit('[success] %s: %s' % (_("Imported Defaults from"), filename))
 
     def on_export_preferences(self):
         """
@@ -3965,8 +3999,7 @@ class App(QtCore.QObject):
         defaults_from_file = {}
 
         if filename == "":
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("FlatCAM preferences export cancelled."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("FlatCAM preferences export cancelled."))
             return
         else:
             try:
@@ -3987,8 +4020,7 @@ class App(QtCore.QObject):
                 e = sys.exc_info()[0]
                 App.log.error("Could not load defaults file.")
                 App.log.error(str(e))
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Could not load preferences file."))
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Could not load preferences file."))
                 return
 
             try:
@@ -4007,14 +4039,12 @@ class App(QtCore.QObject):
                 json.dump(defaults_from_file, f, default=to_dict, indent=2, sort_keys=True)
                 f.close()
             except Exception:
-                self.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed to write defaults to file."))
+                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write defaults to file."))
                 return
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("preferences", filename)
         self.file_saved.emit("preferences", filename)
-        self.inform.emit('[success] %s: %s' %
-                         (_("Exported preferences to"), filename))
+        self.inform.emit('[success] %s: %s' % (_("Exported preferences to"), filename))
 
     def on_preferences_open_folder(self):
         """
@@ -7532,6 +7562,7 @@ class App(QtCore.QObject):
             # Update cursor
             self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
                                      symbol='++', edge_color=self.cursor_color_3D,
+                                     edge_width=self.defaults["global_cursor_width"],
                                      size=self.defaults["global_cursor_size"])
 
         # Set the position label
@@ -8686,6 +8717,7 @@ class App(QtCore.QObject):
                     # Update cursor
                     self.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                              symbol='++', edge_color=self.cursor_color_3D,
+                                             edge_width=self.defaults["global_cursor_width"],
                                              size=self.defaults["global_cursor_size"])
                 else:
                     pos = (pos_canvas[0], pos_canvas[1])

@@ -9,6 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.12.2019
+
+- fixed an issue in old default file detection and in saving the factory defaults file
+- in Preferences window removed the Import/Export Preferences buttons because they are redundant with the entries in the File -> Menu -> Backup. and added a button to Restore Defaults
+- when in Basic mode the Tool type of the tool in the Geometry UI Tool Table after isolating a Gerber object is automatically selected as 'C1'
+- let the multiprocessing Pool have as many processes as needed
+- added a new Preferences setting allowing a custom mouse line width (to make it thicker or thinner)
+
 24.12.2019
 
 - edited some icons so they don't contain white background

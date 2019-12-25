@@ -3690,6 +3690,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+                                         edge_width=self.app.defaults["global_cursor_width"],
                                          size=self.app.defaults["global_cursor_size"])
 
         self.snap_x = x
@@ -3739,6 +3740,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # Update cursor
         self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+                                     edge_width=self.app.defaults["global_cursor_width"],
                                      size=self.app.defaults["global_cursor_size"])
 
     def on_canvas_key_release(self, event):

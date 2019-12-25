@@ -738,6 +738,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             self.ui.tool_type_label.hide()
             self.ui.tool_type_radio.hide()
+
+            # override the Preferences Value; in Basic mode the Tool Type is always Circular ('C1')
+            self.ui.tool_type_radio.set_value('circular')
+
             self.ui.tipdialabel.hide()
             self.ui.tipdia_spinner.hide()
             self.ui.tipanglelabel.hide()
@@ -1436,7 +1440,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
-                    geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
+                    if self.ui.tool_type_radio.get_value() == 'v':
+                        geo_obj.tool_type = 'V'
+                    else:
+                        geo_obj.tool_type = 'C1'
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_t = 1 if milling_type == 'cl' else 0
