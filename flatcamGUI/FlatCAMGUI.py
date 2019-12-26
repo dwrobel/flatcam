@@ -1226,6 +1226,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             _("Open the folder where FlatCAM save the preferences files."))
         self.pref_tab_bottom_layout_1.addWidget(self.pref_open_button)
 
+        # Clear Settings
+        self.clear_btn = FCButton('%s' % _('Clear GUI Settings'))
+        self.clear_btn.setMinimumWidth(130)
+
+        self.clear_btn.setToolTip(
+            _("Clear the GUI settings for FlatCAM,\n"
+              "such as: layout, gui state, style, hdpi support etc.")
+        )
+
+        self.pref_tab_bottom_layout_1.addWidget(self.clear_btn)
+
         self.pref_tab_bottom_layout_2 = QtWidgets.QHBoxLayout()
         self.pref_tab_bottom_layout_2.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.pref_tab_bottom_layout.addLayout(self.pref_tab_bottom_layout_2)

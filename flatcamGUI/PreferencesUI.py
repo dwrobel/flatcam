@@ -51,7 +51,7 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
         self.decimals = decimals
 
         self.general_app_group = GeneralAppPrefGroupUI(decimals=self.decimals)
-        self.general_app_group.setMinimumWidth(290)
+        self.general_app_group.setMinimumWidth(250)
 
         self.general_gui_group = GeneralGUIPrefGroupUI(decimals=self.decimals)
         self.general_gui_group.setMinimumWidth(250)
@@ -330,147 +330,112 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
 
-        self.grid_label = QtWidgets.QLabel('<b>%s</b>' % _('Grid Settings'))
-        grid0.addWidget(self.grid_label, 0, 0, 1, 2)
-
-        # Grid X Entry
-        self.gridx_label = QtWidgets.QLabel('%s:' % _('X value'))
-        self.gridx_label.setToolTip(
-           _("This is the Grid snap value on X axis.")
+        # Theme selection
+        self.theme_label = QtWidgets.QLabel('%s:' % _('Theme'))
+        self.theme_label.setToolTip(
+            _("Select a theme for FlatCAM.")
         )
-        self.gridx_entry = FCDoubleSpinner()
-        self.gridx_entry.set_precision(self.decimals)
-        self.gridx_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.gridx_label, 1, 0)
-        grid0.addWidget(self.gridx_entry, 1, 1)
+        self.theme_radio = RadioSet([
+            {"label": _("Light"), "value": "white"},
+            {"label": _("Dark"), "value": "black"}
+        ], orientation='vertical')
 
-        # Grid Y Entry
-        self.gridy_label = QtWidgets.QLabel('%s:' % _('Y value'))
-        self.gridy_label.setToolTip(
-            _("This is the Grid snap value on Y axis.")
+        grid0.addWidget(self.theme_label, 0, 0)
+        grid0.addWidget(self.theme_radio, 0, 1)
+
+        # Enable Gray Icons
+        self.gray_icons_cb = FCCheckBox('%s' % _('Use Gray Icons'))
+        self.gray_icons_cb.setToolTip(
+            _("Check this box to use a set of icons with\n"
+              "a lighter (gray) color. To be used when a\n"
+              "full dark theme is applied.")
         )
-        self.gridy_entry = FCDoubleSpinner()
-        self.gridy_entry.set_precision(self.decimals)
-        self.gridy_entry.setSingleStep(0.1)
+        grid0.addWidget(self.gray_icons_cb, 1, 0, 1, 3)
 
-        grid0.addWidget(self.gridy_label, 2, 0)
-        grid0.addWidget(self.gridy_entry, 2, 1)
-
-        # Snap Max Entry
-        self.snap_max_label = QtWidgets.QLabel('%s:' % _('Snap Max'))
-        self.snap_max_label.setToolTip(_("Max. magnet distance"))
-        self.snap_max_dist_entry = FCDoubleSpinner()
-        self.snap_max_dist_entry.set_precision(self.decimals)
-        self.snap_max_dist_entry.setSingleStep(0.1)
-
-        grid0.addWidget(self.snap_max_label, 3, 0)
-        grid0.addWidget(self.snap_max_dist_entry, 3, 1)
+        self.theme_button = FCButton(_("Apply Theme"))
+        self.theme_button.setToolTip(
+            _("Select a theme for FlatCAM.\n"
+              "The application will restart after change.")
+        )
+        grid0.addWidget(self.theme_button, 2, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 4, 0, 1, 2)
+        grid0.addWidget(separator_line, 3, 0, 1, 2)
 
-        # Workspace
-        self.workspace_label = QtWidgets.QLabel('<b>%s</b>' % _('Workspace Settings'))
-        grid0.addWidget(self.workspace_label, 5, 0, 1, 2)
+        # Layout selection
+        self.layout_label = QtWidgets.QLabel('%s:' % _('Layout'))
+        self.layout_label.setToolTip(
+            _("Select an layout for FlatCAM.\n"
+              "It is applied immediately.")
+        )
+        self.layout_combo = FCComboBox()
+        # don't translate the QCombo items as they are used in QSettings and identified by name
+        self.layout_combo.addItem("standard")
+        self.layout_combo.addItem("compact")
 
-        self.workspace_cb = FCCheckBox('%s' % _('Active'))
-        self.workspace_cb.setToolTip(
-           _("Draw a delimiting rectangle on canvas.\n"
-             "The purpose is to illustrate the limits for our work.")
+        grid0.addWidget(self.layout_label, 4, 0)
+        grid0.addWidget(self.layout_combo, 4, 1)
+
+        # Set the current index for layout_combo
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            idx = self.layout_combo.findText(layout.capitalize())
+            self.layout_combo.setCurrentIndex(idx)
+
+        # Style selection
+        self.style_label = QtWidgets.QLabel('%s:' % _('Style'))
+        self.style_label.setToolTip(
+            _("Select an style for FlatCAM.\n"
+              "It will be applied at the next app start.")
+        )
+        self.style_combo = FCComboBox()
+        self.style_combo.addItems(QtWidgets.QStyleFactory.keys())
+        # find current style
+        index = self.style_combo.findText(QtWidgets.qApp.style().objectName(), QtCore.Qt.MatchFixedString)
+        self.style_combo.setCurrentIndex(index)
+        self.style_combo.activated[str].connect(self.handle_style)
+
+        grid0.addWidget(self.style_label, 5, 0)
+        grid0.addWidget(self.style_combo, 5, 1)
+
+        # Enable High DPI Support
+        self.hdpi_cb = FCCheckBox('%s' % _('Activate HDPI Support'))
+        self.hdpi_cb.setToolTip(
+            _("Enable High DPI support for FlatCAM.\n"
+              "It will be applied at the next app start.")
         )
 
-        grid0.addWidget(self.workspace_cb, 6, 0, 1, 2)
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("hdpi"):
+            self.hdpi_cb.set_value(settings.value('hdpi', type=int))
+        else:
+            self.hdpi_cb.set_value(False)
+        self.hdpi_cb.stateChanged.connect(self.handle_hdpi)
 
-        self.workspace_type_lbl = QtWidgets.QLabel('%s:' % _('Size'))
-        self.workspace_type_lbl.setToolTip(
-           _("Select the type of rectangle to be used on canvas,\n"
-             "as valid workspace.")
+        grid0.addWidget(self.hdpi_cb, 6, 0, 1, 3)
+
+        # Enable Hover box
+        self.hover_cb = FCCheckBox('%s' % _('Display Hover Shape'))
+        self.hover_cb.setToolTip(
+            _("Enable display of a hover shape for FlatCAM objects.\n"
+              "It is displayed whenever the mouse cursor is hovering\n"
+              "over any kind of not-selected object.")
         )
-        self.wk_cb = FCComboBox()
+        grid0.addWidget(self.hover_cb, 8, 0, 1, 3)
 
-        grid0.addWidget(self.workspace_type_lbl, 7, 0)
-        grid0.addWidget(self.wk_cb, 7, 1)
-
-        self.pagesize = dict()
-        self.pagesize.update(
-            {
-                'A0': (841, 1189),
-                'A1': (594, 841),
-                'A2': (420, 594),
-                'A3': (297, 420),
-                'A4': (210, 297),
-                'A5': (148, 210),
-                'A6': (105, 148),
-                'A7': (74, 105),
-                'A8': (52, 74),
-                'A9': (37, 52),
-                'A10': (26, 37),
-
-                'B0': (1000, 1414),
-                'B1': (707, 1000),
-                'B2': (500, 707),
-                'B3': (353, 500),
-                'B4': (250, 353),
-                'B5': (176, 250),
-                'B6': (125, 176),
-                'B7': (88, 125),
-                'B8': (62, 88),
-                'B9': (44, 62),
-                'B10': (31, 44),
-
-                'C0': (917, 1297),
-                'C1': (648, 917),
-                'C2': (458, 648),
-                'C3': (324, 458),
-                'C4': (229, 324),
-                'C5': (162, 229),
-                'C6': (114, 162),
-                'C7': (81, 114),
-                'C8': (57, 81),
-                'C9': (40, 57),
-                'C10': (28, 40),
-
-                # American paper sizes
-                'LETTER': (8.5, 11),
-                'LEGAL': (8.5, 14),
-                'ELEVENSEVENTEEN': (11, 17),
-
-                # From https://en.wikipedia.org/wiki/Paper_size
-                'JUNIOR_LEGAL': (5, 8),
-                'HALF_LETTER': (5.5, 8),
-                'GOV_LETTER': (8, 10.5),
-                'GOV_LEGAL': (8.5, 13),
-                'LEDGER': (17, 11),
-            }
+        # Enable Selection box
+        self.selection_cb = FCCheckBox('%s' % _('Display Selection Shape'))
+        self.selection_cb.setToolTip(
+            _("Enable the display of a selection shape for FlatCAM objects.\n"
+              "It is displayed whenever the mouse selects an object\n"
+              "either by clicking or dragging mouse from left to right or\n"
+              "right to left.")
         )
-
-        page_size_list = list(self.pagesize.keys())
-
-        self.wk_cb.addItems(page_size_list)
-
-        # Page orientation
-        self.wk_orientation_label = QtWidgets.QLabel('%s:' % _("Orientation"))
-        self.wk_orientation_label.setToolTip(_("Can be:\n"
-                                               "- Portrait\n"
-                                               "- Landscape"))
-
-        self.wk_orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
-                                              {'label': _('Landscape'), 'value': 'l'},
-                                              ], stretch=False)
-
-        self.wks = OptionalInputSection(self.workspace_cb,
-                                        [
-                                            self.workspace_type_lbl,
-                                            self.wk_cb,
-                                            self.wk_orientation_label,
-                                            self.wk_orientation_radio
-                                        ])
-
-        grid0.addWidget(self.wk_orientation_label, 8, 0)
-        grid0.addWidget(self.wk_orientation_radio, 8, 1)
+        grid0.addWidget(self.selection_cb, 9, 0, 1, 3)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -478,7 +443,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         # Plot Selection (left - right) Color
-        self.sel_lr_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Left-Right Selection Color'))
+        self.sel_lr_label = QtWidgets.QLabel('<b>%s</b>' % _('Left-Right Selection Color'))
         grid0.addWidget(self.sel_lr_label, 15, 0, 1, 2)
 
         self.sl_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
@@ -543,7 +508,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(separator_line, 19, 0, 1, 2)
 
         # Plot Selection (left - right) Color
-        self.sel_rl_label = QtWidgets.QLabel('<b>%s</b>' % _('Object Right-Left Selection Color'))
+        self.sel_rl_label = QtWidgets.QLabel('<b>%s</b>' % _('Right-Left Selection Color'))
         grid0.addWidget(self.sel_rl_label, 20, 0, 1, 2)
 
         # Plot Selection (right - left) Line Color
@@ -711,6 +676,24 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.layout.addStretch()
 
+        self.theme_button.clicked.connect(self.app.on_theme_change)
+
+    def handle_style(self, style):
+        # set current style
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('style', style)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
+    def handle_hdpi(self, state):
+        # set current HDPI
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('hdpi', state)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
 
 class GeneralGUISetGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
@@ -736,118 +719,160 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 0, 0)
+        # GRID Settings
+        self.grid_label = QtWidgets.QLabel('<b>%s</b>' % _('Grid Settings'))
+        grid0.addWidget(self.grid_label, 0, 0, 1, 2)
 
-        # Theme selection
-        self.theme_label = QtWidgets.QLabel('%s:' % _('Theme'))
-        self.theme_label.setToolTip(
-            _("Select a theme for FlatCAM.\n"
-              "The application will restart after change.")
+        # Grid X Entry
+        self.gridx_label = QtWidgets.QLabel('%s:' % _('X value'))
+        self.gridx_label.setToolTip(
+           _("This is the Grid snap value on X axis.")
         )
-        self.theme_radio = RadioSet([
-            {"label": _("Light"), "value": "white"},
-            {"label": _("Dark"), "value": "black"}
-        ], orientation='horizontal', stretch=False)
+        self.gridx_entry = FCDoubleSpinner()
+        self.gridx_entry.set_precision(self.decimals)
+        self.gridx_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.theme_label, 1, 0)
-        grid0.addWidget(self.theme_radio, 1, 1)
+        grid0.addWidget(self.gridx_label, 1, 0)
+        grid0.addWidget(self.gridx_entry, 1, 1)
 
-        # Layout selection
-        self.layout_label = QtWidgets.QLabel('%s:' % _('Layout'))
-        self.layout_label.setToolTip(
-            _("Select an layout for FlatCAM.\n"
-              "It is applied immediately.")
+        # Grid Y Entry
+        self.gridy_label = QtWidgets.QLabel('%s:' % _('Y value'))
+        self.gridy_label.setToolTip(
+            _("This is the Grid snap value on Y axis.")
         )
-        self.layout_combo = FCComboBox()
-        # don't translate the QCombo items as they are used in QSettings and identified by name
-        self.layout_combo.addItem("standard")
-        self.layout_combo.addItem("compact")
+        self.gridy_entry = FCDoubleSpinner()
+        self.gridy_entry.set_precision(self.decimals)
+        self.gridy_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.layout_label, 2, 0)
-        grid0.addWidget(self.layout_combo, 2, 1)
+        grid0.addWidget(self.gridy_label, 2, 0)
+        grid0.addWidget(self.gridy_entry, 2, 1)
 
-        # Set the current index for layout_combo
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("layout"):
-            layout = settings.value('layout', type=str)
-            idx = self.layout_combo.findText(layout.capitalize())
-            self.layout_combo.setCurrentIndex(idx)
+        # Snap Max Entry
+        self.snap_max_label = QtWidgets.QLabel('%s:' % _('Snap Max'))
+        self.snap_max_label.setToolTip(_("Max. magnet distance"))
+        self.snap_max_dist_entry = FCDoubleSpinner()
+        self.snap_max_dist_entry.set_precision(self.decimals)
+        self.snap_max_dist_entry.setSingleStep(0.1)
 
-        # Style selection
-        self.style_label = QtWidgets.QLabel('%s:' % _('Style'))
-        self.style_label.setToolTip(
-            _("Select an style for FlatCAM.\n"
-              "It will be applied at the next app start.")
+        grid0.addWidget(self.snap_max_label, 3, 0)
+        grid0.addWidget(self.snap_max_dist_entry, 3, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 4, 0, 1, 2)
+
+        # Workspace
+        self.workspace_label = QtWidgets.QLabel('<b>%s</b>' % _('Workspace Settings'))
+        grid0.addWidget(self.workspace_label, 5, 0, 1, 2)
+
+        self.workspace_cb = FCCheckBox('%s' % _('Active'))
+        self.workspace_cb.setToolTip(
+           _("Draw a delimiting rectangle on canvas.\n"
+             "The purpose is to illustrate the limits for our work.")
         )
-        self.style_combo = FCComboBox()
-        self.style_combo.addItems(QtWidgets.QStyleFactory.keys())
-        # find current style
-        index = self.style_combo.findText(QtWidgets.qApp.style().objectName(), QtCore.Qt.MatchFixedString)
-        self.style_combo.setCurrentIndex(index)
-        self.style_combo.activated[str].connect(self.handle_style)
 
-        grid0.addWidget(self.style_label, 3, 0)
-        grid0.addWidget(self.style_combo, 3, 1)
+        grid0.addWidget(self.workspace_cb, 6, 0, 1, 2)
 
-        # Enable High DPI Support
-        self.hdpi_label = QtWidgets.QLabel('%s:' % _('HDPI Support'))
-        self.hdpi_label.setToolTip(
-            _("Enable High DPI support for FlatCAM.\n"
-              "It will be applied at the next app start.")
+        self.workspace_type_lbl = QtWidgets.QLabel('%s:' % _('Size'))
+        self.workspace_type_lbl.setToolTip(
+           _("Select the type of rectangle to be used on canvas,\n"
+             "as valid workspace.")
         )
-        self.hdpi_cb = FCCheckBox()
+        self.wk_cb = FCComboBox()
 
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("hdpi"):
-            self.hdpi_cb.set_value(settings.value('hdpi', type=int))
-        else:
-            self.hdpi_cb.set_value(False)
-        self.hdpi_cb.stateChanged.connect(self.handle_hdpi)
+        grid0.addWidget(self.workspace_type_lbl, 7, 0)
+        grid0.addWidget(self.wk_cb, 7, 1)
 
-        grid0.addWidget(self.hdpi_label, 4, 0)
-        grid0.addWidget(self.hdpi_cb, 4, 1)
+        self.pagesize = dict()
+        self.pagesize.update(
+            {
+                'A0': (841, 1189),
+                'A1': (594, 841),
+                'A2': (420, 594),
+                'A3': (297, 420),
+                'A4': (210, 297),
+                'A5': (148, 210),
+                'A6': (105, 148),
+                'A7': (74, 105),
+                'A8': (52, 74),
+                'A9': (37, 52),
+                'A10': (26, 37),
 
-        # Clear Settings
-        self.clear_label = QtWidgets.QLabel('%s:' % _('Clear GUI Settings'))
-        self.clear_label.setToolTip(
-            _("Clear the GUI settings for FlatCAM,\n"
-              "such as: layout, gui state, style, hdpi support etc.")
+                'B0': (1000, 1414),
+                'B1': (707, 1000),
+                'B2': (500, 707),
+                'B3': (353, 500),
+                'B4': (250, 353),
+                'B5': (176, 250),
+                'B6': (125, 176),
+                'B7': (88, 125),
+                'B8': (62, 88),
+                'B9': (44, 62),
+                'B10': (31, 44),
+
+                'C0': (917, 1297),
+                'C1': (648, 917),
+                'C2': (458, 648),
+                'C3': (324, 458),
+                'C4': (229, 324),
+                'C5': (162, 229),
+                'C6': (114, 162),
+                'C7': (81, 114),
+                'C8': (57, 81),
+                'C9': (40, 57),
+                'C10': (28, 40),
+
+                # American paper sizes
+                'LETTER': (8.5, 11),
+                'LEGAL': (8.5, 14),
+                'ELEVENSEVENTEEN': (11, 17),
+
+                # From https://en.wikipedia.org/wiki/Paper_size
+                'JUNIOR_LEGAL': (5, 8),
+                'HALF_LETTER': (5.5, 8),
+                'GOV_LETTER': (8, 10.5),
+                'GOV_LEGAL': (8.5, 13),
+                'LEDGER': (17, 11),
+            }
         )
-        self.clear_btn = FCButton(_("Clear"))
-        self.clear_btn.clicked.connect(self.handle_clear)
 
-        grid0.addWidget(self.clear_label, 5, 0)
-        grid0.addWidget(self.clear_btn, 5, 1)
+        page_size_list = list(self.pagesize.keys())
 
-        # Enable Hover box
-        self.hover_label = QtWidgets.QLabel('%s:' % _('Hover Shape'))
-        self.hover_label.setToolTip(
-            _("Enable display of a hover shape for FlatCAM objects.\n"
-              "It is displayed whenever the mouse cursor is hovering\n"
-              "over any kind of not-selected object.")
-        )
-        self.hover_cb = FCCheckBox()
+        self.wk_cb.addItems(page_size_list)
 
-        grid0.addWidget(self.hover_label, 6, 0)
-        grid0.addWidget(self.hover_cb, 6, 1)
+        # Page orientation
+        self.wk_orientation_label = QtWidgets.QLabel('%s:' % _("Orientation"))
+        self.wk_orientation_label.setToolTip(_("Can be:\n"
+                                               "- Portrait\n"
+                                               "- Landscape"))
 
-        # Enable Selection box
-        self.selection_label = QtWidgets.QLabel('%s:' % _('Sel. Shape'))
-        self.selection_label.setToolTip(
-            _("Enable the display of a selection shape for FlatCAM objects.\n"
-              "It is displayed whenever the mouse selects an object\n"
-              "either by clicking or dragging mouse from left to right or\n"
-              "right to left.")
-        )
-        self.selection_cb = FCCheckBox()
+        self.wk_orientation_radio = RadioSet([{'label': _('Portrait'), 'value': 'p'},
+                                              {'label': _('Landscape'), 'value': 'l'},
+                                              ], stretch=False)
 
-        grid0.addWidget(self.selection_label, 7, 0)
-        grid0.addWidget(self.selection_cb, 7, 1)
+        self.wks = OptionalInputSection(self.workspace_cb,
+                                        [
+                                            self.workspace_type_lbl,
+                                            self.wk_cb,
+                                            self.wk_orientation_label,
+                                            self.wk_orientation_radio
+                                        ])
 
-        grid0.addWidget(QtWidgets.QLabel(''), 8, 0)
+        grid0.addWidget(self.wk_orientation_label, 8, 0)
+        grid0.addWidget(self.wk_orientation_radio, 8, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 9, 0, 1, 2)
+
+        # Font Size
+        self.font_size_label = QtWidgets.QLabel('<b>%s</b>' % _('Font Size'))
+        grid0.addWidget(self.font_size_label, 10, 0, 1, 2)
 
         # Notebook Font Size
-        self.notebook_font_size_label = QtWidgets.QLabel('%s:' % _('NB Font Size'))
+        self.notebook_font_size_label = QtWidgets.QLabel('%s:' % _('Notebook'))
         self.notebook_font_size_label.setToolTip(
             _("This sets the font size for the elements found in the Notebook.\n"
               "The notebook is the collapsible area in the left side of the GUI,\n"
@@ -864,11 +889,11 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.notebook_font_size_spinner.set_value(12)
 
-        grid0.addWidget(self.notebook_font_size_label, 9, 0)
-        grid0.addWidget(self.notebook_font_size_spinner, 9, 1)
+        grid0.addWidget(self.notebook_font_size_label, 11, 0)
+        grid0.addWidget(self.notebook_font_size_spinner, 11, 1)
 
         # Axis Font Size
-        self.axis_font_size_label = QtWidgets.QLabel('%s:' % _('Axis Font Size'))
+        self.axis_font_size_label = QtWidgets.QLabel('%s:' % _('Axis'))
         self.axis_font_size_label.setToolTip(
             _("This sets the font size for canvas axis.")
         )
@@ -883,11 +908,11 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.axis_font_size_spinner.set_value(8)
 
-        grid0.addWidget(self.axis_font_size_label, 10, 0)
-        grid0.addWidget(self.axis_font_size_spinner, 10, 1)
+        grid0.addWidget(self.axis_font_size_label, 12, 0)
+        grid0.addWidget(self.axis_font_size_spinner, 12, 1)
 
         # TextBox Font Size
-        self.textbox_font_size_label = QtWidgets.QLabel('%s:' % _('Textbox Font Size'))
+        self.textbox_font_size_label = QtWidgets.QLabel('%s:' % _('Textbox'))
         self.textbox_font_size_label.setToolTip(
             _("This sets the font size for the Textbox GUI\n"
               "elements that are used in FlatCAM.")
@@ -903,11 +928,8 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.textbox_font_size_spinner.set_value(10)
 
-        grid0.addWidget(self.textbox_font_size_label, 11, 0)
-        grid0.addWidget(self.textbox_font_size_spinner, 11, 1)
-
-        # Just to add empty rows
-        grid0.addWidget(QtWidgets.QLabel(''), 12, 0)
+        grid0.addWidget(self.textbox_font_size_label, 13, 0)
+        grid0.addWidget(self.textbox_font_size_spinner, 13, 1)
 
         # -----------------------------------------------------------
         # ----------- APPLICATION STARTUP SETTINGS ------------------
@@ -916,10 +938,10 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 13, 0, 1, 2)
+        grid0.addWidget(separator_line, 14, 0, 1, 2)
 
         self.startup_label = QtWidgets.QLabel('<b>%s</b>' % _('Startup Settings'))
-        grid0.addWidget(self.startup_label, 14, 0, 1, 2)
+        grid0.addWidget(self.startup_label, 15, 0, 1, 2)
 
         # Splash Screen
         self.splash_cb = FCCheckBox('%s' % _('Splash Screen'))
@@ -933,14 +955,14 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         else:
             self.splash_cb.set_value(False)
 
-        grid0.addWidget(self.splash_cb, 15, 0, 1, 2)
+        grid0.addWidget(self.splash_cb, 16, 0, 1, 2)
 
         # Sys Tray Icon
         self.systray_cb = FCCheckBox('%s' % _('Sys Tray Icon'))
         self.systray_cb.setToolTip(
             _("Enable display of FlatCAM icon in Sys Tray.")
         )
-        grid0.addWidget(self.systray_cb, 16, 0, 1, 2)
+        grid0.addWidget(self.systray_cb, 17, 0, 1, 2)
 
         # Shell StartUp CB
         self.shell_startup_cb = FCCheckBox(label='%s' % _('Show Shell'))
@@ -949,7 +971,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "start automatically at startup.")
         )
 
-        grid0.addWidget(self.shell_startup_cb, 17, 0, 1, 2)
+        grid0.addWidget(self.shell_startup_cb, 18, 0, 1, 2)
 
         # Project at StartUp CB
         self.project_startup_cb = FCCheckBox(label='%s' % _('Show Project'))
@@ -957,7 +979,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             _("Check this box if you want the project/selected/tool tab area to\n"
               "to be shown automatically at startup.")
         )
-        grid0.addWidget(self.project_startup_cb, 18, 0, 1, 2)
+        grid0.addWidget(self.project_startup_cb, 19, 0, 1, 2)
 
         # -----------------------------------------------------------
         # -------------- MOUSE SETTINGS -----------------------------
@@ -1148,43 +1170,6 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
 
         self.app.cursor_color_3D = self.app.defaults["global_cursor_color"]
 
-    def handle_style(self, style):
-        # set current style
-        settings = QSettings("Open Source", "FlatCAM")
-        settings.setValue('style', style)
-
-        # This will write the setting to the platform specific storage.
-        del settings
-
-    def handle_hdpi(self, state):
-        # set current HDPI
-        settings = QSettings("Open Source", "FlatCAM")
-        settings.setValue('hdpi', state)
-
-        # This will write the setting to the platform specific storage.
-        del settings
-
-    def handle_clear(self):
-        msgbox = QtWidgets.QMessageBox()
-        msgbox.setText(_("Are you sure you want to delete the GUI Settings? "
-                         "\n")
-                       )
-        msgbox.setWindowTitle(_("Clear GUI Settings"))
-        msgbox.setWindowIcon(QtGui.QIcon(self.resource_loc + '/trash32.png'))
-        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-
-        msgbox.setDefaultButton(bt_no)
-        msgbox.exec_()
-        response = msgbox.clickedButton()
-
-        if response == bt_yes:
-            settings = QSettings("Open Source", "FlatCAM")
-            for key in settings.allKeys():
-                settings.remove(key)
-            # This will write the setting to the platform specific storage.
-            del settings
-
 
 class GeneralAppPrefGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
@@ -1247,11 +1232,16 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                    "Intel HD3000 or older. In this case the plot area will be black therefore\n"
                                    "use the Legacy(2D) mode."))
         self.ge_radio = RadioSet([{'label': _('Legacy(2D)'), 'value': '2D'},
-                                  {'label': _('OpenGL(3D)'), 'value': '3D'}])
+                                  {'label': _('OpenGL(3D)'), 'value': '3D'}],
+                                 orientation='vertical')
 
         grid0.addWidget(self.ge_label, 3, 0)
         grid0.addWidget(self.ge_radio, 3, 1)
-        grid0.addWidget(QtWidgets.QLabel(''), 4, 0)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 4, 0, 1, 2)
 
         # Application Level for FlatCAM
         self.app_level_label = QtWidgets.QLabel('<span style="color:red;"><b>%s:</b></span>' % _('APP. LEVEL'))
@@ -1277,25 +1267,29 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.portability_label, 6, 0)
         grid0.addWidget(self.portability_cb, 6, 1)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 7, 0, 1, 2)
+
         # Languages for FlatCAM
-        self.languagelabel = QtWidgets.QLabel('<b>%s:</b>' % _('Languages'))
+        self.languagelabel = QtWidgets.QLabel('<b>%s</b>' % _('Languages'))
         self.languagelabel.setToolTip(_("Set the language used throughout FlatCAM."))
         self.language_cb = FCComboBox()
 
-        grid0.addWidget(self.languagelabel, 7, 0)
-        grid0.addWidget(self.language_cb, 7, 1)
+        grid0.addWidget(self.languagelabel, 8, 0, 1, 2)
+        grid0.addWidget(self.language_cb, 9, 0, 1, 2)
 
         self.language_apply_btn = FCButton(_("Apply Language"))
         self.language_apply_btn.setToolTip(_("Set the language used throughout FlatCAM.\n"
-                                             "The app will restart after click."
-                                             "Windows: When FlatCAM is installed in Program Files\n"
-                                             "directory, it is possible that the app will not\n"
-                                             "restart after the button is clicked due of Windows\n"
-                                             "security features. In this case the language will be\n"
-                                             "applied at the next app start."))
+                                             "The app will restart after click."))
 
-        grid0.addWidget(self.language_apply_btn, 8, 0, 1, 2)
-        grid0.addWidget(QtWidgets.QLabel(''), 9, 0)
+        grid0.addWidget(self.language_apply_btn, 15, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # Version Check CB
         self.version_check_label = QtWidgets.QLabel('%s:' % _('Version Check'))
@@ -1309,8 +1303,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "for a new version automatically at startup.")
         )
 
-        grid0.addWidget(self.version_check_label, 10, 0)
-        grid0.addWidget(self.version_check_cb, 10, 1)
+        grid0.addWidget(self.version_check_label, 17, 0)
+        grid0.addWidget(self.version_check_cb, 17, 1)
 
         # Send Stats CB
         self.send_stats_label = QtWidgets.QLabel('%s:' % _('Send Stats'))
@@ -1324,8 +1318,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "stats automatically at startup, to help improve FlatCAM.")
         )
 
-        grid0.addWidget(self.send_stats_label, 11, 0)
-        grid0.addWidget(self.send_stats_cb, 11, 1)
+        grid0.addWidget(self.send_stats_label, 18, 0)
+        grid0.addWidget(self.send_stats_cb, 18, 1)
 
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
 
@@ -1350,8 +1344,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         )
         self.worker_number_sb.set_range(2, 16)
 
-        grid0.addWidget(self.worker_number_label, 14, 0)
-        grid0.addWidget(self.worker_number_sb, 14, 1)
+        grid0.addWidget(self.worker_number_label, 19, 0)
+        grid0.addWidget(self.worker_number_sb, 19, 1)
 
         # Geometric tolerance
         tol_label = QtWidgets.QLabel('%s:' % _("Geo Tolerance"))
@@ -1375,9 +1369,13 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.tol_entry.setSingleStep(0.001)
         self.tol_entry.set_precision(6)
 
-        grid0.addWidget(tol_label, 15, 0)
-        grid0.addWidget(self.tol_entry, 15, 1)
-        grid0.addWidget(QtWidgets.QLabel(''), 16, 0)
+        grid0.addWidget(tol_label, 20, 0)
+        grid0.addWidget(self.tol_entry, 20, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 21, 0, 1, 2)
 
         # Open behavior
         self.open_style_cb = FCCheckBox('%s' % _('"Open" behavior'))
@@ -1388,7 +1386,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "path for saving files or the path for opening files.")
         )
 
-        grid0.addWidget(self.open_style_cb, 17, 0, 1, 2)
+        grid0.addWidget(self.open_style_cb, 22, 0, 1, 2)
 
         # Save compressed project CB
         self.save_type_cb = FCCheckBox(_('Save Compressed Project'))
@@ -1397,7 +1395,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "When checked it will save a compressed FlatCAM project.")
         )
 
-        grid0.addWidget(self.save_type_cb, 18, 0, 1, 2)
+        grid0.addWidget(self.save_type_cb, 23, 0, 1, 2)
 
         # Project LZMA Comppression Level
         self.compress_spinner = FCSpinner()
@@ -1409,8 +1407,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "but require more RAM usage and more processing time.")
         )
 
-        grid0.addWidget(self.compress_label, 19, 0)
-        grid0.addWidget(self.compress_spinner, 19, 1)
+        grid0.addWidget(self.compress_label, 24, 0)
+        grid0.addWidget(self.compress_spinner, 24, 1)
 
         self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_spinner], True)
 
@@ -1423,8 +1421,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "but the menu will hold only so much.")
         )
 
-        grid0.addWidget(self.bm_limit_label, 20, 0)
-        grid0.addWidget(self.bm_limit_spinner, 20, 1)
+        grid0.addWidget(self.bm_limit_label, 25, 0)
+        grid0.addWidget(self.bm_limit_spinner, 25, 1)
 
         # Machinist settings that allow unsafe settings
         self.machinist_cb = FCCheckBox(_("Allow Machinist Unsafe Settings"))
@@ -1436,7 +1434,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "<<WARNING>>: Don't change this unless you know what you are doing !!!")
         )
 
-        grid0.addWidget(self.machinist_cb, 21, 0, 1, 2)
+        grid0.addWidget(self.machinist_cb, 26, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)

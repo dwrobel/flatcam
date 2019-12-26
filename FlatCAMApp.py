@@ -505,6 +505,7 @@ class App(QtCore.QObject):
 
             # General GUI Settings
             "global_theme": 'white',
+            "global_gray_icons": False,
             "global_hover": False,
             "global_selection_shape": True,
             "global_layout": "compact",
@@ -1112,12 +1113,11 @@ class App(QtCore.QObject):
             "global_tpdf_rmargin": self.ui.general_defaults_form.general_app_group.rmargin_entry,
 
             # General GUI Preferences
-            "global_gridx": self.ui.general_defaults_form.general_gui_group.gridx_entry,
-            "global_gridy": self.ui.general_defaults_form.general_gui_group.gridy_entry,
-            "global_snap_max": self.ui.general_defaults_form.general_gui_group.snap_max_dist_entry,
-            "global_workspace": self.ui.general_defaults_form.general_gui_group.workspace_cb,
-            "global_workspaceT": self.ui.general_defaults_form.general_gui_group.wk_cb,
-            "global_workspace_orientation": self.ui.general_defaults_form.general_gui_group.wk_orientation_radio,
+            "global_theme": self.ui.general_defaults_form.general_gui_group.theme_radio,
+            "global_gray_icons": self.ui.general_defaults_form.general_gui_group.gray_icons_cb,
+            "global_layout": self.ui.general_defaults_form.general_gui_group.layout_combo,
+            "global_hover": self.ui.general_defaults_form.general_gui_group.hover_cb,
+            "global_selection_shape": self.ui.general_defaults_form.general_gui_group.selection_cb,
 
             "global_sel_fill": self.ui.general_defaults_form.general_gui_group.sf_color_entry,
             "global_sel_line": self.ui.general_defaults_form.general_gui_group.sl_color_entry,
@@ -1131,10 +1131,13 @@ class App(QtCore.QObject):
             "global_project_autohide": self.ui.general_defaults_form.general_gui_group.project_autohide_cb,
 
             # General GUI Settings
-            "global_theme": self.ui.general_defaults_form.general_gui_set_group.theme_radio,
-            "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
-            "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
-            "global_selection_shape": self.ui.general_defaults_form.general_gui_set_group.selection_cb,
+            "global_gridx": self.ui.general_defaults_form.general_gui_set_group.gridx_entry,
+            "global_gridy": self.ui.general_defaults_form.general_gui_set_group.gridy_entry,
+            "global_snap_max": self.ui.general_defaults_form.general_gui_set_group.snap_max_dist_entry,
+            "global_workspace": self.ui.general_defaults_form.general_gui_set_group.workspace_cb,
+            "global_workspaceT": self.ui.general_defaults_form.general_gui_set_group.wk_cb,
+            "global_workspace_orientation": self.ui.general_defaults_form.general_gui_set_group.wk_orientation_radio,
+
             "global_systray_icon": self.ui.general_defaults_form.general_gui_set_group.systray_cb,
             "global_shell_at_startup": self.ui.general_defaults_form.general_gui_set_group.shell_startup_cb,
             "global_project_at_startup": self.ui.general_defaults_form.general_gui_set_group.project_startup_cb,
@@ -1994,6 +1997,7 @@ class App(QtCore.QObject):
 
         self.ui.pref_defaults_button.clicked.connect(self.on_restore_defaults_preferences)
         self.ui.pref_open_button.clicked.connect(self.on_preferences_open_folder)
+        self.ui.clear_btn.clicked.connect(self.on_gui_clear)
 
         # #############################################################################
         # ######################### GUI PREFERENCES SIGNALS ###########################
@@ -2060,20 +2064,20 @@ class App(QtCore.QObject):
             self.on_proj_color_dis_button)
 
         # ############################# Workspace Setting Signals #####################
-        self.ui.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
-        self.ui.general_defaults_form.general_gui_group.wk_orientation_radio.activated_custom.connect(
+        self.ui.general_defaults_form.general_gui_set_group.wk_cb.currentIndexChanged.connect(
+            self.on_workspace_modified)
+        self.ui.general_defaults_form.general_gui_set_group.wk_orientation_radio.activated_custom.connect(
             self.on_workspace_modified
         )
 
-        self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.ui.general_defaults_form.general_gui_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
-        self.ui.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
+        self.ui.general_defaults_form.general_gui_group.layout_combo.activated.connect(self.on_layout)
 
         # #############################################################################
         # ############################# GUI SETTINGS SIGNALS ##########################
         # #############################################################################
 
-        self.ui.general_defaults_form.general_gui_set_group.theme_radio.activated_custom.connect(self.on_theme_change)
         self.ui.general_defaults_form.general_gui_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
 
         # ########## CNC Job related signals #############
@@ -4063,6 +4067,38 @@ class App(QtCore.QObject):
             subprocess.Popen(['xdg-open', self.data_path])
         self.inform.emit('[success] %s' %
                          _("FlatCAM Preferences Folder opened."))
+
+    def on_gui_clear(self):
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        if theme_settings.contains("theme"):
+            theme = theme_settings.value('theme', type=str)
+        else:
+            theme = 'white'
+
+        if theme == 'white':
+            resource_loc = 'share'
+        else:
+            resource_loc = 'share'
+
+        msgbox = QtWidgets.QMessageBox()
+        msgbox.setText(_("Are you sure you want to delete the GUI Settings? "
+                         "\n")
+                       )
+        msgbox.setWindowTitle(_("Clear GUI Settings"))
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/trash32.png'))
+        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+
+        msgbox.setDefaultButton(bt_no)
+        msgbox.exec_()
+        response = msgbox.clickedButton()
+
+        if response == bt_yes:
+            settings = QSettings("Open Source", "FlatCAM")
+            for key in settings.allKeys():
+                settings.remove(key)
+            # This will write the setting to the platform specific storage.
+            del settings
 
     def save_geometry(self, x, y, width, height, notebook_width):
         """
@@ -6899,7 +6935,7 @@ class App(QtCore.QObject):
         if lay:
             current_layout = lay
         else:
-            current_layout = self.ui.general_defaults_form.general_gui_set_group.layout_combo.get_value()
+            current_layout = self.ui.general_defaults_form.general_gui_group.layout_combo.get_value()
 
         lay_settings = QSettings("Open Source", "FlatCAM")
         lay_settings.setValue('layout', current_layout)
