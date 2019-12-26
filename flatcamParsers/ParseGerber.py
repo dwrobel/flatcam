@@ -445,10 +445,12 @@ class Gerber(Geometry):
                 if match:
                     continue
 
-                # Polarity change ###### ##
-                # Example: %LPD*% or %LPC*%
-                # If polarity changes, creates geometry from current
-                # buffer, then adds or subtracts accordingly.
+                # ###############################################################
+                # ################  Polarity change #############################
+                # ########   Example: %LPD*% or %LPC*%        ###################
+                # ########   If polarity changes, creates geometry from current #
+                # ########    buffer, then adds or subtracts accordingly.       #
+                # ###############################################################
                 match = self.lpol_re.search(gline)
                 if match:
                     new_polarity = match.group(1)
@@ -491,11 +493,9 @@ class Gerber(Geometry):
                     # TODO: Remove when bug fixed
                     if len(poly_buffer) > 0:
                         if current_polarity == 'D':
-                            # self.follow_geometry = self.follow_geometry.union(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
 
                         else:
-                            # self.follow_geometry = self.follow_geometry.difference(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
 
                         # follow_buffer = []
@@ -835,7 +835,8 @@ class Gerber(Geometry):
                     geo_dict = dict()
                     if current_aperture in self.apertures:
                         buff_value = float(self.apertures[current_aperture]['size']) / 2.0
-                        region_geo = Polygon(path).buffer(buff_value, int(self.steps_per_circle))
+                        # region_geo = Polygon(path).buffer(buff_value, int(self.steps_per_circle))
+                        region_geo = Polygon(path)  # Sprint Layout Gerbers with ground fill are crashed with above
                     else:
                         region_geo = Polygon(path)
 
@@ -1455,16 +1456,16 @@ class Gerber(Geometry):
 
                     self.solid_geometry = final_poly
 
-                # FIX for issue #347 - Sprint Layout generate strange Gerber files when the copper pour is enabled
+                # FIX for issue #347 - Sprint Layout generate Gerber files when the copper pour is enabled
                 # it use a filled bounding box polygon to which add clear polygons (negative) to isolate the copper
                 # features
                 if self.app.defaults['gerber_extra_buffering']:
                     candidate_geo = list()
                     try:
                         for p in self.solid_geometry:
-                            candidate_geo.append(p.buffer(0.0000001))
+                            candidate_geo.append(p.buffer(-0.0000001))
                     except TypeError:
-                        candidate_geo.append(self.solid_geometry.buffer(0.0000001))
+                        candidate_geo.append(self.solid_geometry.buffer(-0.0000001))
                     self.solid_geometry = candidate_geo
 
                 # try:
