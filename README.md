@@ -22,6 +22,8 @@ CAD program, and create G-Code for Isolation routing.
 - in Panelize Tool made sure that for Gerber objects if one of the apertures is without geometry then it is ignored
 - further modifications in Preferences -> General GUI
 - further modifications in Preferences -> General GUI - extended the changes
+- in Legacy(2D) graphic engine made to work the mouse color change
+- theme changing is no longer auto-reboot upon change; it require now to press a button
 
 25.12.2019
 

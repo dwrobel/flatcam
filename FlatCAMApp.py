@@ -2935,15 +2935,6 @@ class App(QtCore.QObject):
                                 name)
                                )
 
-    def on_theme_change(self, val):
-        t_settings = QSettings("Open Source", "FlatCAM")
-        t_settings.setValue('theme', val)
-
-        # This will write the setting to the platform specific storage.
-        del t_settings
-
-        self.on_app_restart()
-
     def on_app_restart(self):
 
         # make sure that the Sys Tray icon is hidden before restart otherwise it will
@@ -4070,15 +4061,11 @@ class App(QtCore.QObject):
 
     def on_gui_clear(self):
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        if theme_settings.contains("theme"):
-            theme = theme_settings.value('theme', type=str)
-        else:
-            theme = 'white'
+        theme_settings.setValue('theme', 'white')
 
-        if theme == 'white':
-            resource_loc = 'share'
-        else:
-            resource_loc = 'share'
+        del theme_settings
+
+        resource_loc = 'share'
 
         msgbox = QtWidgets.QMessageBox()
         msgbox.setText(_("Are you sure you want to delete the GUI Settings? "
@@ -7539,7 +7526,10 @@ class App(QtCore.QObject):
             )
             cursor.setPos(j_pos[0], j_pos[1])
             self.plotcanvas.mouse = [location[0], location[1]]
-            self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1])
+            if self.defaults["global_cursor_color_enabled"] is True:
+                self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1], color=self.cursor_color_3D)
+            else:
+                self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1])
 
         if self.grid_status():
             # Update cursor

@@ -676,7 +676,17 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.layout.addStretch()
 
-        self.theme_button.clicked.connect(self.app.on_theme_change)
+        self.theme_button.clicked.connect(self.on_theme_change)
+
+    def on_theme_change(self):
+        val = self.theme_radio.get_value()
+        t_settings = QSettings("Open Source", "FlatCAM")
+        t_settings.setValue('theme', val)
+
+        # This will write the setting to the platform specific storage.
+        del t_settings
+
+        self.app.on_app_restart()
 
     def handle_style(self, style):
         # set current style

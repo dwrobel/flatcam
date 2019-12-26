@@ -407,8 +407,10 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         :param x_pos: mouse x position
         :param y_pos: mouse y position
+        :param color: custom color of the mouse
         :return:
         """
+
         # there is no point in drawing mouse cursor when panning as it jumps in a confusing way
         if self.app.app_cursor.enabled is True and self.panning is False:
             if color:
@@ -446,7 +448,10 @@ class PlotCanvasLegacy(QtCore.QObject):
     def clear_cursor(self, state):
 
         if state is True:
-            self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
+            if self.app.defaults["global_cursor_color_enabled"] is True:
+                self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1], color=self.app.cursor_color_3D)
+            else:
+                self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
         else:
             if self.big_cursor is True:
                 self.ch_line.remove()
@@ -791,7 +796,10 @@ class PlotCanvasLegacy(QtCore.QObject):
             self.panning = False
 
             # And update the cursor
-            self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
+            if self.app.defaults["global_cursor_color_enabled"] is True:
+                self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1], color=self.app.cursor_color_3D)
+            else:
+                self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
 
     def on_mouse_move(self, event):
         """
@@ -825,8 +833,10 @@ class PlotCanvasLegacy(QtCore.QObject):
             # #### Temporary place-holder for cached update #####
             self.update_screen_request.emit([0, 0, 0, 0, 0])
 
-        self.draw_cursor(x_pos=x, y_pos=y)
-
+        if self.app.defaults["global_cursor_color_enabled"] is True:
+            self.draw_cursor(x_pos=x, y_pos=y, color=self.app.cursor_color_3D)
+        else:
+            self.draw_cursor(x_pos=x, y_pos=y)
         # self.canvas.blit(self.axes.bbox)
 
     def translate_coords(self, position):
@@ -898,6 +908,7 @@ class FakeCursor(QtCore.QObject):
 
     def set_data(self, pos, **kwargs):
         """Internal event handler to draw the cursor when the mouse moves."""
+        return
 
 
 class ShapeCollectionLegacy:
