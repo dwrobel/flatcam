@@ -457,8 +457,6 @@ class App(QtCore.QObject):
                 'mm': [0.1, 0.2, 0.5, 1, 2.54]
             },
 
-            "global_plot_fill": '#BBF268BF',
-            "global_plot_line": '#006E20BF',
             "global_sel_fill": '#a5a5ffbf',
             "global_sel_line": '#0000ffbf',
             "global_alt_sel_fill": '#BBF268BF',
@@ -524,6 +522,9 @@ class App(QtCore.QObject):
             "gerber_use_buffer_for_union": True,
             "gerber_clean_apertures": True,
             "gerber_extra_buffering": True,
+
+            "gerber_plot_fill": '#BBF268BF',
+            "gerber_plot_line": '#006E20BF',
 
             "gerber_def_units": 'IN',
             "gerber_def_zeros": 'L',
@@ -1118,8 +1119,6 @@ class App(QtCore.QObject):
             "global_workspaceT": self.ui.general_defaults_form.general_gui_group.wk_cb,
             "global_workspace_orientation": self.ui.general_defaults_form.general_gui_group.wk_orientation_radio,
 
-            "global_plot_fill": self.ui.general_defaults_form.general_gui_group.pf_color_entry,
-            "global_plot_line": self.ui.general_defaults_form.general_gui_group.pl_color_entry,
             "global_sel_fill": self.ui.general_defaults_form.general_gui_group.sf_color_entry,
             "global_sel_line": self.ui.general_defaults_form.general_gui_group.sl_color_entry,
             "global_alt_sel_fill": self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry,
@@ -1160,6 +1159,8 @@ class App(QtCore.QObject):
             "gerber_def_zeros": self.ui.gerber_defaults_form.gerber_gen_group.gerber_zeros_radio,
             "gerber_clean_apertures": self.ui.gerber_defaults_form.gerber_gen_group.gerber_clean_cb,
             "gerber_extra_buffering": self.ui.gerber_defaults_form.gerber_gen_group.gerber_extra_buffering,
+            "gerber_plot_fill": self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry,
+            "gerber_plot_line": self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry,
 
             # Gerber Options
             "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
@@ -2009,19 +2010,6 @@ class App(QtCore.QObject):
         # ############################# GUI COLORS SIGNALS ############################
         # #############################################################################
 
-        # Setting plot colors signals
-        self.ui.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(
-            self.on_pf_color_entry)
-        self.ui.general_defaults_form.general_gui_group.pf_color_button.clicked.connect(
-            self.on_pf_color_button)
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.valueChanged.connect(
-            self.on_pf_color_spinner)
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.valueChanged.connect(
-            self.on_pf_color_slider)
-        self.ui.general_defaults_form.general_gui_group.pl_color_entry.editingFinished.connect(
-            self.on_pl_color_entry)
-        self.ui.general_defaults_form.general_gui_group.pl_color_button.clicked.connect(
-            self.on_pl_color_button)
         # Setting selection (left - right) colors signals
         self.ui.general_defaults_form.general_gui_group.sf_color_entry.editingFinished.connect(
             self.on_sf_color_entry)
@@ -2035,6 +2023,7 @@ class App(QtCore.QObject):
             self.on_sl_color_entry)
         self.ui.general_defaults_form.general_gui_group.sl_color_button.clicked.connect(
             self.on_sl_color_button)
+
         # Setting selection (right - left) colors signals
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.editingFinished.connect(
             self.on_alt_sf_color_entry)
@@ -2048,6 +2037,7 @@ class App(QtCore.QObject):
             self.on_alt_sl_color_entry)
         self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.clicked.connect(
             self.on_alt_sl_color_button)
+
         # Setting Editor Draw colors signals
         self.ui.general_defaults_form.general_gui_group.draw_color_entry.editingFinished.connect(
             self.on_draw_color_entry)
@@ -6271,19 +6261,19 @@ class App(QtCore.QObject):
 
     def init_color_pickers_in_preferences_gui(self):
         # Init Plot Colors
-        self.ui.general_defaults_form.general_gui_group.pf_color_entry.set_value(self.defaults['global_plot_fill'])
-        self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
+        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry.set_value(self.defaults['gerber_plot_fill'])
+        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_button.setStyleSheet(
             "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_plot_fill'])[:7])
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.set_value(
-            int(self.defaults['global_plot_fill'][7:9], 16))
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(
-            int(self.defaults['global_plot_fill'][7:9], 16))
+            "border-color: dimgray" % str(self.defaults['gerber_plot_fill'])[:7])
+        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_spinner.set_value(
+            int(self.defaults['gerber_plot_fill'][7:9], 16))
+        self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.setValue(
+            int(self.defaults['gerber_plot_fill'][7:9], 16))
 
-        self.ui.general_defaults_form.general_gui_group.pl_color_entry.set_value(self.defaults['global_plot_line'])
-        self.ui.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
+        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_entry.set_value(self.defaults['gerber_plot_line'])
+        self.ui.gerber_defaults_form.gerber_gen_group.pl_color_button.setStyleSheet(
             "background-color:%s;"
-            "border-color: dimgray" % str(self.defaults['global_plot_line'])[:7])
+            "border-color: dimgray" % str(self.defaults['gerber_plot_line'])[:7])
 
         # Init Left-Right Selection colors
         self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
@@ -6515,68 +6505,6 @@ class App(QtCore.QObject):
             self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio.get_value()
         )
         self.on_excellon_format_changed()
-
-    # Setting plot colors handlers
-    def on_pf_color_entry(self):
-        self.defaults['global_plot_fill'] = \
-            self.ui.general_defaults_form.general_gui_group.pf_color_entry.get_value()[:7] + \
-            self.defaults['global_plot_fill'][7:9]
-        self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_plot_fill'])[:7])
-
-    def on_pf_color_button(self):
-        current_color = QtGui.QColor(self.defaults['global_plot_fill'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_fill_color = c_dialog.getColor(initial=current_color)
-
-        if plot_fill_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
-            "background-color:%s" % str(plot_fill_color.name()))
-
-        new_val = str(plot_fill_color.name()) + str(self.defaults['global_plot_fill'][7:9])
-        self.ui.general_defaults_form.general_gui_group.pf_color_entry.set_value(new_val)
-        self.defaults['global_plot_fill'] = new_val
-
-    def on_pf_color_spinner(self):
-        spinner_value = self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.value()
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(spinner_value)
-        self.defaults['global_plot_fill'] = \
-            self.defaults['global_plot_fill'][:7] + \
-            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.defaults['global_plot_line'] = \
-            self.defaults['global_plot_line'][:7] + \
-            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-
-    def on_pf_color_slider(self):
-        slider_value = self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value()
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.setValue(slider_value)
-
-    def on_pl_color_entry(self):
-        self.defaults['global_plot_line'] = \
-            self.ui.general_defaults_form.general_gui_group.pl_color_entry.get_value()[:7] + \
-            self.defaults['global_plot_line'][7:9]
-        self.ui.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_plot_line'])[:7])
-
-    def on_pl_color_button(self):
-        current_color = QtGui.QColor(self.defaults['global_plot_line'][:7])
-        # print(current_color)
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
-            "background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.defaults['global_plot_line'][7:9])
-        self.ui.general_defaults_form.general_gui_group.pl_color_entry.set_value(new_val_line)
-        self.defaults['global_plot_line'] = new_val_line
 
     # Setting selection colors (left - right) handlers
     def on_sf_color_entry(self):
@@ -10534,7 +10462,7 @@ class App(QtCore.QObject):
                                      mirror=None)
 
             if obj.kind.lower() == 'gerber':
-                # color = self.defaults["global_plot_fill"][:-2]
+                # color = self.defaults["gerber_plot_fill"][:-2]
                 color = obj.fill_color[:-2]
             elif obj.kind.lower() == 'excellon':
                 color = '#C40000'
@@ -12447,7 +12375,7 @@ class App(QtCore.QObject):
         self.clear_pool()
 
     def on_set_color_action_triggered(self):
-        new_color = self.defaults['global_plot_fill']
+        new_color = self.defaults['gerber_plot_fill']
         act_name = self.sender().text().lower()
 
         sel_obj_list = self.collection.get_selected()
@@ -12475,7 +12403,7 @@ class App(QtCore.QObject):
                         str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
 
         if act_name == 'custom':
-            new_color = QtGui.QColor(self.defaults['global_plot_fill'][:7])
+            new_color = QtGui.QColor(self.defaults['gerber_plot_fill'][:7])
             c_dialog = QtWidgets.QColorDialog()
             plot_fill_color = c_dialog.getColor(initial=new_color)
 

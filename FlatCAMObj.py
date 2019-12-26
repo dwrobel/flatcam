@@ -659,8 +659,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.units_found = self.app.defaults['units']
 
-        self.fill_color = self.app.defaults['global_plot_fill']
-        self.outline_color = self.app.defaults['global_plot_line']
+        self.fill_color = self.app.defaults['gerber_plot_fill']
+        self.outline_color = self.app.defaults['gerber_plot_line']
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -1790,7 +1790,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_plot_fill']
+            color = self.app.defaults['gerber_plot_fill']
 
         if 'marked_aperture' not in kwargs:
             return
