@@ -608,22 +608,22 @@ class Panelize(FlatCAMTool):
                         if panel_obj.multigeo is True:
                             for tool in panel_obj.tools:
                                 try:
-                                    for pol in panel_obj.tools[tool]['solid_geometry']:
-                                        geo_len += 1
+                                    geo_len += len(panel_obj.tools[tool]['solid_geometry'])
                                 except TypeError:
-                                    geo_len = 1
+                                    geo_len += 1
                         else:
                             try:
-                                for pol in panel_obj.solid_geometry:
-                                    geo_len += 1
+                                geo_len = len(panel_obj.solid_geometry)
                             except TypeError:
                                 geo_len = 1
                     elif isinstance(panel_obj, FlatCAMGerber):
                         for ap in panel_obj.apertures:
-                            for elem in panel_obj.apertures[ap]['geometry']:
-                                geo_len += 1
+                            if 'geometry' in panel_obj.apertures[ap]:
+                                try:
+                                    geo_len += len(panel_obj.apertures[ap]['geometry'])
+                                except TypeError:
+                                    geo_len += 1
 
-                    self.app.progress.emit(0)
                     element = 0
                     for row in range(rows):
                         currentx = 0.0
@@ -724,49 +724,48 @@ class Panelize(FlatCAMTool):
                                     if self.app.abort_flag:
                                         # graceful abort requested by the user
                                         raise FlatCAMApp.GracefulException
+                                    if 'geometry' in panel_obj.apertures[apid]:
+                                        try:
+                                            # calculate the number of polygons
+                                            geo_len = len(panel_obj.apertures[apid]['geometry'])
+                                        except TypeError:
+                                            geo_len = 1
+                                        pol_nr = 0
+                                        for el in panel_obj.apertures[apid]['geometry']:
+                                            if self.app.abort_flag:
+                                                # graceful abort requested by the user
+                                                raise FlatCAMApp.GracefulException
 
-                                    try:
-                                        # calculate the number of polygons
-                                        geo_len = len(panel_obj.apertures[apid]['geometry'])
-                                    except TypeError:
-                                        geo_len = 1
-                                    pol_nr = 0
-                                    for el in panel_obj.apertures[apid]['geometry']:
-                                        if self.app.abort_flag:
-                                            # graceful abort requested by the user
-                                            raise FlatCAMApp.GracefulException
+                                            new_el = dict()
+                                            if 'solid' in el:
+                                                geo_aper = translate_recursion(el['solid'])
+                                                new_el['solid'] = geo_aper
 
-                                        new_el = dict()
-                                        if 'solid' in el:
-                                            geo_aper = translate_recursion(el['solid'])
-                                            new_el['solid'] = geo_aper
+                                            if 'clear' in el:
+                                                geo_aper = translate_recursion(el['clear'])
+                                                new_el['clear'] = geo_aper
 
-                                        if 'clear' in el:
-                                            geo_aper = translate_recursion(el['clear'])
-                                            new_el['clear'] = geo_aper
+                                            if 'follow' in el:
+                                                geo_aper = translate_recursion(el['follow'])
+                                                new_el['follow'] = geo_aper
 
-                                        if 'follow' in el:
-                                            geo_aper = translate_recursion(el['follow'])
-                                            new_el['follow'] = geo_aper
+                                            obj_fin.apertures[apid]['geometry'].append(deepcopy(new_el))
 
-                                        obj_fin.apertures[apid]['geometry'].append(deepcopy(new_el))
+                                            pol_nr += 1
+                                            disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                                        pol_nr += 1
-                                        disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
-
-                                        if old_disp_number < disp_number <= 100:
-                                            self.app.proc_container.update_view_text(' %s: %d %d%%' %
-                                                                                     (_("Copy"),
-                                                                                      int(element),
-                                                                                      disp_number))
-                                            old_disp_number = disp_number
+                                            if old_disp_number < disp_number <= 100:
+                                                self.app.proc_container.update_view_text(' %s: %d %d%%' %
+                                                                                         (_("Copy"),
+                                                                                          int(element),
+                                                                                          disp_number))
+                                                old_disp_number = disp_number
 
                             currentx += lenghtx
                         currenty += lenghty
 
                     if panel_type == 'gerber':
-                        self.app.inform.emit('%s' %
-                                             _("Generating panel ... Adding the Gerber code."))
+                        self.app.inform.emit('%s' % _("Generating panel ... Adding the Gerber code."))
                         obj_fin.source_file = self.app.export_gerber(obj_name=self.outname, filename=None,
                                                                      local_use=obj_fin, use_thread=False)
 
@@ -777,15 +776,11 @@ class Panelize(FlatCAMTool):
                     # app_obj.log.debug("Finished creating a cascaded union for the panel.")
                     self.app.proc_container.update_view_text('')
 
-                self.app.inform.emit('%s: %d' %
-                                     (_("Generating panel... Spawning copies"), (int(rows * columns))))
+                self.app.inform.emit('%s: %d' % (_("Generating panel... Spawning copies"), (int(rows * columns))))
                 if isinstance(panel_obj, FlatCAMExcellon):
-                    self.app.progress.emit(50)
                     self.app.new_object("excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
                 else:
-                    self.app.progress.emit(50)
-                    self.app.new_object(panel_type, self.outname, job_init_geometry,
-                                        plot=True, autoselected=True)
+                    self.app.new_object(panel_type, self.outname, job_init_geometry, plot=True, autoselected=True)
 
         if self.constrain_flag is False:
             self.app.inform.emit('[success] %s' % _("Panel done..."))

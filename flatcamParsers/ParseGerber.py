@@ -437,18 +437,20 @@ class Gerber(Geometry):
                 gline = gline.strip(' \r\n')
                 # log.debug("Line=%3s %s" % (line_num, gline))
 
-                # ###################
-                # Ignored lines #####
-                # Comments      #####
-                # ###################
+                # ###############################################################
+                # ################   Ignored lines   ############################
+                # ################     Comments      ############################
+                # ###############################################################
                 match = self.comm_re.search(gline)
                 if match:
                     continue
 
-                # Polarity change ###### ##
-                # Example: %LPD*% or %LPC*%
-                # If polarity changes, creates geometry from current
-                # buffer, then adds or subtracts accordingly.
+                # ###############################################################
+                # ################  Polarity change #############################
+                # ########   Example: %LPD*% or %LPC*%        ###################
+                # ########   If polarity changes, creates geometry from current #
+                # ########    buffer, then adds or subtracts accordingly.       #
+                # ###############################################################
                 match = self.lpol_re.search(gline)
                 if match:
                     new_polarity = match.group(1)
@@ -491,11 +493,9 @@ class Gerber(Geometry):
                     # TODO: Remove when bug fixed
                     if len(poly_buffer) > 0:
                         if current_polarity == 'D':
-                            # self.follow_geometry = self.follow_geometry.union(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
 
                         else:
-                            # self.follow_geometry = self.follow_geometry.difference(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
 
                         # follow_buffer = []
@@ -504,11 +504,11 @@ class Gerber(Geometry):
                     current_polarity = new_polarity
                     continue
 
-                # ############################################################# ##
-                # Number format ############################################### ##
-                # Example: %FSLAX24Y24*%
-                # ############################################################# ##
-                # TODO: This is ignoring most of the format. Implement the rest.
+                # ################################################################
+                # #####################  Number format ###########################
+                # #####################  Example: %FSLAX24Y24*%  #################
+                # ################################################################
+
                 match = self.fmt_re.search(gline)
                 if match:
                     absolute = {'A': 'Absolute', 'I': 'Relative'}[match.group(2)]
@@ -524,8 +524,10 @@ class Gerber(Geometry):
                     log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
                     continue
 
-                # ## Mode (IN/MM)
-                # Example: %MOIN*%
+                # ################################################################
+                # ######################## Mode (IN/MM)    #######################
+                # #####################    Example: %MOIN*%  #####################
+                # ################################################################
                 match = self.mode_re.search(gline)
                 if match:
                     self.units = match.group(1)
@@ -535,9 +537,9 @@ class Gerber(Geometry):
                     self.conversion_done = True
                     continue
 
-                # ############################################################# ##
-                # Combined Number format and Mode --- Allegro does this ####### ##
-                # ############################################################# ##
+                # ################################################################
+                # Combined Number format and Mode --- Allegro does this ##########
+                # ################################################################
                 match = self.fmt_re_alt.search(gline)
                 if match:
                     absolute = {'A': 'Absolute', 'I': 'Relative'}[match.group(2)]
@@ -558,9 +560,9 @@ class Gerber(Geometry):
                     self.conversion_done = True
                     continue
 
-                # ############################################################# ##
-                # Search for OrCAD way for having Number format
-                # ############################################################# ##
+                # ################################################################
+                # ####     Search for OrCAD way for having Number format  ########
+                # ################################################################
                 match = self.fmt_re_orcad.search(gline)
                 if match:
                     if match.group(1) is not None:
@@ -587,9 +589,9 @@ class Gerber(Geometry):
                         self.conversion_done = True
                         continue
 
-                # ############################################################# ##
-                # Units (G70/1) OBSOLETE
-                # ############################################################# ##
+                # ################################################################
+                # ############     Units (G70/1) OBSOLETE   ######################
+                # ################################################################
                 match = self.units_re.search(gline)
                 if match:
                     obs_gerber_units = {'0': 'IN', '1': 'MM'}[match.group(1)]
@@ -599,21 +601,21 @@ class Gerber(Geometry):
                     self.conversion_done = True
                     continue
 
-                # ############################################################# ##
-                # Absolute/relative coordinates G90/1 OBSOLETE ######## ##
-                # ##################################################### ##
+                # ################################################################
+                # #####   Absolute/relative coordinates G90/1 OBSOLETE ###########
+                # ################################################################
                 match = self.absrel_re.search(gline)
                 if match:
                     absolute = {'0': "Absolute", '1': "Relative"}[match.group(1)]
                     log.warning("Gerber obsolete coordinates type found = %s (Absolute or Relative) " % absolute)
                     continue
 
-                # ############################################################# ##
-                # Aperture Macros ##################################### ##
+                # ################################################################
+                # Aperture Macros ################################################
                 # Having this at the beginning will slow things down
                 # but macros can have complicated statements than could
                 # be caught by other patterns.
-                # ############################################################# ##
+                # ################################################################
                 if current_macro is None:  # No macro started yet
                     match = self.am1_re.search(gline)
                     # Start macro if match, else not an AM, carry on.
@@ -640,18 +642,20 @@ class Gerber(Geometry):
                         self.aperture_macros[current_macro].append(gline)
                     continue
 
-                # ## Aperture definitions %ADD...
+                # ################################################################
+                # ##############   Aperture definitions %ADD...  #################
+                # ################################################################
                 match = self.ad_re.search(gline)
                 if match:
                     # log.info("Found aperture definition. Line %d: %s" % (line_num, gline))
                     self.aperture_parse(match.group(1), match.group(2), match.group(3))
                     continue
 
-                # ############################################################# ##
-                # Operation code alone ###################### ##
-                # Operation code alone, usually just D03 (Flash)
+                # ################################################################
+                # ################  Operation code alone #########################
+                # ###########   Operation code alone, usually just D03 (Flash) ###
                 # self.opcode_re = re.compile(r'^D0?([123])\*$')
-                # ############################################################# ##
+                # ################################################################
                 match = self.opcode_re.search(gline)
                 if match:
                     current_operation_code = int(match.group(1))
@@ -690,10 +694,10 @@ class Gerber(Geometry):
 
                     continue
 
-                # ############################################################# ##
-                # Tool/aperture change
-                # Example: D12*
-                # ############################################################# ##
+                # ################################################################
+                # ################  Tool/aperture change  ########################
+                # ################  Example: D12*         ########################
+                # ################################################################
                 match = self.tool_re.search(gline)
                 if match:
                     current_aperture = match.group(1)
@@ -740,12 +744,11 @@ class Gerber(Geometry):
                             self.apertures[last_path_aperture]['geometry'].append(deepcopy(geo_dict))
 
                             path = [path[-1]]
-
                     continue
 
-                # ############################################################# ##
-                # G36* - Begin region
-                # ############################################################# ##
+                # ################################################################
+                # ################  G36* - Begin region   ########################
+                # ################################################################
                 if self.regionon_re.search(gline):
                     if len(path) > 1:
                         # Take care of what is left in the path
@@ -780,9 +783,9 @@ class Gerber(Geometry):
                     making_region = True
                     continue
 
-                # ############################################################# ##
-                # G37* - End region
-                # ############################################################# ##
+                # ################################################################
+                # ################  G37* - End region     ########################
+                # ################################################################
                 if self.regionoff_re.search(gline):
                     making_region = False
 
@@ -830,20 +833,27 @@ class Gerber(Geometry):
 
                     # --- Buffered ---
                     geo_dict = dict()
-                    region_f = Polygon(path).exterior
+                    if current_aperture in self.apertures:
+                        buff_value = float(self.apertures[current_aperture]['size']) / 2.0
+                        # region_geo = Polygon(path).buffer(buff_value, int(self.steps_per_circle))
+                        region_geo = Polygon(path)  # Sprint Layout Gerbers with ground fill are crashed with above
+                    else:
+                        region_geo = Polygon(path)
+
+                    region_f = region_geo.exterior
                     if not region_f.is_empty:
                         follow_buffer.append(region_f)
                         geo_dict['follow'] = region_f
 
-                    region_s = Polygon(path)
+                    region_s = region_geo
                     if not region_s.is_valid:
-                        region_s = region_s.buffer(0, int(self.steps_per_circle / 4))
-
+                        region_s = region_s.buffer(0, int(self.steps_per_circle))
                     if not region_s.is_empty:
                         if self.app.defaults['gerber_simplification']:
                             poly_buffer.append(region_s.simplify(s_tol))
                         else:
                             poly_buffer.append(region_s)
+
                         if self.is_lpc is True:
                             geo_dict['clear'] = region_s
                         else:
@@ -855,18 +865,22 @@ class Gerber(Geometry):
                     path = [[current_x, current_y]]  # Start new path
                     continue
 
-                # ## G01/2/3* - Interpolation mode change
-                # Can occur along with coordinates and operation code but
-                # sometimes by itself (handled here).
-                # Example: G01*
+                # ################################################################
+                # ################  G01/2/3* - Interpolation mode change #########
+                # ####  Can occur along with coordinates and operation code but ##
+                # ####  sometimes by itself (handled here).  #####################
+                # ####  Example: G01*                        #####################
+                # ################################################################
                 match = self.interp_re.search(gline)
                 if match:
                     current_interpolation_mode = int(match.group(1))
                     continue
 
-                # ## G01 - Linear interpolation plus flashes
-                # Operation code (D0x) missing is deprecated... oh well I will support it.
+                # ################################################################
+                # ######### G01 - Linear interpolation plus flashes  #############
+                # ######### Operation code (D0x) missing is deprecated   #########
                 # REGEX: r'^(?:G0?(1))?(?:X(-?\d+))?(?:Y(-?\d+))?(?:D0([123]))?\*$'
+                # ################################################################
                 match = self.lin_re.search(gline)
                 if match:
                     # Dxx alone?
@@ -1147,7 +1161,9 @@ class Gerber(Geometry):
                     # log.debug("Line_number=%3s X=%s Y=%s (%s)" % (line_num, linear_x, linear_y, gline))
                     continue
 
-                # ## G74/75* - Single or multiple quadrant arcs
+                # ################################################################
+                # ######### G74/75* - Single or multiple quadrant arcs  ##########
+                # ################################################################
                 match = self.quad_re.search(gline)
                 if match:
                     if match.group(1) == '4':
@@ -1156,9 +1172,12 @@ class Gerber(Geometry):
                         quadrant_mode = 'MULTI'
                     continue
 
-                # ## G02/3 - Circular interpolation
-                # 2-clockwise, 3-counterclockwise
-                # Ex. format: G03 X0 Y50 I-50 J0 where the X, Y coords are the coords of the End Point
+                # ################################################################
+                # ######### G02/3 - Circular interpolation   #####################
+                # ######### 2-clockwise, 3-counterclockwise  #####################
+                # ######### Ex. format: G03 X0 Y50 I-50 J0 where the     #########
+                # ######### X, Y coords are the coords of the End Point  #########
+                # ################################################################
                 match = self.circ_re.search(gline)
                 if match:
                     arcdir = [None, None, "cw", "ccw"]
@@ -1339,12 +1358,16 @@ class Gerber(Geometry):
                         else:
                             log.warning("Invalid arc in line %d." % line_num)
 
-                # ## EOF
+                # ################################################################
+                # ######### EOF - END OF FILE ####################################
+                # ################################################################
                 match = self.eof_re.search(gline)
                 if match:
                     continue
 
-                # ## Line did not match any pattern. Warn user.
+                # ################################################################
+                # ######### Line did not match any pattern. Warn user.  ##########
+                # ################################################################
                 log.warning("Line ignored (%d): %s" % (line_num, gline))
 
             if len(path) > 1:
@@ -1433,16 +1456,16 @@ class Gerber(Geometry):
 
                     self.solid_geometry = final_poly
 
-                # FIX for issue #347 - Sprint Layout generate strange Gerber files when the copper pour is enabled
+                # FIX for issue #347 - Sprint Layout generate Gerber files when the copper pour is enabled
                 # it use a filled bounding box polygon to which add clear polygons (negative) to isolate the copper
                 # features
                 if self.app.defaults['gerber_extra_buffering']:
                     candidate_geo = list()
                     try:
                         for p in self.solid_geometry:
-                            candidate_geo.append(p.buffer(0.0000001))
+                            candidate_geo.append(p.buffer(-0.0000001))
                     except TypeError:
-                        candidate_geo.append(self.solid_geometry.buffer(0.0000001))
+                        candidate_geo.append(self.solid_geometry.buffer(-0.0000001))
                     self.solid_geometry = candidate_geo
 
                 # try:

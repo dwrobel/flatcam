@@ -396,6 +396,7 @@ class Distance(FlatCAMTool):
                 # Update cursor
                 self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                              symbol='++', edge_color=self.app.cursor_color_3D,
+                                             edge_width=self.app.defaults["global_cursor_width"],
                                              size=self.app.defaults["global_cursor_size"])
             else:
                 pos = (pos_canvas[0], pos_canvas[1])

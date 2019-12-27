@@ -505,6 +505,94 @@ class ToolsDB(QtWidgets.QWidget):
         self.table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         table_hlay.addWidget(self.table_widget)
 
+        # set the number of columns and the headers tool tips
+        self.configure_table()
+
+        # pal = QtGui.QPalette()
+        # pal.setColor(QtGui.QPalette.Background, Qt.white)
+
+        # New Bookmark
+        new_vlay = QtWidgets.QVBoxLayout()
+        layout.addLayout(new_vlay)
+
+        # new_tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
+        # new_vlay.addWidget(new_tool_lbl, alignment=QtCore.Qt.AlignBottom)
+
+        self.buttons_frame = QtWidgets.QFrame()
+        self.buttons_frame.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.buttons_frame)
+        self.buttons_box = QtWidgets.QHBoxLayout()
+        self.buttons_box.setContentsMargins(0, 0, 0, 0)
+        self.buttons_frame.setLayout(self.buttons_box)
+        self.buttons_frame.show()
+
+        add_entry_btn = FCButton(_("Add Geometry Tool in DB"))
+        add_entry_btn.setToolTip(
+            _("Add a new tool in the Tools Database.\n"
+              "It will be used in the Geometry UI.\n"
+              "You can edit it after it is added.")
+        )
+        self.buttons_box.addWidget(add_entry_btn)
+
+        # add_fct_entry_btn = FCButton(_("Add Paint/NCC Tool in DB"))
+        # add_fct_entry_btn.setToolTip(
+        #     _("Add a new tool in the Tools Database.\n"
+        #       "It will be used in the Paint/NCC Tools UI.\n"
+        #       "You can edit it after it is added.")
+        # )
+        # self.buttons_box.addWidget(add_fct_entry_btn)
+
+        remove_entry_btn = FCButton(_("Delete Tool from DB"))
+        remove_entry_btn.setToolTip(
+            _("Remove a selection of tools in the Tools Database.")
+        )
+        self.buttons_box.addWidget(remove_entry_btn)
+
+        export_db_btn = FCButton(_("Export DB"))
+        export_db_btn.setToolTip(
+            _("Save the Tools Database to a custom text file.")
+        )
+        self.buttons_box.addWidget(export_db_btn)
+
+        import_db_btn = FCButton(_("Import DB"))
+        import_db_btn.setToolTip(
+            _("Load the Tools Database information's from a custom text file.")
+        )
+        self.buttons_box.addWidget(import_db_btn)
+
+        self.add_tool_from_db = FCButton(_("Add Tool from Tools DB"))
+        self.add_tool_from_db.setToolTip(
+            _("Add a new tool in the Tools Table of the\n"
+              "active Geometry object after selecting a tool\n"
+              "in the Tools Database.")
+        )
+        self.add_tool_from_db.hide()
+
+        self.cancel_tool_from_db = FCButton(_("Cancel"))
+        self.cancel_tool_from_db.hide()
+
+        hlay = QtWidgets.QHBoxLayout()
+        layout.addLayout(hlay)
+        hlay.addWidget(self.add_tool_from_db)
+        hlay.addWidget(self.cancel_tool_from_db)
+        hlay.addStretch()
+
+        # ##############################################################################
+        # ######################## SIGNALS #############################################
+        # ##############################################################################
+
+        add_entry_btn.clicked.connect(self.on_tool_add)
+        remove_entry_btn.clicked.connect(self.on_tool_delete)
+        export_db_btn.clicked.connect(self.on_export_tools_db_file)
+        import_db_btn.clicked.connect(self.on_import_tools_db_file)
+        # closebtn.clicked.connect(self.accept)
+
+        self.add_tool_from_db.clicked.connect(self.on_tool_requested_from_app)
+        self.cancel_tool_from_db.clicked.connect(self.on_cancel_tool)
+
+        self.setup_db_ui()
+
+    def configure_table(self):
         self.table_widget.setColumnCount(27)
         # self.table_widget.setColumnWidth(0, 20)
         self.table_widget.setHorizontalHeaderLabels(
@@ -648,83 +736,8 @@ class ToolsDB(QtWidgets.QWidget):
             _("End Z.\n"
               "A position on Z plane to move immediately after job stop."))
 
-        # pal = QtGui.QPalette()
-        # pal.setColor(QtGui.QPalette.Background, Qt.white)
-
-        # New Bookmark
-        new_vlay = QtWidgets.QVBoxLayout()
-        layout.addLayout(new_vlay)
-
-        # new_tool_lbl = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
-        # new_vlay.addWidget(new_tool_lbl, alignment=QtCore.Qt.AlignBottom)
-
-        self.buttons_frame = QtWidgets.QFrame()
-        self.buttons_frame.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.buttons_frame)
-        self.buttons_box = QtWidgets.QHBoxLayout()
-        self.buttons_box.setContentsMargins(0, 0, 0, 0)
-        self.buttons_frame.setLayout(self.buttons_box)
-        self.buttons_frame.show()
-
-        add_entry_btn = FCButton(_("Add Tool to Tools DB"))
-        add_entry_btn.setToolTip(
-            _("Add a new tool in the Tools Database.\n"
-              "You can edit it after it is added.")
-        )
-        remove_entry_btn = FCButton(_("Remove Tool from Tools DB"))
-        remove_entry_btn.setToolTip(
-            _("Remove a selection of tools in the Tools Database.")
-        )
-        export_db_btn = FCButton(_("Export Tool DB"))
-        export_db_btn.setToolTip(
-            _("Save the Tools Database to a custom text file.")
-        )
-        import_db_btn = FCButton(_("Import Tool DB"))
-        import_db_btn.setToolTip(
-            _("Load the Tools Database information's from a custom text file.")
-        )
-        # button_hlay.addStretch()
-        self.buttons_box.addWidget(add_entry_btn)
-        self.buttons_box.addWidget(remove_entry_btn)
-
-        self.buttons_box.addWidget(export_db_btn)
-        self.buttons_box.addWidget(import_db_btn)
-        # self.buttons_box.addWidget(closebtn)
-
-        self.add_tool_from_db = FCButton(_("Add Tool from Tools DB"))
-        self.add_tool_from_db.setToolTip(
-            _("Add a new tool in the Tools Table of the\n"
-              "active Geometry object after selecting a tool\n"
-              "in the Tools Database.")
-        )
-        self.add_tool_from_db.hide()
-
-        self.cancel_tool_from_db = FCButton(_("Cancel"))
-        self.cancel_tool_from_db.hide()
-
-        hlay = QtWidgets.QHBoxLayout()
-        layout.addLayout(hlay)
-        hlay.addWidget(self.add_tool_from_db)
-        hlay.addWidget(self.cancel_tool_from_db)
-        hlay.addStretch()
-
-        # ##############################################################################
-        # ######################## SIGNALS #############################################
-        # ##############################################################################
-
-        add_entry_btn.clicked.connect(self.on_tool_add)
-        remove_entry_btn.clicked.connect(self.on_tool_delete)
-        export_db_btn.clicked.connect(self.on_export_tools_db_file)
-        import_db_btn.clicked.connect(self.on_import_tools_db_file)
-        # closebtn.clicked.connect(self.accept)
-
-        self.add_tool_from_db.clicked.connect(self.on_tool_requested_from_app)
-        self.cancel_tool_from_db.clicked.connect(self.on_cancel_tool)
-
-        self.setup_db_ui()
-
     def setup_db_ui(self):
-        filename = self.app.data_path + '/tools_db.FlatConfig'
+        filename = self.app.data_path + '/tools_db.FlatDB'
 
         # load the database tools from the file
         try:
@@ -1007,7 +1020,17 @@ class ToolsDB(QtWidgets.QWidget):
 
         dict_elem = dict()
         dict_elem['name'] = 'new_tool'
-        dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
+        if type(self.app.defaults["geometry_cnctooldia"]) == float:
+            dict_elem['tooldia'] = self.app.defaults["geometry_cnctooldia"]
+        else:
+            try:
+                tools_string = self.app.defaults["geometry_cnctooldia"].split(",")
+                tools_diameters = [eval(a) for a in tools_string if a != '']
+                dict_elem['tooldia'] = tools_diameters[0] if tools_diameters else 0.0
+            except Exception as e:
+                self.app.log.debug("ToolDB.on_tool_add() --> %s" % str(e))
+                return
+
         dict_elem['offset'] = 'Path'
         dict_elem['offset_value'] = 0.0
         dict_elem['type'] = 'Rough'
@@ -1151,7 +1174,7 @@ class ToolsDB(QtWidgets.QWidget):
     def on_save_tools_db(self, silent=False):
         self.app.log.debug("ToolsDB.on_save_button() --> Saving Tools Database to file.")
 
-        filename = self.app.data_path + "/tools_db.FlatConfig"
+        filename = self.app.data_path + "/tools_db.FlatDB"
 
         # Preferences save, update the color of the Tools DB Tab text
         for idx in range(self.app.ui.plot_tab_area.count()):
