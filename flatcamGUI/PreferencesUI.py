@@ -4599,7 +4599,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         # Plot Line Color
         self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
         self.line_color_label.setToolTip(
-            _("Set the travel line color for plotted objects.")
+            _("Set the color for plotted objects.")
         )
         self.line_color_entry = FCEntry()
         self.line_color_button = QtWidgets.QPushButton()
