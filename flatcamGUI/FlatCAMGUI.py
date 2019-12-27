@@ -2333,7 +2333,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         :param event: QT event to filter
         :return:
         """
-        if self.general_defaults_form.general_gui_set_group.toggle_tooltips_cb.get_value() is False:
+        if self.general_defaults_form.general_app_set_group.toggle_tooltips_cb.get_value() is False:
             if event.type() == QtCore.QEvent.ToolTip:
                 return True
             else:

@@ -3536,7 +3536,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # Plot Excellon (All polygons?)
             if self.options["solid"]:
                 for geo in self.solid_geometry:
-                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
+                    self.add_shape(shape=geo,
+                                   color=self.app.defaults["excellon_plot_line"],
+                                   face_color=self.app.defaults["excellon_plot_fill"],
                                    visible=visible,
                                    layer=2)
             else:
@@ -4074,7 +4076,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # I use lambda's because the connected functions have parameters that could be used in certain scenarios
         self.ui.addtool_btn.clicked.connect(lambda: self.on_tool_add())
-        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
 
         self.ui.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
@@ -4124,11 +4125,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         try:
             self.ui.addtool_btn.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-        try:
-            self.ui.addtool_entry.returnPressed.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -5793,12 +5789,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         return factor
 
-    def plot_element(self, element, color='#FF0000FF', visible=None):
+    def plot_element(self, element, color=None, visible=None):
+
+        if color is None:
+            color = '#FF0000FF'
 
         visible = visible if visible else self.options['plot']
         try:
             for sub_el in element:
-                self.plot_element(sub_el)
+                self.plot_element(sub_el, color=color)
 
         except TypeError:  # Element is not iterable...
             # if self.app.is_legacy is False:
@@ -5825,12 +5824,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             if self.multigeo is True:  # geo multi tool usage
                 for tooluid_key in self.tools:
                     solid_geometry = self.tools[tooluid_key]['solid_geometry']
-                    self.plot_element(solid_geometry, visible=visible)
+                    self.plot_element(solid_geometry, visible=visible,
+                                      color=self.app.defaults["geometry_plot_line"])
             else:
                 # plot solid geometry that may be an direct attribute of the geometry object
                 # for SingleGeo
                 if self.solid_geometry:
-                    self.plot_element(self.solid_geometry, visible=visible)
+                    self.plot_element(self.solid_geometry, visible=visible,
+                                      color=self.app.defaults["geometry_plot_line"])
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
 

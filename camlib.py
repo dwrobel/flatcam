@@ -4252,8 +4252,7 @@ class CNCjob(Geometry):
     #     return fig
 
     def plot2(self, tooldia=None, dpi=75, margin=0.1, gcode_parsed=None,
-              color={"T": ["#F0E24D4C", "#B5AB3A4C"], "C": ["#5E6CFFFF", "#4650BDFF"]},
-              alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False, kind='all'):
+              color=None, alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False, kind='all'):
         """
         Plots the G-code job onto the given axes.
 
@@ -4269,6 +4268,12 @@ class CNCjob(Geometry):
         :return: None
         """
         # units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
+        if color is None:
+            color = {
+                "T": [self.app.defaults["cncjob_travel_fill"], self.app.defaults["cncjob_travel_line"]],
+                "C": [self.app.defaults["cncjob_plot_fill"], self.app.defaults["cncjob_plot_line"]]
+            }
 
         gcode_parsed = gcode_parsed if gcode_parsed else self.gcode_parsed
         path_num = 0

@@ -612,6 +612,8 @@ class App(QtCore.QObject):
             "excellon_save_filters": "Excellon File (*.txt);;Excellon File (*.drd);;Excellon File (*.drl);;"
                                      "Excellon File (*.exc);;Excellon File (*.ncd);;Excellon File (*.tap);;"
                                      "Excellon File (*.xln);;All Files (*.*)",
+            "excellon_plot_fill": '#C40000BF',
+            "excellon_plot_line": '#750000BF',
 
             # Excellon Options
             "excellon_drillz": -1.7,
@@ -672,6 +674,7 @@ class App(QtCore.QObject):
             "geometry_plot": True,
             "geometry_circle_steps": 64,
             "geometry_cnctooldia": "2.4",
+            "geometry_plot_line": "#FF0000",
 
             # Geometry Options
             "geometry_cutz": -2.4,
@@ -728,6 +731,10 @@ class App(QtCore.QObject):
                                    "G-Code Files (*.ngc);;G-Code Files (*.out);;G-Code Files (*.ply);;"
                                    "G-Code Files (*.sbp);;G-Code Files (*.tap);;G-Code Files (*.xpi);;"
                                    "All Files (*.*)",
+            "cncjob_plot_line": '#4650BDFF',
+            "cncjob_plot_fill": '#5E6CFFFF',
+            "cncjob_travel_line": '#B5AB3A4C',
+            "cncjob_travel_fill": '#F0E24D4C',
 
             # CNC Job Options
             "cncjob_prepend": "",
@@ -983,10 +990,10 @@ class App(QtCore.QObject):
         else:
             self.decimals = int(self.defaults['decimals_inch'])
 
-        if self.defaults["global_theme"] == 'white':
+        if self.defaults["global_gray_icons"] is False:
             self.resource_location = 'share'
         else:
-            self.resource_location = 'share'
+            self.resource_location = 'share/dark_resources'
 
         self.current_units = self.defaults['units']
 
@@ -1093,19 +1100,17 @@ class App(QtCore.QObject):
             "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
             "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
 
+            "global_systray_icon": self.ui.general_defaults_form.general_app_group.systray_cb,
+            "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
+            "global_project_at_startup": self.ui.general_defaults_form.general_app_group.project_startup_cb,
             "global_version_check": self.ui.general_defaults_form.general_app_group.version_check_cb,
             "global_send_stats": self.ui.general_defaults_form.general_app_group.send_stats_cb,
 
             "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
             "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
 
-            "global_open_style": self.ui.general_defaults_form.general_app_group.open_style_cb,
-
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_spinner,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
-
-            "global_bookmarks_limit": self.ui.general_defaults_form.general_app_group.bm_limit_spinner,
-            "global_machinist_setting": self.ui.general_defaults_form.general_app_group.machinist_cb,
 
             "global_tpdf_tmargin": self.ui.general_defaults_form.general_app_group.tmargin_entry,
             "global_tpdf_bmargin": self.ui.general_defaults_form.general_app_group.bmargin_entry,
@@ -1131,27 +1136,27 @@ class App(QtCore.QObject):
             "global_project_autohide": self.ui.general_defaults_form.general_gui_group.project_autohide_cb,
 
             # General GUI Settings
-            "global_gridx": self.ui.general_defaults_form.general_gui_set_group.gridx_entry,
-            "global_gridy": self.ui.general_defaults_form.general_gui_set_group.gridy_entry,
-            "global_snap_max": self.ui.general_defaults_form.general_gui_set_group.snap_max_dist_entry,
-            "global_workspace": self.ui.general_defaults_form.general_gui_set_group.workspace_cb,
-            "global_workspaceT": self.ui.general_defaults_form.general_gui_set_group.wk_cb,
-            "global_workspace_orientation": self.ui.general_defaults_form.general_gui_set_group.wk_orientation_radio,
+            "global_gridx": self.ui.general_defaults_form.general_app_set_group.gridx_entry,
+            "global_gridy": self.ui.general_defaults_form.general_app_set_group.gridy_entry,
+            "global_snap_max": self.ui.general_defaults_form.general_app_set_group.snap_max_dist_entry,
+            "global_workspace": self.ui.general_defaults_form.general_app_set_group.workspace_cb,
+            "global_workspaceT": self.ui.general_defaults_form.general_app_set_group.wk_cb,
+            "global_workspace_orientation": self.ui.general_defaults_form.general_app_set_group.wk_orientation_radio,
 
-            "global_systray_icon": self.ui.general_defaults_form.general_gui_set_group.systray_cb,
-            "global_shell_at_startup": self.ui.general_defaults_form.general_gui_set_group.shell_startup_cb,
-            "global_project_at_startup": self.ui.general_defaults_form.general_gui_set_group.project_startup_cb,
-            "global_cursor_type": self.ui.general_defaults_form.general_gui_set_group.cursor_radio,
-            "global_cursor_size": self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry,
-            "global_cursor_width": self.ui.general_defaults_form.general_gui_set_group.cursor_width_entry,
-            "global_cursor_color_enabled": self.ui.general_defaults_form.general_gui_set_group.mouse_cursor_color_cb,
-            "global_cursor_color": self.ui.general_defaults_form.general_gui_set_group.mouse_cursor_entry,
-            "global_pan_button": self.ui.general_defaults_form.general_gui_set_group.pan_button_radio,
-            "global_mselect_key": self.ui.general_defaults_form.general_gui_set_group.mselect_radio,
-            "global_delete_confirmation": self.ui.general_defaults_form.general_gui_set_group.delete_conf_cb,
+            "global_cursor_type": self.ui.general_defaults_form.general_app_set_group.cursor_radio,
+            "global_cursor_size": self.ui.general_defaults_form.general_app_set_group.cursor_size_entry,
+            "global_cursor_width": self.ui.general_defaults_form.general_app_set_group.cursor_width_entry,
+            "global_cursor_color_enabled": self.ui.general_defaults_form.general_app_set_group.mouse_cursor_color_cb,
+            "global_cursor_color": self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry,
+            "global_pan_button": self.ui.general_defaults_form.general_app_set_group.pan_button_radio,
+            "global_mselect_key": self.ui.general_defaults_form.general_app_set_group.mselect_radio,
+            "global_delete_confirmation": self.ui.general_defaults_form.general_app_set_group.delete_conf_cb,
+            "global_open_style": self.ui.general_defaults_form.general_app_set_group.open_style_cb,
+            "global_toggle_tooltips": self.ui.general_defaults_form.general_app_set_group.toggle_tooltips_cb,
+            "global_machinist_setting": self.ui.general_defaults_form.general_app_set_group.machinist_cb,
 
-            "global_toggle_tooltips": self.ui.general_defaults_form.general_gui_set_group.toggle_tooltips_cb,
-            "global_activity_icon": self.ui.general_defaults_form.general_gui_set_group.activity_combo,
+            "global_bookmarks_limit": self.ui.general_defaults_form.general_app_set_group.bm_limit_spinner,
+            "global_activity_icon": self.ui.general_defaults_form.general_app_set_group.activity_combo,
 
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
@@ -1232,6 +1237,8 @@ class App(QtCore.QObject):
             "excellon_update": self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb,
             "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
             "excellon_search_time": self.ui.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
+            "excellon_plot_fill": self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry,
+            "excellon_plot_line": self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry,
 
             # Excellon Options
             "excellon_drillz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
@@ -1301,6 +1308,7 @@ class App(QtCore.QObject):
             "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
             "geometry_circle_steps": self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
             "geometry_cnctooldia": self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
+            "geometry_plot_line": self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry,
 
             # Geometry Options
             "geometry_cutz": self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
@@ -1345,6 +1353,10 @@ class App(QtCore.QObject):
             "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
             "cncjob_steps_per_circle": self.ui.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
             "cncjob_line_ending":  self.ui.cncjob_defaults_form.cncjob_gen_group.line_ending_cb,
+            "cncjob_plot_line": self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry,
+            "cncjob_plot_fill": self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry,
+            "cncjob_travel_line": self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry,
+            "cncjob_travel_fill": self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry,
 
             # CNC Job Options
             "cncjob_prepend": self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
@@ -1583,8 +1595,8 @@ class App(QtCore.QObject):
             self.on_layout(lay=initial_lay)
 
             # Set the combobox in Preferences to the current layout
-            idx = self.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(initial_lay)
-            self.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
+            idx = self.ui.general_defaults_form.general_gui_group.layout_combo.findText(initial_lay)
+            self.ui.general_defaults_form.general_gui_group.layout_combo.setCurrentIndex(idx)
 
             # after the first run, this object should be False
             self.defaults["first_run"] = False
@@ -2003,90 +2015,25 @@ class App(QtCore.QObject):
         # ######################### GUI PREFERENCES SIGNALS ###########################
         # #############################################################################
 
-        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(self.on_app_restart)
-        self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(
-            lambda: fcTranslate.on_language_apply_click(self, restart=True)
-        )
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
-        # #############################################################################
-        # ############################# GUI COLORS SIGNALS ############################
-        # #############################################################################
-
-        # Setting selection (left - right) colors signals
-        self.ui.general_defaults_form.general_gui_group.sf_color_entry.editingFinished.connect(
-            self.on_sf_color_entry)
-        self.ui.general_defaults_form.general_gui_group.sf_color_button.clicked.connect(
-            self.on_sf_color_button)
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.valueChanged.connect(
-            self.on_sf_color_spinner)
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.valueChanged.connect(
-            self.on_sf_color_slider)
-        self.ui.general_defaults_form.general_gui_group.sl_color_entry.editingFinished.connect(
-            self.on_sl_color_entry)
-        self.ui.general_defaults_form.general_gui_group.sl_color_button.clicked.connect(
-            self.on_sl_color_button)
-
-        # Setting selection (right - left) colors signals
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.editingFinished.connect(
-            self.on_alt_sf_color_entry)
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.clicked.connect(
-            self.on_alt_sf_color_button)
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.valueChanged.connect(
-            self.on_alt_sf_color_spinner)
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.valueChanged.connect(
-            self.on_alt_sf_color_slider)
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.editingFinished.connect(
-            self.on_alt_sl_color_entry)
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.clicked.connect(
-            self.on_alt_sl_color_button)
-
-        # Setting Editor Draw colors signals
-        self.ui.general_defaults_form.general_gui_group.draw_color_entry.editingFinished.connect(
-            self.on_draw_color_entry)
-        self.ui.general_defaults_form.general_gui_group.draw_color_button.clicked.connect(
-            self.on_draw_color_button)
-
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.editingFinished.connect(
-            self.on_sel_draw_color_entry)
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.clicked.connect(
-            self.on_sel_draw_color_button)
-
-        self.ui.general_defaults_form.general_gui_group.proj_color_entry.editingFinished.connect(
-            self.on_proj_color_entry)
-        self.ui.general_defaults_form.general_gui_group.proj_color_button.clicked.connect(
-            self.on_proj_color_button)
-
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.editingFinished.connect(
-            self.on_proj_color_dis_entry)
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.clicked.connect(
-            self.on_proj_color_dis_button)
-
         # ############################# Workspace Setting Signals #####################
-        self.ui.general_defaults_form.general_gui_set_group.wk_cb.currentIndexChanged.connect(
+        self.ui.general_defaults_form.general_app_set_group.wk_cb.currentIndexChanged.connect(
             self.on_workspace_modified)
-        self.ui.general_defaults_form.general_gui_set_group.wk_orientation_radio.activated_custom.connect(
+        self.ui.general_defaults_form.general_app_set_group.wk_orientation_radio.activated_custom.connect(
             self.on_workspace_modified
         )
 
-        self.ui.general_defaults_form.general_gui_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
         self.ui.general_defaults_form.general_gui_group.layout_combo.activated.connect(self.on_layout)
 
         # #############################################################################
         # ############################# GUI SETTINGS SIGNALS ##########################
         # #############################################################################
-
-        self.ui.general_defaults_form.general_gui_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
-
-        # ########## CNC Job related signals #############
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.tc_variable_combo.currentIndexChanged[str].connect(
-            self.on_cnc_custom_parameters)
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.editingFinished.connect(
-            self.on_annotation_fontcolor_entry)
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.clicked.connect(
-            self.on_annotation_fontcolor_button)
+        self.ui.general_defaults_form.general_app_group.ge_radio.activated_custom.connect(self.on_app_restart)
+        self.ui.general_defaults_form.general_app_set_group.cursor_radio.activated_custom.connect(self.on_cursor_type)
 
         # ########## Tools related signals #############
         # Film Tool
@@ -2114,14 +2061,12 @@ class App(QtCore.QObject):
 
         self.object_status_changed.connect(self.on_collection_updated)
 
-        # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
-        self.ui.general_defaults_form.general_gui_set_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
-
         # Make sure that when the Excellon loading parameters are changed, the change is reflected in the
         # Export Excellon parameters.
         self.ui.excellon_defaults_form.excellon_gen_group.update_excellon_cb.stateChanged.connect(
             self.on_update_exc_export
         )
+
         # call it once to make sure it is updated at startup
         self.on_update_exc_export(state=self.defaults["excellon_update"])
 
@@ -2183,9 +2128,6 @@ class App(QtCore.QObject):
             lambda: self.add_extension(ext_type='keyword'))
         self.ui.util_defaults_form.kw_group.del_btn.clicked.connect(
             lambda: self.del_extension(ext_type='keyword'))
-
-        # splash screen button signal
-        self.ui.general_defaults_form.general_gui_set_group.splash_cb.stateChanged.connect(self.on_splash_changed)
 
         # connect the abort_all_tasks related slots to the related signals
         self.proc_container.idle_flag.connect(self.app_is_idle)
@@ -5175,20 +5117,20 @@ class App(QtCore.QObject):
             )
             stgs.setValue(
                 'notebook_font_size',
-                self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value()
+                self.ui.general_defaults_form.general_app_set_group.notebook_font_size_spinner.get_value()
             )
             stgs.setValue(
                 'axis_font_size',
-                self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value()
+                self.ui.general_defaults_form.general_app_set_group.axis_font_size_spinner.get_value()
             )
             stgs.setValue(
                 'textbox_font_size',
-                self.ui.general_defaults_form.general_gui_set_group.textbox_font_size_spinner.get_value()
+                self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
             )
             stgs.setValue('toolbar_lock', self.ui.lock_action.isChecked())
             stgs.setValue(
                 'machinist',
-                1 if self.ui.general_defaults_form.general_app_group.machinist_cb.get_value() else 0
+                1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0
             )
 
             # This will write the setting to the platform specific storage.
@@ -6283,7 +6225,7 @@ class App(QtCore.QObject):
         # self.options2form()
 
     def init_color_pickers_in_preferences_gui(self):
-        # Init Plot Colors
+        # Init Gerber Plot Colors
         self.ui.gerber_defaults_form.gerber_gen_group.pf_color_entry.set_value(self.defaults['gerber_plot_fill'])
         self.ui.gerber_defaults_form.gerber_gen_group.pf_color_button.setStyleSheet(
             "background-color:%s;"
@@ -6297,6 +6239,60 @@ class App(QtCore.QObject):
         self.ui.gerber_defaults_form.gerber_gen_group.pl_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['gerber_plot_line'])[:7])
+
+        # Init Excellon Plot Colors
+        self.ui.excellon_defaults_form.excellon_gen_group.fill_color_entry.set_value(
+            self.defaults['excellon_plot_fill'])
+        self.ui.excellon_defaults_form.excellon_gen_group.fill_color_button.setStyleSheet(
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['excellon_plot_fill'])[:7])
+        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_spinner.set_value(
+            int(self.defaults['excellon_plot_fill'][7:9], 16))
+        self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.setValue(
+            int(self.defaults['excellon_plot_fill'][7:9], 16))
+
+        self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry.set_value(
+            self.defaults['excellon_plot_line'])
+        self.ui.excellon_defaults_form.excellon_gen_group.line_color_button.setStyleSheet(
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['excellon_plot_line'])[:7])
+
+        # Init Geometry Plot Colors
+        self.ui.geometry_defaults_form.geometry_gen_group.line_color_entry.set_value(
+            self.defaults['geometry_plot_line'])
+        self.ui.geometry_defaults_form.geometry_gen_group.line_color_button.setStyleSheet(
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['geometry_plot_line'])[:7])
+
+        # Init CNCJob Travel Line Colors
+        self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_entry.set_value(
+            self.defaults['cncjob_travel_fill'])
+        self.ui.cncjob_defaults_form.cncjob_gen_group.tfill_color_button.setStyleSheet(
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['cncjob_travel_fill'])[:7])
+        self.ui.cncjob_defaults_form.cncjob_gen_group.tcolor_alpha_spinner.set_value(
+            int(self.defaults['cncjob_travel_fill'][7:9], 16))
+        self.ui.cncjob_defaults_form.cncjob_gen_group.tcolor_alpha_slider.setValue(
+            int(self.defaults['cncjob_travel_fill'][7:9], 16))
+
+        self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_entry.set_value(
+            self.defaults['cncjob_travel_line'])
+        self.ui.cncjob_defaults_form.cncjob_gen_group.tline_color_button.setStyleSheet(
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['cncjob_travel_line'])[:7])
+
+        # Init CNCJob Plot Colors
+        self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_entry.set_value(
+            self.defaults['cncjob_plot_fill'])
+        self.ui.cncjob_defaults_form.cncjob_gen_group.fill_color_button.setStyleSheet(
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['cncjob_plot_fill'])[:7])
+
+        self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_entry.set_value(
+            self.defaults['cncjob_plot_line'])
+        self.ui.cncjob_defaults_form.cncjob_gen_group.line_color_button.setStyleSheet(
+            "background-color:%s;"
+            "border-color: dimgray" % str(self.defaults['cncjob_plot_line'])[:7])
 
         # Init Left-Right Selection colors
         self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
@@ -6358,9 +6354,9 @@ class App(QtCore.QObject):
             "border-color: dimgray" % str(self.defaults['global_proj_item_dis_color'])[:7])
 
         # Init Project Disabled Items color
-        self.ui.general_defaults_form.general_gui_set_group.mouse_cursor_entry.set_value(
+        self.ui.general_defaults_form.general_app_set_group.mouse_cursor_entry.set_value(
             self.defaults['global_cursor_color'])
-        self.ui.general_defaults_form.general_gui_set_group.mouse_cursor_button.setStyleSheet(
+        self.ui.general_defaults_form.general_app_set_group.mouse_cursor_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['global_cursor_color'])[:7])
 
@@ -6529,238 +6525,6 @@ class App(QtCore.QObject):
         )
         self.on_excellon_format_changed()
 
-    # Setting selection colors (left - right) handlers
-    def on_sf_color_entry(self):
-        self.defaults['global_sel_fill'] = \
-            self.ui.general_defaults_form.general_gui_group.sf_color_entry.get_value()[:7] + \
-            self.defaults['global_sel_fill'][7:9]
-        self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_sel_fill'])[:7])
-
-    def on_sf_color_button(self):
-        current_color = QtGui.QColor(self.defaults['global_sel_fill'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_fill_color = c_dialog.getColor(initial=current_color)
-
-        if plot_fill_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
-            "background-color:%s" % str(plot_fill_color.name()))
-
-        new_val = str(plot_fill_color.name()) + str(self.defaults['global_sel_fill'][7:9])
-        self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(new_val)
-        self.defaults['global_sel_fill'] = new_val
-
-    def on_sf_color_spinner(self):
-        spinner_value = self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.value()
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(spinner_value)
-        self.defaults['global_sel_fill'] = \
-            self.defaults['global_sel_fill'][:7] + \
-            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.defaults['global_sel_line'] = \
-            self.defaults['global_sel_line'][:7] + \
-            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-
-    def on_sf_color_slider(self):
-        slider_value = self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.value()
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.setValue(slider_value)
-
-    def on_sl_color_entry(self):
-        self.defaults['global_sel_line'] = \
-            self.ui.general_defaults_form.general_gui_group.sl_color_entry.get_value()[:7] + \
-            self.defaults['global_sel_line'][7:9]
-        self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
-
-    def on_sl_color_button(self):
-        current_color = QtGui.QColor(self.defaults['global_sel_line'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
-            "background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.defaults['global_sel_line'][7:9])
-        self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(new_val_line)
-        self.defaults['global_sel_line'] = new_val_line
-
-    # Setting selection colors (right - left) handlers
-    def on_alt_sf_color_entry(self):
-        self.defaults['global_alt_sel_fill'] = self.ui.general_defaults_form.general_gui_group \
-                                   .alt_sf_color_entry.get_value()[:7] + self.defaults['global_alt_sel_fill'][7:9]
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_alt_sel_fill'])[:7])
-
-    def on_alt_sf_color_button(self):
-        current_color = QtGui.QColor(self.defaults['global_alt_sel_fill'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_fill_color = c_dialog.getColor(initial=current_color)
-
-        if plot_fill_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
-            "background-color:%s" % str(plot_fill_color.name()))
-
-        new_val = str(plot_fill_color.name()) + str(self.defaults['global_alt_sel_fill'][7:9])
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(new_val)
-        self.defaults['global_alt_sel_fill'] = new_val
-
-    def on_alt_sf_color_spinner(self):
-        spinner_value = self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.value()
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(spinner_value)
-        self.defaults['global_alt_sel_fill'] = \
-            self.defaults['global_alt_sel_fill'][:7] + \
-            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.defaults['global_alt_sel_line'] = \
-            self.defaults['global_alt_sel_line'][:7] + \
-            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-
-    def on_alt_sf_color_slider(self):
-        slider_value = self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.value()
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.setValue(slider_value)
-
-    def on_alt_sl_color_entry(self):
-        self.defaults['global_alt_sel_line'] = \
-            self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.get_value()[:7] + \
-            self.defaults['global_alt_sel_line'][7:9]
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_alt_sel_line'])[:7])
-
-    def on_alt_sl_color_button(self):
-        current_color = QtGui.QColor(self.defaults['global_alt_sel_line'][:7])
-
-        c_dialog = QtWidgets.QColorDialog()
-        plot_line_color = c_dialog.getColor(initial=current_color)
-
-        if plot_line_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
-            "background-color:%s" % str(plot_line_color.name()))
-
-        new_val_line = str(plot_line_color.name()) + str(self.defaults['global_alt_sel_line'][7:9])
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(new_val_line)
-        self.defaults['global_alt_sel_line'] = new_val_line
-
-    # Setting Editor colors
-    def on_draw_color_entry(self):
-        self.defaults['global_draw_color'] = self.ui.general_defaults_form.general_gui_group \
-                                                   .draw_color_entry.get_value()
-        self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_draw_color']))
-
-    def on_draw_color_button(self):
-        current_color = QtGui.QColor(self.defaults['global_draw_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        draw_color = c_dialog.getColor(initial=current_color)
-
-        if draw_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
-            "background-color:%s" % str(draw_color.name()))
-
-        new_val = str(draw_color.name())
-        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(new_val)
-        self.defaults['global_draw_color'] = new_val
-
-    def on_sel_draw_color_entry(self):
-        self.defaults['global_sel_draw_color'] = self.ui.general_defaults_form.general_gui_group \
-                                                   .sel_draw_color_entry.get_value()
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_sel_draw_color']))
-
-    def on_sel_draw_color_button(self):
-        current_color = QtGui.QColor(self.defaults['global_sel_draw_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        sel_draw_color = c_dialog.getColor(initial=current_color)
-
-        if sel_draw_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
-            "background-color:%s" % str(sel_draw_color.name()))
-
-        new_val_sel = str(sel_draw_color.name())
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(new_val_sel)
-        self.defaults['global_sel_draw_color'] = new_val_sel
-
-    def on_proj_color_entry(self):
-        self.defaults['global_proj_item_color'] = self.ui.general_defaults_form.general_gui_group \
-                                                   .proj_color_entry.get_value()
-        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_proj_item_color']))
-
-    def on_proj_color_button(self):
-        current_color = QtGui.QColor(self.defaults['global_proj_item_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        proj_color = c_dialog.getColor(initial=current_color)
-
-        if proj_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
-            "background-color:%s" % str(proj_color.name()))
-
-        new_val_sel = str(proj_color.name())
-        self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(new_val_sel)
-        self.defaults['global_proj_item_color'] = new_val_sel
-
-    def on_proj_color_dis_entry(self):
-        self.defaults['global_proj_item_dis_color'] = self.ui.general_defaults_form.general_gui_group \
-                                                   .proj_color_dis_entry.get_value()
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['global_proj_item_dis_color']))
-
-    def on_proj_color_dis_button(self):
-        current_color = QtGui.QColor(self.defaults['global_proj_item_dis_color'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        proj_color = c_dialog.getColor(initial=current_color)
-
-        if proj_color.isValid() is False:
-            return
-
-        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
-            "background-color:%s" % str(proj_color.name()))
-
-        new_val_sel = str(proj_color.name())
-        self.ui.general_defaults_form.general_gui_set_group.proj_color_dis_entry.set_value(new_val_sel)
-        self.defaults['global_proj_item_dis_color'] = new_val_sel
-
-    def on_annotation_fontcolor_entry(self):
-        self.defaults['cncjob_annotation_fontcolor'] = \
-            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.get_value()
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
-            "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor']))
-
-    def on_annotation_fontcolor_button(self):
-        current_color = QtGui.QColor(self.defaults['cncjob_annotation_fontcolor'])
-
-        c_dialog = QtWidgets.QColorDialog()
-        annotation_color = c_dialog.getColor(initial=current_color)
-
-        if annotation_color.isValid() is False:
-            return
-
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_button.setStyleSheet(
-            "background-color:%s" % str(annotation_color.name()))
-
-        new_val_sel = str(annotation_color.name())
-        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.annotation_fontcolor_entry.set_value(new_val_sel)
-        self.defaults['cncjob_annotation_fontcolor'] = new_val_sel
-
     def on_film_color_entry(self):
         self.defaults['tools_film_color'] = \
             self.ui.tools_defaults_form.tools_film_group.film_color_entry.get_value()
@@ -6849,13 +6613,6 @@ class App(QtCore.QObject):
         new_val_sel = str(back_color.name())
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_entry.set_value(new_val_sel)
         self.defaults['tools_qrcode_back_color'] = new_val_sel
-
-    def on_splash_changed(self, state):
-        settings = QSettings("Open Source", "FlatCAM")
-        settings.setValue('splash_screen', 1) if state else settings.setValue('splash_screen', 0)
-
-        # This will write the setting to the platform specific storage.
-        del settings
 
     def on_tab_rmb_click(self, checked):
         self.ui.notebook.set_detachable(val=checked)
@@ -7060,24 +6817,18 @@ class App(QtCore.QObject):
         self.app_cursor.enabled = False
 
         if val == 'small':
-            self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry.setDisabled(False)
-            self.ui.general_defaults_form.general_gui_set_group.cursor_size_lbl.setDisabled(False)
+            self.ui.general_defaults_form.general_app_set_group.cursor_size_entry.setDisabled(False)
+            self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(False)
             self.app_cursor = self.plotcanvas.new_cursor()
         else:
-            self.ui.general_defaults_form.general_gui_set_group.cursor_size_entry.setDisabled(True)
-            self.ui.general_defaults_form.general_gui_set_group.cursor_size_lbl.setDisabled(True)
+            self.ui.general_defaults_form.general_app_set_group.cursor_size_entry.setDisabled(True)
+            self.ui.general_defaults_form.general_app_set_group.cursor_size_lbl.setDisabled(True)
             self.app_cursor = self.plotcanvas.new_cursor(big=True)
 
         if self.ui.grid_snap_btn.isChecked():
             self.app_cursor.enabled = True
         else:
             self.app_cursor.enabled = False
-
-    def on_cnc_custom_parameters(self, signal_text):
-        if signal_text == 'Parameters':
-            return
-        else:
-            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
     def on_save_button(self, save_to_file=True):
         log.debug("App.on_save_button() --> Applying preferences to file.")
@@ -7106,20 +6857,20 @@ class App(QtCore.QObject):
         settgs = QSettings("Open Source", "FlatCAM")
 
         # save the notebook font size
-        fsize = self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value()
+        fsize = self.ui.general_defaults_form.general_app_set_group.notebook_font_size_spinner.get_value()
         settgs.setValue('notebook_font_size', fsize)
 
         # save the axis font size
-        g_fsize = self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value()
+        g_fsize = self.ui.general_defaults_form.general_app_set_group.axis_font_size_spinner.get_value()
         settgs.setValue('axis_font_size', g_fsize)
 
         # save the textbox font size
-        tb_fsize = self.ui.general_defaults_form.general_gui_set_group.textbox_font_size_spinner.get_value()
+        tb_fsize = self.ui.general_defaults_form.general_app_set_group.textbox_font_size_spinner.get_value()
         settgs.setValue('textbox_font_size', tb_fsize)
 
         settgs.setValue(
             'machinist',
-            1 if self.ui.general_defaults_form.general_app_group.machinist_cb.get_value() else 0
+            1 if self.ui.general_defaults_form.general_app_set_group.machinist_cb.get_value() else 0
         )
 
         # This will write the setting to the platform specific storage.
@@ -12411,22 +12162,22 @@ class App(QtCore.QObject):
 
         if act_name == 'red':
             new_color = '#FF0000' + \
-                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
         if act_name == 'blue':
             new_color = '#0000FF' + \
-                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
         if act_name == 'yellow':
             new_color = '#FFDF00' + \
-                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
         if act_name == 'green':
             new_color = '#00FF00' + \
-                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
         if act_name == 'purple':
             new_color = '#FF00FF' + \
-                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
         if act_name == 'brown':
             new_color = '#A52A2A' + \
-                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
 
         if act_name == 'custom':
             new_color = QtGui.QColor(self.defaults['gerber_plot_fill'][:7])
@@ -12437,7 +12188,7 @@ class App(QtCore.QObject):
                 return
 
             new_color = str(plot_fill_color.name()) + \
-                        str(hex(self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value())[2:])
+                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
 
         new_line_color = color_variant(new_color[:7], 0.7)
 

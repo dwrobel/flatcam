@@ -24,6 +24,9 @@ CAD program, and create G-Code for Isolation routing.
 - further modifications in Preferences -> General GUI - extended the changes
 - in Legacy(2D) graphic engine made to work the mouse color change
 - theme changing is no longer auto-reboot upon change; it require now to press a button
+- cleaned the Preferences classes and added the signals and signal slots in those classes, removing them from the main app class
+- each FlatCAM object found in Preferences has it's own set of controls for changing the colors
+- added a set of gray icons to be used when the theme is complete dark (for now it is useful only for MacOS with dark theme because at the moment the app is not styled to dark UI except the plot area)
 
 25.12.2019
 

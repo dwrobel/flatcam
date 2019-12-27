@@ -56,12 +56,12 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
         self.general_gui_group = GeneralGUIPrefGroupUI(decimals=self.decimals)
         self.general_gui_group.setMinimumWidth(250)
 
-        self.general_gui_set_group = GeneralGUISetGroupUI(decimals=self.decimals)
-        self.general_gui_set_group.setMinimumWidth(250)
+        self.general_app_set_group = GeneralAPPSetGroupUI(decimals=self.decimals)
+        self.general_app_set_group.setMinimumWidth(250)
 
         self.layout.addWidget(self.general_app_group)
         self.layout.addWidget(self.general_gui_group)
-        self.layout.addWidget(self.general_gui_set_group)
+        self.layout.addWidget(self.general_app_set_group)
 
         self.layout.addStretch()
 
@@ -678,6 +678,39 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.theme_button.clicked.connect(self.on_theme_change)
 
+        # #############################################################################
+        # ############################# GUI COLORS SIGNALS ############################
+        # #############################################################################
+
+        # Setting selection (left - right) colors signals
+        self.sf_color_entry.editingFinished.connect(self.on_sf_color_entry)
+        self.sf_color_button.clicked.connect(self.on_sf_color_button)
+        self.sf_color_alpha_spinner.valueChanged.connect(self.on_sf_color_spinner)
+        self.sf_color_alpha_slider.valueChanged.connect(self.on_sf_color_slider)
+        self.sl_color_entry.editingFinished.connect(self.on_sl_color_entry)
+        self.sl_color_button.clicked.connect(self.on_sl_color_button)
+
+        # Setting selection (right - left) colors signals
+        self.alt_sf_color_entry.editingFinished.connect(self.on_alt_sf_color_entry)
+        self.alt_sf_color_button.clicked.connect(self.on_alt_sf_color_button)
+        self.alt_sf_color_alpha_spinner.valueChanged.connect(self.on_alt_sf_color_spinner)
+        self.alt_sf_color_alpha_slider.valueChanged.connect(self.on_alt_sf_color_slider)
+        self.alt_sl_color_entry.editingFinished.connect(self.on_alt_sl_color_entry)
+        self.alt_sl_color_button.clicked.connect(self.on_alt_sl_color_button)
+
+        # Setting Editor Draw colors signals
+        self.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
+        self.draw_color_button.clicked.connect( self.on_draw_color_button)
+
+        self.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
+        self.sel_draw_color_button.clicked.connect(self.on_sel_draw_color_button)
+
+        self.proj_color_entry.editingFinished.connect(self.on_proj_color_entry)
+        self.proj_color_button.clicked.connect(self.on_proj_color_button)
+
+        self.proj_color_dis_entry.editingFinished.connect(self.on_proj_color_dis_entry)
+        self.proj_color_dis_button.clicked.connect(self.on_proj_color_dis_button)
+
     def on_theme_change(self):
         val = self.theme_radio.get_value()
         t_settings = QSettings("Open Source", "FlatCAM")
@@ -704,12 +737,201 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # This will write the setting to the platform specific storage.
         del settings
 
+    # Setting selection colors (left - right) handlers
+    def on_sf_color_entry(self):
+        self.app.defaults['global_sel_fill'] = self.app.defaults['global_sel_fill'][7:9]
+        self.sf_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_sel_fill'])[:7])
 
-class GeneralGUISetGroupUI(OptionsGroupUI):
+    def on_sf_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['global_sel_fill'][:7])
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_fill_color = c_dialog.getColor(initial=current_color)
+
+        if plot_fill_color.isValid() is False:
+            return
+
+        self.sf_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
+
+        new_val = str(plot_fill_color.name()) + str(self.app.defaults['global_sel_fill'][7:9])
+        self.sf_color_entry.set_value(new_val)
+        self.app.defaults['global_sel_fill'] = new_val
+
+    def on_sf_color_spinner(self):
+        spinner_value = self.sf_color_alpha_spinner.value()
+        self.sf_color_alpha_slider.setValue(spinner_value)
+        self.app.defaults['global_sel_fill'] = self.app.defaults['global_sel_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.app.defaults['global_sel_line'] = self.app.defaults['global_sel_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+
+    def on_sf_color_slider(self):
+        slider_value = self.sf_color_alpha_slider.value()
+        self.sf_color_alpha_spinner.setValue(slider_value)
+
+    def on_sl_color_entry(self):
+        self.app.defaults['global_sel_line'] = self.sl_color_entry.get_value()[:7] + \
+            self.app.defaults['global_sel_line'][7:9]
+        self.sl_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_sel_line'])[:7])
+
+    def on_sl_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['global_sel_line'][:7])
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_line_color = c_dialog.getColor(initial=current_color)
+
+        if plot_line_color.isValid() is False:
+            return
+
+        self.sl_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
+
+        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['global_sel_line'][7:9])
+        self.sl_color_entry.set_value(new_val_line)
+        self.app.defaults['global_sel_line'] = new_val_line
+
+    # Setting selection colors (right - left) handlers
+    def on_alt_sf_color_entry(self):
+        self.app.defaults['global_alt_sel_fill'] = self.alt_sf_color_entry.get_value()[:7] + \
+                                                   self.app.defaults['global_alt_sel_fill'][7:9]
+        self.alt_sf_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['global_alt_sel_fill'])[:7]
+        )
+
+    def on_alt_sf_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['global_alt_sel_fill'][:7])
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_fill_color = c_dialog.getColor(initial=current_color)
+
+        if plot_fill_color.isValid() is False:
+            return
+
+        self.alt_sf_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
+
+        new_val = str(plot_fill_color.name()) + str(self.app.defaults['global_alt_sel_fill'][7:9])
+        self.alt_sf_color_entry.set_value(new_val)
+        self.app.defaults['global_alt_sel_fill'] = new_val
+
+    def on_alt_sf_color_spinner(self):
+        spinner_value = self.alt_sf_color_alpha_spinner.value()
+        self.alt_sf_color_alpha_slider.setValue(spinner_value)
+        self.app.defaults['global_alt_sel_fill'] = self.app.defaults['global_alt_sel_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.app.defaults['global_alt_sel_line'] = self.app.defaults['global_alt_sel_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+
+    def on_alt_sf_color_slider(self):
+        slider_value = self.alt_sf_color_alpha_slider.value()
+        self.alt_sf_color_alpha_spinner.setValue(slider_value)
+
+    def on_alt_sl_color_entry(self):
+        self.app.defaults['global_alt_sel_line'] = self.alt_sl_color_entry.get_value()[:7] + \
+                                                   self.app.defaults['global_alt_sel_line'][7:9]
+        self.alt_sl_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['global_alt_sel_line'])[:7]
+        )
+
+    def on_alt_sl_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['global_alt_sel_line'][:7])
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_line_color = c_dialog.getColor(initial=current_color)
+
+        if plot_line_color.isValid() is False:
+            return
+
+        self.alt_sl_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
+
+        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['global_alt_sel_line'][7:9])
+        self.alt_sl_color_entry.set_value(new_val_line)
+        self.app.defaults['global_alt_sel_line'] = new_val_line
+
+    # Setting Editor colors
+    def on_draw_color_entry(self):
+        self.app.defaults['global_draw_color'] = self.draw_color_entry.get_value()
+        self.draw_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['global_draw_color']))
+
+    def on_draw_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['global_draw_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        draw_color = c_dialog.getColor(initial=current_color)
+
+        if draw_color.isValid() is False:
+            return
+
+        self.draw_color_button.setStyleSheet("background-color:%s" % str(draw_color.name()))
+
+        new_val = str(draw_color.name())
+        self.draw_color_entry.set_value(new_val)
+        self.app.defaults['global_draw_color'] = new_val
+
+    def on_sel_draw_color_entry(self):
+        self.app.defaults['global_sel_draw_color'] = self.sel_draw_color_entry.get_value()
+        self.sel_draw_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['global_sel_draw_color']))
+
+    def on_sel_draw_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['global_sel_draw_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        sel_draw_color = c_dialog.getColor(initial=current_color)
+
+        if sel_draw_color.isValid() is False:
+            return
+
+        self.sel_draw_color_button.setStyleSheet("background-color:%s" % str(sel_draw_color.name()))
+
+        new_val_sel = str(sel_draw_color.name())
+        self.sel_draw_color_entry.set_value(new_val_sel)
+        self.app.defaults['global_sel_draw_color'] = new_val_sel
+
+    def on_proj_color_entry(self):
+        self.app.defaults['global_proj_item_color'] = self.proj_color_entry.get_value()
+        self.proj_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['global_proj_item_color']))
+
+    def on_proj_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['global_proj_item_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        proj_color = c_dialog.getColor(initial=current_color)
+
+        if proj_color.isValid() is False:
+            return
+
+        self.proj_color_button.setStyleSheet("background-color:%s" % str(proj_color.name()))
+
+        new_val_sel = str(proj_color.name())
+        self.proj_color_entry.set_value(new_val_sel)
+        self.app.defaults['global_proj_item_color'] = new_val_sel
+
+    def on_proj_color_dis_entry(self):
+        self.app.defaults['global_proj_item_dis_color'] = self.proj_color_dis_entry.get_value()
+        self.proj_color_dis_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['global_proj_item_dis_color']))
+
+    def on_proj_color_dis_button(self):
+        current_color = QtGui.QColor(self.app.defaults['global_proj_item_dis_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        proj_color = c_dialog.getColor(initial=current_color)
+
+        if proj_color.isValid() is False:
+            return
+
+        self.proj_color_dis_button.setStyleSheet("background-color:%s" % str(proj_color.name()))
+
+        new_val_sel = str(proj_color.name())
+        self.proj_color_dis_entry.set_value(new_val_sel)
+        self.app.defaults['global_proj_item_dis_color'] = new_val_sel
+
+
+class GeneralAPPSetGroupUI(OptionsGroupUI):
     def __init__(self, decimals=4, parent=None):
-        super(GeneralGUISetGroupUI, self).__init__(self)
+        super(GeneralAPPSetGroupUI, self).__init__(self)
 
-        self.setTitle(str(_("GUI Settings")))
+        self.setTitle(str(_("App Settings")))
         self.decimals = decimals
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
@@ -941,64 +1163,14 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.textbox_font_size_label, 13, 0)
         grid0.addWidget(self.textbox_font_size_spinner, 13, 1)
 
-        # -----------------------------------------------------------
-        # ----------- APPLICATION STARTUP SETTINGS ------------------
-        # -----------------------------------------------------------
-
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 14, 0, 1, 2)
 
-        self.startup_label = QtWidgets.QLabel('<b>%s</b>' % _('Startup Settings'))
-        grid0.addWidget(self.startup_label, 15, 0, 1, 2)
-
-        # Splash Screen
-        self.splash_cb = FCCheckBox('%s' % _('Splash Screen'))
-        self.splash_cb.setToolTip(
-            _("Enable display of the splash screen at application startup.")
-        )
-
-        settings = QSettings("Open Source", "FlatCAM")
-        if settings.value("splash_screen"):
-            self.splash_cb.set_value(True)
-        else:
-            self.splash_cb.set_value(False)
-
-        grid0.addWidget(self.splash_cb, 16, 0, 1, 2)
-
-        # Sys Tray Icon
-        self.systray_cb = FCCheckBox('%s' % _('Sys Tray Icon'))
-        self.systray_cb.setToolTip(
-            _("Enable display of FlatCAM icon in Sys Tray.")
-        )
-        grid0.addWidget(self.systray_cb, 17, 0, 1, 2)
-
-        # Shell StartUp CB
-        self.shell_startup_cb = FCCheckBox(label='%s' % _('Show Shell'))
-        self.shell_startup_cb.setToolTip(
-            _("Check this box if you want the shell to\n"
-              "start automatically at startup.")
-        )
-
-        grid0.addWidget(self.shell_startup_cb, 18, 0, 1, 2)
-
-        # Project at StartUp CB
-        self.project_startup_cb = FCCheckBox(label='%s' % _('Show Project'))
-        self.project_startup_cb.setToolTip(
-            _("Check this box if you want the project/selected/tool tab area to\n"
-              "to be shown automatically at startup.")
-        )
-        grid0.addWidget(self.project_startup_cb, 19, 0, 1, 2)
-
         # -----------------------------------------------------------
         # -------------- MOUSE SETTINGS -----------------------------
         # -----------------------------------------------------------
-
-        separator_line = QtWidgets.QFrame()
-        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 20, 0, 1, 2)
 
         self.mouse_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Mouse Settings'))
         grid0.addWidget(self.mouse_lbl, 21, 0, 1, 2)
@@ -1115,6 +1287,17 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.delete_conf_cb, 30, 0, 1, 2)
 
+        # Open behavior
+        self.open_style_cb = FCCheckBox('%s' % _('"Open" behavior'))
+        self.open_style_cb.setToolTip(
+            _("When checked the path for the last saved file is used when saving files,\n"
+              "and the path for the last opened file is used when opening files.\n\n"
+              "When unchecked the path for opening files is the one used last: either the\n"
+              "path for saving files or the path for opening files.")
+        )
+
+        grid0.addWidget(self.open_style_cb, 31, 0, 1, 2)
+
         # Enable/Disable ToolTips globally
         self.toggle_tooltips_cb = FCCheckBox(label='Enable ToolTips')
         self.toggle_tooltips_cb.setToolTip(
@@ -1122,7 +1305,31 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
               "when hovering with mouse over items throughout the App.")
         )
 
-        grid0.addWidget(self.toggle_tooltips_cb, 31, 0, 1, 2)
+        grid0.addWidget(self.toggle_tooltips_cb, 32, 0, 1, 2)
+
+        # Machinist settings that allow unsafe settings
+        self.machinist_cb = FCCheckBox(_("Allow Machinist Unsafe Settings"))
+        self.machinist_cb.setToolTip(
+            _("If checked, some of the application settings will be allowed\n"
+              "to have values that are usually unsafe to use.\n"
+              "Like Z travel negative values or Z Cut positive values.\n"
+              "It will applied at the next application start.\n"
+              "<<WARNING>>: Don't change this unless you know what you are doing !!!")
+        )
+
+        grid0.addWidget(self.machinist_cb, 33, 0, 1, 2)
+
+        # Bookmarks Limit in the Help Menu
+        self.bm_limit_spinner = FCSpinner()
+        self.bm_limit_label = QtWidgets.QLabel('%s:' % _('Bookmarks limit'))
+        self.bm_limit_label.setToolTip(
+            _("The maximum number of bookmarks that may be installed in the menu.\n"
+              "The number of bookmarks in the bookmark manager may be greater\n"
+              "but the menu will hold only so much.")
+        )
+
+        grid0.addWidget(self.bm_limit_label, 34, 0)
+        grid0.addWidget(self.bm_limit_spinner, 34, 1)
 
         # Activity monitor icon
         self.activity_label = QtWidgets.QLabel('%s:' % _("Activity Icon"))
@@ -1132,8 +1339,8 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.activity_combo = FCComboBox()
         self.activity_combo.addItems(['Ball black', 'Ball green', 'Arrow green', 'Eclipse green'])
 
-        grid0.addWidget(self.activity_label, 32, 0)
-        grid0.addWidget(self.activity_combo, 32, 1)
+        grid0.addWidget(self.activity_label, 35, 0)
+        grid0.addWidget(self.activity_combo, 35, 1)
 
         self.layout.addStretch()
 
@@ -1301,37 +1508,75 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 16, 0, 1, 2)
 
-        # Version Check CB
-        self.version_check_label = QtWidgets.QLabel('%s:' % _('Version Check'))
-        self.version_check_label.setToolTip(
-            _("Check this box if you want to check\n"
-              "for a new version automatically at startup.")
+        # -----------------------------------------------------------
+        # ----------- APPLICATION STARTUP SETTINGS ------------------
+        # -----------------------------------------------------------
+
+        self.startup_label = QtWidgets.QLabel('<b>%s</b>' % _('Startup Settings'))
+        grid0.addWidget(self.startup_label, 17, 0, 1, 2)
+
+        # Splash Screen
+        self.splash_cb = FCCheckBox('%s' % _('Splash Screen'))
+        self.splash_cb.setToolTip(
+            _("Enable display of the splash screen at application startup.")
         )
-        self.version_check_cb = FCCheckBox(label='')
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.value("splash_screen"):
+            self.splash_cb.set_value(True)
+        else:
+            self.splash_cb.set_value(False)
+
+        grid0.addWidget(self.splash_cb, 18, 0, 1, 2)
+
+        # Sys Tray Icon
+        self.systray_cb = FCCheckBox('%s' % _('Sys Tray Icon'))
+        self.systray_cb.setToolTip(
+            _("Enable display of FlatCAM icon in Sys Tray.")
+        )
+        grid0.addWidget(self.systray_cb, 19, 0, 1, 2)
+
+        # Shell StartUp CB
+        self.shell_startup_cb = FCCheckBox(label='%s' % _('Show Shell'))
+        self.shell_startup_cb.setToolTip(
+            _("Check this box if you want the shell to\n"
+              "start automatically at startup.")
+        )
+
+        grid0.addWidget(self.shell_startup_cb, 20, 0, 1, 2)
+
+        # Project at StartUp CB
+        self.project_startup_cb = FCCheckBox(label='%s' % _('Show Project'))
+        self.project_startup_cb.setToolTip(
+            _("Check this box if you want the project/selected/tool tab area to\n"
+              "to be shown automatically at startup.")
+        )
+        grid0.addWidget(self.project_startup_cb, 21, 0, 1, 2)
+
+        # Version Check CB
+        self.version_check_cb = FCCheckBox(label='%s' % _('Version Check'))
         self.version_check_cb.setToolTip(
             _("Check this box if you want to check\n"
               "for a new version automatically at startup.")
         )
 
-        grid0.addWidget(self.version_check_label, 17, 0)
-        grid0.addWidget(self.version_check_cb, 17, 1)
+        grid0.addWidget(self.version_check_cb, 22, 0, 1, 2)
 
         # Send Stats CB
-        self.send_stats_label = QtWidgets.QLabel('%s:' % _('Send Stats'))
-        self.send_stats_label.setToolTip(
-            _("Check this box if you agree to send anonymous\n"
-              "stats automatically at startup, to help improve FlatCAM.")
-        )
-        self.send_stats_cb = FCCheckBox(label='')
+        self.send_stats_cb = FCCheckBox(label='%s' % _('Send Statistics'))
         self.send_stats_cb.setToolTip(
             _("Check this box if you agree to send anonymous\n"
               "stats automatically at startup, to help improve FlatCAM.")
         )
 
-        grid0.addWidget(self.send_stats_label, 18, 0)
-        grid0.addWidget(self.send_stats_cb, 18, 1)
+        grid0.addWidget(self.send_stats_cb, 23, 0, 1, 2)
 
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 24, 0, 1, 2)
 
         # Worker Numbers
         self.worker_number_label = QtWidgets.QLabel('%s:' % _('Workers number'))
@@ -1354,8 +1599,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         )
         self.worker_number_sb.set_range(2, 16)
 
-        grid0.addWidget(self.worker_number_label, 19, 0)
-        grid0.addWidget(self.worker_number_sb, 19, 1)
+        grid0.addWidget(self.worker_number_label, 25, 0)
+        grid0.addWidget(self.worker_number_sb, 25, 1)
 
         # Geometric tolerance
         tol_label = QtWidgets.QLabel('%s:' % _("Geo Tolerance"))
@@ -1379,24 +1624,17 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.tol_entry.setSingleStep(0.001)
         self.tol_entry.set_precision(6)
 
-        grid0.addWidget(tol_label, 20, 0)
-        grid0.addWidget(self.tol_entry, 20, 1)
+        grid0.addWidget(tol_label, 26, 0)
+        grid0.addWidget(self.tol_entry, 26, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 21, 0, 1, 2)
+        grid0.addWidget(separator_line, 27, 0, 1, 2)
 
-        # Open behavior
-        self.open_style_cb = FCCheckBox('%s' % _('"Open" behavior'))
-        self.open_style_cb.setToolTip(
-            _("When checked the path for the last saved file is used when saving files,\n"
-              "and the path for the last opened file is used when opening files.\n\n"
-              "When unchecked the path for opening files is the one used last: either the\n"
-              "path for saving files or the path for opening files.")
-        )
-
-        grid0.addWidget(self.open_style_cb, 22, 0, 1, 2)
+        # Save Settings
+        self.save_label = QtWidgets.QLabel('<b>%s</b>' % _("Save Settings"))
+        grid0.addWidget(self.save_label, 28, 0, 1, 2)
 
         # Save compressed project CB
         self.save_type_cb = FCCheckBox(_('Save Compressed Project'))
@@ -1405,7 +1643,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "When checked it will save a compressed FlatCAM project.")
         )
 
-        grid0.addWidget(self.save_type_cb, 23, 0, 1, 2)
+        grid0.addWidget(self.save_type_cb, 29, 0, 1, 2)
 
         # Project LZMA Comppression Level
         self.compress_spinner = FCSpinner()
@@ -1417,41 +1655,15 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "but require more RAM usage and more processing time.")
         )
 
-        grid0.addWidget(self.compress_label, 24, 0)
-        grid0.addWidget(self.compress_spinner, 24, 1)
+        grid0.addWidget(self.compress_label, 30, 0)
+        grid0.addWidget(self.compress_spinner, 30, 1)
 
         self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_spinner], True)
-
-        # Bookmarks Limit in the Help Menu
-        self.bm_limit_spinner = FCSpinner()
-        self.bm_limit_label = QtWidgets.QLabel('%s:' % _('Bookmarks limit'))
-        self.bm_limit_label.setToolTip(
-            _("The maximum number of bookmarks that may be installed in the menu.\n"
-              "The number of bookmarks in the bookmark manager may be greater\n"
-              "but the menu will hold only so much.")
-        )
-
-        grid0.addWidget(self.bm_limit_label, 25, 0)
-        grid0.addWidget(self.bm_limit_spinner, 25, 1)
-
-        # Machinist settings that allow unsafe settings
-        self.machinist_cb = FCCheckBox(_("Allow Machinist Unsafe Settings"))
-        self.machinist_cb.setToolTip(
-            _("If checked, some of the application settings will be allowed\n"
-              "to have values that are usually unsafe to use.\n"
-              "Like Z travel negative values or Z Cut positive values.\n"
-              "It will applied at the next application start.\n"
-              "<<WARNING>>: Don't change this unless you know what you are doing !!!")
-        )
-
-        grid0.addWidget(self.machinist_cb, 26, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.layout.addWidget(separator_line)
-
-        self.layout.addWidget(QtWidgets.QLabel(''))
 
         grid1 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid1)
@@ -1521,6 +1733,21 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         if sys.platform != 'win32':
             self.portability_label.hide()
             self.portability_cb.hide()
+
+        # splash screen button signal
+        self.splash_cb.stateChanged.connect(self.on_splash_changed)
+
+        # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
+        self.shell_startup_cb.clicked.connect(self.app.on_toggle_shell)
+
+        self.language_apply_btn.clicked.connect(lambda: fcTranslate.on_language_apply_click(app=self.app, restart=True))
+
+    def on_splash_changed(self, state):
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('splash_screen', 1) if state else settings.setValue('splash_screen', 0)
+
+        # This will write the setting to the platform specific storage.
+        del settings
 
 
 class GerberGenPrefGroupUI(OptionsGroupUI):
@@ -2654,7 +2881,76 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         self.optimization_time_entry = FCSpinner()
         self.optimization_time_entry.set_range(0, 999)
+
         grid2.addWidget(self.optimization_time_entry, 6, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line, 9, 0, 1, 2)
+
+        # Excellon Object Color
+        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Excellon Object Color'))
+        grid2.addWidget(self.gerber_color_label, 10, 0, 1, 2)
+
+        # Plot Line Color
+        self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.line_color_label.setToolTip(
+            _("Set the line color for plotted objects.")
+        )
+        self.line_color_entry = FCEntry()
+        self.line_color_button = QtWidgets.QPushButton()
+        self.line_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_2 = QtWidgets.QHBoxLayout()
+        self.form_box_child_2.addWidget(self.line_color_entry)
+        self.form_box_child_2.addWidget(self.line_color_button)
+        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid2.addWidget(self.line_color_label, 11, 0)
+        grid2.addLayout(self.form_box_child_2, 11, 1)
+
+        # Plot Fill Color
+        self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
+        self.fill_color_label.setToolTip(
+            _("Set the fill color for plotted objects.\n"
+              "First 6 digits are the color and the last 2\n"
+              "digits are for alpha (transparency) level.")
+        )
+        self.fill_color_entry = FCEntry()
+        self.fill_color_button = QtWidgets.QPushButton()
+        self.fill_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_1 = QtWidgets.QHBoxLayout()
+        self.form_box_child_1.addWidget(self.fill_color_entry)
+        self.form_box_child_1.addWidget(self.fill_color_button)
+        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid2.addWidget(self.fill_color_label, 12, 0)
+        grid2.addLayout(self.form_box_child_1, 12, 1)
+
+        # Plot Fill Transparency Level
+        self.alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.alpha_label.setToolTip(
+            _("Set the fill transparency for plotted objects.")
+        )
+        self.color_alpha_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.color_alpha_slider.setMinimum(0)
+        self.color_alpha_slider.setMaximum(255)
+        self.color_alpha_slider.setSingleStep(1)
+
+        self.color_alpha_spinner = FCSpinner()
+        self.color_alpha_spinner.setMinimumWidth(70)
+        self.color_alpha_spinner.set_range(0, 255)
+
+        self.form_box_child_3 = QtWidgets.QHBoxLayout()
+        self.form_box_child_3.addWidget(self.color_alpha_slider)
+        self.form_box_child_3.addWidget(self.color_alpha_spinner)
+
+        grid2.addWidget(self.alpha_label, 13, 0)
+        grid2.addLayout(self.form_box_child_3, 13, 1)
+
+        self.layout.addStretch()
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
@@ -2670,7 +2966,13 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
 
-        self.layout.addStretch()
+        # Setting plot colors signals
+        self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
+        self.line_color_button.clicked.connect(self.on_line_color_button)
+        self.fill_color_entry.editingFinished.connect(self.on_fill_color_entry)
+        self.fill_color_button.clicked.connect(self.on_fill_color_button)
+        self.color_alpha_spinner.valueChanged.connect(self.on_color_spinner)
+        self.color_alpha_slider.valueChanged.connect(self.on_color_slider)
 
     def optimization_selection(self):
         if self.excellon_optimization_radio.get_value() == 'M':
@@ -2679,6 +2981,62 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         else:
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
+
+    # Setting plot colors handlers
+    def on_fill_color_entry(self):
+        self.app.defaults['excellon_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
+            self.app.defaults['excellon_plot_fill'][7:9]
+        self.fill_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['excellon_plot_fill'])[:7])
+
+    def on_fill_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['excellon_plot_fill'][:7])
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_fill_color = c_dialog.getColor(initial=current_color)
+
+        if plot_fill_color.isValid() is False:
+            return
+
+        self.fill_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
+
+        new_val = str(plot_fill_color.name()) + str(self.app.defaults['excellon_plot_fill'][7:9])
+        self.fill_color_entry.set_value(new_val)
+        self.app.defaults['excellon_plot_fill'] = new_val
+
+    def on_color_spinner(self):
+        spinner_value = self.color_alpha_spinner.value()
+        self.color_alpha_slider.setValue(spinner_value)
+        self.app.defaults['excellon_plot_fill'] = \
+            self.app.defaults['excellon_plot_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.app.defaults['excellon_plot_line'] = \
+            self.app.defaults['excellon_plot_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+
+    def on_color_slider(self):
+        slider_value = self.color_alpha_slider.value()
+        self.color_alpha_spinner.setValue(slider_value)
+
+    def on_line_color_entry(self):
+        self.app.defaults['excellon_plot_line'] = self.line_color_entry.get_value()[:7] + \
+                                                self.app.defaults['excellon_plot_line'][7:9]
+        self.line_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['excellon_plot_line'])[:7])
+
+    def on_line_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['excellon_plot_line'][:7])
+        # print(current_color)
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_line_color = c_dialog.getColor(initial=current_color)
+
+        if plot_line_color.isValid() is False:
+            return
+
+        self.line_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
+
+        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['excellon_plot_line'][7:9])
+        self.line_color_entry.set_value(new_val_line)
+        self.app.defaults['excellon_plot_line'] = new_val_line
 
 
 class ExcellonOptPrefGroupUI(OptionsGroupUI):
@@ -3521,7 +3879,56 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(tdlabel, 3, 0)
         grid0.addWidget(self.cnctooldia_entry, 3, 1)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 9, 0, 1, 2)
+
+        # Geometry Object Color
+        self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Geometry Object Color'))
+        grid0.addWidget(self.gerber_color_label, 10, 0, 1, 2)
+
+        # Plot Line Color
+        self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.line_color_label.setToolTip(
+            _("Set the line color for plotted objects.")
+        )
+        self.line_color_entry = FCEntry()
+        self.line_color_button = QtWidgets.QPushButton()
+        self.line_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_2 = QtWidgets.QHBoxLayout()
+        self.form_box_child_2.addWidget(self.line_color_entry)
+        self.form_box_child_2.addWidget(self.line_color_button)
+        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.line_color_label, 11, 0)
+        grid0.addLayout(self.form_box_child_2, 11, 1)
+
         self.layout.addStretch()
+
+        # Setting plot colors signals
+        self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
+        self.line_color_button.clicked.connect(self.on_line_color_button)
+
+    def on_line_color_entry(self):
+        self.app.defaults['geometry_plot_line'] = self.line_color_entry.get_value()[:7] + 'FF'
+        self.line_color_button.setStyleSheet("background-color:%s" % str(self.app.defaults['geometry_plot_line'])[:7])
+
+    def on_line_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['geometry_plot_line'][:7])
+        # print(current_color)
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_line_color = c_dialog.getColor(initial=current_color)
+
+        if plot_line_color.isValid() is False:
+            return
+
+        self.line_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
+
+        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['geometry_plot_line'][7:9])
+        self.line_color_entry.set_value(new_val_line)
 
 
 class GeometryOptPrefGroupUI(OptionsGroupUI):
@@ -4114,7 +4521,237 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.line_ending_cb, 9, 0, 1, 3)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 12, 0, 1, 2)
+
+        # Travel Line Color
+        self.travel_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Travel Line Color'))
+        grid0.addWidget(self.travel_color_label, 13, 0, 1, 2)
+
+        # Plot Line Color
+        self.tline_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.tline_color_label.setToolTip(
+            _("Set the travel line color for plotted objects.")
+        )
+        self.tline_color_entry = FCEntry()
+        self.tline_color_button = QtWidgets.QPushButton()
+        self.tline_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_2 = QtWidgets.QHBoxLayout()
+        self.form_box_child_2.addWidget(self.tline_color_entry)
+        self.form_box_child_2.addWidget(self.tline_color_button)
+        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.tline_color_label, 14, 0)
+        grid0.addLayout(self.form_box_child_2, 14, 1)
+
+        # Plot Fill Color
+        self.tfill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
+        self.tfill_color_label.setToolTip(
+            _("Set the fill color for plotted objects.\n"
+              "First 6 digits are the color and the last 2\n"
+              "digits are for alpha (transparency) level.")
+        )
+        self.tfill_color_entry = FCEntry()
+        self.tfill_color_button = QtWidgets.QPushButton()
+        self.tfill_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_1 = QtWidgets.QHBoxLayout()
+        self.form_box_child_1.addWidget(self.tfill_color_entry)
+        self.form_box_child_1.addWidget(self.tfill_color_button)
+        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.tfill_color_label, 15, 0)
+        grid0.addLayout(self.form_box_child_1, 15, 1)
+
+        # Plot Fill Transparency Level
+        self.alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
+        self.alpha_label.setToolTip(
+            _("Set the fill transparency for plotted objects.")
+        )
+        self.tcolor_alpha_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.tcolor_alpha_slider.setMinimum(0)
+        self.tcolor_alpha_slider.setMaximum(255)
+        self.tcolor_alpha_slider.setSingleStep(1)
+
+        self.tcolor_alpha_spinner = FCSpinner()
+        self.tcolor_alpha_spinner.setMinimumWidth(70)
+        self.tcolor_alpha_spinner.set_range(0, 255)
+
+        self.form_box_child_3 = QtWidgets.QHBoxLayout()
+        self.form_box_child_3.addWidget(self.tcolor_alpha_slider)
+        self.form_box_child_3.addWidget(self.tcolor_alpha_spinner)
+
+        grid0.addWidget(self.alpha_label, 16, 0)
+        grid0.addLayout(self.form_box_child_3, 16, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 17, 0, 1, 2)
+
+        # CNCJob Object Color
+        self.cnc_color_label = QtWidgets.QLabel('<b>%s</b>' % _('CNCJob Object Color'))
+        grid0.addWidget(self.cnc_color_label, 18, 0, 1, 2)
+
+        # Plot Line Color
+        self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
+        self.line_color_label.setToolTip(
+            _("Set the travel line color for plotted objects.")
+        )
+        self.line_color_entry = FCEntry()
+        self.line_color_button = QtWidgets.QPushButton()
+        self.line_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_2 = QtWidgets.QHBoxLayout()
+        self.form_box_child_2.addWidget(self.line_color_entry)
+        self.form_box_child_2.addWidget(self.line_color_button)
+        self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.line_color_label, 19, 0)
+        grid0.addLayout(self.form_box_child_2, 19, 1)
+
+        # Plot Fill Color
+        self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
+        self.fill_color_label.setToolTip(
+            _("Set the fill color for plotted objects.\n"
+              "First 6 digits are the color and the last 2\n"
+              "digits are for alpha (transparency) level.")
+        )
+        self.fill_color_entry = FCEntry()
+        self.fill_color_button = QtWidgets.QPushButton()
+        self.fill_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_1 = QtWidgets.QHBoxLayout()
+        self.form_box_child_1.addWidget(self.fill_color_entry)
+        self.form_box_child_1.addWidget(self.fill_color_button)
+        self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        grid0.addWidget(self.fill_color_label, 20, 0)
+        grid0.addLayout(self.form_box_child_1, 20, 1)
+
         self.layout.addStretch()
+
+        # Setting plot colors signals
+        self.tline_color_entry.editingFinished.connect(self.on_tline_color_entry)
+        self.tline_color_button.clicked.connect(self.on_tline_color_button)
+        self.tfill_color_entry.editingFinished.connect(self.on_tfill_color_entry)
+        self.tfill_color_button.clicked.connect(self.on_tfill_color_button)
+        self.tcolor_alpha_spinner.valueChanged.connect(self.on_tcolor_spinner)
+        self.tcolor_alpha_slider.valueChanged.connect(self.on_tcolor_slider)
+
+        self.line_color_entry.editingFinished.connect(self.on_line_color_entry)
+        self.line_color_button.clicked.connect(self.on_line_color_button)
+        self.fill_color_entry.editingFinished.connect(self.on_fill_color_entry)
+        self.fill_color_button.clicked.connect(self.on_fill_color_button)
+
+    # ------------------------------------------------------
+    # Setting travel colors handlers
+    # ------------------------------------------------------
+    def on_tfill_color_entry(self):
+        self.app.defaults['cncjob_travel_fill'] = self.tfill_color_entry.get_value()[:7] + \
+                                                  self.app.defaults['cncjob_travel_fill'][7:9]
+        self.tfill_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['cncjob_travel_fill'])[:7])
+
+    def on_tfill_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['cncjob_travel_fill'][:7])
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_fill_color = c_dialog.getColor(initial=current_color)
+
+        if plot_fill_color.isValid() is False:
+            return
+
+        self.tfill_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
+
+        new_val = str(plot_fill_color.name()) + str(self.app.defaults['cncjob_travel_fill'][7:9])
+        self.tfill_color_entry.set_value(new_val)
+        self.app.defaults['cncjob_travel_fill'] = new_val
+
+    def on_tcolor_spinner(self):
+        spinner_value = self.tcolor_alpha_spinner.value()
+        self.tcolor_alpha_slider.setValue(spinner_value)
+        self.app.defaults['cncjob_travel_fill'] = \
+            self.app.defaults['cncjob_travel_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.app.defaults['cncjob_travel_line'] = \
+            self.app.defaults['cncjob_travel_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+
+    def on_tcolor_slider(self):
+        slider_value = self.tcolor_alpha_slider.value()
+        self.tcolor_alpha_spinner.setValue(slider_value)
+
+    def on_tline_color_entry(self):
+        self.app.defaults['cncjob_travel_line'] = self.tline_color_entry.get_value()[:7] + \
+                                                  self.app.defaults['cncjob_travel_line'][7:9]
+        self.tline_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['cncjob_travel_line'])[:7])
+
+    def on_tline_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['cncjob_travel_line'][:7])
+        # print(current_color)
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_line_color = c_dialog.getColor(initial=current_color)
+
+        if plot_line_color.isValid() is False:
+            return
+
+        self.tline_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
+
+        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['cncjob_travel_line'][7:9])
+        self.tline_color_entry.set_value(new_val_line)
+        self.app.defaults['cncjob_travel_line'] = new_val_line
+
+    # ------------------------------------------------------
+    # Setting plot colors handlers
+    # ------------------------------------------------------
+    def on_fill_color_entry(self):
+        self.app.defaults['cncjob_plot_fill'] = self.fill_color_entry.get_value()[:7] + \
+                                                  self.app.defaults['cncjob_plot_fill'][7:9]
+        self.fill_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['cncjob_plot_fill'])[:7])
+
+    def on_fill_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['cncjob_plot_fill'][:7])
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_fill_color = c_dialog.getColor(initial=current_color)
+
+        if plot_fill_color.isValid() is False:
+            return
+
+        self.fill_color_button.setStyleSheet("background-color:%s" % str(plot_fill_color.name()))
+
+        new_val = str(plot_fill_color.name()) + str(self.app.defaults['cncjob_plot_fill'][7:9])
+        self.fill_color_entry.set_value(new_val)
+        self.app.defaults['cncjob_plot_fill'] = new_val
+
+    def on_line_color_entry(self):
+        self.app.defaults['cncjob_plot_line'] = self.line_color_entry.get_value()[:7] + \
+                                                  self.app.defaults['cncjob_plot_line'][7:9]
+        self.line_color_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['cncjob_plot_line'])[:7])
+
+    def on_line_color_button(self):
+        current_color = QtGui.QColor(self.app.defaults['cncjob_plot_line'][:7])
+        # print(current_color)
+
+        c_dialog = QtWidgets.QColorDialog()
+        plot_line_color = c_dialog.getColor(initial=current_color)
+
+        if plot_line_color.isValid() is False:
+            return
+
+        self.line_color_button.setStyleSheet("background-color:%s" % str(plot_line_color.name()))
+
+        new_val_line = str(plot_line_color.name()) + str(self.app.defaults['cncjob_plot_line'][7:9])
+        self.line_color_entry.set_value(new_val_line)
+        self.app.defaults['cncjob_plot_line'] = new_val_line
 
 
 class CNCJobOptPrefGroupUI(OptionsGroupUI):
@@ -4329,6 +4966,37 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(QtWidgets.QLabel(''), 3, 2)
 
         self.layout.addStretch()
+
+        self.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
+
+        self.annotation_fontcolor_entry.editingFinished.connect(self.on_annotation_fontcolor_entry)
+        self.annotation_fontcolor_button.clicked.connect(self.on_annotation_fontcolor_button)
+
+    def on_cnc_custom_parameters(self, signal_text):
+        if signal_text == 'Parameters':
+            return
+        else:
+            self.toolchange_text.insertPlainText('%%%s%%' % signal_text)
+
+    def on_annotation_fontcolor_entry(self):
+        self.app.defaults['cncjob_annotation_fontcolor'] = self.annotation_fontcolor_entry.get_value()
+        self.annotation_fontcolor_button.setStyleSheet(
+            "background-color:%s" % str(self.app.defaults['cncjob_annotation_fontcolor']))
+
+    def on_annotation_fontcolor_button(self):
+        current_color = QtGui.QColor(self.app.defaults['cncjob_annotation_fontcolor'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        annotation_color = c_dialog.getColor(initial=current_color)
+
+        if annotation_color.isValid() is False:
+            return
+
+        self.annotation_fontcolor_button.setStyleSheet("background-color:%s" % str(annotation_color.name()))
+
+        new_val_sel = str(annotation_color.name())
+        self.annotation_fontcolor_entry.set_value(new_val_sel)
+        self.app.defaults['cncjob_annotation_fontcolor'] = new_val_sel
 
 
 class ToolsNCCPrefGroupUI(OptionsGroupUI):
