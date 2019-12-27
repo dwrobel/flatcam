@@ -659,8 +659,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.units_found = self.app.defaults['units']
 
-        self.fill_color = self.app.defaults['global_plot_fill']
-        self.outline_color = self.app.defaults['global_plot_line']
+        self.fill_color = self.app.defaults['gerber_plot_fill']
+        self.outline_color = self.app.defaults['gerber_plot_line']
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -738,6 +738,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             self.ui.tool_type_label.hide()
             self.ui.tool_type_radio.hide()
+
+            # override the Preferences Value; in Basic mode the Tool Type is always Circular ('C1')
+            self.ui.tool_type_radio.set_value('circular')
+
             self.ui.tipdialabel.hide()
             self.ui.tipdia_spinner.hide()
             self.ui.tipanglelabel.hide()
@@ -1436,7 +1440,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
-                    geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
+                    if self.ui.tool_type_radio.get_value() == 'v':
+                        geo_obj.tool_type = 'V'
+                    else:
+                        geo_obj.tool_type = 'C1'
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_t = 1 if milling_type == 'cl' else 0
@@ -1783,7 +1790,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if 'color' in kwargs:
             color = kwargs['color']
         else:
-            color = self.app.defaults['global_plot_fill']
+            color = self.app.defaults['gerber_plot_fill']
 
         if 'marked_aperture' not in kwargs:
             return
@@ -3529,7 +3536,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # Plot Excellon (All polygons?)
             if self.options["solid"]:
                 for geo in self.solid_geometry:
-                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
+                    self.add_shape(shape=geo,
+                                   color=self.app.defaults["excellon_plot_line"],
+                                   face_color=self.app.defaults["excellon_plot_fill"],
                                    visible=visible,
                                    layer=2)
             else:
@@ -3588,7 +3597,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         })
 
         if "cnctooldia" not in self.options:
-            self.options["cnctooldia"] = self.app.defaults["geometry_cnctooldia"]
+            if type(self.app.defaults["geometry_cnctooldia"]) == float:
+                self.options["cnctooldia"] = self.app.defaults["geometry_cnctooldia"]
+            else:
+                try:
+                    tools_string = self.app.defaults["geometry_cnctooldia"].split(",")
+                    tools_diameters = [eval(a) for a in tools_string if a != '']
+                    self.options["cnctooldia"] = tools_diameters[0] if tools_diameters else 0.0
+                except Exception as e:
+                    log.debug("FlatCAMObj.FlatCAMGeometry.init() --> %s" % str(e))
 
         self.options["startz"] = self.app.defaults["geometry_startz"]
 
@@ -4059,7 +4076,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # I use lambda's because the connected functions have parameters that could be used in certain scenarios
         self.ui.addtool_btn.clicked.connect(lambda: self.on_tool_add())
-        self.ui.addtool_entry.returnPressed.connect(self.on_tool_add)
 
         self.ui.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
@@ -4109,11 +4125,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         try:
             self.ui.addtool_btn.clicked.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-        try:
-            self.ui.addtool_entry.returnPressed.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -5778,12 +5789,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         return factor
 
-    def plot_element(self, element, color='#FF0000FF', visible=None):
+    def plot_element(self, element, color=None, visible=None):
+
+        if color is None:
+            color = '#FF0000FF'
 
         visible = visible if visible else self.options['plot']
         try:
             for sub_el in element:
-                self.plot_element(sub_el)
+                self.plot_element(sub_el, color=color)
 
         except TypeError:  # Element is not iterable...
             # if self.app.is_legacy is False:
@@ -5810,12 +5824,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             if self.multigeo is True:  # geo multi tool usage
                 for tooluid_key in self.tools:
                     solid_geometry = self.tools[tooluid_key]['solid_geometry']
-                    self.plot_element(solid_geometry, visible=visible)
+                    self.plot_element(solid_geometry, visible=visible,
+                                      color=self.app.defaults["geometry_plot_line"])
             else:
                 # plot solid geometry that may be an direct attribute of the geometry object
                 # for SingleGeo
                 if self.solid_geometry:
-                    self.plot_element(self.solid_geometry, visible=visible)
+                    self.plot_element(self.solid_geometry, visible=visible,
+                                      color=self.app.defaults["geometry_plot_line"])
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
 

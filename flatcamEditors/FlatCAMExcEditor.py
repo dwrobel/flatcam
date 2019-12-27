@@ -56,8 +56,7 @@ class FCDrillAdd(FCShapeTool):
             item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
             self.draw_app.tools_table_exc.setCurrentItem(item)
         except KeyError:
-            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
-                                          _("To add a drill first select a tool"))
+            self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("To add a drill first select a tool"))
             self.draw_app.select_tool("drill_select")
             return
 
@@ -74,6 +73,8 @@ class FCDrillAdd(FCShapeTool):
             self.draw_app.draw_utility_geometry(geo=geo)
 
         self.draw_app.app.inform.emit(_("Click to place ..."))
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
@@ -119,8 +120,18 @@ class FCDrillAdd(FCShapeTool):
         self.geometry = DrawToolShape(self.util_shape(self.points))
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Drill added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill added."))
+        self.draw_app.app.jump_signal.disconnect()
+
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCDrillArray(FCShapeTool):
@@ -180,6 +191,8 @@ class FCDrillArray(FCShapeTool):
             self.draw_app.draw_utility_geometry(geo=geo)
 
         self.draw_app.app.inform.emit(_("Click on target location ..."))
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
@@ -292,7 +305,7 @@ class FCDrillArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
@@ -322,6 +335,7 @@ class FCDrillArray(FCShapeTool):
             if (self.drill_angle * self.drill_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Too many drills for the selected spacing angle."))
+                self.draw_app.app.jump_signal.disconnect()
                 return
 
             radius = distance(self.destination, self.origin)
@@ -338,11 +352,21 @@ class FCDrillArray(FCShapeTool):
                 geo = self.util_shape((x, y))
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Drill Array added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill Array added."))
         self.draw_app.in_action = False
         self.draw_app.array_frame.hide()
-        return
+
+        self.draw_app.app.jump_signal.disconnect()
+
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCSlot(FCShapeTool):
@@ -390,6 +414,8 @@ class FCSlot(FCShapeTool):
             self.draw_app.draw_utility_geometry(geo=geo)
 
         self.draw_app.app.inform.emit(_("Click on target location ..."))
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
@@ -531,9 +557,19 @@ class FCSlot(FCShapeTool):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Adding Slot completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Slot completed."))
         self.draw_app.slot_frame.hide()
+        self.draw_app.app.jump_signal.disconnect()
+
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCSlotArray(FCShapeTool):
@@ -599,6 +635,8 @@ class FCSlotArray(FCShapeTool):
             self.draw_app.draw_utility_geometry(geo=geo)
 
         self.draw_app.app.inform.emit(_("Click on target location ..."))
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
@@ -821,6 +859,7 @@ class FCSlotArray(FCShapeTool):
             if (self.slot_angle * self.slot_array_size) > 360:
                 self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' %
                                               _("Too many Slots for the selected spacing angle."))
+                self.draw_app.app.jump_signal.disconnect()
                 return
 
             radius = distance(self.destination, self.origin)
@@ -842,17 +881,21 @@ class FCSlotArray(FCShapeTool):
 
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Slot Array added."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Slot Array added."))
         self.draw_app.in_action = False
         self.draw_app.slot_frame.hide()
         self.draw_app.slot_array_frame.hide()
-        return
+        self.draw_app.app.jump_signal.disconnect()
 
     def clean_up(self):
-        self.draw_app.selected = []
-        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.selected = list()
+        self.draw_app.tools_table_exc.clearSelection()
         self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCDrillResize(FCShapeTool):
@@ -1084,6 +1127,16 @@ class FCDrillResize(FCShapeTool):
         # MS: always return to the Select Tool
         self.draw_app.select_tool("drill_select")
 
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
 
 class FCDrillMove(FCShapeTool):
     def __init__(self, draw_app):
@@ -1111,6 +1164,8 @@ class FCDrillMove(FCShapeTool):
             # therefore below we convert to float
             dia_on_row = self.draw_app.tools_table_exc.item(row, 1).text()
             self.selected_dia_list.append(float(dia_on_row))
+
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
@@ -1156,8 +1211,8 @@ class FCDrillMove(FCShapeTool):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Drill(s) Move completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill(s) Move completed."))
+        self.draw_app.app.jump_signal.disconnect()
 
     def selection_bbox(self):
         geo_list = []
@@ -1212,6 +1267,16 @@ class FCDrillMove(FCShapeTool):
                 ss_el = None
             return DrawToolUtilityShape(ss_el)
 
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
 
 class FCDrillCopy(FCDrillMove):
     def __init__(self, draw_app):
@@ -1254,8 +1319,18 @@ class FCDrillCopy(FCDrillMove):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Drill(s) copied."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Drill(s) copied."))
+        self.draw_app.app.jump_signal.disconnect()
+
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.tools_table_exc.clearSelection()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCDrillSelect(DrawTool):
@@ -2919,6 +2994,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
+        try:
+            self.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
     def clear(self):
         self.active_tool = None
         # self.shape_buffer = []
@@ -3690,6 +3770,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+                                         edge_width=self.app.defaults["global_cursor_width"],
                                          size=self.app.defaults["global_cursor_size"])
 
         self.snap_x = x
@@ -3709,12 +3790,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                                                "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
         # ## Utility geometry (animated)
-        geo = self.active_tool.utility_geometry(data=(x, y))
-
-        if isinstance(geo, DrawToolShape) and geo.geo is not None:
-            # Remove any previous utility shape
-            self.tool_shape.clear(update=True)
-            self.draw_utility_geometry(geo=geo)
+        self.update_utility_geometry(data=(x, y))
 
         # ## Selection area on canvas section # ##
         if event_is_dragging == 1 and event.button == 1:
@@ -3739,7 +3815,16 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # Update cursor
         self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+                                     edge_width=self.app.defaults["global_cursor_width"],
                                      size=self.app.defaults["global_cursor_size"])
+
+    def update_utility_geometry(self, data):
+        # ### Utility geometry (animated) ###
+        geo = self.active_tool.utility_geometry(data=data)
+        if isinstance(geo, DrawToolShape) and geo.geo is not None:
+            # Remove any previous utility shape
+            self.tool_shape.clear(update=True)
+            self.draw_utility_geometry(geo=geo)
 
     def on_canvas_key_release(self, event):
         self.key = None

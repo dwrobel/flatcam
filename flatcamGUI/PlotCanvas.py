@@ -310,6 +310,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             # Update cursor
             self.fcapp.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
                                            symbol='++', edge_color=self.fcapp.cursor_color_3D,
+                                           edge_width=self.fcapp.defaults["global_cursor_width"],
                                            size=self.fcapp.defaults["global_cursor_size"])
 
     def new_text_group(self, collection=None):

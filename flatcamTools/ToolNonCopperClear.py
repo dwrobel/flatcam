@@ -698,11 +698,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "paintcontour": self.app.defaults["tools_paintcontour"],
             "paintoverlap": self.app.defaults["tools_paintoverlap"],
 
-            "nccoverlap": self.app.defaults["tools_nccoverlap"],
             "nccmargin": self.app.defaults["tools_nccmargin"],
             "nccmethod": self.app.defaults["tools_nccmethod"],
             "nccconnect": self.app.defaults["tools_nccconnect"],
             "ncccontour": self.app.defaults["tools_ncccontour"],
+            "nccoverlap": self.app.defaults["tools_nccoverlap"],
             "nccrest": self.app.defaults["tools_nccrest"]
         })
 
@@ -1349,6 +1349,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
                                          symbol='++', edge_color=self.app.cursor_color_3D,
+                                         edge_width=self.app.defaults["global_cursor_width"],
                                          size=self.app.defaults["global_cursor_size"])
 
         # update the positions on status bar

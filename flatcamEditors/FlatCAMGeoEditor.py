@@ -1883,6 +1883,7 @@ class DrawTool(object):
         # Jump to coords
         if key == QtCore.Qt.Key_J or key == 'J':
             self.draw_app.app.on_jump_to()
+        return
 
     def utility_geometry(self, data=None):
         return None
@@ -1987,6 +1988,15 @@ class FCCircle(FCShapeTool):
         self.draw_app.app.jump_signal.disconnect()
 
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Adding Circle completed."))
+
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCArc(FCShapeTool):
@@ -2213,6 +2223,15 @@ class FCArc(FCShapeTool):
 
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Arc completed."))
 
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
 
 class FCRectangle(FCShapeTool):
     """
@@ -2270,6 +2289,15 @@ class FCRectangle(FCShapeTool):
 
         self.draw_app.app.jump_signal.disconnect()
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Rectangle completed."))
+
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCPolygon(FCShapeTool):
@@ -2345,6 +2373,15 @@ class FCPolygon(FCShapeTool):
                 self.draw_app.draw_utility_geometry(geo=geo)
                 return _("Backtracked one point ...")
 
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
 
 class FCPath(FCPolygon):
     """
@@ -2400,6 +2437,15 @@ class FCPath(FCPolygon):
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
                 self.draw_app.draw_utility_geometry(geo=geo)
                 return _("Backtracked one point ...")
+
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCSelect(DrawTool):
@@ -2533,6 +2579,15 @@ class FCExplode(FCShapeTool):
         self.draw_app.on_shape_complete()
         self.draw_app.app.inform.emit('[success] %s...' % _("Done. Polygons exploded into lines."))
 
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
 
 class FCMove(FCShapeTool):
     def __init__(self, draw_app):
@@ -2555,8 +2610,10 @@ class FCMove(FCShapeTool):
         if len(self.draw_app.get_selected()) == 0:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s...' %
                                           _("MOVE: No shape selected. Select a shape to move"))
+            return
         else:
             self.draw_app.app.inform.emit(_(" MOVE: Click on reference point ..."))
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_origin(self, origin):
         self.draw_app.app.inform.emit(_(" Click on destination point ..."))
@@ -2593,8 +2650,8 @@ class FCMove(FCShapeTool):
             # Delete old
             self.draw_app.delete_selected()
             self.complete = True
-            self.draw_app.app.inform.emit('[success] %s' %
-                                          _("Done. Geometry(s) Move completed."))
+            self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Move completed."))
+            self.draw_app.app.jump_signal.disconnect()
 
     def selection_bbox(self):
         geo_list = []
@@ -2701,6 +2758,15 @@ class FCMove(FCShapeTool):
             log.error("[ERROR] Something went bad. %s" % str(e))
             raise
 
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
 
 class FCCopy(FCMove):
     def __init__(self, draw_app):
@@ -2715,6 +2781,16 @@ class FCCopy(FCMove):
                          for geom in self.draw_app.get_selected()]
         self.complete = True
         self.draw_app.app.inform.emit('[success] %s' % _("Done. Geometry(s) Copy completed."))
+        self.draw_app.app.jump_signal.disconnect()
+
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCText(FCShapeTool):
@@ -2732,11 +2808,12 @@ class FCText(FCShapeTool):
 
         self.app = draw_app.app
 
-        self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
+        self.draw_app.app.inform.emit(_("Click on 1st point ..."))
         self.origin = (0, 0)
 
         self.text_gui = TextInputTool(self.app)
         self.text_gui.run()
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def click(self, point):
         # Create new geometry
@@ -2754,9 +2831,11 @@ class FCText(FCShapeTool):
                 self.text_gui.text_path = []
                 self.text_gui.hide_tool()
                 self.draw_app.select_tool('select')
+                self.draw_app.app.jump_signal.disconnect()
                 return
         else:
             self.draw_app.app.inform.emit('[WARNING_NOTCL] %s' % _("No text to add."))
+            self.draw_app.app.jump_signal.disconnect()
             return
 
         self.text_gui.text_path = []
@@ -2779,6 +2858,15 @@ class FCText(FCShapeTool):
             return DrawToolUtilityShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
         except Exception:
             return
+
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCBuffer(FCShapeTool):
@@ -2909,6 +2997,16 @@ class FCBuffer(FCShapeTool):
         self.draw_app.select_tool("select")
         self.buff_tool.hide_tool()
 
+    def clean_up(self):
+        self.draw_app.selected = list()
+        self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+
 
 class FCEraser(FCShapeTool):
     def __init__(self, draw_app):
@@ -2931,6 +3029,7 @@ class FCEraser(FCShapeTool):
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+        self.draw_app.app.jump_signal.connect(lambda x: self.draw_app.update_utility_geometry(data=x))
 
     def set_origin(self, origin):
         self.origin = origin
@@ -2982,8 +3081,8 @@ class FCEraser(FCShapeTool):
 
         self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
-        self.draw_app.app.inform.emit('[success] %s' %
-                                      _("Done. Eraser tool action completed."))
+        self.draw_app.app.inform.emit('[success] %s' % _("Done. Eraser tool action completed."))
+        self.draw_app.app.jump_signal.disconnect()
 
     def utility_geometry(self, data=None):
         """
@@ -3013,8 +3112,13 @@ class FCEraser(FCShapeTool):
         return DrawToolUtilityShape(geo_list)
 
     def clean_up(self):
-        self.draw_app.selected = []
+        self.draw_app.selected = list()
         self.draw_app.plot_all()
+
+        try:
+            self.draw_app.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
 
 class FCPaint(FCShapeTool):
@@ -3557,6 +3661,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
+        try:
+            self.app.jump_signal.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
     def add_shape(self, shape):
         """
         Adds a shape to the shape storage.
@@ -3831,6 +3940,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color=self.app.cursor_color_3D,
+                                         edge_width=self.app.defaults["global_cursor_width"],
                                          size=self.app.defaults["global_cursor_size"])
 
         self.snap_x = x
