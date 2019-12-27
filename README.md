@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 27.12.2019
 
 - updated the POT file and the translation files for German, Spanish and French languages
+- fixed some typos
 
 26.12.2019
 
