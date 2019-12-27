@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+27.12.2019
+
+- updated the POT file and the translation files for German, Spanish and French languages
+
 26.12.2019
 
 - modified the ToolDB class and changed some strings

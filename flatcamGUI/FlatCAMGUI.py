@@ -1215,7 +1215,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_defaults_button.setText(_("Restore Defaults"))
         self.pref_defaults_button.setMinimumWidth(130)
         self.pref_defaults_button.setToolTip(
-            _("Restore the entire set of default valaues\n"
+            _("Restore the entire set of default values\n"
               "to the initial values loaded after first launch."))
         self.pref_tab_bottom_layout_1.addWidget(self.pref_defaults_button)
 
