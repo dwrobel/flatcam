@@ -5,11 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2019-12-27 22:54+0400\n"
-=======
-"POT-Creation-Date: 2019-12-27 22:36+0200\n"
->>>>>>> remotes/jpcgt/flatcam/Beta
+"POT-Creation-Date: 2019-12-27 23:01+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -18,11 +14,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.3\n"
-"X-Poedit-Basepath: ../../..\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: build\n"
-"X-Poedit-SearchPathExcluded-1: doc\n"
-"X-Poedit-SearchPathExcluded-2: tests\n"
 
 #: FlatCAMApp.py:1040
 msgid "FlatCAM is initializing ..."
@@ -174,11 +165,7 @@ msgstr "Не удалось прочитать файл значений по у
 
 #: FlatCAMApp.py:3835
 msgid "Preferences default restore was cancelled."
-<<<<<<< HEAD
 msgstr "Восстановление настроек по умолчанию отменено."
-=======
-msgstr "Восстановление настроек было отменено."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: FlatCAMApp.py:3843 FlatCAMApp.py:5021
 msgid "Could not load factory defaults file."
@@ -190,11 +177,7 @@ msgstr "Не удалось прочитать файл с исходными з
 
 #: FlatCAMApp.py:3859
 msgid "Preferences default values are restored."
-<<<<<<< HEAD
 msgstr "Восстанавливаются значения по умолчанию."
-=======
-msgstr "Настройки по умолчанию восстановлены."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: FlatCAMApp.py:3874 FlatCAMApp.py:3878
 msgid "Import FlatCAM Preferences"
@@ -1248,19 +1231,11 @@ msgstr "Сохранить объект PDF отменен."
 
 #: FlatCAMApp.py:10163
 msgid "Printing PDF ... Please wait."
-<<<<<<< HEAD
 msgstr "Печать PDF ... Пожалуйста, подождите."
 
 #: FlatCAMApp.py:10342
 msgid "PDF file saved to"
 msgstr "Файл PDF сохранён в"
-=======
-msgstr "Распечатать PDF ... Пожалуйста, подождите."
-
-#: FlatCAMApp.py:10342
-msgid "PDF file saved to"
-msgstr "Файл PDF экспортируется в"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: FlatCAMApp.py:10366
 msgid "Exporting SVG"
@@ -1805,13 +1780,8 @@ msgid ""
 "It will be used in the Geometry UI.\n"
 "You can edit it after it is added."
 msgstr ""
-<<<<<<< HEAD
 "Добавляет новый инструмент в базу данных инструментов.\n"
 "Он будет использоваться в пользовательском интерфейсе Geometry.\n"
-=======
-"Добавляет новый инструмент в базу данных.\n"
-"Он будет использоваться в интерфейсе Geometry.\n"
->>>>>>> remotes/jpcgt/flatcam/Beta
 "Вы можете отредактировать его после добавления."
 
 #: FlatCAMCommon.py:545
@@ -1824,11 +1794,7 @@ msgstr "Удаляет выбранные инструменты из базы �
 
 #: FlatCAMCommon.py:551
 msgid "Export DB"
-<<<<<<< HEAD
 msgstr "Экспорт БД"
-=======
-msgstr "Экспорт DB"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: FlatCAMCommon.py:553
 msgid "Save the Tools Database to a custom text file."
@@ -1836,11 +1802,7 @@ msgstr "Сохраняет базу данных инструментов в п�
 
 #: FlatCAMCommon.py:557
 msgid "Import DB"
-<<<<<<< HEAD
 msgstr "Импорт БД"
-=======
-msgstr "Импорт DB"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: FlatCAMCommon.py:559
 msgid "Load the Tools Database information's from a custom text file."
@@ -1851,7 +1813,6 @@ msgstr ""
 #: FlatCAMCommon.py:563
 msgid "Add Tool from Tools DB"
 msgstr "Добавить инструмент из БД"
-<<<<<<< HEAD
 
 #: FlatCAMCommon.py:565
 msgid ""
@@ -1863,19 +1824,6 @@ msgstr ""
 "активной геометрии после выбора инструмента\n"
 "в базе данных."
 
-=======
-
-#: FlatCAMCommon.py:565
-msgid ""
-"Add a new tool in the Tools Table of the\n"
-"active Geometry object after selecting a tool\n"
-"in the Tools Database."
-msgstr ""
-"Добавляет новый инструмент в таблицу инструментов\n"
-"активной геометрии после выбора инструмента\n"
-"в базе данных."
-
->>>>>>> remotes/jpcgt/flatcam/Beta
 #: FlatCAMCommon.py:601 FlatCAMCommon.py:1276
 msgid "Tool Name"
 msgstr "Название инструмента"
@@ -2831,11 +2779,7 @@ msgstr "Объект был буферизован"
 
 #: camlib.py:2181
 msgid "Failed to buffer. No object selected"
-<<<<<<< HEAD
 msgstr "Буферизация не удалась. Объект не выбран"
-=======
-msgstr "Не удалось создать буфер. Объект не выбран"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: camlib.py:2378
 msgid "There is no such parameter"
@@ -5460,11 +5404,7 @@ msgstr "Экспортировать настройки в файл ..."
 
 #: flatcamGUI/FlatCAMGUI.py:244 flatcamGUI/FlatCAMGUI.py:1614
 msgid "Print (PDF)"
-<<<<<<< HEAD
 msgstr "Печать (PDF)"
-=======
-msgstr "Распечатать (PDF)"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/FlatCAMGUI.py:247 flatcamGUI/FlatCAMGUI.py:682
 #: flatcamGUI/FlatCAMGUI.py:1252
@@ -5903,7 +5843,6 @@ msgstr "Установить цвет"
 
 #: flatcamGUI/FlatCAMGUI.py:648
 msgid "Red"
-<<<<<<< HEAD
 msgstr "Красный"
 
 #: flatcamGUI/FlatCAMGUI.py:651
@@ -5917,21 +5856,6 @@ msgstr "Жёлтый"
 #: flatcamGUI/FlatCAMGUI.py:657
 msgid "Green"
 msgstr "Зелёный"
-=======
-msgstr "Kрасный"
-
-#: flatcamGUI/FlatCAMGUI.py:651
-msgid "Blue"
-msgstr "Cиний"
-
-#: flatcamGUI/FlatCAMGUI.py:654
-msgid "Yellow"
-msgstr "Желтый"
-
-#: flatcamGUI/FlatCAMGUI.py:657
-msgid "Green"
-msgstr "Зеленый"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/FlatCAMGUI.py:660
 msgid "Purple"
@@ -5943,11 +5867,7 @@ msgstr "Коричневый"
 
 #: flatcamGUI/FlatCAMGUI.py:666
 msgid "Custom"
-<<<<<<< HEAD
 msgstr "Своё"
-=======
-msgstr "Пользовательский"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/FlatCAMGUI.py:671
 msgid "Generate CNC"
@@ -6374,22 +6294,14 @@ msgstr "УТИЛИТЫ"
 
 #: flatcamGUI/FlatCAMGUI.py:1215
 msgid "Restore Defaults"
-<<<<<<< HEAD
 msgstr "Восстановить значения по умолчанию"
-=======
-msgstr "Восстановить настройки по-умолчанию"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/FlatCAMGUI.py:1218
 msgid ""
 "Restore the entire set of default values\n"
 "to the initial values loaded after first launch."
 msgstr ""
-<<<<<<< HEAD
 "Восстановление всего набора значений по умолчанию\n"
-=======
-"Восстановить весь набор значений по умолчанию\n"
->>>>>>> remotes/jpcgt/flatcam/Beta
 "к начальным значениям, загруженным после первого запуска."
 
 #: flatcamGUI/FlatCAMGUI.py:1223
@@ -7086,7 +6998,6 @@ msgid ""
 "- Absolute -> the reference point is point (0,0)\n"
 "- Relative -> the reference point is the mouse position before Jump"
 msgstr ""
-<<<<<<< HEAD
 "Указатель может быть:\n"
 "- Абсолютный -> точка отсчета - это точка (0,0)\n"
 "- Относительный -> опорной точкой является положение мыши перед перемещением"
@@ -7102,23 +7013,6 @@ msgstr "Относительный"
 #: flatcamGUI/GUIElements.py:2279
 msgid "Location"
 msgstr "Местоположение"
-=======
-"Ссылка может быть:\n"
-"- Абсолют -> точка отсчета является точка (0,0)\n"
-"- Относительный -> контрольная точка - это положение мыши перед прыжком"
-
-#: flatcamGUI/GUIElements.py:2268
-msgid "Abs"
-msgstr "Абсолютный"
-
-#: flatcamGUI/GUIElements.py:2269
-msgid "Relative"
-msgstr "Родственник"
-
-#: flatcamGUI/GUIElements.py:2279
-msgid "Location"
-msgstr "Положение"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/GUIElements.py:2281
 msgid ""
@@ -7127,11 +7021,7 @@ msgid ""
 "If the reference is Relative then the Jump will be at the (x,y) distance\n"
 "from the current mouse location point."
 msgstr ""
-<<<<<<< HEAD
 "Значение местоположения - это кортеж (x, y).\n"
-=======
-"Значением местоположения является кортеж (x, y).\n"
->>>>>>> remotes/jpcgt/flatcam/Beta
 "Если задание является абсолютным, то переход будет в положении (x, y).\n"
 "Если ссылка является относительной, то переход будет на расстоянии (x, y)\n"
 "от текущей точки расположения мыши."
@@ -7238,7 +7128,7 @@ msgstr "Сплошной цвет полигонов."
 
 #: flatcamGUI/ObjectUI.py:203
 msgid "Multi-Color"
-msgstr "многоцветный"
+msgstr "Mногоцветный"
 
 #: flatcamGUI/ObjectUI.py:205 flatcamGUI/PreferencesUI.py:1778
 msgid "Draw polygons in different colors."
@@ -8787,11 +8677,7 @@ msgstr "Тема"
 
 #: flatcamGUI/PreferencesUI.py:336
 msgid "Select a theme for FlatCAM."
-<<<<<<< HEAD
 msgstr "Выбор темы для FlatCAM."
-=======
-msgstr "Выберите тему для FlatCAM."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:340
 msgid "Light"
@@ -8803,11 +8689,7 @@ msgstr "Тёмная"
 
 #: flatcamGUI/PreferencesUI.py:348
 msgid "Use Gray Icons"
-<<<<<<< HEAD
 msgstr "Использовать серые иконки"
-=======
-msgstr "Используйте серые значки"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:350
 msgid ""
@@ -8815,15 +8697,9 @@ msgid ""
 "a lighter (gray) color. To be used when a\n"
 "full dark theme is applied."
 msgstr ""
-<<<<<<< HEAD
 "Установите этот флажок, чтобы использовать набор значков\n"
 "более светлого (серого) цвета. Используется при применении\n"
 "полной темной темы."
-=======
-"Установите этот флажок, чтобы использовать набор значков с\n"
-"светлый (серый) цвет. Быть использованным когда\n"
-"полная темная тема применяется."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:356
 msgid "Apply Theme"
@@ -8863,11 +8739,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:406
 msgid "Activate HDPI Support"
-<<<<<<< HEAD
 msgstr "Поддержка HDPI"
-=======
-msgstr "Активировать HDPI"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:408
 msgid ""
@@ -8893,11 +8765,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:431
 msgid "Display Selection Shape"
-<<<<<<< HEAD
 msgstr "Показывать форму выбора"
-=======
-msgstr "Показать форму выбора"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:433
 msgid ""
@@ -8913,11 +8781,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:446
 msgid "Left-Right Selection Color"
-<<<<<<< HEAD
 msgstr "Цвет выделения слева направо"
-=======
-msgstr "Цвет выбора слева-справа"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:449 flatcamGUI/PreferencesUI.py:515
 #: flatcamGUI/PreferencesUI.py:1884 flatcamGUI/PreferencesUI.py:2897
@@ -8934,11 +8798,7 @@ msgstr "Установит цвет линии для поля выбора \"с
 #: flatcamGUI/PreferencesUI.py:1901 flatcamGUI/PreferencesUI.py:2914
 #: flatcamGUI/PreferencesUI.py:4551 flatcamGUI/PreferencesUI.py:4617
 msgid "Fill"
-<<<<<<< HEAD
 msgstr "Заполнение"
-=======
-msgstr "Содержание"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:467
 msgid ""
@@ -8956,11 +8816,7 @@ msgstr ""
 #: flatcamGUI/PreferencesUI.py:1920 flatcamGUI/PreferencesUI.py:2933
 #: flatcamGUI/PreferencesUI.py:4570
 msgid "Alpha"
-<<<<<<< HEAD
 msgstr "Прозрачность"
-=======
-msgstr "Альфа"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:487
 msgid "Set the fill transparency for the 'left to right' selection box."
@@ -8968,11 +8824,7 @@ msgstr "Установит прозрачность заливки для пол
 
 #: flatcamGUI/PreferencesUI.py:511
 msgid "Right-Left Selection Color"
-<<<<<<< HEAD
 msgstr "Цвет выделения справа налево"
-=======
-msgstr "Право-левый цвет выделения"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:517
 msgid "Set the line color for the 'right to left' selection box."
@@ -9075,11 +8927,7 @@ msgstr "Максимальный захват"
 
 #: flatcamGUI/PreferencesUI.py:998
 msgid "Workspace Settings"
-<<<<<<< HEAD
 msgstr "Настройки рабочей области"
-=======
-msgstr "Настройки рабочего пространства"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:1001
 msgid "Active"
@@ -9115,7 +8963,6 @@ msgstr ""
 "Может быть:\n"
 "- Портрет\n"
 "- Альбом"
-<<<<<<< HEAD
 
 #: flatcamGUI/PreferencesUI.py:1082 flatcamGUI/PreferencesUI.py:5896
 #: flatcamTools/ToolFilm.py:424
@@ -9131,23 +8978,6 @@ msgstr "Альбомная"
 msgid "Notebook"
 msgstr "Боковая панель"
 
-=======
-
-#: flatcamGUI/PreferencesUI.py:1082 flatcamGUI/PreferencesUI.py:5896
-#: flatcamTools/ToolFilm.py:424
-msgid "Portrait"
-msgstr "Портретная"
-
-#: flatcamGUI/PreferencesUI.py:1083 flatcamGUI/PreferencesUI.py:5897
-#: flatcamTools/ToolFilm.py:425
-msgid "Landscape"
-msgstr "Альбомная"
-
-#: flatcamGUI/PreferencesUI.py:1107
-msgid "Notebook"
-msgstr "Блокнот"
-
->>>>>>> remotes/jpcgt/flatcam/Beta
 #: flatcamGUI/PreferencesUI.py:1109
 msgid ""
 "This sets the font size for the elements found in the Notebook.\n"
@@ -9160,11 +8990,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1128
 msgid "Axis"
-<<<<<<< HEAD
 msgstr "Оси"
-=======
-msgstr "Ось"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:1130
 msgid "This sets the font size for canvas axis."
@@ -9172,11 +8998,7 @@ msgstr "Это устанавливает размер шрифта для ос�
 
 #: flatcamGUI/PreferencesUI.py:1147
 msgid "Textbox"
-<<<<<<< HEAD
 msgstr "Поле ввода текста"
-=======
-msgstr "Текстовое окно"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:1149
 msgid ""
@@ -9189,7 +9011,6 @@ msgstr ""
 #: flatcamGUI/PreferencesUI.py:1175
 msgid "Mouse Settings"
 msgstr "Настройки мыши"
-<<<<<<< HEAD
 
 #: flatcamGUI/PreferencesUI.py:1179
 msgid "Cursor Shape"
@@ -9313,177 +9134,6 @@ msgstr ""
 "используемых: либо\n"
 "путь для сохранения файлов либо путь для открытия файлов."
 
-#: flatcamGUI/PreferencesUI.py:1302
-msgid "Enable ToolTips"
-msgstr "Всплывающие подсказки"
-
-#: flatcamGUI/PreferencesUI.py:1304
-msgid ""
-"Check this box if you want to have toolTips displayed\n"
-"when hovering with mouse over items throughout the App."
-msgstr ""
-"Установите этот флажок, если вы хотите, чтобы всплывающие подсказки "
-"отображались\n"
-"при наведении курсора мыши на элементы по всему приложению."
-
-#: flatcamGUI/PreferencesUI.py:1311
-msgid "Allow Machinist Unsafe Settings"
-msgstr "Разрешить выполнить небезопасные настройки"
-
-#: flatcamGUI/PreferencesUI.py:1313
-=======
-
-#: flatcamGUI/PreferencesUI.py:1179
-msgid "Cursor Shape"
-msgstr "Форма курсора"
-
-#: flatcamGUI/PreferencesUI.py:1181
->>>>>>> remotes/jpcgt/flatcam/Beta
-msgid ""
-"If checked, some of the application settings will be allowed\n"
-"to have values that are usually unsafe to use.\n"
-"Like Z travel negative values or Z Cut positive values.\n"
-"It will applied at the next application start.\n"
-"<<WARNING>>: Don't change this unless you know what you are doing !!!"
-msgstr ""
-<<<<<<< HEAD
-"Если этот флажок установлен, некоторым настройкам приложения будут "
-"разрешено\n"
-"иметь значения, которые обычно небезопасны для использования.\n"
-"Например отрицательные значения перемещения по оси Z или положительные "
-"значения выреза по Z.\n"
-"Это будет применено при следующем запуске приложения.\n"
-"< < Предупреждение>>: Не меняйте это, если вы не знаете, что вы делаете !!!"
-
-#: flatcamGUI/PreferencesUI.py:1324
-msgid "Bookmarks limit"
-msgstr "Количество закладок"
-
-#: flatcamGUI/PreferencesUI.py:1326
-=======
-"Выбор формы курсора мыши.\n"
-"- Маленький -> с настраиваемым размером.\n"
-"- Большой -> бесконечные линии"
-
-#: flatcamGUI/PreferencesUI.py:1187
-msgid "Small"
-msgstr "Небольшой"
-
-#: flatcamGUI/PreferencesUI.py:1188
-msgid "Big"
-msgstr "Большой"
-
-#: flatcamGUI/PreferencesUI.py:1195
-msgid "Cursor Size"
-msgstr "Размер курсора"
-
-#: flatcamGUI/PreferencesUI.py:1197
-msgid "Set the size of the mouse cursor, in pixels."
-msgstr "Установка размера курсора мыши в пикселях."
-
-#: flatcamGUI/PreferencesUI.py:1208
-msgid "Cursor Width"
-msgstr "Ширина курсора"
-
-#: flatcamGUI/PreferencesUI.py:1210
-msgid "Set the line width of the mouse cursor, in pixels."
-msgstr "Установите ширину линии курсора мыши в пикселях."
-
-#: flatcamGUI/PreferencesUI.py:1221 flatcamGUI/PreferencesUI.py:1228
-msgid "Cursor Color"
-msgstr "Цвет курсора"
-
-#: flatcamGUI/PreferencesUI.py:1223
-msgid "Check this box to color mouse cursor."
-msgstr "Установите этот флажок, чтобы закрасить курсор мыши."
-
-#: flatcamGUI/PreferencesUI.py:1230
-msgid "Set the color of the mouse cursor."
-msgstr "Установите цвет курсора мыши."
-
-#: flatcamGUI/PreferencesUI.py:1253
-msgid "Pan Button"
-msgstr "Кнопка панарамирования"
-
-#: flatcamGUI/PreferencesUI.py:1255
-msgid ""
-"Select the mouse button to use for panning:\n"
-"- MMB --> Middle Mouse Button\n"
-"- RMB --> Right Mouse Button"
-msgstr ""
-"Выбор кнопки мыши для панорамирования:\n"
-"- СКМ --> Средняя кнопка мыши\n"
-"- ПКМ --> Правая кнопка мыши"
-
-#: flatcamGUI/PreferencesUI.py:1259
-msgid "MMB"
-msgstr "СКМ"
-
-#: flatcamGUI/PreferencesUI.py:1260
-msgid "RMB"
-msgstr "ПКМ"
-
-#: flatcamGUI/PreferencesUI.py:1266
-msgid "Multiple Selection"
-msgstr "Множественный выбор"
-
-#: flatcamGUI/PreferencesUI.py:1268
-msgid "Select the key used for multiple selection."
-msgstr "Выберите клавишу, используемую для множественного выбора."
-
-#: flatcamGUI/PreferencesUI.py:1270
-msgid "CTRL"
-msgstr "CTRL"
-
-#: flatcamGUI/PreferencesUI.py:1271
-msgid "SHIFT"
-msgstr "SHIFT"
-
-#: flatcamGUI/PreferencesUI.py:1282
-msgid "Delete object confirmation"
-msgstr "Подтверждать удаление объекта"
-
-#: flatcamGUI/PreferencesUI.py:1284
->>>>>>> remotes/jpcgt/flatcam/Beta
-msgid ""
-"The maximum number of bookmarks that may be installed in the menu.\n"
-"The number of bookmarks in the bookmark manager may be greater\n"
-"but the menu will hold only so much."
-msgstr ""
-"Максимальное количество закладок, которые могут быть установлены в меню.\n"
-"Количество закладок в диспетчере закладок может быть больше\n"
-"но меню будет содержать только это указанное количество."
-
-<<<<<<< HEAD
-#: flatcamGUI/PreferencesUI.py:1335
-msgid "Activity Icon"
-msgstr "Значок активности"
-
-#: flatcamGUI/PreferencesUI.py:1337
-msgid "Select the GIF that show activity when FlatCAM is active."
-msgstr "Выбор GIF-изображения показывающего активность FlatCAM."
-
-=======
-#: flatcamGUI/PreferencesUI.py:1291
-msgid "\"Open\" behavior"
-msgstr "Поведение функции \"Открыть\""
-
-#: flatcamGUI/PreferencesUI.py:1293
-msgid ""
-"When checked the path for the last saved file is used when saving files,\n"
-"and the path for the last opened file is used when opening files.\n"
-"\n"
-"When unchecked the path for opening files is the one used last: either the\n"
-"path for saving files or the path for opening files."
-msgstr ""
-"Если флажок установлен, то путь к последнему сохраненному файлу используется "
-"при сохранении файлов,\n"
-"и путь к последнему открытому файлу используется при открытии файлов.\n"
-"\n"
-"Если флажок не установлен, путь для открытия файлов будет последним из "
-"используемых: либо\n"
-"путь для сохранения файлов либо путь для открытия файлов."
-
 #: flatcamGUI/PreferencesUI.py:1304
 msgid ""
 "Check this box if you want to have toolTips displayed\n"
@@ -9535,7 +9185,6 @@ msgstr "Значок активности"
 msgid "Select the GIF that show activity when FlatCAM is active."
 msgstr "Выбор GIF-изображения показывающего активность FlatCAM."
 
->>>>>>> remotes/jpcgt/flatcam/Beta
 #: flatcamGUI/PreferencesUI.py:1395
 msgid "App Preferences"
 msgstr "Параметры приложения"
@@ -9673,7 +9322,6 @@ msgstr "Языки"
 #: flatcamGUI/PreferencesUI.py:1494
 msgid "Set the language used throughout FlatCAM."
 msgstr "Установите язык, используемый в плоском кулачке."
-<<<<<<< HEAD
 
 #: flatcamGUI/PreferencesUI.py:1500
 msgid "Apply Language"
@@ -9725,59 +9373,6 @@ msgstr "Показывать Проект"
 
 #: flatcamGUI/PreferencesUI.py:1551
 msgid ""
-=======
-
-#: flatcamGUI/PreferencesUI.py:1500
-msgid "Apply Language"
-msgstr "Применить"
-
-#: flatcamGUI/PreferencesUI.py:1501
-msgid ""
-"Set the language used throughout FlatCAM.\n"
-"The app will restart after click."
-msgstr ""
-"Установите язык, используемый в FlatCAM.\n"
-"Приложение будет перезапущено после нажатия."
-
-#: flatcamGUI/PreferencesUI.py:1515
-msgid "Startup Settings"
-msgstr "Настройки запуска"
-
-#: flatcamGUI/PreferencesUI.py:1519
-msgid "Splash Screen"
-msgstr "Заставка"
-
-#: flatcamGUI/PreferencesUI.py:1521
-msgid "Enable display of the splash screen at application startup."
-msgstr "Включает отображение заставки при запуске приложения."
-
-#: flatcamGUI/PreferencesUI.py:1533
-msgid "Sys Tray Icon"
-msgstr "Иконка в системном трее"
-
-#: flatcamGUI/PreferencesUI.py:1535
-msgid "Enable display of FlatCAM icon in Sys Tray."
-msgstr "Включает отображение иконки FlatCAM в системном трее."
-
-#: flatcamGUI/PreferencesUI.py:1540
-msgid "Show Shell"
-msgstr "Показать оболочку"
-
-#: flatcamGUI/PreferencesUI.py:1542
-msgid ""
-"Check this box if you want the shell to\n"
-"start automatically at startup."
-msgstr ""
-"Установите этот флажок, если требуется, чтобы оболочка\n"
-"запуск автоматически при запуске."
-
-#: flatcamGUI/PreferencesUI.py:1549
-msgid "Show Project"
-msgstr "Показать Проект"
-
-#: flatcamGUI/PreferencesUI.py:1551
-msgid ""
->>>>>>> remotes/jpcgt/flatcam/Beta
 "Check this box if you want the project/selected/tool tab area to\n"
 "to be shown automatically at startup."
 msgstr ""
@@ -9798,11 +9393,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1566
 msgid "Send Statistics"
-<<<<<<< HEAD
 msgstr "Отправлять статистику"
-=======
-msgstr "Отправить статистику"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:1568
 msgid ""
@@ -9854,11 +9445,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1636
 msgid "Save Settings"
-<<<<<<< HEAD
 msgstr "Сохранить настройки"
-=======
-msgstr "Настройки для сохранения"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:1640
 msgid "Save Compressed Project"
@@ -9888,16 +9475,11 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1673
 msgid "Text to PDF parameters"
-<<<<<<< HEAD
 msgstr "Параметры преобразования текста в PDF"
-=======
-msgstr "Параметры текста в PDF"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:1675
 msgid "Used when saving text in Code Editor or in FlatCAM Document objects."
 msgstr ""
-<<<<<<< HEAD
 "Используется при сохранении текста в редакторе кода или в объектах FlatCAM "
 "Document."
 
@@ -9932,42 +9514,6 @@ msgstr "Правая граница"
 #: flatcamGUI/PreferencesUI.py:1725
 msgid "Distance between text body and the right of the PDF file."
 msgstr "Расстояние между текстом и правой частью PDF-файла."
-=======
-"Используется при сохранении текста в редакторе кода или в объектах документа "
-"FlatCAM."
-
-#: flatcamGUI/PreferencesUI.py:1684
-msgid "Top Margin"
-msgstr "Верхний край"
-
-#: flatcamGUI/PreferencesUI.py:1686
-msgid "Distance between text body and the top of the PDF file."
-msgstr "Расстояние между текстом и вершиной файла PDF."
-
-#: flatcamGUI/PreferencesUI.py:1697
-msgid "Bottom Margin"
-msgstr "Нижняя край"
-
-#: flatcamGUI/PreferencesUI.py:1699
-msgid "Distance between text body and the bottom of the PDF file."
-msgstr "Расстояние между текстом и нижней частью файла PDF."
-
-#: flatcamGUI/PreferencesUI.py:1710
-msgid "Left Margin"
-msgstr "Левое край"
-
-#: flatcamGUI/PreferencesUI.py:1712
-msgid "Distance between text body and the left of the PDF file."
-msgstr "Расстояние между телом текста и левой частью файла PDF."
-
-#: flatcamGUI/PreferencesUI.py:1723
-msgid "Right Margin"
-msgstr "Правая край"
-
-#: flatcamGUI/PreferencesUI.py:1725
-msgid "Distance between text body and the right of the PDF file."
-msgstr "Расстояние между текстом и правом файла PDF."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:1758
 msgid "Gerber General"
@@ -10045,7 +9591,6 @@ msgstr "LZ"
 #: flatcamTools/ToolPcbWizard.py:112
 msgid "TZ"
 msgstr "TZ"
-<<<<<<< HEAD
 
 #: flatcamGUI/PreferencesUI.py:1857
 msgid "Clean Apertures"
@@ -10056,8 +9601,8 @@ msgid ""
 "Will remove apertures that do not have geometry\n"
 "thus lowering the number of apertures in the Gerber object."
 msgstr ""
-"Удалит отверстия, которые не имеют геометрии\n"
-"тем самым уменьшая количество отверстий в объекте Gerber."
+"Будут удалены отверстия, которые не имеют геометрии\n"
+"тем самым уменьшая количество отверстий в объекте Гербера."
 
 #: flatcamGUI/PreferencesUI.py:1865
 msgid "Polarity change buffer"
@@ -10072,56 +9617,6 @@ msgid ""
 msgstr ""
 "Будет применяться дополнительная буферизация для\n"
 "геометрии твердого тела, когда у нас есть изменения полярности.\n"
-"Может помочь при загрузке файлов Gerber, которые в противном случае\n"
-"не загружается правильно."
-
-#: flatcamGUI/PreferencesUI.py:1880
-msgid "Gerber Object Color"
-msgstr "Цвет объектов Gerber"
-
-#: flatcamGUI/PreferencesUI.py:1886 flatcamGUI/PreferencesUI.py:2899
-#: flatcamGUI/PreferencesUI.py:3894
-msgid "Set the line color for plotted objects."
-msgstr "Установит цвет линии для построенных объектов."
-
-#: flatcamGUI/PreferencesUI.py:1903 flatcamGUI/PreferencesUI.py:2916
-#: flatcamGUI/PreferencesUI.py:4553 flatcamGUI/PreferencesUI.py:4619
-msgid ""
-"Set the fill color for plotted objects.\n"
-"First 6 digits are the color and the last 2\n"
-"digits are for alpha (transparency) level."
-msgstr ""
-"Установит цвет заливки для построенных объектов.\n"
-"Первые 6 цифр-это цвет, а последние 2\n"
-"цифры для альфа-уровня (прозрачности)."
-
-=======
-
-#: flatcamGUI/PreferencesUI.py:1857
-msgid "Clean Apertures"
-msgstr "Очистите апертуры"
-
-#: flatcamGUI/PreferencesUI.py:1859
-msgid ""
-"Will remove apertures that do not have geometry\n"
-"thus lowering the number of apertures in the Gerber object."
-msgstr ""
-"Будут удалены отверстия, которые не имеют геометрии\n"
-"тем самым уменьшая количество отверстий в объекте Гербера."
-
-#: flatcamGUI/PreferencesUI.py:1865
-msgid "Polarity change buffer"
-msgstr "Буфер изменения полярности"
-
-#: flatcamGUI/PreferencesUI.py:1867
-msgid ""
-"Will apply extra buffering for the\n"
-"solid geometry when we have polarity changes.\n"
-"May help loading Gerber files that otherwise\n"
-"do not load correctly."
-msgstr ""
-"Будет применять дополнительную буферизацию для\n"
-"геометрия твердого тела, когда у нас есть изменения полярности.\n"
 "Может помочь при загрузке файлов Gerber, которые в противном случае\n"
 "не загружается правильно."
 
@@ -10145,7 +9640,6 @@ msgstr ""
 "Первые 6 цифр-это цвет, а последние 2\n"
 "цифры для альфа-уровня (прозрачности)."
 
->>>>>>> remotes/jpcgt/flatcam/Beta
 #: flatcamGUI/PreferencesUI.py:1922 flatcamGUI/PreferencesUI.py:2935
 #: flatcamGUI/PreferencesUI.py:4572
 msgid "Set the fill transparency for plotted objects."
@@ -10611,11 +10105,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:2893
 msgid "Excellon Object Color"
-<<<<<<< HEAD
 msgstr "Цвет объектов Excellon"
-=======
-msgstr "Цвет объекта Excellon"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:3048
 msgid "Excellon Options"
@@ -10889,11 +10379,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:3888
 msgid "Geometry Object Color"
-<<<<<<< HEAD
 msgstr "Цвет объектов Geometry"
-=======
-msgstr "Цвет объекта Геометрии"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:3939
 msgid "Geometry Options"
@@ -11092,7 +10578,6 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:4530
 msgid "Travel Line Color"
-<<<<<<< HEAD
 msgstr "Цвет линии передвижения"
 
 #: flatcamGUI/PreferencesUI.py:4536
@@ -11106,21 +10591,6 @@ msgstr "Цвет объектов CNCJob"
 #: flatcamGUI/PreferencesUI.py:4602
 msgid "Set the color for plotted objects."
 msgstr "Установит цвет линии для построенных объектов."
-=======
-msgstr "Цвет линии перемещения"
-
-#: flatcamGUI/PreferencesUI.py:4536
-msgid "Set the travel line color for plotted objects."
-msgstr "Установите цвет линии перемещения для построенных объектов."
-
-#: flatcamGUI/PreferencesUI.py:4596
-msgid "CNCJob Object Color"
-msgstr "Цвет объекта CNCJob"
-
-#: flatcamGUI/PreferencesUI.py:4602
-msgid "Set the color for plotted objects."
-msgstr "Установите цвет для построенных объектов."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:4762
 msgid "CNC Job Options"
@@ -12198,11 +11668,7 @@ msgstr ""
 "Положительное значение создаст эффект расширения,\n"
 "в то время как отрицательное значение создаст эффект эрозии.\n"
 "Каждый геометрический элемент объекта будет увеличен\n"
-<<<<<<< HEAD
 "или уменьшается с помощью \"расстояния\"."
-=======
-"или уменьшается с «расстоянием»."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamGUI/PreferencesUI.py:6422 flatcamGUI/PreferencesUI.py:7065
 #: flatcamTools/ToolQRCode.py:197 flatcamTools/ToolTransform.py:361
@@ -12216,15 +11682,9 @@ msgid ""
 "If not checked then the buffer will follow the exact geometry\n"
 "of the buffered shape."
 msgstr ""
-<<<<<<< HEAD
 "Если установить флажок, то буфер будет окружать буферизованную форму,\n"
 "каждый угол будет закруглен.\n"
 "Если не проверить, то буфер будет следовать точной геометрии\n"
-=======
-"Если флажок установлен, то буфер будет окружать буферизованную форму,\n"
-"каждый угол будет округлен.\n"
-"Если не отмечено, буфер будет следовать точной геометрии\n"
->>>>>>> remotes/jpcgt/flatcam/Beta
 "буферизованной формы."
 
 #: flatcamGUI/PreferencesUI.py:6442
@@ -13368,11 +12828,7 @@ msgstr "Вращение Gerber выполнено."
 
 #: flatcamParsers/ParseGerber.py:2273
 msgid "Gerber Buffer done."
-<<<<<<< HEAD
 msgstr "Буферизация Gerber выполнена."
-=======
-msgstr "Gerber Буфер готов."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamParsers/ParseHPGL2.py:176
 msgid "HPGL2 processing. Parsing"
@@ -14453,11 +13909,7 @@ msgstr ""
 
 #: flatcamTools/ToolDblSided.py:323
 msgid "X min"
-<<<<<<< HEAD
 msgstr "X min"
-=======
-msgstr "Мин X"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamTools/ToolDblSided.py:325 flatcamTools/ToolDblSided.py:339
 msgid "Minimum location."
@@ -14465,19 +13917,11 @@ msgstr "Минимальное местоположение."
 
 #: flatcamTools/ToolDblSided.py:337
 msgid "Y min"
-<<<<<<< HEAD
 msgstr "Y min"
 
 #: flatcamTools/ToolDblSided.py:351
 msgid "X max"
 msgstr "X max"
-=======
-msgstr "Мин Y"
-
-#: flatcamTools/ToolDblSided.py:351
-msgid "X max"
-msgstr "Мак X"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamTools/ToolDblSided.py:353 flatcamTools/ToolDblSided.py:367
 msgid "Maximum location."
@@ -14485,32 +13929,19 @@ msgstr "Максимальное местоположение."
 
 #: flatcamTools/ToolDblSided.py:365
 msgid "Y max"
-<<<<<<< HEAD
 msgstr "Y max"
 
 #: flatcamTools/ToolDblSided.py:377
 msgid "Centroid"
 msgstr "Центр"
-=======
-msgstr "Мак Y"
-
-#: flatcamTools/ToolDblSided.py:377
-msgid "Centroid"
-msgstr "Центроида"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamTools/ToolDblSided.py:379
 msgid ""
 "The center point location for the rectangular\n"
 "bounding shape. Centroid. Format is (x, y)."
 msgstr ""
-<<<<<<< HEAD
 "Расположение центральной точки для прямоугольной \n"
 "ограничивающей фигуры. Центроид. Формат (х, у)."
-=======
-"Расположение центральной точки для прямоугольника\n"
-"ограничивающая форма. Центроида. Формат (х, у)."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamTools/ToolDblSided.py:388
 msgid "Calculate Bounds Values"
@@ -14522,15 +13953,9 @@ msgid ""
 "for the selection of objects.\n"
 "The envelope shape is parallel with the X, Y axis."
 msgstr ""
-<<<<<<< HEAD
 "Рассчитывает координаты огибающей прямоугольной формы,\n"
 "для выбранных объектов.\n"
 "Форма огибающей параллельна осям X, Y."
-=======
-"Рассчитать координаты огибающей прямоугольной формы,\n"
-"для подбора объектов.\n"
-"Форма огибающей параллельна оси X, Y."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamTools/ToolDblSided.py:462
 msgid "2-Sided Tool"
@@ -17189,13 +16614,8 @@ msgid ""
 "Create the buffer effect on each geometry,\n"
 "element from the selected object."
 msgstr ""
-<<<<<<< HEAD
 "Создаёт буферный эффект для каждой геометрии,\n"
 "элемента из выбранного объекта."
-=======
-"Создайте буферный эффект для каждой геометрии,\n"
-"элемент из выбранного объекта."
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: flatcamTools/ToolTransform.py:498
 msgid "Rotate transformation can not be done for a value of 0."
@@ -17301,11 +16721,7 @@ msgstr "Объекты CNCJob не могут быть буферизирова�
 
 #: flatcamTools/ToolTransform.py:905
 msgid "Buffer done"
-<<<<<<< HEAD
 msgstr "Буфер готов"
-=======
-msgstr "Буфер сделан"
->>>>>>> remotes/jpcgt/flatcam/Beta
 
 #: tclCommands/TclCommandBbox.py:74 tclCommands/TclCommandNregions.py:73
 msgid "Expected FlatCAMGerber or FlatCAMGeometry, got"
@@ -17372,7 +16788,6 @@ msgstr ""
 msgid "No Geometry name in args. Provide a name and try again."
 msgstr "Нет имени геометрии в аргументах. Укажите имя и попробуйте снова."
 
-<<<<<<< HEAD
 #, fuzzy
 #~| msgid ""
 #~| "How much (fraction) of the tool width to overlap each tool pass.\n"
@@ -17426,8 +16841,9 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ msgid "tool_tab"
 #~ msgstr "tool_tab"
 
-=======
->>>>>>> remotes/jpcgt/flatcam/Beta
+#~ msgid "Enable ToolTips"
+#~ msgstr "Всплывающие подсказки"
+
 #~ msgid "Add Tool to Tools DB"
 #~ msgstr "Добавить инструмент в БД"
 
@@ -17529,12 +16945,6 @@ msgstr "Нет имени геометрии в аргументах. Укажи
 #~ msgid "Project AutoHide"
 #~ msgstr "Автоскрытие боковой панели"
 
-<<<<<<< HEAD
-=======
-#~ msgid "Enable ToolTips"
-#~ msgstr "Всплывающие подсказки"
-
->>>>>>> remotes/jpcgt/flatcam/Beta
 #~ msgid "Mouse Cursor"
 #~ msgstr "Курсор мыши"
 
