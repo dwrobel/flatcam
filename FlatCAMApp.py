@@ -2070,10 +2070,6 @@ class App(QtCore.QObject):
         # call it once to make sure it is updated at startup
         self.on_update_exc_export(state=self.defaults["excellon_update"])
 
-        # Load the defaults values into the Excellon Format and Excellon Zeros fields
-        self.ui.excellon_defaults_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
-            self.on_excellon_defaults_button)
-
         # when there are arguments at application startup this get launched
         self.args_at_startup[list].connect(self.on_startup_args)
 
@@ -6387,15 +6383,6 @@ class App(QtCore.QObject):
         self.ui.tools2_defaults_form.tools2_qrcode_group.back_color_button.setStyleSheet(
             "background-color:%s;"
             "border-color: dimgray" % str(self.defaults['tools_qrcode_back_color'])[:7])
-
-    def on_excellon_defaults_button(self):
-        self.defaults_form_fields["excellon_format_lower_in"].set_value('4')
-        self.defaults_form_fields["excellon_format_upper_in"].set_value('2')
-        self.defaults_form_fields["excellon_format_lower_mm"].set_value('3')
-        self.defaults_form_fields["excellon_format_upper_mm"].set_value('3')
-        self.defaults_form_fields["excellon_zeros"].set_value('L')
-        self.defaults_form_fields["excellon_units"].set_value('INCH')
-        log.debug("Excellon app defaults loaded ...")
 
     def on_update_exc_export(self, state):
         """

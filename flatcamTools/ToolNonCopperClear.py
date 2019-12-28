@@ -361,26 +361,23 @@ class NonCopperClear(FlatCAMTool, Gerber):
         grid3.addWidget(self.ncc_method_radio, 4, 1)
 
         # Connect lines
-        pathconnectlabel = QtWidgets.QLabel('%s:' % _("Connect"))
-        pathconnectlabel.setToolTip(
+        self.ncc_connect_cb = FCCheckBox('%s' % _("Connect"))
+        self.ncc_connect_cb.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        grid3.addWidget(pathconnectlabel, 5, 0)
-        self.ncc_connect_cb = FCCheckBox()
-        grid3.addWidget(self.ncc_connect_cb, 5, 1)
+        grid3.addWidget(self.ncc_connect_cb, 5, 0, 1, 2)
 
-        contourlabel = QtWidgets.QLabel('%s:' % _("Contour"))
-        contourlabel.setToolTip(
+        self.ncc_contour_cb = FCCheckBox('%s' % _("Contour"))
+        self.ncc_contour_cb.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        grid3.addWidget(contourlabel, 6, 0)
-        self.ncc_contour_cb = FCCheckBox()
-        grid3.addWidget(self.ncc_contour_cb, 6, 1)
+        grid3.addWidget(self.ncc_contour_cb, 6, 0, 1, 2)
 
-        restlabel = QtWidgets.QLabel('%s:' % _("Rest M."))
-        restlabel.setToolTip(
+        # Rest Machining
+        self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.ncc_rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
@@ -389,21 +386,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "no more copper to clear or there are no more tools.\n"
               "If not checked, use the standard algorithm.")
         )
-        grid3.addWidget(restlabel, 7, 0)
-        self.ncc_rest_cb = FCCheckBox()
-        grid3.addWidget(self.ncc_rest_cb, 7, 1)
+
+        grid3.addWidget(self.ncc_rest_cb, 7, 0, 1, 2)
 
         # ## NCC Offset choice
-        self.ncc_offset_choice_label = QtWidgets.QLabel('%s:' % _("Offset"))
-        self.ncc_offset_choice_label.setToolTip(
+        self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
+        self.ncc_choice_offset_cb.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
               "from the copper features.\n"
               "The value can be between 0 and 10 FlatCAM units.")
         )
-        grid3.addWidget(self.ncc_offset_choice_label, 8, 0)
-        self.ncc_choice_offset_cb = FCCheckBox()
-        grid3.addWidget(self.ncc_choice_offset_cb, 8, 1)
+        grid3.addWidget(self.ncc_choice_offset_cb, 8, 0, 1, 2)
 
         # ## NCC Offset value
         self.ncc_offset_label = QtWidgets.QLabel('%s:' % _("Offset value"))

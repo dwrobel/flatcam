@@ -1637,7 +1637,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.dwelltime_entry, 15, 1)
 
         # preprocessor selection
-        pp_label = QtWidgets.QLabel('%s:' % _("PostProcessor"))
+        pp_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_label.setToolTip(
             _("The Preprocessor file that dictates\n"
               "the Machine Code (like GCode, RML, HPGL) output.")
