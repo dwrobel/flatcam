@@ -264,26 +264,22 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintmethod_combo, 3, 1)
 
         # Connect lines
-        pathconnectlabel = QtWidgets.QLabel('%s:' % _("Connect"))
-        pathconnectlabel.setToolTip(
+        self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
+        self.pathconnect_cb.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        grid3.addWidget(pathconnectlabel, 4, 0)
-        self.pathconnect_cb = FCCheckBox()
-        grid3.addWidget(self.pathconnect_cb, 4, 1)
+        grid3.addWidget(self.pathconnect_cb, 4, 0, 1, 2)
 
-        contourlabel = QtWidgets.QLabel('%s:' % _("Contour"))
-        contourlabel.setToolTip(
+        self.paintcontour_cb = FCCheckBox('%s' % _("Contour"))
+        self.paintcontour_cb.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        grid3.addWidget(contourlabel, 5, 0)
-        self.paintcontour_cb = FCCheckBox()
-        grid3.addWidget(self.paintcontour_cb, 5, 1)
+        grid3.addWidget(self.paintcontour_cb, 5, 0, 1, 2)
 
-        restlabel = QtWidgets.QLabel('%s:' % _("Rest M."))
-        restlabel.setToolTip(
+        self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
@@ -292,9 +288,7 @@ class ToolPaint(FlatCAMTool, Gerber):
               "no more copper to clear or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
-        grid3.addWidget(restlabel, 6, 0)
-        self.rest_cb = FCCheckBox()
-        grid3.addWidget(self.rest_cb, 6, 1)
+        grid3.addWidget(self.rest_cb, 6, 0, 1, 2)
 
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))

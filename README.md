@@ -11,6 +11,11 @@ CAD program, and create G-Code for Isolation routing.
 
 28.12.2019
 
+- more updates to the Preferences window and in some other parts of the GUI
+- updated the translations (less Russian)
+
+28.12.2019
+
 - updated all the translations files
 - fixed the big mouse cursor in OpenGL(3D) graphic mode to get the set color
 - fixed the cursor to have the set color and set cursor width in the Legacy(2D) graphic engine

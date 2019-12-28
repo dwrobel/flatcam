@@ -273,7 +273,7 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         self.decimals = decimals
 
         self.cncjob_gen_group = CNCJobGenPrefGroupUI(decimals=self.decimals)
-        self.cncjob_gen_group.setMinimumWidth(320)
+        self.cncjob_gen_group.setMinimumWidth(260)
         self.cncjob_opt_group = CNCJobOptPrefGroupUI(decimals=self.decimals)
         self.cncjob_opt_group.setMinimumWidth(260)
         self.cncjob_adv_opt_group = CNCJobAdvOptPrefGroupUI(decimals=self.decimals)
@@ -1474,15 +1474,13 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.app_level_radio, 5, 1)
 
         # Portability for FlatCAM
-        self.portability_label = QtWidgets.QLabel('%s:' % _('Portable app'))
-        self.portability_label.setToolTip(_("Choose if the application should run as portable.\n\n"
-                                            "If Checked the application will run portable,\n"
-                                            "which means that the preferences files will be saved\n"
-                                            "in the application folder, in the lib\\config subfolder."))
-        self.portability_cb = FCCheckBox()
+        self.portability_cb = FCCheckBox('%s' % _('Portable app'))
+        self.portability_cb.setToolTip(_("Choose if the application should run as portable.\n\n"
+                                         "If Checked the application will run portable,\n"
+                                         "which means that the preferences files will be saved\n"
+                                         "in the application folder, in the lib\\config subfolder."))
 
-        grid0.addWidget(self.portability_label, 6, 0)
-        grid0.addWidget(self.portability_cb, 6, 1)
+        grid0.addWidget(self.portability_cb, 6, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -2358,7 +2356,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(form)
 
         # Gerber Units
-        self.gerber_units_label = QtWidgets.QLabel('<b>%s:</b>' % _('Units'))
+        self.gerber_units_label = QtWidgets.QLabel('%s:' % _('Units'))
         self.gerber_units_label.setToolTip(
             _("The units used in the Gerber file.")
         )
@@ -2372,7 +2370,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.gerber_units_label, self.gerber_units_radio)
 
         # Gerber format
-        self.digits_label = QtWidgets.QLabel("<b>%s:</b>" % _("Int/Decimals"))
+        self.digits_label = QtWidgets.QLabel("%s:" % _("Int/Decimals"))
         self.digits_label.setToolTip(
             _("The number of digits in the whole part of the number\n"
               "and in the fractional part of the number.")
@@ -2412,7 +2410,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.digits_label, hlay1)
 
         # Gerber Zeros
-        self.zeros_label = QtWidgets.QLabel('<b>%s:</b>' % _('Zeros'))
+        self.zeros_label = QtWidgets.QLabel('%s:' % _('Zeros'))
         self.zeros_label.setAlignment(QtCore.Qt.AlignLeft)
         self.zeros_label.setToolTip(
             _("This sets the type of Gerber zeros.\n"
@@ -2691,6 +2689,16 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         grid1.addWidget(self.solid_cb, 0, 1)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid1.addWidget(separator_line, 1, 0, 1, 2)
+
+        grid2 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid2)
+        grid2.setColumnStretch(0, 0)
+        grid2.setColumnStretch(1, 1)
+
         # Excellon format
         self.excellon_format_label = QtWidgets.QLabel("<b>%s:</b>" % _("Excellon Format"))
         self.excellon_format_label.setToolTip(
@@ -2715,16 +2723,12 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "\n"
               "KiCAD 3:5 INCH TZ")
         )
-        self.layout.addWidget(self.excellon_format_label)
+        grid2.addWidget(self.excellon_format_label, 0, 0, 1, 2)
+
+        self.excellon_format_in_label = QtWidgets.QLabel('%s:' % _("INCH"))
+        self.excellon_format_in_label.setToolTip(_("Default values for INCH are 2:4"))
 
         hlay1 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay1)
-        self.excellon_format_in_label = QtWidgets.QLabel('%s:' % _("INCH"))
-        self.excellon_format_in_label.setAlignment(QtCore.Qt.AlignLeft)
-        self.excellon_format_in_label.setToolTip(
-            _("Default values for INCH are 2:4"))
-        hlay1.addWidget(self.excellon_format_in_label, QtCore.Qt.AlignLeft)
-
         self.excellon_format_upper_in_entry = FCSpinner()
         self.excellon_format_upper_in_entry.set_range(0, 9)
         self.excellon_format_upper_in_entry.setMinimumWidth(30)
@@ -2732,11 +2736,11 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
            _("This numbers signify the number of digits in\n"
              "the whole part of Excellon coordinates.")
         )
-        hlay1.addWidget(self.excellon_format_upper_in_entry, QtCore.Qt.AlignLeft)
+        hlay1.addWidget(self.excellon_format_upper_in_entry)
 
         excellon_separator_in_label = QtWidgets.QLabel(':')
         excellon_separator_in_label.setFixedWidth(5)
-        hlay1.addWidget(excellon_separator_in_label, QtCore.Qt.AlignLeft)
+        hlay1.addWidget(excellon_separator_in_label)
 
         self.excellon_format_lower_in_entry = FCSpinner()
         self.excellon_format_lower_in_entry.set_range(0, 9)
@@ -2745,17 +2749,15 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             _("This numbers signify the number of digits in\n"
               "the decimal part of Excellon coordinates.")
         )
-        hlay1.addWidget(self.excellon_format_lower_in_entry, QtCore.Qt.AlignLeft)
-        hlay1.addStretch()
+        hlay1.addWidget(self.excellon_format_lower_in_entry)
+
+        grid2.addWidget(self.excellon_format_in_label, 1, 0)
+        grid2.addLayout(hlay1, 1, 1)
+
+        self.excellon_format_mm_label = QtWidgets.QLabel('%s:' % _("METRIC"))
+        self.excellon_format_mm_label.setToolTip(_("Default values for METRIC are 3:3"))
 
         hlay2 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay2)
-        self.excellon_format_mm_label = QtWidgets.QLabel('%s:' % _("METRIC"))
-        self.excellon_format_mm_label.setAlignment(QtCore.Qt.AlignLeft)
-        self.excellon_format_mm_label.setToolTip(
-            _("Default values for METRIC are 3:3"))
-        hlay2.addWidget(self.excellon_format_mm_label, QtCore.Qt.AlignLeft)
-
         self.excellon_format_upper_mm_entry = FCSpinner()
         self.excellon_format_upper_mm_entry.set_range(0, 9)
         self.excellon_format_upper_mm_entry.setMinimumWidth(30)
@@ -2763,7 +2765,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             _("This numbers signify the number of digits in\n"
               "the whole part of Excellon coordinates.")
         )
-        hlay2.addWidget(self.excellon_format_upper_mm_entry, QtCore.Qt.AlignLeft)
+        hlay2.addWidget(self.excellon_format_upper_mm_entry)
 
         excellon_separator_mm_label = QtWidgets.QLabel(':')
         excellon_separator_mm_label.setFixedWidth(5)
@@ -2776,37 +2778,30 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             _("This numbers signify the number of digits in\n"
               "the decimal part of Excellon coordinates.")
         )
-        hlay2.addWidget(self.excellon_format_lower_mm_entry, QtCore.Qt.AlignLeft)
-        hlay2.addStretch()
+        hlay2.addWidget(self.excellon_format_lower_mm_entry)
 
-        grid2 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid2)
+        grid2.addWidget(self.excellon_format_mm_label, 2, 0)
+        grid2.addLayout(hlay2, 2, 1)
 
-        self.excellon_zeros_label = QtWidgets.QLabel('%s:' % _('Default <b>Zeros</b>'))
+        self.excellon_zeros_label = QtWidgets.QLabel('%s:' % _('Zeros'))
         self.excellon_zeros_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_zeros_label.setToolTip(
             _("This sets the type of Excellon zeros.\n"
               "If LZ then Leading Zeros are kept and\n"
               "Trailing Zeros are removed.\n"
               "If TZ is checked then Trailing Zeros are kept\n"
-              "and Leading Zeros are removed.")
+              "and Leading Zeros are removed.\n\n"
+              "This is used when there is no information\n"
+              "stored in the Excellon file.")
         )
-        grid2.addWidget(self.excellon_zeros_label, 0, 0)
+        grid2.addWidget(self.excellon_zeros_label, 3, 0)
 
         self.excellon_zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'L'},
                                               {'label': _('TZ'), 'value': 'T'}])
-        self.excellon_zeros_radio.setToolTip(
-            _("This sets the default type of Excellon zeros.\n"
-              "If it is not detected in the parsed file the value here\n"
-              "will be used."
-              "If LZ then Leading Zeros are kept and\n"
-              "Trailing Zeros are removed.\n"
-              "If TZ is checked then Trailing Zeros are kept\n"
-              "and Leading Zeros are removed.")
-        )
-        grid2.addWidget(self.excellon_zeros_radio, 0, 1)
 
-        self.excellon_units_label = QtWidgets.QLabel('%s:' % _('Default <b>Units</b>'))
+        grid2.addWidget(self.excellon_zeros_radio, 3, 1)
+
+        self.excellon_units_label = QtWidgets.QLabel('%s:' % _('Units'))
         self.excellon_units_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_units_label.setToolTip(
             _("This sets the default units of Excellon files.\n"
@@ -2815,7 +2810,6 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "Some Excellon files don't have an header\n"
               "therefore this parameter will be used.")
         )
-        grid2.addWidget(self.excellon_units_label, 1, 0)
 
         self.excellon_units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
                                               {'label': _('MM'), 'value': 'METRIC'}])
@@ -2824,18 +2818,29 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "Some Excellon files don't have an header\n"
               "therefore this parameter will be used.")
         )
-        grid2.addWidget(self.excellon_units_radio, 1, 1)
+
+        grid2.addWidget(self.excellon_units_label, 4, 0)
+        grid2.addWidget(self.excellon_units_radio, 4, 1)
 
         self.update_excellon_cb = FCCheckBox(label=_('Update Export settings'))
         self.update_excellon_cb.setToolTip(
             "If checked, the Excellon Export settings will be updated with the ones above."
         )
-        grid2.addWidget(self.update_excellon_cb, 2, 0, 1, 2)
+        grid2.addWidget(self.update_excellon_cb, 5, 0, 1, 2)
 
-        grid2.addWidget(QtWidgets.QLabel(""), 3, 0)
+        # Adding the Excellon Format Defaults Button
+        self.excellon_defaults_button = QtWidgets.QPushButton()
+        self.excellon_defaults_button.setText(str(_("Restore Defaults")))
+        self.excellon_defaults_button.setMinimumWidth(80)
+        grid2.addWidget(self.excellon_defaults_button, 6, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid2.addWidget(separator_line, 7, 0, 1, 2)
 
         self.excellon_general_label = QtWidgets.QLabel("<b>%s:</b>" % _("Excellon Optimization"))
-        grid2.addWidget(self.excellon_general_label, 4, 0, 1, 2)
+        grid2.addWidget(self.excellon_general_label, 8, 0, 1, 2)
 
         self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:'))
         self.excellon_optimization_label.setToolTip(
@@ -2849,7 +2854,6 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If this control is disabled, then FlatCAM works in 32bit mode and it uses\n"
               "Travelling Salesman algorithm for path optimization.")
         )
-        grid2.addWidget(self.excellon_optimization_label, 5, 0)
 
         self.excellon_optimization_radio = RadioSet([{'label': _('MetaHeuristic'), 'value': 'M'},
                                                      {'label': _('Basic'), 'value': 'B'},
@@ -2866,9 +2870,11 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If this control is disabled, then FlatCAM works in 32bit mode and it uses\n"
               "Travelling Salesman algorithm for path optimization.")
         )
-        grid2.addWidget(self.excellon_optimization_radio, 5, 1)
 
-        self.optimization_time_label = QtWidgets.QLabel('%s:' % _('Optimization Time'))
+        grid2.addWidget(self.excellon_optimization_label, 9, 0)
+        grid2.addWidget(self.excellon_optimization_radio, 9, 1)
+
+        self.optimization_time_label = QtWidgets.QLabel('%s:' % _('Duration'))
         self.optimization_time_label.setAlignment(QtCore.Qt.AlignLeft)
         self.optimization_time_label.setToolTip(
             _("When OR-Tools Metaheuristic (MH) is enabled there is a\n"
@@ -2877,21 +2883,21 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "In seconds.")
 
         )
-        grid2.addWidget(self.optimization_time_label, 6, 0)
 
         self.optimization_time_entry = FCSpinner()
         self.optimization_time_entry.set_range(0, 999)
 
-        grid2.addWidget(self.optimization_time_entry, 6, 1)
+        grid2.addWidget(self.optimization_time_label, 10, 0)
+        grid2.addWidget(self.optimization_time_entry, 10, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid2.addWidget(separator_line, 9, 0, 1, 2)
+        grid2.addWidget(separator_line, 11, 0, 1, 2)
 
         # Excellon Object Color
         self.gerber_color_label = QtWidgets.QLabel('<b>%s</b>' % _('Excellon Object Color'))
-        grid2.addWidget(self.gerber_color_label, 10, 0, 1, 2)
+        grid2.addWidget(self.gerber_color_label, 12, 0, 1, 2)
 
         # Plot Line Color
         self.line_color_label = QtWidgets.QLabel('%s:' % _('Outline'))
@@ -2907,8 +2913,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.form_box_child_2.addWidget(self.line_color_button)
         self.form_box_child_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        grid2.addWidget(self.line_color_label, 11, 0)
-        grid2.addLayout(self.form_box_child_2, 11, 1)
+        grid2.addWidget(self.line_color_label, 13, 0)
+        grid2.addLayout(self.form_box_child_2, 13, 1)
 
         # Plot Fill Color
         self.fill_color_label = QtWidgets.QLabel('%s:' % _('Fill'))
@@ -2926,8 +2932,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.form_box_child_1.addWidget(self.fill_color_button)
         self.form_box_child_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        grid2.addWidget(self.fill_color_label, 12, 0)
-        grid2.addLayout(self.form_box_child_1, 12, 1)
+        grid2.addWidget(self.fill_color_label, 14, 0)
+        grid2.addLayout(self.form_box_child_1, 14, 1)
 
         # Plot Fill Transparency Level
         self.alpha_label = QtWidgets.QLabel('%s:' % _('Alpha'))
@@ -2947,8 +2953,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.form_box_child_3.addWidget(self.color_alpha_slider)
         self.form_box_child_3.addWidget(self.color_alpha_spinner)
 
-        grid2.addWidget(self.alpha_label, 13, 0)
-        grid2.addLayout(self.form_box_child_3, 13, 1)
+        grid2.addWidget(self.alpha_label, 15, 0)
+        grid2.addLayout(self.form_box_child_3, 15, 1)
 
         self.layout.addStretch()
 
@@ -2973,6 +2979,9 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.fill_color_button.clicked.connect(self.on_fill_color_button)
         self.color_alpha_spinner.valueChanged.connect(self.on_color_spinner)
         self.color_alpha_slider.valueChanged.connect(self.on_color_slider)
+
+        # Load the defaults values into the Excellon Format and Excellon Zeros fields
+        self.excellon_defaults_button.clicked.connect(self.on_excellon_defaults_button)
 
     def optimization_selection(self):
         if self.excellon_optimization_radio.get_value() == 'M':
@@ -3038,6 +3047,14 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.line_color_entry.set_value(new_val_line)
         self.app.defaults['excellon_plot_line'] = new_val_line
 
+    def on_excellon_defaults_button(self):
+        self.app.defaults_form_fields["excellon_format_lower_in"].set_value('4')
+        self.app.defaults_form_fields["excellon_format_upper_in"].set_value('2')
+        self.app.defaults_form_fields["excellon_format_lower_mm"].set_value('3')
+        self.app.defaults_form_fields["excellon_format_upper_mm"].set_value('3')
+        self.app.defaults_form_fields["excellon_zeros"].set_value('L')
+        self.app.defaults_form_fields["excellon_units"].set_value('INCH')
+
 
 class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
@@ -3058,6 +3075,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
         grid2 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid2)
+        grid2.setColumnStretch(0, 0)
+        grid2.setColumnStretch(1, 1)
 
         # Cut Z
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -3095,14 +3114,12 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.travelz_entry, 1, 1)
 
         # Tool change:
-        toolchlabel = QtWidgets.QLabel('%s:' % _("Tool change"))
-        toolchlabel.setToolTip(
+        self.toolchange_cb = FCCheckBox('%s' % _("Tool change"))
+        self.toolchange_cb.setToolTip(
             _("Include tool-change sequence\n"
               "in G-Code (Pause for tool change).")
         )
-        self.toolchange_cb = FCCheckBox()
-        grid2.addWidget(toolchlabel, 2, 0)
-        grid2.addWidget(self.toolchange_cb, 2, 1)
+        grid2.addWidget(self.toolchange_cb, 2, 0, 1, 2)
 
         toolchangezlabel = QtWidgets.QLabel('%s:' % _('Toolchange Z'))
         toolchangezlabel.setToolTip(
@@ -3165,22 +3182,19 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.spindlespeed_entry, 6, 1)
 
         # Dwell
-        dwelllabel = QtWidgets.QLabel('%s:' % _('Dwell'))
-        dwelllabel.setToolTip(
+        self.dwell_cb = FCCheckBox('%s' % _('Enable Dwell'))
+        self.dwell_cb .setToolTip(
             _("Pause to allow the spindle to reach its\n"
               "speed before cutting.")
         )
+        grid2.addWidget(self.dwell_cb, 7, 0, 1, 2)
+
         dwelltime = QtWidgets.QLabel('%s:' % _('Duration'))
-        dwelltime.setToolTip(
-            _("Number of time units for spindle to dwell.")
-        )
-        self.dwell_cb = FCCheckBox()
+        dwelltime.setToolTip(_("Number of time units for spindle to dwell."))
         self.dwelltime_entry = FCDoubleSpinner()
         self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.set_range(0, 99999.9999)
 
-        grid2.addWidget(dwelllabel, 7, 0)
-        grid2.addWidget(self.dwell_cb, 7, 1)
         grid2.addWidget(dwelltime, 8, 0)
         grid2.addWidget(self.dwelltime_entry, 8, 1)
 
@@ -3244,15 +3258,6 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
         grid2.addWidget(stdlabel, 13, 0)
         grid2.addWidget(self.slot_tooldia_entry, 13, 1)
-
-        grid4 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid4)
-
-        # Adding the Excellon Format Defaults Button
-        self.excellon_defaults_button = QtWidgets.QPushButton()
-        self.excellon_defaults_button.setText(str(_("Defaults")))
-        self.excellon_defaults_button.setMinimumWidth(80)
-        grid4.addWidget(self.excellon_defaults_button, 0, 0, QtCore.Qt.AlignRight)
 
         self.layout.addStretch()
 
@@ -3365,19 +3370,17 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(spindle_dir_label, 6, 0)
         grid1.addWidget(self.spindledir_radio, 6, 1)
 
-        fplungelabel = QtWidgets.QLabel('%s:' % _('Fast Plunge'))
-        fplungelabel.setToolTip(
+        self.fplunge_cb = FCCheckBox('%s' % _('Fast Plunge'))
+        self.fplunge_cb.setToolTip(
             _("By checking this, the vertical move from\n"
               "Z_Toolchange to Z_move is done with G0,\n"
               "meaning the fastest speed available.\n"
               "WARNING: the move is done at Toolchange X,Y coords.")
         )
-        self.fplunge_cb = FCCheckBox()
-        grid1.addWidget(fplungelabel, 7, 0)
-        grid1.addWidget(self.fplunge_cb, 7, 1)
+        grid1.addWidget(self.fplunge_cb, 7, 0, 1, 2)
 
-        fretractlabel = QtWidgets.QLabel('%s:' % _('Fast Retract'))
-        fretractlabel.setToolTip(
+        self.fretract_cb = FCCheckBox('%s' % _('Fast Retract'))
+        self.fretract_cb.setToolTip(
             _("Exit hole strategy.\n"
               " - When uncheked, while exiting the drilled hole the drill bit\n"
               "will travel slow, with set feedrate (G1), up to zero depth and then\n"
@@ -3385,9 +3388,8 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
               " - When checked the travel from Z cut (cut depth) to Z_move\n"
               "(travel height) is done as fast as possible (G0) in one move.")
         )
-        self.fretract_cb = FCCheckBox()
-        grid1.addWidget(fretractlabel, 8, 0)
-        grid1.addWidget(self.fretract_cb, 8, 1)
+
+        grid1.addWidget(self.fretract_cb, 8, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -3412,7 +3414,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(form)
 
         # Excellon Units
-        self.excellon_units_label = QtWidgets.QLabel('<b>%s:</b>' % _('Units'))
+        self.excellon_units_label = QtWidgets.QLabel('%s:' % _('Units'))
         self.excellon_units_label.setToolTip(
             _("The units used in the Excellon file.")
         )
@@ -3426,7 +3428,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.excellon_units_label, self.excellon_units_radio)
 
         # Excellon non-decimal format
-        self.digits_label = QtWidgets.QLabel("<b>%s:</b>" % _("Int/Decimals"))
+        self.digits_label = QtWidgets.QLabel("%s:" % _("Int/Decimals"))
         self.digits_label.setToolTip(
             _("The NC drill files, usually named Excellon files\n"
               "are files that can be found in different formats.\n"
@@ -3462,7 +3464,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.digits_label, hlay1)
 
         # Select the Excellon Format
-        self.format_label = QtWidgets.QLabel("<b>%s:</b>" % _("Format"))
+        self.format_label = QtWidgets.QLabel("%s:" % _("Format"))
         self.format_label.setToolTip(
             _("Select the kind of coordinates format used.\n"
               "Coordinates can be saved with decimal point or without.\n"
@@ -3485,7 +3487,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.format_label, self.format_radio)
 
         # Excellon Zeros
-        self.zeros_label = QtWidgets.QLabel('<b>%s:</b>' % _('Zeros'))
+        self.zeros_label = QtWidgets.QLabel('%s:' % _('Zeros'))
         self.zeros_label.setAlignment(QtCore.Qt.AlignLeft)
         self.zeros_label.setToolTip(
             _("This sets the type of Excellon zeros.\n"
@@ -3508,7 +3510,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.zeros_label, self.zeros_radio)
 
         # Slot type
-        self.slot_type_label = QtWidgets.QLabel('<b>%s:</b>' % _('Slot type'))
+        self.slot_type_label = QtWidgets.QLabel('%s:' % _('Slot type'))
         self.slot_type_label.setAlignment(QtCore.Qt.AlignLeft)
         self.slot_type_label.setToolTip(
             _("This sets how the slots will be exported.\n"
@@ -3952,6 +3954,8 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
 
         grid1 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid1)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
 
         # Cut Z
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -4027,16 +4031,14 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.travelz_entry, 3, 1)
 
         # Tool change:
-        toolchlabel = QtWidgets.QLabel('%s:' % _("Tool change"))
-        toolchlabel.setToolTip(
+        self.toolchange_cb = FCCheckBox('%s' % _("Tool change"))
+        self.toolchange_cb.setToolTip(
             _(
                 "Include tool-change sequence\n"
                 "in the Machine Code (Pause for tool change)."
             )
         )
-        self.toolchange_cb = FCCheckBox()
-        grid1.addWidget(toolchlabel, 4, 0)
-        grid1.addWidget(self.toolchange_cb, 4, 1)
+        grid1.addWidget(self.toolchange_cb, 4, 0, 1, 2)
 
         # Toolchange Z
         toolchangezlabel = QtWidgets.QLabel('%s:' % _('Toolchange Z'))
@@ -4128,7 +4130,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.cncspindlespeed_entry, 9, 1)
 
         # Dwell
-        self.dwell_cb = FCCheckBox(label='%s:' % _('Dwell'))
+        self.dwell_cb = FCCheckBox(label='%s' % _('Enable Dwell'))
         self.dwell_cb.setToolTip(
             _("Pause to allow the spindle to reach its\n"
               "speed before cutting.")
@@ -4289,16 +4291,14 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.spindledir_radio, 8, 1)
 
         # Fast Move from Z Toolchange
-        fplungelabel = QtWidgets.QLabel('%s:' % _('Fast Plunge'))
-        fplungelabel.setToolTip(
+        self.fplunge_cb = FCCheckBox('%s' % _('Fast Plunge'))
+        self.fplunge_cb.setToolTip(
             _("By checking this, the vertical move from\n"
               "Z_Toolchange to Z_move is done with G0,\n"
               "meaning the fastest speed available.\n"
               "WARNING: the move is done at Toolchange X,Y coords.")
         )
-        self.fplunge_cb = FCCheckBox()
-        grid1.addWidget(fplungelabel, 9, 0)
-        grid1.addWidget(self.fplunge_cb, 9, 1)
+        grid1.addWidget(self.fplunge_cb, 9, 0, 1, 2)
 
         # Size of trace segment on X axis
         segx_label = QtWidgets.QLabel('%s:' % _("Segment X size"))
@@ -4404,7 +4404,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         # self.plot_cb = QtWidgets.QCheckBox('Plot')
         self.plot_cb = FCCheckBox(_('Plot Object'))
         self.plot_cb.setToolTip(_("Plot (show) this object."))
-        grid0.addWidget(self.plot_cb, 0, 0)
+        grid0.addWidget(self.plot_cb, 0, 0, 1, 2)
 
         # Plot Kind
         self.cncplot_method_label = QtWidgets.QLabel('%s:' % _("Plot kind"))
@@ -4419,7 +4419,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             {"label": _("All"), "value": "all"},
             {"label": _("Travel"), "value": "travel"},
             {"label": _("Cut"), "value": "cut"}
-        ], stretch=False)
+        ], orientation='vertical')
 
         grid0.addWidget(self.cncplot_method_label, 1, 0)
         grid0.addWidget(self.cncplot_method_radio, 1, 1)
@@ -4465,10 +4465,10 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.tooldia_entry, 4, 1)
 
         # add a space
-        grid0.addWidget(QtWidgets.QLabel(''), 5, 0)
+        grid0.addWidget(QtWidgets.QLabel('<b>%s:</b>' % _("G-code Decimals")), 5, 0, 1, 2)
 
         # Number of decimals to use in GCODE coordinates
-        cdeclabel = QtWidgets.QLabel('%s:' % _('Coordinates decimals'))
+        cdeclabel = QtWidgets.QLabel('%s:' % _('Coordinates'))
         cdeclabel.setToolTip(
             _("The number of decimals to be used for \n"
               "the X, Y, Z coordinates in CNC code (GCODE, etc.)")
@@ -4481,7 +4481,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.coords_dec_entry, 6, 1)
 
         # Number of decimals to use in GCODE feedrate
-        frdeclabel = QtWidgets.QLabel('%s:' % _('Feedrate decimals'))
+        frdeclabel = QtWidgets.QLabel('%s:' % _('Feedrate'))
         frdeclabel.setToolTip(
             _("The number of decimals to be used for \n"
               "the Feedrate parameter in CNC code (GCODE, etc.)")
@@ -4788,7 +4788,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.prepend_text = FCTextArea()
         self.prepend_text.setPlaceholderText(
-            _("Type here any G-Code commands you would\n"
+            _("Type here any G-Code commands you would "
               "like to add at the beginning of the G-Code file.")
         )
         self.layout.addWidget(self.prepend_text)
@@ -4805,7 +4805,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.append_text = FCTextArea()
         self.append_text.setPlaceholderText(
-            _("Type here any G-Code commands you would\n"
+            _("Type here any G-Code commands you would "
               "like to append to the generated file.\n"
               "I.e.: M2 (End of program)")
         )
@@ -4832,7 +4832,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.export_gcode_label)
 
         # Prepend to G-Code
-        toolchangelabel = QtWidgets.QLabel('%s:' % _('Toolchange G-Code'))
+        toolchangelabel = QtWidgets.QLabel('%s' % _('Toolchange G-Code'))
         toolchangelabel.setToolTip(
             _(
                 "Type here any G-Code commands you would\n"
@@ -4858,12 +4858,12 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.toolchange_text = FCTextArea()
         self.toolchange_text.setPlaceholderText(
             _(
-                "Type here any G-Code commands you would\n"
+                "Type here any G-Code commands you would "
                 "like to be executed when Toolchange event is encountered.\n"
-                "This will constitute a Custom Toolchange GCode,\n"
+                "This will constitute a Custom Toolchange GCode, "
                 "or a Toolchange Macro.\n"
                 "The FlatCAM variables are surrounded by '%' symbol.\n"
-                "WARNING: it can be used only with a preprocessor file\n"
+                "WARNING: it can be used only with a preprocessor file "
                 "that has 'toolchange_custom' in it's name."
             )
         )
@@ -4898,26 +4898,32 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
                      'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
         self.tc_variable_combo.addItems(variables)
+        self.tc_variable_combo.insertSeparator(1)
+
         self.tc_variable_combo.setItemData(0, _("FlatCAM CNC parameters"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(1, 'tool = %s' % _("tool number"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(2, 'tooldia = %s' % _("tool diameter"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(3, 't_drills = %s' % _("for Excellon, total number of drills"),
+        fnt = QtGui.QFont()
+        fnt.setBold(True)
+        self.tc_variable_combo.setItemData(0, fnt, Qt.FontRole)
+
+        self.tc_variable_combo.setItemData(2, 'tool = %s' % _("tool number"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(3, 'tooldia = %s' % _("tool diameter"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(4, 't_drills = %s' % _("for Excellon, total number of drills"),
                                            Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(4, 'x_toolchange = %s' % _("X coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(5, 'y_toolchange = %s' % _("Y coord for Toolchange"),
+        self.tc_variable_combo.setItemData(5, 'x_toolchange = %s' % _("X coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(6, 'y_toolchange = %s' % _("Y coord for Toolchange"),
                                            Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(6, 'z_toolchange = %s' % _("Z coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(7, 'z_cut = %s' % _("Z depth for the cut"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(8, 'z_move = %s' % _("Z height for travel"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(9, 'z_depthpercut = %s' % _("the step value for multidepth cut"),
+        self.tc_variable_combo.setItemData(7, 'z_toolchange = %s' % _("Z coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(8, 'z_cut = %s' % _("Z depth for the cut"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(9, 'z_move = %s' % _("Z height for travel"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(10, 'z_depthpercut = %s' % _("the step value for multidepth cut"),
                                            Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(10, 'spindlesspeed = %s' % _("the value for the spindle speed"),
+        self.tc_variable_combo.setItemData(11, 'spindlesspeed = %s' % _("the value for the spindle speed"),
                                            Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(11,
+        self.tc_variable_combo.setItemData(12,
                                            _("dwelltime = time to dwell to allow the spindle to reach it's set RPM"),
                                            Qt.ToolTipRole)
 
-        hlay1.addStretch()
+        # hlay1.addStretch()
 
         # Insert Variable into the Toolchange G-Code Text Box
         # self.tc_insert_buton = FCButton("Insert")
@@ -5193,30 +5199,26 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_method_radio, 10, 1)
 
         # Connect lines
-        pathconnectlabel = QtWidgets.QLabel('%s:' % _("Connect"))
-        pathconnectlabel.setToolTip(
+        self.ncc_connect_cb = FCCheckBox('%s' % _("Connect"))
+        self.ncc_connect_cb.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        self.ncc_connect_cb = FCCheckBox()
 
-        grid0.addWidget(pathconnectlabel, 11, 0)
-        grid0.addWidget(self.ncc_connect_cb, 11, 1)
+        grid0.addWidget(self.ncc_connect_cb, 11, 0, 1, 2)
 
         # Contour Checkbox
-        contourlabel = QtWidgets.QLabel('%s:' % _("Contour"))
-        contourlabel.setToolTip(
+        self.ncc_contour_cb = FCCheckBox('%s' % _("Contour"))
+        self.ncc_contour_cb.setToolTip(
            _("Cut around the perimeter of the polygon\n"
              "to trim rough edges.")
         )
-        self.ncc_contour_cb = FCCheckBox()
 
-        grid0.addWidget(contourlabel, 12, 0)
-        grid0.addWidget(self.ncc_contour_cb, 12, 1)
+        grid0.addWidget(self.ncc_contour_cb, 12, 0, 1, 2)
 
         # Rest machining CheckBox
-        restlabel = QtWidgets.QLabel('%s:' % _("Rest M."))
-        restlabel.setToolTip(
+        self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.ncc_rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
               "using the biggest tool and continue with the next tools,\n"
@@ -5225,23 +5227,19 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "no more copper to clear or there are no more tools.\n"
               "If not checked, use the standard algorithm.")
         )
-        self.ncc_rest_cb = FCCheckBox()
 
-        grid0.addWidget(restlabel, 13, 0)
-        grid0.addWidget(self.ncc_rest_cb, 13, 1)
+        grid0.addWidget(self.ncc_rest_cb, 13, 0, 1, 2)
 
         # ## NCC Offset choice
-        self.ncc_offset_choice_label = QtWidgets.QLabel('%s:' % _("Offset"))
-        self.ncc_offset_choice_label.setToolTip(
+        self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
+        self.ncc_choice_offset_cb.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
               "from the copper features.\n"
               "The value can be between 0 and 10 FlatCAM units.")
         )
-        self.ncc_choice_offset_cb = FCCheckBox()
 
-        grid0.addWidget(self.ncc_offset_choice_label, 14, 0)
-        grid0.addWidget(self.ncc_choice_offset_cb, 14, 1)
+        grid0.addWidget(self.ncc_choice_offset_cb, 14, 0, 1, 2)
 
         # ## NCC Offset value
         self.ncc_offset_label = QtWidgets.QLabel('%s:' % _("Offset value"))
@@ -5438,14 +5436,12 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
             self.gaps_combo.setStyleSheet('background-color: rgb(255,255,255)')
 
         # Surrounding convex box shape
-        self.convex_box = FCCheckBox()
-        self.convex_box_label = QtWidgets.QLabel('%s:' % _("Convex Sh."))
-        self.convex_box_label.setToolTip(
+        self.convex_box = FCCheckBox('%s' % _("Convex Shape"))
+        self.convex_box.setToolTip(
             _("Create a convex shape surrounding the entire PCB.\n"
               "Used only if the source object type is Gerber.")
         )
-        grid0.addWidget(self.convex_box_label, 7, 0)
-        grid0.addWidget(self.convex_box, 7, 1)
+        grid0.addWidget(self.convex_box, 7, 0, 1, 2)
 
         self.layout.addStretch()
 
@@ -5619,24 +5615,20 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.paintmethod_combo, 4, 1)
 
         # Connect lines
-        pathconnectlabel = QtWidgets.QLabel('%s:' % _("Connect"))
-        pathconnectlabel.setToolTip(
+        self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
+        self.pathconnect_cb.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        grid0.addWidget(pathconnectlabel, 5, 0)
-        self.pathconnect_cb = FCCheckBox()
-        grid0.addWidget(self.pathconnect_cb, 5, 1)
+        grid0.addWidget(self.pathconnect_cb, 5, 0, 1, 2)
 
         # Paint contour
-        contourlabel = QtWidgets.QLabel('%s:' % _("Contour"))
-        contourlabel.setToolTip(
+        self.contour_cb = FCCheckBox('%s' % _("Contour"))
+        self.contour_cb.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        grid0.addWidget(contourlabel, 6, 0)
-        self.contour_cb = FCCheckBox()
-        grid0.addWidget(self.contour_cb, 6, 1)
+        grid0.addWidget(self.contour_cb, 6, 0, 1, 2)
 
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
@@ -6065,7 +6057,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
               "the final panel will have as many columns and rows as\n"
               "they fit completely within selected area.")
         )
-        grid0.addWidget(self.pconstrain_cb, 5, 0)
+        grid0.addWidget(self.pconstrain_cb, 5, 0, 1, 2)
 
         self.px_width_entry = FCDoubleSpinner()
         self.px_width_entry.set_range(0.000001, 9999.9999)
@@ -6647,7 +6639,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.dwellrev_entry, 14, 1)
 
         # Preprocessors
-        pp_label = QtWidgets.QLabel('%s:' % _('PostProcessor'))
+        pp_label = QtWidgets.QLabel('%s:' % _('Preprocessor'))
         pp_label.setToolTip(
             _("Files that control the GCode generation.")
         )
