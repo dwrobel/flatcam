@@ -662,7 +662,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addLayout(self.form_box_child_13, 31, 1)
 
         # Project autohide CB
-        self.project_autohide_cb = FCCheckBox(label='Project AutoHide')
+        self.project_autohide_cb = FCCheckBox(label=_('Project AutoHide'))
         self.project_autohide_cb.setToolTip(
             _("Check this box if you want the project/selected/tool tab area to\n"
               "hide automatically when there are no objects loaded and\n"
