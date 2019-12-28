@@ -6828,6 +6828,8 @@ class App(QtCore.QObject):
             if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
                 self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
 
+        self.ui.pref_apply_button.setStyleSheet("QPushButton {color: black;}")
+
         self.inform.emit('%s' % _("Preferences applied."))
 
         # make sure we update the self.current_defaults dict used to undo changes to self.defaults
@@ -7616,13 +7618,16 @@ class App(QtCore.QObject):
                     pass
 
     def on_preferences_edited(self):
-        self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
+        if self.preferences_changed_flag is False:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
 
-        for idx in range(self.ui.plot_tab_area.count()):
-            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
 
-        self.preferences_changed_flag = True
+            self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")
+
+            self.preferences_changed_flag = True
 
     def on_tools_database(self):
         """
