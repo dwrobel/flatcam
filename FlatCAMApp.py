@@ -3258,6 +3258,10 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'grb_editor'
 
+            # reset the following variables so the UI is built again after edit
+            edited_object.ui_build = False
+            edited_object.build_aperture_storage = False
+
         # make sure that we can't select another object while in Editor Mode:
         # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.ui.project_frame.setDisabled(True)
@@ -6828,7 +6832,8 @@ class App(QtCore.QObject):
             if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
                 self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
 
-        self.ui.pref_apply_button.setStyleSheet("QPushButton {color: black;}")
+        # restore the default stylesheet by setting a blank one
+        self.ui.pref_apply_button.setStyleSheet("")
 
         self.inform.emit('%s' % _("Preferences applied."))
 

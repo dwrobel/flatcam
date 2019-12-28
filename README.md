@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 29.12.2019
 
 - the Apply button text in Preferences is now made red when changes were made and require to be applied
+- the Gerber UI is built only once now so the process is lighter on CPU
+- the Gerber apertures marking shapes storage is now built only once because the more are built the more sluggish is the interface
 
 28.12.2019
 
