@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-12-27 03:35+0200\n"
-"PO-Revision-Date: 2019-12-27 03:50+0200\n"
+"POT-Creation-Date: 2019-12-27 21:54+0200\n"
+"PO-Revision-Date: 2019-12-27 21:54+0200\n"
 "Last-Translator: Marius Stanciu - Google Translate\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -10668,13 +10668,17 @@ msgstr ""
 msgid "Travel Line Color"
 msgstr "Color de Línea de Viaje"
 
-#: flatcamGUI/PreferencesUI.py:4536 flatcamGUI/PreferencesUI.py:4602
+#: flatcamGUI/PreferencesUI.py:4536
 msgid "Set the travel line color for plotted objects."
 msgstr "Establezca el color de la línea de viaje para los objetos trazados."
 
 #: flatcamGUI/PreferencesUI.py:4596
 msgid "CNCJob Object Color"
 msgstr "Color de objeto CNCJob"
+
+#: flatcamGUI/PreferencesUI.py:4602
+msgid "Set the color for plotted objects."
+msgstr "Establecer el color para los objetos trazados."
 
 #: flatcamGUI/PreferencesUI.py:4762
 msgid "CNC Job Options"

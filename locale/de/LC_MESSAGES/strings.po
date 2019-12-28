@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-12-27 03:21+0200\n"
-"PO-Revision-Date: 2019-12-27 03:34+0200\n"
+"POT-Creation-Date: 2019-12-27 21:55+0200\n"
+"PO-Revision-Date: 2019-12-27 21:55+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -7121,7 +7121,6 @@ msgid "Abs"
 msgstr "Abs"
 
 #: flatcamGUI/GUIElements.py:2269
-#| msgid "Negative"
 msgid "Relative"
 msgstr "Relativ"
 
@@ -10743,13 +10742,17 @@ msgstr ""
 msgid "Travel Line Color"
 msgstr "Reiselinienfarbe"
 
-#: flatcamGUI/PreferencesUI.py:4536 flatcamGUI/PreferencesUI.py:4602
+#: flatcamGUI/PreferencesUI.py:4536
 msgid "Set the travel line color for plotted objects."
 msgstr "Legen Sie die Reiselinienfarbe für geplottete Objekte fest."
 
 #: flatcamGUI/PreferencesUI.py:4596
 msgid "CNCJob Object Color"
 msgstr "CNCJob-Objektfarbe"
+
+#: flatcamGUI/PreferencesUI.py:4602
+msgid "Set the color for plotted objects."
+msgstr "Legen Sie die Farbe für geplottete Objekte fest."
 
 #: flatcamGUI/PreferencesUI.py:4762
 msgid "CNC Job Options"

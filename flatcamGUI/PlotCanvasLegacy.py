@@ -292,6 +292,7 @@ class PlotCanvasLegacy(QtCore.QObject):
         self.panning = False
         self.mouse = [0, 0]
         self.big_cursor = False
+        self.big_cursor_isdisabled = None
 
         # signal is the mouse is dragging
         self.is_dragging = False
@@ -375,14 +376,14 @@ class PlotCanvasLegacy(QtCore.QObject):
         pass
         # log.debug("Cache updated the screen!")
 
-    def new_cursor(self, axes=None, big=None, color=None):
+    def new_cursor(self, axes=None, big=None):
         # if axes is None:
         #     c = MplCursor(axes=self.axes, color='black', linewidth=1)
         # else:
         #     c = MplCursor(axes=axes, color='black', linewidth=1)
 
-        if color:
-            color = color
+        if self.app.defaults["global_cursor_color_enabled"]:
+            color = self.app.defaults["global_cursor_color"]
         else:
             if self.app.defaults['global_theme'] == 'white':
                 color = '#000000'
@@ -391,8 +392,9 @@ class PlotCanvasLegacy(QtCore.QObject):
 
         if big is True:
             self.big_cursor = True
-            self.ch_line = self.axes.axhline(color=color, linewidth=1)
-            self.cv_line = self.axes.axvline(color=color, linewidth=1)
+            self.ch_line = self.axes.axhline(color=color, linewidth=self.app.defaults["global_cursor_width"])
+            self.cv_line = self.axes.axvline(color=color, linewidth=self.app.defaults["global_cursor_width"])
+            self.big_cursor_isdisabled = False
         else:
             self.big_cursor = False
 
@@ -433,31 +435,58 @@ class PlotCanvasLegacy(QtCore.QObject):
                                               mew=self.app.defaults["global_cursor_width"], animated=True)
                     for el in elements:
                         self.axes.draw_artist(el)
+                except Exception as e:
+                    # this happen at app initialization since self.app.geo_editor does not exist yet
+                    # I could reshuffle the object instantiating order but what's the point?
+                    # I could crash something else and that's pythonic, too
+                    log.debug("PlotCanvasLegacy.draw_cursor() big_cursor is False --> %s" % str(e))
+            else:
+                try:
+                    self.ch_line.set_markeredgewidth(self.app.defaults["global_cursor_width"])
+                    self.cv_line.set_markeredgewidth(self.app.defaults["global_cursor_width"])
+                except Exception:
+                    pass
+
+                try:
+                    x, y = self.app.geo_editor.snap(x_pos, y_pos)
+                    self.ch_line.set_ydata(y)
+                    self.cv_line.set_xdata(x)
                 except Exception:
                     # this happen at app initialization since self.app.geo_editor does not exist yet
                     # I could reshuffle the object instantiating order but what's the point?
                     # I could crash something else and that's pythonic, too
                     pass
-            else:
-                self.ch_line.set_ydata(y_pos)
-                self.cv_line.set_xdata(x_pos)
                 self.canvas.draw_idle()
 
         self.canvas.blit(self.axes.bbox)
 
     def clear_cursor(self, state):
-
         if state is True:
+            if self.big_cursor is True and self.big_cursor_isdisabled is True:
+                if self.app.defaults["global_cursor_color_enabled"]:
+                    color = self.app.defaults["global_cursor_color"]
+                else:
+                    if self.app.defaults['global_theme'] == 'white':
+                        color = '#000000'
+                    else:
+                        color = '#FFFFFF'
+
+                self.ch_line = self.axes.axhline(color=color, linewidth=self.app.defaults["global_cursor_width"])
+                self.cv_line = self.axes.axvline(color=color, linewidth=self.app.defaults["global_cursor_width"])
+                self.big_cursor_isdisabled = False
             if self.app.defaults["global_cursor_color_enabled"] is True:
                 self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1], color=self.app.cursor_color_3D)
             else:
                 self.draw_cursor(x_pos=self.mouse[0], y_pos=self.mouse[1])
         else:
             if self.big_cursor is True:
-                self.ch_line.remove()
-                self.cv_line.remove()
-                self.canvas.draw_idle()
-
+                self.big_cursor_isdisabled = True
+                try:
+                    self.ch_line.remove()
+                    self.cv_line.remove()
+                    self.canvas.draw_idle()
+                except Exception as e:
+                    log.debug("PlotCanvasLegacy.clear_cursor() big_cursor is True --> %s" % str(e))
             self.canvas.restore_region(self.background)
             self.canvas.blit(self.axes.bbox)
 

@@ -133,10 +133,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.draw_workspace(workspace_size=self.fcapp.defaults["global_workspaceT"])
 
         self.line_parent = None
-        self.cursor_v_line = InfiniteLine(pos=None, color=self.line_color, vertical=True,
+        if self.fcapp.defaults["global_cursor_color_enabled"]:
+            c_color = Color(self.fcapp.defaults["global_cursor_color"]).rgba
+        else:
+            c_color = self.line_color
+        self.cursor_v_line = InfiniteLine(pos=None, color=c_color, vertical=True,
                                           parent=self.line_parent)
 
-        self.cursor_h_line = InfiniteLine(pos=None, color=self.line_color, vertical=False,
+        self.cursor_h_line = InfiniteLine(pos=None, color=c_color, vertical=False,
                                           parent=self.line_parent)
 
         # if self.app.defaults['global_workspace'] is True:
@@ -270,10 +274,14 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             self.cursor_v_line.parent = None
 
     def on_mouse_position(self, pos):
-        # self.line_color = color
 
-        self.cursor_h_line.set_data(pos=pos[1], color=self.line_color)
-        self.cursor_v_line.set_data(pos=pos[0], color=self.line_color)
+        if self.fcapp.defaults['global_cursor_color_enabled']:
+            color = Color(self.fcapp.defaults['global_cursor_color']).rgba
+        else:
+            color = self.line_color
+
+        self.cursor_h_line.set_data(pos=pos[1], color=color)
+        self.cursor_v_line.set_data(pos=pos[0], color=color)
         self.view.scene.update()
 
     def on_mouse_scroll(self, event):

@@ -201,7 +201,7 @@ class FCPad(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_circle.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_circle.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         try:
@@ -425,7 +425,7 @@ class FCPadArray(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.app.resource_location + '/aero_array.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap(self.draw_app.app.resource_location + '/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']

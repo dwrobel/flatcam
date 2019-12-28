@@ -9,9 +9,19 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.12.2019
+
+- updated all the translations files
+- fixed the big mouse cursor in OpenGL(3D) graphic mode to get the set color
+- fixed the cursor to have the set color and set cursor width in the Legacy(2D) graphic engine
+- in Legacy(2D) graphic mode fixed the cursor toggle when the big cursor is activated
+- in Legacy(2D) fixed big mouse cursor to snap to the grid
+- RELEASE 8.991
+
 27.12.2019
 
 - updated the POT file and the translation files for German, Spanish and French languages
+- fixed some typos
 
 26.12.2019
 
