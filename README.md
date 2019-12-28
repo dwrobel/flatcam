@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - more updates to the Preferences window and in some other parts of the GUI
 - updated the translations (less Russian)
+- fixed a minor issue that when saving a project with CNCJob objects, the variable that holds the origin of the CNCJob object was not saved in the project. Added to the serializable objects also the exc_cnc_tools dictionary 
+- some changes in the File menu
 
 28.12.2019
 
