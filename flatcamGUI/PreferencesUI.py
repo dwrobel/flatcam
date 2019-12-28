@@ -323,7 +323,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("GUI Preferences")))
         self.decimals = decimals
-        
+
         # Create a grid layout for the Application general settings
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
@@ -662,7 +662,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         grid0.addLayout(self.form_box_child_13, 31, 1)
 
         # Project autohide CB
-        self.project_autohide_cb = FCCheckBox(label='Project AutoHide')
+        self.project_autohide_cb = FCCheckBox(label=_('Project AutoHide'))
         self.project_autohide_cb.setToolTip(
             _("Check this box if you want the project/selected/tool tab area to\n"
               "hide automatically when there are no objects loaded and\n"
@@ -1299,7 +1299,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         grid0.addWidget(self.open_style_cb, 31, 0, 1, 2)
 
         # Enable/Disable ToolTips globally
-        self.toggle_tooltips_cb = FCCheckBox(label='Enable ToolTips')
+        self.toggle_tooltips_cb = FCCheckBox(label=_('Enable ToolTips'))
         self.toggle_tooltips_cb.setToolTip(
             _("Check this box if you want to have toolTips displayed\n"
               "when hovering with mouse over items throughout the App.")
@@ -1394,7 +1394,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("App Preferences")))
         self.decimals = decimals
-        
+
         # Create a form layout for the Application general settings
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
@@ -1425,7 +1425,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.precision_metric_label, 1, 0)
         grid0.addWidget(self.precision_metric_entry, 1, 1)
-        
+
         # Precision Inch
         self.precision_inch_label = QtWidgets.QLabel('%s:' % _('Precision INCH'))
         self.precision_inch_label.setToolTip(
@@ -1439,7 +1439,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.precision_inch_label, 2, 0)
         grid0.addWidget(self.precision_inch_entry, 2, 1)
-        
+
         # Graphic Engine for FlatCAM
         self.ge_label = QtWidgets.QLabel('<b>%s:</b>' % _('Graphic Engine'))
         self.ge_label.setToolTip(_("Choose what graphic engine to use in FlatCAM.\n"
@@ -1755,7 +1755,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("Gerber General")))
         self.decimals = decimals
-        
+
         # ## Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
@@ -2669,7 +2669,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("Excellon General")))
         self.decimals = decimals
-        
+
         # Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
@@ -3064,7 +3064,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("Excellon Options")))
         self.decimals = decimals
-        
+
         # ## Create CNC Job
         self.cncjob_label = QtWidgets.QLabel('<b>%s</b>' % _('Create CNC Job'))
         self.cncjob_label.setToolTip(
@@ -3270,7 +3270,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("Excellon Adv. Options")))
         self.decimals = decimals
-        
+
         # #######################
         # ## ADVANCED OPTIONS ###
         # #######################
@@ -3401,7 +3401,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
         self.setTitle(str(_("Excellon Export")))
         self.decimals = decimals
-        
+
         # Plot options
         self.export_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export Options"))
         self.export_options_label.setToolTip(
