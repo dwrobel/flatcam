@@ -81,26 +81,31 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufilenewgeo.setToolTip(
             _("Will create a new, empty Geometry Object.")
         )
-        self.menufilenewgrb = self.menufilenew.addAction(QtGui.QIcon(self.app.resource_location + '/new_file_grb16.png'), _('Gerber\tB'))
+        self.menufilenewgrb = self.menufilenew.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_file_grb16.png'), _('Gerber\tB'))
         self.menufilenewgrb.setToolTip(
             _("Will create a new, empty Gerber Object.")
         )
-        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon(self.app.resource_location + '/new_file_exc16.png'), _('Excellon\tL'))
+        self.menufilenewexc = self.menufilenew.addAction(
+            QtGui.QIcon(self.app.resource_location + '/new_file_exc16.png'), _('Excellon\tL'))
         self.menufilenewexc.setToolTip(
             _("Will create a new, empty Excellon Object.")
         )
         self.menufilenew.addSeparator()
 
-        self.menufilenewdoc = self.menufilenew.addAction(QtGui.QIcon(self.app.resource_location + '/notes16_1.png'), _('Document\tD'))
+        self.menufilenewdoc = self.menufilenew.addAction(
+            QtGui.QIcon(self.app.resource_location + '/notes16_1.png'), _('Document\tD'))
         self.menufilenewdoc.setToolTip(
             _("Will create a new, empty Document Object.")
         )
 
-        self.menufile_open = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'), _('Open'))
+        self.menufile_open = self.menufile.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/folder32_bis.png'), _('Open'))
         self.menufile_open.setToolTipsVisible(True)
 
         # Open Project ...
-        self.menufileopenproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'), _('Open &Project ...'), self)
+        self.menufileopenproject = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/folder16.png'), _('Open &Project ...'), self)
         self.menufile_open.addAction(self.menufileopenproject)
         self.menufile_open.addSeparator()
 
@@ -115,30 +120,37 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile_open.addAction(self.menufileopenexcellon)
 
         # Open G-Code ...
-        self.menufileopengcode = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/code.png'), _('Open G-&Code ...'), self)
+        self.menufileopengcode = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/code.png'), _('Open G-&Code ...'), self)
         self.menufile_open.addAction(self.menufileopengcode)
 
         self.menufile_open.addSeparator()
 
         # Open Config File...
-        self.menufileopenconfig = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/folder16.png'), _('Open Config ...'), self)
+        self.menufileopenconfig = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/folder16.png'), _('Open Config ...'), self)
         self.menufile_open.addAction(self.menufileopenconfig)
 
         # Recent
-        self.recent_projects = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/recent_files.png'), _("Recent projects"))
-        self.recent = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/recent_files.png'), _("Recent files"))
+        self.recent_projects = self.menufile.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/recent_files.png'), _("Recent projects"))
+        self.recent = self.menufile.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/recent_files.png'), _("Recent files"))
 
         # Separator
         self.menufile.addSeparator()
 
         # Scripting
-        self.menufile_scripting = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Scripting'))
+        self.menufile_scripting = self.menufile.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/script16.png'), _('Scripting'))
         self.menufile_scripting.setToolTipsVisible(True)
 
-        self.menufilenewscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/script_new16.png'), _('New Script ...'), self)
-        self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'), self)
-        self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/script16.png'),
-                                                   '%s\tSHIFT+S' % _('Run Script ...'), self)
+        self.menufilenewscript = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/script_new16.png'), _('New Script ...'), self)
+        self.menufileopenscript = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/open_script32.png'), _('Open Script ...'), self)
+        self.menufilerunscript = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/script16.png'), '%s\tSHIFT+S' % _('Run Script ...'), self)
         self.menufilerunscript.setToolTip(
            _("Will run the opened Tcl Script thus\n"
              "enabling the automation of certain\n"
@@ -153,40 +165,45 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addSeparator()
 
         # Import ...
-        self.menufileimport = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/import.png'), _('Import'))
-        self.menufileimportsvg = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/svg16.png'),
-                                                   _('&SVG as Geometry Object ...'), self)
+        self.menufileimport = self.menufile.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/import.png'), _('Import'))
+        self.menufileimportsvg = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/svg16.png'), _('&SVG as Geometry Object ...'), self)
         self.menufileimport.addAction(self.menufileimportsvg)
-        self.menufileimportsvg_as_gerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/svg16.png'),
-                                                             _('&SVG as Gerber Object ...'), self)
+        self.menufileimportsvg_as_gerber = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/svg16.png'), _('&SVG as Gerber Object ...'), self)
         self.menufileimport.addAction(self.menufileimportsvg_as_gerber)
         self.menufileimport.addSeparator()
 
-        self.menufileimportdxf = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/dxf16.png'),
-                                                   _('&DXF as Geometry Object ...'), self)
+        self.menufileimportdxf = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/dxf16.png'), _('&DXF as Geometry Object ...'), self)
         self.menufileimport.addAction(self.menufileimportdxf)
-        self.menufileimportdxf_as_gerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/dxf16.png'),
-                                                             _('&DXF as Gerber Object ...'), self)
+        self.menufileimportdxf_as_gerber = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/dxf16.png'), _('&DXF as Gerber Object ...'), self)
         self.menufileimport.addAction(self.menufileimportdxf_as_gerber)
         self.menufileimport.addSeparator()
-        self.menufileimport_hpgl2_as_geo = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/dxf16.png'),
-                                                             _('HPGL2 as Geometry Object ...'), self)
+        self.menufileimport_hpgl2_as_geo = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/dxf16.png'), _('HPGL2 as Geometry Object ...'), self)
         self.menufileimport.addAction(self.menufileimport_hpgl2_as_geo)
         self.menufileimport.addSeparator()
 
         # Export ...
-        self.menufileexport = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export'))
+        self.menufileexport = self.menufile.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export'))
         self.menufileexport.setToolTipsVisible(True)
 
-        self.menufileexportsvg = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export &SVG ...'), self)
+        self.menufileexportsvg = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export &SVG ...'), self)
         self.menufileexport.addAction(self.menufileexportsvg)
 
-        self.menufileexportdxf = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export DXF ...'), self)
+        self.menufileexportdxf = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/export.png'), _('Export DXF ...'), self)
         self.menufileexport.addAction(self.menufileexportdxf)
 
         self.menufileexport.addSeparator()
 
-        self.menufileexportpng = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/export_png32.png'), _('Export &PNG ...'), self)
+        self.menufileexportpng = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/export_png32.png'), _('Export &PNG ...'), self)
         self.menufileexportpng.setToolTip(
             _("Will export an image in PNG format,\n"
               "the saved image will contain the visual \n"
@@ -196,8 +213,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.menufileexport.addSeparator()
 
-        self.menufileexportexcellon = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/drill32.png'),
-                                                        _('Export &Excellon ...'), self)
+        self.menufileexportexcellon = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/drill32.png'), _('Export &Excellon ...'), self)
         self.menufileexportexcellon.setToolTip(
            _("Will export an Excellon Object as Excellon file,\n"
              "the coordinates format, the file units and zeros\n"
@@ -205,8 +222,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         )
         self.menufileexport.addAction(self.menufileexportexcellon)
 
-        self.menufileexportgerber = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'),
-                                                      _('Export &Gerber ...'), self)
+        self.menufileexportgerber = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/flatcam_icon32.png'), _('Export &Gerber ...'), self)
         self.menufileexportgerber.setToolTip(
             _("Will export an Gerber Object as Gerber file,\n"
               "the coordinates format, the file units and zeros\n"
@@ -217,26 +234,28 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menufile.addSeparator()
 
-        # Save Defaults
-        self.menufilesavedefaults = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/defaults.png'),
-                                                      _('Save Preferences'), self)
-        self.menufile.addAction(self.menufilesavedefaults)
-
-        # Separator
-        self.menufile.addSeparator()
-
-        self.menufile_backup = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/backup24.png'),
-                                                     _('Backup'))
+        self.menufile_backup = self.menufile.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/backup24.png'), _('Backup'))
 
         # Import Preferences
-        self.menufileimportpref = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/backup_import24.png'),
-                                                    _('Import Preferences from file ...'), self)
+        self.menufileimportpref = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/backup_import24.png'),
+            _('Import Preferences from file ...'), self
+        )
         self.menufile_backup.addAction(self.menufileimportpref)
 
         # Export Preferences
-        self.menufileexportpref = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/backup_export24.png'),
-                                                    _('Export Preferences to file ...'), self)
+        self.menufileexportpref = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/backup_export24.png'), _('Export Preferences to file ...'), self)
         self.menufile_backup.addAction(self.menufileexportpref)
+
+        # Separator
+        self.menufile_backup.addSeparator()
+
+        # Save Defaults
+        self.menufilesavedefaults = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/defaults.png'), _('Save Preferences'), self)
+        self.menufile_backup.addAction(self.menufilesavedefaults)
 
         # Separator
         self.menufile.addSeparator()
@@ -247,18 +266,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile_save = self.menufile.addMenu(QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save'))
 
         # Save Project
-        self.menufilesaveproject = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/floppy16.png'),
-                                                     _('&Save Project ...'), self)
+        self.menufilesaveproject = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('&Save Project ...'), self)
         self.menufile_save.addAction(self.menufilesaveproject)
 
         # Save Project As ...
-        self.menufilesaveprojectas = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/save_as.png'),
-                                                       _('Save Project &As ...\tCTRL+S'), self)
+        self.menufilesaveprojectas = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/save_as.png'), _('Save Project &As ...\tCTRL+S'), self)
         self.menufile_save.addAction(self.menufilesaveprojectas)
 
         # Save Project Copy ...
-        self.menufilesaveprojectcopy = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/floppy16.png'),
-                                                         _('Save Project C&opy ...'), self)
+        self.menufilesaveprojectcopy = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/floppy16.png'), _('Save Project C&opy ...'), self)
         self.menufile_save.addAction(self.menufilesaveprojectcopy)
 
         self.menufile_save.addSeparator()
@@ -267,8 +286,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addSeparator()
 
         # Quit
-        self.menufile_exit = QtWidgets.QAction(QtGui.QIcon(self.app.resource_location + '/power16.png'),
-                                               _('E&xit'), self)
+        self.menufile_exit = QtWidgets.QAction(
+            QtGui.QIcon(self.app.resource_location + '/power16.png'), _('E&xit'), self)
         # exitAction.setShortcut('Ctrl+Q')
         # exitAction.setStatusTip('Exit application')
         self.menufile.addAction(self.menufile_exit)
@@ -279,10 +298,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuedit = self.menu.addMenu(_('Edit'))
         # Separator
         self.menuedit.addSeparator()
-        self.menueditedit = self.menuedit.addAction(QtGui.QIcon(self.app.resource_location + '/edit16.png'),
-                                                    _('Edit Object\tE'))
-        self.menueditok = self.menuedit.addAction(QtGui.QIcon(self.app.resource_location + '/edit_ok16.png'),
-                                                  _('Close Editor\tCTRL+S'))
+        self.menueditedit = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/edit16.png'), _('Edit Object\tE'))
+        self.menueditok = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/edit_ok16.png'), _('Close Editor\tCTRL+S'))
 
         # adjust the initial state of the menu entries related to the editor
         self.menueditedit.setDisabled(False)
@@ -290,8 +309,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Separator
         self.menuedit.addSeparator()
-        self.menuedit_convert = self.menuedit.addMenu(QtGui.QIcon(self.app.resource_location + '/convert24.png'),
-                                                      _('Conversion'))
+        self.menuedit_convert = self.menuedit.addMenu(
+            QtGui.QIcon(self.app.resource_location + '/convert24.png'), _('Conversion'))
         self.menuedit_convertjoin = self.menuedit_convert.addAction(
             QtGui.QIcon(self.app.resource_location + '/join16.png'), _('&Join Geo/Gerber/Exc -> Geo'))
         self.menuedit_convertjoin.setToolTip(
