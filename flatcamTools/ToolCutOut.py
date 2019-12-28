@@ -177,6 +177,8 @@ class CutOut(FlatCAMTool):
 
         # Margin
         self.margin = FCDoubleSpinner()
+        self.margin.set_range(-9999.9999, 9999.9999)
+        self.margin.setSingleStep(0.1)
         self.margin.set_precision(self.decimals)
 
         self.margin_label = QtWidgets.QLabel('%s:' % _("Margin"))
