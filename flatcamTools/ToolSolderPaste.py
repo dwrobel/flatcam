@@ -331,7 +331,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.dwellrev_label, self.dwellrev_entry)
 
         # Preprocessors
-        pp_label = QtWidgets.QLabel('%s:' % _('PostProcessor'))
+        pp_label = QtWidgets.QLabel('%s:' % _('Preprocessor'))
         pp_label.setToolTip(
             _("Files that control the GCode generation.")
         )
