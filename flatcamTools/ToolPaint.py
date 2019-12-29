@@ -637,7 +637,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
 
-            "tooldia": float(self.app.defaults["tools_painttooldia"]),
+            "tooldia": self.app.defaults["tools_painttooldia"],
             "paintmargin": float(self.app.defaults["tools_paintmargin"]),
             "paintmethod": self.app.defaults["tools_paintmethod"],
             "selectmethod": self.app.defaults["tools_selectmethod"],
@@ -646,9 +646,15 @@ class ToolPaint(FlatCAMTool, Gerber):
             "paintoverlap": self.app.defaults["tools_paintoverlap"]
         })
 
+        try:
+            diameters = [float(self.app.defaults["tools_painttooldia"])]
+        except (ValueError, TypeError):
+            diameters = [eval(x) for x in self.app.defaults["tools_painttooldia"].split(",") if x != '']
+
         # call on self.on_tool_add() counts as an call to self.build_ui()
         # through this, we add a initial row / tool in the tool_table
-        self.on_tool_add(float(self.app.defaults["tools_painttooldia"]), muted=True)
+        for dia in diameters:
+            self.on_tool_add(dia, muted=True)
 
         # if the Paint Method is "Single" disable the tool table context menu
         if self.default_data["selectmethod"] == "single":

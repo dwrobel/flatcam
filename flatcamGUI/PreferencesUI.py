@@ -2520,7 +2520,9 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
 
         self.adddim_label = QtWidgets.QLabel('%s:' % _('Aperture Dimensions'))
         self.adddim_label.setToolTip(
-            _("Diameters of the cutting tools, separated by ','")
+            _("Diameters of the cutting tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
         )
         grid0.addWidget(self.adddim_label, 5, 0)
         self.adddim_entry = FCEntry()
@@ -3873,7 +3875,9 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         # Tooldia
         tdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
         tdlabel.setToolTip(
-            _("Diameters of the cutting tools, separated by ','")
+            _("Diameters of the cutting tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
         )
         self.cnctooldia_entry = FCEntry()
 
@@ -5025,7 +5029,9 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
 
         ncctdlabel = QtWidgets.QLabel('%s:' % _('Tools dia'))
         ncctdlabel.setToolTip(
-            _("Diameters of the cutting tools, separated by ','")
+            _("Diameters of the cutting tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
         )
         grid0.addWidget(ncctdlabel, 0, 0)
         self.ncc_tool_dia_entry = FCEntry()
@@ -5533,8 +5539,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Tool dia
         ptdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
         ptdlabel.setToolTip(
-            _("Diameter of the tool to\n"
-              "be used in the operation.")
+            _("Diameters of the cutting tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
         )
         grid0.addWidget(ptdlabel, 0, 0)
 

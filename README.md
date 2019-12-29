@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - the Gerber apertures marking shapes storage is now built only once because the more are built the more sluggish is the interface
 - added a new function called by shortcut key combo CTRL+G when the current widget in Plot Area is an Code Editor. It will jump to the specified line in the text.
 - fixed a small where the app tried to hide a label that I've removed previously
+- in Paint Tool Preferences allowed to add a list of initial tools separated by comma
+- in Geometry Paint Tool fixed the Overlap rate to work between 0 and 99.9999%
 
 28.12.2019
 
