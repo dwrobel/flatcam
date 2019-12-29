@@ -3271,8 +3271,7 @@ class App(QtCore.QObject):
 
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
         self.ui.plot_tab_area.protectTab(0)
-        self.inform.emit('[WARNING_NOTCL] %s' %
-                         _("Editor is activated ..."))
+        self.inform.emit('[WARNING_NOTCL] %s' % _("Editor is activated ..."))
 
         self.should_we_save = True
 
@@ -9918,8 +9917,33 @@ class App(QtCore.QObject):
             self.toggle_codeeditor = False
 
     def on_code_editor_close(self):
-        print("closed")
         self.toggle_codeeditor = False
+
+    def goto_text_line(self):
+        """
+        Will scroll a text to the specified text line.
+
+        :return: None
+        """
+        dia_box = Dialog_box(title=_("Go to Line ..."),
+                             label=_("Line:"),
+                             icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
+                             initial_text='')
+        try:
+            line = int(dia_box.location) - 1
+        except (ValueError, TypeError):
+            line = 0
+
+        if dia_box.ok:
+            # make sure to move first the cursor at the end so after finding the line the line will be positioned
+            # at the top of the window
+            self.ui.plot_tab_area.currentWidget().code_editor.moveCursor(QTextCursor.End)
+            # get the document() of the TextEditor
+            doc = self.ui.plot_tab_area.currentWidget().code_editor.document()
+            # create a Text Cursor based on the searched line
+            cursor = QTextCursor(doc.findBlockByLineNumber(line))
+            # set cursor of the code editor with the cursor at the searcehd line
+            self.ui.plot_tab_area.currentWidget().code_editor.setTextCursor(cursor)
 
     def on_filenewscript(self, silent=False, name=None, text=None):
         """
@@ -9931,8 +9955,7 @@ class App(QtCore.QObject):
         :return: None
         """
         if silent is False:
-            self.inform.emit('[success] %s' %
-                             _("New TCL script file created in Code Editor."))
+            self.inform.emit('[success] %s' % _("New TCL script file created in Code Editor."))
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
@@ -10035,8 +10058,7 @@ class App(QtCore.QObject):
                         self.shell._sysShell.exec_command(cmd_line_shellfile_content, no_echo=True)
 
                 if silent is False:
-                    self.inform.emit('[success] %s' %
-                                     _("TCL script file opened in Code Editor and executed."))
+                    self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor and executed."))
             except Exception as e:
                 log.debug("App.on_filerunscript() -> %s" % str(e))
                 sys.exit(2)

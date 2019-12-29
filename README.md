@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - the Apply button text in Preferences is now made red when changes were made and require to be applied
 - the Gerber UI is built only once now so the process is lighter on CPU
 - the Gerber apertures marking shapes storage is now built only once because the more are built the more sluggish is the interface
+- added a new function called by shortcut key combo CTRL+G when the current widget in Plot Area is an Code Editor. It will jump to the specified line in the text.
 
 28.12.2019
 
