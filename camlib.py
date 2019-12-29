@@ -2239,7 +2239,6 @@ class CNCjob(Geometry):
         Geometry.__init__(self, geo_steps_per_circle=self.steps_per_circle)
 
         self.kind = kind
-        self.origin_kind = None
 
         self.units = units
 
@@ -4155,7 +4154,7 @@ class CNCjob(Geometry):
                                 kind = ['C', 'F']
                                 geometry.append(
                                     {
-                                        "geom": Point(current_drill_point_coords).buffer(dia/2).exterior,
+                                        "geom": Point(current_drill_point_coords).buffer(dia/2.0).exterior,
                                         "kind": kind
                                     }
                                 )
@@ -4465,11 +4464,12 @@ class CNCjob(Geometry):
                 #         if geo['kind'][0] == 'C':
                 #             obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                 #                           visible=visible, layer=1)
+
             try:
                 obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
                                    font_size=self.app.defaults["cncjob_annotation_fontsize"],
                                    color=self.app.defaults["cncjob_annotation_fontcolor"])
-            except Exception as e:
+            except Exception:
                 pass
 
     def create_geometry(self):

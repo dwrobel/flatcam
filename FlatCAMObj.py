@@ -3302,7 +3302,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.options['type'] = 'Excellon'
             job_obj.options['ppname_e'] = pp_excellon_name
 
-            app_obj.progress.emit(20)
             job_obj.z_cut = float(self.options["drillz"])
             job_obj.tool_offset = self.tool_offset
             job_obj.z_move = float(self.options["travelz"])
@@ -3325,27 +3324,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
 
-            try:
-                job_obj.z_pdepth = float(self.options["z_pdepth"])
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Wrong value format for self.defaults["z_pdepth"] '
-                                           'or self.options["z_pdepth"]'))
-
-            try:
-                job_obj.feedrate_probe = float(self.options["feedrate_probe"])
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                         _('Wrong value format for self.defaults["feedrate_probe"] or '
-                                           'self.options["feedrate_probe"]'))
+            job_obj.z_pdepth = float(self.options["z_pdepth"])
+            job_obj.feedrate_probe = float(self.options["feedrate_probe"])
 
             # There could be more than one drill size...
             # job_obj.tooldia =   # TODO: duplicate variable!
@@ -3364,13 +3344,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
             if ret_val == 'fail':
                 return 'fail'
-            app_obj.progress.emit(50)
+
             job_obj.gcode_parse()
-
-            app_obj.progress.emit(60)
             job_obj.create_geometry()
-
-            app_obj.progress.emit(80)
 
         # To be run in separate thread
         def job_thread(app_obj):
@@ -6078,6 +6054,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # (like the one in the TCL Command), False
         self.multitool = False
 
+        # determine if the GCode was generated out of a Excellon object or a Geometry object
+        self.origin_kind = None
+
         # used for parsing the GCode lines to adjust the GCode when the GCode is offseted or scaled
         gcodex_re_string = r'(?=.*(X[-\+]?\d*\.\d*))'
         self.g_x_re = re.compile(gcodex_re_string)
@@ -6097,7 +6076,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
+        self.ser_attrs += ['options', 'kind', 'origin_kind', 'cnc_tools', 'exc_cnc_tools', 'multitool']
 
         if self.app.is_legacy is False:
             self.text_col = self.app.plotcanvas.new_text_collection()
