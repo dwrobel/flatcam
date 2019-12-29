@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - Buffer sub-tool in Transform Tool: added the possibility to apply a factor effectively scaling the aperture size thus the copper features sizes
 - in Transform Tool adjusted the GUI
+- fixed some decimals issues in NCC Tool, Paint Tool and Excellon Editor (they were still using the harcoded values)
+- some small updates in the NCC Tool
 
 29.12.2019
 

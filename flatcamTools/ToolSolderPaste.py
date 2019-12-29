@@ -621,11 +621,6 @@ class SolderPaste(FlatCAMTool):
 
         self.units = self.app.defaults['units'].upper()
 
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
-
         for name in list(self.app.preprocessors.keys()):
             # populate only with preprocessor files that start with 'Paste_'
             if name.partition('_')[0] != 'Paste':

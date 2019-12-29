@@ -601,13 +601,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         # updated units
         self.units = self.app.defaults['units'].upper()
 
-        if self.units == "IN":
-            self.decimals = 4
-            self.addtool_entry.set_value(0.039)
-        else:
-            self.decimals = 2
-            self.addtool_entry.set_value(1)
-
         # set the working variables to a known state
         self.paint_tools.clear()
         self.tooluid = 0
@@ -650,6 +643,14 @@ class ToolPaint(FlatCAMTool, Gerber):
             diameters = [float(self.app.defaults["tools_painttooldia"])]
         except (ValueError, TypeError):
             diameters = [eval(x) for x in self.app.defaults["tools_painttooldia"].split(",") if x != '']
+
+        if not diameters:
+            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
+            self.build_ui()
+            # if the Paint Method is "Single" disable the tool table context menu
+            if self.default_data["selectmethod"] == "single":
+                self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
+            return
 
         # call on self.on_tool_add() counts as an call to self.build_ui()
         # through this, we add a initial row / tool in the tool_table

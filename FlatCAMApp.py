@@ -1795,12 +1795,14 @@ class App(QtCore.QObject):
 
             if self.cmd_line_headless == 1:
                 self.trayIcon = FlatCAMSystemTray(app=self,
-                                                  icon=QtGui.QIcon(self.resource_location + '/flatcam_icon32_green.png'),
+                                                  icon=QtGui.QIcon(self.resource_location +
+                                                                   '/flatcam_icon32_green.png'),
                                                   headless=True,
                                                   parent=self.parent_w)
             else:
                 self.trayIcon = FlatCAMSystemTray(app=self,
-                                                  icon=QtGui.QIcon(self.resource_location + '/flatcam_icon32_green.png'),
+                                                  icon=QtGui.QIcon(self.resource_location +
+                                                                   '/flatcam_icon32_green.png'),
                                                   parent=self.parent_w)
 
         # #############################################################################
@@ -2921,7 +2923,6 @@ class App(QtCore.QObject):
             #     self.defaults_form_fields[option].set_value(self.defaults[option])
             # except KeyError:
             #     #self.log.debug("defaults_write_form(): No field for: %s" % option)
-            #     # TODO: Rethink this?
             #     pass
 
     def defaults_write_form_field(self, field, factor=None, units=None, defaults_dict=None):
@@ -2931,6 +2932,7 @@ class App(QtCore.QObject):
         :param field: the GUI element in Preferences GUI to be updated
         :param factor: factor to be applied to the field parameter
         :param units: current FLatCAM measuring units
+        :param defaults_dict: the defaults storage
         :return: None, it updates GUI elements
         """
 
@@ -2951,8 +2953,6 @@ class App(QtCore.QObject):
                 elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
                     self.defaults_form_fields[field].set_value((def_dict[field] * factor))
         except KeyError:
-            # self.log.debug("defaults_write_form(): No field for: %s" % option)
-            # TODO: Rethink this?
             pass
         except AttributeError:
             log.debug(field)
@@ -6910,7 +6910,7 @@ class App(QtCore.QObject):
 
         # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
         if notebook_widget_name == 'selected_tab':
-            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+            if self.collection.get_active().kind == 'geometry':
                 # Tool add works for Geometry only if Advanced is True in Preferences
                 if self.defaults["global_app_level"] == 'a':
                     tool_add_popup = FCInputDialog(title="New Tool ...",
@@ -6926,12 +6926,11 @@ class App(QtCore.QObject):
                             return
                         self.collection.get_active().on_tool_add(dia=float(val))
                     else:
-                        self.inform.emit('[WARNING_NOTCL] %s...' %
-                                         _("Adding Tool cancelled"))
+                        self.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
                 else:
                     msgbox = QtWidgets.QMessageBox()
                     msgbox.setText(_("Adding Tool works only when Advanced is checked.\n"
-                                   "Go to Preferences -> General - Show Advanced Options."))
+                                     "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
                     msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/warning.png'))
                     bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
