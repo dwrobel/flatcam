@@ -1729,7 +1729,6 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
         if sys.platform != 'win32':
-            self.portability_label.hide()
             self.portability_cb.hide()
 
         # splash screen button signal
