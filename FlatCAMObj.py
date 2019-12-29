@@ -2215,8 +2215,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         Gerber.skew(self, angle_x=angle_x, angle_y=angle_y, point=point)
         self.replotApertures.emit()
 
-    def buffer(self, distance, join):
-        Gerber.buffer(self, distance=distance, join=join)
+    def buffer(self, distance, join, factor=None):
+        Gerber.buffer(self, distance=distance, join=join, factor=factor)
         self.replotApertures.emit()
 
     def serialize(self):

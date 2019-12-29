@@ -843,6 +843,7 @@ class App(QtCore.QObject):
             "tools_transform_mirror_reference": False,
             "tools_transform_mirror_point": (0, 0),
             "tools_transform_buffer_dis": 0.0,
+            "tools_transform_buffer_factor": 100.0,
             "tools_transform_buffer_corner": True,
 
             # SolderPaste Tool
@@ -1465,6 +1466,7 @@ class App(QtCore.QObject):
             "tools_transform_mirror_reference": self.ui.tools_defaults_form.tools_transform_group.mirror_reference_cb,
             "tools_transform_mirror_point": self.ui.tools_defaults_form.tools_transform_group.flip_ref_entry,
             "tools_transform_buffer_dis": self.ui.tools_defaults_form.tools_transform_group.buffer_entry,
+            "tools_transform_buffer_factor": self.ui.tools_defaults_form.tools_transform_group.buffer_factor_entry,
             "tools_transform_buffer_corner": self.ui.tools_defaults_form.tools_transform_group.buffer_rounded_cb,
 
             # SolderPaste Dispensing Tool

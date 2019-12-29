@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.12.2019
+
+- Buffer sub-tool in Transform Tool: added the possibility to apply a factor effectively scaling the aperture size thus the copper features sizes
+- in Transform Tool adjusted the GUI
+
 29.12.2019
 
 - the Apply button text in Preferences is now made red when changes were made and require to be applied

@@ -2118,11 +2118,11 @@ class Geometry(object):
         #     self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y,
         #                                         origin=(px, py))
 
-    def buffer(self, distance, join):
+    def buffer(self, distance, join, factor):
         """
 
-        :param distance:
-        :param join:
+        :param distance: if 'factor' is True then distance is the factor
+        :param factor: True or False (None)
         :return:
         """
 
@@ -2145,7 +2145,10 @@ class Geometry(object):
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         self.old_disp_number = disp_number
 
-                    return obj.buffer(distance, resolution=self.geo_steps_per_circle, join_style=join)
+                    if factor is None:
+                        return obj.buffer(distance, resolution=self.geo_steps_per_circle, join_style=join)
+                    else:
+                        return affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
                 except AttributeError:
                     return obj
 
@@ -2155,20 +2158,23 @@ class Geometry(object):
                     # variables to display the percentage of work done
                     self.geo_len = 0
                     try:
-                        for __ in self.tools[tool]['solid_geometry']:
-                            self.geo_len += 1
+                        self.geo_len += len(self.tools[tool]['solid_geometry'])
                     except TypeError:
-                        self.geo_len = 1
+                        self.geo_len += 1
                     self.old_disp_number = 0
                     self.el_count = 0
 
-                    self.tools[tool]['solid_geometry'] = buffer_geom(self.tools[tool]['solid_geometry'])
+                    res = buffer_geom(self.tools[tool]['solid_geometry'])
+                    try:
+                        __ = iter(res)
+                        self.tools[tool]['solid_geometry'] = res
+                    except TypeError:
+                        self.tools[tool]['solid_geometry'] = [res]
 
             # variables to display the percentage of work done
             self.geo_len = 0
             try:
-                for __ in self.solid_geometry:
-                    self.geo_len += 1
+                self.geo_len = len(self.solid_geometry)
             except TypeError:
                 self.geo_len = 1
             self.old_disp_number = 0
@@ -2181,6 +2187,7 @@ class Geometry(object):
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to buffer. No object selected"))
 
         self.app.proc_container.new_text = ''
+
 
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):

@@ -6416,6 +6416,23 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.buffer_label, 17, 0)
         grid0.addWidget(self.buffer_entry, 17, 1)
 
+        self.buffer_factor_label = QtWidgets.QLabel('%s:' % _("Factor"))
+        self.buffer_factor_label.setToolTip(
+            _("A positive value will create the effect of dilation,\n"
+              "while a negative value will create the effect of erosion.\n"
+              "Each geometry element of the object will be increased\n"
+              "or decreased by the 'factor'.")
+        )
+
+        self.buffer_factor_entry = FCDoubleSpinner(suffix='%')
+        self.buffer_factor_entry.set_range(-100.0000, 1000.0000)
+        self.buffer_factor_entry.set_precision(self.decimals)
+        self.buffer_factor_entry.setWrapping(True)
+        self.buffer_factor_entry.setSingleStep(1)
+
+        grid0.addWidget(self.buffer_factor_label, 18, 0)
+        grid0.addWidget(self.buffer_factor_entry, 18, 1)
+
         self.buffer_rounded_cb = FCCheckBox()
         self.buffer_rounded_cb.setText('%s' % _("Rounded"))
         self.buffer_rounded_cb.setToolTip(
@@ -6425,9 +6442,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "of the buffered shape.")
         )
 
-        grid0.addWidget(self.buffer_rounded_cb, 18, 0, 1, 2)
+        grid0.addWidget(self.buffer_rounded_cb, 19, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 19, 0, 1, 2)
 
         self.layout.addStretch()
 
