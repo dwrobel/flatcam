@@ -662,6 +662,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.fill_color = self.app.defaults['gerber_plot_fill']
         self.outline_color = self.app.defaults['gerber_plot_line']
 
+        # keep track if the UI is built so we don't have to build it every time
+        self.ui_build = False
+
+        # build only once the aperture storage (takes time)
+        self.build_aperture_storage = False
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -834,121 +840,118 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def build_ui(self):
         FlatCAMObj.build_ui(self)
 
-        try:
-            # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.ui.apertures_table.itemChanged.disconnect()
-        except (TypeError, AttributeError):
-            pass
-
-        self.apertures_row = 0
-        aper_no = self.apertures_row + 1
-        sort = []
-        for k, v in list(self.apertures.items()):
-            sort.append(int(k))
-        sorted_apertures = sorted(sort)
-
-        # sort = []
-        # for k, v in list(self.aperture_macros.items()):
-        #     sort.append(k)
-        # sorted_macros = sorted(sort)
-
-        # n = len(sorted_apertures) + len(sorted_macros)
-        n = len(sorted_apertures)
-        self.ui.apertures_table.setRowCount(n)
-
-        for ap_code in sorted_apertures:
-            ap_code = str(ap_code)
-
-            ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-            ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
-
-            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
-            ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
-
-            ap_type_item = QtWidgets.QTableWidgetItem(str(self.apertures[ap_code]['type']))
-            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
-
-            if str(self.apertures[ap_code]['type']) == 'R' or str(self.apertures[ap_code]['type']) == 'O':
-                ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['width'],
-                                    self.decimals, self.apertures[ap_code]['height']
-                                    )
-                )
-                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            elif str(self.apertures[ap_code]['type']) == 'P':
-                ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['diam'],
-                                    self.decimals, self.apertures[ap_code]['nVertices'])
-                )
-                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            else:
-                ap_dim_item = QtWidgets.QTableWidgetItem('')
-                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+        if self.ui.aperture_table_visibility_cb.get_value() and self.ui_build is False:
+            self.ui_build = True
 
             try:
-                if self.apertures[ap_code]['size'] is not None:
-                    ap_size_item = QtWidgets.QTableWidgetItem(
-                        '%.*f' % (self.decimals, float(self.apertures[ap_code]['size'])))
+                # if connected, disconnect the signal from the slot on item_changed as it creates issues
+                self.ui.apertures_table.itemChanged.disconnect()
+            except (TypeError, AttributeError):
+                pass
+
+            self.apertures_row = 0
+            aper_no = self.apertures_row + 1
+            sort = []
+            for k, v in list(self.apertures.items()):
+                sort.append(int(k))
+            sorted_apertures = sorted(sort)
+
+            n = len(sorted_apertures)
+            self.ui.apertures_table.setRowCount(n)
+
+            for ap_code in sorted_apertures:
+                ap_code = str(ap_code)
+
+                ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+                ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
+
+                ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+                ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+                ap_type_item = QtWidgets.QTableWidgetItem(str(self.apertures[ap_code]['type']))
+                ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+                if str(self.apertures[ap_code]['type']) == 'R' or str(self.apertures[ap_code]['type']) == 'O':
+                    ap_dim_item = QtWidgets.QTableWidgetItem(
+                        '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['width'],
+                                        self.decimals, self.apertures[ap_code]['height']
+                                        )
+                    )
+                    ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                elif str(self.apertures[ap_code]['type']) == 'P':
+                    ap_dim_item = QtWidgets.QTableWidgetItem(
+                        '%.*f, %.*f' % (self.decimals, self.apertures[ap_code]['diam'],
+                                        self.decimals, self.apertures[ap_code]['nVertices'])
+                    )
+                    ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
                 else:
-                    ap_size_item = QtWidgets.QTableWidgetItem('')
-            except KeyError:
-                ap_size_item = QtWidgets.QTableWidgetItem('')
-            ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                    ap_dim_item = QtWidgets.QTableWidgetItem('')
+                    ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            mark_item = FCCheckBox()
-            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
-            # if self.ui.aperture_table_visibility_cb.isChecked():
-            #     mark_item.setChecked(True)
-
-            self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
-            self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
-            self.ui.apertures_table.setItem(self.apertures_row, 3, ap_size_item)   # Aperture Dimensions
-            self.ui.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)   # Aperture Dimensions
-
-            empty_plot_item = QtWidgets.QTableWidgetItem('')
-            empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.apertures_table.setItem(self.apertures_row, 5, empty_plot_item)
-            self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
-
-            self.apertures_row += 1
-
-        self.ui.apertures_table.selectColumn(0)
-        self.ui.apertures_table.resizeColumnsToContents()
-        self.ui.apertures_table.resizeRowsToContents()
-
-        vertical_header = self.ui.apertures_table.verticalHeader()
-        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        vertical_header.hide()
-        self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-
-        horizontal_header = self.ui.apertures_table.horizontalHeader()
-        horizontal_header.setMinimumSectionSize(10)
-        horizontal_header.setDefaultSectionSize(70)
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.resizeSection(0, 27)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(4,  QtWidgets.QHeaderView.Stretch)
-        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.resizeSection(5, 17)
-        self.ui.apertures_table.setColumnWidth(5, 17)
-
-        self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.ui.apertures_table.setSortingEnabled(False)
-        self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
-        self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
-
-        # update the 'mark' checkboxes state according with what is stored in the self.marked_rows list
-        if self.marked_rows:
-            for row in range(self.ui.apertures_table.rowCount()):
                 try:
-                    self.ui.apertures_table.cellWidget(row, 5).set_value(self.marked_rows[row])
-                except IndexError:
-                    pass
+                    if self.apertures[ap_code]['size'] is not None:
+                        ap_size_item = QtWidgets.QTableWidgetItem(
+                            '%.*f' % (self.decimals, float(self.apertures[ap_code]['size'])))
+                    else:
+                        ap_size_item = QtWidgets.QTableWidgetItem('')
+                except KeyError:
+                    ap_size_item = QtWidgets.QTableWidgetItem('')
+                ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-        self.ui_connect()
+                mark_item = FCCheckBox()
+                mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+                # if self.ui.aperture_table_visibility_cb.isChecked():
+                #     mark_item.setChecked(True)
+
+                self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
+                self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
+                self.ui.apertures_table.setItem(self.apertures_row, 3, ap_size_item)   # Aperture Dimensions
+                self.ui.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)   # Aperture Dimensions
+
+                empty_plot_item = QtWidgets.QTableWidgetItem('')
+                empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                self.ui.apertures_table.setItem(self.apertures_row, 5, empty_plot_item)
+                self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
+
+                self.apertures_row += 1
+
+            self.ui.apertures_table.selectColumn(0)
+            self.ui.apertures_table.resizeColumnsToContents()
+            self.ui.apertures_table.resizeRowsToContents()
+
+            vertical_header = self.ui.apertures_table.verticalHeader()
+            # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+            vertical_header.hide()
+            self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+            horizontal_header = self.ui.apertures_table.horizontalHeader()
+            horizontal_header.setMinimumSectionSize(10)
+            horizontal_header.setDefaultSectionSize(70)
+            horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+            horizontal_header.resizeSection(0, 27)
+            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+            horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+            horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+            horizontal_header.setSectionResizeMode(4,  QtWidgets.QHeaderView.Stretch)
+            horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
+            horizontal_header.resizeSection(5, 17)
+            self.ui.apertures_table.setColumnWidth(5, 17)
+
+            self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+            self.ui.apertures_table.setSortingEnabled(False)
+            self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
+            self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
+
+            # update the 'mark' checkboxes state according with what is stored in the self.marked_rows list
+            if self.marked_rows:
+                for row in range(self.ui.apertures_table.rowCount()):
+                    try:
+                        self.ui.apertures_table.cellWidget(row, 5).set_value(self.marked_rows[row])
+                    except IndexError:
+                        pass
+
+            self.ui_connect()
 
     def ui_connect(self):
         for row in range(self.ui.apertures_table.rowCount()):
@@ -1615,13 +1618,16 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def on_aperture_table_visibility_change(self):
         if self.ui.aperture_table_visibility_cb.isChecked():
             # add the shapes storage for marking apertures
-            if self.app.is_legacy is False:
-                for ap_code in self.apertures:
-                    self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=1)
-            else:
-                for ap_code in self.apertures:
-                    self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
-                                                                      name=self.options['name'] + str(ap_code))
+            if self.build_aperture_storage is False:
+                self.build_aperture_storage = True
+
+                if self.app.is_legacy is False:
+                    for ap_code in self.apertures:
+                        self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=1)
+                else:
+                    for ap_code in self.apertures:
+                        self.mark_shapes[ap_code] = ShapeCollectionLegacy(obj=self, app=self.app,
+                                                                          name=self.options['name'] + str(ap_code))
 
             self.ui.apertures_table.setVisible(True)
             for ap in self.mark_shapes:
@@ -1629,6 +1635,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             self.ui.mark_all_cb.setVisible(True)
             self.ui.mark_all_cb.setChecked(False)
+            self.build_ui()
         else:
             self.ui.apertures_table.setVisible(False)
 
@@ -1640,9 +1647,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     self.ui.apertures_table.cellWidget(row, 5).set_value(False)
                 self.clear_plot_apertures()
 
-                for ap in list(self.mark_shapes.keys()):
-                    # self.mark_shapes[ap].enabled = False
-                    del self.mark_shapes[ap]
+                # for ap in list(self.mark_shapes.keys()):
+                #     # self.mark_shapes[ap].enabled = False
+                #     del self.mark_shapes[ap]
             except Exception as e:
                 log.debug(" FlatCAMGerber.on_aperture_visibility_changed() --> %s" % str(e))
 
@@ -2208,8 +2215,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         Gerber.skew(self, angle_x=angle_x, angle_y=angle_y, point=point)
         self.replotApertures.emit()
 
-    def buffer(self, distance, join):
-        Gerber.buffer(self, distance=distance, join=join)
+    def buffer(self, distance, join, factor=None):
+        Gerber.buffer(self, distance=distance, join=join, factor=factor)
         self.replotApertures.emit()
 
     def serialize(self):

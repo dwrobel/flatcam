@@ -9,6 +9,23 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.12.2019
+
+- Buffer sub-tool in Transform Tool: added the possibility to apply a factor effectively scaling the aperture size thus the copper features sizes
+- in Transform Tool adjusted the GUI
+- fixed some decimals issues in NCC Tool, Paint Tool and Excellon Editor (they were still using the harcoded values)
+- some small updates in the NCC Tool
+
+29.12.2019
+
+- the Apply button text in Preferences is now made red when changes were made and require to be applied
+- the Gerber UI is built only once now so the process is lighter on CPU
+- the Gerber apertures marking shapes storage is now built only once because the more are built the more sluggish is the interface
+- added a new function called by shortcut key combo CTRL+G when the current widget in Plot Area is an Code Editor. It will jump to the specified line in the text.
+- fixed a small where the app tried to hide a label that I've removed previously
+- in Paint Tool Preferences allowed to add a list of initial tools separated by comma
+- in Geometry Paint Tool fixed the Overlap rate to work between 0 and 99.9999%
+
 28.12.2019
 
 - more updates to the Preferences window and in some other parts of the GUI

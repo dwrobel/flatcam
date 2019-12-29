@@ -1729,7 +1729,6 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
         if sys.platform != 'win32':
-            self.portability_label.hide()
             self.portability_cb.hide()
 
         # splash screen button signal
@@ -2521,7 +2520,9 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
 
         self.adddim_label = QtWidgets.QLabel('%s:' % _('Aperture Dimensions'))
         self.adddim_label.setToolTip(
-            _("Diameters of the cutting tools, separated by ','")
+            _("Diameters of the cutting tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
         )
         grid0.addWidget(self.adddim_label, 5, 0)
         self.adddim_entry = FCEntry()
@@ -3874,7 +3875,9 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         # Tooldia
         tdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
         tdlabel.setToolTip(
-            _("Diameters of the cutting tools, separated by ','")
+            _("Diameters of the cutting tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
         )
         self.cnctooldia_entry = FCEntry()
 
@@ -5026,7 +5029,9 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
 
         ncctdlabel = QtWidgets.QLabel('%s:' % _('Tools dia'))
         ncctdlabel.setToolTip(
-            _("Diameters of the cutting tools, separated by ','")
+            _("Diameters of the cutting tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
         )
         grid0.addWidget(ncctdlabel, 0, 0)
         self.ncc_tool_dia_entry = FCEntry()
@@ -5534,8 +5539,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Tool dia
         ptdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
         ptdlabel.setToolTip(
-            _("Diameter of the tool to\n"
-              "be used in the operation.")
+            _("Diameters of the cutting tools, separated by comma.\n"
+              "The value of the diameter has to use the dot decimals separator.\n"
+              "Valid values: 0.3, 1.0")
         )
         grid0.addWidget(ptdlabel, 0, 0)
 
@@ -6410,6 +6416,23 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.buffer_label, 17, 0)
         grid0.addWidget(self.buffer_entry, 17, 1)
 
+        self.buffer_factor_label = QtWidgets.QLabel('%s:' % _("Factor"))
+        self.buffer_factor_label.setToolTip(
+            _("A positive value will create the effect of dilation,\n"
+              "while a negative value will create the effect of erosion.\n"
+              "Each geometry element of the object will be increased\n"
+              "or decreased by the 'factor'.")
+        )
+
+        self.buffer_factor_entry = FCDoubleSpinner(suffix='%')
+        self.buffer_factor_entry.set_range(-100.0000, 1000.0000)
+        self.buffer_factor_entry.set_precision(self.decimals)
+        self.buffer_factor_entry.setWrapping(True)
+        self.buffer_factor_entry.setSingleStep(1)
+
+        grid0.addWidget(self.buffer_factor_label, 18, 0)
+        grid0.addWidget(self.buffer_factor_entry, 18, 1)
+
         self.buffer_rounded_cb = FCCheckBox()
         self.buffer_rounded_cb.setText('%s' % _("Rounded"))
         self.buffer_rounded_cb.setToolTip(
@@ -6419,9 +6442,8 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
               "of the buffered shape.")
         )
 
-        grid0.addWidget(self.buffer_rounded_cb, 18, 0, 1, 2)
+        grid0.addWidget(self.buffer_rounded_cb, 19, 0, 1, 2)
 
-        grid0.addWidget(QtWidgets.QLabel(''), 19, 0, 1, 2)
 
         self.layout.addStretch()
 
