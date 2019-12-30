@@ -177,7 +177,7 @@ msgstr "Не удалось прочитать файл с исходными з
 
 #: FlatCAMApp.py:3855
 msgid "Preferences default values are restored."
-msgstr "Восстанавливаются значения по умолчанию."
+msgstr "Настройки по умолчанию восстановлены."
 
 #: FlatCAMApp.py:3870 FlatCAMApp.py:3874
 msgid "Import FlatCAM Preferences"
@@ -3210,7 +3210,7 @@ msgstr "Линейный"
 #: flatcamGUI/PreferencesUI.py:5044 flatcamGUI/PreferencesUI.py:7465
 #: flatcamTools/ToolFiducials.py:220 flatcamTools/ToolNonCopperClear.py:221
 msgid "Circular"
-msgstr "Круг"
+msgstr "Круглый"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1717 flatcamGUI/PreferencesUI.py:3593
 msgid "Nr of drills"
@@ -7168,7 +7168,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:274
 msgid "Mark the aperture instances on canvas."
-msgstr "Отметьте экземпляры диафрагмы на холсте."
+msgstr "Отметьте места отверстий на холсте."
 
 #: flatcamGUI/ObjectUI.py:286 flatcamGUI/PreferencesUI.py:2014
 msgid "Isolation Routing"
@@ -7197,7 +7197,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:312
 msgid "V-Shape"
-msgstr "V-образная форма"
+msgstr "V-образный"
 
 #: flatcamGUI/ObjectUI.py:318 flatcamGUI/ObjectUI.py:1374
 #: flatcamGUI/PreferencesUI.py:2231 flatcamGUI/PreferencesUI.py:5055
@@ -8216,10 +8216,10 @@ msgid ""
 "meet with last cut, we generate an\n"
 "extended cut over the first cut section."
 msgstr ""
-"Для того, чтобы удалить возможно\n"
-"медные остатки, где первый разрез\n"
-"встреча с последним отрезком, мы генерируем\n"
-"расширенный разрез по первой секции разреза."
+"Для того, чтобы удалить возможные остатки меди в тех местах,\n"
+"где первый разрез встречается с последним,\n"
+"мы генерируем расширенный разрез\n"
+"над первым разрезом."
 
 #: flatcamGUI/ObjectUI.py:1606 flatcamGUI/PreferencesUI.py:4120
 msgid ""
@@ -8937,8 +8937,8 @@ msgid ""
 "Draw a delimiting rectangle on canvas.\n"
 "The purpose is to illustrate the limits for our work."
 msgstr ""
-"Нарисует прямоугольник с разделителями на холсте.\n"
-"Цель состоит в том, чтобы проиллюстрировать пределы нашей работы."
+"Нарисует на холсте разделительный прямоугольник,\n"
+"для отображения границы нашей работы."
 
 #: flatcamGUI/PreferencesUI.py:1011
 msgid ""
@@ -9538,7 +9538,7 @@ msgid ""
 "circular aperture linear approximation."
 msgstr ""
 "Количество шагов круга для Gerber \n"
-"линейное приближение круговой апертуры."
+"линейное приближение круговых отверстий."
 
 #: flatcamGUI/PreferencesUI.py:1802
 msgid "Default Values"
@@ -9683,7 +9683,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:2202
 msgid "Table Show/Hide"
-msgstr "Таблица вкл/откл"
+msgstr "Таблица отверстий вкл/откл"
 
 #: flatcamGUI/PreferencesUI.py:2204
 msgid ""
@@ -9691,9 +9691,9 @@ msgid ""
 "Also, on hide, it will delete all mark shapes\n"
 "that are drawn on canvas."
 msgstr ""
-"Переключение отображения таблицы апертур Gerber.\n"
-"Кроме того, при скрытии он удалит все фигуры меток\n"
-"которые нарисованы на холсте."
+"Переключение отображения таблицы отверстий Gerber.\n"
+"Кроме того, при скрытии он удалит все отмеченные фигуры\n"
+"отображённые на холсте."
 
 #: flatcamGUI/PreferencesUI.py:2284
 msgid "Exterior"
@@ -9816,31 +9816,31 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:2472
 msgid "New Aperture code"
-msgstr "Новый код диафрагмы"
+msgstr "Код нового отверстия"
 
 #: flatcamGUI/PreferencesUI.py:2485
 msgid "New Aperture size"
-msgstr "Новый размер диафрагмы"
+msgstr "Размер нового отверстия"
 
 #: flatcamGUI/PreferencesUI.py:2487
 msgid "Size for the new aperture"
-msgstr "Размер для новой диафрагмы"
+msgstr "Размер нового отверстия"
 
 #: flatcamGUI/PreferencesUI.py:2498
 msgid "New Aperture type"
-msgstr "Новый тип диафрагмы"
+msgstr "Тип нового отверстия"
 
 #: flatcamGUI/PreferencesUI.py:2500
 msgid ""
 "Type for the new aperture.\n"
 "Can be 'C', 'R' or 'O'."
 msgstr ""
-"Введите для новой диафрагмы.\n"
+"Тип нового отверстия.\n"
 "Может быть «C», «R» или «O»."
 
 #: flatcamGUI/PreferencesUI.py:2522
 msgid "Aperture Dimensions"
-msgstr "Разм. диафрагмы"
+msgstr "Размеры отверстия"
 
 #: flatcamGUI/PreferencesUI.py:2524 flatcamGUI/PreferencesUI.py:3877
 #: flatcamGUI/PreferencesUI.py:5029
@@ -10172,9 +10172,9 @@ msgid ""
 "meaning the fastest speed available.\n"
 "WARNING: the move is done at Toolchange X,Y coords."
 msgstr ""
-"Проверяя это, вертикальное перемещение\n"
-"Z_toolchange на Z_move выполняется с помощью G0,\n"
-"это означает самую быструю скорость.\n"
+"Если отмечено, то вертикальный переход от\n"
+"Z_Toolchange к Z_move осуществляется с помощью G0,\n"
+"что означает самую быструю доступную скорость.\n"
 "Предупреждение: перемещение выполняется при смене координат Toolchange X,Y."
 
 #: flatcamGUI/PreferencesUI.py:3382
@@ -10698,7 +10698,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:5043 flatcamTools/ToolNonCopperClear.py:220
 msgid "V-shape"
-msgstr "V-образный инструмент"
+msgstr "V-образный"
 
 #: flatcamGUI/PreferencesUI.py:5083 flatcamGUI/PreferencesUI.py:5092
 #: flatcamTools/ToolNonCopperClear.py:256
@@ -11832,8 +11832,8 @@ msgid ""
 "The dispenser speed while pushing solder paste\n"
 "through the dispenser nozzle."
 msgstr ""
-"Диспенсер скорости при нажатии паяльной пасты\n"
-"через сопло дозатора."
+"Скорость диспенсера при проталкивании паяльной пасты\n"
+"через форсунку диспенсера."
 
 #: flatcamGUI/PreferencesUI.py:6607 flatcamTools/ToolSolderPaste.py:302
 msgid "Dwell FWD"
@@ -11852,8 +11852,8 @@ msgid ""
 "The dispenser speed while retracting solder paste\n"
 "through the dispenser nozzle."
 msgstr ""
-"Скорость распределителя пока втягивающ затир припоя\n"
-"через сопло дозатора."
+"Скорость диспенсера при втягивании паяльной пасты\n"
+"через форсунку диспенсера."
 
 #: flatcamGUI/PreferencesUI.py:6633 flatcamTools/ToolSolderPaste.py:326
 msgid "Dwell REV"
