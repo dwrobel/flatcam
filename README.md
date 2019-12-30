@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Tcl commands that use the overlap parameter to switch from fraction to percentage
 - in Transform Tool mae sure that the buffer sub-tool parameters are better explained in tooltips
 - attempt to make TclCommand quit_flatcam work under Linux
+- some fixes in the NCC Tcl command (using the bool() method on some params)
 
 29.12.2019
 

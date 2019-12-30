@@ -3,6 +3,7 @@ from FlatCAMObj import FlatCAMGerber
 
 import collections
 
+
 class TclCommandIsolate(TclCommandSignaled):
     """
     Tcl shell command to Creates isolation routing geometry for the given Gerber.
@@ -45,7 +46,8 @@ class TclCommandIsolate(TclCommandSignaled):
             ('name', 'Name of the source object.'),
             ('dia', 'Tool diameter.'),
             ('passes', 'Passes of tool width.'),
-            ('overlap', 'Percentage of tool diameter to overlap passes. [0%, 99.9999%'),
+            ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
+                        'E.g: for a 25% from tool diameter overlap use -overlap 25'),
             ('combine', 'Combine all passes into one geometry.'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('follow', 'Create a Geometry that follows the Gerber path.'),
