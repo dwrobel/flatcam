@@ -55,7 +55,7 @@ class TclCommandCopperClear(TclCommand):
             ('name', 'Name of the source Geometry object. String.'),
             ('tooldia', 'Diameter of the tool to be used. Can be a comma separated list of diameters. No space is '
                         'allowed between tool diameters. E.g: correct: 0.5,1 / incorrect: 0.5, 1'),
-            ('overlap', 'Fraction of the tool diameter to overlap cuts. Float number.'),
+            ('overlap', 'Percentage of the tool diameter to overlap cuts. Float number, [0%, 99.9999%]'),
             ('margin', 'Bounding box margin. Float number.'),
             ('order', 'Can have the values: "no", "fwd" and "rev". String.'
                       'It is useful when there are multiple tools in tooldia parameter.'
@@ -106,9 +106,9 @@ class TclCommandCopperClear(TclCommand):
             tooldia = self.app.defaults["tools_ncctools"]
 
         if 'overlap' in args:
-            overlap = float(args['overlap'])
+            overlap = float(args['overlap']) / 100.0
         else:
-            overlap = float(self.app.defaults["tools_nccoverlap"])
+            overlap = float(self.app.defaults["tools_nccoverlap"]) / 100.0
 
         if 'order' in args:
             order = args['order']

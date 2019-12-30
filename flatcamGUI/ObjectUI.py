@@ -388,7 +388,7 @@ class GerberObjectUI(ObjectUI):
         # Pass overlap
         overlabel = QtWidgets.QLabel('%s:' % _('Pass overlap'))
         overlabel.setToolTip(
-            _("How much (fraction) of the tool width to overlap each tool pass.")
+            _("How much (percentage) of the tool width to overlap each tool pass.")
         )
         overlabel.setMinimumWidth(90)
         self.iso_overlap_entry = FCDoubleSpinner(suffix='%')

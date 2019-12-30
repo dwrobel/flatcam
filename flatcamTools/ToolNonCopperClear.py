@@ -318,7 +318,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # Overlap Entry
         nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         nccoverlabel.setToolTip(
-            _("How much (fraction) of the tool width to overlap each tool pass.\n"
+            _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be cleared are still \n"
               "not cleared.\n"
@@ -1430,7 +1430,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         else:
             ncc_select = self.reference_radio.get_value()
 
-        overlap = overlap if overlap is not None else float(self.app.defaults["tools_nccoverlap"])
+        overlap = overlap if overlap is not None else float(self.app.defaults["tools_nccoverlap"]) / 100.0
 
         connect = connect if connect else self.app.defaults["tools_nccconnect"]
         contour = contour if contour else self.app.defaults["tools_ncccontour"]

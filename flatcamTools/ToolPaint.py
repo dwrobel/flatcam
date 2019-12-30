@@ -218,7 +218,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # Overlap
         ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         ovlabel.setToolTip(
-            _("How much (fraction) of the tool width to overlap each tool pass.\n"
+            _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be painted are still \n"
               "not painted.\n"
@@ -1380,7 +1380,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         prog_plot = True if self.app.defaults["tools_paint_plotting"] == 'progressive' else False
 
         name = outname if outname is not None else self.obj_name + "_paint"
-        over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"])
+        over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"]) / 100.0
         conn = connect if connect is not None else self.app.defaults["tools_pathconnect"]
         cont = contour if contour is not None else self.app.defaults["tools_paintcontour"]
         order = order if order is not None else self.order_radio.get_value()
@@ -1630,7 +1630,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         proc = self.app.proc_container.new(_("Painting polygons..."))
         name = outname if outname is not None else self.obj_name + "_paint"
 
-        over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"])
+        over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"]) / 100.0
         conn = connect if connect is not None else self.app.defaults["tools_pathconnect"]
         cont = contour if contour is not None else self.app.defaults["tools_paintcontour"]
         order = order if order is not None else self.order_radio.get_value()
@@ -2214,7 +2214,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         proc = self.app.proc_container.new(_("Painting polygons..."))
         name = outname if outname is not None else self.obj_name + "_paint"
 
-        over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"])
+        over = overlap if overlap is not None else float(self.app.defaults["tools_paintoverlap"]) / 100.0
         conn = connect if connect is not None else self.app.defaults["tools_pathconnect"]
         cont = contour if contour is not None else self.app.defaults["tools_paintcontour"]
         order = order if order is not None else self.order_radio.get_value()
