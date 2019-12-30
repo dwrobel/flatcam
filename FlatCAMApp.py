@@ -1830,7 +1830,7 @@ class App(QtCore.QObject):
         # signal for displaying messages in status bar
         self.inform.connect(self.info)
         # signal to be called when the app is quiting
-        self.app_quit.connect(self.quit_application)
+        self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
         self.message.connect(self.message_dialog)
         self.progress.connect(self.set_progress_bar)
 
@@ -5138,7 +5138,11 @@ class App(QtCore.QObject):
             del stgs
 
         log.debug("App.final_save() --> App UI state saved.")
+
         QtWidgets.qApp.quit()
+
+        if sys.platform != 'win32':
+            sys.exit()
 
     def on_portable_checked(self, state):
         """
