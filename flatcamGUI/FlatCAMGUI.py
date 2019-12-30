@@ -2723,7 +2723,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Open Gerber file
                 if key == QtCore.Qt.Key_G:
-                    self.app.on_fileopengerber()
+                    widget_name = self.plot_tab_area.currentWidget().objectName()
+                    if 'editor' in widget_name.lower():
+                        self.app.goto_text_line()
+                    else:
+                        self.app.on_fileopengerber()
 
                 # Distance Tool
                 if key == QtCore.Qt.Key_M:

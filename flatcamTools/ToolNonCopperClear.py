@@ -634,11 +634,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
 
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
-
         self.tools_frame.show()
 
         self.ncc_order_radio.set_value(self.app.defaults["tools_nccorder"])
@@ -701,10 +696,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
         })
 
         try:
+            dias = [float(self.app.defaults["tools_ncctools"])]
+        except (ValueError, TypeError):
             dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",") if dia != '']
-        except Exception as e:
-            log.error("At least one tool diameter needed. "
-                      "Verify in Edit -> Preferences -> TOOLS -> NCC Tools. %s" % str(e))
+
+        if not dias:
+            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
             return
 
         self.tooluid = 0

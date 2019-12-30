@@ -1459,11 +1459,11 @@ class Excellon(Geometry):
         self.create_geometry()
         self.app.proc_container.new_text = ''
 
-    def buffer(self, distance, join):
+    def buffer(self, distance, join, factor):
         """
 
-        :param distance:
-        :param join:
+        :param distance: if 'factor' is True then distance is the factor
+        :param factor: True or False (None)
         :return:
         """
         log.debug("flatcamParsers.ParseExcellon.Excellon.buffer()")
@@ -1479,13 +1479,24 @@ class Excellon(Geometry):
                 return new_obj
             else:
                 try:
-                    return obj.buffer(distance, resolution=self.geo_steps_per_circle)
+                    if factor is None:
+                        return obj.buffer(distance, resolution=self.geo_steps_per_circle)
+                    else:
+                        return affinity.scale(obj, xfact=distance, yfact=distance, origin='center')
                 except AttributeError:
                     return obj
 
         # buffer solid_geometry
         for tool, tool_dict in list(self.tools.items()):
-            self.tools[tool]['solid_geometry'] = buffer_geom(tool_dict['solid_geometry'])
-            self.tools[tool]['C'] += distance
+            res = buffer_geom(tool_dict['solid_geometry'])
+            try:
+                __ = iter(res)
+                self.tools[tool]['solid_geometry'] = res
+            except TypeError:
+                self.tools[tool]['solid_geometry'] = [res]
+            if factor is None:
+                self.tools[tool]['C'] += distance
+            else:
+                self.tools[tool]['C'] *= distance
 
         self.create_geometry()

@@ -2188,14 +2188,14 @@ class Gerber(Geometry):
         except Exception as e:
             log.debug('camlib.Gerber.rotate() Exception --> %s' % str(e))
             return 'fail'
-        self.app.inform.emit('[success] %s' %
-                             _("Gerber Rotate done."))
+        self.app.inform.emit('[success] %s' % _("Gerber Rotate done."))
         self.app.proc_container.new_text = ''
 
-    def buffer(self, distance, join):
+    def buffer(self, distance, join, factor=None):
         """
 
-        :param distance:
+        :param distance: if 'factor' is True then distance is the factor
+        :param factor: True or False (None)
         :return:
         """
         log.debug("parseGerber.Gerber.buffer()")
@@ -2206,69 +2206,143 @@ class Gerber(Geometry):
         # variables to display the percentage of work done
         self.geo_len = 0
         try:
-            for __ in self.solid_geometry:
-                self.geo_len += 1
-        except TypeError:
+            self.geo_len = len(self.solid_geometry)
+        except (TypeError, ValueError):
             self.geo_len = 1
 
         self.old_disp_number = 0
         self.el_count = 0
 
-        def buffer_geom(obj):
-            if type(obj) is list:
-                new_obj = []
-                for g in obj:
-                    new_obj.append(buffer_geom(g))
-                return new_obj
-            else:
-                try:
-                    self.el_count += 1
-                    disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
-                    if self.old_disp_number < disp_number <= 100:
-                        self.app.proc_container.update_view_text(' %d%%' % disp_number)
-                        self.old_disp_number = disp_number
+        if factor is None:
+            def buffer_geom(obj):
+                if type(obj) is list:
+                    new_obj = []
+                    for g in obj:
+                        new_obj.append(buffer_geom(g))
+                    return new_obj
+                else:
+                    try:
+                        self.el_count += 1
+                        disp_number = int(np.interp(self.el_count, [0, self.geo_len], [0, 100]))
+                        if self.old_disp_number < disp_number <= 100:
+                            self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                            self.old_disp_number = disp_number
 
-                    return obj.buffer(distance, resolution=self.steps_per_circle, join_style=join)
-                except AttributeError:
-                    return obj
+                        return obj.buffer(distance, resolution=int(self.steps_per_circle), join_style=join)
 
-        self.solid_geometry = buffer_geom(self.solid_geometry)
+                    except AttributeError:
+                        return obj
 
-        # we need to buffer the geometry stored in the Gerber apertures, too
-        try:
+            res = buffer_geom(self.solid_geometry)
+            try:
+                __ = iter(res)
+                self.solid_geometry = res
+            except TypeError:
+                self.solid_geometry = [res]
+
+            # we need to buffer the geometry stored in the Gerber apertures, too
+            try:
+                for apid in self.apertures:
+                    new_geometry = list()
+                    if 'geometry' in self.apertures[apid]:
+                        for geo_el in self.apertures[apid]['geometry']:
+                            new_geo_el = dict()
+                            if 'solid' in geo_el:
+                                new_geo_el['solid'] = buffer_geom(geo_el['solid'])
+                            if 'follow' in geo_el:
+                                new_geo_el['follow'] = geo_el['follow']
+                            if 'clear' in geo_el:
+                                new_geo_el['clear'] = buffer_geom(geo_el['clear'])
+                            new_geometry.append(new_geo_el)
+
+                    self.apertures[apid]['geometry'] = deepcopy(new_geometry)
+
+                    try:
+                        if str(self.apertures[apid]['type']) == 'R' or str(self.apertures[apid]['type']) == 'O':
+                            self.apertures[apid]['width'] += (distance * 2)
+                            self.apertures[apid]['height'] += (distance * 2)
+                        elif str(self.apertures[apid]['type']) == 'P':
+                            self.apertures[apid]['diam'] += (distance * 2)
+                            self.apertures[apid]['nVertices'] += (distance * 2)
+                    except KeyError:
+                        pass
+
+                    try:
+                        if self.apertures[apid]['size'] is not None:
+                            self.apertures[apid]['size'] = float(self.apertures[apid]['size'] + (distance * 2))
+                    except KeyError:
+                        pass
+            except Exception as e:
+                log.debug('camlib.Gerber.buffer() Exception --> %s' % str(e))
+                return 'fail'
+        else:
+            try:
+                for apid in self.apertures:
+                    try:
+                        if str(self.apertures[apid]['type']) == 'R' or str(self.apertures[apid]['type']) == 'O':
+                            self.apertures[apid]['width'] *= distance
+                            self.apertures[apid]['height'] *= distance
+                        elif str(self.apertures[apid]['type']) == 'P':
+                            self.apertures[apid]['diam'] *= distance
+                            self.apertures[apid]['nVertices'] *= distance
+                    except KeyError:
+                        pass
+
+                    try:
+                        if self.apertures[apid]['size'] is not None:
+                            self.apertures[apid]['size'] = float(self.apertures[apid]['size']) * distance
+                    except KeyError:
+                        pass
+
+                    new_geometry = list()
+                    if 'geometry' in self.apertures[apid]:
+                        for geo_el in self.apertures[apid]['geometry']:
+                            new_geo_el = dict()
+                            if 'follow' in geo_el:
+                                new_geo_el['follow'] = geo_el['follow']
+                                size = float(self.apertures[apid]['size'])
+                                if isinstance(new_geo_el['follow'], Point):
+                                    if str(self.apertures[apid]['type']) == 'C':
+                                        new_geo_el['solid'] = geo_el['follow'].buffer(
+                                            size / 1.9999,
+                                            resolution=int(self.steps_per_circle)
+                                        )
+                                    elif str(self.apertures[apid]['type']) == 'R':
+                                        width = self.apertures[apid]['width']
+                                        height = self.apertures[apid]['height']
+                                        minx = new_geo_el['follow'].x - width / 2
+                                        maxx = new_geo_el['follow'].x + width / 2
+                                        miny = new_geo_el['follow'].y - height / 2
+                                        maxy = new_geo_el['follow'].y + height / 2
+
+                                        geo_p = shply_box(minx, miny, maxx, maxy)
+                                        new_geo_el['solid'] = geo_p
+                                    else:
+                                        log.debug("flatcamParsers.ParseGerber.Gerber.buffer() --> "
+                                                  "ap type not supported")
+                                else:
+                                    new_geo_el['solid'] = geo_el['follow'].buffer(
+                                        size/1.9999,
+                                        resolution=int(self.steps_per_circle)
+                                    )
+                            if 'clear' in geo_el:
+                                new_geo_el['clear'] = geo_el['clear']
+                            new_geometry.append(new_geo_el)
+
+                    self.apertures[apid]['geometry'] = deepcopy(new_geometry)
+            except Exception as e:
+                log.debug('camlib.Gerber.buffer() Exception --> %s' % str(e))
+                return 'fail'
+
+            # make the new solid_geometry
+            new_solid_geo = list()
             for apid in self.apertures:
-                new_geometry = list()
                 if 'geometry' in self.apertures[apid]:
-                    for geo_el in self.apertures[apid]['geometry']:
-                        new_geo_el = dict()
-                        if 'solid' in geo_el:
-                            new_geo_el['solid'] = buffer_geom(geo_el['solid'])
-                        if 'follow' in geo_el:
-                            new_geo_el['follow'] = buffer_geom(geo_el['follow'])
-                        if 'clear' in geo_el:
-                            new_geo_el['clear'] = buffer_geom(geo_el['clear'])
-                        new_geometry.append(new_geo_el)
+                    new_solid_geo += [geo_el['solid'] for geo_el in self.apertures[apid]['geometry']]
 
-                self.apertures[apid]['geometry'] = deepcopy(new_geometry)
-
-                try:
-                    if str(self.apertures[apid]['type']) == 'R' or str(self.apertures[apid]['type']) == 'O':
-                        self.apertures[apid]['width'] += (distance * 2)
-                        self.apertures[apid]['height'] += (distance * 2)
-                    elif str(self.apertures[apid]['type']) == 'P':
-                        self.apertures[apid]['diam'] += (distance * 2)
-                        self.apertures[apid]['nVertices'] += (distance * 2)
-                except KeyError:
-                    pass
-
-                try:
-                    if self.apertures[apid]['size'] is not None:
-                        self.apertures[apid]['size'] = float(self.apertures[apid]['size'] + (distance * 2))
-                except KeyError:
-                    pass
-        except Exception as e:
-            log.debug('camlib.Gerber.buffer() Exception --> %s' % str(e))
-            return 'fail'
+            self.solid_geometry = MultiPolygon(new_solid_geo)
+            self.solid_geometry = self.solid_geometry.buffer(0.000001)
+            self.solid_geometry = self.solid_geometry.buffer(-0.000001)
 
         self.app.inform.emit('[success] %s' % _("Gerber Buffer done."))
         self.app.proc_container.new_text = ''

@@ -441,8 +441,7 @@ class PaintOptionsTool(FlatCAMTool):
         # Tool dia
         ptdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
         ptdlabel.setToolTip(
-           _("Diameter of the tool to\n"
-             "be used in the operation.")
+           _("Diameter of the tool to be used in the operation.")
         )
         grid.addWidget(ptdlabel, 0, 0)
 
@@ -463,10 +462,10 @@ class PaintOptionsTool(FlatCAMTool):
               "due of too many paths.")
         )
         self.paintoverlap_entry = FCDoubleSpinner(suffix='%')
-        self.paintoverlap_entry.set_range(0.0000, 1.0000)
+        self.paintoverlap_entry.set_range(0.0000, 99.9999)
         self.paintoverlap_entry.set_precision(self.decimals)
         self.paintoverlap_entry.setWrapping(True)
-        self.paintoverlap_entry.setSingleStep(0.1)
+        self.paintoverlap_entry.setSingleStep(1)
 
         grid.addWidget(ovlabel, 1, 0)
         grid.addWidget(self.paintoverlap_entry, 1, 1)
@@ -525,7 +524,6 @@ class PaintOptionsTool(FlatCAMTool):
         # Buttons
         hlay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay)
-        hlay.addStretch()
         self.paint_button = QtWidgets.QPushButton(_("Paint"))
         hlay.addWidget(self.paint_button)
 
@@ -584,9 +582,9 @@ class PaintOptionsTool(FlatCAMTool):
                                  _("Paint cancelled. No shape selected."))
             return
 
-        tooldia = float(self.painttooldia_entry.get_value())
-        overlap = float(self.paintoverlap_entry.get_value())
-        margin = float(self.paintmargin_entry.get_value())
+        tooldia = self.painttooldia_entry.get_value()
+        overlap = self.paintoverlap_entry.get_value() / 100.0
+        margin = self.paintmargin_entry.get_value()
 
         method = self.paintmethod_combo.get_value()
         contour = self.paintcontour_cb.get_value()
@@ -4749,9 +4747,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
     def paint(self, tooldia, overlap, margin, connect, contour, method):
 
-        if overlap >= 1:
+        if overlap >= 100:
             self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Could not do Paint. Overlap value has to be less than 1.00 (100%%)."))
+                                 _("Could not do Paint. Overlap value has to be less than 100%%."))
             return
 
         self.paint_tooldia = tooldia

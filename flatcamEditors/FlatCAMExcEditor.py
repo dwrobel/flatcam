@@ -2227,11 +2227,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         # updated units
         self.units = self.app.defaults['units'].upper()
 
-        if self.units == "IN":
-            self.decimals = 4
-        else:
-            self.decimals = 2
-
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
 

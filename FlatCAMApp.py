@@ -141,8 +141,8 @@ class App(QtCore.QObject):
     # ##########################################################################
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
-    version = 8.991
-    version_date = "2019/12/27"
+    version = 8.992
+    version_date = "2020/01/02"
     beta = True
     engine = '3D'
 
@@ -843,6 +843,7 @@ class App(QtCore.QObject):
             "tools_transform_mirror_reference": False,
             "tools_transform_mirror_point": (0, 0),
             "tools_transform_buffer_dis": 0.0,
+            "tools_transform_buffer_factor": 100.0,
             "tools_transform_buffer_corner": True,
 
             # SolderPaste Tool
@@ -1465,6 +1466,7 @@ class App(QtCore.QObject):
             "tools_transform_mirror_reference": self.ui.tools_defaults_form.tools_transform_group.mirror_reference_cb,
             "tools_transform_mirror_point": self.ui.tools_defaults_form.tools_transform_group.flip_ref_entry,
             "tools_transform_buffer_dis": self.ui.tools_defaults_form.tools_transform_group.buffer_entry,
+            "tools_transform_buffer_factor": self.ui.tools_defaults_form.tools_transform_group.buffer_factor_entry,
             "tools_transform_buffer_corner": self.ui.tools_defaults_form.tools_transform_group.buffer_rounded_cb,
 
             # SolderPaste Dispensing Tool
@@ -1793,12 +1795,14 @@ class App(QtCore.QObject):
 
             if self.cmd_line_headless == 1:
                 self.trayIcon = FlatCAMSystemTray(app=self,
-                                                  icon=QtGui.QIcon(self.resource_location + '/flatcam_icon32_green.png'),
+                                                  icon=QtGui.QIcon(self.resource_location +
+                                                                   '/flatcam_icon32_green.png'),
                                                   headless=True,
                                                   parent=self.parent_w)
             else:
                 self.trayIcon = FlatCAMSystemTray(app=self,
-                                                  icon=QtGui.QIcon(self.resource_location + '/flatcam_icon32_green.png'),
+                                                  icon=QtGui.QIcon(self.resource_location +
+                                                                   '/flatcam_icon32_green.png'),
                                                   parent=self.parent_w)
 
         # #############################################################################
@@ -2919,7 +2923,6 @@ class App(QtCore.QObject):
             #     self.defaults_form_fields[option].set_value(self.defaults[option])
             # except KeyError:
             #     #self.log.debug("defaults_write_form(): No field for: %s" % option)
-            #     # TODO: Rethink this?
             #     pass
 
     def defaults_write_form_field(self, field, factor=None, units=None, defaults_dict=None):
@@ -2929,6 +2932,7 @@ class App(QtCore.QObject):
         :param field: the GUI element in Preferences GUI to be updated
         :param factor: factor to be applied to the field parameter
         :param units: current FLatCAM measuring units
+        :param defaults_dict: the defaults storage
         :return: None, it updates GUI elements
         """
 
@@ -2949,8 +2953,6 @@ class App(QtCore.QObject):
                 elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
                     self.defaults_form_fields[field].set_value((def_dict[field] * factor))
         except KeyError:
-            # self.log.debug("defaults_write_form(): No field for: %s" % option)
-            # TODO: Rethink this?
             pass
         except AttributeError:
             log.debug(field)
@@ -3258,6 +3260,10 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'grb_editor'
 
+            # reset the following variables so the UI is built again after edit
+            edited_object.ui_build = False
+            edited_object.build_aperture_storage = False
+
         # make sure that we can't select another object while in Editor Mode:
         # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.ui.project_frame.setDisabled(True)
@@ -3267,8 +3273,7 @@ class App(QtCore.QObject):
 
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
         self.ui.plot_tab_area.protectTab(0)
-        self.inform.emit('[WARNING_NOTCL] %s' %
-                         _("Editor is activated ..."))
+        self.inform.emit('[WARNING_NOTCL] %s' % _("Editor is activated ..."))
 
         self.should_we_save = True
 
@@ -6828,6 +6833,9 @@ class App(QtCore.QObject):
             if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
                 self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('black'))
 
+        # restore the default stylesheet by setting a blank one
+        self.ui.pref_apply_button.setStyleSheet("")
+
         self.inform.emit('%s' % _("Preferences applied."))
 
         # make sure we update the self.current_defaults dict used to undo changes to self.defaults
@@ -6902,7 +6910,7 @@ class App(QtCore.QObject):
 
         # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
         if notebook_widget_name == 'selected_tab':
-            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+            if self.collection.get_active().kind == 'geometry':
                 # Tool add works for Geometry only if Advanced is True in Preferences
                 if self.defaults["global_app_level"] == 'a':
                     tool_add_popup = FCInputDialog(title="New Tool ...",
@@ -6918,12 +6926,11 @@ class App(QtCore.QObject):
                             return
                         self.collection.get_active().on_tool_add(dia=float(val))
                     else:
-                        self.inform.emit('[WARNING_NOTCL] %s...' %
-                                         _("Adding Tool cancelled"))
+                        self.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
                 else:
                     msgbox = QtWidgets.QMessageBox()
                     msgbox.setText(_("Adding Tool works only when Advanced is checked.\n"
-                                   "Go to Preferences -> General - Show Advanced Options."))
+                                     "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
                     msgbox.setWindowIcon(QtGui.QIcon(self.resource_location + '/warning.png'))
                     bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
@@ -7616,13 +7623,16 @@ class App(QtCore.QObject):
                     pass
 
     def on_preferences_edited(self):
-        self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
+        if self.preferences_changed_flag is False:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Preferences edited but not saved."))
 
-        for idx in range(self.ui.plot_tab_area.count()):
-            if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
-                self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.tabText(idx) == _("Preferences"):
+                    self.ui.plot_tab_area.tabBar.setTabTextColor(idx, QtGui.QColor('red'))
 
-        self.preferences_changed_flag = True
+            self.ui.pref_apply_button.setStyleSheet("QPushButton {color: red;}")
+
+            self.preferences_changed_flag = True
 
     def on_tools_database(self):
         """
@@ -9908,8 +9918,33 @@ class App(QtCore.QObject):
             self.toggle_codeeditor = False
 
     def on_code_editor_close(self):
-        print("closed")
         self.toggle_codeeditor = False
+
+    def goto_text_line(self):
+        """
+        Will scroll a text to the specified text line.
+
+        :return: None
+        """
+        dia_box = Dialog_box(title=_("Go to Line ..."),
+                             label=_("Line:"),
+                             icon=QtGui.QIcon(self.resource_location + '/jump_to16.png'),
+                             initial_text='')
+        try:
+            line = int(dia_box.location) - 1
+        except (ValueError, TypeError):
+            line = 0
+
+        if dia_box.ok:
+            # make sure to move first the cursor at the end so after finding the line the line will be positioned
+            # at the top of the window
+            self.ui.plot_tab_area.currentWidget().code_editor.moveCursor(QTextCursor.End)
+            # get the document() of the TextEditor
+            doc = self.ui.plot_tab_area.currentWidget().code_editor.document()
+            # create a Text Cursor based on the searched line
+            cursor = QTextCursor(doc.findBlockByLineNumber(line))
+            # set cursor of the code editor with the cursor at the searcehd line
+            self.ui.plot_tab_area.currentWidget().code_editor.setTextCursor(cursor)
 
     def on_filenewscript(self, silent=False, name=None, text=None):
         """
@@ -9921,8 +9956,7 @@ class App(QtCore.QObject):
         :return: None
         """
         if silent is False:
-            self.inform.emit('[success] %s' %
-                             _("New TCL script file created in Code Editor."))
+            self.inform.emit('[success] %s' % _("New TCL script file created in Code Editor."))
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")
@@ -10025,8 +10059,7 @@ class App(QtCore.QObject):
                         self.shell._sysShell.exec_command(cmd_line_shellfile_content, no_echo=True)
 
                 if silent is False:
-                    self.inform.emit('[success] %s' %
-                                     _("TCL script file opened in Code Editor and executed."))
+                    self.inform.emit('[success] %s' % _("TCL script file opened in Code Editor and executed."))
             except Exception as e:
                 log.debug("App.on_filerunscript() -> %s" % str(e))
                 sys.exit(2)
