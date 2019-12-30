@@ -56,7 +56,8 @@ class TclCommandPaint(TclCommand):
             ('name', 'Name of the source Geometry object. String.'),
             ('tooldia', 'Diameter of the tool to be used. Can be a comma separated list of diameters. No space is '
                         'allowed between tool diameters. E.g: correct: 0.5,1 / incorrect: 0.5, 1'),
-            ('overlap', 'Percentage of the tool diameter to overlap cuts. Float number, [0%, 99.9999%]'),
+            ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
+                        'E.g: for a 25% from tool diameter overlap use -overlap 25'),
             ('margin', 'Bounding box margin. Float number.'),
             ('order', 'Can have the values: "no", "fwd" and "rev". String.'
                       'It is useful when there are multiple tools in tooldia parameter.'
