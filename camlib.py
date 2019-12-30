@@ -1326,7 +1326,7 @@ class Geometry(object):
         geoms.get_points = get_pts
 
         # Path margin
-        path_margin = polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4))
+        path_margin = polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))
 
         if path_margin.is_empty or path_margin is None:
             return
@@ -1345,7 +1345,7 @@ class Geometry(object):
             # provide the app with a way to process the GUI events when in a blocking loop
             QtWidgets.QApplication.processEvents()
 
-            path = Point(seedpoint).buffer(radius, int(steps_per_circle / 4)).exterior
+            path = Point(seedpoint).buffer(radius, int(steps_per_circle)).exterior
             path = path.intersection(path_margin)
 
             # Touches polygon?

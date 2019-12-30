@@ -1269,23 +1269,22 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         """
 
         if geometry is None:
-            if follow:
-                work_geo = self.follow_geometry
-            else:
-                work_geo = self.solid_geometry
+            work_geo = self.follow_geometry if follow is True else self.solid_geometry
         else:
             work_geo = geometry
 
         if dia is None:
             dia = float(self.options["isotooldia"])
+
         if passes is None:
             passes = int(self.options["isopasses"])
+
         if overlap is None:
             overlap = float(self.options["isooverlap"])
-        if combine is None:
-            combine = self.options["combine_passes"]
-        else:
-            combine = bool(combine)
+
+        overlap /= 100.0
+
+        combine = self.options["combine_passes"] if combine is None else bool(combine)
 
         if milling_type is None:
             milling_type = self.options["milling_type"]
@@ -1316,7 +1315,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 geo_obj.solid_geometry = []
                 for i in range(passes):
-                    iso_offset = dia * ((2 * i + 1) / 2.0) - (i * (overlap / 100) * dia)
+                    iso_offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_t = 1 if milling_type == 'cl' else 0
@@ -1417,7 +1416,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         else:
             for i in range(passes):
 
-                offset = dia * ((2 * i + 1) / 2.0) - (i * (overlap / 100) * dia)
+                offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
                 if passes > 1:
                     if outname is None:
                         if self.iso_type == 0:

@@ -367,11 +367,14 @@ class IntEntry(QtWidgets.QLineEdit):
 
 
 class FCEntry(QtWidgets.QLineEdit):
-    def __init__(self, decimals=None, alignment=None, parent=None):
+    def __init__(self, decimals=None, alignment=None, border_color=None, parent=None):
         super(FCEntry, self).__init__(parent)
         self.readyToEdit = True
         self.editingFinished.connect(self.on_edit_finished)
         self.decimals = decimals if decimals is not None else 4
+
+        if border_color:
+            self.setStyleSheet("QLineEdit {border: 1px solid %s;}" % border_color)
 
         if alignment:
             if alignment == 'center':

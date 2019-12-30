@@ -15,6 +15,12 @@ CAD program, and create G-Code for Isolation routing.
 - in Transform Tool adjusted the GUI
 - fixed some decimals issues in NCC Tool, Paint Tool and Excellon Editor (they were still using the harcoded values)
 - some small updates in the NCC Tool
+- changes in the Preferences UI for NCC and Paint Tool in Tool Dia entry field
+- fixed Tcl commands that use the overlap parameter to switch from fraction to percentage
+- in Transform Tool mae sure that the buffer sub-tool parameters are better explained in tooltips
+- attempt to make TclCommand quit_flatcam work under Linux
+- some fixes in the NCC Tcl command (using the bool() method on some params)
+- another attempt to make TclCommand quit_flatcam work under Linux
 
 29.12.2019
 

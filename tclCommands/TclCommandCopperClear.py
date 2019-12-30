@@ -55,7 +55,8 @@ class TclCommandCopperClear(TclCommand):
             ('name', 'Name of the source Geometry object. String.'),
             ('tooldia', 'Diameter of the tool to be used. Can be a comma separated list of diameters. No space is '
                         'allowed between tool diameters. E.g: correct: 0.5,1 / incorrect: 0.5, 1'),
-            ('overlap', 'Fraction of the tool diameter to overlap cuts. Float number.'),
+            ('overlap', 'Percentage of tool diameter to overlap current pass over previous pass. Float [0, 99.9999]\n'
+                        'E.g: for a 25% from tool diameter overlap use -overlap 25'),
             ('margin', 'Bounding box margin. Float number.'),
             ('order', 'Can have the values: "no", "fwd" and "rev". String.'
                       'It is useful when there are multiple tools in tooldia parameter.'
@@ -68,13 +69,13 @@ class TclCommandCopperClear(TclCommand):
             ('rest', 'Use rest-machining. True or False'),
             ('has_offset', 'The offset will used only if this is set True or present in args. True or False.'),
             ('offset', 'The copper clearing will finish to a distance from copper features. Float number.'),
-            ('all', 'Will copper clear the whole object. 1 = enabled, anything else = disabled'),
+            ('all', 'Will copper clear the whole object. 1 or True = enabled, anything else = disabled'),
             ('ref', 'Will clear of extra copper all polygons within a specified object with the name in "box" '
-                    'parameter. 1 = enabled, anything else = disabled'),
+                    'parameter. 1 or True = enabled, anything else = disabled'),
             ('box', 'Name of the object to be used as reference. Required when selecting "ref" = 1. String.'),
             ('outname', 'Name of the resulting Geometry object. String.'),
         ]),
-        'examples': []
+        'examples': ["ncc obj_name -tooldia 0.3,1 -overlap 10 -margin 1.0 -method 'lines' -all True"]
     }
 
     def execute(self, args, unnamed_args):
@@ -106,9 +107,9 @@ class TclCommandCopperClear(TclCommand):
             tooldia = self.app.defaults["tools_ncctools"]
 
         if 'overlap' in args:
-            overlap = float(args['overlap'])
+            overlap = float(args['overlap']) / 100.0
         else:
-            overlap = float(self.app.defaults["tools_nccoverlap"])
+            overlap = float(self.app.defaults["tools_nccoverlap"]) / 100.0
 
         if 'order' in args:
             order = args['order']
@@ -217,7 +218,7 @@ class TclCommandCopperClear(TclCommand):
                 outname = name + "_ncc_rm"
 
         # Non-Copper clear all polygons in the non-copper clear object
-        if 'all' in args and args['all'] == 1:
+        if 'all' in args and bool(args['all']):
             self.app.ncclear_tool.clear_copper(ncc_obj=obj,
                                                select_method='itself',
                                                ncctooldia=tooldia,
@@ -237,7 +238,7 @@ class TclCommandCopperClear(TclCommand):
             return
 
         # Non-Copper clear all polygons found within the box object from the the non_copper cleared object
-        elif 'ref' in args and args['ref'] == 1:
+        elif 'ref' in args and bool(args['ref']):
             if 'box' not in args:
                 self.raise_tcl_error('%s' % _("Expected -box <value>."))
             else:
