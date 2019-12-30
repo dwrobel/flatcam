@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Transform Tool adjusted the GUI
 - fixed some decimals issues in NCC Tool, Paint Tool and Excellon Editor (they were still using the harcoded values)
 - some small updates in the NCC Tool
+- changes in the Preferences UI for NCC and Paint Tool in Tool Dia entry field
 
 29.12.2019
 

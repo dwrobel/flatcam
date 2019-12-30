@@ -5034,7 +5034,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "Valid values: 0.3, 1.0")
         )
         grid0.addWidget(ncctdlabel, 0, 0)
-        self.ncc_tool_dia_entry = FCEntry()
+        self.ncc_tool_dia_entry = FCEntry(border_color='#0069A9')
+        self.ncc_tool_dia_entry.setPlaceholderText(_("Comma separated values"))
         grid0.addWidget(self.ncc_tool_dia_entry, 0, 1)
 
         # Tool Type Radio Button
@@ -5545,7 +5546,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(ptdlabel, 0, 0)
 
-        self.painttooldia_entry = FCEntry()
+        self.painttooldia_entry = FCEntry(border_color='#0069A9')
+        self.painttooldia_entry.setPlaceholderText(_("Comma separated values"))
 
         grid0.addWidget(self.painttooldia_entry, 0, 1)
 
