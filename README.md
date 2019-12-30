@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Transform Tool mae sure that the buffer sub-tool parameters are better explained in tooltips
 - attempt to make TclCommand quit_flatcam work under Linux
 - some fixes in the NCC Tcl command (using the bool() method on some params)
+- another attempt to make TclCommand quit_flatcam work under Linux
 
 29.12.2019
 

@@ -5104,7 +5104,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.save_defaults()
+        self.save_defaults(silent=True)
         log.debug("App.final_save() --> App Defaults saved.")
 
         if self.cmd_line_headless != 1:
@@ -5139,10 +5139,13 @@ class App(QtCore.QObject):
 
         log.debug("App.final_save() --> App UI state saved.")
 
-        QtWidgets.qApp.quit()
-
+        # QtWidgets.qApp.quit()
+        QtCore.QCoreApplication.exit()
         if sys.platform != 'win32':
-            sys.exit()
+            try:
+                sys.exit()
+            except Exception:
+                pass
 
     def on_portable_checked(self, state):
         """
