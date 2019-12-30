@@ -45,7 +45,7 @@ class TclCommandIsolate(TclCommandSignaled):
             ('name', 'Name of the source object.'),
             ('dia', 'Tool diameter.'),
             ('passes', 'Passes of tool width.'),
-            ('overlap', 'Fraction of tool diameter to overlap passes.'),
+            ('overlap', 'Percentage of tool diameter to overlap passes. [0%, 99.9999%'),
             ('combine', 'Combine all passes into one geometry.'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('follow', 'Create a Geometry that follows the Gerber path.'),

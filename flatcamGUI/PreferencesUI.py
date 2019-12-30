@@ -2048,7 +2048,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         # Pass overlap
         overlabel = QtWidgets.QLabel('%s:' % _('Pass overlap'))
         overlabel.setToolTip(
-            _("How much (fraction) of the tool width to overlap each tool pass.")
+            _("How much (percentage) of the tool width to overlap each tool pass.")
         )
         self.iso_overlap_entry = FCDoubleSpinner(suffix='%')
         self.iso_overlap_entry.set_precision(self.decimals)
@@ -5157,7 +5157,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         # Overlap Entry
         nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         nccoverlabel.setToolTip(
-           _("How much (fraction) of the tool width to overlap each tool pass.\n"
+           _("How much (percentage) of the tool width to overlap each tool pass.\n"
              "Adjust the value starting with lower values\n"
              "and increasing it if areas that should be cleared are still \n"
              "not cleared.\n"
@@ -5574,7 +5574,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Overlap
         ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         ovlabel.setToolTip(
-            _("How much (fraction) of the tool width to overlap each tool pass.\n"
+            _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
               "and increasing it if areas that should be painted are still \n"
               "not painted.\n"
@@ -6418,12 +6418,13 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.buffer_label, 17, 0)
         grid0.addWidget(self.buffer_entry, 17, 1)
 
-        self.buffer_factor_label = QtWidgets.QLabel('%s:' % _("Factor"))
+        self.buffer_factor_label = QtWidgets.QLabel('%s:' % _("Value"))
         self.buffer_factor_label.setToolTip(
             _("A positive value will create the effect of dilation,\n"
               "while a negative value will create the effect of erosion.\n"
               "Each geometry element of the object will be increased\n"
-              "or decreased by the 'factor'.")
+              "or decreased to fit the 'Value'. Value is a percentage\n"
+              "of the initial dimension.")
         )
 
         self.buffer_factor_entry = FCDoubleSpinner(suffix='%')

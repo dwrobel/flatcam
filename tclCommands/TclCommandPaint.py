@@ -56,7 +56,7 @@ class TclCommandPaint(TclCommand):
             ('name', 'Name of the source Geometry object. String.'),
             ('tooldia', 'Diameter of the tool to be used. Can be a comma separated list of diameters. No space is '
                         'allowed between tool diameters. E.g: correct: 0.5,1 / incorrect: 0.5, 1'),
-            ('overlap', 'Fraction of the tool diameter to overlap cuts. Float number.'),
+            ('overlap', 'Percentage of the tool diameter to overlap cuts. Float number, [0%, 99.9999%]'),
             ('margin', 'Bounding box margin. Float number.'),
             ('order', 'Can have the values: "no", "fwd" and "rev". String.'
                       'It is useful when there are multiple tools in tooldia parameter.'
@@ -74,7 +74,7 @@ class TclCommandPaint(TclCommand):
             ('y', 'Y value of coordinate for the selection of a single polygon. Float number.'),
             ('outname', 'Name of the resulting Geometry object. String.'),
         ]),
-        'examples': []
+        'examples': ["paint obj_name -tooldia 0.3 -margin 0.1 -method 'seed' -all True"]
     }
 
     def execute(self, args, unnamed_args):
@@ -103,9 +103,9 @@ class TclCommandPaint(TclCommand):
             tooldia = float(self.app.defaults["tools_paintoverlap"])
 
         if 'overlap' in args:
-            overlap = float(args['overlap'])
+            overlap = float(args['overlap']) / 100.0
         else:
-            overlap = float(self.app.defaults["tools_paintoverlap"])
+            overlap = float(self.app.defaults["tools_paintoverlap"]) / 100.0
 
         if 'order' in args:
             order = args['order']
