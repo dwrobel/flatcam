@@ -22,6 +22,7 @@ CAD program, and create G-Code for Isolation routing.
 - some fixes in the NCC Tcl command (using the bool() method on some params)
 - another attempt to make TclCommand quit_flatcam work under Linux
 - another attempt to make TclCommand quit_flatcam work under Linux - use signal to call a hard exit when in Linux
+- TclCommand quit_flatcam work under Linux
 
 29.12.2019
 
