@@ -253,6 +253,19 @@ class App(QtCore.QObject):
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
 
+        # #########################################################################
+        # Setup the listening thread for another instance launching with args #####
+        # #########################################################################
+
+        # make sure the thread is stored by using a self. otherwise it's garbage collected
+        self.th = QtCore.QThread()
+        self.th.start(priority=QtCore.QThread.LowestPriority)
+
+        self.new_launch = ArgsThread()
+        self.new_launch.open_signal[list].connect(self.on_startup_args)
+        self.new_launch.moveToThread(self.th)
+        self.new_launch.start.emit()
+
         # ############################################################################
         # # ################# OS-specific ############################################
         # ############################################################################
@@ -260,20 +273,6 @@ class App(QtCore.QObject):
 
         # Folder for user settings.
         if sys.platform == 'win32':
-
-            # #########################################################################
-            # Setup the listening thread for another instance launching with args #####
-            # #########################################################################
-
-            # make sure the thread is stored by using a self. otherwise it's garbage collected
-            self.th = QtCore.QThread()
-            self.th.start(priority=QtCore.QThread.LowestPriority)
-
-            self.new_launch = ArgsThread()
-            self.new_launch.open_signal[list].connect(self.on_startup_args)
-            self.new_launch.moveToThread(self.th)
-            self.new_launch.start.emit()
-
             from win32com.shell import shell, shellcon
             if platform.architecture()[0] == '32bit':
                 App.log.debug("Win32!")
@@ -3597,7 +3596,7 @@ class App(QtCore.QObject):
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
 
         :param text: Input command
-        :param reraise: Re-raise TclError exceptions in Python (mostly for unitttests).
+        :param reraise: Re-raise TclError exceptions in Python (mostly for unittests).
         :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
         will create crashes of the _Expandable_Edit widget
         :return: Output from the command
@@ -3614,6 +3613,7 @@ class App(QtCore.QObject):
                 self.shell.append_output(result + '\n')
 
         except tk.TclError as e:
+
             # This will display more precise answer if something in TCL shell fails
             result = self.tcl.eval("set errorInfo")
             self.log.error("Exec command Exception: %s" % (result + '\n'))
@@ -5138,14 +5138,7 @@ class App(QtCore.QObject):
             del stgs
 
         log.debug("App.final_save() --> App UI state saved.")
-
-        # QtWidgets.qApp.quit()
-        QtCore.QCoreApplication.exit()
-        if sys.platform != 'win32':
-            try:
-                sys.exit()
-            except Exception:
-                pass
+        QtWidgets.qApp.quit()
 
     def on_portable_checked(self, state):
         """

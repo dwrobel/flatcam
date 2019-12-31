@@ -13,7 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - Buffer sub-tool in Transform Tool: added the possibility to apply a factor effectively scaling the aperture size thus the copper features sizes
 - in Transform Tool adjusted the GUI
-- fixed some decimals issues in NCC Tool, Paint Tool and Excellon Editor (they were still using the harcoded values)
+- fixed some decimals issues in NCC Tool, Paint Tool and Excellon Editor (they were still using the hardcoded values)
 - some small updates in the NCC Tool
 - changes in the Preferences UI for NCC and Paint Tool in Tool Dia entry field
 - fixed Tcl commands that use the overlap parameter to switch from fraction to percentage
@@ -21,6 +21,8 @@ CAD program, and create G-Code for Isolation routing.
 - attempt to make TclCommand quit_flatcam work under Linux
 - some fixes in the NCC Tcl command (using the bool() method on some params)
 - another attempt to make TclCommand quit_flatcam work under Linux
+- another attempt to make TclCommand quit_flatcam work under Linux - use signal to call a hard exit when in Linux
+- TclCommand quit_flatcam work under Linux
 
 29.12.2019
 
