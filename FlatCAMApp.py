@@ -241,8 +241,6 @@ class App(QtCore.QObject):
     # signal emitted when jumping
     jump_signal = pyqtSignal(tuple)
 
-    hard_exit_signal = pyqtSignal()
-
     def __init__(self, user_defaults=True):
         """
         Starts the application.
@@ -255,6 +253,19 @@ class App(QtCore.QObject):
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
 
+        # #########################################################################
+        # Setup the listening thread for another instance launching with args #####
+        # #########################################################################
+
+        # make sure the thread is stored by using a self. otherwise it's garbage collected
+        self.th = QtCore.QThread()
+        self.th.start(priority=QtCore.QThread.LowestPriority)
+
+        self.new_launch = ArgsThread()
+        self.new_launch.open_signal[list].connect(self.on_startup_args)
+        self.new_launch.moveToThread(self.th)
+        self.new_launch.start.emit()
+
         # ############################################################################
         # # ################# OS-specific ############################################
         # ############################################################################
@@ -262,20 +273,6 @@ class App(QtCore.QObject):
 
         # Folder for user settings.
         if sys.platform == 'win32':
-
-            # #########################################################################
-            # Setup the listening thread for another instance launching with args #####
-            # #########################################################################
-
-            # make sure the thread is stored by using a self. otherwise it's garbage collected
-            self.th = QtCore.QThread()
-            self.th.start(priority=QtCore.QThread.LowestPriority)
-
-            self.new_launch = ArgsThread()
-            self.new_launch.open_signal[list].connect(self.on_startup_args)
-            self.new_launch.moveToThread(self.th)
-            self.new_launch.start.emit()
-
             from win32com.shell import shell, shellcon
             if platform.architecture()[0] == '32bit':
                 App.log.debug("Win32!")
@@ -2138,8 +2135,6 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.tab_closed_signal.connect(self.on_plot_area_tab_closed)
 
         self.ui.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
-
-        self.hard_exit_signal.connect(self.on_hard_exit)
 
         # #####################################################################################
         # ########### FINISHED CONNECTING SIGNALS #############################################
@@ -5143,15 +5138,7 @@ class App(QtCore.QObject):
             del stgs
 
         log.debug("App.final_save() --> App UI state saved.")
-
-        # QtWidgets.qApp.quit()
-        QtCore.QCoreApplication.exit()
-        if sys.platform != 'win32':
-            self.hard_exit_signal.emit()
-
-    def on_hard_exit(self):
-        log.debug("App.on_hard_exit() Executed")
-        sys.exit()
+        QtWidgets.qApp.quit()
 
     def on_portable_checked(self, state):
         """
