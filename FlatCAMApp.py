@@ -241,6 +241,8 @@ class App(QtCore.QObject):
     # signal emitted when jumping
     jump_signal = pyqtSignal(tuple)
 
+    hard_exit_signal = pyqtSignal()
+
     def __init__(self, user_defaults=True):
         """
         Starts the application.
@@ -2137,6 +2139,8 @@ class App(QtCore.QObject):
 
         self.ui.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
 
+        self.hard_exit_signal.connect(self.on_hard_exit)
+
         # #####################################################################################
         # ########### FINISHED CONNECTING SIGNALS #############################################
         # #####################################################################################
@@ -3597,7 +3601,7 @@ class App(QtCore.QObject):
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
 
         :param text: Input command
-        :param reraise: Re-raise TclError exceptions in Python (mostly for unitttests).
+        :param reraise: Re-raise TclError exceptions in Python (mostly for unittests).
         :param no_echo: If True it will not try to print to the Shell because most likely the shell is hidden and it
         will create crashes of the _Expandable_Edit widget
         :return: Output from the command
@@ -3614,6 +3618,7 @@ class App(QtCore.QObject):
                 self.shell.append_output(result + '\n')
 
         except tk.TclError as e:
+
             # This will display more precise answer if something in TCL shell fails
             result = self.tcl.eval("set errorInfo")
             self.log.error("Exec command Exception: %s" % (result + '\n'))
@@ -5142,10 +5147,11 @@ class App(QtCore.QObject):
         # QtWidgets.qApp.quit()
         QtCore.QCoreApplication.exit()
         if sys.platform != 'win32':
-            try:
-                sys.exit()
-            except Exception:
-                pass
+            self.hard_exit_signal.emit()
+
+    def on_hard_exit(self):
+        log.debug("App.on_hard_exit() Executed")
+        sys.exit()
 
     def on_portable_checked(self, state):
         """
