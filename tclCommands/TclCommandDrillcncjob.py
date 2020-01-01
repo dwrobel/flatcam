@@ -48,7 +48,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         'args': collections.OrderedDict([
             ('name', 'Name of the source object.'),
             ('drilled_dias',
-             'Comma separated tool diameters of the drills to be drilled (example: 0.6, 1.0 or 3.125).'),
+             'Comma separated tool diameters of the drills to be drilled (example: 0.6,1.0 or 3.125). No space allowed'),
             ('drillz', 'Drill depth into material (example: -2.0).'),
             ('travelz', 'Travel distance above material (example: 2.0).'),
             ('feedrate', 'Drilling feed rate.'),
@@ -74,7 +74,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ]),
         'examples': ['drillcncjob test.TXT -drillz -1.5 -travelz 14 -feedrate 222 -feedrate_rapid 456 -spindlespeed 777'
                      ' -toolchange True -toolchangez 33 -endz 22 -pp default\n'
-                     'Usage of -feedrate_rapid matter only when the posptocessor is using it, like -marlin-.']
+                     'Usage of -feedrate_rapid matter only when the preprocessor is using it, like -marlin-.']
     }
 
     def execute(self, args, unnamed_args):
@@ -186,6 +186,9 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             if bool(args['dwell']) and args['dwelltime']:
                 job_obj.dwell = True
                 job_obj.dwelltime = float(args['dwelltime'])
+            else:
+                job_obj.dwell = obj.options["dwell"]
+                job_obj.dwelltime = float(obj.options["dwelltime"])
 
             job_obj.spindlespeed = args["spindlespeed"] if "spindlespeed" in args else None
             job_obj.pp_excellon_name = args["pp"] if "pp" in args and args["pp"] \
@@ -209,6 +212,18 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.generate_from_excellon_by_tool(obj, tools, drillz=drillz, toolchangez=toolchangez,
                                                    endz=endz,
                                                    toolchange=toolchange, excellon_optimization_type=opt_type)
+
+            for t_item in job_obj.exc_cnc_tools:
+                job_obj.exc_cnc_tools[t_item]['data']['offset'] = \
+                    float(job_obj.exc_cnc_tools[t_item]['offset_z']) + float(drillz)
+                job_obj.exc_cnc_tools[t_item]['data']['ppname_e'] = obj.options['ppname_e']
+
+                # for now there is no tool offset support in this Tcl Command so we write the 0.0 value here
+                job_obj.tool_offset[t_item] = 0.0
+
+            print(job_obj.tool_offset)
+            job_obj.origin_kind = 'excellon'
+
             job_obj.gcode_parse()
             job_obj.create_geometry()
 

@@ -258,8 +258,8 @@ class TclCommand(object):
         :return: raise exception
         """
 
-        # becouse of signaling we cannot call error to TCL from here but when task
-        # is finished also nonsignaled are handled here to better exception
+        # because of signaling we cannot call error to TCL from here but when task
+        # is finished also non-signaled are handled here to better exception
         # handling and  displayed after command is finished
         raise self.app.TclErrorException(text)
 
@@ -400,7 +400,7 @@ class TclCommandSignaled(TclCommand):
                 passed_timeout = self.app.defaults['global_background_timeout']
 
             # set detail for processing, it will be there until next open or close
-            self.app.shell.open_proccessing(self.get_current_command())
+            self.app.shell.open_processing(self.get_current_command())
 
             def handle_finished(obj):
                 self.app.shell_command_finished.disconnect(handle_finished)

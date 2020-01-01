@@ -1007,7 +1007,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
-            self.tools_table.itemChanged.connect(self.on_tool_edit)
+            # self.tools_table.itemChanged.connect(self.on_tool_edit)
+            self.ui_connect()
             return
         else:
             if muted is None:

@@ -7252,7 +7252,7 @@ class FlatCAMScript(FlatCAMObj):
 
                 # execute the actual Tcl command
                 try:
-                    self.app.shell.open_proccessing()  # Disables input box.
+                    self.app.shell.open_processing()  # Disables input box.
 
                     result = self.app.tcl.eval(str(new_command))
                     if result != 'None':
@@ -7270,7 +7270,7 @@ class FlatCAMScript(FlatCAMObj):
             log.error("Exec command Exception: %s" % (result + '\n'))
             self.app.shell.append_error('ERROR: ' + result + '\n')
 
-        self.app.shell.close_proccessing()
+        self.app.shell.close_processing()
 
     def on_autocomplete_changed(self, state):
         if state:

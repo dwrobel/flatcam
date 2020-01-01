@@ -18,6 +18,9 @@ from matplotlib.backend_bases import KeyEvent as mpl_key_event
 import webbrowser
 from copy import deepcopy
 from datetime import datetime
+
+import subprocess
+import os
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins
@@ -2340,6 +2343,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.lock_toolbar(lock=lock_state)
         self.lock_action.triggered[bool].connect(self.lock_toolbar)
 
+        self.pref_open_button.clicked.connect(self.on_preferences_open_folder)
+        self.clear_btn.clicked.connect(self.on_gui_clear)
+
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%% GUI Building FINISHED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2359,6 +2365,47 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 return False
 
         return False
+
+    def on_preferences_open_folder(self):
+        """
+        Will open an Explorer window set to the folder path where the FlatCAM preferences files are usually saved.
+
+        :return: None
+        """
+
+        if sys.platform == 'win32':
+            subprocess.Popen('explorer %s' % self.app.data_path)
+        elif sys.platform == 'darwin':
+            os.system('open "%s"' % self.app.data_path)
+        else:
+            subprocess.Popen(['xdg-open', self.app.data_path])
+        self.app.inform.emit('[success] %s' % _("FlatCAM Preferences Folder opened."))
+
+    def on_gui_clear(self):
+        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
+        theme_settings.setValue('theme', 'white')
+
+        del theme_settings
+
+        resource_loc = self.app.resource_location
+
+        msgbox = QtWidgets.QMessageBox()
+        msgbox.setText(_("Are you sure you want to delete the GUI Settings? \n"))
+        msgbox.setWindowTitle(_("Clear GUI Settings"))
+        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/trash32.png'))
+        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+
+        msgbox.setDefaultButton(bt_no)
+        msgbox.exec_()
+        response = msgbox.clickedButton()
+
+        if response == bt_yes:
+            settings = QSettings("Open Source", "FlatCAM")
+            for key in settings.allKeys():
+                settings.remove(key)
+            # This will write the setting to the platform specific storage.
+            del settings
 
     def populate_toolbars(self):
         """

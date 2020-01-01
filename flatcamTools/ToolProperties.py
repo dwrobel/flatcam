@@ -468,7 +468,7 @@ class Properties(FlatCAMTool):
                         _("Depth of Cut"),
                         '%.*f %s' % (
                             self.decimals,
-                            (obj.z_cut - obj.tool_offset[tool_dia]),
+                            (obj.z_cut - abs(obj.tool_offset[tool_dia])),
                             self.app.defaults['units'].lower()
                         )
                     ],

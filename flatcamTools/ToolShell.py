@@ -56,7 +56,7 @@ class TermWidget(QWidget):
         self._history = ['']  # current empty line
         self._historyIndex = 0
 
-    def open_proccessing(self, detail=None):
+    def open_processing(self, detail=None):
         """
         Open processing and disable using shell commands again until all commands are finished
 
@@ -67,14 +67,14 @@ class TermWidget(QWidget):
         self._edit.setTextColor(Qt.white)
         self._edit.setTextBackgroundColor(Qt.darkGreen)
         if detail is None:
-            self._edit.setPlainText(_("...proccessing..."))
+            self._edit.setPlainText(_("...processing..."))
         else:
-            self._edit.setPlainText('%s [%s]' % (_("...proccessing..."),  detail))
+            self._edit.setPlainText('%s [%s]' % (_("...processing..."),  detail))
 
         self._edit.setDisabled(True)
         self._edit.setFocus()
 
-    def close_proccessing(self):
+    def close_processing(self):
         """
         Close processing and enable using shell commands  again
         :return:
