@@ -48,18 +48,20 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         'args': collections.OrderedDict([
             ('name', 'Name of the source object.'),
             ('drilled_dias',
-             'Comma separated tool diameters of the drills to be drilled (example: 0.6,1.0 or 3.125). No space allowed'),
+             'Comma separated tool diameters of the drills to be drilled (example: 0.6,1.0 or 3.125). '
+             'No space allowed'),
             ('drillz', 'Drill depth into material (example: -2.0).'),
             ('travelz', 'Travel distance above material (example: 2.0).'),
             ('feedrate', 'Drilling feed rate.'),
             ('feedrate_rapid', 'Rapid drilling feed rate.'),
             ('spindlespeed', 'Speed of the spindle in rpm (example: 4000).'),
             ('toolchange', 'Enable tool changes (example: True).'),
-            ('toolchangez', 'Z distance for toolchange (example: 30.0).'),
+            ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
+                            'If used in the command then a toolchange event will be included in gcode'),
             ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
             ('endz', 'Z distance at job end (example: 30.0).'),
-            ('dwell', 'True or False; use (or not) the dwell'),
-            ('dwelltime', 'Time to pause to allow the spindle to reach the full speed'),
+            ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
+                          'If it is not used in command then it will not be included'),
             ('pp', 'This is the Excellon preprocessor name: case_sensitive, no_quotes'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('opt_type', 'Name of move optimization type. B by default for Basic OR-Tools, M for Metaheuristic OR-Tools'
@@ -73,7 +75,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('muted', 'It will not put errors in the Shell or status bar.')
         ]),
         'examples': ['drillcncjob test.TXT -drillz -1.5 -travelz 14 -feedrate 222 -feedrate_rapid 456 -spindlespeed 777'
-                     ' -toolchange True -toolchangez 33 -endz 22 -pp default\n'
+                     ' -toolchangez 33 -endz 22 -pp default\n'
                      'Usage of -feedrate_rapid matter only when the preprocessor is using it, like -marlin-.']
     }
 
@@ -118,7 +120,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
         def job_init(job_obj, app_obj):
             # tools = args["tools"] if "tools" in args else 'all'
-            units = self.app.defaults['units'].upper()
 
             try:
                 if 'drilled_dias' in args and args['drilled_dias'] != 'all':
@@ -171,11 +172,19 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 else:
                     return "fail"
 
-            drillz = args["drillz"] if "drillz" in args and args["drillz"] else obj.options["drillz"]
-            toolchangez = args["toolchangez"] if "toolchangez" in args and args["toolchangez"] else \
-                obj.options["toolchangez"]
-            endz = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
-            toolchange = True if "toolchange" in args and bool(args["toolchange"]) is True else False
+            drillz = args["drillz"] if "drillz" in args and args["drillz"] is not None else obj.options["drillz"]
+
+            if "toolchangez" in args:
+                toolchange = True
+                if args["toolchangez"] is not None:
+                    toolchangez = args["toolchangez"]
+                else:
+                    toolchangez = obj.options["toolchangez"]
+            else:
+                toolchange = False
+                toolchangez = 0.0
+
+            endz = args["endz"] if "endz" in args and args["endz"] is not None else obj.options["endz"]
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 
             job_obj.z_move = args["travelz"] if "travelz" in args and args["travelz"] else obj.options["travelz"]
@@ -183,12 +192,15 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.feedrate_rapid = args["feedrate_rapid"] \
                 if "feedrate_rapid" in args and args["feedrate_rapid"] else obj.options["feedrate_rapid"]
 
-            if bool(args['dwell']) and args['dwelltime']:
+            if 'dwelltime' in args:
                 job_obj.dwell = True
-                job_obj.dwelltime = float(args['dwelltime'])
+                if args['dwelltime'] is not None:
+                    job_obj.dwelltime = float(args['dwelltime'])
+                else:
+                    job_obj.dwelltime = float(obj.options["dwelltime"])
             else:
-                job_obj.dwell = obj.options["dwell"]
-                job_obj.dwelltime = float(obj.options["dwelltime"])
+                job_obj.dwell = False
+                job_obj.dwelltime = 0.0
 
             job_obj.spindlespeed = args["spindlespeed"] if "spindlespeed" in args else None
             job_obj.pp_excellon_name = args["pp"] if "pp" in args and args["pp"] \
