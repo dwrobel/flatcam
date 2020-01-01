@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+1.01.2020
+
+- fixed bug in NCC Tool: after trying to add a tool already in the Tool Table when trying to change the Tool Type the GUI does not change
+- final fix for app not quiting when running a script as argument, script that has the quit_flatcam Tcl command; fixed issue #360
+- fixed issue #363. The Tcl command drillcncjob does not create tool cut, does not allow creation of gcode, it forces the usage of dwell and dwelltime parameters
+
+
 30.12.2019
 
 - Buffer sub-tool in Transform Tool: added the possibility to apply a factor effectively scaling the aperture size thus the copper features sizes

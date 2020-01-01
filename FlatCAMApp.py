@@ -20,7 +20,6 @@ import shutil
 import stat
 
 from stat import S_IREAD, S_IRGRP, S_IROTH
-import subprocess
 import ctypes
 
 # import tkinter as tk
@@ -39,7 +38,7 @@ import gc
 from xml.dom.minidom import parseString as parse_xml_string
 
 from multiprocessing.connection import Listener, Client
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 import socket
 from array import array
 
@@ -240,6 +239,9 @@ class App(QtCore.QObject):
 
     # signal emitted when jumping
     jump_signal = pyqtSignal(tuple)
+
+    # close app signal
+    close_app_signal = pyqtSignal()
 
     def __init__(self, user_defaults=True):
         """
@@ -2011,8 +2013,6 @@ class App(QtCore.QObject):
         self.ui.pref_close_button.clicked.connect(self.on_pref_close_button)
 
         self.ui.pref_defaults_button.clicked.connect(self.on_restore_defaults_preferences)
-        self.ui.pref_open_button.clicked.connect(self.on_preferences_open_folder)
-        self.ui.clear_btn.clicked.connect(self.on_gui_clear)
 
         # #############################################################################
         # ######################### GUI PREFERENCES SIGNALS ###########################
@@ -2136,6 +2136,8 @@ class App(QtCore.QObject):
 
         self.ui.grid_snap_btn.triggered.connect(self.on_grid_snap_triggered)
 
+        # signal to close the application
+        self.close_app_signal.connect(self.kill_app)
         # #####################################################################################
         # ########### FINISHED CONNECTING SIGNALS #############################################
         # #####################################################################################
@@ -2695,20 +2697,24 @@ class App(QtCore.QObject):
                 sys.exit(2)
 
         if self.cmd_line_shellfile:
-            try:
+            if self.cmd_line_headless != 1:
                 if self.ui.shell_dock.isHidden():
                     self.ui.shell_dock.show()
-
+            try:
                 with open(self.cmd_line_shellfile, "r") as myfile:
-                    if show_splash:
-                        self.splash.showMessage('%s: %ssec\n%s' % (
-                            _("Canvas initialization started.\n"
-                              "Canvas initialization finished in"), '%.2f' % self.used_time,
-                            _("Executing Tcl Script ...")),
-                                                alignment=Qt.AlignBottom | Qt.AlignLeft,
-                                                color=QtGui.QColor("gray"))
+                    # if show_splash:
+                    #     self.splash.showMessage('%s: %ssec\n%s' % (
+                    #         _("Canvas initialization started.\n"
+                    #           "Canvas initialization finished in"), '%.2f' % self.used_time,
+                    #         _("Executing Tcl Script ...")),
+                    #                             alignment=Qt.AlignBottom | Qt.AlignLeft,
+                    #                             color=QtGui.QColor("gray"))
                     cmd_line_shellfile_text = myfile.read()
-                    self.shell._sysShell.exec_command(cmd_line_shellfile_text)
+                    if self.cmd_line_headless != 1:
+                        self.shell._sysShell.exec_command(cmd_line_shellfile_text)
+                    else:
+                        self.shell._sysShell.exec_command(cmd_line_shellfile_text, no_echo=True)
+
             except Exception as ext:
                 print("ERROR: ", ext)
                 sys.exit(2)
@@ -3606,7 +3612,7 @@ class App(QtCore.QObject):
 
         try:
             if no_echo is False:
-                self.shell.open_proccessing()  # Disables input box.
+                self.shell.open_processing()  # Disables input box.
 
             result = self.tcl.eval(str(tcl_command_string))
             if result != 'None' and no_echo is False:
@@ -3624,7 +3630,7 @@ class App(QtCore.QObject):
                 raise e
         finally:
             if no_echo is False:
-                self.shell.close_proccessing()
+                self.shell.close_processing()
             pass
         return result
 
@@ -3978,57 +3984,12 @@ class App(QtCore.QObject):
                 json.dump(defaults_from_file, f, default=to_dict, indent=2, sort_keys=True)
                 f.close()
             except Exception:
-                self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write defaults to file."))
+                self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
                 return
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("preferences", filename)
         self.file_saved.emit("preferences", filename)
         self.inform.emit('[success] %s: %s' % (_("Exported preferences to"), filename))
-
-    def on_preferences_open_folder(self):
-        """
-        Will open an Explorer window set to the folder path where the FlatCAM preferences files are usually saved.
-
-        :return: None
-        """
-        self.report_usage("on_preferences_open_folder()")
-
-        if sys.platform == 'win32':
-            subprocess.Popen('explorer %s' % self.data_path)
-        elif sys.platform == 'darwin':
-            os.system('open "%s"' % self.data_path)
-        else:
-            subprocess.Popen(['xdg-open', self.data_path])
-        self.inform.emit('[success] %s' %
-                         _("FlatCAM Preferences Folder opened."))
-
-    def on_gui_clear(self):
-        theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
-        theme_settings.setValue('theme', 'white')
-
-        del theme_settings
-
-        resource_loc = 'share'
-
-        msgbox = QtWidgets.QMessageBox()
-        msgbox.setText(_("Are you sure you want to delete the GUI Settings? "
-                         "\n")
-                       )
-        msgbox.setWindowTitle(_("Clear GUI Settings"))
-        msgbox.setWindowIcon(QtGui.QIcon(resource_loc + '/trash32.png'))
-        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
-
-        msgbox.setDefaultButton(bt_no)
-        msgbox.exec_()
-        response = msgbox.clickedButton()
-
-        if response == bt_yes:
-            settings = QSettings("Open Source", "FlatCAM")
-            for key in settings.allKeys():
-                settings.remove(key)
-            # This will write the setting to the platform specific storage.
-            del settings
 
     def save_geometry(self, x, y, width, height, notebook_width):
         """
@@ -4981,13 +4942,14 @@ class App(QtCore.QObject):
             self.defaults["global_toolbar_view"] = tb_status
 
         # Save update options
+        filename = data_path + "/current_defaults.FlatConfig"
         try:
-            f = open(data_path + "/current_defaults.FlatConfig", "w")
+            f = open(filename, "w")
             json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
             f.close()
         except Exception as e:
             log.debug("App.save_defaults() --> %s" % str(e))
-            self.inform.emit('[ERROR_NOTCL] %s' % _("Failed to write defaults to file."))
+            self.inform.emit('[ERROR_NOTCL] %s %s' % (_("Failed to write defaults to file."), str(filename)))
             return
 
         if not silent:
@@ -5138,7 +5100,13 @@ class App(QtCore.QObject):
             del stgs
 
         log.debug("App.final_save() --> App UI state saved.")
+        self.close_app_signal.emit()
+
+    def kill_app(self):
         QtWidgets.qApp.quit()
+        # When the main event loop is not started yet in which case the qApp.quit() will do nothing
+        # we use the following command
+        sys.exit(0)
 
     def on_portable_checked(self, state):
         """
@@ -10043,8 +10011,7 @@ class App(QtCore.QObject):
 
         if filename == "":
             if silent is False:
-                self.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Run TCL script cancelled."))
+                self.inform.emit('[WARNING_NOTCL] %s' % _("Run TCL script cancelled."))
         else:
             if self.cmd_line_headless != 1:
                 if self.ui.shell_dock.isHidden():

@@ -2550,7 +2550,6 @@ class CNCjob(Geometry):
                     self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
                     self.exc_cnc_tools[it[1]]['offset_z'] = z_off
                     self.exc_cnc_tools[it[1]]['data'] = default_data
-
                     self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
