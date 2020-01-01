@@ -339,13 +339,23 @@ class App(QtCore.QObject):
             os.makedirs(self.preprocessorpaths)
             App.log.debug('Created preprocessors folder: ' + self.preprocessorpaths)
 
-        # create tools_db.FlatDB file if there is none
+        # create geo_tools_db.FlatDB file if there is none
         try:
-            f = open(self.data_path + '/tools_db.FlatDB')
+            f = open(self.data_path + '/geo_tools_db.FlatDB')
             f.close()
         except IOError:
-            App.log.debug('Creating empty tool_db.FlatDB')
-            f = open(self.data_path + '/tools_db.FlatDB', 'w')
+            App.log.debug('Creating empty geo_tool_db.FlatDB')
+            f = open(self.data_path + '/geo_tools_db.FlatDB', 'w')
+            json.dump({}, f)
+            f.close()
+
+        # create fctool_tools_db.FlatDB file if there is none
+        try:
+            f = open(self.data_path + '/fctool_tools_db.FlatDB')
+            f.close()
+        except IOError:
+            App.log.debug('Creating empty fctool_tool_db.FlatDB')
+            f = open(self.data_path + '/fctool_tools_db.FlatDB', 'w')
             json.dump({}, f)
             f.close()
 
@@ -956,13 +966,15 @@ class App(QtCore.QObject):
                                           'Repetier, Roland_MDX_20, Users, Toolchange_Custom, Toolchange_Probe_MACH3, '
                                           'Toolchange_manual, Users, all, angle_x, angle_y, axis, auto, axisoffset, '
                                           'box, center_x, center_y, columns, combine, connect, contour, default, '
-                                          'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwell, dwelltime, '
+                                          'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwelltime, '
+                                          'extracut_length, '
                                           'feedrate_z, grbl_11, grbl_laser, gridoffsety, gridx, gridy, has_offset, '
                                           'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
-                                          'minoffset, multidepth, name, offset, opt_type, order, outname, overlap, '
+                                          'minoffset, name, offset, opt_type, order, outname, overlap, '
                                           'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
                                           'rows, shellvar_, scale_factor, spacing_columns, spacing_rows, spindlespeed, '
-                                          'toolchange_xy, tooldia, use_threads, value, x, x0, x1, y, y0, y1, z_cut, '
+                                          'toolchange_xy, toolchangez, '
+                                          'tooldia, use_threads, value, x, x0, x1, y, y0, y1, z_cut, '
                                           'z_move',
             "script_autocompleter": True,
             "script_text": "",
@@ -2188,14 +2200,16 @@ class App(QtCore.QObject):
                                  'Toolchange_manual', 'Users', 'all', 'angle_x', 'angle_y', 'auto', 'axis',
                                  'axisoffset',
                                  'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
-                                 'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz', 'dwell',
-                                 'dwelltime', 'feedrate_z', 'grbl_11', 'grbl_laser', 'gridoffsety', 'gridx', 'gridy',
+                                 'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz',
+                                 'dwelltime', 'extracut_length',
+                                 'feedrate_z', 'grbl_11', 'grbl_laser', 'gridoffsety', 'gridx', 'gridy',
                                  'has_offset', 'holes', 'hpgl', 'iso_type', 'line_xyz', 'margin', 'marlin', 'method',
-                                 'milled_dias', 'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order',
+                                 'milled_dias', 'minoffset', 'name', 'offset', 'opt_type', 'order',
                                  'outname', 'overlap', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',
                                  'preamble', 'radius', 'ref', 'rest', 'rows', 'shellvar_', 'scale_factor',
                                  'spacing_columns',
-                                 'spacing_rows', 'spindlespeed', 'toolchange_xy', 'tooldia', 'use_threads', 'value',
+                                 'spacing_rows', 'spindlespeed', 'toolchange_xy', 'toolchangez',
+                                 'tooldia', 'use_threads', 'value',
                                  'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
                                  ]
 
