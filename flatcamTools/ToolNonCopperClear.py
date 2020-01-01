@@ -1626,6 +1626,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
+
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Could not get the extent of the area to be non copper cleared."))
+                    return 'fail'
             elif isinstance(ncc_obj, FlatCAMGerber) and isotooldia:
                 isolated_geo = []
 
@@ -1650,6 +1655,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     if isolated_geo == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                     else:
+                        if ncc_margin < tool_iso:
+                            app_obj.inform.emit('[WARNING_NOTCL] %s' % _("Isolation geometry is broken. Margin is less "
+                                                                         "than isolation tool diameter."))
                         try:
                             for geo_elem in isolated_geo:
                                 # provide the app with a way to process the GUI events when in a blocking loop
@@ -1723,26 +1731,28 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if empty == 'fail':
                     return 'fail'
 
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Isolation geometry is broken. Margin is less than isolation tool diameter."))
+                    return 'fail'
+
             elif isinstance(ncc_obj, FlatCAMGeometry):
                 sol_geo = cascaded_union(ncc_obj.solid_geometry)
                 if has_offset is True:
-                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' %
-                                        _("Buffering"))
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %
-                                        _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' %  _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
 
-            else:
-                app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                    _('The selected object is not suitable for copper clearing.'))
-                return
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Could not get the extent of the area to be non copper cleared."))
+                    return 'fail'
 
-            if empty.is_empty:
-                app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                    _("Could not get the extent of the area to be non copper cleared."))
+            else:
+                app_obj.inform.emit('[ERROR_NOTCL] %s' %  _('The selected object is not suitable for copper clearing.'))
                 return 'fail'
 
             if type(empty) is Polygon:
@@ -1762,11 +1772,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
-                app_obj.inform.emit(
-                    '[success] %s %s%s %s' % (_('NCC Tool clearing with tool diameter = '),
-                                              str(tool),
-                                              units.lower(),
-                                              _('started.'))
+                app_obj.inform.emit('[success] %s = %s%s %s' % (
+                    _('NCC Tool clearing with tool diameter'), str(tool), units.lower(), _('started.'))
                 )
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
 
@@ -1836,7 +1843,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                 poly_processed.append(False)
                                                 log.warning("Polygon in MultiPolygon can not be cleared.")
                                         else:
-                                            log.warning("Geo in Iterable can not be cleared beacuse it is not Polygon. "
+                                            log.warning("Geo in Iterable can not be cleared because it is not Polygon. "
                                                         "It is: %s" % str(type(pol)))
                                 except TypeError:
                                     if isinstance(p, Polygon):
@@ -1942,32 +1949,59 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                app_obj.inform.emit('[ERROR] %s' % _("There is no NCC Geometry in the file.\n"
-                                                     "Usually it means that the tool diameter is too big "
-                                                     "for the painted geometry.\n"
-                                                     "Change the painting parameters and try again."))
-                return
+                app_obj.inform.emit('[ERROR] %s' %
+                                    _("There is no NCC Geometry in the file.\n"
+                                      "Usually it means that the tool diameter is too big for the painted geometry.\n"
+                                      "Change the painting parameters and try again."))
+                return 'fail'
+
+            # check to see if geo_obj.tools is empty
+            # it will be updated only if there is a solid_geometry for tools
+            if geo_obj.tools:
+                if warning_flag == 0:
+                    self.app.inform.emit('[success] %s' % _("NCC Tool clear all done."))
+                else:
+                    self.app.inform.emit('[WARNING] %s: %s %s.' % (
+                        _("NCC Tool clear all done but the copper features isolation is broken for"),
+                        str(warning_flag),
+                        _("tools")))
+                    return
+
+                # create the solid_geometry
+                geo_obj.solid_geometry = list()
+                for tooluid in geo_obj.tools:
+                    if geo_obj.tools[tooluid]['solid_geometry']:
+                        try:
+                            for geo in geo_obj.tools[tooluid]['solid_geometry']:
+                                geo_obj.solid_geometry.append(geo)
+                        except TypeError:
+                            geo_obj.solid_geometry.append(geo_obj.tools[tooluid]['solid_geometry'])
+            else:
+                # I will use this variable for this purpose although it was meant for something else
+                # signal that we have no geo in the object therefore don't create it
+                app_obj.poly_not_cleared = False
+                return "fail"
 
             # create the solid_geometry
-            geo_obj.solid_geometry = list()
-            for tooluid in geo_obj.tools:
-                if geo_obj.tools[tooluid]['solid_geometry']:
-                    try:
-                        for geo in geo_obj.tools[tooluid]['solid_geometry']:
-                            geo_obj.solid_geometry.append(geo)
-                    except TypeError:
-                        geo_obj.solid_geometry.append(geo_obj.tools[tooluid]['solid_geometry'])
-
-            # Experimental...
-            # print("Indexing...", end=' ')
-            # geo_obj.make_index()
-            if warning_flag == 0:
-                self.app.inform.emit('[success] %s' % _("NCC Tool clear all done."))
-            else:
-                self.app.inform.emit('[WARNING] %s: %s %s.' % (_("NCC Tool clear all done but the copper features "
-                                                                 "isolation is broken for"),
-                                                               str(warning_flag),
-                                                               _("tools")))
+            # geo_obj.solid_geometry = list()
+            # for tooluid in geo_obj.tools:
+            #     if geo_obj.tools[tooluid]['solid_geometry']:
+            #         try:
+            #             for geo in geo_obj.tools[tooluid]['solid_geometry']:
+            #                 geo_obj.solid_geometry.append(geo)
+            #         except TypeError:
+            #             geo_obj.solid_geometry.append(geo_obj.tools[tooluid]['solid_geometry'])
+            #
+            # # Experimental...
+            # # print("Indexing...", end=' ')
+            # # geo_obj.make_index()
+            # if warning_flag == 0:
+            #     self.app.inform.emit('[success] %s' % _("NCC Tool clear all done."))
+            # else:
+            #     self.app.inform.emit('[WARNING] %s: %s %s.' % (
+            #         _("NCC Tool clear all done but the copper features isolation is broken for"),
+            #         str(warning_flag),
+            #         _("tools")))
 
         # ###########################################################################################
         # Initializes the new geometry object for the case of the rest-machining ####################
@@ -2009,15 +2043,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if isinstance(ncc_obj, FlatCAMGerber) and not isotooldia:
                 sol_geo = ncc_obj.solid_geometry
                 if has_offset is True:
-                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' %
-                                        _("Buffering"))
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %
-                                        _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' %  _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
 
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Could not get the extent of the area to be non copper cleared."))
+                    return 'fail'
             elif isinstance(ncc_obj, FlatCAMGerber) and isotooldia:
                 isolated_geo = []
                 self.solid_geometry = ncc_obj.solid_geometry
@@ -2036,6 +2072,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     if isolated_geo == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                     else:
+                        app_obj.inform.emit('[WARNING_NOTCL] %s' % _("Isolation geometry is broken. Margin is less "
+                                                                     "than isolation tool diameter."))
+
                         try:
                             for geo_elem in isolated_geo:
                                 # provide the app with a way to process the GUI events when in a blocking loop
@@ -2105,35 +2144,35 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 sol_geo = cascaded_union(isolated_geo)
                 if has_offset is True:
-                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' %
-                                        _("Buffering"))
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %
-                                        _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
+                    return 'fail'
+
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Isolation geometry is broken. Margin is less than isolation tool diameter."))
                     return 'fail'
 
             elif isinstance(ncc_obj, FlatCAMGeometry):
                 sol_geo = cascaded_union(ncc_obj.solid_geometry)
                 if has_offset is True:
-                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' %
-                                        _("Buffering"))
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %
-                                        _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
-            else:
-                app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                    _('The selected object is not suitable for copper clearing.'))
-                return
 
-            if empty.is_empty:
-                app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                    _("Could not get the extent of the area to be non copper cleared."))
-                return 'fail'
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Could not get the extent of the area to be non copper cleared."))
+                    return 'fail'
+            else:
+                app_obj.inform.emit('[ERROR_NOTCL] %s' % _('The selected object is not suitable for copper clearing.'))
+                return
 
             if self.app.abort_flag:
                 # graceful abort requested by the user
@@ -2156,11 +2195,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 tool = sorted_tools.pop(0)
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
 
-                app_obj.inform.emit(
-                    '[success] %s %s%s %s' % (_('NCC Tool clearing with tool diameter = '),
-                                              str(tool),
-                                              units.lower(),
-                                              _('started.'))
+                app_obj.inform.emit('[success] %s = %s%s %s' % (
+                    _('NCC Tool clearing with tool diameter'), str(tool), units.lower(), _('started.'))
                 )
                 app_obj.proc_container.update_view_text(' %d%%' % 0)
 
@@ -2240,7 +2276,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                 elif isinstance(p, MultiPolygon):
                                     for poly in p:
                                         if poly is not None:
-                                            # provide the app with a way to process the GUI events when in a blocking loop
+                                            # provide the app with a way to process the GUI events when
+                                            # in a blocking loop
                                             QtWidgets.QApplication.processEvents()
 
                                             try:
@@ -2337,7 +2374,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     self.app.inform.emit(
                         '[WARNING] %s: %s %s.' % (_("NCC Tool Rest Machining clear all done but the copper features "
                                                     "isolation is broken for"), str(warning_flag), _("tools")))
-                return
+                    return
 
                 # create the solid_geometry
                 geo_obj.solid_geometry = list()

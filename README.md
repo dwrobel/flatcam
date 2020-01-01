@@ -14,7 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in NCC Tool: after trying to add a tool already in the Tool Table when trying to change the Tool Type the GUI does not change
 - final fix for app not quiting when running a script as argument, script that has the quit_flatcam Tcl command; fixed issue #360
 - fixed issue #363. The Tcl command drillcncjob does not create tool cut, does not allow creation of gcode, it forces the usage of dwell and dwelltime parameters
-
+- in NCC Tool I've added a warning so the user is warned that the NCC margin has to have a value of at least the tool diameter that is doing an iso_op job in the Tool Table
 
 30.12.2019
 

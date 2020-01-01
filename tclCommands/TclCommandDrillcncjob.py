@@ -221,7 +221,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
                 # for now there is no tool offset support in this Tcl Command so we write the 0.0 value here
                 job_obj.tool_offset[t_item] = 0.0
 
-            print(job_obj.tool_offset)
             job_obj.origin_kind = 'excellon'
 
             job_obj.gcode_parse()
