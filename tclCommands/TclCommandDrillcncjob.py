@@ -26,11 +26,9 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         ('feedrate', float),
         ('feedrate_rapid', float),
         ('spindlespeed', int),
-        ('toolchange', bool),
         ('toolchangez', float),
         ('toolchangexy', tuple),
         ('endz', float),
-        ('dwell', bool),
         ('dwelltime', float),
         ('pp', str),
         ('outname', str),
@@ -55,7 +53,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('feedrate', 'Drilling feed rate.'),
             ('feedrate_rapid', 'Rapid drilling feed rate.'),
             ('spindlespeed', 'Speed of the spindle in rpm (example: 4000).'),
-            ('toolchange', 'Enable tool changes (example: True).'),
             ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
                             'If used in the command then a toolchange event will be included in gcode'),
             ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
@@ -221,8 +218,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
 
-            job_obj.generate_from_excellon_by_tool(obj, tools, drillz=drillz, toolchangez=toolchangez,
-                                                   endz=endz,
+            job_obj.generate_from_excellon_by_tool(obj, tools, drillz=drillz, toolchangez=toolchangez, endz=endz,
                                                    toolchange=toolchange, excellon_optimization_type=opt_type)
 
             for t_item in job_obj.exc_cnc_tools:
