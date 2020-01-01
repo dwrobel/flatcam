@@ -1263,6 +1263,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
         self.tabBar = self.FCTabBar(self)
         self.tabBar.onMoveTabSignal.connect(self.moveTab)
+        self.tabBar.onCloseTabSignal.connect(self.on_closetab_middle_button)
+
         self.tabBar.detachedTabDropSignal.connect(self.detachedTabDrop)
         self.set_detachable(val=True)
 
@@ -1350,6 +1352,17 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         """
 
         self.removeTab(currentIndex)
+
+    def on_closetab_middle_button(self, current_index):
+        """
+
+        :param current_index:
+        :return:
+        """
+
+        # if tab is protected don't delete it
+        if self.tabBar.tabButton(current_index, QtWidgets.QTabBar.RightSide) is not None:
+            self.removeTab(current_index)
 
     def protectTab(self, currentIndex):
         # self.FCTabBar().setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
@@ -1664,7 +1677,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         onDetachTabSignal = QtCore.pyqtSignal(int, QtCore.QPoint)
         onMoveTabSignal = QtCore.pyqtSignal(int, int)
         detachedTabDropSignal = QtCore.pyqtSignal(str, int, QtCore.QPoint)
-
+        onCloseTabSignal = QtCore.pyqtSignal(int)
         right_click = QtCore.pyqtSignal(int)
 
         def __init__(self, parent=None):
@@ -1724,6 +1737,10 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             """
             if event.button() == QtCore.Qt.RightButton and self.prev_index == self.tabAt(event.pos()):
                 self.right_click.emit(self.prev_index)
+
+            if event.button() == QtCore.Qt.MiddleButton:
+                self.onCloseTabSignal.emit(int(self.tabAt(event.pos())))
+
             self.prev_index = -1
 
             QtWidgets.QTabBar.mouseReleaseEvent(self, event)
