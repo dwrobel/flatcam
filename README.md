@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue #363. The Tcl command drillcncjob does not create tool cut, does not allow creation of gcode, it forces the usage of dwell and dwelltime parameters
 - in NCC Tool I've added a warning so the user is warned that the NCC margin has to have a value of at least the tool diameter that is doing an iso_op job in the Tool Table
 - modified the Drillcncjob and Cncjob Tcl commands to be allowed to work without the 'dwell' and 'toolchange' arguments. If 'dwelltime' argument is present it will be assumed that the 'dwell' is True and the same for 'toolchangez' parameter, if present then 'toolchange' will be assumed to be True, else False
+- modified the extracut and multidepth parameters in Cncjob Tcl command like for dwell and toolchange
 
 30.12.2019
 
