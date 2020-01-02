@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 2.01.2020
 
 - started to rework the NCC Tool GUI in preparation for adding a Tool DB feature
+- for auto-completer, now clicking an entry in the completer popup will select that entry and insert it
 
 1.01.2020
 

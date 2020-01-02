@@ -794,11 +794,16 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         self.completer.setModel(self.model)
         self.set_model_data(keyword_list=[])
         self.completer.insertText.connect(self.insertCompletion)
+        self.completer.popup().clicked.connect(self.insert_completion_click)
 
         self.completer_enable = False
 
     def set_model_data(self, keyword_list):
         self.model.setStringList(keyword_list)
+
+    def insert_completion_click(self):
+        self.completer.insertText.emit(self.completer.getSelected())
+        self.completer.setCompletionMode(QCompleter.PopupCompletion)
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
@@ -958,6 +963,7 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
         self.completer.setModel(self.model)
         self.set_model_data(keyword_list=[])
         self.completer.insertText.connect(self.insertCompletion)
+        self.completer.popup().clicked.connect(self.insert_completion_click)
 
         self.completer_enable = False
 
@@ -971,6 +977,10 @@ class FCPlainTextAreaExtended(QtWidgets.QPlainTextEdit):
 
     def set_model_data(self, keyword_list):
         self.model.setStringList(keyword_list)
+
+    def insert_completion_click(self):
+        self.completer.insertText.emit(self.completer.getSelected())
+        self.completer.setCompletionMode(QCompleter.PopupCompletion)
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
@@ -2370,9 +2380,14 @@ class _ExpandableTextEdit(QTextEdit):
         self.completer.setModel(self.model)
         self.set_model_data(keyword_list=[])
         self.completer.insertText.connect(self.insertCompletion)
+        self.completer.popup().clicked.connect(self.insert_completion_click)
 
     def set_model_data(self, keyword_list):
         self.model.setStringList(keyword_list)
+
+    def insert_completion_click(self):
+        self.completer.insertText.emit(self.completer.getSelected())
+        self.completer.setCompletionMode(QCompleter.PopupCompletion)
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
