@@ -4527,10 +4527,10 @@ class App(QtCore.QObject):
                         'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n'
                         'copies of the Software, and to permit persons to whom the Software is\n'
                         'furnished to do so, subject to the following conditions:\n\n'
-    
+
                         'The above copyright notice and this permission notice shall be included in\n'
                         'all copies or substantial portions of the Software.\n\n'
-    
+
                         'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n'
                         'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n'
                         'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n'
@@ -6625,7 +6625,7 @@ class App(QtCore.QObject):
         self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
 
     def on_workspace(self):
-        if self.ui.general_defaults_form.general_gui_group.workspace_cb.get_value():
+        if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
         else:
             self.plotcanvas.delete_workspace()
@@ -6633,13 +6633,13 @@ class App(QtCore.QObject):
         # self.save_defaults(silent=True)
 
     def on_workspace_toggle(self):
-        state = False if self.ui.general_defaults_form.general_gui_group.workspace_cb.get_value() else True
+        state = False if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value() else True
         try:
-            self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.disconnect(self.on_workspace)
+            self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.disconnect(self.on_workspace)
         except TypeError:
             pass
-        self.ui.general_defaults_form.general_gui_group.workspace_cb.set_value(state)
-        self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.ui.general_defaults_form.general_app_set_group.workspace_cb.set_value(state)
+        self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
         self.on_workspace()
 
     def on_layout(self, index=None, lay=None):
@@ -8591,7 +8591,7 @@ class App(QtCore.QObject):
 
         # make all objects inactive
         self.collection.set_all_inactive()
-        
+
         for obj in self.collection.get_list():
             try:
                 # select the object(s) only if it is enabled (plotted)

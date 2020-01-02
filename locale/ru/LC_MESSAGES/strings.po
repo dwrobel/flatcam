@@ -5628,7 +5628,7 @@ msgstr "&Привязка к сетке\tG"
 
 #: flatcamGUI/FlatCAMGUI.py:437
 msgid "&Toggle Grid Lines\tALT+G"
-msgstr "&Переключить линии сетки \tALT+G"
+msgstr "&Сетка вкл/откл\tALT+G"
 
 #: flatcamGUI/FlatCAMGUI.py:439
 msgid "&Toggle Axis\tSHIFT+G"
@@ -8711,7 +8711,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:369
 msgid "Layout"
-msgstr "Расположение"
+msgstr "Макет"
 
 #: flatcamGUI/PreferencesUI.py:371
 msgid ""
