@@ -682,8 +682,6 @@ class ToolTransform(FlatCAMTool):
                     xmaximal = max(xmaxlist)
                     ymaximal = max(ymaxlist)
 
-                    self.app.progress.emit(20)
-
                     px = 0.5 * (xminimal + xmaximal)
                     py = 0.5 * (yminimal + ymaximal)
                     for sel_obj in obj_list:
@@ -697,8 +695,6 @@ class ToolTransform(FlatCAMTool):
                         sel_obj.options['rotate'] = num
                         sel_obj.plot()
                     self.app.inform.emit('[success] %s...' % _('Rotate done'))
-                    self.app.progress.emit(100)
-
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
                                          (_("Due of"), str(e), _("action was not executed.")))
@@ -743,8 +739,6 @@ class ToolTransform(FlatCAMTool):
                         px = 0.5 * (xminimal + xmaximal)
                         py = 0.5 * (yminimal + ymaximal)
 
-                    self.app.progress.emit(20)
-
                     # execute mirroring
                     for sel_obj in obj_list:
                         if isinstance(sel_obj, FlatCAMCNCjob):
@@ -768,12 +762,9 @@ class ToolTransform(FlatCAMTool):
                                     sel_obj.options['mirror_x'] = not sel_obj.options['mirror_x']
                                 else:
                                     sel_obj.options['mirror_x'] = True
-                                self.app.inform.emit('[success] %s...' %
-                                                     _('Flip on the X axis done'))
+                                self.app.inform.emit('[success] %s...' % _('Flip on the X axis done'))
                             self.app.object_changed.emit(sel_obj)
                         sel_obj.plot()
-                    self.app.progress.emit(100)
-
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
                                          (_("Due of"), str(e), _("action was not executed.")))
@@ -809,8 +800,6 @@ class ToolTransform(FlatCAMTool):
                     xminimal = min(xminlist)
                     yminimal = min(yminlist)
 
-                    self.app.progress.emit(20)
-
                     for sel_obj in obj_list:
                         if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be skewed."))
@@ -825,10 +814,7 @@ class ToolTransform(FlatCAMTool):
                                 sel_obj.options['skew_y'] = num
                             self.app.object_changed.emit(sel_obj)
                         sel_obj.plot()
-                    self.app.inform.emit('[success] %s %s %s...' %
-                                         (_('Skew on the'),  str(axis), _("axis done")))
-                    self.app.progress.emit(100)
-
+                    self.app.inform.emit('[success] %s %s %s...' % (_('Skew on the'),  str(axis), _("axis done")))
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
                                          (_("Due of"), str(e), _("action was not executed.")))
@@ -865,8 +851,6 @@ class ToolTransform(FlatCAMTool):
                     xmaximal = max(xmaxlist)
                     ymaximal = max(ymaxlist)
 
-                    self.app.progress.emit(20)
-
                     if point is None:
                         px = 0.5 * (xminimal + xmaximal)
                         py = 0.5 * (yminimal + ymaximal)
@@ -887,7 +871,6 @@ class ToolTransform(FlatCAMTool):
 
                     self.app.inform.emit('[success] %s %s %s...' %
                                          (_('Scale on the'), str(axis), _('axis done')))
-                    self.app.progress.emit(100)
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
                                          (_("Due of"), str(e), _("action was not executed.")))
@@ -903,8 +886,6 @@ class ToolTransform(FlatCAMTool):
         else:
             with self.app.proc_container.new(_("Applying Offset")):
                 try:
-                    self.app.progress.emit(20)
-
                     for sel_obj in obj_list:
                         if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be offset."))
@@ -922,8 +903,6 @@ class ToolTransform(FlatCAMTool):
 
                     self.app.inform.emit('[success] %s %s %s...' %
                                          (_('Offset on the'), str(axis), _('axis done')))
-                    self.app.progress.emit(100)
-
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s %s, %s.' %
                                          (_("Due of"), str(e),  _("action was not executed.")))

@@ -1846,7 +1846,7 @@ class App(QtCore.QObject):
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
         self.message.connect(self.message_dialog)
-        self.progress.connect(self.set_progress_bar)
+        # self.progress.connect(self.set_progress_bar)
 
         # signals that are emitted when object state changes
         self.object_created.connect(self.on_object_created)
@@ -6625,7 +6625,7 @@ class App(QtCore.QObject):
         self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
 
     def on_workspace(self):
-        if self.ui.general_defaults_form.general_gui_group.workspace_cb.get_value():
+        if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value():
             self.plotcanvas.draw_workspace(workspace_size=self.defaults['global_workspaceT'])
         else:
             self.plotcanvas.delete_workspace()
@@ -6633,13 +6633,13 @@ class App(QtCore.QObject):
         # self.save_defaults(silent=True)
 
     def on_workspace_toggle(self):
-        state = False if self.ui.general_defaults_form.general_gui_group.workspace_cb.get_value() else True
+        state = False if self.ui.general_defaults_form.general_app_set_group.workspace_cb.get_value() else True
         try:
-            self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.disconnect(self.on_workspace)
+            self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.disconnect(self.on_workspace)
         except TypeError:
             pass
-        self.ui.general_defaults_form.general_gui_group.workspace_cb.set_value(state)
-        self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.ui.general_defaults_form.general_app_set_group.workspace_cb.set_value(state)
+        self.ui.general_defaults_form.general_app_set_group.workspace_cb.stateChanged.connect(self.on_workspace)
         self.on_workspace()
 
     def on_layout(self, index=None, lay=None):
@@ -10874,13 +10874,11 @@ class App(QtCore.QObject):
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             self.new_object(obj_type, name, obj_init, autoselected=False)
-            self.progress.emit(20)
             # Register recent file
             self.file_opened.emit("dxf", filename)
 
             # GUI feedback
             self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
-            self.progress.emit(100)
 
     def open_gerber(self, filename, outname=None):
         """
@@ -10956,7 +10954,6 @@ class App(QtCore.QObject):
 
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
-            # self.progress.emit(20)
 
             try:
                 ret = excellon_obj.parse_file(filename=filename)
@@ -10969,7 +10966,6 @@ class App(QtCore.QObject):
                 app_obj.inform.emit('[ERROR_NOTCL] %s: %s' %
                                     (_("Cannot open file"), filename))
                 log.debug("Could not open Excellon object.")
-                self.progress.emit(0)  # TODO: self and app_bjj mixed
                 return "fail"
             except Exception:
                 msg = '[ERROR_NOTCL] %s' % \

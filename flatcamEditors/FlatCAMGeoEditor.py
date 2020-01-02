@@ -1272,8 +1272,6 @@ class TransformEditorTool(FlatCAMTool):
                     xmaximal = max(xmaxlist)
                     ymaximal = max(ymaxlist)
 
-                    self.app.progress.emit(20)
-
                     for sel_sha in shape_list:
                         px = 0.5 * (xminimal + xmaximal)
                         py = 0.5 * (yminimal + ymaximal)
@@ -1284,11 +1282,7 @@ class TransformEditorTool(FlatCAMTool):
 
                     # self.draw_app.transform_complete.emit()
 
-                    self.app.inform.emit('[success] %s' %
-                                         _("Done. Rotate completed."))
-
-                    self.app.progress.emit(100)
-
+                    self.app.inform.emit('[success] %s' % _("Done. Rotate completed."))
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Rotation action was not executed"), str(e)))
                     return
@@ -1329,8 +1323,6 @@ class TransformEditorTool(FlatCAMTool):
                         px = 0.5 * (xminimal + xmaximal)
                         py = 0.5 * (yminimal + ymaximal)
 
-                    self.app.progress.emit(20)
-
                     # execute mirroring
                     for sha in shape_list:
                         if axis is 'X':
@@ -1346,8 +1338,6 @@ class TransformEditorTool(FlatCAMTool):
                     #     self.draw_app.add_shape(DrawToolShape(sha.geo))
                     #
                     # self.draw_app.transform_complete.emit()
-
-                    self.app.progress.emit(100)
 
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Flip action was not executed"), str(e)))
@@ -1375,8 +1365,6 @@ class TransformEditorTool(FlatCAMTool):
                     xminimal = min(xminlist)
                     yminimal = min(yminlist)
 
-                    self.app.progress.emit(20)
-
                     for sha in shape_list:
                         if axis is 'X':
                             sha.skew(num, 0, point=(xminimal, yminimal))
@@ -1388,12 +1376,9 @@ class TransformEditorTool(FlatCAMTool):
                     #
                     # self.draw_app.transform_complete.emit()
                     if axis == 'X':
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Skew on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Skew on the X axis done'))
                     else:
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Skew on the Y axis done'))
-                    self.app.progress.emit(100)
+                        self.app.inform.emit('[success] %s...' % _('Skew on the Y axis done'))
 
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Skew action was not executed"), str(e)))
@@ -1407,8 +1392,7 @@ class TransformEditorTool(FlatCAMTool):
         ymaxlist = []
 
         if not shape_list:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("No shape selected. Please Select a shape to scale!"))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("No shape selected. Please Select a shape to scale!"))
             return
         else:
             with self.app.proc_container.new(_("Applying Scale")):
@@ -1427,8 +1411,6 @@ class TransformEditorTool(FlatCAMTool):
                     xmaximal = max(xmaxlist)
                     ymaximal = max(ymaxlist)
 
-                    self.app.progress.emit(20)
-
                     if point is None:
                         px = 0.5 * (xminimal + xmaximal)
                         py = 0.5 * (yminimal + ymaximal)
@@ -1445,12 +1427,9 @@ class TransformEditorTool(FlatCAMTool):
                     # self.draw_app.transform_complete.emit()
 
                     if str(axis) == 'X':
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Scale on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Scale on the X axis done'))
                     else:
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Scale on the Y axis done'))
-                    self.app.progress.emit(100)
+                        self.app.inform.emit('[success] %s...' % _('Scale on the Y axis done'))
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Scale action was not executed"), str(e)))
                     return
@@ -1467,8 +1446,6 @@ class TransformEditorTool(FlatCAMTool):
         else:
             with self.app.proc_container.new(_("Applying Offset")):
                 try:
-                    self.app.progress.emit(20)
-
                     for sha in shape_list:
                         if axis is 'X':
                             sha.offset((num, 0))
@@ -1477,12 +1454,9 @@ class TransformEditorTool(FlatCAMTool):
                         self.draw_app.replot()
 
                     if axis == 'X':
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Offset on the X axis done'))
+                        self.app.inform.emit('[success] %s...' % _('Offset on the X axis done'))
                     else:
-                        self.app.inform.emit('[success] %s...' %
-                                             _('Offset on the Y axis done'))
-                    self.app.progress.emit(100)
+                        self.app.inform.emit('[success] %s...' % _('Offset on the Y axis done'))
 
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Offset action was not executed"), str(e)))

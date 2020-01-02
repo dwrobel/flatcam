@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - started to rework the NCC Tool GUI in preparation for adding a Tool DB feature
 - for auto-completer, now clicking an entry in the completer popup will select that entry and insert it
 - made available only for Linux and Windows (not OSX) the starting of the thread that checks if another instance of FlatCAM is already running at the launch of FLatCAM
+- modified Toggle Workspace function to work in the new Preferences UI configuration
+- cleaned the app from progress signal usage since it is not used anymore
 
 1.01.2020
 
