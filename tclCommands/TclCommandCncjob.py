@@ -33,17 +33,13 @@ class TclCommandCncjob(TclCommandSignaled):
         ('feedrate', float),
         ('feedrate_z', float),
         ('feedrate_rapid', float),
-        ('multidepth', bool),
-        ('extracut', bool),
         ('extracut_length', float),
         ('depthperpass', float),
-        ('toolchange', int),
         ('toolchangez', float),
         ('toolchangexy', tuple),
         ('startz', float),
         ('endz', float),
         ('spindlespeed', int),
-        ('dwell', bool),
         ('dwelltime', float),
         ('pp', str),
         ('muted', int),
@@ -64,18 +60,16 @@ class TclCommandCncjob(TclCommandSignaled):
             ('feedrate', 'Moving speed on X-Y plane when cutting.'),
             ('feedrate_z', 'Moving speed on Z plane when cutting.'),
             ('feedrate_rapid', 'Rapid moving at speed when cutting.'),
-            ('multidepth', 'Use or not multidepth cnc cut. (True or False)'),
-            ('extracut', 'Use or not an extra cnccut over the first point in path,in the job end (example: True)'),
-            ('extracut', 'The value for extra cnccut over the first point in path,in the job end; float'),
-            ('depthperpass', 'Height of one layer for multidepth.'),
-            ('toolchange', 'Enable tool changes (example: True).'),
-            ('toolchangez', 'Z distance for toolchange (example: 30.0).'),
+            ('extracut_length', 'The value for extra cnccut over the first point in path,in the job end; float'),
+            ('depthperpass', 'If present then use multidepth cnc cut. Height of one layer for multidepth.'),
+            ('toolchangez', 'Z distance for toolchange (example: 30.0).\n'
+                            'If used in the command then a toolchange event will be included in gcode'),
             ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
             ('startz', 'Height before the first move.'),
             ('endz', 'Height where the last move will park.'),
             ('spindlespeed', 'Speed of the spindle in rpm (example: 4000).'),
-            ('dwell', 'True or False; use (or not) the dwell'),
-            ('dwelltime', 'Time to pause to allow the spindle to reach the full speed'),
+            ('dwelltime', 'Time to pause to allow the spindle to reach the full speed.\n'
+                          'If it is not used in command then it will not be included'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('pp', 'Name of the Geometry preprocessor. No quotes, case sensitive'),
             ('muted', 'It will not put errors in the Shell.')
@@ -136,26 +130,52 @@ class TclCommandCncjob(TclCommandSignaled):
         args["feedrate_rapid"] = args["feedrate_rapid"] if "feedrate_rapid" in args and args["feedrate_rapid"] else \
             obj.options["feedrate_rapid"]
 
-        args["multidepth"] = bool(args["multidepth"]) if "multidepth" in args else obj.options["multidepth"]
-        args["extracut"] = bool(args["extracut"]) if "extracut" in args else obj.options["extracut"]
-        args["extracut_length"] = float(args["extracut_length"]) if "extracut_length" in args else \
-            obj.options["extracut_length"]
-        args["depthperpass"] = args["depthperpass"] if "depthperpass" in args and args["depthperpass"] else \
-            obj.options["depthperpass"]
+        if "extracut_length" in args:
+            args["extracut"] = True
+            if args["extracut_length"] is None:
+                args["extracut_length"] = 0.0
+            else:
+                args["extracut_length"] = float(args["extracut_length"])
+        else:
+            args["extracut"] = False
+
+        if "depthperpass" in args:
+            args["multidepth"] = True
+            if args["depthperpass"] is None:
+                args["depthperpass"] = obj.options["depthperpass"]
+            else:
+                args["depthperpass"] = float(args["depthperpass"])
+        else:
+            args["multidepth"] = False
 
         args["startz"] = args["startz"] if "startz" in args and args["startz"] else \
             self.app.defaults["geometry_startz"]
         args["endz"] = args["endz"] if "endz" in args and args["endz"] else obj.options["endz"]
 
         args["spindlespeed"] = args["spindlespeed"] if "spindlespeed" in args and args["spindlespeed"] != 0 else None
-        args["dwell"] = bool(args["dwell"]) if "dwell" in args else obj.options["dwell"]
-        args["dwelltime"] = args["dwelltime"] if "dwelltime" in args and args["dwelltime"] else obj.options["dwelltime"]
+
+        if 'dwelltime' in args:
+            args["dwell"] = True
+            if args['dwelltime'] is None:
+                args["dwelltime"] = float(obj.options["dwelltime"])
+            else:
+                args["dwelltime"] = float(args['dwelltime'])
+        else:
+            args["dwell"] = False
+            args["dwelltime"] = 0.0
 
         args["pp"] = args["pp"] if "pp" in args and args["pp"] else obj.options["ppname_g"]
 
-        args["toolchange"] = True if "toolchange" in args and args["toolchange"] == 1 else False
-        args["toolchangez"] = args["toolchangez"] if "toolchangez" in args and args["toolchangez"] else \
-            obj.options["toolchangez"]
+        if "toolchangez" in args:
+            args["toolchange"] = True
+            if args["toolchangez"] is not None:
+                args["toolchangez"] = args["toolchangez"]
+            else:
+                args["toolchangez"] = obj.options["toolchangez"]
+        else:
+            args["toolchange"] = False
+            args["toolchangez"] = 0.0
+
         args["toolchangexy"] = args["toolchangexy"] if "toolchangexy" in args and args["toolchangexy"] else \
             self.app.defaults["geometry_toolchangexy"]
 

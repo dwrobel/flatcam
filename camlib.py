@@ -2415,11 +2415,8 @@ class CNCjob(Geometry):
             must_visit.remove(nearest)
         return path
 
-    def generate_from_excellon_by_tool(
-            self, exobj, tools="all", drillz = 3.0,
-            toolchange=False, toolchangez=0.1, toolchangexy='',
-            endz=2.0, startz=None,
-            excellon_optimization_type='B'):
+    def generate_from_excellon_by_tool(self, exobj, tools="all", drillz = 3.0, toolchange=False, toolchangez=0.1,
+                                       toolchangexy='', endz=2.0, startz=None, excellon_optimization_type='B'):
         """
         Creates gcode for this object from an Excellon object
         for the specified tools.
@@ -2515,6 +2512,16 @@ class CNCjob(Geometry):
             tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
             log.debug("Tools selected and sorted are: %s" % str(tools))
 
+        # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
+        # running this method from a Tcl Command
+        build_tools_in_use_list = False
+        if 'Tools_in_use' not in self.options:
+            self.options['Tools_in_use'] = list()
+
+        # if the list is empty (either we just added the key or it was already there but empty) signal to build it
+        if not self.options['Tools_in_use']:
+            build_tools_in_use_list = True
+
         # fill the data into the self.exc_cnc_tools dictionary
         for it in sorted_tools:
             for to_ol in tools:
@@ -2550,8 +2557,16 @@ class CNCjob(Geometry):
                     self.exc_cnc_tools[it[1]]['nr_slots'] = slot_no
                     self.exc_cnc_tools[it[1]]['offset_z'] = z_off
                     self.exc_cnc_tools[it[1]]['data'] = default_data
-
                     self.exc_cnc_tools[it[1]]['solid_geometry'] = deepcopy(sol_geo)
+
+                    # build a self.options['Tools_in_use'] list from scratch if we don't have one like in the case of
+                    # running this method from a Tcl Command
+                    if build_tools_in_use_list is True:
+                        self.options['Tools_in_use'].append(
+                            [it[0], it[1], drill_no, slot_no]
+                        )
+
+        print(self.options['Tools_in_use'])
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
         # Points (Group by tool)

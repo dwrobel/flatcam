@@ -9,18 +9,38 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+2.01.2020
+
+- started to rework the NCC Tool GUI in preparation for adding a Tool DB feature
+- for auto-completer, now clicking an entry in the completer popup will select that entry and insert it
+- made available only for Linux and Windows (not OSX) the starting of the thread that checks if another instance of FlatCAM is already running at the launch of FLatCAM
+
+1.01.2020
+
+- fixed bug in NCC Tool: after trying to add a tool already in the Tool Table when trying to change the Tool Type the GUI does not change
+- final fix for app not quiting when running a script as argument, script that has the quit_flatcam Tcl command; fixed issue #360
+- fixed issue #363. The Tcl command drillcncjob does not create tool cut, does not allow creation of gcode, it forces the usage of dwell and dwelltime parameters
+- in NCC Tool I've added a warning so the user is warned that the NCC margin has to have a value of at least the tool diameter that is doing an iso_op job in the Tool Table
+- modified the Drillcncjob and Cncjob Tcl commands to be allowed to work without the 'dwell' and 'toolchange' arguments. If 'dwelltime' argument is present it will be assumed that the 'dwell' is True and the same for 'toolchangez' parameter, if present then 'toolchange' will be assumed to be True, else False
+- modified the extracut and multidepth parameters in Cncjob Tcl command like for dwell and toolchange
+- added ability for Tcl commands to have optional arguments with None value (meaning missing value). This case should be treated for each Tcl command in execute() method
+- fixed the Drillcncjob Tcl command by adding an custom self.options key "Tools_in_use" and build it's value, in case it does not exist, to make the toolchange command work
+- middle mouse click on closable tabs will close them
+
 30.12.2019
 
 - Buffer sub-tool in Transform Tool: added the possibility to apply a factor effectively scaling the aperture size thus the copper features sizes
 - in Transform Tool adjusted the GUI
-- fixed some decimals issues in NCC Tool, Paint Tool and Excellon Editor (they were still using the harcoded values)
+- fixed some decimals issues in NCC Tool, Paint Tool and Excellon Editor (they were still using the hardcoded values)
 - some small updates in the NCC Tool
 - changes in the Preferences UI for NCC and Paint Tool in Tool Dia entry field
 - fixed Tcl commands that use the overlap parameter to switch from fraction to percentage
-- in Transform Tool mae sure that the buffer sub-tool parameters are better explained in tooltips
+- in Transform Tool made sure that the buffer sub-tool parameters are better explained in tooltips
 - attempt to make TclCommand quit_flatcam work under Linux
 - some fixes in the NCC Tcl command (using the bool() method on some params)
 - another attempt to make TclCommand quit_flatcam work under Linux
+- another attempt to make TclCommand quit_flatcam work under Linux - use signal to call a hard exit when in Linux
+- TclCommand quit_flatcam work under Linux
 
 29.12.2019
 
@@ -28,8 +48,8 @@ CAD program, and create G-Code for Isolation routing.
 - the Gerber UI is built only once now so the process is lighter on CPU
 - the Gerber apertures marking shapes storage is now built only once because the more are built the more sluggish is the interface
 - added a new function called by shortcut key combo CTRL+G when the current widget in Plot Area is an Code Editor. It will jump to the specified line in the text.
-- fixed a small where the app tried to hide a label that I've removed previously
-- in Paint Tool Preferences allowed to add a list of initial tools separated by comma
+- fixed a small bug where the app tried to hide a label that I've removed previously
+- in Paint Tool Preferences is allowed to add a list of initial tools separated by comma
 - in Geometry Paint Tool fixed the Overlap rate to work between 0 and 99.9999%
 
 28.12.2019
