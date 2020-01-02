@@ -259,14 +259,15 @@ class App(QtCore.QObject):
         # Setup the listening thread for another instance launching with args #####
         # #########################################################################
 
-        # make sure the thread is stored by using a self. otherwise it's garbage collected
-        self.th = QtCore.QThread()
-        self.th.start(priority=QtCore.QThread.LowestPriority)
+        if sys.platform == 'win32' or sys.platform == 'linux':
+            # make sure the thread is stored by using a self. otherwise it's garbage collected
+            self.th = QtCore.QThread()
+            self.th.start(priority=QtCore.QThread.LowestPriority)
 
-        self.new_launch = ArgsThread()
-        self.new_launch.open_signal[list].connect(self.on_startup_args)
-        self.new_launch.moveToThread(self.th)
-        self.new_launch.start.emit()
+            self.new_launch = ArgsThread()
+            self.new_launch.open_signal[list].connect(self.on_startup_args)
+            self.new_launch.moveToThread(self.th)
+            self.new_launch.start.emit()
 
         # ############################################################################
         # # ################# OS-specific ############################################
