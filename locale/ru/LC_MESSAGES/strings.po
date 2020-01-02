@@ -3142,7 +3142,7 @@ msgid ""
 "Add a new tool to the tool list\n"
 "with the diameter specified above."
 msgstr ""
-"Добляет новый инструмент в список инструментов\n"
+"Добавляет новый инструмент в список инструментов\n"
 "с диаметром, указанным выше."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1628
@@ -3188,7 +3188,7 @@ msgstr "Добавить массив отверстий"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1699
 msgid "Add an array of drills (linear or circular array)"
-msgstr "Добавить массив свёрел (линейный или круговой массив)"
+msgstr "Добавляет массив свёрел (линейный или круговой массив)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1705
 msgid ""
@@ -4450,7 +4450,7 @@ msgstr "Нажмите на целевой точке."
 #: flatcamEditors/FlatCAMGeoEditor.py:4479
 #: flatcamEditors/FlatCAMGeoEditor.py:4514
 msgid "A selection of at least 2 geo items is required to do Intersection."
-msgstr "Выберите по крайней мере 2 geo элемента, что-бы сделать пересечение."
+msgstr "Выберите по крайней мере 2 элемента геометрии для пересечения."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:4600
 #: flatcamEditors/FlatCAMGeoEditor.py:4704
@@ -6876,7 +6876,7 @@ msgid ""
 "Reference is (X=0, Y= 0) position"
 msgstr ""
 "Абсолютное измерение.\n"
-"Ссылка (X=0, Y= 0) Положение"
+"Указатель в точке (X=0, Y= 0)"
 
 #: flatcamGUI/FlatCAMGUI.py:2301
 msgid "Lock Toolbars"
@@ -8258,8 +8258,8 @@ msgid ""
 "for custom selection of tools."
 msgstr ""
 "Добавьте хотя бы один инструмент в таблицу инструментов.\n"
-"Щелкните заголовок, чтобы выбрать все, или Ctrl + LMB\n"
-"для пользовательского выбора инструментов."
+"Щелкните заголовок, чтобы выбрать все, или Ctrl + ЛКМ\n"
+"для выбора инструментов вручную."
 
 #: flatcamGUI/ObjectUI.py:1707
 msgid "Generate CNCJob object"
@@ -9115,7 +9115,7 @@ msgstr ""
 
 #: flatcamGUI/PreferencesUI.py:1291
 msgid "\"Open\" behavior"
-msgstr "Поведение функции \"Открыть\""
+msgstr "Помнить пути открытия/сохранения"
 
 #: flatcamGUI/PreferencesUI.py:1293
 msgid ""
@@ -11700,7 +11700,7 @@ msgid ""
 "or decreased with the 'distance'."
 msgstr ""
 "Положительное значение создаст эффект расширения,\n"
-"в то время как отрицательное значение создаст эффект эрозии.\n"
+"в то время как отрицательное значение создаст эффект размытия.\n"
 "Каждый геометрический элемент объекта будет увеличен\n"
 "или уменьшается с помощью \"расстояния\"."
 
@@ -11880,7 +11880,7 @@ msgid ""
 "A tool to substract one Gerber or Geometry object\n"
 "from another of the same type."
 msgstr ""
-"Инструмент для вычитания одного объекта Gerber или Геометрия\n"
+"Инструмент для вычитания одного объекта Gerber или Geometry\n"
 "от другого того же типа."
 
 #: flatcamGUI/PreferencesUI.py:6670 flatcamTools/ToolSub.py:149
@@ -13865,12 +13865,11 @@ msgid ""
 "The (x, y) coordinates are captured by pressing SHIFT key\n"
 "and left mouse button click on canvas or you can enter the coords manually."
 msgstr ""
-"Добавьте координаты в формате <b> (x, y) </ b>, через который ось "
-"зеркального отображения\n"
-"  выбран в проходе «ЗЕРКАЛЬНАЯ ОСЬ».\n"
+"Добавление координат в формате <b> (x, y) </ b>, через которые проходит ось "
+"зеркалирования\n"
+" выбран в поле «ЗЕРКАЛЬНАЯ ОСЬ».\n"
 "Координаты (x, y) фиксируются нажатием клавиши SHIFT\n"
-"и щелкните левой кнопкой мыши на холсте или вы можете ввести координаты "
-"вручную."
+"и щелчком ЛКМ на холсте или вы можете ввести координаты вручную."
 
 #: flatcamTools/ToolDblSided.py:230
 msgid "Alignment Drill Coordinates"
@@ -13907,16 +13906,14 @@ msgid ""
 "field and click Paste.\n"
 "- by entering the coords manually in the format: (x1, y1), (x2, y2), ..."
 msgstr ""
-"Добавьте координаты сверления отверстий в формате: (x1, y1), (x2, y2), ...\n"
+"Добавляет координаты сверления отверстий в формате: (x1, y1), (x2, y2), ...\n"
 "на одной стороне зеркальной оси.\n"
 "\n"
 "Набор координат можно получить:\n"
-"- нажмите клавишу SHIFT и щелкните левой кнопкой мыши на холсте. Затем "
-"нажмите Добавить.\n"
-"- нажмите клавишу SHIFT и щелкните левой кнопкой мыши на холсте. Затем CTRL "
-"+ V в поле.\n"
-"- нажмите клавишу SHIFT и щелкните левой кнопкой мыши на холсте. Затем "
-"нажмите RMB в поле и нажмите Вставить.\n"
+"- нажмите клавишу SHIFT и щелкните ЛКМ на холсте. Затем нажмите Добавить.\n"
+"- нажмите клавишу SHIFT и щелкните ЛКМ на холсте. Затем CTRL + V в поле.\n"
+"- нажмите клавишу SHIFT и щелкните ЛКМ на холсте. Затем нажмите ПКМ в поле и "
+"нажмите Вставить.\n"
 "- путем ввода координат вручную в формате: (x1, y1), (x2, y2), ..."
 
 #: flatcamTools/ToolDblSided.py:272
@@ -13996,7 +13993,7 @@ msgid ""
 "'Point' reference is selected and 'Point' coordinates are missing. Add them "
 "and retry."
 msgstr ""
-"Ссылка «Точка» выбрана, а координаты «Точка» отсутствуют. Добавьте их и "
+"Выбран указатель 'Точка', а координаты точки отсутствуют. Добавьте их и "
 "повторите попытку."
 
 #: flatcamTools/ToolDblSided.py:512
@@ -14029,8 +14026,8 @@ msgstr ""
 msgid ""
 "'Point' coordinates missing. Using Origin (0, 0) as mirroring reference."
 msgstr ""
-"Координаты точки отсутствуют. Использование Origin (0, 0) в качестве ссылки "
-"на зеркальное отображение."
+"Координаты точки отсутствуют. Используется точка (0, 0) в качестве указателя "
+"для зеркалирования."
 
 #: flatcamTools/ToolDblSided.py:588 flatcamTools/ToolDblSided.py:632
 #: flatcamTools/ToolDblSided.py:669
@@ -15570,8 +15567,8 @@ msgid ""
 "{text} Too big for the constrain area. Final panel has {col} columns and "
 "{row} rows"
 msgstr ""
-"{text}  Слишком большой для зоны ограничения. Последняя панель содержит "
-"столбцы {col} и строки {row}"
+"{text} Слишком большой для выбранного участка. Итоговая панель содержит "
+"{col} столбцов и {row} строк"
 
 #: flatcamTools/ToolPanelize.py:798
 msgid "Panel created successfully."
