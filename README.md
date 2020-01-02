@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+2.01.2020
+
+- started to rework the NCC Tool GUI in preparation for adding a Tool DB feature
+- for auto-completer, now clicking an entry in the completer popup will select that entry and insert it
+- made available only for Linux and Windows (not OSX) the starting of the thread that checks if another instance of FlatCAM is already running at the launch of FLatCAM
+
 1.01.2020
 
 - fixed bug in NCC Tool: after trying to add a tool already in the Tool Table when trying to change the Tool Type the GUI does not change
@@ -29,7 +35,7 @@ CAD program, and create G-Code for Isolation routing.
 - some small updates in the NCC Tool
 - changes in the Preferences UI for NCC and Paint Tool in Tool Dia entry field
 - fixed Tcl commands that use the overlap parameter to switch from fraction to percentage
-- in Transform Tool mae sure that the buffer sub-tool parameters are better explained in tooltips
+- in Transform Tool made sure that the buffer sub-tool parameters are better explained in tooltips
 - attempt to make TclCommand quit_flatcam work under Linux
 - some fixes in the NCC Tcl command (using the bool() method on some params)
 - another attempt to make TclCommand quit_flatcam work under Linux
@@ -42,8 +48,8 @@ CAD program, and create G-Code for Isolation routing.
 - the Gerber UI is built only once now so the process is lighter on CPU
 - the Gerber apertures marking shapes storage is now built only once because the more are built the more sluggish is the interface
 - added a new function called by shortcut key combo CTRL+G when the current widget in Plot Area is an Code Editor. It will jump to the specified line in the text.
-- fixed a small where the app tried to hide a label that I've removed previously
-- in Paint Tool Preferences allowed to add a list of initial tools separated by comma
+- fixed a small bug where the app tried to hide a label that I've removed previously
+- in Paint Tool Preferences is allowed to add a list of initial tools separated by comma
 - in Geometry Paint Tool fixed the Overlap rate to work between 0 and 99.9999%
 
 28.12.2019
