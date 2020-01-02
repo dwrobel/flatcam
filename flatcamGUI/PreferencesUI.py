@@ -2081,7 +2081,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(milling_type_label, 4, 0)
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conv.'), 'value': 'cv'}])
+                                            {'label': _('Conventional'), 'value': 'cv'}])
         grid0.addWidget(self.milling_type_radio, 4, 1)
 
         # Combine passes
@@ -4379,7 +4379,7 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
               "- conventional / useful when there is no backlash compensation")
         )
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conv.'), 'value': 'cv'}])
+                                            {'label': _('Conventional'), 'value': 'cv'}])
         grid0.addWidget(milling_type_label, 1, 0)
         grid0.addWidget(self.milling_type_radio, 1, 1)
 
@@ -5123,7 +5123,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
 
         self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conv.'), 'value': 'cv'}])
+                                            {'label': _('Conventional'), 'value': 'cv'}])
         self.milling_type_radio.setToolTip(
             _("Milling type when the selected tool is of type: 'iso_op':\n"
               "- climb / best for precision milling and to reduce tool usage\n"
