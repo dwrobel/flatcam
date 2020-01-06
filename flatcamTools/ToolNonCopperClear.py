@@ -643,7 +643,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Reference"): "nccref",
             _('Milling Type'): "milling_type",
             _('Tool Type'): "tool_type",
-            _('Cut Z'): "tools_ncccutz",
+            _('Cut Z'): "cutz",
             _('V-Tip Dia'): "vtipdia",
             _('V-Tip Angle'): "vtipangle",
             _('Tool Dia'): "tooldia",
@@ -804,11 +804,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.blockSignals(True)
 
         widget_changed = self.sender()
-        # try:
-        #     widget_idx = self.grid3.indexOf(widget_changed)
-        # except Exception as e:
-        #     return
-
         wdg_objname = widget_changed.objectName()
         option_changed = self.name2option[wdg_objname]
 
@@ -817,68 +812,63 @@ class NonCopperClear(FlatCAMTool, Gerber):
             row = 0
         tooluid_item = int(self.tools_table.item(row, 3).text())
 
-        print(option_changed)
-        print(self.ncc_tools[tooluid_item]['data'])
         for tooluid_key, tooluid_val in self.ncc_tools.items():
             if int(tooluid_key) == tooluid_item:
+                new_option_value = self.form_fields[option_changed].get_value()
                 if option_changed in tooluid_val:
-                    print("key", option_changed)
-                    tooluid_val[option_changed] = self.form_fields[option_changed].get_value()
-
-        for tooluid_key, tooluid_val in self.ncc_tools.items():
-            if int(tooluid_key) == tooluid_item:
+                    tooluid_val[option_changed] = new_option_value
                 if option_changed in tooluid_val['data']:
-                    print("data", option_changed)
-                    tooluid_val['data'][option_changed] = self.form_fields[option_changed].get_value()
+                    tooluid_val['data'][option_changed] = new_option_value
 
         # store all the data associated with the row parameter to the self.tools storage
-        tooldia_item = float(self.tools_table.item(row, 1).text())
-        tool_type_item = self.tools_table.cellWidget(row, 2).currentText()
-        operation_type_item = self.tools_table.cellWidget(row, 4).currentText()
-
-        offset_item = self.ncc_choice_offset_cb.get_value()
-        offset_value_item = float(self.ncc_offset_spinner.get_value())
-
-        tooluid_item = int(self.tools_table.item(row, 3).text())
-
-        # this new dict will hold the actual useful data, another dict that is the value of key 'data'
-        temp_tools = {}
-        temp_dia = {}
-        temp_data = {}
-
-        for tooluid_key, tooluid_value in self.ncc_tools.items():
-            if int(tooluid_key) == tooluid_item:
-                for key, value in tooluid_value.items():
-                    if key == 'tooldia':
-                        temp_dia[key] = tooldia_item
-                    if key == 'tool_type':
-                        temp_dia[key] = tool_type_item
-                    if key == 'data':
-                        # update the 'data' section
-                        for data_key in tooluid_value[key].keys():
-                            for form_key, form_value in self.form_fields.items():
-                                if form_key == data_key:
-                                    temp_data[data_key] = form_value.get_value()
-                            # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
-                            # updated from self.app.defaults
-                            if data_key not in self.form_fields:
-                                temp_data[data_key] = value[data_key]
-                        temp_dia[key] = deepcopy(temp_data)
-                        temp_data.clear()
-
-                    if key == 'solid_geometry':
-                        temp_dia[key] = deepcopy(self.ncc_tools[tooluid_key]['solid_geometry'])
-
-                    temp_tools[tooluid_key] = deepcopy(temp_dia)
-            else:
-                temp_tools[tooluid_key] = deepcopy(tooluid_value)
-
-        temp_tools['offset'] = 'Path'
-        temp_tools['type'] = _("Iso")
-
-        self.ncc_tools.clear()
-        self.ncc_tools = deepcopy(temp_tools)
-        temp_tools.clear()
+        # tooldia_item = float(self.tools_table.item(row, 1).text())
+        # tool_type_item = self.tools_table.cellWidget(row, 2).currentText()
+        # operation_type_item = self.tools_table.cellWidget(row, 4).currentText()
+        #
+        # offset_item = self.ncc_choice_offset_cb.get_value()
+        # offset_value_item = float(self.ncc_offset_spinner.get_value())
+        #
+        # tooluid_item = int(self.tools_table.item(row, 3).text())
+        #
+        # # this new dict will hold the actual useful data, another dict that is the value of key 'data'
+        # temp_tools = {}
+        # temp_dia = {}
+        # temp_data = {}
+        #
+        # for tooluid_key, tooluid_value in self.ncc_tools.items():
+        #     if int(tooluid_key) == tooluid_item:
+        #         for key, value in tooluid_value.items():
+        #             if key == 'tooldia':
+        #                 temp_dia[key] = tooldia_item
+        #             if key == 'tool_type':
+        #                 temp_dia[key] = tool_type_item
+        #             if key == 'data':
+        #                 # update the 'data' section
+        #                 for data_key in tooluid_value[key].keys():
+        #                     for form_key, form_value in self.form_fields.items():
+        #                         if form_key == data_key:
+        #                             temp_data[data_key] = form_value.get_value()
+        #                     # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
+        #                     # updated from self.app.defaults
+        #                     if data_key not in self.form_fields:
+        #                         temp_data[data_key] = value[data_key]
+        #                 temp_dia[key] = deepcopy(temp_data)
+        #                 temp_data.clear()
+        #
+        #             if key == 'solid_geometry':
+        #                 temp_dia[key] = deepcopy(self.ncc_tools[tooluid_key]['solid_geometry'])
+        #
+        #             temp_tools[tooluid_key] = deepcopy(temp_dia)
+        #     else:
+        #         temp_tools[tooluid_key] = deepcopy(tooluid_value)
+        #
+        # temp_tools['offset'] = 'Path'
+        # temp_tools['type'] = _("Iso")
+        #
+        # self.ncc_tools.clear()
+        # self.ncc_tools = deepcopy(temp_tools)
+        # print("ncc_tools", self.ncc_tools)
+        # temp_tools.clear()
 
         self.blockSignals(False)
 
@@ -947,6 +937,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_connect_cb.set_value(self.app.defaults["tools_nccconnect"])
         self.ncc_contour_cb.set_value(self.app.defaults["tools_ncccontour"])
         self.ncc_rest_cb.set_value(self.app.defaults["tools_nccrest"])
+        self.ncc_choice_offset_cb.set_value(self.app.defaults["tools_ncc_offset_choice"])
+        self.ncc_offset_spinner.set_value(self.app.defaults["tools_ncc_offset_value"])
+
         self.reference_radio.set_value(self.app.defaults["tools_nccref"])
         self.milling_type_radio.set_value(self.app.defaults["tools_nccmilling_type"])
         self.cutz_entry.set_value(self.app.defaults["tools_ncccutz"])
@@ -989,7 +982,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "ncccontour": self.app.defaults["tools_ncccontour"],
             "nccoverlap": self.app.defaults["tools_nccoverlap"],
             "nccrest": self.app.defaults["tools_nccrest"],
-            "nccref": self.app.defaults["tools_nccref"]
+            "nccref": self.app.defaults["tools_nccref"],
+            "nccoffset": self.app.defaults["tools_ncc_offset_choice"],
+            "nccoffset_value": self.app.defaults["tools_ncc_offset_value"],
+
         }
 
         try:

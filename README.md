@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.01.2019
+
+- working on new NCC Tool
+
 2.01.2020
 
 - started to rework the NCC Tool GUI in preparation for adding a Tool DB feature
