@@ -12040,8 +12040,7 @@ class App(QtCore.QObject):
         log.debug("App.on_enable_sel_plot()")
         object_list = self.collection.get_selected()
         self.enable_plots(objects=object_list)
-        self.inform.emit('[success] %s' %
-                         _("Selected plots enabled..."))
+        self.inform.emit('[success] %s' % _("Selected plots enabled..."))
 
     def on_disable_sel_plots(self):
         log.debug("App.on_disable_sel_plot()")
@@ -12049,8 +12048,7 @@ class App(QtCore.QObject):
         # self.inform.emit(_("Disabling plots ..."))
         object_list = self.collection.get_selected()
         self.disable_plots(objects=object_list)
-        self.inform.emit('[success] %s' %
-                         _("Selected plots disabled..."))
+        self.inform.emit('[success] %s' % _("Selected plots disabled..."))
 
     def enable_plots(self, objects):
         """
@@ -12066,6 +12064,20 @@ class App(QtCore.QObject):
             if obj.options['plot'] is False:
                 obj.options.set_change_callback(lambda x: None)
                 obj.options['plot'] = True
+                try:
+                    # only the Gerber obj has on_plot_cb_click() method
+                    obj.ui.plot_cb.stateChanged.disconnect(obj.on_plot_cb_click)
+                    # disable this cb while disconnected,
+                    # in case the operation takes time the user is not allowed to change it
+                    obj.ui.plot_cb.setDisabled(True)
+                except AttributeError:
+                    pass
+                obj.set_form_item("plot")
+                try:
+                    obj.ui.plot_cb.stateChanged.connect(obj.on_plot_cb_click)
+                    obj.ui.plot_cb.setDisabled(False)
+                except AttributeError:
+                    pass
                 obj.options.set_change_callback(obj.on_options_change)
 
         def worker_task(objs):
@@ -12100,6 +12112,18 @@ class App(QtCore.QObject):
             if obj.options['plot'] is True:
                 obj.options.set_change_callback(lambda x: None)
                 obj.options['plot'] = False
+                try:
+                    # only the Gerber obj has on_plot_cb_click() method
+                    obj.ui.plot_cb.stateChanged.disconnect(obj.on_plot_cb_click)
+                    obj.ui.plot_cb.setDisabled(True)
+                except AttributeError:
+                    pass
+                obj.set_form_item("plot")
+                try:
+                    obj.ui.plot_cb.stateChanged.connect(obj.on_plot_cb_click)
+                    obj.ui.plot_cb.setDisabled(False)
+                except AttributeError:
+                    pass
                 obj.options.set_change_callback(obj.on_options_change)
 
         try:

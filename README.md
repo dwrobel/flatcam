@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.01.2019
+
+- solved issue #368 - when using the Enable/Disable prj context menu entries the plotted status is not updated in the object properties
+
 6.01.2019
 
 - working on new NCC Tool
