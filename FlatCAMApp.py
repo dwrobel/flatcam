@@ -12262,7 +12262,7 @@ class App(QtCore.QObject):
             try:
                 self.collection.get_active().read_form()
             except Exception as e:
-                self.log.debug("There was no active object. %s" % str(e))
+                self.log.debug("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
                 pass
 
             # Serialize the whole project

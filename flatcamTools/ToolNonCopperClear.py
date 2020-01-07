@@ -219,7 +219,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
 
-        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("Tool Selection"))
+        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
         self.grid3.addWidget(self.tool_sel_label, 1, 0, 1, 2)
 
         # Tool Type Radio Button
@@ -302,13 +302,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.grid3.addWidget(self.addtool_entry_lbl, 6, 0)
         self.grid3.addWidget(self.addtool_entry, 6, 1)
 
-        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add Tool from DataBase'))
-        self.addtool_from_db_btn.setToolTip(
-            _("Add a new tool to the Tool Table\n"
-              "from the Tool DataBase.")
-        )
-        self.grid3.addWidget(self.addtool_from_db_btn, 7, 0, 1, 2)
-
         hlay = QtWidgets.QHBoxLayout()
 
         self.addtool_btn = QtWidgets.QPushButton(_('Add'))
@@ -326,7 +319,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
         hlay.addWidget(self.addtool_btn)
         hlay.addWidget(self.deltool_btn)
 
-        self.grid3.addLayout(hlay, 8, 0, 1, 2)
+        self.grid3.addLayout(hlay, 7, 0, 1, 2)
+
+        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add Tool from DataBase'))
+        self.addtool_from_db_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "from the Tool DataBase.")
+        )
+        self.grid3.addWidget(self.addtool_from_db_btn, 8, 0, 1, 2)
 
         self.grid3.addWidget(QtWidgets.QLabel(''), 9, 0, 1, 2)
 
@@ -623,12 +623,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "nccoffset": self.ncc_choice_offset_cb,
             "nccoffset_value": self.ncc_offset_spinner,
             "nccref":  self.reference_radio,
-            "milling_type": self.milling_type_radio,
-            "tool_type": self.tool_type_radio,
-            "cutz": self.cutz_entry,
-            "vtipdia": self.tipdia_entry,
-            "vtipangle": self.tipangle_entry,
-            "tooldia": self.addtool_entry,
+            "milling_type": self.milling_type_radio
         }
 
         self.name2option = {
@@ -642,11 +637,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Offset value"): "nccoffset_value",
             _("Reference"): "nccref",
             _('Milling Type'): "milling_type",
-            _('Tool Type'): "tool_type",
-            _('Cut Z'): "cutz",
-            _('V-Tip Dia'): "vtipdia",
-            _('V-Tip Angle'): "vtipangle",
-            _('Tool Dia'): "tooldia",
         }
 
         # #############################################################################
@@ -681,7 +671,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.update_ui()
 
     def update_ui(self, row=None):
-        self.ui_disconnect()
+        self.blockSignals(True)
 
         if row is None:
             try:
@@ -697,7 +687,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # populate the form with the data from the tool associated with the row parameter
         try:
             item = self.tools_table.item(current_row, 3)
-            if type(item) is not None:
+            if item is not None:
                 tooluid = int(item.text())
             else:
                 return
@@ -717,16 +707,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     for key, value in tooluid_value.items():
                         if key == 'data':
                             form_value_storage = tooluid_value[key]
-                            self.update_form(form_value_storage)
-                        if key == 'offset_value':
-                            # update the offset value in the entry even if the entry is hidden
-                            self.ncc_offset_spinner.set_value(tooluid_value[key])
-
+                            self.storage_to_form(form_value_storage)
         except Exception as e:
             log.debug("FlatCAMObj ---> update_ui() " + str(e))
-        self.ui_connect()
 
-    def update_form(self, dict_storage):
+        self.blockSignals(False)
+
+    def storage_to_form(self, dict_storage):
         for form_key in self.form_fields:
             for storage_key in dict_storage:
                 if form_key == storage_key:
@@ -735,13 +722,39 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     except Exception:
                         pass
 
+    def form_to_storage(self):
+        if self.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            return
+
+        self.blockSignals(True)
+
+        widget_changed = self.sender()
+        wdg_objname = widget_changed.objectName()
+        option_changed = self.name2option[wdg_objname]
+
+        row = self.tools_table.currentRow()
+        if row < 0:
+            row = 0
+        tooluid_item = int(self.tools_table.item(row, 3).text())
+
+        for tooluid_key, tooluid_val in self.ncc_tools.items():
+            if int(tooluid_key) == tooluid_item:
+                new_option_value = self.form_fields[option_changed].get_value()
+                if option_changed in tooluid_val:
+                    tooluid_val[option_changed] = new_option_value
+                if option_changed in tooluid_val['data']:
+                    tooluid_val['data'][option_changed] = new_option_value
+
+        self.blockSignals(False)
+
     def on_apply_param_to_all_clicked(self):
         if self.tools_table.rowCount() == 0:
             # there is no tool in tool table so we can't save the GUI elements values to storage
             log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
-        self.ui_disconnect()
+        self.blockSignals(True)
 
         row = self.tools_table.currentRow()
         if row < 0:
@@ -793,82 +806,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_tools.clear()
         self.ncc_tools = deepcopy(temp_tools)
         temp_tools.clear()
-
-        self.ui_connect()
-
-    def gui_form_to_storage(self):
-        if self.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            return
-
-        self.blockSignals(True)
-
-        widget_changed = self.sender()
-        wdg_objname = widget_changed.objectName()
-        option_changed = self.name2option[wdg_objname]
-
-        row = self.tools_table.currentRow()
-        if row < 0:
-            row = 0
-        tooluid_item = int(self.tools_table.item(row, 3).text())
-
-        for tooluid_key, tooluid_val in self.ncc_tools.items():
-            if int(tooluid_key) == tooluid_item:
-                new_option_value = self.form_fields[option_changed].get_value()
-                if option_changed in tooluid_val:
-                    tooluid_val[option_changed] = new_option_value
-                if option_changed in tooluid_val['data']:
-                    tooluid_val['data'][option_changed] = new_option_value
-
-        # store all the data associated with the row parameter to the self.tools storage
-        # tooldia_item = float(self.tools_table.item(row, 1).text())
-        # tool_type_item = self.tools_table.cellWidget(row, 2).currentText()
-        # operation_type_item = self.tools_table.cellWidget(row, 4).currentText()
-        #
-        # offset_item = self.ncc_choice_offset_cb.get_value()
-        # offset_value_item = float(self.ncc_offset_spinner.get_value())
-        #
-        # tooluid_item = int(self.tools_table.item(row, 3).text())
-        #
-        # # this new dict will hold the actual useful data, another dict that is the value of key 'data'
-        # temp_tools = {}
-        # temp_dia = {}
-        # temp_data = {}
-        #
-        # for tooluid_key, tooluid_value in self.ncc_tools.items():
-        #     if int(tooluid_key) == tooluid_item:
-        #         for key, value in tooluid_value.items():
-        #             if key == 'tooldia':
-        #                 temp_dia[key] = tooldia_item
-        #             if key == 'tool_type':
-        #                 temp_dia[key] = tool_type_item
-        #             if key == 'data':
-        #                 # update the 'data' section
-        #                 for data_key in tooluid_value[key].keys():
-        #                     for form_key, form_value in self.form_fields.items():
-        #                         if form_key == data_key:
-        #                             temp_data[data_key] = form_value.get_value()
-        #                     # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
-        #                     # updated from self.app.defaults
-        #                     if data_key not in self.form_fields:
-        #                         temp_data[data_key] = value[data_key]
-        #                 temp_dia[key] = deepcopy(temp_data)
-        #                 temp_data.clear()
-        #
-        #             if key == 'solid_geometry':
-        #                 temp_dia[key] = deepcopy(self.ncc_tools[tooluid_key]['solid_geometry'])
-        #
-        #             temp_tools[tooluid_key] = deepcopy(temp_dia)
-        #     else:
-        #         temp_tools[tooluid_key] = deepcopy(tooluid_value)
-        #
-        # temp_tools['offset'] = 'Path'
-        # temp_tools['type'] = _("Iso")
-        #
-        # self.ncc_tools.clear()
-        # self.ncc_tools = deepcopy(temp_tools)
-        # print("ncc_tools", self.ncc_tools)
-        # temp_tools.clear()
 
         self.blockSignals(False)
 
@@ -1140,39 +1077,39 @@ class NonCopperClear(FlatCAMTool, Gerber):
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
                 try:
-                    current_widget.stateChanged.disconnect(self.gui_form_to_storage)
+                    current_widget.stateChanged.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
             if isinstance(current_widget, RadioSet):
                 try:
-                    current_widget.activated_custom.disconnect(self.gui_form_to_storage)
+                    current_widget.activated_custom.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
             elif isinstance(current_widget, FCDoubleSpinner):
                 try:
-                    current_widget.returnPressed.disconnect(self.gui_form_to_storage)
+                    current_widget.returnPressed.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
 
         for opt in self.form_fields:
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
-                current_widget.stateChanged.connect(self.gui_form_to_storage)
+                current_widget.stateChanged.connect(self.form_to_storage)
             if isinstance(current_widget, RadioSet):
-                current_widget.activated_custom.connect(self.gui_form_to_storage)
+                current_widget.activated_custom.connect(self.form_to_storage)
             elif isinstance(current_widget, FCDoubleSpinner):
-                current_widget.returnPressed.connect(self.gui_form_to_storage)
+                current_widget.returnPressed.connect(self.form_to_storage)
 
     def ui_disconnect(self):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.tools_table.itemChanged.disconnect(self.on_tool_edit)
+            self.tools_table.itemChanged.disconnect()
         except (TypeError, AttributeError):
             pass
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.tool_type_radio.activated_custom.disconnect(self.on_tool_type)
+            self.tool_type_radio.activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -1187,17 +1124,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
                 try:
-                    current_widget.stateChanged.disconnect(self.gui_form_to_storage)
+                    current_widget.stateChanged.disconnect()
                 except (TypeError, ValueError):
                     pass
             if isinstance(current_widget, RadioSet):
                 try:
-                    current_widget.activated_custom.disconnect(self.gui_form_to_storage)
+                    current_widget.activated_custom.disconnect()
                 except (TypeError, ValueError):
                     pass
             elif isinstance(current_widget, FCDoubleSpinner):
                 try:
-                    current_widget.returnPressed.disconnect(self.gui_form_to_storage)
+                    current_widget.returnPressed.disconnect()
                 except (TypeError, ValueError):
                     pass
 
@@ -1312,7 +1249,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             return float(self.addtool_entry.get_value())
 
     def on_tool_add(self, dia=None, muted=None):
-        self.ui_disconnect()
+        self.blockSignals(True)
+
         self.units = self.app.defaults['units'].upper()
 
         if dia:
@@ -1354,7 +1292,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
             # self.tools_table.itemChanged.connect(self.on_tool_edit)
-            self.ui_connect()
+            self.blockSignals(False)
+
             return
         else:
             if muted is None:
@@ -1372,10 +1311,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 }
             })
 
+        self.blockSignals(False)
+
         self.build_ui()
 
     def on_tool_edit(self):
-        self.ui_disconnect()
+        self.blockSignals(True)
 
         old_tool_dia = ''
         tool_dias = []
@@ -1393,8 +1334,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 try:
                     new_tool_dia = float(self.tools_table.item(row, 1).text().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, "
-                                         "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, use a number."))
+                    self.blockSignals(False)
                     return
 
             tooluid = int(self.tools_table.item(row, 3).text())
@@ -1403,6 +1344,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if new_tool_dia not in tool_dias:
                 self.ncc_tools[tooluid]['tooldia'] = new_tool_dia
                 self.app.inform.emit('[success] %s' % _("Tool from Tool Table was edited."))
+                self.blockSignals(False)
                 self.build_ui()
                 return
             else:
@@ -1415,6 +1357,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 restore_dia_item.setText(str(old_tool_dia))
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Edit cancelled. "
                                                               "New diameter value is already in the Tool Table."))
+        self.blockSignals(False)
         self.build_ui()
 
     def on_tool_delete(self, rows_to_delete=None, all_tools=None):
@@ -1425,12 +1368,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
         :param all_tools: delete all tools in the tool table
         :return:
         """
-        self.ui_disconnect()
+        self.blockSignals(True)
 
         deleted_tools_list = []
 
         if all_tools:
             self.paint_tools.clear()
+            self.blockSignals(False)
             self.build_ui()
             return
 
@@ -1444,6 +1388,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             for t in deleted_tools_list:
                 self.ncc_tools.pop(t, None)
+
+            self.blockSignals(False)
             self.build_ui()
             return
 
@@ -1461,11 +1407,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         except AttributeError:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a tool to delete."))
+            self.blockSignals(False)
             return
         except Exception as e:
             log.debug(str(e))
 
         self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
+        self.blockSignals(False)
         self.build_ui()
 
     def on_ncc_click(self):
