@@ -2006,6 +2006,11 @@ class FCTable(QtWidgets.QTableWidget):
     def __init__(self, drag_drop=False, protected_rows=None, parent=None):
         super(FCTable, self).__init__(parent)
 
+        palette = QtGui.QPalette()
+        palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight,
+                         palette.color(QtGui.QPalette.Active, QtGui.QPalette.Highlight))
+        self.setPalette(palette)
+
         if drag_drop:
             self.setDragEnabled(True)
             self.setAcceptDrops(True)

@@ -1631,7 +1631,7 @@ class App(QtCore.QObject):
         self.toggle_units_ignore = False
 
         # #############################################################################
-        # ########################## LOAD POSTPROCESSORS ##############################
+        # ########################## LOAD PREPROCESSORS ###############################
         # #############################################################################
 
         # a dictionary that have as keys the name of the preprocessor files and the value is the class from
@@ -1846,7 +1846,7 @@ class App(QtCore.QObject):
         # signal to be called when the app is quiting
         self.app_quit.connect(self.quit_application, type=Qt.QueuedConnection)
         self.message.connect(self.message_dialog)
-        self.progress.connect(self.set_progress_bar)
+        # self.progress.connect(self.set_progress_bar)
 
         # signals that are emitted when object state changes
         self.object_created.connect(self.on_object_created)
@@ -2464,7 +2464,10 @@ class App(QtCore.QObject):
         self.fiducial_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
-        self.install_tools()
+        try:
+            self.install_tools()
+        except AttributeError:
+            pass
 
         # ##################################################################################
         # ########################### SETUP RECENT ITEMS ###################################
@@ -2628,7 +2631,10 @@ class App(QtCore.QObject):
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
         # VisPy visuals
         if self.is_legacy is False:
-            self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+            try:
+                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+            except AttributeError:
+                self.tool_shapes = None
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
@@ -2639,9 +2645,20 @@ class App(QtCore.QObject):
 
         # watch out for the position of the editors instantiation ... if it is done before a save of the default values
         # at the first launch of the App , the editors will not be functional.
-        self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
-        self.exc_editor = FlatCAMExcEditor(self)
-        self.grb_editor = FlatCAMGrbEditor(self)
+        try:
+            self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+        except AttributeError:
+            pass
+
+        try:
+            self.exc_editor = FlatCAMExcEditor(self)
+        except AttributeError:
+            pass
+
+        try:
+            self.grb_editor = FlatCAMGrbEditor(self)
+        except AttributeError:
+            pass
         self.log.debug("Finished adding FlatCAM Editor's.")
 
         self.set_ui_title(name=_("New Project - Not saved"))
@@ -3136,7 +3153,11 @@ class App(QtCore.QObject):
         self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
 
         # third install all of them
-        self.install_tools()
+        try:
+            self.install_tools()
+        except AttributeError:
+            pass
+
         self.log.debug("Tools are initialized.")
 
     # def parse_system_fonts(self):
@@ -10874,13 +10895,11 @@ class App(QtCore.QObject):
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             self.new_object(obj_type, name, obj_init, autoselected=False)
-            self.progress.emit(20)
             # Register recent file
             self.file_opened.emit("dxf", filename)
 
             # GUI feedback
             self.inform.emit('[success] %s: %s' % (_("Opened"), filename))
-            self.progress.emit(100)
 
     def open_gerber(self, filename, outname=None):
         """
@@ -10956,7 +10975,6 @@ class App(QtCore.QObject):
 
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
-            # self.progress.emit(20)
 
             try:
                 ret = excellon_obj.parse_file(filename=filename)
@@ -10969,7 +10987,6 @@ class App(QtCore.QObject):
                 app_obj.inform.emit('[ERROR_NOTCL] %s: %s' %
                                     (_("Cannot open file"), filename))
                 log.debug("Could not open Excellon object.")
-                self.progress.emit(0)  # TODO: self and app_bjj mixed
                 return "fail"
             except Exception:
                 msg = '[ERROR_NOTCL] %s' % \
@@ -11611,6 +11628,11 @@ class App(QtCore.QObject):
 
         }
 
+        try:
+            image_opener = self.image_tool.import_image
+        except AttributeError:
+            image_opener = None
+
         openers = {
             'gerber': lambda fname: self.worker_task.emit({'fcn': self.open_gerber, 'params': [fname]}),
             'excellon': lambda fname: self.worker_task.emit({'fcn': self.open_excellon, 'params': [fname]}),
@@ -11621,7 +11643,7 @@ class App(QtCore.QObject):
             'project': self.open_project,
             'svg': self.import_svg,
             'dxf': self.import_dxf,
-            'image': self.image_tool.import_image,
+            'image': image_opener,
             'pdf': lambda fname: self.worker_task.emit({'fcn': self.pdf_tool.open_pdf, 'params': [fname]})
         }
 
@@ -11950,7 +11972,7 @@ class App(QtCore.QObject):
 
     def on_plotcanvas_setup(self, container=None):
         """
-        This is doing the setup for the plot area (VisPy canvas)
+        This is doing the setup for the plot area (canvas)
 
         :param container: widget where to install the canvas
         :return: None
@@ -11961,7 +11983,18 @@ class App(QtCore.QObject):
             plot_container = self.ui.right_layout
 
         if self.is_legacy is False:
-            self.plotcanvas = PlotCanvas(plot_container, self)
+            try:
+                self.plotcanvas = PlotCanvas(plot_container, self)
+            except Exception as er:
+                msg_txt = traceback.format_exc()
+                log.debug("App.on_plotcanvas_setup() failed -> %s" % str(er))
+                log.debug("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
+                msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
+                msg += _("OpenGL canvas initialization failed. HW or HW configuration not supported."
+                         "Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General tab.\n\n")
+                msg += msg_txt
+                self.inform.emit(msg)
+                return 'fail'
         else:
             self.plotcanvas = PlotCanvasLegacy(plot_container, self)
 
@@ -12044,8 +12077,7 @@ class App(QtCore.QObject):
         log.debug("App.on_enable_sel_plot()")
         object_list = self.collection.get_selected()
         self.enable_plots(objects=object_list)
-        self.inform.emit('[success] %s' %
-                         _("Selected plots enabled..."))
+        self.inform.emit('[success] %s' % _("Selected plots enabled..."))
 
     def on_disable_sel_plots(self):
         log.debug("App.on_disable_sel_plot()")
@@ -12053,8 +12085,7 @@ class App(QtCore.QObject):
         # self.inform.emit(_("Disabling plots ..."))
         object_list = self.collection.get_selected()
         self.disable_plots(objects=object_list)
-        self.inform.emit('[success] %s' %
-                         _("Selected plots disabled..."))
+        self.inform.emit('[success] %s' % _("Selected plots disabled..."))
 
     def enable_plots(self, objects):
         """
@@ -12070,6 +12101,20 @@ class App(QtCore.QObject):
             if obj.options['plot'] is False:
                 obj.options.set_change_callback(lambda x: None)
                 obj.options['plot'] = True
+                try:
+                    # only the Gerber obj has on_plot_cb_click() method
+                    obj.ui.plot_cb.stateChanged.disconnect(obj.on_plot_cb_click)
+                    # disable this cb while disconnected,
+                    # in case the operation takes time the user is not allowed to change it
+                    obj.ui.plot_cb.setDisabled(True)
+                except AttributeError:
+                    pass
+                obj.set_form_item("plot")
+                try:
+                    obj.ui.plot_cb.stateChanged.connect(obj.on_plot_cb_click)
+                    obj.ui.plot_cb.setDisabled(False)
+                except AttributeError:
+                    pass
                 obj.options.set_change_callback(obj.on_options_change)
 
         def worker_task(objs):
@@ -12104,6 +12149,18 @@ class App(QtCore.QObject):
             if obj.options['plot'] is True:
                 obj.options.set_change_callback(lambda x: None)
                 obj.options['plot'] = False
+                try:
+                    # only the Gerber obj has on_plot_cb_click() method
+                    obj.ui.plot_cb.stateChanged.disconnect(obj.on_plot_cb_click)
+                    obj.ui.plot_cb.setDisabled(True)
+                except AttributeError:
+                    pass
+                obj.set_form_item("plot")
+                try:
+                    obj.ui.plot_cb.stateChanged.connect(obj.on_plot_cb_click)
+                    obj.ui.plot_cb.setDisabled(False)
+                except AttributeError:
+                    pass
                 obj.options.set_change_callback(obj.on_options_change)
 
         try:
@@ -12242,7 +12299,7 @@ class App(QtCore.QObject):
             try:
                 self.collection.get_active().read_form()
             except Exception as e:
-                self.log.debug("There was no active object. %s" % str(e))
+                self.log.debug("save_project() --> There was no active object. Skipping read_form. %s" % str(e))
                 pass
 
             # Serialize the whole project

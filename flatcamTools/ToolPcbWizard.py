@@ -417,8 +417,6 @@ class PcbWizard(FlatCAMTool):
 
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
-            # self.progress.emit(20)
-
             try:
                 ret = excellon_obj.parse_file(file_obj=excellon_fileobj)
                 if ret == "fail":
@@ -427,10 +425,8 @@ class PcbWizard(FlatCAMTool):
                                         _("This is not Excellon file."))
                     return "fail"
             except IOError:
-                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (
-                        _("Cannot parse file"), self.outname))
+                app_obj.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Cannot parse file"), self.outname))
                 app_obj.log.debug("Could not import Excellon object.")
-                app_obj.progress.emit(0)
                 return "fail"
             except Exception as e:
                 app_obj.log.debug("PcbWizard.on_import_excellon().obj_init() %s" % str(e))
@@ -443,7 +439,7 @@ class PcbWizard(FlatCAMTool):
             if ret == 'fail':
                 app_obj.log.debug("Could not create geometry for Excellon object.")
                 return "fail"
-            app_obj.progress.emit(100)
+
             for tool in excellon_obj.tools:
                 if excellon_obj.tools[tool]['solid_geometry']:
                     return

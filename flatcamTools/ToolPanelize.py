@@ -484,11 +484,8 @@ class Panelize(FlatCAMTool):
             if panel_obj is not None:
                 self.app.inform.emit(_("Generating panel ... "))
 
-                self.app.progress.emit(0)
-
                 def job_init_excellon(obj_fin, app_obj):
                     currenty = 0.0
-                    self.app.progress.emit(10)
                     obj_fin.tools = copied_tools
                     obj_fin.drills = []
                     obj_fin.slots = []

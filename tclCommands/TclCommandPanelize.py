@@ -177,11 +177,8 @@ class TclCommandPanelize(TclCommand):
             if obj is not None:
                 self.app.inform.emit("Generating panel ... Please wait.")
 
-                self.app.progress.emit(0)
-
                 def job_init_excellon(obj_fin, app_obj):
                     currenty = 0.0
-                    self.app.progress.emit(10)
                     obj_fin.tools = obj.tools.copy()
                     obj_fin.drills = []
                     obj_fin.slots = []
@@ -247,7 +244,6 @@ class TclCommandPanelize(TclCommand):
                             for tool in obj.tools:
                                 obj_fin.tools[tool]['solid_geometry'][:] = []
 
-                    self.app.progress.emit(0)
                     for row in range(rows):
                         currentx = 0.0
 
@@ -271,10 +267,8 @@ class TclCommandPanelize(TclCommand):
                         currenty += lenghty
 
                 if isinstance(obj, FlatCAMExcellon):
-                    self.app.progress.emit(50)
                     self.app.new_object("excellon", outname, job_init_excellon, plot=False, autoselected=True)
                 else:
-                    self.app.progress.emit(50)
                     self.app.new_object("geometry", outname, job_init_geometry, plot=False, autoselected=True)
 
         if threaded is True:

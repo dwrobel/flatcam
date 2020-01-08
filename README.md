@@ -9,11 +9,29 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.01.2019
+
+- working in NCC Tool
+- selected rows in the Tools Tables will stay colored in blue after loosing focus instead of the default gray
+- in NCC Tool the Tool name in the Parameters section will be the Tool ID in the Tool Table
+- added an exception catch in case the plotcanvas init failed for the OpenGL graphic engine and warn user about what happened
+
+7.01.2019
+
+- solved issue #368 - when using the Enable/Disable prj context menu entries the plotted status is not updated in the object properties
+- updates in NCC Tool
+
+6.01.2019
+
+- working on new NCC Tool
+
 2.01.2020
 
 - started to rework the NCC Tool GUI in preparation for adding a Tool DB feature
 - for auto-completer, now clicking an entry in the completer popup will select that entry and insert it
 - made available only for Linux and Windows (not OSX) the starting of the thread that checks if another instance of FlatCAM is already running at the launch of FLatCAM
+- modified Toggle Workspace function to work in the new Preferences UI configuration
+- cleaned the app from progress signal usage since it is not used anymore
 
 1.01.2020
 

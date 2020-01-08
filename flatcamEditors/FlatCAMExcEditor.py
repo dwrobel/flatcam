@@ -3305,7 +3305,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):
 
-            # self.progress.emit(20)
             excellon_obj.drills = deepcopy(new_drills)
             excellon_obj.tools = deepcopy(new_tools)
             excellon_obj.slots = deepcopy(new_slots)
@@ -3335,12 +3334,9 @@ class FlatCAMExcEditor(QtCore.QObject):
                                                                   use_thread=False)
             except Exception as e:
                 log.error("Error on Edited object creation: %s" % str(e))
-                self.app.progress.emit(100)
                 return
 
-            self.app.inform.emit('[success] %s' %
-                                 _("Excellon editing finished."))
-            # self.progress.emit(100)
+            self.app.inform.emit('[success] %s' % _("Excellon editing finished."))
 
     def on_tool_select(self, tool):
         """

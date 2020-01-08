@@ -219,22 +219,22 @@ class TclCommandCopperClear(TclCommand):
 
         # Non-Copper clear all polygons in the non-copper clear object
         if 'all' in args and bool(args['all']):
-            self.app.ncclear_tool.clear_copper(ncc_obj=obj,
-                                               select_method='itself',
-                                               ncctooldia=tooldia,
-                                               overlap=overlap,
-                                               order=order,
-                                               margin=margin,
-                                               has_offset=has_offset,
-                                               offset=offset,
-                                               method=method,
-                                               outname=outname,
-                                               connect=connect,
-                                               contour=contour,
-                                               rest=rest,
-                                               tools_storage=ncc_tools,
-                                               plot=False,
-                                               run_threaded=False)
+            self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
+                                                   select_method='itself',
+                                                   ncctooldia=tooldia,
+                                                   overlap=overlap,
+                                                   order=order,
+                                                   margin=margin,
+                                                   has_offset=has_offset,
+                                                   offset=offset,
+                                                   method=method,
+                                                   outname=outname,
+                                                   connect=connect,
+                                                   contour=contour,
+                                                   rest=rest,
+                                                   tools_storage=ncc_tools,
+                                                   plot=False,
+                                                   run_threaded=False)
             return
 
         # Non-Copper clear all polygons found within the box object from the the non_copper cleared object
@@ -252,23 +252,23 @@ class TclCommandCopperClear(TclCommand):
                     self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
                     return "Could not retrieve object: %s" % name
 
-                self.app.ncclear_tool.clear_copper(ncc_obj=obj,
-                                                   sel_obj=box_obj,
-                                                   select_method='box',
-                                                   ncctooldia=tooldia,
-                                                   overlap=overlap,
-                                                   order=order,
-                                                   margin=margin,
-                                                   has_offset=has_offset,
-                                                   offset=offset,
-                                                   method=method,
-                                                   outname=outname,
-                                                   connect=connect,
-                                                   contour=contour,
-                                                   rest=rest,
-                                                   tools_storage=ncc_tools,
-                                                   plot=False,
-                                                   run_threaded=False)
+                self.app.ncclear_tool.clear_copper_tcl(ncc_obj=obj,
+                                                       sel_obj=box_obj,
+                                                       select_method='box',
+                                                       ncctooldia=tooldia,
+                                                       overlap=overlap,
+                                                       order=order,
+                                                       margin=margin,
+                                                       has_offset=has_offset,
+                                                       offset=offset,
+                                                       method=method,
+                                                       outname=outname,
+                                                       connect=connect,
+                                                       contour=contour,
+                                                       rest=rest,
+                                                       tools_storage=ncc_tools,
+                                                       plot=False,
+                                                       run_threaded=False)
             return
         else:
             self.raise_tcl_error("%s:" % _("None of the following args: 'ref', 'all' were found or none was set to 1.\n"
