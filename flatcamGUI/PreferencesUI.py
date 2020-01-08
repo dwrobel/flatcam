@@ -1661,18 +1661,13 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.layout.addWidget(separator_line)
-
-        grid1 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid1)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
+        grid0.addWidget(separator_line, 31, 0, 1, 2)
 
         self.pdf_param_label = QtWidgets.QLabel('<B>%s:</b>' % _("Text to PDF parameters"))
         self.pdf_param_label.setToolTip(
             _("Used when saving text in Code Editor or in FlatCAM Document objects.")
         )
-        grid1.addWidget(self.pdf_param_label, 0, 0, 1, 2)
+        grid0.addWidget(self.pdf_param_label, 32, 0, 1, 2)
 
         # Top Margin value
         self.tmargin_entry = FCDoubleSpinner()
@@ -1684,8 +1679,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the top of the PDF file.")
         )
 
-        grid1.addWidget(self.tmargin_label, 1, 0)
-        grid1.addWidget(self.tmargin_entry, 1, 1)
+        grid0.addWidget(self.tmargin_label, 33, 0)
+        grid0.addWidget(self.tmargin_entry, 33, 1)
 
         # Bottom Margin value
         self.bmargin_entry = FCDoubleSpinner()
@@ -1697,8 +1692,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the bottom of the PDF file.")
         )
 
-        grid1.addWidget(self.bmargin_label, 2, 0)
-        grid1.addWidget(self.bmargin_entry, 2, 1)
+        grid0.addWidget(self.bmargin_label, 34, 0)
+        grid0.addWidget(self.bmargin_entry, 34, 1)
 
         # Left Margin value
         self.lmargin_entry = FCDoubleSpinner()
@@ -1710,8 +1705,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the left of the PDF file.")
         )
 
-        grid1.addWidget(self.lmargin_label, 3, 0)
-        grid1.addWidget(self.lmargin_entry, 3, 1)
+        grid0.addWidget(self.lmargin_label, 35, 0)
+        grid0.addWidget(self.lmargin_entry, 35, 1)
 
         # Right Margin value
         self.rmargin_entry = FCDoubleSpinner()
@@ -1723,8 +1718,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             _("Distance between text body and the right of the PDF file.")
         )
 
-        grid1.addWidget(self.rmargin_label, 4, 0)
-        grid1.addWidget(self.rmargin_entry, 4, 1)
+        grid0.addWidget(self.rmargin_label, 36, 0)
+        grid0.addWidget(self.rmargin_entry, 36, 1)
 
         self.layout.addStretch()
 

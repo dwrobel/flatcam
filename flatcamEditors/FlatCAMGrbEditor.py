@@ -5761,7 +5761,6 @@ class TransformEditorTool(FlatCAMTool):
                 xmaximal = max(xmaxlist)
                 ymaximal = max(ymaxlist)
 
-                self.app.progress.emit(20)
                 px = 0.5 * (xminimal + xmaximal)
                 py = 0.5 * (yminimal + ymaximal)
 
@@ -5775,12 +5774,9 @@ class TransformEditorTool(FlatCAMTool):
                         sel_el['clear'] = affinity.rotate(sel_el['clear'], angle=-num, origin=(px, py))
                 self.draw_app.plot_all()
 
-                self.app.inform.emit('[success] %s' %
-                                     _("Done. Rotate completed."))
-                self.app.progress.emit(100)
+                self.app.inform.emit('[success] %s' % _("Done. Rotate completed."))
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                     (_("Rotation action was not executed."), str(e)))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Rotation action was not executed."), str(e)))
                 return
 
     def on_flip(self, axis):
@@ -5827,8 +5823,6 @@ class TransformEditorTool(FlatCAMTool):
                     px = 0.5 * (xminimal + xmaximal)
                     py = 0.5 * (yminimal + ymaximal)
 
-                self.app.progress.emit(20)
-
                 # execute mirroring
                 for sel_el_shape in elem_list:
                     sel_el = sel_el_shape.geo
@@ -5851,8 +5845,6 @@ class TransformEditorTool(FlatCAMTool):
                         self.app.inform.emit('[success] %s...' %
                                              _('Flip on the X axis done'))
                 self.draw_app.plot_all()
-                self.app.progress.emit(100)
-
             except Exception as e:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
                                      (_("Flip action was not executed."), str(e)))
@@ -5889,8 +5881,6 @@ class TransformEditorTool(FlatCAMTool):
                     xminimal = min(xminlist)
                     yminimal = min(yminlist)
 
-                    self.app.progress.emit(20)
-
                     for sel_el_shape in elem_list:
                         sel_el = sel_el_shape.geo
                         if axis is 'X':
@@ -5913,8 +5903,6 @@ class TransformEditorTool(FlatCAMTool):
                         self.app.inform.emit('[success] %s...' % _('Skew on the X axis done'))
                     else:
                         self.app.inform.emit('[success] %s...' % _('Skew on the Y axis done'))
-                    self.app.progress.emit(100)
-
                 except Exception as e:
                     self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Skew action was not executed."), str(e)))
                     return
@@ -5957,8 +5945,6 @@ class TransformEditorTool(FlatCAMTool):
                     yminimal = min(yminlist)
                     xmaximal = max(xmaxlist)
                     ymaximal = max(ymaxlist)
-
-                    self.app.progress.emit(20)
 
                     if point is None:
                         px = 0.5 * (xminimal + xmaximal)

@@ -1811,7 +1811,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             visibility = kwargs['visible']
 
         with self.app.proc_container.new(_("Plotting Apertures")):
-            self.app.progress.emit(30)
 
             def job_thread(app_obj):
                 try:
@@ -3080,7 +3079,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
-            app_obj.progress.emit(20)
 
             # ## Add properties to the object
 
@@ -3110,7 +3108,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         if use_thread:
             def geo_thread(app_obj):
                 app_obj.new_object("geometry", outname, geo_init, plot=plot)
-                app_obj.progress.emit(100)
 
             # Create a promise with the new name
             self.app.collection.promise(outname)
@@ -3173,7 +3170,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
-            app_obj.progress.emit(20)
 
             # ## Add properties to the object
 
@@ -3217,7 +3213,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         if use_thread:
             def geo_thread(app_obj):
                 app_obj.new_object("geometry", outname + '_slot', geo_init, plot=plot)
-                app_obj.progress.emit(100)
 
             # Create a promise with the new name
             self.app.collection.promise(outname)
@@ -3358,7 +3353,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         def job_thread(app_obj):
             with self.app.proc_container.new(_("Generating CNC Code")):
                 app_obj.new_object("cncjob", job_name, job_init)
-                app_obj.progress.emit(100)
 
         # Create promise for the new name.
         self.app.collection.promise(job_name)
@@ -5425,11 +5419,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # Propagate options
             job_obj.options["tooldia"] = tooldia
 
-            app_obj.progress.emit(20)
-
             job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
             job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
-            app_obj.progress.emit(40)
 
             job_obj.options['type'] = 'Geometry'
             job_obj.options['tool_dia'] = tooldia
@@ -5459,24 +5450,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 pp_geometry_name=ppname_g
             )
 
-            app_obj.progress.emit(50)
             # tell gcode_parse from which point to start drawing the lines depending on what kind of object is the
             # source of gcode
             job_obj.toolchange_xy_type = "geometry"
             job_obj.gcode_parse()
-            self.app.inform.emit('[success] %s' %
-                                 _("Finished G-Code processing..."))
-
-            app_obj.progress.emit(80)
+            self.app.inform.emit('[success] %s' % _("Finished G-Code processing..."))
 
         if use_thread:
             # To be run in separate thread
             def job_thread(app_obj):
                 with self.app.proc_container.new(_("Generating CNC Code")):
                     app_obj.new_object("cncjob", outname, job_init, plot=plot)
-                    app_obj.inform.emit('[success] %s: %s' %
-                                        (_("CNCjob created")), outname)
-                    app_obj.progress.emit(100)
+                    app_obj.inform.emit('[success] %s: %s' % (_("CNCjob created")), outname)
 
             # Create a promise with the name
             self.app.collection.promise(outname)

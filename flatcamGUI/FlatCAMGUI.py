@@ -2221,9 +2221,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.infobar.addWidget(self.units_label)
 
         # disabled
-        self.progress_bar = QtWidgets.QProgressBar()
-        self.progress_bar.setMinimum(0)
-        self.progress_bar.setMaximum(100)
+        # self.progress_bar = QtWidgets.QProgressBar()
+        # self.progress_bar.setMinimum(0)
+        # self.progress_bar.setMaximum(100)
         # infobar.addWidget(self.progress_bar)
 
         # ########################################################################
@@ -2261,6 +2261,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.g_editor_cmenu.menuAction().setVisible(False)
         self.grb_editor_cmenu.menuAction().setVisible(False)
         self.e_editor_cmenu.menuAction().setVisible(False)
+
+        # ########################################################################
+        # ######################## BUILD PREFERENCES #############################
+        # ########################################################################
 
         self.general_defaults_form = GeneralPreferencesUI(decimals=self.decimals)
         self.gerber_defaults_form = GerberPreferencesUI(decimals=self.decimals)
@@ -2358,7 +2362,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         :param event: QT event to filter
         :return:
         """
-        if self.general_defaults_form.general_app_set_group.toggle_tooltips_cb.get_value() is False:
+        if self.app.defaults["global_toggle_tooltips"] is False:
             if event.type() == QtCore.QEvent.ToolTip:
                 return True
             else:

@@ -6,10 +6,11 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore, QtGui
+
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton
 from flatcamParsers.ParseGerber import Gerber
-from FlatCAMObj import FlatCAMGeometry, FlatCAMGerber
+
 import FlatCAMApp
 
 from copy import deepcopy
@@ -175,6 +176,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "- climb / best for precision milling and to reduce tool usage\n"
               "- conventional / useful when there is no backlash compensation")
         )
+        self.milling_type_radio.setObjectName(_("Milling Type"))
 
         grid1.addWidget(self.milling_type_label, 0, 0)
         grid1.addWidget(self.milling_type_radio, 0, 1)
@@ -218,7 +220,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.grid3.setColumnStretch(0, 0)
         self.grid3.setColumnStretch(1, 1)
 
-        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("Tool Selection"))
+        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
         self.grid3.addWidget(self.tool_sel_label, 1, 0, 1, 2)
 
         # Tool Type Radio Button
@@ -236,6 +238,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "- 'V-shape'\n"
               "- Circular")
         )
+        self.tool_type_radio.setObjectName(_("Tool Type"))
+
         self.grid3.addWidget(self.tool_type_label, 2, 0)
         self.grid3.addWidget(self.tool_type_radio, 2, 1)
 
@@ -245,7 +249,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("The tip diameter for V-Shape Tool"))
         self.tipdia_entry = FCDoubleSpinner()
         self.tipdia_entry.set_precision(self.decimals)
+        self.tipdia_entry.set_range(0.0000, 9999.9999)
         self.tipdia_entry.setSingleStep(0.1)
+        self.tipdia_entry.setObjectName(_("V-Tip Dia"))
 
         self.grid3.addWidget(self.tipdialabel, 3, 0)
         self.grid3.addWidget(self.tipdia_entry, 3, 1)
@@ -257,7 +263,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "In degree."))
         self.tipangle_entry = FCDoubleSpinner()
         self.tipangle_entry.set_precision(self.decimals)
+        self.tipangle_entry.set_range(0.0000, 180.0000)
         self.tipangle_entry.setSingleStep(5)
+        self.tipangle_entry.setObjectName(_("V-Tip Angle"))
 
         self.grid3.addWidget(self.tipanglelabel, 4, 0)
         self.grid3.addWidget(self.tipangle_entry, 4, 1)
@@ -271,6 +279,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.cutz_entry = FCDoubleSpinner()
         self.cutz_entry.set_precision(self.decimals)
         self.cutz_entry.set_range(-99999.9999, 0.0000)
+        self.cutz_entry.setObjectName(_("Cut Z"))
 
         self.cutz_entry.setToolTip(
            _("Depth of cut into material. Negative value.\n"
@@ -288,16 +297,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         )
         self.addtool_entry = FCDoubleSpinner()
         self.addtool_entry.set_precision(self.decimals)
+        self.addtool_entry.set_range(0.000, 9999.9999)
+        self.addtool_entry.setObjectName(_("Tool Dia"))
 
         self.grid3.addWidget(self.addtool_entry_lbl, 6, 0)
         self.grid3.addWidget(self.addtool_entry, 6, 1)
-
-        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add Tool from DataBase'))
-        self.addtool_from_db_btn.setToolTip(
-            _("Add a new tool to the Tool Table\n"
-              "from the Tool DataBase.")
-        )
-        self.grid3.addWidget(self.addtool_from_db_btn, 7, 0, 1, 2)
 
         hlay = QtWidgets.QHBoxLayout()
 
@@ -316,7 +320,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
         hlay.addWidget(self.addtool_btn)
         hlay.addWidget(self.deltool_btn)
 
-        self.grid3.addLayout(hlay, 8, 0, 1, 2)
+        self.grid3.addLayout(hlay, 7, 0, 1, 2)
+
+        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add Tool from DataBase'))
+        self.addtool_from_db_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "from the Tool DataBase.")
+        )
+        self.grid3.addWidget(self.addtool_from_db_btn, 8, 0, 1, 2)
 
         self.grid3.addWidget(QtWidgets.QLabel(''), 9, 0, 1, 2)
 
@@ -351,16 +362,20 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_overlap_entry.setWrapping(True)
         self.ncc_overlap_entry.setRange(0.000, 99.9999)
         self.ncc_overlap_entry.setSingleStep(0.1)
+        self.ncc_overlap_entry.setObjectName(_("Overlap Rate"))
 
         self.grid3.addWidget(nccoverlabel, 12, 0)
         self.grid3.addWidget(self.ncc_overlap_entry, 12, 1)
 
+        # Margin
         nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
         nccmarginlabel.setToolTip(
             _("Bounding box margin.")
         )
         self.ncc_margin_entry = FCDoubleSpinner()
         self.ncc_margin_entry.set_precision(self.decimals)
+        self.ncc_margin_entry.set_range(-9999.9999, 9999.9999)
+        self.ncc_margin_entry.setObjectName(_("Margin"))
 
         self.grid3.addWidget(nccmarginlabel, 13, 0)
         self.grid3.addWidget(self.ncc_margin_entry, 13, 1)
@@ -378,19 +393,25 @@ class NonCopperClear(FlatCAMTool, Gerber):
             {"label": _("Seed-based"), "value": "seed"},
             {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
+        self.ncc_method_radio.setObjectName(_("Method"))
 
         self.grid3.addWidget(methodlabel, 14, 0)
         self.grid3.addWidget(self.ncc_method_radio, 14, 1)
 
         # Connect lines
         self.ncc_connect_cb = FCCheckBox('%s' % _("Connect"))
+        self.ncc_connect_cb.setObjectName(_("Connect"))
+
         self.ncc_connect_cb.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
         self.grid3.addWidget(self.ncc_connect_cb, 15, 0, 1, 2)
 
+        # Contour
         self.ncc_contour_cb = FCCheckBox('%s' % _("Contour"))
+        self.ncc_contour_cb.setObjectName(_("Contour"))
+
         self.ncc_contour_cb.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
@@ -399,6 +420,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # Rest Machining
         self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.ncc_rest_cb.setObjectName(_("Rest Machining"))
+
         self.ncc_rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
@@ -413,6 +436,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # ## NCC Offset choice
         self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
+        self.ncc_choice_offset_cb.setObjectName(_("Offset"))
+
         self.ncc_choice_offset_cb.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
@@ -433,6 +458,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_offset_spinner.set_range(0.00, 10.00)
         self.ncc_offset_spinner.set_precision(4)
         self.ncc_offset_spinner.setWrapping(True)
+        self.ncc_offset_spinner.setObjectName(_("Offset value"))
 
         units = self.app.defaults['units'].upper()
         if units == 'MM':
@@ -452,7 +478,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
             {"label": _("Area Selection"), "value": "area"},
             {'label':  _("Reference Object"), 'value': 'box'}
         ], orientation='vertical', stretch=False)
-        self.reference_label = QtWidgets.QLabel(_("Reference:"))
+        self.reference_radio.setObjectName(_("Reference"))
+
+        self.reference_label = QtWidgets.QLabel('%s:' % _("Reference"))
         self.reference_label.setToolTip(
             _("- 'Itself' - the non copper clearing extent is based on the object that is copper cleared.\n "
               "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
@@ -586,6 +614,32 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.tooldia = None
 
+        self.form_fields = {
+            "nccoverlap": self.ncc_overlap_entry,
+            "nccmargin": self.ncc_margin_entry,
+            "nccmethod": self.ncc_method_radio,
+            "nccconnect": self.ncc_connect_cb,
+            "ncccontour": self.ncc_contour_cb,
+            "nccrest": self.ncc_rest_cb,
+            "nccoffset": self.ncc_choice_offset_cb,
+            "nccoffset_value": self.ncc_offset_spinner,
+            "nccref":  self.reference_radio,
+            "milling_type": self.milling_type_radio
+        }
+
+        self.name2option = {
+            _('Overlap Rate'): "nccoverlap",
+            _('Margin'): "nccmargin",
+            _('Method'): "nccmethod",
+            _("Connect"): "nccconnect",
+            _("Contour"): "ncccontour",
+            _("Rest Machining"): "nccrest",
+            _("Offset"): "nccoffset",
+            _("Offset value"): "nccoffset_value",
+            _("Reference"): "nccref",
+            _('Milling Type'): "milling_type",
+        }
+
         # #############################################################################
         # ############################ SGINALS ########################################
         # #############################################################################
@@ -618,7 +672,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.update_ui()
 
     def update_ui(self, row=None):
-        self.ui_disconnect()
+        self.blockSignals(True)
 
         if row is None:
             try:
@@ -634,7 +688,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # populate the form with the data from the tool associated with the row parameter
         try:
             item = self.tools_table.item(current_row, 3)
-            if type(item) is not None:
+            if item is not None:
                 tooluid = int(item.text())
             else:
                 return
@@ -644,7 +698,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # update the QLabel that shows for which Tool we have the parameters in the UI form
         self.tool_data_label.setText(
-            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
+            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), (current_row + 1))
         )
 
         try:
@@ -654,70 +708,46 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     for key, value in tooluid_value.items():
                         if key == 'data':
                             form_value_storage = tooluid_value[key]
-                            self.update_form(form_value_storage)
-                        if key == 'offset_value':
-                            # update the offset value in the entry even if the entry is hidden
-                            self.ncc_offset_spinner.set_value(tooluid_value[key])
-
-                        if key == 'tool_type' and value == 'V':
-                            self.update_cutz()
+                            self.storage_to_form(form_value_storage)
         except Exception as e:
             log.debug("FlatCAMObj ---> update_ui() " + str(e))
-        self.ui_connect()
 
-    def update_cutz(self):
-        vdia = float(self.tipdia_entry.get_value())
-        half_vangle = float(self.tipangle_entry.get_value()) / 2
+        self.blockSignals(False)
 
-        row = self.tools_table.currentRow()
-        tool_uid_item = self.tools_table.item(row, 3)
-        if tool_uid_item is None:
-            return
-        tool_uid = int(tool_uid_item.text())
-
-        tool_dia_item = self.tools_table.item(row, 1)
-        if tool_dia_item is None:
-            return
-        tooldia = float(tool_dia_item.text())
-
-        new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
-        new_cutz = float('%.*f' % (self.decimals, new_cutz)) * -1.0   # this value has to be negative
-
-        self.cutz_entry.set_value(new_cutz)
-
-        # store the new CutZ value into storage (self.ncc_tools)
-        for tooluid_key, tooluid_value in self.ncc_tools.items():
-            if int(tooluid_key) == tool_uid:
-                tooluid_value['data']['cutz'] = new_cutz
-
-    def on_tooltable_cellwidget_change(self):
-        cw = self.sender()
-        cw_index = self.tools_table.indexAt(cw.pos())
-        cw_row = cw_index.row()
-        cw_col = cw_index.column()
-        current_uid = int(self.tools_table.item(cw_row, 3).text())
-
-        # store the text of the cellWidget that changed it's index in the self.tools
-        for tooluid_key, tooluid_value in self.ncc_tools.items():
-            if int(tooluid_key) == current_uid:
-                cb_txt = cw.currentText()
-                if cw_col == 2:
-                    tooluid_value['tool_type'] = cb_txt
-
-    def update_form(self, dict_storage):
+    def storage_to_form(self, dict_storage):
         for form_key in self.form_fields:
             for storage_key in dict_storage:
                 if form_key == storage_key:
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
-                    except Exception as e:
-                        log.debug(str(e))
+                    except Exception:
+                        pass
 
-        # this is done here because those buttons control through OptionalInputSelection if some entry's are Enabled
-        # or not. But due of using the ui_disconnect() status is no longer updated and I had to do it here
-        self.ui.ois_dwell_geo.on_cb_change()
-        self.ui.ois_mpass_geo.on_cb_change()
-        self.ui.ois_tcz_geo.on_cb_change()
+    def form_to_storage(self):
+        if self.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            return
+
+        self.blockSignals(True)
+
+        widget_changed = self.sender()
+        wdg_objname = widget_changed.objectName()
+        option_changed = self.name2option[wdg_objname]
+
+        row = self.tools_table.currentRow()
+        if row < 0:
+            row = 0
+        tooluid_item = int(self.tools_table.item(row, 3).text())
+
+        for tooluid_key, tooluid_val in self.ncc_tools.items():
+            if int(tooluid_key) == tooluid_item:
+                new_option_value = self.form_fields[option_changed].get_value()
+                if option_changed in tooluid_val:
+                    tooluid_val[option_changed] = new_option_value
+                if option_changed in tooluid_val['data']:
+                    tooluid_val['data'][option_changed] = new_option_value
+
+        self.blockSignals(False)
 
     def on_apply_param_to_all_clicked(self):
         if self.tools_table.rowCount() == 0:
@@ -725,7 +755,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
             return
 
-        self.ui_disconnect()
+        self.blockSignals(True)
 
         row = self.tools_table.currentRow()
         if row < 0:
@@ -736,8 +766,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         type_item = self.tools_table.cellWidget(row, 2).currentText()
         operation_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
 
-        offset_item = self.ncc_choice_offset_cb.get_value()
-        offset_value_item = float(self.ncc_offset_spinner.get_value())
+        nccoffset_item = self.ncc_choice_offset_cb.get_value()
+        nccoffset_value_item = float(self.ncc_offset_spinner.get_value())
 
         # this new dict will hold the actual useful data, another dict that is the value of key 'data'
         temp_tools = {}
@@ -746,16 +776,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         for tooluid_key, tooluid_value in self.ncc_tools.items():
             for key, value in tooluid_value.items():
-                if key == 'tooldia':
-                    temp_dia[key] = tooldia_item
-                # update the 'offset', 'type' and 'tool_type' sections
-                if key == 'offset':
-                    temp_dia[key] = offset_item
-                if key == 'type':
-                    temp_dia[key] = type_item
-                if key == 'offset_value':
-                    temp_dia[key] = offset_value_item
-
                 if key == 'data':
                     # update the 'data' section
                     for data_key in tooluid_value[key].keys():
@@ -769,8 +789,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     temp_dia[key] = deepcopy(temp_data)
                     temp_data.clear()
 
-                if key == 'solid_geometry':
+                elif key == 'solid_geometry':
                     temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
+                else:
+                    temp_dia[key] = deepcopy(value)
 
                 temp_tools[tooluid_key] = deepcopy(temp_dia)
 
@@ -778,93 +800,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_tools = deepcopy(temp_tools)
         temp_tools.clear()
 
-        self.ui_connect()
-
-    def gui_form_to_storage(self):
-        if self.tools_table.rowCount() == 0:
-            # there is no tool in tool table so we can't save the GUI elements values to storage
-            log.debug("NonCopperClear.gui_form_to_storage() --> no tool in Tools Table, aborting.")
-            return
-
-        self.ui_disconnect()
-        widget_changed = self.sender()
-        try:
-            widget_idx = self.grid3.indexOf(widget_changed)
-        except Exception as e:
-            return
-
-        # those are the indexes for the V-Tip Dia and V-Tip Angle, if edited calculate the new Cut Z
-        if widget_idx == 1 or widget_idx == 3:
-            self.update_cutz()
-
-        # the original connect() function of the OptionalInputSelection is no longer working because of the
-        # ui_diconnect() so I use this 'hack'
-        # if isinstance(widget_changed, FCCheckBox):
-        #     if widget_changed.text() == 'Multi-Depth:':
-        #         self.ui.ois_mpass_geo.on_cb_change()
-        #
-        #     if widget_changed.text() == 'Tool change':
-        #         self.ui.ois_tcz_geo.on_cb_change()
-        #
-        #     if widget_changed.text() == 'Dwell:':
-        #         self.ui.ois_dwell_geo.on_cb_change()
-
-        row = self.tools_table.currentRow()
-        if row < 0:
-            row = 0
-
-        # store all the data associated with the row parameter to the self.tools storage
-        tooldia_item = float(self.tools_table.item(row, 1).text())
-        tool_type_item = self.tools_table.cellWidget(row, 2).currentText()
-        operation_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
-
-        offset_item = self.ncc_choice_offset_cb.get_value()
-        offset_value_item = float(self.ncc_offset_spinner.get_value())
-
-        tooluid_item = int(self.ui.geo_tools_table.item(row, 3).text())
-
-        # this new dict will hold the actual useful data, another dict that is the value of key 'data'
-        temp_tools = {}
-        temp_dia = {}
-        temp_data = {}
-
-        for tooluid_key, tooluid_value in self.tools.items():
-            if int(tooluid_key) == tooluid_item:
-                for key, value in tooluid_value.items():
-                    if key == 'tooldia':
-                        temp_dia[key] = tooldia_item
-                    # update the 'offset', 'type' and 'tool_type' sections
-                    if key == 'offset':
-                        temp_dia[key] = offset_item
-                    if key == 'tool_type':
-                        temp_dia[key] = tool_type_item
-                    if key == 'offset_value':
-                        temp_dia[key] = offset_value_item
-
-                    if key == 'data':
-                        # update the 'data' section
-                        for data_key in tooluid_value[key].keys():
-                            for form_key, form_value in self.form_fields.items():
-                                if form_key == data_key:
-                                    temp_data[data_key] = form_value.get_value()
-                            # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
-                            # updated from self.app.defaults
-                            if data_key not in self.form_fields:
-                                temp_data[data_key] = value[data_key]
-                        temp_dia[key] = deepcopy(temp_data)
-                        temp_data.clear()
-
-                    if key == 'solid_geometry':
-                        temp_dia[key] = deepcopy(self.ncc_tools[tooluid_key]['solid_geometry'])
-
-                    temp_tools[tooluid_key] = deepcopy(temp_dia)
-            else:
-                temp_tools[tooluid_key] = deepcopy(tooluid_value)
-
-        self.ncc_tools.clear()
-        self.ncc_tools = deepcopy(temp_tools)
-        temp_tools.clear()
-        self.ui_connect()
+        self.blockSignals(False)
 
     def on_add_tool_by_key(self):
         tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
@@ -931,6 +867,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_connect_cb.set_value(self.app.defaults["tools_nccconnect"])
         self.ncc_contour_cb.set_value(self.app.defaults["tools_ncccontour"])
         self.ncc_rest_cb.set_value(self.app.defaults["tools_nccrest"])
+        self.ncc_choice_offset_cb.set_value(self.app.defaults["tools_ncc_offset_choice"])
+        self.ncc_offset_spinner.set_value(self.app.defaults["tools_ncc_offset_value"])
+
         self.reference_radio.set_value(self.app.defaults["tools_nccref"])
         self.milling_type_radio.set_value(self.app.defaults["tools_nccmilling_type"])
         self.cutz_entry.set_value(self.app.defaults["tools_ncccutz"])
@@ -943,7 +882,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # init the working variables
         self.default_data.clear()
-        self.default_data.update({
+        self.default_data = {
             "name": '_ncc',
             "plot": self.app.defaults["geometry_plot"],
             "cutz": float(self.cutz_entry.get_value()),
@@ -967,21 +906,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
 
-            "tooldia": self.app.defaults["tools_painttooldia"],
-            "paintmargin": self.app.defaults["tools_paintmargin"],
-            "paintmethod": self.app.defaults["tools_paintmethod"],
-            "selectmethod": self.app.defaults["tools_selectmethod"],
-            "pathconnect": self.app.defaults["tools_pathconnect"],
-            "paintcontour": self.app.defaults["tools_paintcontour"],
-            "paintoverlap": self.app.defaults["tools_paintoverlap"],
-
             "nccmargin": self.app.defaults["tools_nccmargin"],
             "nccmethod": self.app.defaults["tools_nccmethod"],
             "nccconnect": self.app.defaults["tools_nccconnect"],
             "ncccontour": self.app.defaults["tools_ncccontour"],
             "nccoverlap": self.app.defaults["tools_nccoverlap"],
-            "nccrest": self.app.defaults["tools_nccrest"]
-        })
+            "nccrest": self.app.defaults["tools_nccrest"],
+            "nccref": self.app.defaults["tools_nccref"],
+            "nccoffset": self.app.defaults["tools_ncc_offset_choice"],
+            "nccoffset_value": self.app.defaults["tools_ncc_offset_value"],
+
+        }
 
         try:
             dias = [float(self.app.defaults["tools_ncctools"])]
@@ -1118,21 +1053,56 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tools_table.itemChanged.connect(self.on_tool_edit)
 
         for row in range(self.tools_table.rowCount()):
-            for col in [2, 4]:
-                self.tools_table.cellWidget(row, col).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
+            try:
+                self.tools_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
+            except AttributeError:
+                pass
+
+            try:
+                self.tools_table.cellWidget(row, 4).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
+            except AttributeError:
+                pass
 
         self.tool_type_radio.activated_custom.connect(self.on_tool_type)
+
+        # first disconnect
+        for opt in self.form_fields:
+            current_widget = self.form_fields[opt]
+            if isinstance(current_widget, FCCheckBox):
+                try:
+                    current_widget.stateChanged.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+            if isinstance(current_widget, RadioSet):
+                try:
+                    current_widget.activated_custom.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(current_widget, FCDoubleSpinner):
+                try:
+                    current_widget.returnPressed.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+
+        for opt in self.form_fields:
+            current_widget = self.form_fields[opt]
+            if isinstance(current_widget, FCCheckBox):
+                current_widget.stateChanged.connect(self.form_to_storage)
+            if isinstance(current_widget, RadioSet):
+                current_widget.activated_custom.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCDoubleSpinner):
+                current_widget.returnPressed.connect(self.form_to_storage)
 
     def ui_disconnect(self):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.tools_table.itemChanged.disconnect(self.on_tool_edit)
+            self.tools_table.itemChanged.disconnect()
         except (TypeError, AttributeError):
             pass
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.tool_type_radio.activated_custom.disconnect(self.on_tool_type)
+            self.tool_type_radio.activated_custom.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -1141,6 +1111,24 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 try:
                     self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
                 except (TypeError, AttributeError):
+                    pass
+
+        for opt in self.form_fields:
+            current_widget = self.form_fields[opt]
+            if isinstance(current_widget, FCCheckBox):
+                try:
+                    current_widget.stateChanged.disconnect()
+                except (TypeError, ValueError):
+                    pass
+            if isinstance(current_widget, RadioSet):
+                try:
+                    current_widget.activated_custom.disconnect()
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(current_widget, FCDoubleSpinner):
+                try:
+                    current_widget.returnPressed.disconnect()
+                except (TypeError, ValueError):
                     pass
 
     def on_combo_box_type(self):
@@ -1189,30 +1177,28 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         current_uid = int(self.tools_table.item(cw_row, 3).text())
 
-        hide_iso_type = True
-        for row in range(self.tools_table.rowCount()):
-            if self.tools_table.cellWidget(row, 4).currentText() == 'iso_op':
-                hide_iso_type = False
-                break
-
-        if hide_iso_type is False:
-            self.milling_type_label.show()
-            self.milling_type_radio.show()
-        else:
-            self.milling_type_label.hide()
-            self.milling_type_radio.hide()
-
         # if the sender is in the column with index 2 then we update the tool_type key
         if cw_col == 2:
             tt = cw.currentText()
-            if tt == 'V':
-                typ = 'Iso'
-            else:
-                typ = "Rough"
+            typ = 'Iso' if tt == 'V' else "Rough"
 
             self.ncc_tools[current_uid].update({
                 'type': typ,
                 'tool_type': tt,
+            })
+
+        if cw_col == 4:
+            op = cw.currentText()
+
+            if op == 'iso_op':
+                self.milling_type_label.show()
+                self.milling_type_radio.show()
+            else:
+                self.milling_type_label.hide()
+                self.milling_type_radio.hide()
+
+            self.ncc_tools[current_uid].update({
+                'operation': op
             })
 
     def on_tool_type(self, val):
@@ -1254,7 +1240,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             return float(self.addtool_entry.get_value())
 
     def on_tool_add(self, dia=None, muted=None):
-        self.ui_disconnect()
+        self.blockSignals(True)
+
         self.units = self.app.defaults['units'].upper()
 
         if dia:
@@ -1296,7 +1283,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if muted is None:
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
             # self.tools_table.itemChanged.connect(self.on_tool_edit)
-            self.ui_connect()
+            self.blockSignals(False)
+
             return
         else:
             if muted is None:
@@ -1314,10 +1302,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 }
             })
 
+        self.blockSignals(False)
+
         self.build_ui()
 
     def on_tool_edit(self):
-        self.ui_disconnect()
+        self.blockSignals(True)
 
         old_tool_dia = ''
         tool_dias = []
@@ -1335,8 +1325,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 try:
                     new_tool_dia = float(self.tools_table.item(row, 1).text().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, "
-                                         "use a number."))
+                    self.app.inform.emit('[ERROR_NOTCL]  %s' % _("Wrong value format entered, use a number."))
+                    self.blockSignals(False)
                     return
 
             tooluid = int(self.tools_table.item(row, 3).text())
@@ -1345,6 +1335,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             if new_tool_dia not in tool_dias:
                 self.ncc_tools[tooluid]['tooldia'] = new_tool_dia
                 self.app.inform.emit('[success] %s' % _("Tool from Tool Table was edited."))
+                self.blockSignals(False)
                 self.build_ui()
                 return
             else:
@@ -1357,6 +1348,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 restore_dia_item.setText(str(old_tool_dia))
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Edit cancelled. "
                                                               "New diameter value is already in the Tool Table."))
+        self.blockSignals(False)
         self.build_ui()
 
     def on_tool_delete(self, rows_to_delete=None, all_tools=None):
@@ -1367,12 +1359,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
         :param all_tools: delete all tools in the tool table
         :return:
         """
-        self.ui_disconnect()
+        self.blockSignals(True)
 
         deleted_tools_list = []
 
         if all_tools:
             self.paint_tools.clear()
+            self.blockSignals(False)
             self.build_ui()
             return
 
@@ -1382,10 +1375,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     tooluid_del = int(self.tools_table.item(row, 3).text())
                     deleted_tools_list.append(tooluid_del)
             except TypeError:
-                deleted_tools_list.append(rows_to_delete)
+                tooluid_del = int(self.tools_table.item(rows_to_delete, 3).text())
+                deleted_tools_list.append(tooluid_del)
 
             for t in deleted_tools_list:
                 self.ncc_tools.pop(t, None)
+
+            self.blockSignals(False)
             self.build_ui()
             return
 
@@ -1403,11 +1399,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         except AttributeError:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a tool to delete."))
+            self.blockSignals(False)
             return
         except Exception as e:
             log.debug(str(e))
 
         self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
+        self.blockSignals(False)
         self.build_ui()
 
     def on_ncc_click(self):
@@ -1720,7 +1718,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             ncc_select = self.reference_radio.get_value()
 
         overlap = overlap if overlap is not None else float(self.app.defaults["tools_nccoverlap"]) / 100.0
-
         connect = connect if connect else self.app.defaults["tools_nccconnect"]
         contour = contour if contour else self.app.defaults["tools_ncccontour"]
         order = order if order else self.ncc_order_radio.get_value()
@@ -1818,7 +1815,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         elif ncc_select == 'box':
             geo_n = ncc_sel_obj.solid_geometry
-            if isinstance(ncc_sel_obj, FlatCAMGeometry):
+            if ncc_sel_obj.kind == 'geometry':
                 try:
                     __ = iter(geo_n)
                 except Exception as e:
@@ -1833,7 +1830,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
                 bounding_box = cascaded_union(geo_buff_list)
-            elif isinstance(ncc_sel_obj, FlatCAMGerber):
+            elif ncc_sel_obj.kind == 'gerber':
                 geo_n = cascaded_union(geo_n).convex_hull
                 bounding_box = cascaded_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
                 bounding_box = bounding_box.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
@@ -1856,7 +1853,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # Initializes the new geometry object ######################################################
         # ##########################################################################################
         def gen_clear_area(geo_obj, app_obj):
-            assert isinstance(geo_obj, FlatCAMGeometry), \
+            assert geo_obj.kind == 'geometry', \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             # provide the app with a way to process the GUI events when in a blocking loop
@@ -1898,7 +1895,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             log.debug("NCC Tool. Calculate 'empty' area.")
             self.app.inform.emit(_("NCC Tool. Calculate 'empty' area."))
 
-            if isinstance(ncc_obj, FlatCAMGerber) and not isotooldia:
+            if ncc_obj.kind == 'gerber' and not isotooldia:
                 # unfortunately for this function to work time efficient,
                 # if the Gerber was loaded without buffering then it require the buffering now.
                 if self.app.defaults['gerber_buffering'] == 'no':
@@ -1919,7 +1916,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                         _("Could not get the extent of the area to be non copper cleared."))
                     return 'fail'
-            elif isinstance(ncc_obj, FlatCAMGerber) and isotooldia:
+            elif ncc_obj.kind == 'gerber' and isotooldia:
                 isolated_geo = []
 
                 # unfortunately for this function to work time efficient,
@@ -2024,7 +2021,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         _("Isolation geometry is broken. Margin is less than isolation tool diameter."))
                     return 'fail'
 
-            elif isinstance(ncc_obj, FlatCAMGeometry):
+            elif ncc_obj.kind == 'geometry':
                 sol_geo = cascaded_union(ncc_obj.solid_geometry)
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
@@ -2295,7 +2292,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # Initializes the new geometry object for the case of the rest-machining ####################
         # ###########################################################################################
         def gen_clear_area_rest(geo_obj, app_obj):
-            assert isinstance(geo_obj, FlatCAMGeometry), \
+            assert geo_obj.kind == 'geometry', \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             log.debug("NCC Tool. Rest machining copper clearing task started.")
@@ -2328,7 +2325,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # ###################################################################################################
             # Calculate the empty area by subtracting the solid_geometry from the object bounding box geometry ##
             # ###################################################################################################
-            if isinstance(ncc_obj, FlatCAMGerber) and not isotooldia:
+            if ncc_obj.kind == 'gerber' and not isotooldia:
                 sol_geo = ncc_obj.solid_geometry
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
@@ -2342,7 +2339,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     app_obj.inform.emit('[ERROR_NOTCL] %s' %
                                         _("Could not get the extent of the area to be non copper cleared."))
                     return 'fail'
-            elif isinstance(ncc_obj, FlatCAMGerber) and isotooldia:
+            elif ncc_obj.kind == 'gerber' and isotooldia:
                 isolated_geo = []
                 self.solid_geometry = ncc_obj.solid_geometry
 
@@ -2444,7 +2441,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         _("Isolation geometry is broken. Margin is less than isolation tool diameter."))
                     return 'fail'
 
-            elif isinstance(ncc_obj, FlatCAMGeometry):
+            elif ncc_obj.kind == 'geometry':
                 sol_geo = cascaded_union(ncc_obj.solid_geometry)
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
@@ -2715,359 +2712,1003 @@ class NonCopperClear(FlatCAMTool, Gerber):
         else:
             job_thread(app_obj=self.app)
 
-    # def on_ncc(self):
-    #
-    #     # Prepare non-copper polygons
-    #     if self.reference_radio.get_value() == 'area':
-    #         geo_n = self.sel_rect
-    #
-    #         geo_buff_list = []
-    #         for poly in geo_n:
-    #             geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
-    #         bounding_box = cascaded_union(geo_buff_list)
-    #     else:
-    #         geo_n = self.bound_obj.solid_geometry
-    #
-    #         try:
-    #             if isinstance(geo_n, MultiPolygon):
-    #                 env_obj = geo_n.convex_hull
-    #             elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
-    #                     (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-    #                 env_obj = cascaded_union(geo_n)
-    #             else:
-    #                 env_obj = cascaded_union(geo_n)
-    #                 env_obj = env_obj.convex_hull
-    #             bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
-    #         except Exception as e:
-    #             log.debug("NonCopperClear.on_ncc() --> %s" % str(e))
-    #             self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
-    #             return
-    #
-    #     # calculate the empty area by subtracting the solid_geometry from the object bounding box geometry
-    #     if isinstance(self.ncc_obj, FlatCAMGerber):
-    #         if self.ncc_choice_offset_cb.isChecked():
-    #             self.app.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
-    #             offseted_geo = self.ncc_obj.solid_geometry.buffer(distance=ncc_offset_value)
-    #             self.app.inform.emit(_("[success] Buffering finished ..."))
-    #             empty = self.get_ncc_empty_area(target=offseted_geo, boundary=bounding_box)
-    #         else:
-    #             empty = self.get_ncc_empty_area(target=self.ncc_obj.solid_geometry, boundary=bounding_box)
-    #     elif isinstance(self.ncc_obj, FlatCAMGeometry):
-    #         sol_geo = cascaded_union(self.ncc_obj.solid_geometry)
-    #         if self.ncc_choice_offset_cb.isChecked():
-    #             self.app.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
-    #             offseted_geo = sol_geo.buffer(distance=ncc_offset_value)
-    #             self.app.inform.emit(_("[success] Buffering finished ..."))
-    #             empty = self.get_ncc_empty_area(target=offseted_geo, boundary=bounding_box)
-    #         else:
-    #             empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
-    #     else:
-    #         self.inform.emit(_('[ERROR_NOTCL] The selected object is not suitable for copper clearing.'))
-    #         return
-    #
-    #     if type(empty) is Polygon:
-    #         empty = MultiPolygon([empty])
-    #
-    #     if empty.is_empty:
-    #         self.app.inform.emit(_("[ERROR_NOTCL] Could not get the extent of the area to be non copper cleared."))
-    #         return
-    #
-    #     # clear non copper using standard algorithm
-    #     if clearing_method is False:
-    #         self.clear_non_copper(
-    #             empty=empty,
-    #             over=over,
-    #             pol_method=pol_method,
-    #             connect=connect,
-    #             contour=contour
-    #         )
-    #     # clear non copper using rest machining algorithm
-    #     else:
-    #         self.clear_non_copper_rest(
-    #             empty=empty,
-    #             over=over,
-    #             pol_method=pol_method,
-    #             connect=connect,
-    #             contour=contour
-    #         )
-    #
-    # def clear_non_copper(self, empty, over, pol_method, outname=None, connect=True, contour=True):
-    #
-    #     name = outname if outname else self.obj_name + "_ncc"
-    #
-    #     # Sort tools in descending order
-    #     sorted_tools = []
-    #     for k, v in self.ncc_tools.items():
-    #         sorted_tools.append(float('%.4f' % float(v['tooldia'])))
-    #
-    #     order = self.ncc_order_radio.get_value()
-    #     if order == 'fwd':
-    #         sorted_tools.sort(reverse=False)
-    #     elif order == 'rev':
-    #         sorted_tools.sort(reverse=True)
-    #     else:
-    #         pass
-    #
-    #     # Do job in background
-    #     proc = self.app.proc_container.new(_("Clearing Non-Copper areas."))
-    #
-    #     def initialize(geo_obj, app_obj):
-    #         assert isinstance(geo_obj, FlatCAMGeometry), \
-    #             "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
-    #
-    #         cleared_geo = []
-    #         # Already cleared area
-    #         cleared = MultiPolygon()
-    #
-    #         # flag for polygons not cleared
-    #         app_obj.poly_not_cleared = False
-    #
-    #         # Generate area for each tool
-    #         offset = sum(sorted_tools)
-    #         current_uid = int(1)
-    #         tool = eval(self.app.defaults["tools_ncctools"])[0]
-    #
-    #         for tool in sorted_tools:
-    #             self.app.inform.emit(_('[success] Non-Copper Clearing with ToolDia = %s started.') % str(tool))
-    #             cleared_geo[:] = []
-    #
-    #             # Get remaining tools offset
-    #             offset -= (tool - 1e-12)
-    #
-    #             # Area to clear
-    #             area = empty.buffer(-offset)
-    #             try:
-    #                 area = area.difference(cleared)
-    #             except Exception as e:
-    #                 continue
-    #
-    #             # Transform area to MultiPolygon
-    #             if type(area) is Polygon:
-    #                 area = MultiPolygon([area])
-    #
-    #             if area.geoms:
-    #                 if len(area.geoms) > 0:
-    #                     for p in area.geoms:
-    #                         try:
-    #                             if pol_method == 'standard':
-    #                                 cp = self.clear_polygon(p, tool, self.app.defaults["gerber_circle_steps"],
-    #                                                         overlap=over, contour=contour, connect=connect)
-    #                             elif pol_method == 'seed':
-    #                                 cp = self.clear_polygon2(p, tool, self.app.defaults["gerber_circle_steps"],
-    #                                                          overlap=over, contour=contour, connect=connect)
-    #                             else:
-    #                                 cp = self.clear_polygon3(p, tool, self.app.defaults["gerber_circle_steps"],
-    #                                                          overlap=over, contour=contour, connect=connect)
-    #                             if cp:
-    #                                 cleared_geo += list(cp.get_objects())
-    #                         except Exception as e:
-    #                             log.warning("Polygon can not be cleared. %s" % str(e))
-    #                             app_obj.poly_not_cleared = True
-    #                             continue
-    #
-    #                     # check if there is a geometry at all in the cleared geometry
-    #                     if cleared_geo:
-    #                         # Overall cleared area
-    #                         cleared = empty.buffer(-offset * (1 + over)).buffer(-tool / 1.999999).buffer(
-    #                             tool / 1.999999)
-    #
-    #                         # clean-up cleared geo
-    #                         cleared = cleared.buffer(0)
-    #
-    #                         # find the tooluid associated with the current tool_dia so we know where to add the tool
-    #                         # solid_geometry
-    #                         for k, v in self.ncc_tools.items():
-    #                             if float('%.4f' % v['tooldia']) == float('%.4f' % tool):
-    #                                 current_uid = int(k)
-    #
-    #                                 # add the solid_geometry to the current too in self.paint_tools dictionary
-    #                                 # and then reset the temporary list that stored that solid_geometry
-    #                                 v['solid_geometry'] = deepcopy(cleared_geo)
-    #                                 v['data']['name'] = name
-    #                                 break
-    #                         geo_obj.tools[current_uid] = dict(self.ncc_tools[current_uid])
-    #                     else:
-    #                         log.debug("There are no geometries in the cleared polygon.")
-    #
-    #         geo_obj.options["cnctooldia"] = str(tool)
-    #         geo_obj.multigeo = True
-    #
-    #     def job_thread(app_obj):
-    #         try:
-    #             app_obj.new_object("geometry", name, initialize)
-    #         except Exception as e:
-    #             proc.done()
-    #             self.app.inform.emit(_('[ERROR_NOTCL] NCCTool.clear_non_copper() --> %s') % str(e))
-    #             return
-    #         proc.done()
-    #
-    #         if app_obj.poly_not_cleared is False:
-    #             self.app.inform.emit(_('[success] NCC Tool finished.'))
-    #         else:
-    #             self.app.inform.emit(_('[WARNING_NOTCL] NCC Tool finished but some PCB features could not be cleared. '
-    #                                  'Check the result.'))
-    #         # reset the variable for next use
-    #         app_obj.poly_not_cleared = False
-    #
-    #         # focus on Selected Tab
-    #         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
-    #
-    #     # Promise object with the new name
-    #     self.app.collection.promise(name)
-    #
-    #     # Background
-    #     self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
-    #
-    # # clear copper with 'rest-machining' algorithm
-    # def clear_non_copper_rest(self, empty, over, pol_method, outname=None, connect=True, contour=True):
-    #
-    #     name = outname if outname is not None else self.obj_name + "_ncc_rm"
-    #
-    #     # Sort tools in descending order
-    #     sorted_tools = []
-    #     for k, v in self.ncc_tools.items():
-    #         sorted_tools.append(float('%.4f' % float(v['tooldia'])))
-    #     sorted_tools.sort(reverse=True)
-    #
-    #     # Do job in background
-    #     proc = self.app.proc_container.new(_("Clearing Non-Copper areas."))
-    #
-    #     def initialize_rm(geo_obj, app_obj):
-    #         assert isinstance(geo_obj, FlatCAMGeometry), \
-    #             "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
-    #
-    #         cleared_geo = []
-    #         cleared_by_last_tool = []
-    #         rest_geo = []
-    #         current_uid = 1
-    #         tool = eval(self.app.defaults["tools_ncctools"])[0]
-    #
-    #         # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
-    #         app_obj.poly_not_cleared = True
-    #
-    #         area = empty.buffer(0)
-    #         # Generate area for each tool
-    #         while sorted_tools:
-    #             tool = sorted_tools.pop(0)
-    #             self.app.inform.emit(_('[success] Non-Copper Rest Clearing with ToolDia = %s started.') % str(tool))
-    #
-    #             tool_used = tool - 1e-12
-    #             cleared_geo[:] = []
-    #
-    #             # Area to clear
-    #             for poly in cleared_by_last_tool:
-    #                 try:
-    #                     area = area.difference(poly)
-    #                 except Exception as e:
-    #                     pass
-    #             cleared_by_last_tool[:] = []
-    #
-    #             # Transform area to MultiPolygon
-    #             if type(area) is Polygon:
-    #                 area = MultiPolygon([area])
-    #
-    #             # add the rest that was not able to be cleared previously; area is a MultyPolygon
-    #             # and rest_geo it's a list
-    #             allparts = [p.buffer(0) for p in area.geoms]
-    #             allparts += deepcopy(rest_geo)
-    #             rest_geo[:] = []
-    #             area = MultiPolygon(deepcopy(allparts))
-    #             allparts[:] = []
-    #
-    #             if area.geoms:
-    #                 if len(area.geoms) > 0:
-    #                     for p in area.geoms:
-    #                         try:
-    #                             if pol_method == 'standard':
-    #                                 cp = self.clear_polygon(p, tool_used, self.app.defaults["gerber_circle_steps"],
-    #                                                         overlap=over, contour=contour, connect=connect)
-    #                             elif pol_method == 'seed':
-    #                                 cp = self.clear_polygon2(p, tool_used,
-    #                                                          self.app.defaults["gerber_circle_steps"],
-    #                                                          overlap=over, contour=contour, connect=connect)
-    #                             else:
-    #                                 cp = self.clear_polygon3(p, tool_used,
-    #                                                          self.app.defaults["gerber_circle_steps"],
-    #                                                          overlap=over, contour=contour, connect=connect)
-    #                             cleared_geo.append(list(cp.get_objects()))
-    #                         except:
-    #                             log.warning("Polygon can't be cleared.")
-    #                             # this polygon should be added to a list and then try clear it with a smaller tool
-    #                             rest_geo.append(p)
-    #
-    #                     # check if there is a geometry at all in the cleared geometry
-    #                     if cleared_geo:
-    #                         # Overall cleared area
-    #                         cleared_area = list(self.flatten_list(cleared_geo))
-    #
-    #                         # cleared = MultiPolygon([p.buffer(tool_used / 2).buffer(-tool_used / 2)
-    #                         #                         for p in cleared_area])
-    #
-    #                         # here we store the poly's already processed in the original geometry by the current tool
-    #                         # into cleared_by_last_tool list
-    #                         # this will be sustracted from the original geometry_to_be_cleared and make data for
-    #                         # the next tool
-    #                         buffer_value = tool_used / 2
-    #                         for p in cleared_area:
-    #                             poly = p.buffer(buffer_value)
-    #                             cleared_by_last_tool.append(poly)
-    #
-    #                         # find the tooluid associated with the current tool_dia so we know
-    #                         # where to add the tool solid_geometry
-    #                         for k, v in self.ncc_tools.items():
-    #                             if float('%.4f' % v['tooldia']) == float('%.4f' % tool):
-    #                                 current_uid = int(k)
-    #
-    #                                 # add the solid_geometry to the current too in self.paint_tools dictionary
-    #                                 # and then reset the temporary list that stored that solid_geometry
-    #                                 v['solid_geometry'] = deepcopy(cleared_area)
-    #                                 v['data']['name'] = name
-    #                                 cleared_area[:] = []
-    #                                 break
-    #
-    #                         geo_obj.tools[current_uid] = dict(self.ncc_tools[current_uid])
-    #                     else:
-    #                         log.debug("There are no geometries in the cleared polygon.")
-    #
-    #         geo_obj.multigeo = True
-    #         geo_obj.options["cnctooldia"] = str(tool)
-    #
-    #         # check to see if geo_obj.tools is empty
-    #         # it will be updated only if there is a solid_geometry for tools
-    #         if geo_obj.tools:
-    #             return
-    #         else:
-    #             # I will use this variable for this purpose although it was meant for something else
-    #             # signal that we have no geo in the object therefore don't create it
-    #             app_obj.poly_not_cleared = False
-    #             return "fail"
-    #
-    #     def job_thread(app_obj):
-    #         try:
-    #             app_obj.new_object("geometry", name, initialize_rm)
-    #         except Exception as e:
-    #             proc.done()
-    #             app_obj.inform.emit(_('[ERROR_NOTCL] NCCTool.clear_non_copper_rest() --> %s') % str(e))
-    #             return
-    #
-    #         if app_obj.poly_not_cleared is True:
-    #             app_obj.inform.emit('[success] NCC Tool finished.')
-    #             # focus on Selected Tab
-    #             app_obj.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
-    #         else:
-    #             app_obj.inform.emit(_('[ERROR_NOTCL] NCC Tool finished but could not clear the object '
-    #                                  'with current settings.'))
-    #             # focus on Project Tab
-    #             app_obj.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
-    #         proc.done()
-    #         # reset the variable for next use
-    #         app_obj.poly_not_cleared = False
-    #
-    #     # Promise object with the new name
-    #     self.app.collection.promise(name)
-    #
-    #     # Background
-    #     self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+    def clear_copper_tcl(self, ncc_obj,
+                         sel_obj=None,
+                         ncctooldia=None,
+                         isotooldia=None,
+                         margin=None,
+                         has_offset=None,
+                         offset=None,
+                         select_method=None,
+                         outname=None,
+                         overlap=None,
+                         connect=None,
+                         contour=None,
+                         order=None,
+                         method=None,
+                         rest=None,
+                         tools_storage=None,
+                         plot=True,
+                         run_threaded=False):
+        """
+        Clear the excess copper from the entire object. To be used only in a TCL command.
+
+        :param ncc_obj: ncc cleared object
+        :param ncctooldia: a tuple or single element made out of diameters of the tools to be used to ncc clear
+        :param isotooldia: a tuple or single element made out of diameters of the tools to be used for isolation
+        :param overlap: value by which the paths will overlap
+        :param order: if the tools are ordered and how
+        :param select_method: if to do ncc on the whole object, on an defined area or on an area defined by
+        another object
+        :param has_offset: True if an offset is needed
+        :param offset: distance from the copper features where the copper clearing is stopping
+        :param margin: a border around cleared area
+        :param outname: name of the resulting object
+        :param connect: Connect lines to avoid tool lifts.
+        :param contour: Paint around the edges.
+        :param method: choice out of 'seed', 'normal', 'lines'
+        :param rest: True if to use rest-machining
+        :param tools_storage: whether to use the current tools_storage self.ncc_tools or a different one.
+        Usage of the different one is related to when this function is called from a TcL command.
+        :param plot: if True after the job is finished the result will be plotted, else it will not.
+        :param run_threaded: If True the method will be run in a threaded way suitable for GUI usage; if False it will
+        run non-threaded for TclShell usage
+        :return:
+        """
+        if run_threaded:
+            proc = self.app.proc_container.new(_("Non-Copper clearing ..."))
+        else:
+            self.app.proc_container.view.set_busy(_("Non-Copper clearing ..."))
+            QtWidgets.QApplication.processEvents()
+
+        # #####################################################################
+        # ####### Read the parameters #########################################
+        # #####################################################################
+
+        units = self.app.defaults['units']
+
+        log.debug("NCC Tool started. Reading parameters.")
+        self.app.inform.emit(_("NCC Tool started. Reading parameters."))
+
+        ncc_method = method
+        ncc_margin = margin
+        ncc_select = select_method
+        overlap = overlap
+
+        connect = connect
+        contour = contour
+        order = order
+
+        if tools_storage is not None:
+            tools_storage = tools_storage
+        else:
+            tools_storage = self.ncc_tools
+
+        ncc_offset = 0.0
+        if has_offset is True:
+            ncc_offset = offset
+
+        # ######################################################################################################
+        # # Read the tooldia parameter and create a sorted list out them - they may be more than one diameter ##
+        # ######################################################################################################
+        sorted_tools = []
+        try:
+            sorted_tools = [float(eval(dia)) for dia in ncctooldia.split(",") if dia != '']
+        except AttributeError:
+            if not isinstance(ncctooldia, list):
+                sorted_tools = [float(ncctooldia)]
+            else:
+                sorted_tools = ncctooldia
+
+        # ##############################################################################################################
+        # Prepare non-copper polygons. Create the bounding box area from which the copper features will be subtracted ##
+        # ##############################################################################################################
+        log.debug("NCC Tool. Preparing non-copper polygons.")
+        self.app.inform.emit(_("NCC Tool. Preparing non-copper polygons."))
+
+        try:
+            if sel_obj is None or sel_obj == 'itself':
+                ncc_sel_obj = ncc_obj
+            else:
+                ncc_sel_obj = sel_obj
+        except Exception as e:
+            log.debug("NonCopperClear.clear_copper() --> %s" % str(e))
+            return 'fail'
+
+        bounding_box = None
+        if ncc_select == 'itself':
+            geo_n = ncc_sel_obj.solid_geometry
+
+            try:
+                if isinstance(geo_n, MultiPolygon):
+                    env_obj = geo_n.convex_hull
+                elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
+                        (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
+                    env_obj = cascaded_union(geo_n)
+                else:
+                    env_obj = cascaded_union(geo_n)
+                    env_obj = env_obj.convex_hull
+
+                bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
+            except Exception as e:
+                log.debug("NonCopperClear.clear_copper() 'itself'  --> %s" % str(e))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
+                return 'fail'
+
+        elif ncc_select == 'area':
+            geo_n = cascaded_union(self.sel_rect)
+            try:
+                __ = iter(geo_n)
+            except Exception as e:
+                log.debug("NonCopperClear.clear_copper() 'area' --> %s" % str(e))
+                geo_n = [geo_n]
+
+            geo_buff_list = []
+            for poly in geo_n:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+                geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
+
+            bounding_box = cascaded_union(geo_buff_list)
+
+        elif ncc_select == 'box':
+            geo_n = ncc_sel_obj.solid_geometry
+            if ncc_sel_obj.kind == 'geometry':
+                try:
+                    __ = iter(geo_n)
+                except Exception as e:
+                    log.debug("NonCopperClear.clear_copper() 'box' --> %s" % str(e))
+                    geo_n = [geo_n]
+
+                geo_buff_list = []
+                for poly in geo_n:
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise FlatCAMApp.GracefulException
+                    geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
+
+                bounding_box = cascaded_union(geo_buff_list)
+            elif ncc_sel_obj.kind == 'gerber':
+                geo_n = cascaded_union(geo_n).convex_hull
+                bounding_box = cascaded_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
+                bounding_box = bounding_box.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
+            else:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
+                return 'fail'
+
+        log.debug("NCC Tool. Finished non-copper polygons.")
+        # ########################################################################################################
+        # set the name for the future Geometry object
+        # I do it here because it is also stored inside the gen_clear_area() and gen_clear_area_rest() methods
+        # ########################################################################################################
+        rest_machining_choice = rest
+        if rest_machining_choice is True:
+            name = outname if outname is not None else self.obj_name + "_ncc_rm"
+        else:
+            name = outname if outname is not None else self.obj_name + "_ncc"
+
+        # ##########################################################################################
+        # Initializes the new geometry object ######################################################
+        # ##########################################################################################
+        def gen_clear_area(geo_obj, app_obj):
+            assert geo_obj.kind == 'geometry', \
+                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+
+            # provide the app with a way to process the GUI events when in a blocking loop
+            if not run_threaded:
+                QtWidgets.QApplication.processEvents()
+
+            log.debug("NCC Tool. Normal copper clearing task started.")
+            self.app.inform.emit(_("NCC Tool. Finished non-copper polygons. Normal copper clearing task started."))
+
+            # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
+            # will store the number of tools for which the isolation is broken
+            warning_flag = 0
+
+            if order == 'fwd':
+                sorted_tools.sort(reverse=False)
+            elif order == 'rev':
+                sorted_tools.sort(reverse=True)
+            else:
+                pass
+
+            cleared_geo = []
+            # Already cleared area
+            cleared = MultiPolygon()
+
+            # flag for polygons not cleared
+            app_obj.poly_not_cleared = False
+
+            # Generate area for each tool
+            offset = sum(sorted_tools)
+            current_uid = int(1)
+            try:
+                tool = eval(self.app.defaults["tools_ncctools"])[0]
+            except TypeError:
+                tool = eval(self.app.defaults["tools_ncctools"])
+
+            # ###################################################################################################
+            # Calculate the empty area by subtracting the solid_geometry from the object bounding box geometry ##
+            # ###################################################################################################
+            log.debug("NCC Tool. Calculate 'empty' area.")
+            self.app.inform.emit(_("NCC Tool. Calculate 'empty' area."))
+
+            if ncc_obj.kind == 'gerber' and not isotooldia:
+                # unfortunately for this function to work time efficient,
+                # if the Gerber was loaded without buffering then it require the buffering now.
+                if self.app.defaults['gerber_buffering'] == 'no':
+                    sol_geo = ncc_obj.solid_geometry.buffer(0)
+                else:
+                    sol_geo = ncc_obj.solid_geometry
+
+                if has_offset is True:
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
+                    sol_geo = sol_geo.buffer(distance=ncc_offset)
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
+
+                empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
+
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Could not get the extent of the area to be non copper cleared."))
+                    return 'fail'
+            elif ncc_obj.kind == 'gerber' and isotooldia:
+                isolated_geo = []
+
+                # unfortunately for this function to work time efficient,
+                # if the Gerber was loaded without buffering then it require the buffering now.
+                if self.app.defaults['gerber_buffering'] == 'no':
+                    self.solid_geometry = ncc_obj.solid_geometry.buffer(0)
+                else:
+                    self.solid_geometry = ncc_obj.solid_geometry
+
+                # if milling type is climb then the move is counter-clockwise around features
+                milling_type = self.app.defaults["tools_nccmilling_type"]
+
+                for tool_iso in isotooldia:
+                    new_geometry = []
+
+                    if milling_type == 'cl':
+                        isolated_geo = self.generate_envelope(tool_iso / 2, 1)
+                    else:
+                        isolated_geo = self.generate_envelope(tool_iso / 2, 0)
+
+                    if isolated_geo == 'fail':
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                    else:
+                        if ncc_margin < tool_iso:
+                            app_obj.inform.emit('[WARNING_NOTCL] %s' % _("Isolation geometry is broken. Margin is less "
+                                                                         "than isolation tool diameter."))
+                        try:
+                            for geo_elem in isolated_geo:
+                                # provide the app with a way to process the GUI events when in a blocking loop
+                                QtWidgets.QApplication.processEvents()
+
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise FlatCAMApp.GracefulException
+
+                                if isinstance(geo_elem, Polygon):
+                                    for ring in self.poly2rings(geo_elem):
+                                        new_geo = ring.intersection(bounding_box)
+                                        if new_geo and not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                                elif isinstance(geo_elem, MultiPolygon):
+                                    for poly in geo_elem:
+                                        for ring in self.poly2rings(poly):
+                                            new_geo = ring.intersection(bounding_box)
+                                            if new_geo and not new_geo.is_empty:
+                                                new_geometry.append(new_geo)
+                                elif isinstance(geo_elem, LineString):
+                                    new_geo = geo_elem.intersection(bounding_box)
+                                    if new_geo:
+                                        if not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                                elif isinstance(geo_elem, MultiLineString):
+                                    for line_elem in geo_elem:
+                                        new_geo = line_elem.intersection(bounding_box)
+                                        if new_geo and not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                        except TypeError:
+                            if isinstance(isolated_geo, Polygon):
+                                for ring in self.poly2rings(isolated_geo):
+                                    new_geo = ring.intersection(bounding_box)
+                                    if new_geo:
+                                        if not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                            elif isinstance(isolated_geo, LineString):
+                                new_geo = isolated_geo.intersection(bounding_box)
+                                if new_geo and not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                            elif isinstance(isolated_geo, MultiLineString):
+                                for line_elem in isolated_geo:
+                                    new_geo = line_elem.intersection(bounding_box)
+                                    if new_geo and not new_geo.is_empty:
+                                        new_geometry.append(new_geo)
+
+                        # a MultiLineString geometry element will show that the isolation is broken for this tool
+                        for geo_e in new_geometry:
+                            if type(geo_e) == MultiLineString:
+                                warning_flag += 1
+                                break
+
+                        for k, v in tools_storage.items():
+                            if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                tool_iso)):
+                                current_uid = int(k)
+                                # add the solid_geometry to the current too in self.paint_tools dictionary
+                                # and then reset the temporary list that stored that solid_geometry
+                                v['solid_geometry'] = deepcopy(new_geometry)
+                                v['data']['name'] = name
+                                break
+                        geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
+
+                sol_geo = cascaded_union(isolated_geo)
+                if has_offset is True:
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
+                    sol_geo = sol_geo.buffer(distance=ncc_offset)
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
+                empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
+
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Isolation geometry is broken. Margin is less than isolation tool diameter."))
+                    return 'fail'
+
+            elif ncc_obj.kind == 'geometry':
+                sol_geo = cascaded_union(ncc_obj.solid_geometry)
+                if has_offset is True:
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
+                    sol_geo = sol_geo.buffer(distance=ncc_offset)
+                    app_obj.inform.emit('[success] %s ...' %  _("Buffering finished"))
+                empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
+
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Could not get the extent of the area to be non copper cleared."))
+                    return 'fail'
+
+            else:
+                app_obj.inform.emit('[ERROR_NOTCL] %s' %  _('The selected object is not suitable for copper clearing.'))
+                return 'fail'
+
+            if type(empty) is Polygon:
+                empty = MultiPolygon([empty])
+
+            log.debug("NCC Tool. Finished calculation of 'empty' area.")
+            self.app.inform.emit(_("NCC Tool. Finished calculation of 'empty' area."))
+
+            # COPPER CLEARING #
+            cp = None
+            for tool in sorted_tools:
+                log.debug("Starting geometry processing for tool: %s" % str(tool))
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
+
+                app_obj.inform.emit('[success] %s = %s%s %s' % (
+                    _('NCC Tool clearing with tool diameter'), str(tool), units.lower(), _('started.'))
+                )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
+
+                cleared_geo[:] = []
+
+                # Get remaining tools offset
+                offset -= (tool - 1e-12)
+
+                # Area to clear
+                area = empty.buffer(-offset)
+                try:
+                    area = area.difference(cleared)
+                except Exception as e:
+                    continue
+
+                # Transform area to MultiPolygon
+                if type(area) is Polygon:
+                    area = MultiPolygon([area])
+
+                # variables to display the percentage of work done
+                geo_len = len(area.geoms)
+
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                if area.geoms:
+                    if len(area.geoms) > 0:
+                        pol_nr = 0
+                        for p in area.geoms:
+                            # provide the app with a way to process the GUI events when in a blocking loop
+                            QtWidgets.QApplication.processEvents()
+
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise FlatCAMApp.GracefulException
+
+                            # clean the polygon
+                            p = p.buffer(0)
+
+                            if p is not None and p.is_valid:
+                                poly_processed = list()
+                                try:
+                                    for pol in p:
+                                        if pol is not None and isinstance(pol, Polygon):
+                                            if ncc_method == 'standard':
+                                                cp = self.clear_polygon(pol, tool,
+                                                                        self.grb_circle_steps,
+                                                                        overlap=overlap, contour=contour,
+                                                                        connect=connect,
+                                                                        prog_plot=False)
+                                            elif ncc_method == 'seed':
+                                                cp = self.clear_polygon2(pol, tool,
+                                                                         self.grb_circle_steps,
+                                                                         overlap=overlap, contour=contour,
+                                                                         connect=connect,
+                                                                         prog_plot=False)
+                                            else:
+                                                cp = self.clear_polygon3(pol, tool,
+                                                                         self.grb_circle_steps,
+                                                                         overlap=overlap, contour=contour,
+                                                                         connect=connect,
+                                                                         prog_plot=False)
+                                            if cp:
+                                                cleared_geo += list(cp.get_objects())
+                                                poly_processed.append(True)
+                                            else:
+                                                poly_processed.append(False)
+                                                log.warning("Polygon in MultiPolygon can not be cleared.")
+                                        else:
+                                            log.warning("Geo in Iterable can not be cleared because it is not Polygon. "
+                                                        "It is: %s" % str(type(pol)))
+                                except TypeError:
+                                    if isinstance(p, Polygon):
+                                        if ncc_method == 'standard':
+                                            cp = self.clear_polygon(p, tool, self.grb_circle_steps,
+                                                                    overlap=overlap, contour=contour, connect=connect,
+                                                                    prog_plot=False)
+                                        elif ncc_method == 'seed':
+                                            cp = self.clear_polygon2(p, tool, self.grb_circle_steps,
+                                                                     overlap=overlap, contour=contour, connect=connect,
+                                                                     prog_plot=False)
+                                        else:
+                                            cp = self.clear_polygon3(p, tool, self.grb_circle_steps,
+                                                                     overlap=overlap, contour=contour, connect=connect,
+                                                                     prog_plot=False)
+                                        if cp:
+                                            cleared_geo += list(cp.get_objects())
+                                            poly_processed.append(True)
+                                        else:
+                                            poly_processed.append(False)
+                                            log.warning("Polygon can not be cleared.")
+                                    else:
+                                        log.warning("Geo can not be cleared because it is: %s" % str(type(p)))
+
+                                p_cleared = poly_processed.count(True)
+                                p_not_cleared = poly_processed.count(False)
+
+                                if p_not_cleared:
+                                    app_obj.poly_not_cleared = True
+
+                                if p_cleared == 0:
+                                    continue
+
+                                pol_nr += 1
+                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                                # log.debug("Polygons cleared: %d" % pol_nr)
+
+                                if old_disp_number < disp_number <= 100:
+                                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                                    old_disp_number = disp_number
+                                    # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
+
+                            # check if there is a geometry at all in the cleared geometry
+                        if cleared_geo:
+                            # Overall cleared area
+                            cleared = empty.buffer(-offset * (1 + overlap)).buffer(-tool / 1.999999).buffer(
+                                tool / 1.999999)
+
+                            # clean-up cleared geo
+                            cleared = cleared.buffer(0)
+
+                            # find the tooluid associated with the current tool_dia so we know where to add the tool
+                            # solid_geometry
+                            for k, v in tools_storage.items():
+                                if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                    tool)):
+                                    current_uid = int(k)
+
+                                    # add the solid_geometry to the current too in self.paint_tools dictionary
+                                    # and then reset the temporary list that stored that solid_geometry
+                                    v['solid_geometry'] = deepcopy(cleared_geo)
+                                    v['data']['name'] = name
+                                    break
+                            geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
+                        else:
+                            log.debug("There are no geometries in the cleared polygon.")
+
+            # delete tools with empty geometry
+            # look for keys in the tools_storage dict that have 'solid_geometry' values empty
+            for uid, uid_val in list(tools_storage.items()):
+                try:
+                    # if the solid_geometry (type=list) is empty
+                    if not uid_val['solid_geometry']:
+                        tools_storage.pop(uid, None)
+                except KeyError:
+                    tools_storage.pop(uid, None)
+
+            geo_obj.options["cnctooldia"] = str(tool)
+
+            geo_obj.multigeo = True
+            geo_obj.tools.clear()
+            geo_obj.tools = dict(tools_storage)
+
+            # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
+            has_solid_geo = 0
+            for tooluid in geo_obj.tools:
+                if geo_obj.tools[tooluid]['solid_geometry']:
+                    has_solid_geo += 1
+            if has_solid_geo == 0:
+                app_obj.inform.emit('[ERROR] %s' %
+                                    _("There is no NCC Geometry in the file.\n"
+                                      "Usually it means that the tool diameter is too big for the painted geometry.\n"
+                                      "Change the painting parameters and try again."))
+                return 'fail'
+
+            # check to see if geo_obj.tools is empty
+            # it will be updated only if there is a solid_geometry for tools
+            if geo_obj.tools:
+                if warning_flag == 0:
+                    self.app.inform.emit('[success] %s' % _("NCC Tool clear all done."))
+                else:
+                    self.app.inform.emit('[WARNING] %s: %s %s.' % (
+                        _("NCC Tool clear all done but the copper features isolation is broken for"),
+                        str(warning_flag),
+                        _("tools")))
+                    return
+
+                # create the solid_geometry
+                geo_obj.solid_geometry = list()
+                for tooluid in geo_obj.tools:
+                    if geo_obj.tools[tooluid]['solid_geometry']:
+                        try:
+                            for geo in geo_obj.tools[tooluid]['solid_geometry']:
+                                geo_obj.solid_geometry.append(geo)
+                        except TypeError:
+                            geo_obj.solid_geometry.append(geo_obj.tools[tooluid]['solid_geometry'])
+            else:
+                # I will use this variable for this purpose although it was meant for something else
+                # signal that we have no geo in the object therefore don't create it
+                app_obj.poly_not_cleared = False
+                return "fail"
+
+        # ###########################################################################################
+        # Initializes the new geometry object for the case of the rest-machining ####################
+        # ###########################################################################################
+        def gen_clear_area_rest(geo_obj, app_obj):
+            assert geo_obj.kind == 'geometry', \
+                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+
+            log.debug("NCC Tool. Rest machining copper clearing task started.")
+            app_obj.inform.emit('_(NCC Tool. Rest machining copper clearing task started.')
+
+            # provide the app with a way to process the GUI events when in a blocking loop
+            if not run_threaded:
+                QtWidgets.QApplication.processEvents()
+
+            # a flag to signal that the isolation is broken by the bounding box in 'area' and 'box' cases
+            # will store the number of tools for which the isolation is broken
+            warning_flag = 0
+
+            sorted_tools.sort(reverse=True)
+
+            cleared_geo = []
+            cleared_by_last_tool = []
+            rest_geo = []
+            current_uid = 1
+            try:
+                tool = eval(self.app.defaults["tools_ncctools"])[0]
+            except TypeError:
+                tool = eval(self.app.defaults["tools_ncctools"])
+
+            # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
+            app_obj.poly_not_cleared = True
+            log.debug("NCC Tool. Calculate 'empty' area.")
+            app_obj.inform.emit("NCC Tool. Calculate 'empty' area.")
+
+            # ###################################################################################################
+            # Calculate the empty area by subtracting the solid_geometry from the object bounding box geometry ##
+            # ###################################################################################################
+            if ncc_obj.kind == 'gerber' and not isotooldia:
+                sol_geo = ncc_obj.solid_geometry
+                if has_offset is True:
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
+                    sol_geo = sol_geo.buffer(distance=ncc_offset)
+                    app_obj.inform.emit('[success] %s ...' %  _("Buffering finished"))
+                empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
+
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Could not get the extent of the area to be non copper cleared."))
+                    return 'fail'
+            elif ncc_obj.kind == 'gerber' and isotooldia:
+                isolated_geo = []
+                self.solid_geometry = ncc_obj.solid_geometry
+
+                # if milling type is climb then the move is counter-clockwise around features
+                milling_type = self.app.defaults["tools_nccmilling_type"]
+
+                for tool_iso in isotooldia:
+                    new_geometry = []
+
+                    if milling_type == 'cl':
+                        isolated_geo = self.generate_envelope(tool_iso, 1)
+                    else:
+                        isolated_geo = self.generate_envelope(tool_iso, 0)
+
+                    if isolated_geo == 'fail':
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
+                    else:
+                        app_obj.inform.emit('[WARNING_NOTCL] %s' % _("Isolation geometry is broken. Margin is less "
+                                                                     "than isolation tool diameter."))
+
+                        try:
+                            for geo_elem in isolated_geo:
+                                # provide the app with a way to process the GUI events when in a blocking loop
+                                QtWidgets.QApplication.processEvents()
+
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise FlatCAMApp.GracefulException
+
+                                if isinstance(geo_elem, Polygon):
+                                    for ring in self.poly2rings(geo_elem):
+                                        new_geo = ring.intersection(bounding_box)
+                                        if new_geo and not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                                elif isinstance(geo_elem, MultiPolygon):
+                                    for poly in geo_elem:
+                                        for ring in self.poly2rings(poly):
+                                            new_geo = ring.intersection(bounding_box)
+                                            if new_geo and not new_geo.is_empty:
+                                                new_geometry.append(new_geo)
+                                elif isinstance(geo_elem, LineString):
+                                    new_geo = geo_elem.intersection(bounding_box)
+                                    if new_geo:
+                                        if not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                                elif isinstance(geo_elem, MultiLineString):
+                                    for line_elem in geo_elem:
+                                        new_geo = line_elem.intersection(bounding_box)
+                                        if new_geo and not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                        except TypeError:
+                            try:
+                                if isinstance(isolated_geo, Polygon):
+                                    for ring in self.poly2rings(isolated_geo):
+                                        new_geo = ring.intersection(bounding_box)
+                                        if new_geo:
+                                            if not new_geo.is_empty:
+                                                new_geometry.append(new_geo)
+                                elif isinstance(isolated_geo, LineString):
+                                    new_geo = isolated_geo.intersection(bounding_box)
+                                    if new_geo and not new_geo.is_empty:
+                                        new_geometry.append(new_geo)
+                                elif isinstance(isolated_geo, MultiLineString):
+                                    for line_elem in isolated_geo:
+                                        new_geo = line_elem.intersection(bounding_box)
+                                        if new_geo and not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                            except Exception as e:
+                                pass
+
+                        # a MultiLineString geometry element will show that the isolation is broken for this tool
+                        for geo_e in new_geometry:
+                            if type(geo_e) == MultiLineString:
+                                warning_flag += 1
+                                break
+
+                        for k, v in tools_storage.items():
+                            if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                tool_iso)):
+                                current_uid = int(k)
+                                # add the solid_geometry to the current too in self.paint_tools dictionary
+                                # and then reset the temporary list that stored that solid_geometry
+                                v['solid_geometry'] = deepcopy(new_geometry)
+                                v['data']['name'] = name
+                                break
+                        geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
+
+                sol_geo = cascaded_union(isolated_geo)
+                if has_offset is True:
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
+                    sol_geo = sol_geo.buffer(distance=ncc_offset)
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
+                empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
+
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Isolation geometry is broken. Margin is less than isolation tool diameter."))
+                    return 'fail'
+
+            elif ncc_obj.kind == 'geometry':
+                sol_geo = cascaded_union(ncc_obj.solid_geometry)
+                if has_offset is True:
+                    app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
+                    sol_geo = sol_geo.buffer(distance=ncc_offset)
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
+                empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
+                if empty == 'fail':
+                    return 'fail'
+
+                if empty.is_empty:
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' %
+                                        _("Could not get the extent of the area to be non copper cleared."))
+                    return 'fail'
+            else:
+                app_obj.inform.emit('[ERROR_NOTCL] %s' % _('The selected object is not suitable for copper clearing.'))
+                return
+
+            if self.app.abort_flag:
+                # graceful abort requested by the user
+                raise FlatCAMApp.GracefulException
+
+            if type(empty) is Polygon:
+                empty = MultiPolygon([empty])
+
+            area = empty.buffer(0)
+
+            log.debug("NCC Tool. Finished calculation of 'empty' area.")
+            app_obj.inform.emit("NCC Tool. Finished calculation of 'empty' area.")
+
+            # Generate area for each tool
+            while sorted_tools:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
+                tool = sorted_tools.pop(0)
+                log.debug("Starting geometry processing for tool: %s" % str(tool))
+
+                app_obj.inform.emit('[success] %s = %s%s %s' % (
+                    _('NCC Tool clearing with tool diameter'), str(tool), units.lower(), _('started.'))
+                )
+                app_obj.proc_container.update_view_text(' %d%%' % 0)
+
+                tool_used = tool - 1e-12
+                cleared_geo[:] = []
+
+                # Area to clear
+                for poly in cleared_by_last_tool:
+                    # provide the app with a way to process the GUI events when in a blocking loop
+                    QtWidgets.QApplication.processEvents()
+
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise FlatCAMApp.GracefulException
+                    try:
+                        area = area.difference(poly)
+                    except Exception as e:
+                        pass
+                cleared_by_last_tool[:] = []
+
+                # Transform area to MultiPolygon
+                if type(area) is Polygon:
+                    area = MultiPolygon([area])
+
+                # add the rest that was not able to be cleared previously; area is a MultyPolygon
+                # and rest_geo it's a list
+                allparts = [p.buffer(0) for p in area.geoms]
+                allparts += deepcopy(rest_geo)
+                rest_geo[:] = []
+                area = MultiPolygon(deepcopy(allparts))
+                allparts[:] = []
+
+                # variables to display the percentage of work done
+                geo_len = len(area.geoms)
+                disp_number = 0
+                old_disp_number = 0
+                log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
+
+                if area.geoms:
+                    if len(area.geoms) > 0:
+                        pol_nr = 0
+                        for p in area.geoms:
+                            if self.app.abort_flag:
+                                # graceful abort requested by the user
+                                raise FlatCAMApp.GracefulException
+
+                            # clean the polygon
+                            p = p.buffer(0)
+
+                            if p is not None and p.is_valid:
+                                # provide the app with a way to process the GUI events when in a blocking loop
+                                QtWidgets.QApplication.processEvents()
+
+                                if isinstance(p, Polygon):
+                                    try:
+                                        if ncc_method == 'standard':
+                                            cp = self.clear_polygon(p, tool_used,
+                                                                    self.grb_circle_steps,
+                                                                    overlap=overlap, contour=contour, connect=connect,
+                                                                    prog_plot=False)
+                                        elif ncc_method == 'seed':
+                                            cp = self.clear_polygon2(p, tool_used,
+                                                                     self.grb_circle_steps,
+                                                                     overlap=overlap, contour=contour, connect=connect,
+                                                                     prog_plot=False)
+                                        else:
+                                            cp = self.clear_polygon3(p, tool_used,
+                                                                     self.grb_circle_steps,
+                                                                     overlap=overlap, contour=contour, connect=connect,
+                                                                     prog_plot=False)
+                                        cleared_geo.append(list(cp.get_objects()))
+                                    except Exception as e:
+                                        log.warning("Polygon can't be cleared. %s" % str(e))
+                                        # this polygon should be added to a list and then try clear it with
+                                        # a smaller tool
+                                        rest_geo.append(p)
+                                elif isinstance(p, MultiPolygon):
+                                    for poly in p:
+                                        if poly is not None:
+                                            # provide the app with a way to process the GUI events when
+                                            # in a blocking loop
+                                            QtWidgets.QApplication.processEvents()
+
+                                            try:
+                                                if ncc_method == 'standard':
+                                                    cp = self.clear_polygon(poly, tool_used,
+                                                                            self.grb_circle_steps,
+                                                                            overlap=overlap, contour=contour,
+                                                                            connect=connect,
+                                                                            prog_plot=False)
+                                                elif ncc_method == 'seed':
+                                                    cp = self.clear_polygon2(poly, tool_used,
+                                                                             self.grb_circle_steps,
+                                                                             overlap=overlap, contour=contour,
+                                                                             connect=connect,
+                                                                             prog_plot=False)
+                                                else:
+                                                    cp = self.clear_polygon3(poly, tool_used,
+                                                                             self.grb_circle_steps,
+                                                                             overlap=overlap, contour=contour,
+                                                                             connect=connect,
+                                                                             prog_plot=False)
+                                                cleared_geo.append(list(cp.get_objects()))
+                                            except Exception as e:
+                                                log.warning("Polygon can't be cleared. %s" % str(e))
+                                                # this polygon should be added to a list and then try clear it with
+                                                # a smaller tool
+                                                rest_geo.append(poly)
+
+                                pol_nr += 1
+                                disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
+                                # log.debug("Polygons cleared: %d" % pol_nr)
+
+                                if old_disp_number < disp_number <= 100:
+                                    self.app.proc_container.update_view_text(' %d%%' % disp_number)
+                                    old_disp_number = disp_number
+                                    # log.debug("Polygons cleared: %d. Percentage done: %d%%" % (pol_nr, disp_number))
+
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise FlatCAMApp.GracefulException
+
+                        # check if there is a geometry at all in the cleared geometry
+                        if cleared_geo:
+                            # Overall cleared area
+                            cleared_area = list(self.flatten_list(cleared_geo))
+
+                            # cleared = MultiPolygon([p.buffer(tool_used / 2).buffer(-tool_used / 2)
+                            #                         for p in cleared_area])
+
+                            # here we store the poly's already processed in the original geometry by the current tool
+                            # into cleared_by_last_tool list
+                            # this will be sutracted from the original geometry_to_be_cleared and make data for
+                            # the next tool
+                            buffer_value = tool_used / 2
+                            for p in cleared_area:
+                                if self.app.abort_flag:
+                                    # graceful abort requested by the user
+                                    raise FlatCAMApp.GracefulException
+
+                                poly = p.buffer(buffer_value)
+                                cleared_by_last_tool.append(poly)
+
+                            # find the tooluid associated with the current tool_dia so we know
+                            # where to add the tool solid_geometry
+                            for k, v in tools_storage.items():
+                                if float('%.*f' % (self.decimals, v['tooldia'])) == float('%.*f' % (self.decimals,
+                                                                                                    tool)):
+                                    current_uid = int(k)
+
+                                    # add the solid_geometry to the current too in self.paint_tools dictionary
+                                    # and then reset the temporary list that stored that solid_geometry
+                                    v['solid_geometry'] = deepcopy(cleared_area)
+                                    v['data']['name'] = name
+                                    cleared_area[:] = []
+                                    break
+
+                            geo_obj.tools[current_uid] = dict(tools_storage[current_uid])
+                        else:
+                            log.debug("There are no geometries in the cleared polygon.")
+
+            geo_obj.multigeo = True
+            geo_obj.options["cnctooldia"] = str(tool)
+
+            # check to see if geo_obj.tools is empty
+            # it will be updated only if there is a solid_geometry for tools
+            if geo_obj.tools:
+                if warning_flag == 0:
+                    self.app.inform.emit('[success] %s' % _("NCC Tool Rest Machining clear all done."))
+                else:
+                    self.app.inform.emit(
+                        '[WARNING] %s: %s %s.' % (_("NCC Tool Rest Machining clear all done but the copper features "
+                                                    "isolation is broken for"), str(warning_flag), _("tools")))
+                    return
+
+                # create the solid_geometry
+                geo_obj.solid_geometry = list()
+                for tooluid in geo_obj.tools:
+                    if geo_obj.tools[tooluid]['solid_geometry']:
+                        try:
+                            for geo in geo_obj.tools[tooluid]['solid_geometry']:
+                                geo_obj.solid_geometry.append(geo)
+                        except TypeError:
+                            geo_obj.solid_geometry.append(geo_obj.tools[tooluid]['solid_geometry'])
+            else:
+                # I will use this variable for this purpose although it was meant for something else
+                # signal that we have no geo in the object therefore don't create it
+                app_obj.poly_not_cleared = False
+                return "fail"
+
+        # ###########################################################################################
+        # Create the Job function and send it to the worker to be processed in another thread #######
+        # ###########################################################################################
+        def job_thread(app_obj):
+            try:
+                if rest_machining_choice is True:
+                    app_obj.new_object("geometry", name, gen_clear_area_rest, plot=plot)
+                else:
+                    app_obj.new_object("geometry", name, gen_clear_area, plot=plot)
+            except FlatCAMApp.GracefulException:
+                if run_threaded:
+                    proc.done()
+                return
+            except Exception:
+                if run_threaded:
+                    proc.done()
+                traceback.print_stack()
+                return
+
+            if run_threaded:
+                proc.done()
+            else:
+                app_obj.proc_container.view.set_idle()
+
+            # focus on Selected Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+
+        if run_threaded:
+            # Promise object with the new name
+            self.app.collection.promise(name)
+
+            # Background
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        else:
+            job_thread(app_obj=self.app)
 
     def get_ncc_empty_area(self, target, boundary=None):
         """

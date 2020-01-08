@@ -1348,8 +1348,6 @@ class SolderPaste(FlatCAMTool):
             job_obj.options['ymax'] = ymax
 
             for tooluid_key, tooluid_value in obj.tools.items():
-                app_obj.progress.emit(20)
-
                 # find the tool_dia associated with the tooluid_key
                 tool_dia = tooluid_value['tooldia']
                 tool_cnc_dict = deepcopy(tooluid_value)
@@ -1380,8 +1378,6 @@ class SolderPaste(FlatCAMTool):
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
                 job_obj.toolchange_xy_type = "geometry"
-                app_obj.progress.emit(80)
-
                 job_obj.cnc_tools.update({
                     tooluid_key: deepcopy(tool_cnc_dict)
                 })
@@ -1394,8 +1390,6 @@ class SolderPaste(FlatCAMTool):
                     if app_obj.new_object("cncjob", name, job_init) != 'fail':
                         app_obj.inform.emit('[success] [success] %s: %s' %
                                             (_("ToolSolderPaste CNCjob created"), name))
-                        app_obj.progress.emit(100)
-
             # Create a promise with the name
             self.app.collection.promise(name)
             # Send to worker
