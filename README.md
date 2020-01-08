@@ -12,6 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 8.01.2019
 
 - working in NCC Tool
+- selected rows in the Tools Tables will stay colored in blue after loosing focus instead of the default gray
+- in NCC Tool the Tool name in the Parameters section will be the Tool ID in the Tool Table
+- added an exception catch in case the plotcanvas init failed for the OpenGL graphic engine and warn user about what happened
 
 7.01.2019
 

@@ -6,6 +6,7 @@
 # ##########################################################
 
 from PyQt5 import QtWidgets, QtCore, QtGui
+
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton
 from flatcamParsers.ParseGerber import Gerber
@@ -697,7 +698,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # update the QLabel that shows for which Tool we have the parameters in the UI form
         self.tool_data_label.setText(
-            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
+            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), (current_row + 1))
         )
 
         try:
@@ -765,8 +766,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         type_item = self.tools_table.cellWidget(row, 2).currentText()
         operation_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
 
-        offset_item = self.ncc_choice_offset_cb.get_value()
-        offset_value_item = float(self.ncc_offset_spinner.get_value())
+        nccoffset_item = self.ncc_choice_offset_cb.get_value()
+        nccoffset_value_item = float(self.ncc_offset_spinner.get_value())
 
         # this new dict will hold the actual useful data, another dict that is the value of key 'data'
         temp_tools = {}
@@ -775,16 +776,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         for tooluid_key, tooluid_value in self.ncc_tools.items():
             for key, value in tooluid_value.items():
-                if key == 'tooldia':
-                    temp_dia[key] = tooldia_item
-                # update the 'offset', 'type' and 'tool_type' sections
-                if key == 'offset':
-                    temp_dia[key] = offset_item
-                if key == 'type':
-                    temp_dia[key] = type_item
-                if key == 'offset_value':
-                    temp_dia[key] = offset_value_item
-
                 if key == 'data':
                     # update the 'data' section
                     for data_key in tooluid_value[key].keys():
@@ -798,8 +789,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     temp_dia[key] = deepcopy(temp_data)
                     temp_data.clear()
 
-                if key == 'solid_geometry':
+                elif key == 'solid_geometry':
                     temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
+                else:
+                    temp_dia[key] = deepcopy(value)
 
                 temp_tools[tooluid_key] = deepcopy(temp_dia)
 
@@ -1382,7 +1375,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     tooluid_del = int(self.tools_table.item(row, 3).text())
                     deleted_tools_list.append(tooluid_del)
             except TypeError:
-                deleted_tools_list.append(rows_to_delete)
+                tooluid_del = int(self.tools_table.item(rows_to_delete, 3).text())
+                deleted_tools_list.append(tooluid_del)
 
             for t in deleted_tools_list:
                 self.ncc_tools.pop(t, None)

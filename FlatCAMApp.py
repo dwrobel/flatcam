@@ -1631,7 +1631,7 @@ class App(QtCore.QObject):
         self.toggle_units_ignore = False
 
         # #############################################################################
-        # ########################## LOAD POSTPROCESSORS ##############################
+        # ########################## LOAD PREPROCESSORS ###############################
         # #############################################################################
 
         # a dictionary that have as keys the name of the preprocessor files and the value is the class from
@@ -2464,7 +2464,10 @@ class App(QtCore.QObject):
         self.fiducial_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
-        self.install_tools()
+        try:
+            self.install_tools()
+        except AttributeError:
+            pass
 
         # ##################################################################################
         # ########################### SETUP RECENT ITEMS ###################################
@@ -2628,7 +2631,10 @@ class App(QtCore.QObject):
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
         # VisPy visuals
         if self.is_legacy is False:
-            self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+            try:
+                self.tool_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
+            except AttributeError:
+                self.tool_shapes = None
         else:
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
@@ -2639,9 +2645,20 @@ class App(QtCore.QObject):
 
         # watch out for the position of the editors instantiation ... if it is done before a save of the default values
         # at the first launch of the App , the editors will not be functional.
-        self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
-        self.exc_editor = FlatCAMExcEditor(self)
-        self.grb_editor = FlatCAMGrbEditor(self)
+        try:
+            self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+        except AttributeError:
+            pass
+
+        try:
+            self.exc_editor = FlatCAMExcEditor(self)
+        except AttributeError:
+            pass
+
+        try:
+            self.grb_editor = FlatCAMGrbEditor(self)
+        except AttributeError:
+            pass
         self.log.debug("Finished adding FlatCAM Editor's.")
 
         self.set_ui_title(name=_("New Project - Not saved"))
@@ -3136,7 +3153,11 @@ class App(QtCore.QObject):
         self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
 
         # third install all of them
-        self.install_tools()
+        try:
+            self.install_tools()
+        except AttributeError:
+            pass
+
         self.log.debug("Tools are initialized.")
 
     # def parse_system_fonts(self):
@@ -11607,6 +11628,11 @@ class App(QtCore.QObject):
 
         }
 
+        try:
+            image_opener = self.image_tool.import_image
+        except AttributeError:
+            image_opener = None
+
         openers = {
             'gerber': lambda fname: self.worker_task.emit({'fcn': self.open_gerber, 'params': [fname]}),
             'excellon': lambda fname: self.worker_task.emit({'fcn': self.open_excellon, 'params': [fname]}),
@@ -11617,7 +11643,7 @@ class App(QtCore.QObject):
             'project': self.open_project,
             'svg': self.import_svg,
             'dxf': self.import_dxf,
-            'image': self.image_tool.import_image,
+            'image': image_opener,
             'pdf': lambda fname: self.worker_task.emit({'fcn': self.pdf_tool.open_pdf, 'params': [fname]})
         }
 
@@ -11946,7 +11972,7 @@ class App(QtCore.QObject):
 
     def on_plotcanvas_setup(self, container=None):
         """
-        This is doing the setup for the plot area (VisPy canvas)
+        This is doing the setup for the plot area (canvas)
 
         :param container: widget where to install the canvas
         :return: None
@@ -11957,7 +11983,18 @@ class App(QtCore.QObject):
             plot_container = self.ui.right_layout
 
         if self.is_legacy is False:
-            self.plotcanvas = PlotCanvas(plot_container, self)
+            try:
+                self.plotcanvas = PlotCanvas(plot_container, self)
+            except Exception as er:
+                msg_txt = traceback.format_exc()
+                log.debug("App.on_plotcanvas_setup() failed -> %s" % str(er))
+                log.debug("OpenGL canvas initialization failed with the following error.\n" + msg_txt)
+                msg = '[ERROR_NOTCL] %s' % _("An internal error has occurred. See shell.\n")
+                msg += _("OpenGL canvas initialization failed. HW or HW configuration not supported."
+                         "Change the graphic engine to Legacy(2D) in Edit -> Preferences -> General tab.\n\n")
+                msg += msg_txt
+                self.inform.emit(msg)
+                return 'fail'
         else:
             self.plotcanvas = PlotCanvasLegacy(plot_container, self)
 
