@@ -311,30 +311,35 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "with the diameter specified above.")
         )
 
+        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add from DB'))
+        self.addtool_from_db_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "from the Tool DataBase.")
+        )
+
+        hlay.addWidget(self.addtool_btn)
+        hlay.addWidget(self.addtool_from_db_btn)
+
+        self.grid3.addLayout(hlay, 7, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(separator_line, 8, 0, 1, 2)
+
         self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row(s) in the Tool Table.")
         )
+        self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
 
-        hlay.addWidget(self.addtool_btn)
-        hlay.addWidget(self.deltool_btn)
-
-        self.grid3.addLayout(hlay, 7, 0, 1, 2)
-
-        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add Tool from DataBase'))
-        self.addtool_from_db_btn.setToolTip(
-            _("Add a new tool to the Tool Table\n"
-              "from the Tool DataBase.")
-        )
-        self.grid3.addWidget(self.addtool_from_db_btn, 8, 0, 1, 2)
-
-        self.grid3.addWidget(QtWidgets.QLabel(''), 9, 0, 1, 2)
+        self.grid3.addWidget(QtWidgets.QLabel(''), 10, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line, 10, 0, 1, 2)
+        self.grid3.addWidget(separator_line, 11, 0, 1, 2)
 
         self.tool_data_label = QtWidgets.QLabel(
             "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
@@ -344,7 +349,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 "Each tool store it's own set of such data."
             )
         )
-        self.grid3.addWidget(self.tool_data_label, 11, 0, 1, 2)
+        self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
 
         # Overlap Entry
         nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
@@ -364,8 +369,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_overlap_entry.setSingleStep(0.1)
         self.ncc_overlap_entry.setObjectName(_("Overlap Rate"))
 
-        self.grid3.addWidget(nccoverlabel, 12, 0)
-        self.grid3.addWidget(self.ncc_overlap_entry, 12, 1)
+        self.grid3.addWidget(nccoverlabel, 13, 0)
+        self.grid3.addWidget(self.ncc_overlap_entry, 13, 1)
 
         # Margin
         nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
@@ -377,8 +382,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_margin_entry.set_range(-9999.9999, 9999.9999)
         self.ncc_margin_entry.setObjectName(_("Margin"))
 
-        self.grid3.addWidget(nccmarginlabel, 13, 0)
-        self.grid3.addWidget(self.ncc_margin_entry, 13, 1)
+        self.grid3.addWidget(nccmarginlabel, 14, 0)
+        self.grid3.addWidget(self.ncc_margin_entry, 14, 1)
 
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
@@ -395,8 +400,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         ], orientation='vertical', stretch=False)
         self.ncc_method_radio.setObjectName(_("Method"))
 
-        self.grid3.addWidget(methodlabel, 14, 0)
-        self.grid3.addWidget(self.ncc_method_radio, 14, 1)
+        self.grid3.addWidget(methodlabel, 15, 0)
+        self.grid3.addWidget(self.ncc_method_radio, 15, 1)
 
         # Connect lines
         self.ncc_connect_cb = FCCheckBox('%s' % _("Connect"))
@@ -406,7 +411,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        self.grid3.addWidget(self.ncc_connect_cb, 15, 0, 1, 2)
+        self.grid3.addWidget(self.ncc_connect_cb, 16, 0, 1, 2)
 
         # Contour
         self.ncc_contour_cb = FCCheckBox('%s' % _("Contour"))
@@ -416,7 +421,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        self.grid3.addWidget(self.ncc_contour_cb, 16, 0, 1, 2)
+        self.grid3.addWidget(self.ncc_contour_cb, 17, 0, 1, 2)
 
         # Rest Machining
         self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
@@ -432,7 +437,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "If not checked, use the standard algorithm.")
         )
 
-        self.grid3.addWidget(self.ncc_rest_cb, 17, 0, 1, 2)
+        self.grid3.addWidget(self.ncc_rest_cb, 18, 0, 1, 2)
 
         # ## NCC Offset choice
         self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
@@ -444,7 +449,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "from the copper features.\n"
               "The value can be between 0 and 10 FlatCAM units.")
         )
-        self.grid3.addWidget(self.ncc_choice_offset_cb, 18, 0, 1, 2)
+        self.grid3.addWidget(self.ncc_choice_offset_cb, 19, 0, 1, 2)
 
         # ## NCC Offset value
         self.ncc_offset_label = QtWidgets.QLabel('%s:' % _("Offset value"))
@@ -466,8 +471,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         else:
             self.ncc_offset_spinner.setSingleStep(0.01)
 
-        self.grid3.addWidget(self.ncc_offset_label, 19, 0)
-        self.grid3.addWidget(self.ncc_offset_spinner, 19, 1)
+        self.grid3.addWidget(self.ncc_offset_label, 20, 0)
+        self.grid3.addWidget(self.ncc_offset_spinner, 20, 1)
 
         self.ncc_offset_label.hide()
         self.ncc_offset_spinner.hide()
@@ -486,11 +491,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
               "- 'Reference Object' - will do non copper clearing within the area specified by another object.")
         )
-        self.grid3.addWidget(self.reference_label, 20, 0)
-        self.grid3.addWidget(self.reference_radio, 20, 1)
+        self.grid3.addWidget(self.reference_label, 21, 0)
+        self.grid3.addWidget(self.reference_radio, 21, 1)
 
         form1 = QtWidgets.QFormLayout()
-        self.grid3.addLayout(form1, 21, 0, 1, 2)
+        self.grid3.addLayout(form1, 22, 0, 1, 2)
 
         self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.box_combo_type_label.setToolTip(
@@ -521,14 +526,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line2, 22, 0, 1, 2)
+        self.grid3.addWidget(separator_line2, 23, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
         self.apply_param_to_all.setToolTip(
             _("The parameters in the current form will be applied\n"
               "on all the tools from the Tool Table.")
         )
-        self.grid3.addWidget(self.apply_param_to_all, 23, 0, 1, 2)
+        self.grid3.addWidget(self.apply_param_to_all, 24, 0, 1, 2)
 
         self.generate_ncc_button = QtWidgets.QPushButton(_('Generate Geometry'))
         self.generate_ncc_button.setToolTip(
@@ -564,11 +569,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # #############################################################################
         self.tools_table.setupContextMenu()
         self.tools_table.addContextMenu(
-            "Add", self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
+            _("Add"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
         self.tools_table.addContextMenu(
-            "Delete", lambda:
+            _("Add from DB"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
+        self.tools_table.addContextMenu(
+            _("Delete"), lambda:
             self.on_tool_delete(rows_to_delete=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png"))
+            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
+        )
 
         # #############################################################################
         # ########################## VARIABLES ########################################
@@ -1070,20 +1080,21 @@ class NonCopperClear(FlatCAMTool, Gerber):
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
                 try:
-                    current_widget.stateChanged.disconnect(self.form_to_storage)
+                    current_widget.stateChanged.disconnect()
                 except (TypeError, ValueError):
                     pass
             if isinstance(current_widget, RadioSet):
                 try:
-                    current_widget.activated_custom.disconnect(self.form_to_storage)
+                    current_widget.activated_custom.disconnect()
                 except (TypeError, ValueError):
                     pass
             elif isinstance(current_widget, FCDoubleSpinner):
                 try:
-                    current_widget.returnPressed.disconnect(self.form_to_storage)
+                    current_widget.returnPressed.disconnect()
                 except (TypeError, ValueError):
                     pass
 
+        # then reconnect
         for opt in self.form_fields:
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
@@ -1092,6 +1103,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 current_widget.activated_custom.connect(self.form_to_storage)
             elif isinstance(current_widget, FCDoubleSpinner):
                 current_widget.returnPressed.connect(self.form_to_storage)
+
+        self.ncc_choice_offset_cb.stateChanged.connect(self.on_offset_choice)
+        self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
+        self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
     def ui_disconnect(self):
         try:
@@ -1416,18 +1431,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # init values for the next usage
         self.reset_usage()
+
         self.app.report_usage("on_paint_button_click")
 
         self.overlap = float(self.ncc_overlap_entry.get_value()) / 100.0
-
         self.grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
-
         self.connect = self.ncc_connect_cb.get_value()
         self.contour = self.ncc_contour_cb.get_value()
         self.has_offset = self.ncc_choice_offset_cb.isChecked()
         self.rest = self.ncc_rest_cb.get_value()
-
         self.obj_name = self.object_combo.currentText()
+
         # Get source object.
         try:
             self.ncc_obj = self.app.collection.get_by_name(self.obj_name)
@@ -1523,11 +1537,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
     def on_mouse_release(self, event):
         if self.app.is_legacy is False:
             event_pos = event.pos
-            event_is_dragging = event.is_dragging
+            # event_is_dragging = event.is_dragging
             right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
-            event_is_dragging = self.app.plotcanvas.is_dragging
+            # event_is_dragging = self.app.plotcanvas.is_dragging
             right_button = 3
 
         event_pos = self.app.plotcanvas.translate_coords(event_pos)
@@ -1539,13 +1553,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit('[WARNING_NOTCL] %s' % _("Click the end point of the paint area."))
 
                 self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
-                if self.app.grid_status() == True:
+                if self.app.grid_status():
                     self.cursor_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
             else:
                 self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
                 self.app.delete_selection_shape()
 
-                if self.app.grid_status() == True:
+                if self.app.grid_status():
                     curr_pos = self.app.geo_editor.snap(event_pos[0], event_pos[1])
                 else:
                     curr_pos = (event_pos[0], event_pos[1])
@@ -1566,7 +1580,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.first_click = False
                 return
 
-        elif event.button == right_button and self.mouse_is_dragging == False:
+        elif event.button == right_button and self.mouse_is_dragging is False:
             self.first_click = False
 
             self.delete_tool_selection_shape()
@@ -1606,11 +1620,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         if self.app.is_legacy is False:
             event_pos = event.pos
             event_is_dragging = event.is_dragging
-            right_button = 2
+            # right_button = 2
         else:
             event_pos = (event.xdata, event.ydata)
             event_is_dragging = self.app.plotcanvas.is_dragging
-            right_button = 3
+            # right_button = 3
 
         curr_pos = self.app.plotcanvas.translate_coords(event_pos)
 
@@ -1621,7 +1635,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.mouse_is_dragging = False
 
         # update the cursor position
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             # Update cursor
             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
@@ -1651,17 +1665,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                      sel_obj=None,
                      ncctooldia=None,
                      isotooldia=None,
-                     margin=None,
-                     has_offset=None,
-                     offset=None,
-                     select_method=None,
                      outname=None,
-                     overlap=None,
-                     connect=None,
-                     contour=None,
                      order=None,
-                     method=None,
-                     rest=None,
                      tools_storage=None,
                      plot=True,
                      run_threaded=True):
@@ -1671,18 +1676,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         :param ncc_obj: ncc cleared object
         :param ncctooldia: a tuple or single element made out of diameters of the tools to be used to ncc clear
         :param isotooldia: a tuple or single element made out of diameters of the tools to be used for isolation
-        :param overlap: value by which the paths will overlap
-        :param order: if the tools are ordered and how
-        :param select_method: if to do ncc on the whole object, on an defined area or on an area defined by
-        another object
-        :param has_offset: True if an offset is needed
-        :param offset: distance from the copper features where the copper clearing is stopping
-        :param margin: a border around cleared area
         :param outname: name of the resulting object
-        :param connect: Connect lines to avoid tool lifts.
-        :param contour: Paint around the edges.
-        :param method: choice out of 'seed', 'normal', 'lines'
-        :param rest: True if to use rest-machining
         :param tools_storage: whether to use the current tools_storage self.ncc_tools or a different one.
         Usage of the different one is related to when this function is called from a TcL command.
         :param plot: if True after the job is finished the result will be plotted, else it will not.
@@ -1701,25 +1695,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # #####################################################################
 
         units = self.app.defaults['units']
-
-        log.debug("NCC Tool started. Reading parameters.")
-        self.app.inform.emit(_("NCC Tool started. Reading parameters."))
-
-        ncc_method = method if method else self.ncc_method_radio.get_value()
-
-        if margin is not None:
-            ncc_margin = margin
-        else:
-            ncc_margin = float(self.ncc_margin_entry.get_value())
-
-        if select_method is not None:
-            ncc_select = select_method
-        else:
-            ncc_select = self.reference_radio.get_value()
-
-        overlap = overlap if overlap is not None else float(self.app.defaults["tools_nccoverlap"]) / 100.0
-        connect = connect if connect else self.app.defaults["tools_nccconnect"]
-        contour = contour if contour else self.app.defaults["tools_ncccontour"]
         order = order if order else self.ncc_order_radio.get_value()
 
         # determine if to use the progressive plotting
@@ -1732,17 +1707,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             tools_storage = tools_storage
         else:
             tools_storage = self.ncc_tools
-
-        ncc_offset = 0.0
-        if has_offset is True:
-            if offset is not None:
-                ncc_offset = offset
-            else:
-                try:
-                    ncc_offset = float(self.ncc_offset_spinner.get_value())
-                except ValueError:
-                    self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
-                    return
 
         # ######################################################################################################
         # # Read the tooldia parameter and create a sorted list out them - they may be more than one diameter ##
@@ -1843,11 +1807,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # set the name for the future Geometry object
         # I do it here because it is also stored inside the gen_clear_area() and gen_clear_area_rest() methods
         # ########################################################################################################
-        rest_machining_choice = rest if rest is not None else self.app.defaults["tools_nccrest"]
-        if rest_machining_choice is True:
-            name = outname if outname is not None else self.obj_name + "_ncc_rm"
-        else:
-            name = outname if outname is not None else self.obj_name + "_ncc"
+        name = outname if outname is not None else self.obj_name + "_ncc"
 
         # ##########################################################################################
         # Initializes the new geometry object ######################################################
@@ -2026,7 +1986,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %  _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
@@ -2071,7 +2031,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 area = empty.buffer(-offset)
                 try:
                     area = area.difference(cleared)
-                except Exception as e:
+                except Exception:
                     continue
 
                 # Transform area to MultiPolygon
@@ -2330,7 +2290,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %  _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
@@ -2407,7 +2367,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         new_geo = line_elem.intersection(bounding_box)
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
-                            except Exception as e:
+                            except Exception:
                                 pass
 
                         # a MultiLineString geometry element will show that the isolation is broken for this tool
@@ -2516,7 +2476,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 # variables to display the percentage of work done
                 geo_len = len(area.geoms)
-                disp_number = 0
                 old_disp_number = 0
                 log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
@@ -3065,7 +3024,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %  _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
@@ -3110,7 +3069,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 area = empty.buffer(-offset)
                 try:
                     area = area.difference(cleared)
-                except Exception as e:
+                except Exception:
                     continue
 
                 # Transform area to MultiPolygon
@@ -3332,7 +3291,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 if has_offset is True:
                     app_obj.inform.emit('[WARNING_NOTCL] %s ...' % _("Buffering"))
                     sol_geo = sol_geo.buffer(distance=ncc_offset)
-                    app_obj.inform.emit('[success] %s ...' %  _("Buffering finished"))
+                    app_obj.inform.emit('[success] %s ...' % _("Buffering finished"))
                 empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
                 if empty == 'fail':
                     return 'fail'
@@ -3500,7 +3459,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         raise FlatCAMApp.GracefulException
                     try:
                         area = area.difference(poly)
-                    except Exception as e:
+                    except Exception:
                         pass
                 cleared_by_last_tool[:] = []
 
@@ -3518,7 +3477,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
                 # variables to display the percentage of work done
                 geo_len = len(area.geoms)
-                disp_number = 0
                 old_disp_number = 0
                 log.warning("Total number of polygons to be cleared. %s" % str(geo_len))
 
