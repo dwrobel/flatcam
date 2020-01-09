@@ -1786,6 +1786,8 @@ class App(QtCore.QObject):
         self.app_cursor = None
         self.hover_shapes = None
 
+        self.log.debug("Setting up canvas: %s" % str(self.defaults["global_graphic_engine"]))
+
         # setup the PlotCanvas
         self.on_plotcanvas_setup()
 
@@ -11981,7 +11983,7 @@ class App(QtCore.QObject):
             plot_container = container
         else:
             plot_container = self.ui.right_layout
-
+        print("step_1")
         if self.is_legacy is False:
             try:
                 self.plotcanvas = PlotCanvas(plot_container, self)
@@ -11997,9 +11999,11 @@ class App(QtCore.QObject):
                 return 'fail'
         else:
             self.plotcanvas = PlotCanvasLegacy(plot_container, self)
+        print("step_2")
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
+        print("step_3")
 
         self.mm = self.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
         self.mp = self.plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
@@ -12008,22 +12012,28 @@ class App(QtCore.QObject):
 
         # Keys over plot enabled
         self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
+        print("step_4")
 
         if self.defaults['global_cursor_type'] == 'small':
             self.app_cursor = self.plotcanvas.new_cursor()
         else:
             self.app_cursor = self.plotcanvas.new_cursor(big=True)
 
+        print("step_5")
+
         if self.ui.grid_snap_btn.isChecked():
             self.app_cursor.enabled = True
         else:
             self.app_cursor.enabled = False
+
+        print("step_6")
 
         if self.is_legacy is False:
             self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
         else:
             # will use the default Matplotlib axes
             self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
+        print("step_7")
 
     def on_zoom_fit(self, event):
         """
