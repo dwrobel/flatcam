@@ -150,11 +150,8 @@ class ToolExtractDrills(FlatCAMTool):
         self.e_drills_button.clicked.connect(self.on_extract_drills_click)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
-        self.tools = list()
-        self.drills = dict()
-
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+E', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+I', **kwargs)
 
     def run(self, toggle=True):
         self.app.report_usage("Extract Drills()")
@@ -192,6 +189,12 @@ class ToolExtractDrills(FlatCAMTool):
         self.ring_entry.set_value(float(self.app.defaults["tools_edrills_hole_ring"]))
 
     def on_extract_drills_click(self):
+
+        drill_dia = self.dia_entry.get_value()
+        ring_val = self.ring_entry.get_value()
+        drills = list()
+        tools = dict()
+
         selection_index = self.gerber_object_combo.currentIndex()
         model_index = self.app.collection.index(selection_index, 0, self.gerber_object_combo.rootModelIndex())
 
@@ -201,34 +204,65 @@ class ToolExtractDrills(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        # axis = self.mirror_axis.get_value()
-        # mode = self.axis_location.get_value()
-        #
-        # if mode == "point":
-        #     try:
-        #         px, py = self.point_entry.get_value()
-        #     except TypeError:
-        #         self.app.inform.emit('[WARNING_NOTCL] %s' % _("'Point' coordinates missing. "
-        #                                                       "Using Origin (0, 0) as mirroring reference."))
-        #         px, py = (0, 0)
-        #
-        # else:
-        #     selection_index_box = self.box_combo.currentIndex()
-        #     model_index_box = self.app.collection.index(selection_index_box, 0, self.box_combo.rootModelIndex())
-        #     try:
-        #         bb_obj = model_index_box.internalPointer().obj
-        #     except Exception as e:
-        #         self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Box object loaded ..."))
-        #         return
-        #
-        #     xmin, ymin, xmax, ymax = bb_obj.bounds()
-        #     px = 0.5 * (xmin + xmax)
-        #     py = 0.5 * (ymin + ymax)
-        #
-        # fcobj.mirror(axis, [px, py])
-        # self.app.object_changed.emit(fcobj)
-        # fcobj.plot()
-        self.app.inform.emit('[success] Gerber %s %s...' % (str(fcobj.options['name']), _("was mirrored")))
+        outname = fcobj.options['name'].rpartition('.')[0]
+
+        mode = self.hole_size_radio.get_value()
+
+        if mode == 'fixed':
+            tools = {"1": {"C": drill_dia}}
+            for apid, apid_value in fcobj.apertures.items():
+                for geo_el in apid_value['geometry']:
+                    if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
+                        drills.append({"point": geo_el['follow'], "tool": "1"})
+                        if 'solid_geometry' not in tools["1"]:
+                            tools["1"]['solid_geometry'] = list()
+                        else:
+                            tools["1"]['solid_geometry'].append(geo_el['follow'])
+        else:
+            for apid, apid_value in fcobj.apertures.items():
+                ap_type = apid_value['type']
+
+                dia = float(apid_value['size']) - (2 * ring_val)
+                if ap_type == 'R' or ap_type == 'O':
+                    width = float(apid_value['width'])
+                    height = float(apid_value['height'])
+                    if width >= height:
+                        dia = float(apid_value['height']) - (2 * ring_val)
+                    else:
+                        dia = float(apid_value['width']) - (2 * ring_val)
+
+                tool_in_drills = False
+                for tool, tool_val in tools.items():
+                    if abs(float('%.*f' % (self.decimals, tool_val["C"])) - dia) < (10 ** -self.decimals):
+                        tool_in_drills = tool
+
+                if tool_in_drills is False:
+                    if tools:
+                        new_tool = max([int(t) for t in tools]) + 1
+                        tool_in_drills = str(new_tool)
+                    else:
+                        tool_in_drills = "1"
+
+                for geo_el in apid_value['geometry']:
+                    if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
+                        if tool_in_drills not in tools:
+                            tools[tool_in_drills] = {"C": dia}
+
+                        drills.append({"point": geo_el['follow'], "tool": tool_in_drills})
+
+                        if 'solid_geometry' not in tools[tool_in_drills]:
+                            tools[tool_in_drills]['solid_geometry'] = list()
+                        else:
+                            tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
+
+        def obj_init(obj_inst, app_inst):
+            obj_inst.tools = tools
+            obj_inst.drills = drills
+            obj_inst.create_geometry()
+            obj_inst.source_file = self.app.export_excellon(obj_name=outname, local_use=obj_inst, filename=None,
+                                                            use_thread=False)
+
+        self.app.new_object("excellon", outname, obj_init)
 
     def on_hole_size_toggle(self, val):
         if val == "fixed":

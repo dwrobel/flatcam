@@ -10389,7 +10389,8 @@ class App(QtCore.QObject):
         self.report_usage("export_svg()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("export_svg()")
 
@@ -10457,7 +10458,8 @@ class App(QtCore.QObject):
         self.report_usage("save source file()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("save source file()")
 
@@ -10500,7 +10502,10 @@ class App(QtCore.QObject):
         self.report_usage("export_excellon()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"] + '/' + 'exported_excellon'
+            if self.defaults["global_last_save_folder"]:
+                filename = self.defaults["global_last_save_folder"] + '/' + 'exported_excellon'
+            else:
+                filename = self.defaults["global_last_folder"] + '/' + 'exported_excellon'
 
         self.log.debug("export_excellon()")
 
@@ -10656,7 +10661,8 @@ class App(QtCore.QObject):
         self.report_usage("export_gerber()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("export_gerber()")
 
@@ -10792,7 +10798,8 @@ class App(QtCore.QObject):
         self.report_usage("export_dxf()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("export_dxf()")
 

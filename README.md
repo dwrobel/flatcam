@@ -13,6 +13,9 @@ CAD program, and create G-Code for Isolation routing.
 
 - working on a new tool: Extract Drills Tool who will create a Excellon object out of the apertures of a Gerber object
 - finished the GUI in the Extract Drills Tool
+- fixed issue in Film Tool where some parameters names in calls of method export_positive() were not matching the actual parameters name
+- finished the Extract Drills Tool
+- fixed a small issue in the DoubleSided Tool
 
 8.01.2019
 

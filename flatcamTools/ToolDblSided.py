@@ -533,16 +533,17 @@ class DblSidedTool(FlatCAMTool):
                                                           "Add them and retry."))
             return
 
-        drills = []
+        drills = list()
 
         for hole in holes:
             point = Point(hole)
             point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
             drills.append({"point": point, "tool": "1"})
             drills.append({"point": point_mirror, "tool": "1"})
-            if 'solid_geometry' not in tools:
-                tools["1"]['solid_geometry'] = []
+            if 'solid_geometry' not in tools["1"]:
+                tools["1"]['solid_geometry'] = list()
             else:
+                tools["1"]['solid_geometry'].append(point)
                 tools["1"]['solid_geometry'].append(point_mirror)
 
         def obj_init(obj_inst, app_inst):
