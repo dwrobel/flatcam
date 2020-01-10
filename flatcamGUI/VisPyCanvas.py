@@ -24,15 +24,24 @@ black = Color("#000000")
 class VisPyCanvas(scene.SceneCanvas):
 
     def __init__(self, config=None):
-        scene.SceneCanvas.__init__(self, keys=None, config=config)
+        print("vp_1")
+        try:
+            # scene.SceneCanvas.__init__(self, keys=None, config=config)
+            super().__init__(config=config, keys=None)
+        except Exception as e:
+            print("VisPyCanvas.__init__() -> %s" % str(e))
+
+        print("vp_2")
 
         self.unfreeze()
+        print("vp_3")
 
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("axis_font_size"):
             a_fsize = settings.value('axis_font_size', type=int)
         else:
             a_fsize = 8
+        print("vp_4")
 
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
@@ -50,6 +59,8 @@ class VisPyCanvas(scene.SceneCanvas):
             # back_color = Color('#272822') # darker
             # back_color = Color('#3c3f41') # lighter
 
+        print("vp_5")
+
         self.central_widget.bgcolor = back_color
         self.central_widget.border_color = back_color
 
@@ -58,6 +69,8 @@ class VisPyCanvas(scene.SceneCanvas):
 
         top_padding = self.grid_widget.add_widget(row=0, col=0, col_span=2)
         top_padding.height_max = 0
+
+        print("vp_6")
 
         self.yaxis = scene.AxisWidget(
             orientation='left', axis_color=tick_color, text_color=tick_color, font_size=a_fsize, axis_width=1
@@ -76,8 +89,12 @@ class VisPyCanvas(scene.SceneCanvas):
         # right_padding.width_max = 24
         right_padding.width_max = 0
 
+        print("vp_7")
+
         view = self.grid_widget.add_view(row=1, col=1, border_color=tick_color, bgcolor=theme_color)
         view.camera = Camera(aspect=1, rect=(-25, -25, 150, 150))
+
+        print("vp_8")
 
         # Following function was removed from 'prepare_draw()' of 'Grid' class by patch,
         # it is necessary to call manually
@@ -101,7 +118,10 @@ class VisPyCanvas(scene.SceneCanvas):
         else:
             self.grid = scene.GridLines(parent=self.view.scene, color='#dededeff')
 
+        print("vp_9")
+
         self.grid.set_gl_state(depth_test=False)
+        print("vp_10")
 
         self.freeze()
 
