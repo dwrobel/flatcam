@@ -954,6 +954,11 @@ class App(QtCore.QObject):
             "tools_cal_toolchange_xy": '',
             "tools_cal_sec_point": 'tl',
 
+            # Drills Extraction Tool
+            "tools_edrills_hole_type": 'fixed',
+            "tools_edrills_hole_fixed_dia": 0.5,
+            "tools_edrills_hole_ring": 0.2,
+
             # Utilities
             # file associations
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
@@ -2464,12 +2469,13 @@ class App(QtCore.QObject):
         self.qrcode_tool = None
         self.copper_thieving_tool = None
         self.fiducial_tool = None
+        self.edrills_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         try:
             self.install_tools()
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            log.debug("App.__init__() install tools() --> %s" % str(e))
 
         # ##################################################################################
         # ########################### SETUP RECENT ITEMS ###################################
@@ -3017,13 +3023,6 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.dblsidedtool = DblSidedTool(self)
-        self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=True)
-
-        self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menutool,
-                                  before=self.dblsidedtool.menuAction,
-                                  separator=False)
         self.distance_tool = Distance(self)
         self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
                                    before=self.ui.menueditorigin,
@@ -3034,6 +3033,17 @@ class App(QtCore.QObject):
                                        pos=self.ui.menuedit,
                                        before=self.ui.menueditorigin,
                                        separator=True)
+
+        self.dblsidedtool = DblSidedTool(self)
+        self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=False)
+
+        self.cal_exc_tool = ToolCalibration(self)
+        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menutool,
+                                  before=self.dblsidedtool.menuAction,
+                                  separator=False)
+
+        self.edrills_tool = ToolExtractDrills(self)
+        self.edrills_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill16.png'), separator=True)
 
         self.panelize_tool = Panelize(self)
         self.panelize_tool.install(icon=QtGui.QIcon(self.resource_location + '/panelize16.png'))

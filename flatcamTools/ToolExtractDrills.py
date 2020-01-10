@@ -59,21 +59,15 @@ class ToolExtractDrills(FlatCAMTool):
         self.grb_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.grb_label.setToolTip('%s.' % _("Gerber from which to extract drill holes"))
 
-        self.mirror_gerber_button.setStyleSheet("""
-                        QPushButton
-                        {
-                            font-weight: bold;
-                        }
-                        """)
-        self.mirror_gerber_button.setMinimumWidth(60)
-
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.grb_label, 0, 0)
         grid_lay.addWidget(self.gerber_object_combo, 1, 0)
 
         # ## Grid Layout
-        grid_lay1 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid_lay1)
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
+        grid1.setColumnStretch(0, 0)
+        grid1.setColumnStretch(1, 1)
 
         # ## Axis
         self.hole_size_radio = RadioSet([{'label': _("Fixed"), 'value': 'fixed'},
@@ -85,20 +79,15 @@ class ToolExtractDrills(FlatCAMTool):
               "- Proprotional -> each hole will havea a variable size\n"
               "such as to preserve a set annular ring"))
 
-        grid_lay1.addWidget(self.hole_size_label, 3, 0)
-        grid_lay1.addWidget(self.hole_size_radio, 3, 1)
+        grid1.addWidget(self.hole_size_label, 3, 0)
+        grid1.addWidget(self.hole_size_radio, 3, 1)
 
-        self.layout.addWidget(QtWidgets.QLabel(''))
+        # grid_lay1.addWidget(QtWidgets.QLabel(''))
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.layout.addWidget(separator_line)
-
-        grid1 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid1)
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
+        grid1.addWidget(separator_line, 5, 0, 1, 2)
 
         # Diameter value
         self.dia_entry = FCDoubleSpinner()
@@ -110,8 +99,8 @@ class ToolExtractDrills(FlatCAMTool):
             _("Fixed hole diameter.")
         )
 
-        grid1.addWidget(self.dia_label, 1, 0)
-        grid1.addWidget(self.dia_entry, 1, 1)
+        grid1.addWidget(self.dia_label, 7, 0)
+        grid1.addWidget(self.dia_entry, 7, 1)
 
         # Annular Ring value
         self.ring_entry = FCDoubleSpinner()
@@ -125,8 +114,8 @@ class ToolExtractDrills(FlatCAMTool):
               "and the margin of the copper pad.")
         )
 
-        grid1.addWidget(self.ring_label, 2, 0)
-        grid1.addWidget(self.ring_entry, 2, 1)
+        grid1.addWidget(self.ring_label, 8, 0)
+        grid1.addWidget(self.ring_entry, 8, 1)
 
         # Calculate Bounding box
         self.e_drills_button = QtWidgets.QPushButton(_("Extract Drills"))
@@ -157,7 +146,7 @@ class ToolExtractDrills(FlatCAMTool):
         self.layout.addWidget(self.reset_button)
 
         # ## Signals
-        self.hole_size_radio.activated_custom(self.on_hole_size_toggle)
+        self.hole_size_radio.activated_custom.connect(self.on_hole_size_toggle)
         self.e_drills_button.clicked.connect(self.on_extract_drills_click)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
@@ -165,7 +154,7 @@ class ToolExtractDrills(FlatCAMTool):
         self.drills = dict()
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+D', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+E', **kwargs)
 
     def run(self, toggle=True):
         self.app.report_usage("Extract Drills()")
@@ -204,60 +193,56 @@ class ToolExtractDrills(FlatCAMTool):
 
     def on_extract_drills_click(self):
         selection_index = self.gerber_object_combo.currentIndex()
-        # fcobj = self.app.collection.object_list[selection_index]
         model_index = self.app.collection.index(selection_index, 0, self.gerber_object_combo.rootModelIndex())
+
         try:
             fcobj = model_index.internalPointer().obj
         except Exception as e:
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
             return
 
-        if not isinstance(fcobj, FlatCAMGerber):
-            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Only Gerber, Excellon and Geometry objects can be mirrored."))
-            return
-
-        axis = self.mirror_axis.get_value()
-        mode = self.axis_location.get_value()
-
-        if mode == "point":
-            try:
-                px, py = self.point_entry.get_value()
-            except TypeError:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("'Point' coordinates missing. "
-                                                              "Using Origin (0, 0) as mirroring reference."))
-                px, py = (0, 0)
-
-        else:
-            selection_index_box = self.box_combo.currentIndex()
-            model_index_box = self.app.collection.index(selection_index_box, 0, self.box_combo.rootModelIndex())
-            try:
-                bb_obj = model_index_box.internalPointer().obj
-            except Exception as e:
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Box object loaded ..."))
-                return
-
-            xmin, ymin, xmax, ymax = bb_obj.bounds()
-            px = 0.5 * (xmin + xmax)
-            py = 0.5 * (ymin + ymax)
-
-        fcobj.mirror(axis, [px, py])
-        self.app.object_changed.emit(fcobj)
-        fcobj.plot()
+        # axis = self.mirror_axis.get_value()
+        # mode = self.axis_location.get_value()
+        #
+        # if mode == "point":
+        #     try:
+        #         px, py = self.point_entry.get_value()
+        #     except TypeError:
+        #         self.app.inform.emit('[WARNING_NOTCL] %s' % _("'Point' coordinates missing. "
+        #                                                       "Using Origin (0, 0) as mirroring reference."))
+        #         px, py = (0, 0)
+        #
+        # else:
+        #     selection_index_box = self.box_combo.currentIndex()
+        #     model_index_box = self.app.collection.index(selection_index_box, 0, self.box_combo.rootModelIndex())
+        #     try:
+        #         bb_obj = model_index_box.internalPointer().obj
+        #     except Exception as e:
+        #         self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Box object loaded ..."))
+        #         return
+        #
+        #     xmin, ymin, xmax, ymax = bb_obj.bounds()
+        #     px = 0.5 * (xmin + xmax)
+        #     py = 0.5 * (ymin + ymax)
+        #
+        # fcobj.mirror(axis, [px, py])
+        # self.app.object_changed.emit(fcobj)
+        # fcobj.plot()
         self.app.inform.emit('[success] Gerber %s %s...' % (str(fcobj.options['name']), _("was mirrored")))
 
     def on_hole_size_toggle(self, val):
         if val == "fixed":
-            self.dia_entry.show()
-            self.dia_label.show()
+            self.dia_entry.setDisabled(False)
+            self.dia_label.setDisabled(False)
 
-            self.ring_label.hide()
-            self.ring_entry.hide()
+            self.ring_label.setDisabled(True)
+            self.ring_entry.setDisabled(True)
         else:
-            self.dia_entry.hide()
-            self.dia_label.hide()
+            self.dia_entry.setDisabled(True)
+            self.dia_label.setDisabled(True)
 
-            self.ring_label.show()
-            self.ring_entry.show()
+            self.ring_label.setDisabled(False)
+            self.ring_entry.setDisabled(False)
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
