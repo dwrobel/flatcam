@@ -32,11 +32,11 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         :param container: The parent container in which to draw plots.
         :rtype: PlotCanvas
         """
-        print("step_1_1")
 
-        super(PlotCanvas, self).__init__()
+        # super(PlotCanvas, self).__init__()
+        # QtCore.QObject.__init__(self)
         # VisPyCanvas.__init__(self)
-        print("step_1_2")
+        super().__init__()
 
         # VisPyCanvas does not allow new attributes. Override.
         self.unfreeze()
@@ -45,8 +45,6 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         # Parent container
         self.container = container
-
-        print("step_1_3")
 
         settings = QtCore.QSettings("Open Source", "FlatCAM")
         if settings.contains("theme"):
@@ -117,16 +115,12 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
             }
         )
 
-        print("step_1_4")
-
         # <VisPyCanvas>
         self.create_native()
         self.native.setParent(self.fcapp.ui)
 
         # <QtCore.QObject>
         self.container.addWidget(self.native)
-
-        print("step_1_5")
 
         # ## AXIS # ##
         self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=True,
@@ -135,14 +129,10 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.h_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 0.8), vertical=False,
                                    parent=self.view.scene)
 
-        print("step_1_6")
-
         # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
         # all CNC have a limited workspace
         if self.fcapp.defaults['global_workspace'] is True:
             self.draw_workspace(workspace_size=self.fcapp.defaults["global_workspaceT"])
-
-        print("step_1_7")
 
         self.line_parent = None
         if self.fcapp.defaults["global_cursor_color_enabled"]:
@@ -155,8 +145,6 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
 
         self.cursor_h_line = InfiniteLine(pos=None, color=c_color, vertical=False,
                                           parent=self.line_parent)
-
-        print("step_1_8")
 
         self.shape_collections = []
 
@@ -171,10 +159,7 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.big_cursor = None
         # Keep VisPy canvas happy by letting it be "frozen" again.
         self.freeze()
-        print("step_1_9")
-
         self.fit_view()
-        print("step_1_10")
 
         self.graph_event_connect('mouse_wheel', self.on_mouse_scroll)
 
