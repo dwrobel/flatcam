@@ -333,7 +333,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Theme selection
         self.theme_label = QtWidgets.QLabel('%s:' % _('Theme'))
         self.theme_label.setToolTip(
-            _("Select a theme for FlatCAM.")
+            _("Select a theme for FlatCAM.\n"
+              "It will theme the plot area.")
         )
 
         self.theme_radio = RadioSet([
@@ -356,6 +357,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.theme_button = FCButton(_("Apply Theme"))
         self.theme_button.setToolTip(
             _("Select a theme for FlatCAM.\n"
+              "It will theme the plot area.\n"
               "The application will restart after change.")
         )
         grid0.addWidget(self.theme_button, 2, 0, 1, 3)
@@ -1587,14 +1589,6 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
               "After change, it will be applied at next App start.")
         )
         self.worker_number_sb = FCSpinner()
-        self.worker_number_sb.setToolTip(
-            _("The number of Qthreads made available to the App.\n"
-              "A bigger number may finish the jobs more quickly but\n"
-              "depending on your computer speed, may make the App\n"
-              "unresponsive. Can have a value between 2 and 16.\n"
-              "Default value is 2.\n"
-              "After change, it will be applied at next App start.")
-        )
         self.worker_number_sb.set_range(2, 16)
 
         grid0.addWidget(self.worker_number_label, 25, 0)
@@ -1604,21 +1598,13 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         tol_label = QtWidgets.QLabel('%s:' % _("Geo Tolerance"))
         tol_label.setToolTip(_(
             "This value can counter the effect of the Circle Steps\n"
-            "parameter. Default value is 0.01.\n"
+            "parameter. Default value is 0.005.\n"
             "A lower value will increase the detail both in image\n"
             "and in Gcode for the circles, with a higher cost in\n"
             "performance. Higher value will provide more\n"
             "performance at the expense of level of detail."
         ))
         self.tol_entry = FCDoubleSpinner()
-        self.tol_entry.setToolTip(_(
-            "This value can counter the effect of the Circle Steps\n"
-            "parameter. Default value is 0.01.\n"
-            "A lower value will increase the detail both in image\n"
-            "and in Gcode for the circles, with a higher cost in\n"
-            "performance. Higher value will provide more\n"
-            "performance at the expense of level of detail."
-        ))
         self.tol_entry.setSingleStep(0.001)
         self.tol_entry.set_precision(6)
 

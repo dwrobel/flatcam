@@ -8465,7 +8465,7 @@ class App(QtCore.QObject):
                         self.draw_moving_selection_shape(self.pos, pos, color=self.defaults['global_alt_sel_line'],
                                                          face_color=self.defaults['global_alt_sel_fill'])
                         self.selection_type = False
-                    elif dx > 0:
+                    elif dx >= 0:
                         self.draw_moving_selection_shape(self.pos, pos)
                         self.selection_type = True
                     else:
@@ -8862,6 +8862,7 @@ class App(QtCore.QObject):
         pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
 
         sel_rect = Polygon([pt1, pt2, pt3, pt4])
+
         if self.defaults['units'].upper() == 'MM':
             sel_rect = sel_rect.buffer(-0.1)
             sel_rect = sel_rect.buffer(0.2)
