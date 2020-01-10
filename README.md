@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.02.2019
+
+- working on a new tool: Extract Drills Tool who will create a Excellon object out of the apertures of a Gerber object
+
 8.01.2019
 
 - working in NCC Tool
