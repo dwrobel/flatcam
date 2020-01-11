@@ -957,7 +957,16 @@ class App(QtCore.QObject):
             # Drills Extraction Tool
             "tools_edrills_hole_type": 'fixed',
             "tools_edrills_hole_fixed_dia": 0.5,
-            "tools_edrills_hole_ring": 0.2,
+            "tools_edrills_circular_ring": 0.2,
+            "tools_edrills_oblong_ring": 0.2,
+            "tools_edrills_square_ring": 0.2,
+            "tools_edrills_rectangular_ring": 0.2,
+            "tools_edrills_others_ring": 0.2,
+            "tools_edrills_circular": True,
+            "tools_edrills_oblong": False,
+            "tools_edrills_square": False,
+            "tools_edrills_rectangular": False,
+            "tools_edrills_others": False,
 
             # Utilities
             # file associations

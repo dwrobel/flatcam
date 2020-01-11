@@ -2009,6 +2009,10 @@ class FCTable(QtWidgets.QTableWidget):
         palette = QtGui.QPalette()
         palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight,
                          palette.color(QtGui.QPalette.Active, QtGui.QPalette.Highlight))
+
+        # make inactive rows text some color as active; may be useful in the future
+        # palette.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.HighlightedText,
+        #                  palette.color(QtGui.QPalette.Active, QtGui.QPalette.HighlightedText))
         self.setPalette(palette)
 
         if drag_drop:

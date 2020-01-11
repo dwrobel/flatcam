@@ -2,13 +2,9 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, EvalEntry, FCEntry
-from FlatCAMObj import FlatCAMGerber, FlatCAMExcellon, FlatCAMGeometry
-
-from numpy import Inf
+from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox
 
 from shapely.geometry import Point
-from shapely import affinity
 
 import logging
 import gettext
@@ -60,8 +56,62 @@ class ToolExtractDrills(FlatCAMTool):
         self.grb_label.setToolTip('%s.' % _("Gerber from which to extract drill holes"))
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
-        grid_lay.addWidget(self.grb_label, 0, 0)
-        grid_lay.addWidget(self.gerber_object_combo, 1, 0)
+        grid_lay.addWidget(self.grb_label, 0, 0, 1, 2)
+        grid_lay.addWidget(self.gerber_object_combo, 1, 0, 1, 2)
+
+        self.padt_label = QtWidgets.QLabel("<b>%s:</b>" % _("Processed Pads Type"))
+        self.padt_label.setToolTip(
+            _("The type of pads shape to be processed.\n"
+              "If the PCB has many SMD pads with rectangular pads,\n"
+              "disable the Rectangular aperture.")
+        )
+
+        grid_lay.addWidget(self.padt_label, 2, 0, 1, 2)
+
+        # Circular Aperture Selection
+        self.circular_cb = FCCheckBox('%s' % _("Circular"))
+        self.circular_cb.setToolTip(
+            _("Create drills from circular pads.")
+        )
+
+        grid_lay.addWidget(self.circular_cb, 3, 0, 1, 2)
+
+        # Oblong Aperture Selection
+        self.oblong_cb = FCCheckBox('%s' % _("Oblong"))
+        self.oblong_cb.setToolTip(
+            _("Create drills from oblong pads.")
+        )
+
+        grid_lay.addWidget(self.oblong_cb, 4, 0, 1, 2)
+
+        # Square Aperture Selection
+        self.square_cb = FCCheckBox('%s' % _("Square"))
+        self.square_cb.setToolTip(
+            _("Create drills from square pads.")
+        )
+
+        grid_lay.addWidget(self.square_cb, 5, 0, 1, 2)
+
+        # Rectangular Aperture Selection
+        self.rectangular_cb = FCCheckBox('%s' % _("Rectangular"))
+        self.rectangular_cb.setToolTip(
+            _("Create drills from rectangular pads.")
+        )
+
+        grid_lay.addWidget(self.rectangular_cb, 6, 0, 1, 2)
+
+        # Others type of Apertures Selection
+        self.other_cb = FCCheckBox('%s' % _("Others"))
+        self.other_cb.setToolTip(
+            _("Create drills from other types of pad shape.")
+        )
+
+        grid_lay.addWidget(self.other_cb, 7, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line, 8, 0, 1, 2)
 
         # ## Grid Layout
         grid1 = QtWidgets.QGridLayout()
@@ -102,22 +152,95 @@ class ToolExtractDrills(FlatCAMTool):
         grid1.addWidget(self.dia_label, 7, 0)
         grid1.addWidget(self.dia_entry, 7, 1)
 
-        # Annular Ring value
-        self.ring_entry = FCDoubleSpinner()
-        self.ring_entry.set_precision(self.decimals)
-        self.ring_entry.set_range(0.0000, 9999.9999)
+        self.ring_frame = QtWidgets.QFrame()
+        self.ring_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.ring_frame)
 
-        self.ring_label = QtWidgets.QLabel('%s:' % _("Annular Ring"))
+        self.ring_box = QtWidgets.QVBoxLayout()
+        self.ring_box.setContentsMargins(0, 0, 0, 0)
+        self.ring_frame.setLayout(self.ring_box)
+
+        # ## Grid Layout
+        grid2 = QtWidgets.QGridLayout()
+        grid2.setColumnStretch(0, 0)
+        grid2.setColumnStretch(1, 1)
+        self.ring_box.addLayout(grid2)
+
+        # Annular Ring value
+        self.ring_label = QtWidgets.QLabel('<b>%s</b>' % _("Annular Ring"))
         self.ring_label.setToolTip(
             _("The size of annular ring.\n"
               "The copper sliver between the drill hole exterior\n"
               "and the margin of the copper pad.")
         )
+        grid2.addWidget(self.ring_label, 0, 0, 1, 2)
 
-        grid1.addWidget(self.ring_label, 8, 0)
-        grid1.addWidget(self.ring_entry, 8, 1)
+        # Circular Annular Ring Value
+        self.circular_ring_label = QtWidgets.QLabel('%s:' % _("Circular"))
+        self.circular_ring_label.setToolTip(
+            _("The size of annular ring for circular pads.")
+        )
 
-        # Calculate Bounding box
+        self.circular_ring_entry = FCDoubleSpinner()
+        self.circular_ring_entry.set_precision(self.decimals)
+        self.circular_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid2.addWidget(self.circular_ring_label, 1, 0)
+        grid2.addWidget(self.circular_ring_entry, 1, 1)
+
+        # Oblong Annular Ring Value
+        self.oblong_ring_label = QtWidgets.QLabel('%s:' % _("Oblong"))
+        self.oblong_ring_label.setToolTip(
+            _("The size of annular ring for oblong pads.")
+        )
+
+        self.oblong_ring_entry = FCDoubleSpinner()
+        self.oblong_ring_entry.set_precision(self.decimals)
+        self.oblong_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid2.addWidget(self.oblong_ring_label, 2, 0)
+        grid2.addWidget(self.oblong_ring_entry, 2, 1)
+
+        # Square Annular Ring Value
+        self.square_ring_label = QtWidgets.QLabel('%s:' % _("Square"))
+        self.square_ring_label.setToolTip(
+            _("The size of annular ring for square pads.")
+        )
+
+        self.square_ring_entry = FCDoubleSpinner()
+        self.square_ring_entry.set_precision(self.decimals)
+        self.square_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid2.addWidget(self.square_ring_label, 3, 0)
+        grid2.addWidget(self.square_ring_entry, 3, 1)
+
+        # Rectangular Annular Ring Value
+        self.rectangular_ring_label = QtWidgets.QLabel('%s:' % _("Rectangular"))
+        self.rectangular_ring_label.setToolTip(
+            _("The size of annular ring for rectangular pads.")
+        )
+
+        self.rectangular_ring_entry = FCDoubleSpinner()
+        self.rectangular_ring_entry.set_precision(self.decimals)
+        self.rectangular_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid2.addWidget(self.rectangular_ring_label, 4, 0)
+        grid2.addWidget(self.rectangular_ring_entry, 4, 1)
+
+        # Others Annular Ring Value
+        self.other_ring_label = QtWidgets.QLabel('%s:' % _("Others"))
+        self.other_ring_label.setToolTip(
+            _("The size of annular ring for other pads.")
+        )
+
+        self.other_ring_entry = FCDoubleSpinner()
+        self.other_ring_entry.set_precision(self.decimals)
+        self.other_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid2.addWidget(self.other_ring_label, 5, 0)
+        grid2.addWidget(self.other_ring_entry, 5, 1)
+
+        # Extract drills from Gerber apertures flashes (pads)
         self.e_drills_button = QtWidgets.QPushButton(_("Extract Drills"))
         self.e_drills_button.setToolTip(
             _("Extract drills from a given Gerber file.")
@@ -145,10 +268,41 @@ class ToolExtractDrills(FlatCAMTool):
                         """)
         self.layout.addWidget(self.reset_button)
 
+        self.circular_ring_entry.setEnabled(False)
+        self.oblong_ring_entry.setEnabled(False)
+        self.square_ring_entry.setEnabled(False)
+        self.rectangular_ring_entry.setEnabled(False)
+        self.other_ring_entry.setEnabled(False)
+
         # ## Signals
         self.hole_size_radio.activated_custom.connect(self.on_hole_size_toggle)
         self.e_drills_button.clicked.connect(self.on_extract_drills_click)
         self.reset_button.clicked.connect(self.set_tool_ui)
+
+        self.circular_cb.stateChanged.connect(
+            lambda state:
+                self.circular_ring_entry.setDisabled(False) if state else self.circular_ring_entry.setDisabled(True)
+        )
+
+        self.oblong_cb.stateChanged.connect(
+            lambda state:
+            self.oblong_ring_entry.setDisabled(False) if state else self.oblong_ring_entry.setDisabled(True)
+        )
+
+        self.square_cb.stateChanged.connect(
+            lambda state:
+            self.square_ring_entry.setDisabled(False) if state else self.square_ring_entry.setDisabled(True)
+        )
+
+        self.rectangular_cb.stateChanged.connect(
+            lambda state:
+            self.rectangular_ring_entry.setDisabled(False) if state else self.rectangular_ring_entry.setDisabled(True)
+        )
+
+        self.other_cb.stateChanged.connect(
+            lambda state:
+            self.other_ring_entry.setDisabled(False) if state else self.other_ring_entry.setDisabled(True)
+        )
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+I', **kwargs)
@@ -186,12 +340,28 @@ class ToolExtractDrills(FlatCAMTool):
         self.hole_size_radio.set_value(self.app.defaults["tools_edrills_hole_type"])
 
         self.dia_entry.set_value(float(self.app.defaults["tools_edrills_hole_fixed_dia"]))
-        self.ring_entry.set_value(float(self.app.defaults["tools_edrills_hole_ring"]))
+
+        self.circular_ring_entry.set_value(float(self.app.defaults["tools_edrills_circular_ring"]))
+        self.oblong_ring_entry.set_value(float(self.app.defaults["tools_edrills_oblong_ring"]))
+        self.square_ring_entry.set_value(float(self.app.defaults["tools_edrills_square_ring"]))
+        self.rectangular_ring_entry.set_value(float(self.app.defaults["tools_edrills_rectangular_ring"]))
+        self.other_ring_entry.set_value(float(self.app.defaults["tools_edrills_others_ring"]))
+
+        self.circular_cb.set_value(self.app.defaults["tools_edrills_circular"])
+        self.oblong_cb.set_value(self.app.defaults["tools_edrills_oblong"])
+        self.square_cb.set_value(self.app.defaults["tools_edrills_square"])
+        self.rectangular_cb.set_value(self.app.defaults["tools_edrills_rectangular"])
+        self.other_cb.set_value(self.app.defaults["tools_edrills_others"])
 
     def on_extract_drills_click(self):
 
         drill_dia = self.dia_entry.get_value()
-        ring_val = self.ring_entry.get_value()
+        circ_r_val = self.circular_ring_entry.get_value()
+        oblong_r_val = self.oblong_ring_entry.get_value()
+        square_r_val = self.square_ring_entry.get_value()
+        rect_r_val = self.rectangular_ring_entry.get_value()
+        other_r_val = self.other_ring_entry.get_value()
+
         drills = list()
         tools = dict()
 
@@ -211,6 +381,29 @@ class ToolExtractDrills(FlatCAMTool):
         if mode == 'fixed':
             tools = {"1": {"C": drill_dia}}
             for apid, apid_value in fcobj.apertures.items():
+                ap_type = apid_value['type']
+
+                if ap_type == 'C':
+                    if self.circular_cb.get_value() is False:
+                        continue
+                elif ap_type == 'O':
+                    if self.oblong_cb.get_value() is False:
+                        continue
+                elif ap_type == 'R':
+                    width = float(apid_value['width'])
+                    height = float(apid_value['height'])
+
+                    # if the height == width (float numbers so the reason for the following)
+                    if round(width, self.decimals) == round(height, self.decimals):
+                        if self.square_cb.get_value() is False:
+                            continue
+                    else:
+                        if self.rectangular_cb.get_value() is False:
+                            continue
+                else:
+                    if self.other_cb.get_value() is False:
+                        continue
+
                 for geo_el in apid_value['geometry']:
                     if 'follow' in geo_el and isinstance(geo_el['follow'], Point):
                         drills.append({"point": geo_el['follow'], "tool": "1"})
@@ -218,22 +411,46 @@ class ToolExtractDrills(FlatCAMTool):
                             tools["1"]['solid_geometry'] = list()
                         else:
                             tools["1"]['solid_geometry'].append(geo_el['follow'])
+
+            if 'solid_geometry' not in tools["1"] or not tools["1"]['solid_geometry']:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
+                return
         else:
+            drills_found = set()
             for apid, apid_value in fcobj.apertures.items():
                 ap_type = apid_value['type']
 
-                dia = float(apid_value['size']) - (2 * ring_val)
-                if ap_type == 'R' or ap_type == 'O':
+                dia = None
+                if ap_type == 'C':
+                    if self.circular_cb.get_value():
+                        dia = float(apid_value['size']) - (2 * circ_r_val)
+                elif ap_type == 'R' or ap_type == 'O':
                     width = float(apid_value['width'])
                     height = float(apid_value['height'])
-                    if width >= height:
-                        dia = float(apid_value['height']) - (2 * ring_val)
+
+                    # if the height == width (float numbers so the reason for the following)
+                    if abs(float('%.*f' % (self.decimals, width)) - float('%.*f' % (self.decimals, height))) < \
+                            (10 ** -self.decimals):
+                        if self.square_cb.get_value():
+                            dia = float(apid_value['height']) - (2 * square_r_val)
                     else:
-                        dia = float(apid_value['width']) - (2 * ring_val)
+                        if self.rectangular_cb.get_value():
+                            if width > height:
+                                dia = float(apid_value['height']) - (2 * rect_r_val)
+                            else:
+                                dia = float(apid_value['width']) - (2 * rect_r_val)
+                else:
+                    if self.other_cb.get_value():
+                        dia = float(apid_value['size']) - (2 * other_r_val)
+
+                # if dia is None then none of the above applied so we skip th    e following
+                if dia is None:
+                    continue
 
                 tool_in_drills = False
                 for tool, tool_val in tools.items():
-                    if abs(float('%.*f' % (self.decimals, tool_val["C"])) - dia) < (10 ** -self.decimals):
+                    if abs(float('%.*f' % (self.decimals, tool_val["C"])) - float('%.*f' % (self.decimals, dia))) < \
+                            (10 ** -self.decimals):
                         tool_in_drills = tool
 
                 if tool_in_drills is False:
@@ -255,6 +472,16 @@ class ToolExtractDrills(FlatCAMTool):
                         else:
                             tools[tool_in_drills]['solid_geometry'].append(geo_el['follow'])
 
+                if tool_in_drills in tools:
+                    if 'solid_geometry' not in tools[tool_in_drills] or not tools[tool_in_drills]['solid_geometry']:
+                        drills_found.add(False)
+                    else:
+                        drills_found.add(True)
+
+            if True not in drills_found:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("No drills extracted. Try different parameters."))
+                return
+
         def obj_init(obj_inst, app_inst):
             obj_inst.tools = tools
             obj_inst.drills = drills
@@ -269,14 +496,12 @@ class ToolExtractDrills(FlatCAMTool):
             self.dia_entry.setDisabled(False)
             self.dia_label.setDisabled(False)
 
-            self.ring_label.setDisabled(True)
-            self.ring_entry.setDisabled(True)
+            self.ring_frame.setDisabled(True)
         else:
             self.dia_entry.setDisabled(True)
             self.dia_label.setDisabled(True)
 
-            self.ring_label.setDisabled(False)
-            self.ring_entry.setDisabled(False)
+            self.ring_frame.setDisabled(False)
 
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

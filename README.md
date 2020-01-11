@@ -9,7 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
-10.02.2019
+11.01.2020
+
+- fixed an issue in the Distance Tool
+- expanded the Extract Drills Tool to use a particular annular ring for each type of aperture flash (pad)
+
+10.02.2020
 
 - working on a new tool: Extract Drills Tool who will create a Excellon object out of the apertures of a Gerber object
 - finished the GUI in the Extract Drills Tool
@@ -17,14 +22,14 @@ CAD program, and create G-Code for Isolation routing.
 - finished the Extract Drills Tool
 - fixed a small issue in the DoubleSided Tool
 
-8.01.2019
+8.01.2020
 
 - working in NCC Tool
 - selected rows in the Tools Tables will stay colored in blue after loosing focus instead of the default gray
 - in NCC Tool the Tool name in the Parameters section will be the Tool ID in the Tool Table
 - added an exception catch in case the plotcanvas init failed for the OpenGL graphic engine and warn user about what happened
 
-7.01.2019
+7.01.2020
 
 - solved issue #368 - when using the Enable/Disable prj context menu entries the plotted status is not updated in the object properties
 - updates in NCC Tool
