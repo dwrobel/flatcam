@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed an issue in the Distance Tool
 - expanded the Extract Drills Tool to use a particular annular ring for each type of aperture flash (pad)
+- Extract Drills Tool: fixed issue with oblong pads and with pads made from aperture macros
+- Extract Drills Tool: added controls in Edit -> Preferences
 
 10.02.2020
 

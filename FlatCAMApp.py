@@ -1592,6 +1592,20 @@ class App(QtCore.QObject):
             "tools_cal_toolchange_xy": self.ui.tools2_defaults_form.tools2_cal_group.toolchange_xy_entry,
             "tools_cal_sec_point": self.ui.tools2_defaults_form.tools2_cal_group.second_point_radio,
 
+            # Extract Drills Tool
+            "tools_edrills_hole_type": self.ui.tools2_defaults_form.tools2_edrills_group.hole_size_radio,
+            "tools_edrills_hole_fixed_dia": self.ui.tools2_defaults_form.tools2_edrills_group.dia_entry,
+            "tools_edrills_circular_ring": self.ui.tools2_defaults_form.tools2_edrills_group.circular_ring_entry,
+            "tools_edrills_oblong_ring": self.ui.tools2_defaults_form.tools2_edrills_group.oblong_ring_entry,
+            "tools_edrills_square_ring": self.ui.tools2_defaults_form.tools2_edrills_group.square_ring_entry,
+            "tools_edrills_rectangular_ring": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_ring_entry,
+            "tools_edrills_others_ring": self.ui.tools2_defaults_form.tools2_edrills_group.other_ring_entry,
+            "tools_edrills_circular": self.ui.tools2_defaults_form.tools2_edrills_group.circular_cb,
+            "tools_edrills_oblong": self.ui.tools2_defaults_form.tools2_edrills_group.oblong_cb,
+            "tools_edrills_square": self.ui.tools2_defaults_form.tools2_edrills_group.square_cb,
+            "tools_edrills_rectangular": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_cb,
+            "tools_edrills_others": self.ui.tools2_defaults_form.tools2_edrills_group.other_cb,
+
             # Utilities
             # File associations
             "fa_excellon": self.ui.util_defaults_form.fa_excellon_group.exc_list_text,

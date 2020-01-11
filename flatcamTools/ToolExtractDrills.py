@@ -59,7 +59,7 @@ class ToolExtractDrills(FlatCAMTool):
         grid_lay.addWidget(self.grb_label, 0, 0, 1, 2)
         grid_lay.addWidget(self.gerber_object_combo, 1, 0, 1, 2)
 
-        self.padt_label = QtWidgets.QLabel("<b>%s:</b>" % _("Processed Pads Type"))
+        self.padt_label = QtWidgets.QLabel("<b>%s</b>" % _("Processed Pads Type"))
         self.padt_label.setToolTip(
             _("The type of pads shape to be processed.\n"
               "If the PCB has many SMD pads with rectangular pads,\n"
@@ -424,7 +424,15 @@ class ToolExtractDrills(FlatCAMTool):
                 if ap_type == 'C':
                     if self.circular_cb.get_value():
                         dia = float(apid_value['size']) - (2 * circ_r_val)
-                elif ap_type == 'R' or ap_type == 'O':
+                elif ap_type == 'O':
+                    width = float(apid_value['width'])
+                    height = float(apid_value['height'])
+                    if self.oblong_cb.get_value():
+                        if width > height:
+                            dia = float(apid_value['height']) - (2 * rect_r_val)
+                        else:
+                            dia = float(apid_value['width']) - (2 * rect_r_val)
+                elif ap_type == 'R':
                     width = float(apid_value['width'])
                     height = float(apid_value['height'])
 
@@ -441,9 +449,20 @@ class ToolExtractDrills(FlatCAMTool):
                                 dia = float(apid_value['width']) - (2 * rect_r_val)
                 else:
                     if self.other_cb.get_value():
-                        dia = float(apid_value['size']) - (2 * other_r_val)
+                        try:
+                            dia = float(apid_value['size']) - (2 * other_r_val)
+                        except KeyError:
+                            if ap_type == 'AM':
+                                pol = apid_value['geometry'][0]['solid']
+                                x0, y0, x1, y1 = pol.bounds
+                                dx = x1 - x0
+                                dy = y1 - y0
+                                if dx <= dy:
+                                    dia = dx - (2 * other_r_val)
+                                else:
+                                    dia = dy - (2 * other_r_val)
 
-                # if dia is None then none of the above applied so we skip th    e following
+                # if dia is None then none of the above applied so we skip the following
                 if dia is None:
                     continue
 

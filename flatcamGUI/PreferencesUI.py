@@ -242,19 +242,23 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
         self.tools2_cal_group = Tools2CalPrefGroupUI(decimals=self.decimals)
         self.tools2_cal_group.setMinimumWidth(220)
 
+        self.tools2_edrills_group = Tools2EDrillsPrefGroupUI(decimals=self.decimals)
+        self.tools2_edrills_group.setMinimumWidth(220)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools2_checkrules_group)
         self.vlay.addWidget(self.tools2_optimal_group)
 
         self.vlay1 = QtWidgets.QVBoxLayout()
         self.vlay1.addWidget(self.tools2_qrcode_group)
+        self.vlay1.addWidget(self.tools2_fiducials_group)
 
         self.vlay2 = QtWidgets.QVBoxLayout()
         self.vlay2.addWidget(self.tools2_cfill_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
-        self.vlay3.addWidget(self.tools2_fiducials_group)
         self.vlay3.addWidget(self.tools2_cal_group)
+        self.vlay3.addWidget(self.tools2_edrills_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
@@ -7614,6 +7618,190 @@ class Tools2CalPrefGroupUI(OptionsGroupUI):
 
         grid_lay.addWidget(second_point_lbl, 8, 0)
         grid_lay.addWidget(self.second_point_radio, 8, 1, 1, 2)
+
+        self.layout.addStretch()
+
+
+class Tools2EDrillsPrefGroupUI(OptionsGroupUI):
+    def __init__(self, decimals=4, parent=None):
+
+        super(Tools2EDrillsPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Extract Drills Options")))
+        self.decimals = decimals
+
+        # ## Grid Layout
+        grid_lay = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay)
+        grid_lay.setColumnStretch(0, 0)
+        grid_lay.setColumnStretch(1, 1)
+
+        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _('Parameters'))
+        self.param_label.setToolTip(
+            _("Parameters used for this tool.")
+        )
+        grid_lay.addWidget(self.param_label, 0, 0, 1, 2)
+
+        self.padt_label = QtWidgets.QLabel("<b>%s:</b>" % _("Processed Pads Type"))
+        self.padt_label.setToolTip(
+            _("The type of pads shape to be processed.\n"
+              "If the PCB has many SMD pads with rectangular pads,\n"
+              "disable the Rectangular aperture.")
+        )
+
+        grid_lay.addWidget(self.padt_label, 2, 0, 1, 2)
+
+        # Circular Aperture Selection
+        self.circular_cb = FCCheckBox('%s' % _("Circular"))
+        self.circular_cb.setToolTip(
+            _("Create drills from circular pads.")
+        )
+
+        grid_lay.addWidget(self.circular_cb, 3, 0, 1, 2)
+
+        # Oblong Aperture Selection
+        self.oblong_cb = FCCheckBox('%s' % _("Oblong"))
+        self.oblong_cb.setToolTip(
+            _("Create drills from oblong pads.")
+        )
+
+        grid_lay.addWidget(self.oblong_cb, 4, 0, 1, 2)
+
+        # Square Aperture Selection
+        self.square_cb = FCCheckBox('%s' % _("Square"))
+        self.square_cb.setToolTip(
+            _("Create drills from square pads.")
+        )
+
+        grid_lay.addWidget(self.square_cb, 5, 0, 1, 2)
+
+        # Rectangular Aperture Selection
+        self.rectangular_cb = FCCheckBox('%s' % _("Rectangular"))
+        self.rectangular_cb.setToolTip(
+            _("Create drills from rectangular pads.")
+        )
+
+        grid_lay.addWidget(self.rectangular_cb, 6, 0, 1, 2)
+
+        # Others type of Apertures Selection
+        self.other_cb = FCCheckBox('%s' % _("Others"))
+        self.other_cb.setToolTip(
+            _("Create drills from other types of pad shape.")
+        )
+
+        grid_lay.addWidget(self.other_cb, 7, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line, 8, 0, 1, 2)
+
+        # ## Axis
+        self.hole_size_radio = RadioSet([{'label': _("Fixed"), 'value': 'fixed'},
+                                         {'label': _("Proportional"), 'value': 'prop'}])
+        self.hole_size_label = QtWidgets.QLabel('%s:' % _("Hole Size"))
+        self.hole_size_label.setToolTip(
+            _("The type of hole size. Can be:\n"
+              "- Fixed -> all holes will have a set size\n"
+              "- Proprotional -> each hole will havea a variable size\n"
+              "such as to preserve a set annular ring"))
+
+        grid_lay.addWidget(self.hole_size_label, 9, 0)
+        grid_lay.addWidget(self.hole_size_radio, 9, 1)
+
+        # grid_lay1.addWidget(QtWidgets.QLabel(''))
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid_lay.addWidget(separator_line, 10, 0, 1, 2)
+
+        # Diameter value
+        self.dia_entry = FCDoubleSpinner()
+        self.dia_entry.set_precision(self.decimals)
+        self.dia_entry.set_range(0.0000, 9999.9999)
+
+        self.dia_label = QtWidgets.QLabel('%s:' % _("Diameter"))
+        self.dia_label.setToolTip(
+            _("Fixed hole diameter.")
+        )
+
+        grid_lay.addWidget(self.dia_label, 11, 0)
+        grid_lay.addWidget(self.dia_entry, 11, 1)
+
+        # Annular Ring value
+        self.ring_label = QtWidgets.QLabel('<b>%s</b>' % _("Annular Ring"))
+        self.ring_label.setToolTip(
+            _("The size of annular ring.\n"
+              "The copper sliver between the drill hole exterior\n"
+              "and the margin of the copper pad.")
+        )
+        grid_lay.addWidget(self.ring_label, 12, 0, 1, 2)
+
+        # Circular Annular Ring Value
+        self.circular_ring_label = QtWidgets.QLabel('%s:' % _("Circular"))
+        self.circular_ring_label.setToolTip(
+            _("The size of annular ring for circular pads.")
+        )
+
+        self.circular_ring_entry = FCDoubleSpinner()
+        self.circular_ring_entry.set_precision(self.decimals)
+        self.circular_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid_lay.addWidget(self.circular_ring_label, 13, 0)
+        grid_lay.addWidget(self.circular_ring_entry, 13, 1)
+
+        # Oblong Annular Ring Value
+        self.oblong_ring_label = QtWidgets.QLabel('%s:' % _("Oblong"))
+        self.oblong_ring_label.setToolTip(
+            _("The size of annular ring for oblong pads.")
+        )
+
+        self.oblong_ring_entry = FCDoubleSpinner()
+        self.oblong_ring_entry.set_precision(self.decimals)
+        self.oblong_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid_lay.addWidget(self.oblong_ring_label, 14, 0)
+        grid_lay.addWidget(self.oblong_ring_entry, 14, 1)
+
+        # Square Annular Ring Value
+        self.square_ring_label = QtWidgets.QLabel('%s:' % _("Square"))
+        self.square_ring_label.setToolTip(
+            _("The size of annular ring for square pads.")
+        )
+
+        self.square_ring_entry = FCDoubleSpinner()
+        self.square_ring_entry.set_precision(self.decimals)
+        self.square_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid_lay.addWidget(self.square_ring_label, 15, 0)
+        grid_lay.addWidget(self.square_ring_entry, 15, 1)
+
+        # Rectangular Annular Ring Value
+        self.rectangular_ring_label = QtWidgets.QLabel('%s:' % _("Rectangular"))
+        self.rectangular_ring_label.setToolTip(
+            _("The size of annular ring for rectangular pads.")
+        )
+
+        self.rectangular_ring_entry = FCDoubleSpinner()
+        self.rectangular_ring_entry.set_precision(self.decimals)
+        self.rectangular_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid_lay.addWidget(self.rectangular_ring_label, 16, 0)
+        grid_lay.addWidget(self.rectangular_ring_entry, 16, 1)
+
+        # Others Annular Ring Value
+        self.other_ring_label = QtWidgets.QLabel('%s:' % _("Others"))
+        self.other_ring_label.setToolTip(
+            _("The size of annular ring for other pads.")
+        )
+
+        self.other_ring_entry = FCDoubleSpinner()
+        self.other_ring_entry.set_precision(self.decimals)
+        self.other_ring_entry.set_range(0.0000, 9999.9999)
+
+        grid_lay.addWidget(self.other_ring_label, 17, 0)
+        grid_lay.addWidget(self.other_ring_entry, 17, 1)
 
         self.layout.addStretch()
 
