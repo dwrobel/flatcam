@@ -528,13 +528,13 @@ class Geometry(object):
             self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
-            self.solid_geometry.append(Point(origin).buffer(
-                radius, int(self.geo_steps_per_circle)))
+            self.solid_geometry.append(Point(origin).buffer(radius, int(self.geo_steps_per_circle)))
             return
 
         try:
-            self.solid_geometry = self.solid_geometry.union(Point(origin).buffer(
-                radius, int(self.geo_steps_per_circle)))
+            self.solid_geometry = self.solid_geometry.union(
+                Point(origin).buffer(radius, int(self.geo_steps_per_circle))
+            )
         except Exception as e:
             log.error("Failed to run union on polygons. %s" % str(e))
             return

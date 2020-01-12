@@ -595,6 +595,7 @@ class Gerber(Geometry):
                 match = self.units_re.search(gline)
                 if match:
                     obs_gerber_units = {'0': 'IN', '1': 'MM'}[match.group(1)]
+                    self.units = obs_gerber_units
                     log.warning("Gerber obsolete units found = %s" % obs_gerber_units)
                     # Changed for issue #80
                     # self.convert_units({'0': 'IN', '1': 'MM'}[match.group(1)])

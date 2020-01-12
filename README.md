@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 12.01.2020
 
 - improved the circle approximation resolution
+- fixed an issue in Gerber parser with detecting old kind of units
 
 11.01.2020
 
