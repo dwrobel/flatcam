@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+12.01.2020
+
+- improved the circle approximation resolution
+
 11.01.2020
 
 - fixed an issue in the Distance Tool
@@ -36,7 +40,7 @@ CAD program, and create G-Code for Isolation routing.
 - solved issue #368 - when using the Enable/Disable prj context menu entries the plotted status is not updated in the object properties
 - updates in NCC Tool
 
-6.01.2019
+6.01.2020
 
 - working on new NCC Tool
 
