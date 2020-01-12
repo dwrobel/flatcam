@@ -12025,7 +12025,12 @@ class App(QtCore.QObject):
         else:
             plot_container = self.ui.right_layout
 
-        if self.is_legacy is False:
+        modifier = QtWidgets.QApplication.queryKeyboardModifiers()
+        if self.is_legacy is True or modifier == QtCore.Qt.ControlModifier:
+            self.is_legacy = True
+            self.defaults["global_graphic_engine"] = "2D"
+            self.plotcanvas = PlotCanvasLegacy(plot_container, self)
+        else:
             try:
                 self.plotcanvas = PlotCanvas(plot_container, self)
             except Exception as er:
@@ -12038,8 +12043,6 @@ class App(QtCore.QObject):
                 msg += msg_txt
                 self.inform.emit(msg)
                 return 'fail'
-        else:
-            self.plotcanvas = PlotCanvasLegacy(plot_container, self)
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()

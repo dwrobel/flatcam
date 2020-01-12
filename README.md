@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - improved the circle approximation resolution
 - fixed an issue in Gerber parser with detecting old kind of units
+- if CTRL key is pressed during app startup the app will start in the Legacy(2D) graphic engine compatibility mode
 
 11.01.2020
 
