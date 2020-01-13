@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed a small GUI issue in Excellon UI when Basic mode is active
 - started the add of a new Tool: Align Objects Tool which will align (sync) objects of Gerber or Excellon type
+- fixed an issue in Gerber parser introduced recently due of changes made to make Gerber files produced by Sprint Layout
 
 12.01.2020
 
