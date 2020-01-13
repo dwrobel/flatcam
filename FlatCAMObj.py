@@ -2638,7 +2638,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         horizontal_header.setDefaultSectionSize(70)
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        if self.app.defaults["global_app_level"] == 'b':
+            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        else:
+            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
