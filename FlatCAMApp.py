@@ -2493,6 +2493,7 @@ class App(QtCore.QObject):
         self.copper_thieving_tool = None
         self.fiducial_tool = None
         self.edrills_tool = None
+        self.align_objects_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         try:
@@ -3064,6 +3065,9 @@ class App(QtCore.QObject):
         self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menutool,
                                   before=self.dblsidedtool.menuAction,
                                   separator=False)
+
+        self.align_objects_tool = AlignObjects(self)
+        self.align_objects_tool.install(icon=QtGui.QIcon(self.resource_location + '/align16.png'), separator=False)
 
         self.edrills_tool = ToolExtractDrills(self)
         self.edrills_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill16.png'), separator=True)

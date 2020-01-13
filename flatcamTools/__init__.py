@@ -5,6 +5,8 @@ from flatcamTools.ToolCalibration import ToolCalibration
 from flatcamTools.ToolCutOut import CutOut
 
 from flatcamTools.ToolDblSided import DblSidedTool
+from flatcamTools.ToolExtractDrills import ToolExtractDrills
+from flatcamTools.ToolAlignObjects import AlignObjects
 
 from flatcamTools.ToolFilm import Film
 
@@ -30,8 +32,6 @@ from flatcamTools.ToolRulesCheck import RulesCheck
 
 from flatcamTools.ToolCopperThieving import ToolCopperThieving
 from flatcamTools.ToolFiducials import ToolFiducials
-
-from flatcamTools.ToolExtractDrills import ToolExtractDrills
 
 from flatcamTools.ToolShell import FCShell
 from flatcamTools.ToolSolderPaste import SolderPaste
