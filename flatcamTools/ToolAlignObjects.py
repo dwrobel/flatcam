@@ -10,8 +10,10 @@ from FlatCAMTool import FlatCAMTool
 
 from flatcamGUI.GUIElements import FCComboBox, RadioSet
 
+import math
+
 from shapely.geometry import Point
-from shapely.affinity import translate, rotate
+from shapely.affinity import translate
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -68,7 +70,7 @@ class AlignObjects(FlatCAMTool):
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be aligned.\n"
-              "It can be of type: Gerber, Excellon or Geometry.\n"
+              "It can be of type: Gerber or Excellon.\n"
               "The selection here decide the type of objects that will be\n"
               "in the Object combobox.")
         )
@@ -111,7 +113,7 @@ class AlignObjects(FlatCAMTool):
         self.type_aligner_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.type_aligner_obj_combo_label.setToolTip(
             _("Specify the type of object to be aligned to.\n"
-              "It can be of type: Gerber, Excellon or Geometry.\n"
+              "It can be of type: Gerber or Excellon.\n"
               "The selection here decide the type of objects that will be\n"
               "in the Object combobox.")
         )
@@ -394,8 +396,8 @@ class AlignObjects(FlatCAMTool):
             self.set_color()
 
         if len(self.clicked_points) == 2:
-            self.align_translate()
             if self.align_type == 'sp':
+                self.align_translate()
                 self.app.inform.emit('[success] %s' % _("Done."))
                 self.app.plot_all()
 
@@ -416,6 +418,7 @@ class AlignObjects(FlatCAMTool):
             self.set_color()
 
         if len(self.clicked_points) == 4:
+            self.align_translate()
             self.align_rotate()
             self.app.inform.emit('[success] %s' % _("Done."))
 
@@ -425,10 +428,6 @@ class AlignObjects(FlatCAMTool):
     def align_translate(self):
         dx = self.clicked_points[1][0] - self.clicked_points[0][0]
         dy = self.clicked_points[1][1] - self.clicked_points[0][1]
-
-        if self.align_type == 'dp':
-            self.new_start = translate(Point(self.clicked_points[2]), xoff=dx, yoff=dy)
-            self.new_dest = translate(Point(self.clicked_points[3]), xoff=dx, yoff=dy)
 
         self.aligned_obj.offset((dx, dy))
 
@@ -440,7 +439,24 @@ class AlignObjects(FlatCAMTool):
         self.aligned_obj.options['ymax'] = d
 
     def align_rotate(self):
-        print(self.new_start.x == self.new_dest.x)
+        dx = self.clicked_points[1][0] - self.clicked_points[0][0]
+        dy = self.clicked_points[1][1] - self.clicked_points[0][1]
+
+        new_start_pt = translate(Point(self.clicked_points[2]), xoff=dx, yoff=dy)
+        self.new_start = (new_start_pt.x, new_start_pt.y)
+        self.new_dest = self.clicked_points[3]
+
+        origin_pt = self.clicked_points[1]
+
+        sec_dx = self.new_dest[0] - self.new_start[0]
+        sec_dy = self.new_dest[1] - self.new_start[1]
+
+        rotation_not_needed = (abs(self.new_start[0] - self.new_dest[0]) <= (10 ** -self.decimals)) or \
+                              (abs(self.new_start[1] - self.new_dest[1]) <= (10 ** -self.decimals))
+        if rotation_not_needed is False:
+            # calculate rotation angle
+            angle = math.degrees(math.atan(sec_dy / sec_dx))
+            self.aligned_obj.rotate(angle=angle, point=origin_pt)
 
     def execute(self):
         aligned_name = self.object_combo.currentText()
