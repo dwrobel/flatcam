@@ -54,18 +54,16 @@ class AlignObjects(FlatCAMTool):
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
-        self.aligned_label = QtWidgets.QLabel('<b>%s</b>' % _("Selection of the aligned object"))
+        self.aligned_label = QtWidgets.QLabel('<b>%s</b>' % _("Selection of the WORKING object"))
         grid0.addWidget(self.aligned_label, 0, 0, 1, 2)
 
         # Type of object to be aligned
         self.type_obj_combo = FCComboBox()
         self.type_obj_combo.addItem("Gerber")
         self.type_obj_combo.addItem("Excellon")
-        self.type_obj_combo.addItem("Geometry")
 
         self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
-        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.type_obj_combo_label.setToolTip(
@@ -96,9 +94,9 @@ class AlignObjects(FlatCAMTool):
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 4, 0, 1, 2)
 
-        self.aligned_label = QtWidgets.QLabel('<b>%s</b>' % _("Selection of the aligner object"))
+        self.aligned_label = QtWidgets.QLabel('<b>%s</b>' % _("Selection of the TARGET object"))
         self.aligned_label.setToolTip(
-            _("Object to which the other objects will be aligned to (moved).")
+            _("Object to which the other objects will be aligned to (moved to).")
         )
         grid0.addWidget(self.aligned_label, 6, 0, 1, 2)
 
@@ -106,11 +104,9 @@ class AlignObjects(FlatCAMTool):
         self.type_aligner_obj_combo = FCComboBox()
         self.type_aligner_obj_combo.addItem("Gerber")
         self.type_aligner_obj_combo.addItem("Excellon")
-        self.type_aligner_obj_combo.addItem("Geometry")
 
         self.type_aligner_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
         self.type_aligner_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
-        self.type_aligner_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_aligner_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.type_aligner_obj_combo_label.setToolTip(
@@ -219,9 +215,16 @@ class AlignObjects(FlatCAMTool):
         self.clicked_points = list()
 
         self.new_start = None
-        self.new_stop = None
+        self.new_dest = None
 
         self.align_type = None
+
+        # old colors of objects involved in the alignment
+        self.aligner_old_fill_color = None
+        self.aligner_old_line_color = None
+        self.aligned_old_fill_color = None
+        self.aligned_old_line_color = None
+
 
     def run(self, toggle=True):
         self.app.report_usage("ToolAlignObjects()")
@@ -261,6 +264,11 @@ class AlignObjects(FlatCAMTool):
         self.aligned_obj = None
         self.aligner_obj = None
 
+        self.aligner_old_fill_color = None
+        self.aligner_old_line_color = None
+        self.aligned_old_fill_color = None
+        self.aligned_old_line_color = None
+
         self.a_type_radio.set_value(self.app.defaults["tools_align_objects_align_type"])
 
         if self.local_connected is True:
@@ -277,6 +285,7 @@ class AlignObjects(FlatCAMTool):
         self.aligner_object_combo.setCurrentIndex(0)
 
     def on_align(self):
+        self.app.delete_selection_shape()
 
         obj_sel_index = self.object_combo.currentIndex()
         obj_model_index = self.app.collection.index(obj_sel_index, 0, self.object_combo.rootModelIndex())
@@ -314,8 +323,14 @@ class AlignObjects(FlatCAMTool):
 
         self.local_connected = True
 
-        self.app.inform.emit(_("Get First alignment point on the aligned object."))
+        self.aligner_old_fill_color = self.aligner_obj.fill_color
+        self.aligner_old_line_color = self.aligner_obj.outline_color
+        self.aligned_old_fill_color = self.aligned_obj.fill_color
+        self.aligned_old_line_color = self.aligned_obj.outline_color
+
+        self.app.inform.emit('%s: %s' % (_("First Point"), _("Click on the START point.")))
         self.target_obj = self.aligned_obj
+        self.set_color()
 
     def on_mouse_click_release(self, event):
         if self.app.is_legacy is False:
@@ -365,40 +380,47 @@ class AlignObjects(FlatCAMTool):
                                         self.check_points()
 
         elif event.button == right_button and self.app.event_is_dragging is False:
+            self.reset_color()
             self.clicked_points = list()
             self.disconnect_cal_events()
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
 
     def check_points(self):
-        if self.align_type == 'sp':
-            if len(self.clicked_points) == 1:
-                self.app.inform.emit(_("Get First alignment point on the aligner object."))
-                self.target_obj = self.aligner_obj
+        if len(self.clicked_points) == 1:
+            self.app.inform.emit('%s: %s. %s' % (
+                _("First Point"), _("Click on the DESTINATION point."), _(" Or right click to cancel.")))
+            self.target_obj = self.aligner_obj
+            self.reset_color()
+            self.set_color()
 
-            if len(self.clicked_points) == 2:
+        if len(self.clicked_points) == 2:
+            self.align_translate()
+            if self.align_type == 'sp':
                 self.app.inform.emit('[success] %s' % _("Done."))
-                self.align_translate()
                 self.app.plot_all()
 
                 self.disconnect_cal_events()
-        else:
-            if len(self.clicked_points) == 1:
-                self.app.inform.emit(_("Get Second alignment point on aligned object. Or right click to cancel."))
+                return
+            else:
+                self.app.inform.emit('%s: %s. %s' % (
+                    _("Second Point"), _("Click on the START point."), _(" Or right click to cancel.")))
+                self.target_obj = self.aligned_obj
+                self.reset_color()
+                self.set_color()
 
-            if len(self.clicked_points) == 2:
-                self.app.inform.emit(_("Get First alignment point on the aligner object."))
-                self.target_obj = self.aligner_obj
+        if len(self.clicked_points) == 3:
+            self.app.inform.emit('%s: %s. %s' % (
+                _("Second Point"), _("Click on the DESTINATION point."), _(" Or right click to cancel.")))
+            self.target_obj = self.aligner_obj
+            self.reset_color()
+            self.set_color()
 
-            if len(self.clicked_points) == 3:
-                self.app.inform.emit(_("Get Second alignment point on the aligner object. Or right click to cancel."))
+        if len(self.clicked_points) == 4:
+            self.align_rotate()
+            self.app.inform.emit('[success] %s' % _("Done."))
 
-            if len(self.clicked_points) == 4:
-                self.app.inform.emit('[success] %s' % _("Done."))
-                self.align_translate()
-                self.align_rotate()
-                self.app.plot_all()
-
-                self.disconnect_cal_events()
+            self.disconnect_cal_events()
+            self.app.plot_all()
 
     def align_translate(self):
         dx = self.clicked_points[1][0] - self.clicked_points[0][0]
@@ -477,9 +499,27 @@ class AlignObjects(FlatCAMTool):
             self.canvas.graph_event_disconnect(self.mr)
 
         self.local_connected = False
-        self.target_obj = None
-        self.aligned_obj = None
-        self.aligner_obj = None
+
+        self.aligner_old_fill_color = None
+        self.aligner_old_line_color = None
+        self.aligned_old_fill_color = None
+        self.aligned_old_line_color = None
+
+    def set_color(self):
+        new_color = "#15678abf"
+        new_line_color = new_color
+        self.target_obj.shapes.redraw(
+            update_colors=(new_color, new_line_color)
+        )
+
+    def reset_color(self):
+        self.aligned_obj.shapes.redraw(
+            update_colors=(self.aligned_old_fill_color, self.aligned_old_line_color)
+        )
+
+        self.aligner_obj.shapes.redraw(
+            update_colors=(self.aligner_old_fill_color, self.aligner_old_line_color)
+        )
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

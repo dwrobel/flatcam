@@ -957,6 +957,7 @@ class App(QtCore.QObject):
             # Drills Extraction Tool
             "tools_edrills_hole_type": 'fixed',
             "tools_edrills_hole_fixed_dia": 0.5,
+            "tools_edrills_hole_prop_factor": 80.0,
             "tools_edrills_circular_ring": 0.2,
             "tools_edrills_oblong_ring": 0.2,
             "tools_edrills_square_ring": 0.2,
@@ -1598,6 +1599,7 @@ class App(QtCore.QObject):
             # Extract Drills Tool
             "tools_edrills_hole_type": self.ui.tools2_defaults_form.tools2_edrills_group.hole_size_radio,
             "tools_edrills_hole_fixed_dia": self.ui.tools2_defaults_form.tools2_edrills_group.dia_entry,
+            "tools_edrills_hole_prop_factor": self.ui.tools2_defaults_form.tools2_edrills_group.factor_entry,
             "tools_edrills_circular_ring": self.ui.tools2_defaults_form.tools2_edrills_group.circular_ring_entry,
             "tools_edrills_oblong_ring": self.ui.tools2_defaults_form.tools2_edrills_group.oblong_ring_entry,
             "tools_edrills_square_ring": self.ui.tools2_defaults_form.tools2_edrills_group.square_ring_entry,
@@ -4277,8 +4279,19 @@ class App(QtCore.QObject):
                 obj.options['xmax'] = xmax
                 obj.options['ymax'] = ymax
             except Exception as e:
-                log.warning("The object has no bounds properties. %s" % str(e))
+                log.warning("App.new_object() -> The object has no bounds properties. %s" % str(e))
                 return "fail"
+
+            try:
+                if kind == 'excellon':
+                    obj.fill_color = self.app.defaults["excellon_plot_fill"]
+                    obj.outline_color = self.app.defaults["excellon_plot_line"]
+
+                if kind == 'gerber':
+                    obj.fill_color = self.app.defaults["gerber_plot_fill"]
+                    obj.outline_color = self.app.defaults["gerber_plot_line"]
+            except Exception as e:
+                log.warning("App.new_object() -> setting colors error. %s" % str(e))
 
         # update the KeyWords list with the name of the file
         self.myKeywords.append(obj.options['name'])
@@ -12305,19 +12318,12 @@ class App(QtCore.QObject):
         new_line_color = color_variant(new_color[:7], 0.7)
 
         for sel_obj in sel_obj_list:
-            if self.is_legacy is False:
-                sel_obj.fill_color = new_color
-                sel_obj.outline_color = new_line_color
+            sel_obj.fill_color = new_color
+            sel_obj.outline_color = new_line_color
 
-                sel_obj.shapes.redraw(
-                    update_colors=(new_color, new_line_color)
-                )
-            else:
-                sel_obj.fill_color = new_color
-                sel_obj.outline_color = new_line_color
-                sel_obj.shapes.redraw(
-                    update_colors=(new_color, new_line_color)
-                )
+            sel_obj.shapes.redraw(
+                update_colors=(new_color, new_line_color)
+            )
 
     def on_grid_snap_triggered(self, state):
         if state:

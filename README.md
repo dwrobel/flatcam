@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.01.2020
+
+- in Extract Drill Tool added a new method of drills extraction. The methods are: fixed diameter, fixed annular ring and proportional
+- in Align Objects Tool finished the Single Point method of alignment
+
 13.01.2020
 
 - fixed a small GUI issue in Excellon UI when Basic mode is active
