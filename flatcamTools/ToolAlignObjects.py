@@ -10,11 +10,8 @@ from FlatCAMTool import FlatCAMTool
 
 from flatcamGUI.GUIElements import FCComboBox, RadioSet
 
-from copy import deepcopy
-
-import numpy as np
-
 from shapely.geometry import Point
+from shapely.affinity import translate, rotate
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -221,6 +218,9 @@ class AlignObjects(FlatCAMTool):
         # here store the alignment points
         self.clicked_points = list()
 
+        self.new_start = None
+        self.new_stop = None
+
         self.align_type = None
 
     def run(self, toggle=True):
@@ -286,9 +286,9 @@ class AlignObjects(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no aligned FlatCAM object selected..."))
             return
 
-        aligner_obj_sel_index = self.object_combo.currentIndex()
+        aligner_obj_sel_index = self.aligner_object_combo.currentIndex()
         aligner_obj_model_index = self.app.collection.index(
-            aligner_obj_sel_index, 0, self.object_combo.rootModelIndex())
+            aligner_obj_sel_index, 0, self.aligner_object_combo.rootModelIndex())
 
         try:
             self.aligner_obj = aligner_obj_model_index.internalPointer().obj
@@ -373,12 +373,13 @@ class AlignObjects(FlatCAMTool):
         if self.align_type == 'sp':
             if len(self.clicked_points) == 1:
                 self.app.inform.emit(_("Get First alignment point on the aligner object."))
-                # TODO: not working
                 self.target_obj = self.aligner_obj
 
             if len(self.clicked_points) == 2:
                 self.app.inform.emit('[success] %s' % _("Done."))
                 self.align_translate()
+                self.app.plot_all()
+
                 self.disconnect_cal_events()
         else:
             if len(self.clicked_points) == 1:
@@ -395,13 +396,29 @@ class AlignObjects(FlatCAMTool):
                 self.app.inform.emit('[success] %s' % _("Done."))
                 self.align_translate()
                 self.align_rotate()
+                self.app.plot_all()
+
                 self.disconnect_cal_events()
 
     def align_translate(self):
-        pass
+        dx = self.clicked_points[1][0] - self.clicked_points[0][0]
+        dy = self.clicked_points[1][1] - self.clicked_points[0][1]
+
+        if self.align_type == 'dp':
+            self.new_start = translate(Point(self.clicked_points[2]), xoff=dx, yoff=dy)
+            self.new_dest = translate(Point(self.clicked_points[3]), xoff=dx, yoff=dy)
+
+        self.aligned_obj.offset((dx, dy))
+
+        # Update the object bounding box options
+        a, b, c, d = self.aligned_obj.bounds()
+        self.aligned_obj.options['xmin'] = a
+        self.aligned_obj.options['ymin'] = b
+        self.aligned_obj.options['xmax'] = c
+        self.aligned_obj.options['ymax'] = d
 
     def align_rotate(self):
-        pass
+        print(self.new_start.x == self.new_dest.x)
 
     def execute(self):
         aligned_name = self.object_combo.currentText()
