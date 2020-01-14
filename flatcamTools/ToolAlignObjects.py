@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from FlatCAMTool import FlatCAMTool
 
-from flatcamGUI.GUIElements import FCComboBox
+from flatcamGUI.GUIElements import FCComboBox, RadioSet
 
 from copy import deepcopy
 
@@ -61,7 +61,7 @@ class AlignObjects(FlatCAMTool):
         grid0.addWidget(self.aligned_label, 0, 0, 1, 2)
 
         # Type of object to be aligned
-        self.type_obj_combo = QtWidgets.QComboBox()
+        self.type_obj_combo = FCComboBox()
         self.type_obj_combo.addItem("Gerber")
         self.type_obj_combo.addItem("Excellon")
         self.type_obj_combo.addItem("Geometry")
@@ -81,7 +81,7 @@ class AlignObjects(FlatCAMTool):
         grid0.addWidget(self.type_obj_combo, 2, 1)
 
         # Object to be aligned
-        self.object_combo = QtWidgets.QComboBox()
+        self.object_combo = FCComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(1)
@@ -106,7 +106,7 @@ class AlignObjects(FlatCAMTool):
         grid0.addWidget(self.aligned_label, 6, 0, 1, 2)
 
         # Type of object to be aligned to = aligner
-        self.type_aligner_obj_combo = QtWidgets.QComboBox()
+        self.type_aligner_obj_combo = FCComboBox()
         self.type_aligner_obj_combo.addItem("Gerber")
         self.type_aligner_obj_combo.addItem("Excellon")
         self.type_aligner_obj_combo.addItem("Geometry")
@@ -126,7 +126,7 @@ class AlignObjects(FlatCAMTool):
         grid0.addWidget(self.type_aligner_obj_combo, 7, 1)
 
         # Object to be aligned to = aligner
-        self.aligner_object_combo = QtWidgets.QComboBox()
+        self.aligner_object_combo = FCComboBox()
         self.aligner_object_combo.setModel(self.app.collection)
         self.aligner_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.aligner_object_combo.setCurrentIndex(1)
@@ -143,6 +143,30 @@ class AlignObjects(FlatCAMTool):
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
         grid0.addWidget(separator_line, 9, 0, 1, 2)
+
+        # Alignment Type
+        self.a_type_lbl = QtWidgets.QLabel('<b>%s:</b>' % _("Alignment Type"))
+        self.a_type_lbl.setToolTip(
+            _("The type of alignment can be:\n"
+              "- Single Point -> it require a single point of sync, the action will be a translation\n"
+              "- Dual Point -> it require two points of sync, the action will be translation followed by rotation")
+        )
+        self.a_type_radio = RadioSet(
+            [
+                {'label': _('Single Point'), 'value': 'sp'},
+                {'label': _('Dual Point'), 'value': 'dp'}
+            ],
+            orientation='horizontal',
+            stretch=False
+        )
+
+        grid0.addWidget(self.a_type_lbl, 10, 0, 1, 2)
+        grid0.addWidget(self.a_type_radio, 11, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 12, 0, 1, 2)
 
         # Buttons
         self.align_object_button = QtWidgets.QPushButton(_("Align Object"))
@@ -191,14 +215,13 @@ class AlignObjects(FlatCAMTool):
         self.aligned_obj = None
         self.aligner_obj = None
 
-        # here store the alignment points for the aligned object
-        self.aligned_clicked_points = list()
+        # this is one of the objects: self.aligned_obj or self.aligner_obj
+        self.target_obj = None
 
-        # here store the alignment points for the aligner object
-        self.aligner_clicked_points = list()
+        # here store the alignment points
+        self.clicked_points = list()
 
-        # counter for the clicks
-        self.click_cnt = 0
+        self.align_type = None
 
     def run(self, toggle=True):
         self.app.report_usage("ToolAlignObjects()")
@@ -233,7 +256,12 @@ class AlignObjects(FlatCAMTool):
     def set_tool_ui(self):
         self.reset_fields()
 
-        self.click_cnt = 0
+        self.clicked_points = list()
+        self.target_obj = None
+        self.aligned_obj = None
+        self.aligner_obj = None
+
+        self.a_type_radio.set_value(self.app.defaults["tools_align_objects_align_type"])
 
         if self.local_connected is True:
             self.disconnect_cal_events()
@@ -268,6 +296,8 @@ class AlignObjects(FlatCAMTool):
             self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no aligner FlatCAM object selected..."))
             return
 
+        self.align_type = self.a_type_radio.get_value()
+
         # disengage the grid snapping since it will be hard to find the drills or pads on grid
         if self.app.ui.grid_snap_btn.isChecked():
             self.grid_status_memory = True
@@ -285,6 +315,7 @@ class AlignObjects(FlatCAMTool):
         self.local_connected = True
 
         self.app.inform.emit(_("Get First alignment point on the aligned object."))
+        self.target_obj = self.aligned_obj
 
     def on_mouse_click_release(self, event):
         if self.app.is_legacy is False:
@@ -311,7 +342,7 @@ class AlignObjects(FlatCAMTool):
                         for geo in tool_dict['solid_geometry']:
                             if click_pt.within(geo):
                                 center_pt = geo.centroid
-                                self.click_points.append(
+                                self.clicked_points.append(
                                     [
                                         float('%.*f' % (self.decimals, center_pt.x)),
                                         float('%.*f' % (self.decimals, center_pt.y))
@@ -325,7 +356,7 @@ class AlignObjects(FlatCAMTool):
                                 if click_pt.within(geo_el['solid']):
                                     if isinstance(geo_el['follow'], Point):
                                         center_pt = geo_el['solid'].centroid
-                                        self.click_points.append(
+                                        self.clicked_points.append(
                                             [
                                                 float('%.*f' % (self.decimals, center_pt.x)),
                                                 float('%.*f' % (self.decimals, center_pt.y))
@@ -334,24 +365,37 @@ class AlignObjects(FlatCAMTool):
                                         self.check_points()
 
         elif event.button == right_button and self.app.event_is_dragging is False:
-            if not len(self.click_points):
-                self.reset_calibration_points()
-                self.disconnect_cal_events()
-                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
+            self.clicked_points = list()
+            self.disconnect_cal_events()
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Cancelled by user request."))
 
     def check_points(self):
-        if len(self.aligned_click_points) == 1:
-            self.app.inform.emit(_("Get Second alignment point on aligned object. "
-                                   "Or right click to get First alignment point on the aligner object."))
+        if self.align_type == 'sp':
+            if len(self.clicked_points) == 1:
+                self.app.inform.emit(_("Get First alignment point on the aligner object."))
+                # TODO: not working
+                self.target_obj = self.aligner_obj
 
-        if len(self.aligned_click_points) == 2:
-            self.app.inform.emit(_("Get First alignment point on the aligner object."))
+            if len(self.clicked_points) == 2:
+                self.app.inform.emit('[success] %s' % _("Done."))
+                self.align_translate()
+                self.disconnect_cal_events()
+        else:
+            if len(self.clicked_points) == 1:
+                self.app.inform.emit(_("Get Second alignment point on aligned object. Or right click to cancel."))
 
-        if len(self.aligner_click_points) == 1:
-            self.app.inform.emit(_("Get Second alignment point on the aligner object. Or right click to finish."))
-            self.align_translate()
-            self.align_rotate()
-            self.disconnect_cal_events()
+            if len(self.clicked_points) == 2:
+                self.app.inform.emit(_("Get First alignment point on the aligner object."))
+                self.target_obj = self.aligner_obj
+
+            if len(self.clicked_points) == 3:
+                self.app.inform.emit(_("Get Second alignment point on the aligner object. Or right click to cancel."))
+
+            if len(self.clicked_points) == 4:
+                self.app.inform.emit('[success] %s' % _("Done."))
+                self.align_translate()
+                self.align_rotate()
+                self.disconnect_cal_events()
 
     def align_translate(self):
         pass
@@ -416,7 +460,9 @@ class AlignObjects(FlatCAMTool):
             self.canvas.graph_event_disconnect(self.mr)
 
         self.local_connected = False
-        self.click_cnt = 0
+        self.target_obj = None
+        self.aligned_obj = None
+        self.aligner_obj = None
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

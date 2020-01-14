@@ -968,6 +968,9 @@ class App(QtCore.QObject):
             "tools_edrills_rectangular": False,
             "tools_edrills_others": False,
 
+            # Align Objects Tool
+            "tools_align_objects_align_type": 'sp',
+
             # Utilities
             # file associations
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
