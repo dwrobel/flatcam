@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Extract Drill Tool added a new method of drills extraction. The methods are: fixed diameter, fixed annular ring and proportional
 - in Align Objects Tool finished the Single Point method of alignment
 - working on the Dual Point option in Align Objects Tool - angle has to be recalculated
+- finished Dual Point option in Align Objects Tool
 
 13.01.2020
 

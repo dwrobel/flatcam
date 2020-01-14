@@ -216,9 +216,6 @@ class AlignObjects(FlatCAMTool):
         # here store the alignment points
         self.clicked_points = list()
 
-        self.new_start = None
-        self.new_dest = None
-
         self.align_type = None
 
         # old colors of objects involved in the alignment
@@ -442,20 +439,25 @@ class AlignObjects(FlatCAMTool):
         dx = self.clicked_points[1][0] - self.clicked_points[0][0]
         dy = self.clicked_points[1][1] - self.clicked_points[0][1]
 
-        new_start_pt = translate(Point(self.clicked_points[2]), xoff=dx, yoff=dy)
-        self.new_start = (new_start_pt.x, new_start_pt.y)
-        self.new_dest = self.clicked_points[3]
+        test_rotation_pt = translate(Point(self.clicked_points[2]), xoff=dx, yoff=dy)
+        new_start = (test_rotation_pt.x, test_rotation_pt.y)
+        new_dest = self.clicked_points[3]
 
         origin_pt = self.clicked_points[1]
 
-        sec_dx = self.new_dest[0] - self.new_start[0]
-        sec_dy = self.new_dest[1] - self.new_start[1]
+        dxd = new_dest[0] - origin_pt[0]
+        dyd = new_dest[1] - origin_pt[1]
 
-        rotation_not_needed = (abs(self.new_start[0] - self.new_dest[0]) <= (10 ** -self.decimals)) or \
-                              (abs(self.new_start[1] - self.new_dest[1]) <= (10 ** -self.decimals))
+        dxs = new_start[0] - origin_pt[0]
+        dys = new_start[1] - origin_pt[1]
+
+        rotation_not_needed = (abs(new_start[0] - new_dest[0]) <= (10 ** -self.decimals)) or \
+                              (abs(new_start[1] - new_dest[1]) <= (10 ** -self.decimals))
         if rotation_not_needed is False:
             # calculate rotation angle
-            angle = math.degrees(math.atan(sec_dy / sec_dx))
+            angle_dest = math.degrees(math.atan(dyd / dxd))
+            angle_start = math.degrees(math.atan(dys / dxs))
+            angle = angle_dest - angle_start
             self.aligned_obj.rotate(angle=angle, point=origin_pt)
 
     def execute(self):
