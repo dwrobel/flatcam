@@ -534,22 +534,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         # #############################################################################
 
         # #############################################################################
-        # ###################### Setup CONTEXT MENU ###################################
-        # #############################################################################
-        self.tools_table.setupContextMenu()
-        self.tools_table.addContextMenu(
-            _("Add"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
-        )
-        self.tools_table.addContextMenu(
-            _("Add from DB"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
-        )
-        self.tools_table.addContextMenu(
-            _("Delete"), lambda:
-            self.on_tool_delete(rows_to_delete=None, all_tools=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
-        )
-
-        # #############################################################################
         # ########################## VARIABLES ########################################
         # #############################################################################
 
@@ -586,40 +570,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.poly_dict = dict()
 
         # store here the default data for Geometry Data
-        self.default_data = {}
-        self.default_data.update({
-            "name": '_paint',
-            "plot": self.app.defaults["geometry_plot"],
-            "cutz": self.app.defaults["geometry_cutz"],
-            "vtipdia": float(self.tipdia_entry.get_value()),
-            "vtipangle": float(self.tipangle_entry.get_value()),
-            "travelz": self.app.defaults["geometry_travelz"],
-            "feedrate": self.app.defaults["geometry_feedrate"],
-            "feedrate_z": self.app.defaults["geometry_feedrate_z"],
-            "feedrate_rapid": self.app.defaults["geometry_feedrate_rapid"],
-            "dwell": self.app.defaults["geometry_dwell"],
-            "dwelltime": self.app.defaults["geometry_dwelltime"],
-            "multidepth": self.app.defaults["geometry_multidepth"],
-            "ppname_g": self.app.defaults["geometry_ppname_g"],
-            "depthperpass": self.app.defaults["geometry_depthperpass"],
-            "extracut": self.app.defaults["geometry_extracut"],
-            "extracut_length": self.app.defaults["geometry_extracut_length"],
-            "toolchange": self.app.defaults["geometry_toolchange"],
-            "toolchangez": self.app.defaults["geometry_toolchangez"],
-            "endz": self.app.defaults["geometry_endz"],
-            "spindlespeed": self.app.defaults["geometry_spindlespeed"],
-            "toolchangexy": self.app.defaults["geometry_toolchangexy"],
-            "startz": self.app.defaults["geometry_startz"],
-
-            "tooldia": self.app.defaults["tools_painttooldia"],
-            "paintmargin": self.app.defaults["tools_paintmargin"],
-            "paintmethod": self.app.defaults["tools_paintmethod"],
-            "selectmethod": self.app.defaults["tools_selectmethod"],
-            "pathconnect": self.app.defaults["tools_pathconnect"],
-            "paintcontour": self.app.defaults["tools_paintcontour"],
-            "paintoverlap": self.app.defaults["tools_paintoverlap"],
-            "paintrest": self.app.defaults["tools_paintrest"],
-        })
+        self.default_data = dict()
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
@@ -668,11 +619,16 @@ class ToolPaint(FlatCAMTool, Gerber):
         # #############################################################################
         self.tools_table.setupContextMenu()
         self.tools_table.addContextMenu(
-            "Add", self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png"))
+            _("Add"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
         self.tools_table.addContextMenu(
-            "Delete", lambda:
-            self.on_tool_delete(rows_to_delete=None, all=None),
-            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png"))
+            _("Add from DB"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
+        self.tools_table.addContextMenu(
+            _("Delete"), lambda:
+            self.on_tool_delete(rows_to_delete=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
+        )
 
     def on_type_obj_index_changed(self, index):
         obj_type = self.type_obj_combo.currentIndex()
@@ -953,12 +909,12 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # ## Init the GUI interface
         self.order_radio.set_value(self.app.defaults["tools_paintorder"])
-        self.paintmargin_entry.set_value(self.default_data["paintmargin"])
-        self.paintmethod_combo.set_value(self.default_data["paintmethod"])
-        self.selectmethod_combo.set_value(self.default_data["selectmethod"])
-        self.pathconnect_cb.set_value(self.default_data["pathconnect"])
-        self.paintcontour_cb.set_value(self.default_data["paintcontour"])
-        self.paintoverlap_entry.set_value(self.default_data["paintoverlap"])
+        self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
+        self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
+        self.selectmethod_combo.set_value(self.app.defaults["tools_selectmethod"])
+        self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
+        self.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
+        self.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
 
         self.cutz_entry.set_value(self.app.defaults["tools_paintcutz"])
         self.tool_type_radio.set_value(self.app.defaults["tools_painttool_type"])
@@ -981,7 +937,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.default_data.update({
             "name": '_paint',
             "plot": self.app.defaults["geometry_plot"],
-            "cutz": float(self.app.defaults["geometry_cutz"]),
+            "cutz": float(self.cutz_entry.get_value()),
             "vtipdia": float(self.tipdia_entry.get_value()),
             "vtipangle": float(self.tipangle_entry.get_value()),
             "travelz": float(self.app.defaults["geometry_travelz"]),
@@ -1003,12 +959,13 @@ class ToolPaint(FlatCAMTool, Gerber):
             "startz": self.app.defaults["geometry_startz"],
 
             "tooldia": self.app.defaults["tools_painttooldia"],
-            "paintmargin": float(self.app.defaults["tools_paintmargin"]),
+            "paintmargin": self.app.defaults["tools_paintmargin"],
             "paintmethod": self.app.defaults["tools_paintmethod"],
             "selectmethod": self.app.defaults["tools_selectmethod"],
             "pathconnect": self.app.defaults["tools_pathconnect"],
             "paintcontour": self.app.defaults["tools_paintcontour"],
-            "paintoverlap": self.app.defaults["tools_paintoverlap"]
+            "paintoverlap": self.app.defaults["tools_paintoverlap"],
+            "paintrest": self.app.defaults["tools_paintrest"],
         })
 
         try:
