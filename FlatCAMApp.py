@@ -141,7 +141,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.992
-    version_date = "2020/01/02"
+    version_date = "2020/01/20"
     beta = True
     engine = '3D'
 
@@ -7202,15 +7202,13 @@ class App(QtCore.QObject):
                     obj.options['ymin'] = b
                     obj.options['xmax'] = c
                     obj.options['ymax'] = d
-                self.inform.emit('[success] %s...' %
-                                 _('Origin set'))
+                self.inform.emit('[success] %s...' % _('Origin set'))
                 if noplot_sig is False:
                     self.replot_signal.emit([])
 
         if location is not None:
             if len(location) != 2:
-                self.inform.emit('[ERROR_NOTCL] %s...' %
-                                 _("Origin coordinates specified but incomplete."))
+                self.inform.emit('[ERROR_NOTCL] %s...' % _("Origin coordinates specified but incomplete."))
                 return 'fail'
 
             x, y = location
