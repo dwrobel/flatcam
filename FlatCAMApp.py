@@ -803,6 +803,12 @@ class App(QtCore.QObject):
             "tools_pathconnect": True,
             "tools_paintcontour": True,
             "tools_paint_plotting": 'normal',
+            "tools_paintrest": False,
+            "tools_painttool_type": 'V',
+            "tools_paintcutz": -0.05,
+            "tools_painttipdia": 0.1,
+            "tools_painttipangle": 30,
+            "tools_paintnewdia": 1.0,
 
             # 2-Sided Tool
             "tools_2sided_mirror_axis": "X",

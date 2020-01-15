@@ -14,13 +14,14 @@ from copy import deepcopy
 from flatcamParsers.ParseGerber import Gerber
 from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry
 from camlib import Geometry
-from flatcamGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet
+from flatcamGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton
 import FlatCAMApp
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing
 from shapely.ops import cascaded_union
 
 import numpy as np
+import math
 from numpy import Inf
 import traceback
 import logging
@@ -66,8 +67,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_frame.setLayout(self.tools_box)
 
         # ## Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.tools_box.addLayout(form_layout)
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.tools_box.addLayout(grid0)
 
         # ################################################
         # ##### Type of object to be painted #############
@@ -90,7 +93,8 @@ class ToolPaint(FlatCAMTool, Gerber):
               "of objects that will populate the 'Object' combobox.")
         )
         self.type_obj_combo_label.setMinimumWidth(60)
-        form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
+        grid0.addWidget(self.type_obj_combo_label, 1, 0)
+        grid0.addWidget(self.type_obj_combo, 1, 1)
 
         # ################################################
         # ##### The object to be painted #################
@@ -103,10 +107,13 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
         self.object_label.setToolTip(_("Object to be painted."))
 
-        form_layout.addRow(self.object_label, self.obj_combo)
+        grid0.addWidget(self.object_label, 2, 0)
+        grid0.addWidget(self.obj_combo, 2, 1)
 
-        e_lab_0 = QtWidgets.QLabel('')
-        form_layout.addRow(e_lab_0)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 5, 0, 1, 2)
 
         # ### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
@@ -114,10 +121,11 @@ class ToolPaint(FlatCAMTool, Gerber):
             _("Tools pool from which the algorithm\n"
               "will pick the ones used for painting.")
         )
-        self.tools_box.addWidget(self.tools_table_label)
 
         self.tools_table = FCTable()
-        self.tools_box.addWidget(self.tools_table)
+
+        grid0.addWidget(self.tools_table_label, 6, 0, 1, 2)
+        grid0.addWidget(self.tools_table, 7, 0, 1, 2)
 
         self.tools_table.setColumnCount(4)
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('TT'), ''])
@@ -167,23 +175,107 @@ class ToolPaint(FlatCAMTool, Gerber):
                                       "'Reverse' --> menas that the tools will ordered from big to small\n\n"
                                       "WARNING: using rest machining will automatically set the order\n"
                                       "in reverse and disable this control."))
-        form = QtWidgets.QFormLayout()
-        self.tools_box.addLayout(form)
-        form.addRow(QtWidgets.QLabel(''), QtWidgets.QLabel(''))
-        form.addRow(self.order_label, self.order_radio)
 
-        # ### Add a new Tool ## ##
+        grid0.addWidget(self.order_label, 9, 0)
+        grid0.addWidget(self.order_radio, 9, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 10, 0, 1, 2)
+
+        self.grid3 = QtWidgets.QGridLayout()
+        self.tools_box.addLayout(self.grid3)
+        self.grid3.setColumnStretch(0, 0)
+        self.grid3.setColumnStretch(1, 1)
+
+        # ##############################################################################
+        # ###################### ADD A NEW TOOL ########################################
+        # ##############################################################################
+        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
+        self.grid3.addWidget(self.tool_sel_label, 1, 0, 1, 2)
+
+        # Tool Type Radio Button
+        self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
+        self.tool_type_label.setToolTip(
+            _("Default tool type:\n"
+              "- 'V-shape'\n"
+              "- Circular")
+        )
+
+        self.tool_type_radio = RadioSet([{'label': _('V-shape'), 'value': 'V'},
+                                         {'label': _('Circular'), 'value': 'C1'}])
+        self.tool_type_radio.setToolTip(
+            _("Default tool type:\n"
+              "- 'V-shape'\n"
+              "- Circular")
+        )
+        self.tool_type_radio.setObjectName(_("Tool Type"))
+
+        self.grid3.addWidget(self.tool_type_label, 2, 0)
+        self.grid3.addWidget(self.tool_type_radio, 2, 1)
+
+        # Tip Dia
+        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel.setToolTip(
+            _("The tip diameter for V-Shape Tool"))
+        self.tipdia_entry = FCDoubleSpinner()
+        self.tipdia_entry.set_precision(self.decimals)
+        self.tipdia_entry.set_range(0.0000, 9999.9999)
+        self.tipdia_entry.setSingleStep(0.1)
+        self.tipdia_entry.setObjectName(_("V-Tip Dia"))
+
+        self.grid3.addWidget(self.tipdialabel, 3, 0)
+        self.grid3.addWidget(self.tipdia_entry, 3, 1)
+
+        # Tip Angle
+        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel.setToolTip(
+            _("The tip angle for V-Shape Tool.\n"
+              "In degree."))
+        self.tipangle_entry = FCDoubleSpinner()
+        self.tipangle_entry.set_precision(self.decimals)
+        self.tipangle_entry.set_range(0.0000, 180.0000)
+        self.tipangle_entry.setSingleStep(5)
+        self.tipangle_entry.setObjectName(_("V-Tip Angle"))
+
+        self.grid3.addWidget(self.tipanglelabel, 4, 0)
+        self.grid3.addWidget(self.tipangle_entry, 4, 1)
+
+        # Cut Z entry
+        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel.setToolTip(
+            _("Depth of cut into material. Negative value.\n"
+              "In FlatCAM units.")
+        )
+        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry.set_precision(self.decimals)
+        self.cutz_entry.set_range(-99999.9999, 0.0000)
+        self.cutz_entry.setObjectName(_("Cut Z"))
+
+        self.cutz_entry.setToolTip(
+            _("Depth of cut into material. Negative value.\n"
+              "In FlatCAM units.")
+        )
+        self.grid3.addWidget(cutzlabel, 5, 0)
+        self.grid3.addWidget(self.cutz_entry, 5, 1)
+
+        # ### Tool Diameter ####
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
-            _("Diameter for the new tool.")
+            _("Diameter for the new tool to add in the Tool Table.\n"
+              "If the tool is V-shape type then this value is automatically\n"
+              "calculated from the other parameters.")
         )
         self.addtool_entry = FCDoubleSpinner()
         self.addtool_entry.set_precision(self.decimals)
+        self.addtool_entry.set_range(0.000, 9999.9999)
+        self.addtool_entry.setObjectName(_("Tool Dia"))
 
-        form.addRow(self.addtool_entry_lbl, self.addtool_entry)
+        self.grid3.addWidget(self.addtool_entry_lbl, 6, 0)
+        self.grid3.addWidget(self.addtool_entry, 6, 1)
 
-        grid2 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid2)
+        hlay = QtWidgets.QHBoxLayout()
 
         self.addtool_btn = QtWidgets.QPushButton(_('Add'))
         self.addtool_btn.setToolTip(
@@ -191,29 +283,50 @@ class ToolPaint(FlatCAMTool, Gerber):
               "with the diameter specified above.")
         )
 
-        # self.copytool_btn = QtWidgets.QPushButton('Copy')
-        # self.copytool_btn.setToolTip(
-        #     "Copy a selection of tools in the Tool Table\n"
-        #     "by first selecting a row in the Tool Table."
-        # )
+        self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add from DB'))
+        self.addtool_from_db_btn.setToolTip(
+            _("Add a new tool to the Tool Table\n"
+              "from the Tool DataBase.")
+        )
+
+        hlay.addWidget(self.addtool_btn)
+        hlay.addWidget(self.addtool_from_db_btn)
+
+        self.grid3.addLayout(hlay, 7, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(separator_line, 8, 0, 1, 2)
 
         self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
               "by first selecting a row(s) in the Tool Table.")
         )
+        self.grid3.addWidget(self.deltool_btn, 9, 0, 1, 2)
 
-        grid2.addWidget(self.addtool_btn, 0, 0)
-        # grid2.addWidget(self.copytool_btn, 0, 1)
-        grid2.addWidget(self.deltool_btn, 0, 2)
+        self.grid3.addWidget(QtWidgets.QLabel(''), 10, 0, 1, 2)
 
-        self.empty_label_0 = QtWidgets.QLabel('')
-        self.tools_box.addWidget(self.empty_label_0)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(separator_line, 11, 0, 1, 2)
 
-        grid3 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid3)
-        grid3.setColumnStretch(0, 0)
-        grid3.setColumnStretch(1, 1)
+        self.tool_data_label = QtWidgets.QLabel(
+            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
+        self.tool_data_label.setToolTip(
+            _(
+                "The data used for creating GCode.\n"
+                "Each tool store it's own set of such data."
+            )
+        )
+        self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
+
+        grid4 = QtWidgets.QGridLayout()
+        grid4.setColumnStretch(0, 0)
+        grid4.setColumnStretch(1, 1)
+        self.tools_box.addLayout(grid4)
 
         # Overlap
         ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
@@ -231,8 +344,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintoverlap_entry.setWrapping(True)
         self.paintoverlap_entry.setRange(0.0000, 99.9999)
         self.paintoverlap_entry.setSingleStep(0.1)
-        grid3.addWidget(ovlabel, 1, 0)
-        grid3.addWidget(self.paintoverlap_entry, 1, 1)
+        self.paintoverlap_entry.setObjectName(_("Overlap Rate"))
+
+        grid4.addWidget(ovlabel, 1, 0)
+        grid4.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
         marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
@@ -241,11 +356,12 @@ class ToolPaint(FlatCAMTool, Gerber):
               "the edges of the polygon to\n"
               "be painted.")
         )
-        grid3.addWidget(marginlabel, 2, 0)
         self.paintmargin_entry = FCDoubleSpinner()
         self.paintmargin_entry.set_precision(self.decimals)
+        self.paintmargin_entry.setObjectName(_("Margin"))
 
-        grid3.addWidget(self.paintmargin_entry, 2, 1)
+        grid4.addWidget(marginlabel, 2, 0)
+        grid4.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
@@ -255,30 +371,60 @@ class ToolPaint(FlatCAMTool, Gerber):
               "- Seed-based: Outwards from seed.\n"
               "- Line-based: Parallel lines.")
         )
-        grid3.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
             {"label": _("Standard"), "value": "standard"},
             {"label": _("Seed-based"), "value": "seed"},
             {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
-        grid3.addWidget(self.paintmethod_combo, 3, 1)
+        self.paintmethod_combo.setObjectName(_("Method"))
+
+        grid4.addWidget(methodlabel, 3, 0)
+        grid4.addWidget(self.paintmethod_combo, 3, 1)
 
         # Connect lines
         self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
+        self.pathconnect_cb.setObjectName(_("Connect"))
         self.pathconnect_cb.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        grid3.addWidget(self.pathconnect_cb, 4, 0, 1, 2)
 
         self.paintcontour_cb = FCCheckBox('%s' % _("Contour"))
+        self.paintcontour_cb.setObjectName(_("Contour"))
         self.paintcontour_cb.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        grid3.addWidget(self.paintcontour_cb, 5, 0, 1, 2)
+
+        grid4.addWidget(self.pathconnect_cb, 4, 0)
+        grid4.addWidget(self.paintcontour_cb, 4, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid4.addWidget(separator_line, 5, 0, 1, 2)
+
+        self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
+        self.apply_param_to_all.setToolTip(
+            _("The parameters in the current form will be applied\n"
+              "on all the tools from the Tool Table.")
+        )
+        grid4.addWidget(self.apply_param_to_all, 7, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid4.addWidget(separator_line, 8, 0, 1, 2)
+
+        # General Parameters
+        self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
+        self.gen_param_label.setToolTip(
+            _("Parameters that are common for all tools.")
+        )
+        grid4.addWidget(self.gen_param_label, 10, 0, 1, 2)
 
         self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.rest_cb.setObjectName(_("Rest Machining"))
         self.rest_cb.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
@@ -288,7 +434,7 @@ class ToolPaint(FlatCAMTool, Gerber):
               "no more copper to clear or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
-        grid3.addWidget(self.rest_cb, 6, 0, 1, 2)
+        grid4.addWidget(self.rest_cb, 11, 0, 1, 2)
 
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
@@ -301,7 +447,7 @@ class ToolPaint(FlatCAMTool, Gerber):
               "- 'Reference Object' - will do non copper clearing within the area\n"
               "specified by another object.")
         )
-        grid3.addWidget(selectlabel, 7, 0)
+
         # grid3 = QtWidgets.QGridLayout()
         self.selectmethod_combo = RadioSet([
             {"label": _("Polygon Selection"), "value": "single"},
@@ -309,6 +455,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             {"label": _("All Polygons"), "value": "all"},
             {"label": _("Reference Object"), "value": "ref"}
         ], orientation='vertical', stretch=False)
+        self.selectmethod_combo.setObjectName(_("Selection"))
         self.selectmethod_combo.setToolTip(
             _("How to select Polygons to be painted.\n"
               "- 'Polygon Selection' - left mouse click to add/remove polygons to be painted.\n"
@@ -318,10 +465,12 @@ class ToolPaint(FlatCAMTool, Gerber):
               "- 'Reference Object' - will do non copper clearing within the area\n"
               "specified by another object.")
         )
-        grid3.addWidget(self.selectmethod_combo, 7, 1)
+
+        grid4.addWidget(selectlabel, 13, 0, 1, 2)
+        grid4.addWidget(self.selectmethod_combo, 14, 0, 1, 2)
 
         form1 = QtWidgets.QFormLayout()
-        self.tools_box.addLayout(form1)
+        grid4.addLayout(form1, 15, 0, 1, 2)
 
         self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.box_combo_type_label.setToolTip(
@@ -350,7 +499,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.box_combo_type_label.hide()
 
         # GO Button
-        self.generate_paint_button = QtWidgets.QPushButton(_('Create Paint Geometry'))
+        self.generate_paint_button = QtWidgets.QPushButton(_('Generate Geometry'))
         self.generate_paint_button.setToolTip(
             _("- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
               "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
@@ -381,8 +530,28 @@ class ToolPaint(FlatCAMTool, Gerber):
                         """)
         self.tools_box.addWidget(self.reset_button)
 
-        # #################################### FINSIHED GUI #####################################
-        # #######################################################################################
+        # #################################### FINSIHED GUI ###########################
+        # #############################################################################
+
+        # #############################################################################
+        # ###################### Setup CONTEXT MENU ###################################
+        # #############################################################################
+        self.tools_table.setupContextMenu()
+        self.tools_table.addContextMenu(
+            _("Add"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
+        self.tools_table.addContextMenu(
+            _("Add from DB"), self.on_add_tool_by_key, icon=QtGui.QIcon(self.app.resource_location + "/plus16.png")
+        )
+        self.tools_table.addContextMenu(
+            _("Delete"), lambda:
+            self.on_tool_delete(rows_to_delete=None, all_tools=None),
+            icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
+        )
+
+        # #############################################################################
+        # ########################## VARIABLES ########################################
+        # #############################################################################
 
         self.obj_name = ""
         self.paint_obj = None
@@ -422,8 +591,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             "name": '_paint',
             "plot": self.app.defaults["geometry_plot"],
             "cutz": self.app.defaults["geometry_cutz"],
-            "vtipdia": 0.1,
-            "vtipangle": 30,
+            "vtipdia": float(self.tipdia_entry.get_value()),
+            "vtipangle": float(self.tipangle_entry.get_value()),
             "travelz": self.app.defaults["geometry_travelz"],
             "feedrate": self.app.defaults["geometry_feedrate"],
             "feedrate_z": self.app.defaults["geometry_feedrate_z"],
@@ -448,19 +617,43 @@ class ToolPaint(FlatCAMTool, Gerber):
             "selectmethod": self.app.defaults["tools_selectmethod"],
             "pathconnect": self.app.defaults["tools_pathconnect"],
             "paintcontour": self.app.defaults["tools_paintcontour"],
-            "paintoverlap": self.app.defaults["tools_paintoverlap"]
+            "paintoverlap": self.app.defaults["tools_paintoverlap"],
+            "paintrest": self.app.defaults["tools_paintrest"],
         })
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
+
+        self.form_fields = {
+            "paintoverlap": self.paintoverlap_entry,
+            "paintmargin": self.paintmargin_entry,
+            "paintmethod": self.paintmethod_combo,
+            "pathconnect": self.pathconnect_cb,
+            "paintcontour": self.paintcontour_cb,
+        }
+
+        self.name2option = {
+            _('Overlap Rate'): "paintoverlap",
+            _('Margin'): "paintmargin",
+            _('Method'): "paintmethod",
+            _("Connect"): "pathconnect",
+            _("Contour"): "paintcontour",
+        }
 
         # #############################################################################
         # ################################# Signals ###################################
         # #############################################################################
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.returnPressed.connect(self.on_tool_add)
-        # self.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
-        self.tools_table.itemChanged.connect(self.on_tool_edit)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
+
+        self.tipdia_entry.returnPressed.connect(self.on_calculate_tooldia)
+        self.tipangle_entry.returnPressed.connect(self.on_calculate_tooldia)
+        self.cutz_entry.returnPressed.connect(self.on_calculate_tooldia)
+
+        # self.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
+        # self.tools_table.itemChanged.connect(self.on_tool_edit)
+        self.tools_table.currentItemChanged.connect(self.on_row_selection_change)
+
         self.generate_paint_button.clicked.connect(self.on_paint_button_click)
         self.selectmethod_combo.activated_custom.connect(self.on_radio_selection)
         self.order_radio.activated_custom[str].connect(self.on_order_changed)
@@ -489,22 +682,6 @@ class ToolPaint(FlatCAMTool, Gerber):
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
 
-    def on_add_tool_by_key(self):
-        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
-                                       text='%s:' % _('Enter a Tool Diameter'),
-                                       min=0.0000, max=99.9999, decimals=4)
-        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
-
-        val, ok = tool_add_popup.get_value()
-        if ok:
-            if float(val) == 0:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Please enter a tool diameter with non-zero value, in Float format."))
-                return
-            self.on_tool_add(dia=float(val))
-        else:
-            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
-
     def run(self, toggle=True):
         self.app.report_usage("ToolPaint()")
 
@@ -532,16 +709,203 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.app.ui.notebook.setTabText(2, _("Paint Tool"))
 
-    def reset_usage(self):
-        self.obj_name = ""
-        self.paint_obj = None
-        self.bound_obj = None
+    def on_row_selection_change(self):
+        self.update_ui()
 
-        self.first_click = False
-        self.cursor_pos = None
-        self.mouse_is_dragging = False
+    def update_ui(self, row=None):
+        self.blockSignals(True)
 
-        self.sel_rect = []
+        if row is None:
+            try:
+                current_row = self.tools_table.currentRow()
+            except Exception:
+                current_row = 0
+        else:
+            current_row = row
+
+        if current_row < 0:
+            current_row = 0
+
+        # populate the form with the data from the tool associated with the row parameter
+        try:
+            item = self.tools_table.item(current_row, 3)
+            if item is not None:
+                tooluid = int(item.text())
+            else:
+                return
+        except Exception as e:
+            log.debug("Tool missing. Add a tool in the Tool Table. %s" % str(e))
+            return
+
+        # update the QLabel that shows for which Tool we have the parameters in the UI form
+        self.tool_data_label.setText(
+            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), (current_row + 1))
+        )
+
+        try:
+            # set the form with data from the newly selected tool
+            for tooluid_key, tooluid_value in list(self.paint_tools.items()):
+                if int(tooluid_key) == tooluid:
+                    for key, value in tooluid_value.items():
+                        if key == 'data':
+                            form_value_storage = tooluid_value[key]
+                            self.storage_to_form(form_value_storage)
+        except Exception as e:
+            log.debug("ToolPaint ---> update_ui() " + str(e))
+
+        self.blockSignals(False)
+
+    def storage_to_form(self, dict_storage):
+        for form_key in self.form_fields:
+            for storage_key in dict_storage:
+                if form_key == storage_key:
+                    try:
+                        self.form_fields[form_key].set_value(dict_storage[form_key])
+                    except Exception:
+                        pass
+
+    def form_to_storage(self):
+        if self.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            return
+
+        self.blockSignals(True)
+
+        widget_changed = self.sender()
+        wdg_objname = widget_changed.objectName()
+        option_changed = self.name2option[wdg_objname]
+
+        row = self.tools_table.currentRow()
+        if row < 0:
+            row = 0
+        tooluid_item = int(self.tools_table.item(row, 3).text())
+
+        for tooluid_key, tooluid_val in self.paint_tools.items():
+            if int(tooluid_key) == tooluid_item:
+                new_option_value = self.form_fields[option_changed].get_value()
+                if option_changed in tooluid_val:
+                    tooluid_val[option_changed] = new_option_value
+                if option_changed in tooluid_val['data']:
+                    tooluid_val['data'][option_changed] = new_option_value
+
+        self.blockSignals(False)
+
+    def on_apply_param_to_all_clicked(self):
+        if self.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            return
+
+        self.blockSignals(True)
+
+        row = self.tools_table.currentRow()
+        if row < 0:
+            row = 0
+
+        # this new dict will hold the actual useful data, another dict that is the value of key 'data'
+        temp_tools = {}
+        temp_dia = {}
+        temp_data = {}
+
+        for tooluid_key, tooluid_value in self.paint_tools.items():
+            for key, value in tooluid_value.items():
+                if key == 'data':
+                    # update the 'data' section
+                    for data_key in tooluid_value[key].keys():
+                        for form_key, form_value in self.form_fields.items():
+                            if form_key == data_key:
+                                temp_data[data_key] = form_value.get_value()
+                        # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
+                        # updated from self.app.defaults
+                        if data_key not in self.form_fields:
+                            temp_data[data_key] = value[data_key]
+                    temp_dia[key] = deepcopy(temp_data)
+                    temp_data.clear()
+
+                elif key == 'solid_geometry':
+                    temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
+                else:
+                    temp_dia[key] = deepcopy(value)
+
+                temp_tools[tooluid_key] = deepcopy(temp_dia)
+
+        self.paint_tools.clear()
+        self.paint_tools = deepcopy(temp_tools)
+        temp_tools.clear()
+
+        self.blockSignals(False)
+
+    def on_add_tool_by_key(self):
+        tool_add_popup = FCInputDialog(title='%s...' % _("New Tool"),
+                                       text='%s:' % _('Enter a Tool Diameter'),
+                                       min=0.0000, max=99.9999, decimals=4)
+        tool_add_popup.setWindowIcon(QtGui.QIcon(self.app.resource_location + '/letter_t_32.png'))
+
+        val, ok = tool_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Please enter a tool diameter with non-zero value, in Float format."))
+                return
+            self.on_tool_add(dia=float(val))
+        else:
+            self.app.inform.emit('[WARNING_NOTCL] %s...' % _("Adding Tool cancelled"))
+
+    def on_tooltable_cellwidget_change(self):
+        cw = self.sender()
+        cw_index = self.tools_table.indexAt(cw.pos())
+        cw_row = cw_index.row()
+        cw_col = cw_index.column()
+
+        current_uid = int(self.tools_table.item(cw_row, 3).text())
+
+        # if the sender is in the column with index 2 then we update the tool_type key
+        if cw_col == 2:
+            tt = cw.currentText()
+            typ = 'Iso' if tt == 'V' else "Rough"
+
+            self.paint_tools[current_uid].update({
+                'type': typ,
+                'tool_type': tt,
+            })
+
+    def on_tool_type(self, val):
+        if val == 'V':
+            self.addtool_entry_lbl.setDisabled(True)
+            self.addtool_entry.setDisabled(True)
+            self.tipdialabel.show()
+            self.tipdia_entry.show()
+            self.tipanglelabel.show()
+            self.tipangle_entry.show()
+        else:
+            self.addtool_entry_lbl.setDisabled(False)
+            self.addtool_entry.setDisabled(False)
+            self.tipdialabel.hide()
+            self.tipdia_entry.hide()
+            self.tipanglelabel.hide()
+            self.tipangle_entry.hide()
+
+    def on_calculate_tooldia(self):
+        if self.tool_type_radio.get_value() == 'V':
+            tip_dia = float(self.tipdia_entry.get_value())
+            tip_angle = float(self.tipangle_entry.get_value()) / 2.0
+            cut_z = float(self.cutz_entry.get_value())
+            cut_z = -cut_z if cut_z < 0 else cut_z
+
+            # calculated tool diameter so the cut_z parameter is obeyed
+            tool_dia = tip_dia + (2 * cut_z * math.tan(math.radians(tip_angle)))
+
+            # update the default_data so it is used in the ncc_tools dict
+            self.default_data.update({
+                "vtipdia": tip_dia,
+                "vtipangle": (tip_angle * 2),
+            })
+
+            self.addtool_entry.set_value(tool_dia)
+
+            return tool_dia
+        else:
+            return float(self.addtool_entry.get_value())
 
     def on_radio_selection(self):
         if self.selectmethod_combo.get_value() == "ref":
@@ -596,6 +960,14 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintcontour_cb.set_value(self.default_data["paintcontour"])
         self.paintoverlap_entry.set_value(self.default_data["paintoverlap"])
 
+        self.cutz_entry.set_value(self.app.defaults["tools_paintcutz"])
+        self.tool_type_radio.set_value(self.app.defaults["tools_painttool_type"])
+        self.tipdia_entry.set_value(self.app.defaults["tools_painttipdia"])
+        self.tipangle_entry.set_value(self.app.defaults["tools_painttipangle"])
+        self.addtool_entry.set_value(self.app.defaults["tools_paintnewdia"])
+
+        self.on_tool_type(val=self.tool_type_radio.get_value())
+
         # make the default object type, "Geometry"
         self.type_obj_combo.setCurrentIndex(2)
         # updated units
@@ -610,8 +982,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             "name": '_paint',
             "plot": self.app.defaults["geometry_plot"],
             "cutz": float(self.app.defaults["geometry_cutz"]),
-            "vtipdia": 0.1,
-            "vtipangle": 30,
+            "vtipdia": float(self.tipdia_entry.get_value()),
+            "vtipangle": float(self.tipangle_entry.get_value()),
             "travelz": float(self.app.defaults["geometry_travelz"]),
             "feedrate": float(self.app.defaults["geometry_feedrate"]),
             "feedrate_z": float(self.app.defaults["geometry_feedrate_z"]),
@@ -1077,9 +1449,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
             except Exception as e:
-                self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                     (_("Could not retrieve object"),
-                                      self.obj_name))
+                self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
                 return "Could not retrieve object: %s" % self.obj_name
 
             self.paint_poly_ref(obj=self.paint_obj,
@@ -2693,6 +3063,105 @@ class ToolPaint(FlatCAMTool, Gerber):
                              tools_storage=tools_storage,
                              plot=plot,
                              run_threaded=run_threaded)
+
+    def ui_connect(self):
+        self.tools_table.itemChanged.connect(self.on_tool_edit)
+
+        for row in range(self.tools_table.rowCount()):
+            try:
+                self.tools_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
+            except AttributeError:
+                pass
+
+            try:
+                self.tools_table.cellWidget(row, 4).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
+            except AttributeError:
+                pass
+
+        self.tool_type_radio.activated_custom.connect(self.on_tool_type)
+
+        # first disconnect
+        for opt in self.form_fields:
+            current_widget = self.form_fields[opt]
+            if isinstance(current_widget, FCCheckBox):
+                try:
+                    current_widget.stateChanged.disconnect()
+                except (TypeError, ValueError):
+                    pass
+            if isinstance(current_widget, RadioSet):
+                try:
+                    current_widget.activated_custom.disconnect()
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(current_widget, FCDoubleSpinner):
+                try:
+                    current_widget.returnPressed.disconnect()
+                except (TypeError, ValueError):
+                    pass
+
+        # then reconnect
+        for opt in self.form_fields:
+            current_widget = self.form_fields[opt]
+            if isinstance(current_widget, FCCheckBox):
+                current_widget.stateChanged.connect(self.form_to_storage)
+            if isinstance(current_widget, RadioSet):
+                current_widget.activated_custom.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCDoubleSpinner):
+                current_widget.returnPressed.connect(self.form_to_storage)
+
+        self.ncc_choice_offset_cb.stateChanged.connect(self.on_offset_choice)
+        self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
+        self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
+
+    def ui_disconnect(self):
+        try:
+            # if connected, disconnect the signal from the slot on item_changed as it creates issues
+            self.tools_table.itemChanged.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            # if connected, disconnect the signal from the slot on item_changed as it creates issues
+            self.tool_type_radio.activated_custom.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        for row in range(self.tools_table.rowCount()):
+            for col in [2, 4]:
+                try:
+                    self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
+                except (TypeError, AttributeError):
+                    pass
+
+        for opt in self.form_fields:
+            current_widget = self.form_fields[opt]
+            if isinstance(current_widget, FCCheckBox):
+                try:
+                    current_widget.stateChanged.disconnect()
+                except (TypeError, ValueError):
+                    pass
+            if isinstance(current_widget, RadioSet):
+                try:
+                    current_widget.activated_custom.disconnect()
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(current_widget, FCDoubleSpinner):
+                try:
+                    current_widget.returnPressed.disconnect()
+                except (TypeError, ValueError):
+                    pass
+
+    def reset_usage(self):
+        self.obj_name = ""
+        self.paint_obj = None
+        self.bound_obj = None
+
+        self.first_click = False
+        self.cursor_pos = None
+        self.mouse_is_dragging = False
+
+        self.sel_rect = []
+
 
     @staticmethod
     def paint_bounds(geometry):

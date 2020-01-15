@@ -411,7 +411,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        self.grid3.addWidget(self.ncc_connect_cb, 16, 0, 1, 2)
+        self.grid3.addWidget(self.ncc_connect_cb, 16, 0)
 
         # Contour
         self.ncc_contour_cb = FCCheckBox('%s' % _("Contour"))
@@ -421,7 +421,69 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        self.grid3.addWidget(self.ncc_contour_cb, 17, 0, 1, 2)
+        self.grid3.addWidget(self.ncc_contour_cb, 16, 1)
+
+        # ## NCC Offset choice
+        self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
+        self.ncc_choice_offset_cb.setObjectName(_("Offset"))
+
+        self.ncc_choice_offset_cb.setToolTip(
+            _("If used, it will add an offset to the copper features.\n"
+              "The copper clearing will finish to a distance\n"
+              "from the copper features.\n"
+              "The value can be between 0 and 10 FlatCAM units.")
+        )
+        self.grid3.addWidget(self.ncc_choice_offset_cb, 19, 0)
+
+        # ## NCC Offset value
+        # self.ncc_offset_label = QtWidgets.QLabel('%s:' % _("Offset value"))
+        # self.ncc_offset_label.setToolTip(
+        #     _("If used, it will add an offset to the copper features.\n"
+        #       "The copper clearing will finish to a distance\n"
+        #       "from the copper features.\n"
+        #       "The value can be between 0 and 10 FlatCAM units.")
+        # )
+        self.ncc_offset_spinner = FCDoubleSpinner()
+        self.ncc_offset_spinner.set_range(0.00, 10.00)
+        self.ncc_offset_spinner.set_precision(4)
+        self.ncc_offset_spinner.setWrapping(True)
+        self.ncc_offset_spinner.setObjectName(_("Offset value"))
+
+        units = self.app.defaults['units'].upper()
+        if units == 'MM':
+            self.ncc_offset_spinner.setSingleStep(0.1)
+        else:
+            self.ncc_offset_spinner.setSingleStep(0.01)
+
+        # self.grid3.addWidget(self.ncc_offset_label, 20, 0)
+        self.grid3.addWidget(self.ncc_offset_spinner, 19, 1)
+
+        # self.ncc_offset_label.hide()
+        self.ncc_offset_spinner.setEnabled(False)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(separator_line, 21, 0, 1, 2)
+
+        self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
+        self.apply_param_to_all.setToolTip(
+            _("The parameters in the current form will be applied\n"
+              "on all the tools from the Tool Table.")
+        )
+        self.grid3.addWidget(self.apply_param_to_all, 22, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(separator_line, 23, 0, 1, 2)
+
+        # General Parameters
+        self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
+        self.gen_param_label.setToolTip(
+            _("Parameters that are common for all tools.")
+        )
+        self.grid3.addWidget(self.gen_param_label, 24, 0, 1, 2)
 
         # Rest Machining
         self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
@@ -437,51 +499,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "If not checked, use the standard algorithm.")
         )
 
-        self.grid3.addWidget(self.ncc_rest_cb, 18, 0, 1, 2)
-
-        # ## NCC Offset choice
-        self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
-        self.ncc_choice_offset_cb.setObjectName(_("Offset"))
-
-        self.ncc_choice_offset_cb.setToolTip(
-            _("If used, it will add an offset to the copper features.\n"
-              "The copper clearing will finish to a distance\n"
-              "from the copper features.\n"
-              "The value can be between 0 and 10 FlatCAM units.")
-        )
-        self.grid3.addWidget(self.ncc_choice_offset_cb, 19, 0, 1, 2)
-
-        # ## NCC Offset value
-        self.ncc_offset_label = QtWidgets.QLabel('%s:' % _("Offset value"))
-        self.ncc_offset_label.setToolTip(
-            _("If used, it will add an offset to the copper features.\n"
-              "The copper clearing will finish to a distance\n"
-              "from the copper features.\n"
-              "The value can be between 0 and 10 FlatCAM units.")
-        )
-        self.ncc_offset_spinner = FCDoubleSpinner()
-        self.ncc_offset_spinner.set_range(0.00, 10.00)
-        self.ncc_offset_spinner.set_precision(4)
-        self.ncc_offset_spinner.setWrapping(True)
-        self.ncc_offset_spinner.setObjectName(_("Offset value"))
-
-        units = self.app.defaults['units'].upper()
-        if units == 'MM':
-            self.ncc_offset_spinner.setSingleStep(0.1)
-        else:
-            self.ncc_offset_spinner.setSingleStep(0.01)
-
-        self.grid3.addWidget(self.ncc_offset_label, 20, 0)
-        self.grid3.addWidget(self.ncc_offset_spinner, 20, 1)
-
-        self.ncc_offset_label.hide()
-        self.ncc_offset_spinner.hide()
+        self.grid3.addWidget(self.ncc_rest_cb, 25, 0, 1, 2)
 
         # ## Reference
         self.reference_radio = RadioSet([
             {'label': _('Itself'), 'value': 'itself'},
             {"label": _("Area Selection"), "value": "area"},
-            {'label':  _("Reference Object"), 'value': 'box'}
+            {'label': _("Reference Object"), 'value': 'box'}
         ], orientation='vertical', stretch=False)
         self.reference_radio.setObjectName(_("Reference"))
 
@@ -491,11 +515,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
               "- 'Reference Object' - will do non copper clearing within the area specified by another object.")
         )
-        self.grid3.addWidget(self.reference_label, 21, 0)
-        self.grid3.addWidget(self.reference_radio, 21, 1)
+        self.grid3.addWidget(self.reference_label, 26, 0, 1, 2)
+        self.grid3.addWidget(self.reference_radio, 27, 0, 1, 2)
 
         form1 = QtWidgets.QFormLayout()
-        self.grid3.addLayout(form1, 22, 0, 1, 2)
+        self.grid3.addLayout(form1, 28, 0, 1, 2)
 
         self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.box_combo_type_label.setToolTip(
@@ -523,17 +547,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.box_combo_type.hide()
         self.box_combo_type_label.hide()
 
-        separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid3.addWidget(separator_line2, 23, 0, 1, 2)
-
-        self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
-        self.apply_param_to_all.setToolTip(
-            _("The parameters in the current form will be applied\n"
-              "on all the tools from the Tool Table.")
-        )
-        self.grid3.addWidget(self.apply_param_to_all, 24, 0, 1, 2)
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid3.addWidget(separator_line, 29, 0, 1, 2)
 
         self.generate_ncc_button = QtWidgets.QPushButton(_('Generate Geometry'))
         self.generate_ncc_button.setToolTip(
@@ -630,10 +647,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "nccmethod": self.ncc_method_radio,
             "nccconnect": self.ncc_connect_cb,
             "ncccontour": self.ncc_contour_cb,
-            "nccrest": self.ncc_rest_cb,
             "nccoffset": self.ncc_choice_offset_cb,
             "nccoffset_value": self.ncc_offset_spinner,
-            "nccref":  self.reference_radio,
             "milling_type": self.milling_type_radio
         }
 
@@ -643,10 +658,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _('Method'): "nccmethod",
             _("Connect"): "nccconnect",
             _("Contour"): "ncccontour",
-            _("Rest Machining"): "nccrest",
             _("Offset"): "nccoffset",
             _("Offset value"): "nccoffset_value",
-            _("Reference"): "nccref",
             _('Milling Type'): "milling_type",
         }
 
@@ -720,7 +733,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             form_value_storage = tooluid_value[key]
                             self.storage_to_form(form_value_storage)
         except Exception as e:
-            log.debug("FlatCAMObj ---> update_ui() " + str(e))
+            log.debug("NonCopperClear ---> update_ui() " + str(e))
 
         self.blockSignals(False)
 
@@ -1164,12 +1177,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.box_combo_type_label.show()
 
     def on_offset_choice(self, state):
-        if state:
-            self.ncc_offset_label.show()
-            self.ncc_offset_spinner.show()
-        else:
-            self.ncc_offset_label.hide()
-            self.ncc_offset_spinner.hide()
+        # if state:
+        #     self.ncc_offset_label.show()
+        #     self.ncc_offset_spinner.show()
+        # else:
+        #     self.ncc_offset_label.hide()
+        #     self.ncc_offset_spinner.hide()
+        self.ncc_offset_spinner.setEnabled(state)
 
     def on_order_changed(self, order):
         if order != 'no':
