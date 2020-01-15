@@ -373,6 +373,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/origin16.png'), _('Se&t Origin\tO'))
         self.menueditjump = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location\tJ'))
+        self.menueditlocate = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/locate16.png'), _('Locate in Object\tSHIFT+J'))
 
         # Separator
         self.menuedit.addSeparator()
@@ -825,6 +827,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
         self.jmp_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
+        self.locate_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
 
         # ########################################################################
         # ########################## View Toolbar# ###############################
@@ -859,6 +863,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################################
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
+        self.align_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+        self.extract_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Drills Tool"))
+
         self.cutout_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("Cutout Tool"))
         self.ncc_btn = self.toolbartools.addAction(
@@ -1475,6 +1484,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>SHIFT+J</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>SHIFT+M</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1507,6 +1520,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>ALT+A</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>ALT+C</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1516,6 +1533,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+E</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>ALT+I</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
@@ -1637,11 +1658,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # SHIFT section
                 _("Copy Obj_Name"),
-                _("Toggle Code Editor"), _("Toggle the axis"), _("Distance Minimum Tool"), _("Open Preferences Window"),
+                _("Toggle Code Editor"), _("Toggle the axis"), _("Locate in Object"), _("Distance Minimum Tool"),
+                _("Open Preferences Window"),
                 _("Rotate by 90 degree CCW"), _("Run a Script"), _("Toggle the workspace"), _("Skew on X axis"),
                 _("Skew on Y axis"),
                 # ALT section
-                _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"), _("Fiducials Tool"),
+                _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
+                _("Extract Drills Tool"), _("Fiducials Tool"),
                 _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                 _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
@@ -2457,8 +2480,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
         self.jmp_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
+        self.locate_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/locate32.png'), _('Locate in Object'))
 
-        # ## View Toolbar # ##
+        # ########################################################################
+        # ########################## View Toolbar# ###############################
+        # ########################################################################
         self.replot_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/replot32.png'), _("&Replot"))
         self.clear_plot_btn = self.toolbarview.addAction(
@@ -2470,9 +2497,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.zoom_fit_btn = self.toolbarview.addAction(
             QtGui.QIcon(self.app.resource_location + '/zoom_fit32.png'), _("Zoom Fit"))
 
-        # self.toolbarview.setVisible(False)
-
-        # ## Shell Toolbar # ##
+        # ########################################################################
+        # ########################## Shell Toolbar# ##############################
+        # ########################################################################
         self.shell_btn = self.toolbarshell.addAction(
             QtGui.QIcon(self.app.resource_location + '/shell32.png'), _("&Command Line"))
         self.new_script_btn = self.toolbarshell.addAction(
@@ -2485,6 +2512,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ## Tools Toolbar # ##
         self.dblsided_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/doubleside32.png'), _("2Sided Tool"))
+        self.align_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/align32.png'), _("Align Objects Tool"))
+        self.extract_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/extract_drill32.png'), _("Extract Drills Tool"))
+
         self.cutout_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/cut16_bis.png'), _("&Cutout Tool"))
         self.ncc_btn = self.toolbartools.addAction(
@@ -2498,10 +2530,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.film_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(
-            QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'),
-                                                      _("SolderPaste Tool"))
+            QtGui.QIcon(self.app.resource_location + '/solderpastebis32.png'), _("SolderPaste Tool"))
         self.sub_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/sub32.png'), _("Subtract Tool"))
+        self.rules_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/rules32.png'), _("Rules Tool"))
+        self.optimal_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/open_excellon32.png'), _("Optimal Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -2834,6 +2869,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_G:
                     self.app.on_toggle_axis()
 
+                # Locate in Object
+                if key == QtCore.Qt.Key_J:
+                    self.app.on_locate(obj=self.app.collection.get_active())
+
                 # Run Distance Minimum Tool
                 if key == QtCore.Qt.Key_M:
                     self.app.distance_min_tool.run()
@@ -2882,6 +2921,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == Qt.Key_3:
                     self.app.disable_other_plots()
 
+                # Align in Object Tool
+                if key == QtCore.Qt.Key_A:
+                    self.app.align_objects_tool.run(toggle=True)
+
                 # Calculator Tool
                 if key == QtCore.Qt.Key_C:
                     self.app.calculator_tool.run(toggle=True)
@@ -2905,6 +2948,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_G:
                     self.app.on_toggle_grid_lines()
                     return
+
+                # Align in Object Tool
+                if key == QtCore.Qt.Key_I:
+                    self.app.edrills_tool.run(toggle=True)
 
                 # Fiducials Tool
                 if key == QtCore.Qt.Key_J:

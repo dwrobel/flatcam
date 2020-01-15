@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.01.2020
+
+- added key shortcuts and toolbar icons for the new tools: Align Object Tool (ALT+A) and Extract Drills (ALT+I)
+- added new functionality (key shortcut SHIFT+J) to locate the corners of the bounding box (and center) in a selected object
+
 14.01.2020
 
 - in Extract Drill Tool added a new method of drills extraction. The methods are: fixed diameter, fixed annular ring and proportional

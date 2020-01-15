@@ -240,6 +240,9 @@ class App(QtCore.QObject):
     # signal emitted when jumping
     jump_signal = pyqtSignal(tuple)
 
+    # signal emitted when jumping
+    locate_signal = pyqtSignal(tuple, str)
+
     # close app signal
     close_app_signal = pyqtSignal()
 
@@ -429,6 +432,7 @@ class App(QtCore.QObject):
             "global_stats": dict(),
             "global_tabs_detachable": True,
             "global_jump_ref": 'abs',
+            "global_locate_pt": 'bl',
             "global_tpdf_tmargin": 15.0,
             "global_tpdf_bmargin": 10.0,
             "global_tpdf_lmargin": 20.0,
@@ -1956,6 +1960,7 @@ class App(QtCore.QObject):
 
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menueditjump.triggered.connect(self.on_jump_to)
+        self.ui.menueditlocate.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
         self.ui.menuedittoggleunits.triggered.connect(self.on_toggle_units_click)
         self.ui.menueditselectall.triggered.connect(self.on_selectall)
@@ -3241,6 +3246,7 @@ class App(QtCore.QObject):
         self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
         self.ui.origin_btn.triggered.connect(self.on_set_origin)
         self.ui.jmp_btn.triggered.connect(self.on_jump_to)
+        self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
         self.ui.new_script_btn.triggered.connect(self.on_filenewscript)
@@ -3250,6 +3256,9 @@ class App(QtCore.QObject):
         # Tools Toolbar Signals
         self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
         self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
+        self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
+        self.ui.extract_btn.triggered.connect(lambda: self.edrills_tool.run(toggle=True))
+
         self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
         self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
         self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
@@ -7288,7 +7297,151 @@ class App(QtCore.QObject):
 
         self.jump_signal.emit(location)
 
-        units = self.defaults['units'].upper()
+        if fit_center:
+            self.plotcanvas.fit_center(loc=location)
+
+        cursor = QtGui.QCursor()
+
+        if self.is_legacy is False:
+            # I don't know where those differences come from but they are constant for the current
+            # execution of the application and they are multiples of a value around 0.0263mm.
+            # In a random way sometimes they are more sometimes they are less
+            # if units == 'MM':
+            #     cal_factor = 0.0263
+            # else:
+            #     cal_factor = 0.0263 / 25.4
+
+            cal_location = (location[0], location[1])
+
+            canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            jump_loc = self.plotcanvas.translate_coords_2((cal_location[0], cal_location[1]))
+
+            j_pos = (
+                int(canvas_origin.x() + round(jump_loc[0])),
+                int(canvas_origin.y() + round(jump_loc[1]))
+            )
+            cursor.setPos(j_pos[0], j_pos[1])
+        else:
+            # find the canvas origin which is in the top left corner
+            canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            # determine the coordinates for the lowest left point of the canvas
+            x0, y0 = canvas_origin.x(), canvas_origin.y() + self.ui.right_layout.geometry().height()
+
+            # transform the given location from data coordinates to display coordinates. THe display coordinates are
+            # in pixels where the origin 0,0 is in the lowest left point of the display window (in our case is the
+            # canvas) and the point (width, height) is in the top-right location
+            loc = self.plotcanvas.axes.transData.transform_point(location)
+            j_pos = (
+                int(x0 + loc[0]),
+                int(y0 - loc[1])
+            )
+            cursor.setPos(j_pos[0], j_pos[1])
+            self.plotcanvas.mouse = [location[0], location[1]]
+            if self.defaults["global_cursor_color_enabled"] is True:
+                self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1], color=self.cursor_color_3D)
+            else:
+                self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1])
+
+        if self.grid_status():
+            # Update cursor
+            self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
+                                     symbol='++', edge_color=self.cursor_color_3D,
+                                     edge_width=self.defaults["global_cursor_width"],
+                                     size=self.defaults["global_cursor_size"])
+
+        # Set the position label
+        self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                       "<b>Y</b>: %.4f" % (location[0], location[1]))
+        # Set the relative position label
+        dx = location[0] - float(self.rel_point1[0])
+        dy = location[1] - float(self.rel_point1[1])
+        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+
+        self.inform.emit('[success] %s' % _("Done."))
+        return location
+
+    def on_locate(self, obj, fit_center=True):
+        """
+        Jump to one of the corners (or center) of an object by setting the mouse cursor location
+        :return:
+
+        """
+        self.report_usage("on_locate()")
+
+        if obj is None:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("There is no object selected..."))
+            return 'fail'
+
+        class DialogBoxChoice(QtWidgets.QDialog):
+            def __init__(self, title=None, icon=None, choice='bl'):
+                """
+
+                :param title: string with the window title
+                """
+                super(DialogBoxChoice, self).__init__()
+
+                self.ok = False
+
+                self.setWindowIcon(icon)
+                self.setWindowTitle(str(title))
+
+                self.form = QtWidgets.QFormLayout(self)
+
+                self.ref_radio = RadioSet([
+                    {"label": _("Bottom-Left"), "value": "bl"},
+                    {"label": _("Top-Left"), "value": "tl"},
+                    {"label": _("Bottom-Right"), "value": "br"},
+                    {"label": _("Top-Right"), "value": "tr"},
+                    {"label": _("Center"), "value": "c"}
+                ], orientation='vertical', stretch=False)
+                self.ref_radio.set_value(choice)
+                self.form.addRow(self.ref_radio)
+
+                self.button_box = QtWidgets.QDialogButtonBox(
+                    QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
+                    Qt.Horizontal, parent=self)
+                self.form.addRow(self.button_box)
+
+                self.button_box.accepted.connect(self.accept)
+                self.button_box.rejected.connect(self.reject)
+
+                if self.exec_() == QtWidgets.QDialog.Accepted:
+                    self.ok = True
+                    self.location_point = self.ref_radio.get_value()
+                else:
+                    self.ok = False
+                    self.location_point = None
+
+        dia_box = DialogBoxChoice(title=_("Locate ..."),
+                                  icon=QtGui.QIcon(self.resource_location + '/locate16.png'),
+                                  choice=self.defaults['global_locate_pt'])
+
+        if dia_box.ok is True:
+            try:
+                location_point = dia_box.location_point
+                self.defaults['global_locate_pt'] = dia_box.location_point
+            except Exception:
+                return
+        else:
+            return
+
+        loc_b = obj.bounds()
+        if location_point == 'bl':
+            location = (loc_b[0], loc_b[1])
+        elif location_point == 'tl':
+            location = (loc_b[0], loc_b[3])
+        elif location_point == 'br':
+            location = (loc_b[2], loc_b[1])
+        elif location_point == 'tr':
+            location = (loc_b[2], loc_b[3])
+        else:
+            # center
+            cx = loc_b[0] + ((loc_b[2] - loc_b[0]) / 2)
+            cy = loc_b[1] + ((loc_b[3] - loc_b[1]) / 2)
+            location = (cx, cy)
+
+        self.locate_signal.emit(location, location_point)
 
         if fit_center:
             self.plotcanvas.fit_center(loc=location)

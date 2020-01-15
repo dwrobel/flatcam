@@ -224,7 +224,6 @@ class AlignObjects(FlatCAMTool):
         self.aligned_old_fill_color = None
         self.aligned_old_line_color = None
 
-
     def run(self, toggle=True):
         self.app.report_usage("ToolAlignObjects()")
 
@@ -459,50 +458,6 @@ class AlignObjects(FlatCAMTool):
             angle_start = math.degrees(math.atan(dys / dxs))
             angle = angle_dest - angle_start
             self.aligned_obj.rotate(angle=angle, point=origin_pt)
-
-    def execute(self):
-        aligned_name = self.object_combo.currentText()
-
-        # Get source object.
-        try:
-            aligned_obj = self.app.collection.get_by_name(str(aligned_name))
-        except Exception as e:
-            log.debug("AlignObjects.on_align() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), aligned_name))
-            return "Could not retrieve object: %s" % aligned_name
-
-        if aligned_obj is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), aligned_obj))
-            return "Object not found: %s" % aligned_obj
-
-        aligner_name = self.box_combo.currentText()
-
-        try:
-            aligner_obj = self.app.collection.get_by_name(aligner_name)
-        except Exception as e:
-            log.debug("AlignObjects.on_align() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), aligner_name))
-            return "Could not retrieve object: %s" % aligner_name
-
-        if aligner_obj is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), aligner_name))
-
-        def align_job():
-            pass
-
-        proc = self.app.proc_container.new(_("Working..."))
-
-        def job_thread(app_obj):
-            try:
-                align_job()
-                app_obj.inform.emit('[success] %s' % _("Panel created successfully."))
-            except Exception as ee:
-                proc.done()
-                log.debug(str(ee))
-                return
-            proc.done()
-
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def disconnect_cal_events(self):
         # restore the Grid snapping if it was active before
