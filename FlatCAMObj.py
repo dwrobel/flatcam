@@ -1307,7 +1307,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             else:
                 iso_name = outname
 
-            # TODO: This is ugly. Create way to pass data into init function.
             def iso_init(geo_obj, app_obj):
                 # Propagate options
                 geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
@@ -1318,8 +1317,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     iso_offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
 
                     # if milling type is climb then the move is counter-clockwise around features
-                    mill_t = 1 if milling_type == 'cl' else 0
-                    geom = self.generate_envelope(iso_offset, mill_t, geometry=work_geo, env_iso_type=iso_t,
+                    mill_dir = 1 if milling_type == 'cl' else 0
+                    geom = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
                                                   follow=follow, nr_passes=i)
 
                     if geom == 'fail':
@@ -1438,7 +1437,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     else:
                         iso_name = outname
 
-                # TODO: This is ugly. Create way to pass data into init function.
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
@@ -1448,9 +1446,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         geo_obj.tool_type = 'C1'
 
                     # if milling type is climb then the move is counter-clockwise around features
-                    mill_t = 1 if milling_type == 'cl' else 0
-                    mill_t = 1 if milling_type == 'cl' else 0
-                    geom = self.generate_envelope(offset, mill_t, geometry=work_geo, env_iso_type=iso_t,
+                    mill_dir = 1 if milling_type == 'cl' else 0
+                    geom = self.generate_envelope(offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
                                                   follow=follow,
                                                   nr_passes=i)
 
@@ -2641,7 +2638,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         horizontal_header.setDefaultSectionSize(70)
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(0, 20)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        if self.app.defaults["global_app_level"] == 'b':
+            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        else:
+            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)

@@ -595,6 +595,7 @@ class Gerber(Geometry):
                 match = self.units_re.search(gline)
                 if match:
                     obs_gerber_units = {'0': 'IN', '1': 'MM'}[match.group(1)]
+                    self.units = obs_gerber_units
                     log.warning("Gerber obsolete units found = %s" % obs_gerber_units)
                     # Changed for issue #80
                     # self.convert_units({'0': 'IN', '1': 'MM'}[match.group(1)])
@@ -834,7 +835,8 @@ class Gerber(Geometry):
                     # --- Buffered ---
                     geo_dict = dict()
                     if current_aperture in self.apertures:
-                        buff_value = float(self.apertures[current_aperture]['size']) / 2.0
+                        # the following line breaks loading of Circuit Studio Gerber files
+                        # buff_value = float(self.apertures[current_aperture]['size']) / 2.0
                         # region_geo = Polygon(path).buffer(buff_value, int(self.steps_per_circle))
                         region_geo = Polygon(path)  # Sprint Layout Gerbers with ground fill are crashed with above
                     else:

@@ -1,11 +1,12 @@
 import sys
 
-
 from flatcamTools.ToolCalculators import ToolCalculator
 from flatcamTools.ToolCalibration import ToolCalibration
 from flatcamTools.ToolCutOut import CutOut
 
 from flatcamTools.ToolDblSided import DblSidedTool
+from flatcamTools.ToolExtractDrills import ToolExtractDrills
+from flatcamTools.ToolAlignObjects import AlignObjects
 
 from flatcamTools.ToolFilm import Film
 
@@ -17,10 +18,10 @@ from flatcamTools.ToolDistanceMin import DistanceMin
 from flatcamTools.ToolMove import ToolMove
 
 from flatcamTools.ToolNonCopperClear import NonCopperClear
+from flatcamTools.ToolPaint import ToolPaint
 
 from flatcamTools.ToolOptimal import ToolOptimal
 
-from flatcamTools.ToolPaint import ToolPaint
 from flatcamTools.ToolPanelize import Panelize
 from flatcamTools.ToolPcbWizard import PcbWizard
 from flatcamTools.ToolPDF import ToolPDF

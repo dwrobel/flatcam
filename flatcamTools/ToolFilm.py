@@ -752,7 +752,7 @@ class Film(FlatCAMTool):
                                  skew_factor_x=skew_factor_x, skew_factor_y=skew_factor_y,
                                  skew_reference=skew_reference,
                                  mirror=mirror,
-                                 pagesize=pagesize, orientation=orientation, color=color, opacity=1.0,
+                                 pagesize_val=pagesize, orientation_val=orientation, color_val=color, opacity_val=1.0,
                                  ftype=ftype
                                  )
 
@@ -1080,23 +1080,28 @@ class Film(FlatCAMTool):
                         skew_factor_x=None, skew_factor_y=None, skew_reference='center',
                         mirror=None,  orientation_val='p', pagesize_val='A4', color_val='black', opacity_val=1.0,
                         use_thread=True, ftype='svg'):
+
         """
         Exports a Geometry Object to an SVG file in positive black.
 
-        :param obj_name: the name of the FlatCAM object to be saved as SVG
-        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
-        :param filename: Path to the SVG file to save to.
+        :param obj_name:            the name of the FlatCAM object to be saved
+        :param box_name:            the name of the FlatCAM object to be used as delimitation of the content to be saved
+        :param filename:            Path to the file to save to.
         :param scale_stroke_factor: factor by which to change/scale the thickness of the features
-        :param scale_factor_x: factor to scale the svg geometry on the X axis
-        :param scale_factor_y: factor to scale the svg geometry on the Y axis
-        :param skew_factor_x: factor to skew the svg geometry on the X axis
-        :param skew_factor_y: factor to skew the svg geometry on the Y axis
-        :param skew_reference: reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft', 'topright' and
-        those are the 4 points of the bounding box of the geometry to be skewed.
-        :param mirror: can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
+        :param scale_factor_x:      factor to scale the geometry on the X axis
+        :param scale_factor_y:      factor to scale the geometry on the Y axis
+        :param skew_factor_x:       factor to skew the geometry on the X axis
+        :param skew_factor_y:       factor to skew the geometry on the Y axis
+        :param skew_reference:      reference to use for skew. Can be 'bottomleft', 'bottomright', 'topleft',
+        'topright' and those are the 4 points of the bounding box of the geometry to be skewed.
+        :param mirror:              can be 'x' or 'y' or 'both'. Axis on which to mirror the svg geometry
+        :param orientation_val:
+        :param pagesize_val:
+        :param color_val:
+        :param opacity_val:
+        :param use_thread:          if to be run in a separate thread; boolean
+        :param ftype:               the type of file for saving the film: 'svg', 'png' or 'pdf'
 
-        :param use_thread: if to be run in a separate thread; boolean
-        :param ftype: the type of file for saving the film: 'svg', 'png' or 'pdf'
         :return:
         """
         self.app.report_usage("export_positive()")

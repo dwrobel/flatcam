@@ -458,8 +458,8 @@ class Geometry(object):
     """
 
     defaults = {
-        "units": 'in',
-        "geo_steps_per_circle": 64
+        "units": 'mm',
+        # "geo_steps_per_circle": 128
     }
 
     def __init__(self, geo_steps_per_circle=None):
@@ -528,13 +528,13 @@ class Geometry(object):
             self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
-            self.solid_geometry.append(Point(origin).buffer(
-                radius, int(int(self.geo_steps_per_circle) / 4)))
+            self.solid_geometry.append(Point(origin).buffer(radius, int(self.geo_steps_per_circle)))
             return
 
         try:
-            self.solid_geometry = self.solid_geometry.union(Point(origin).buffer(
-                radius, int(int(self.geo_steps_per_circle) / 4)))
+            self.solid_geometry = self.solid_geometry.union(
+                Point(origin).buffer(radius, int(self.geo_steps_per_circle))
+            )
         except Exception as e:
             log.error("Failed to run union on polygons. %s" % str(e))
             return
@@ -944,7 +944,7 @@ class Geometry(object):
                     geo_iso.append(pol)
                 else:
                     corner_type = 1 if corner is None else corner
-                    geo_iso.append(pol.buffer(offset, int(int(self.geo_steps_per_circle) / 4), join_style=corner_type))
+                    geo_iso.append(pol.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type))
                 pol_nr += 1
                 disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
@@ -959,8 +959,7 @@ class Geometry(object):
                 geo_iso.append(working_geo)
             else:
                 corner_type = 1 if corner is None else corner
-                geo_iso.append(working_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                                                  join_style=corner_type))
+                geo_iso.append(working_geo.buffer(offset, int(self.geo_steps_per_circle), join_style=corner_type))
 
         self.app.proc_container.update_view_text(' %s' % _("Buffering"))
         geo_iso = unary_union(geo_iso)
@@ -1225,7 +1224,7 @@ class Geometry(object):
 
         # Can only result in a Polygon or MultiPolygon
         # NOTE: The resulting polygon can be "empty".
-        current = polygon.buffer((-tooldia / 1.999999), int(int(steps_per_circle) / 4))
+        current = polygon.buffer((-tooldia / 1.999999), int(steps_per_circle))
         if current.area == 0:
             # Otherwise, trying to to insert current.exterior == None
             # into the FlatCAMStorage will fail.
@@ -1254,7 +1253,7 @@ class Geometry(object):
             QtWidgets.QApplication.processEvents()
 
             # Can only result in a Polygon or MultiPolygon
-            current = current.buffer(-tooldia * (1 - overlap), int(int(steps_per_circle) / 4))
+            current = current.buffer(-tooldia * (1 - overlap), int(steps_per_circle))
             if current.area > 0:
 
                 # current can be a MultiPolygon
@@ -1372,11 +1371,12 @@ class Geometry(object):
 
         # Clean inside edges (contours) of the original polygon
         if contour:
-            outer_edges = [x.exterior for x in autolist(
-                polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4)))]
+            outer_edges = [
+                x.exterior for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle)))
+            ]
             inner_edges = []
             # Over resulting polygons
-            for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4))):
+            for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle))):
                 for y in x.interiors:  # Over interiors of each polygon
                     inner_edges.append(y)
             # geoms += outer_edges + inner_edges
@@ -1626,7 +1626,7 @@ class Geometry(object):
                 # Straight line from current_pt to pt.
                 # Is the toolpath inside the geometry?
                 walk_path = LineString([current_pt, pt])
-                walk_cut = walk_path.buffer(tooldia / 2, int(steps_per_circle / 4))
+                walk_cut = walk_path.buffer(tooldia / 2, int(steps_per_circle))
 
                 if walk_cut.within(boundary) and walk_path.length < max_walk:
                     # log.debug("Walk to path #%d is inside. Joining." % path_count)
@@ -4213,7 +4213,7 @@ class CNCjob(Geometry):
                     radius = np.sqrt(gobj['I']**2 + gobj['J']**2)
                     start = np.arctan2(-gobj['J'], -gobj['I'])
                     stop = np.arctan2(-center[1] + y, -center[0] + x)
-                    path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle / 4))
+                    path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle))
 
                 current['X'] = x
                 current['Y'] = y
@@ -4362,8 +4362,7 @@ class CNCjob(Geometry):
                                           visible=visible, layer=1)
             else:
                 # For Incremental coordinates type G91
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _('G91 coordinates not implemented ...'))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _('G91 coordinates not implemented ...'))
                 for geo in gcode_parsed:
                     if geo['kind'][0] == 'T':
                         current_position = geo['geom'].coords[0]

@@ -9,19 +9,59 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
-8.01.2019
+15.01.2020
+
+- added key shortcuts and toolbar icons for the new tools: Align Object Tool (ALT+A) and Extract Drills (ALT+I)
+- added new functionality (key shortcut SHIFT+J) to locate the corners of the bounding box (and center) in a selected object
+
+14.01.2020
+
+- in Extract Drill Tool added a new method of drills extraction. The methods are: fixed diameter, fixed annular ring and proportional
+- in Align Objects Tool finished the Single Point method of alignment
+- working on the Dual Point option in Align Objects Tool - angle has to be recalculated
+- finished Dual Point option in Align Objects Tool
+
+13.01.2020
+
+- fixed a small GUI issue in Excellon UI when Basic mode is active
+- started the add of a new Tool: Align Objects Tool which will align (sync) objects of Gerber or Excellon type
+- fixed an issue in Gerber parser introduced recently due of changes made to make Gerber files produced by Sprint Layout
+- working on the Align Objects Tool
+
+12.01.2020
+
+- improved the circle approximation resolution
+- fixed an issue in Gerber parser with detecting old kind of units
+- if CTRL key is pressed during app startup the app will start in the Legacy(2D) graphic engine compatibility mode
+
+11.01.2020
+
+- fixed an issue in the Distance Tool
+- expanded the Extract Drills Tool to use a particular annular ring for each type of aperture flash (pad)
+- Extract Drills Tool: fixed issue with oblong pads and with pads made from aperture macros
+- Extract Drills Tool: added controls in Edit -> Preferences
+
+10.02.2020
+
+- working on a new tool: Extract Drills Tool who will create a Excellon object out of the apertures of a Gerber object
+- finished the GUI in the Extract Drills Tool
+- fixed issue in Film Tool where some parameters names in calls of method export_positive() were not matching the actual parameters name
+- finished the Extract Drills Tool
+- fixed a small issue in the DoubleSided Tool
+
+8.01.2020
 
 - working in NCC Tool
 - selected rows in the Tools Tables will stay colored in blue after loosing focus instead of the default gray
 - in NCC Tool the Tool name in the Parameters section will be the Tool ID in the Tool Table
 - added an exception catch in case the plotcanvas init failed for the OpenGL graphic engine and warn user about what happened
 
-7.01.2019
+7.01.2020
 
 - solved issue #368 - when using the Enable/Disable prj context menu entries the plotted status is not updated in the object properties
 - updates in NCC Tool
 
-6.01.2019
+6.01.2020
 
 - working on new NCC Tool
 

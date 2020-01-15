@@ -141,7 +141,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.992
-    version_date = "2020/01/02"
+    version_date = "2020/01/20"
     beta = True
     engine = '3D'
 
@@ -239,6 +239,9 @@ class App(QtCore.QObject):
 
     # signal emitted when jumping
     jump_signal = pyqtSignal(tuple)
+
+    # signal emitted when jumping
+    locate_signal = pyqtSignal(tuple, str)
 
     # close app signal
     close_app_signal = pyqtSignal()
@@ -429,6 +432,7 @@ class App(QtCore.QObject):
             "global_stats": dict(),
             "global_tabs_detachable": True,
             "global_jump_ref": 'abs',
+            "global_locate_pt": 'bl',
             "global_tpdf_tmargin": 15.0,
             "global_tpdf_bmargin": 10.0,
             "global_tpdf_lmargin": 20.0,
@@ -524,8 +528,8 @@ class App(QtCore.QObject):
             "global_cursor_type": "small",
             "global_cursor_size": 20,
             "global_cursor_width": 2,
-            "global_cursor_color": '#000000',
-            "global_cursor_color_enabled": False,
+            "global_cursor_color": '#FF0000',
+            "global_cursor_color_enabled": True,
 
             # Gerber General
             "gerber_plot": True,
@@ -953,6 +957,24 @@ class App(QtCore.QObject):
             "tools_cal_toolchangez": 15,
             "tools_cal_toolchange_xy": '',
             "tools_cal_sec_point": 'tl',
+
+            # Drills Extraction Tool
+            "tools_edrills_hole_type": 'fixed',
+            "tools_edrills_hole_fixed_dia": 0.5,
+            "tools_edrills_hole_prop_factor": 80.0,
+            "tools_edrills_circular_ring": 0.2,
+            "tools_edrills_oblong_ring": 0.2,
+            "tools_edrills_square_ring": 0.2,
+            "tools_edrills_rectangular_ring": 0.2,
+            "tools_edrills_others_ring": 0.2,
+            "tools_edrills_circular": True,
+            "tools_edrills_oblong": False,
+            "tools_edrills_square": False,
+            "tools_edrills_rectangular": False,
+            "tools_edrills_others": False,
+
+            # Align Objects Tool
+            "tools_align_objects_align_type": 'sp',
 
             # Utilities
             # file associations
@@ -1578,6 +1600,21 @@ class App(QtCore.QObject):
             "tools_cal_toolchange_xy": self.ui.tools2_defaults_form.tools2_cal_group.toolchange_xy_entry,
             "tools_cal_sec_point": self.ui.tools2_defaults_form.tools2_cal_group.second_point_radio,
 
+            # Extract Drills Tool
+            "tools_edrills_hole_type": self.ui.tools2_defaults_form.tools2_edrills_group.hole_size_radio,
+            "tools_edrills_hole_fixed_dia": self.ui.tools2_defaults_form.tools2_edrills_group.dia_entry,
+            "tools_edrills_hole_prop_factor": self.ui.tools2_defaults_form.tools2_edrills_group.factor_entry,
+            "tools_edrills_circular_ring": self.ui.tools2_defaults_form.tools2_edrills_group.circular_ring_entry,
+            "tools_edrills_oblong_ring": self.ui.tools2_defaults_form.tools2_edrills_group.oblong_ring_entry,
+            "tools_edrills_square_ring": self.ui.tools2_defaults_form.tools2_edrills_group.square_ring_entry,
+            "tools_edrills_rectangular_ring": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_ring_entry,
+            "tools_edrills_others_ring": self.ui.tools2_defaults_form.tools2_edrills_group.other_ring_entry,
+            "tools_edrills_circular": self.ui.tools2_defaults_form.tools2_edrills_group.circular_cb,
+            "tools_edrills_oblong": self.ui.tools2_defaults_form.tools2_edrills_group.oblong_cb,
+            "tools_edrills_square": self.ui.tools2_defaults_form.tools2_edrills_group.square_cb,
+            "tools_edrills_rectangular": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_cb,
+            "tools_edrills_others": self.ui.tools2_defaults_form.tools2_edrills_group.other_cb,
+
             # Utilities
             # File associations
             "fa_excellon": self.ui.util_defaults_form.fa_excellon_group.exc_list_text,
@@ -1923,6 +1960,7 @@ class App(QtCore.QObject):
 
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menueditjump.triggered.connect(self.on_jump_to)
+        self.ui.menueditlocate.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
         self.ui.menuedittoggleunits.triggered.connect(self.on_toggle_units_click)
         self.ui.menueditselectall.triggered.connect(self.on_selectall)
@@ -2464,12 +2502,14 @@ class App(QtCore.QObject):
         self.qrcode_tool = None
         self.copper_thieving_tool = None
         self.fiducial_tool = None
+        self.edrills_tool = None
+        self.align_objects_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         try:
             self.install_tools()
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            log.debug("App.__init__() install tools() --> %s" % str(e))
 
         # ##################################################################################
         # ########################### SETUP RECENT ITEMS ###################################
@@ -3017,13 +3057,6 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.dblsidedtool = DblSidedTool(self)
-        self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=True)
-
-        self.cal_exc_tool = ToolCalibration(self)
-        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menutool,
-                                  before=self.dblsidedtool.menuAction,
-                                  separator=False)
         self.distance_tool = Distance(self)
         self.distance_tool.install(icon=QtGui.QIcon(self.resource_location + '/distance16.png'), pos=self.ui.menuedit,
                                    before=self.ui.menueditorigin,
@@ -3034,6 +3067,20 @@ class App(QtCore.QObject):
                                        pos=self.ui.menuedit,
                                        before=self.ui.menueditorigin,
                                        separator=True)
+
+        self.dblsidedtool = DblSidedTool(self)
+        self.dblsidedtool.install(icon=QtGui.QIcon(self.resource_location + '/doubleside16.png'), separator=False)
+
+        self.cal_exc_tool = ToolCalibration(self)
+        self.cal_exc_tool.install(icon=QtGui.QIcon(self.resource_location + '/calibrate_16.png'), pos=self.ui.menutool,
+                                  before=self.dblsidedtool.menuAction,
+                                  separator=False)
+
+        self.align_objects_tool = AlignObjects(self)
+        self.align_objects_tool.install(icon=QtGui.QIcon(self.resource_location + '/align16.png'), separator=False)
+
+        self.edrills_tool = ToolExtractDrills(self)
+        self.edrills_tool.install(icon=QtGui.QIcon(self.resource_location + '/drill16.png'), separator=True)
 
         self.panelize_tool = Panelize(self)
         self.panelize_tool.install(icon=QtGui.QIcon(self.resource_location + '/panelize16.png'))
@@ -3199,6 +3246,7 @@ class App(QtCore.QObject):
         self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
         self.ui.origin_btn.triggered.connect(self.on_set_origin)
         self.ui.jmp_btn.triggered.connect(self.on_jump_to)
+        self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
         self.ui.new_script_btn.triggered.connect(self.on_filenewscript)
@@ -3208,6 +3256,9 @@ class App(QtCore.QObject):
         # Tools Toolbar Signals
         self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
         self.ui.cal_btn.triggered.connect(lambda: self.cal_exc_tool.run(toggle=True))
+        self.ui.align_btn.triggered.connect(lambda: self.align_objects_tool.run(toggle=True))
+        self.ui.extract_btn.triggered.connect(lambda: self.edrills_tool.run(toggle=True))
+
         self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
         self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
         self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
@@ -4237,8 +4288,19 @@ class App(QtCore.QObject):
                 obj.options['xmax'] = xmax
                 obj.options['ymax'] = ymax
             except Exception as e:
-                log.warning("The object has no bounds properties. %s" % str(e))
+                log.warning("App.new_object() -> The object has no bounds properties. %s" % str(e))
                 return "fail"
+
+            try:
+                if kind == 'excellon':
+                    obj.fill_color = self.app.defaults["excellon_plot_fill"]
+                    obj.outline_color = self.app.defaults["excellon_plot_line"]
+
+                if kind == 'gerber':
+                    obj.fill_color = self.app.defaults["gerber_plot_fill"]
+                    obj.outline_color = self.app.defaults["gerber_plot_line"]
+            except Exception as e:
+                log.warning("App.new_object() -> setting colors error. %s" % str(e))
 
         # update the KeyWords list with the name of the file
         self.myKeywords.append(obj.options['name'])
@@ -7140,15 +7202,13 @@ class App(QtCore.QObject):
                     obj.options['ymin'] = b
                     obj.options['xmax'] = c
                     obj.options['ymax'] = d
-                self.inform.emit('[success] %s...' %
-                                 _('Origin set'))
+                self.inform.emit('[success] %s...' % _('Origin set'))
                 if noplot_sig is False:
                     self.replot_signal.emit([])
 
         if location is not None:
             if len(location) != 2:
-                self.inform.emit('[ERROR_NOTCL] %s...' %
-                                 _("Origin coordinates specified but incomplete."))
+                self.inform.emit('[ERROR_NOTCL] %s...' % _("Origin coordinates specified but incomplete."))
                 return 'fail'
 
             x, y = location
@@ -7235,7 +7295,151 @@ class App(QtCore.QObject):
 
         self.jump_signal.emit(location)
 
-        units = self.defaults['units'].upper()
+        if fit_center:
+            self.plotcanvas.fit_center(loc=location)
+
+        cursor = QtGui.QCursor()
+
+        if self.is_legacy is False:
+            # I don't know where those differences come from but they are constant for the current
+            # execution of the application and they are multiples of a value around 0.0263mm.
+            # In a random way sometimes they are more sometimes they are less
+            # if units == 'MM':
+            #     cal_factor = 0.0263
+            # else:
+            #     cal_factor = 0.0263 / 25.4
+
+            cal_location = (location[0], location[1])
+
+            canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            jump_loc = self.plotcanvas.translate_coords_2((cal_location[0], cal_location[1]))
+
+            j_pos = (
+                int(canvas_origin.x() + round(jump_loc[0])),
+                int(canvas_origin.y() + round(jump_loc[1]))
+            )
+            cursor.setPos(j_pos[0], j_pos[1])
+        else:
+            # find the canvas origin which is in the top left corner
+            canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+            # determine the coordinates for the lowest left point of the canvas
+            x0, y0 = canvas_origin.x(), canvas_origin.y() + self.ui.right_layout.geometry().height()
+
+            # transform the given location from data coordinates to display coordinates. THe display coordinates are
+            # in pixels where the origin 0,0 is in the lowest left point of the display window (in our case is the
+            # canvas) and the point (width, height) is in the top-right location
+            loc = self.plotcanvas.axes.transData.transform_point(location)
+            j_pos = (
+                int(x0 + loc[0]),
+                int(y0 - loc[1])
+            )
+            cursor.setPos(j_pos[0], j_pos[1])
+            self.plotcanvas.mouse = [location[0], location[1]]
+            if self.defaults["global_cursor_color_enabled"] is True:
+                self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1], color=self.cursor_color_3D)
+            else:
+                self.plotcanvas.draw_cursor(x_pos=location[0], y_pos=location[1])
+
+        if self.grid_status():
+            # Update cursor
+            self.app_cursor.set_data(np.asarray([(location[0], location[1])]),
+                                     symbol='++', edge_color=self.cursor_color_3D,
+                                     edge_width=self.defaults["global_cursor_width"],
+                                     size=self.defaults["global_cursor_size"])
+
+        # Set the position label
+        self.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                       "<b>Y</b>: %.4f" % (location[0], location[1]))
+        # Set the relative position label
+        dx = location[0] - float(self.rel_point1[0])
+        dy = location[1] - float(self.rel_point1[1])
+        self.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+
+        self.inform.emit('[success] %s' % _("Done."))
+        return location
+
+    def on_locate(self, obj, fit_center=True):
+        """
+        Jump to one of the corners (or center) of an object by setting the mouse cursor location
+        :return:
+
+        """
+        self.report_usage("on_locate()")
+
+        if obj is None:
+            self.inform.emit('[WARNING_NOTCL] %s' % _("There is no object selected..."))
+            return 'fail'
+
+        class DialogBoxChoice(QtWidgets.QDialog):
+            def __init__(self, title=None, icon=None, choice='bl'):
+                """
+
+                :param title: string with the window title
+                """
+                super(DialogBoxChoice, self).__init__()
+
+                self.ok = False
+
+                self.setWindowIcon(icon)
+                self.setWindowTitle(str(title))
+
+                self.form = QtWidgets.QFormLayout(self)
+
+                self.ref_radio = RadioSet([
+                    {"label": _("Bottom-Left"), "value": "bl"},
+                    {"label": _("Top-Left"), "value": "tl"},
+                    {"label": _("Bottom-Right"), "value": "br"},
+                    {"label": _("Top-Right"), "value": "tr"},
+                    {"label": _("Center"), "value": "c"}
+                ], orientation='vertical', stretch=False)
+                self.ref_radio.set_value(choice)
+                self.form.addRow(self.ref_radio)
+
+                self.button_box = QtWidgets.QDialogButtonBox(
+                    QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
+                    Qt.Horizontal, parent=self)
+                self.form.addRow(self.button_box)
+
+                self.button_box.accepted.connect(self.accept)
+                self.button_box.rejected.connect(self.reject)
+
+                if self.exec_() == QtWidgets.QDialog.Accepted:
+                    self.ok = True
+                    self.location_point = self.ref_radio.get_value()
+                else:
+                    self.ok = False
+                    self.location_point = None
+
+        dia_box = DialogBoxChoice(title=_("Locate ..."),
+                                  icon=QtGui.QIcon(self.resource_location + '/locate16.png'),
+                                  choice=self.defaults['global_locate_pt'])
+
+        if dia_box.ok is True:
+            try:
+                location_point = dia_box.location_point
+                self.defaults['global_locate_pt'] = dia_box.location_point
+            except Exception:
+                return
+        else:
+            return
+
+        loc_b = obj.bounds()
+        if location_point == 'bl':
+            location = (loc_b[0], loc_b[1])
+        elif location_point == 'tl':
+            location = (loc_b[0], loc_b[3])
+        elif location_point == 'br':
+            location = (loc_b[2], loc_b[1])
+        elif location_point == 'tr':
+            location = (loc_b[2], loc_b[3])
+        else:
+            # center
+            cx = loc_b[0] + ((loc_b[2] - loc_b[0]) / 2)
+            cy = loc_b[1] + ((loc_b[3] - loc_b[1]) / 2)
+            location = (cx, cy)
+
+        self.locate_signal.emit(location, location_point)
 
         if fit_center:
             self.plotcanvas.fit_center(loc=location)
@@ -8465,7 +8669,7 @@ class App(QtCore.QObject):
                         self.draw_moving_selection_shape(self.pos, pos, color=self.defaults['global_alt_sel_line'],
                                                          face_color=self.defaults['global_alt_sel_fill'])
                         self.selection_type = False
-                    elif dx > 0:
+                    elif dx >= 0:
                         self.draw_moving_selection_shape(self.pos, pos)
                         self.selection_type = True
                     else:
@@ -8862,6 +9066,7 @@ class App(QtCore.QObject):
         pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
 
         sel_rect = Polygon([pt1, pt2, pt3, pt4])
+
         if self.defaults['units'].upper() == 'MM':
             sel_rect = sel_rect.buffer(-0.1)
             sel_rect = sel_rect.buffer(0.2)
@@ -10378,7 +10583,8 @@ class App(QtCore.QObject):
         self.report_usage("export_svg()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("export_svg()")
 
@@ -10446,7 +10652,8 @@ class App(QtCore.QObject):
         self.report_usage("save source file()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("save source file()")
 
@@ -10489,7 +10696,10 @@ class App(QtCore.QObject):
         self.report_usage("export_excellon()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"] + '/' + 'exported_excellon'
+            if self.defaults["global_last_save_folder"]:
+                filename = self.defaults["global_last_save_folder"] + '/' + 'exported_excellon'
+            else:
+                filename = self.defaults["global_last_folder"] + '/' + 'exported_excellon'
 
         self.log.debug("export_excellon()")
 
@@ -10645,7 +10855,8 @@ class App(QtCore.QObject):
         self.report_usage("export_gerber()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("export_gerber()")
 
@@ -10781,7 +10992,8 @@ class App(QtCore.QObject):
         self.report_usage("export_dxf()")
 
         if filename is None:
-            filename = self.defaults["global_last_save_folder"]
+            filename = self.defaults["global_last_save_folder"] if self.defaults["global_last_save_folder"] \
+                                                                   is not None else self.defaults["global_last_folder"]
 
         self.log.debug("export_dxf()")
 
@@ -11983,8 +12195,13 @@ class App(QtCore.QObject):
             plot_container = container
         else:
             plot_container = self.ui.right_layout
-        print("step_1")
-        if self.is_legacy is False:
+
+        modifier = QtWidgets.QApplication.queryKeyboardModifiers()
+        if self.is_legacy is True or modifier == QtCore.Qt.ControlModifier:
+            self.is_legacy = True
+            self.defaults["global_graphic_engine"] = "2D"
+            self.plotcanvas = PlotCanvasLegacy(plot_container, self)
+        else:
             try:
                 self.plotcanvas = PlotCanvas(plot_container, self)
             except Exception as er:
@@ -11997,13 +12214,9 @@ class App(QtCore.QObject):
                 msg += msg_txt
                 self.inform.emit(msg)
                 return 'fail'
-        else:
-            self.plotcanvas = PlotCanvasLegacy(plot_container, self)
-        print("step_2")
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
-        print("step_3")
 
         self.mm = self.plotcanvas.graph_event_connect('mouse_move', self.on_mouse_move_over_plot)
         self.mp = self.plotcanvas.graph_event_connect('mouse_press', self.on_mouse_click_over_plot)
@@ -12012,28 +12225,22 @@ class App(QtCore.QObject):
 
         # Keys over plot enabled
         self.kp = self.plotcanvas.graph_event_connect('key_press', self.ui.keyPressEvent)
-        print("step_4")
 
         if self.defaults['global_cursor_type'] == 'small':
             self.app_cursor = self.plotcanvas.new_cursor()
         else:
             self.app_cursor = self.plotcanvas.new_cursor(big=True)
 
-        print("step_5")
-
         if self.ui.grid_snap_btn.isChecked():
             self.app_cursor.enabled = True
         else:
             self.app_cursor.enabled = False
-
-        print("step_6")
 
         if self.is_legacy is False:
             self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
         else:
             # will use the default Matplotlib axes
             self.hover_shapes = ShapeCollectionLegacy(obj=self, app=self, name='hover')
-        print("step_7")
 
     def on_zoom_fit(self, event):
         """
@@ -12262,19 +12469,12 @@ class App(QtCore.QObject):
         new_line_color = color_variant(new_color[:7], 0.7)
 
         for sel_obj in sel_obj_list:
-            if self.is_legacy is False:
-                sel_obj.fill_color = new_color
-                sel_obj.outline_color = new_line_color
+            sel_obj.fill_color = new_color
+            sel_obj.outline_color = new_line_color
 
-                sel_obj.shapes.redraw(
-                    update_colors=(new_color, new_line_color)
-                )
-            else:
-                sel_obj.fill_color = new_color
-                sel_obj.outline_color = new_line_color
-                sel_obj.shapes.redraw(
-                    update_colors=(new_color, new_line_color)
-                )
+            sel_obj.shapes.redraw(
+                update_colors=(new_color, new_line_color)
+            )
 
     def on_grid_snap_triggered(self, state):
         if state:
