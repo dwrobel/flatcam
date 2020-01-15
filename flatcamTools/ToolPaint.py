@@ -1034,11 +1034,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
 
     def build_ui(self):
-        try:
-            # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.tools_table.itemChanged.disconnect()
-        except (TypeError, AttributeError):
-            pass
+        self.ui_disconnect()
 
         # updated units
         self.units = self.app.defaults['units'].upper()
@@ -1119,8 +1115,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_table.setMinimumHeight(self.tools_table.getHeight())
         self.tools_table.setMaximumHeight(self.tools_table.getHeight())
 
-        # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
-        self.tools_table.itemChanged.connect(self.on_tool_edit)
+        self.ui_connect()
 
     def on_combo_box_type(self):
         obj_type = self.box_combo_type.currentIndex()
@@ -1166,21 +1161,19 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Adding tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' %  _("Adding tool cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
             if muted is None:
-                self.app.inform.emit('[success] %s' %
-                                     _("New tool added to Tool Table."))
+                self.app.inform.emit('[success] %s' % _("New tool added to Tool Table."))
             self.paint_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.*f' % (self.decimals, tool_dia)),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Iso',
-                    'tool_type': 'V',
+                    'tool_type': self.tool_type_radio.get_value(),
                     'data': dict(self.default_data),
                     'solid_geometry': []
                 }
@@ -3109,9 +3102,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             elif isinstance(current_widget, FCDoubleSpinner):
                 current_widget.returnPressed.connect(self.form_to_storage)
 
-        self.ncc_choice_offset_cb.stateChanged.connect(self.on_offset_choice)
-        self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
-        self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.rest_cb.stateChanged.connect(self.on_rest_machining_check)
+        self.order_radio.activated_custom[str].connect(self.on_order_changed)
 
     def ui_disconnect(self):
         try:

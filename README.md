@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - added new functionality (key shortcut SHIFT+J) to locate the corners of the bounding box (and center) in a selected object
 - modified the NCC Tool GUI to prepare for accepting a tool from a tool database
 - started to modify the Paint Tool to be similar to NCC Tool and to accept a tool from a database
+- work in Paint Tool GUI functionality
 
 14.01.2020
 
