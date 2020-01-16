@@ -1050,6 +1050,16 @@ class ExcellonObjectUI(ObjectUI):
         self.excellon_gcode_type_radio.setVisible(False)
         gcode_type_label.hide()
 
+        warning_lbl = QtWidgets.QLabel(
+            _(
+                "Add / Select at least one tool in the tool-table.\n"
+                "Click the header to select all, or Ctrl + LMB\n"
+                "for custom selection of tools."
+            ))
+
+        grid2.addWidget(QtWidgets.QLabel(''), 2, 0, 1, 3)
+        grid2.addWidget(warning_lbl, 3, 0, 1, 3)
+
         self.generate_cnc_button = QtWidgets.QPushButton(_('Create Drills GCode'))
         self.generate_cnc_button.setToolTip(
             _("Generate the CNC Job.")
@@ -1060,7 +1070,7 @@ class ExcellonObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        grid2.addWidget(self.generate_cnc_button, 2, 0, 1, 3)
+        grid2.addWidget(self.generate_cnc_button, 4, 0, 1, 3)
 
         # ### Milling Holes Drills ####
         self.mill_hole_label = QtWidgets.QLabel('<b>%s</b>' % _('Mill Holes'))
@@ -1069,7 +1079,7 @@ class ExcellonObjectUI(ObjectUI):
               "Select from the Tools Table above the hole dias to be\n"
               "milled. Use the # column to make the selection.")
         )
-        grid2.addWidget(self.mill_hole_label, 3, 0, 1, 3)
+        grid2.addWidget(self.mill_hole_label, 5, 0, 1, 3)
 
         self.tdlabel = QtWidgets.QLabel('%s:' % _('Drill Tool dia'))
         self.tdlabel.setToolTip(
@@ -1092,9 +1102,9 @@ class ExcellonObjectUI(ObjectUI):
                         }
                         """)
 
-        grid2.addWidget(self.tdlabel, 4, 0)
-        grid2.addWidget(self.tooldia_entry, 4, 1)
-        grid2.addWidget(self.generate_milling_button, 4, 2)
+        grid2.addWidget(self.tdlabel, 6, 0)
+        grid2.addWidget(self.tooldia_entry, 6, 1)
+        grid2.addWidget(self.generate_milling_button, 6, 2)
 
         self.stdlabel = QtWidgets.QLabel('%s:' % _('Slot Tool dia'))
         self.stdlabel.setToolTip(
@@ -1119,9 +1129,9 @@ class ExcellonObjectUI(ObjectUI):
                         }
                         """)
 
-        grid2.addWidget(self.stdlabel, 5, 0)
-        grid2.addWidget(self.slot_tooldia_entry, 5, 1)
-        grid2.addWidget(self.generate_milling_slots_button, 5, 2)
+        grid2.addWidget(self.stdlabel, 7, 0)
+        grid2.addWidget(self.slot_tooldia_entry, 7, 1)
+        grid2.addWidget(self.generate_milling_slots_button, 7, 2)
 
     def hide_drills(self, state=True):
         if state is True:
@@ -1697,7 +1707,7 @@ class GeometryObjectUI(ObjectUI):
 
         warning_lbl = QtWidgets.QLabel(
             _(
-                "Add at least one tool in the tool-table.\n"
+                "Add / Select at least one tool in the tool-table.\n"
                 "Click the header to select all, or Ctrl + LMB\n"
                 "for custom selection of tools."
             ))

@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated/optimized the GUI in Preferences for Paint Tool and for NCC Tool
 - work in Paint Tool to bring it up to date with NCC Tool
 - updated the GUI in preferences for Calculator Tool
+- a small change in the Excellon UI
 
 15.01.2020
 
