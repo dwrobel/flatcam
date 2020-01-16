@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - a small change in the Excellon UI
 - updated the Excellon and Geometry UI to be similar
 - put bases for future changes to Excellon Object UI such that each tool will hold it's own parameters
+- in ParseExcellon.Excellon the self.tools dict has now a key 'data' which holds a dict with all the default values for Excellon and Geometry
+- Excellon and Geometry objects, when started with multiple tools selected, the parameters tool name reflect this situation
 
 15.01.2020
 

@@ -2622,9 +2622,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # sort the tool diameter column
         # self.ui.tools_table.sortItems(1)
+
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
-        #
+
         self.ui.tools_table.resizeColumnsToContents()
         self.ui.tools_table.resizeRowsToContents()
 
@@ -2685,6 +2686,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 offset_spin_widget.valueChanged.connect(self.on_tool_offset_edit)
             except (TypeError, AttributeError):
                 pass
+
+        # set the text on tool_data_label after loading the object
+        sel_rows = list()
+        sel_items = self.ui.tools_table.selectedItems()
+        for it in sel_items:
+            sel_rows.append(it.row())
+        if len(sel_rows) > 1:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
 
         self.ui_connect()
 
@@ -3854,6 +3865,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.ui.e_cut_entry.setDisabled(False) if self.ui.extracut_cb.get_value() else \
             self.ui.e_cut_entry.setDisabled(True)
+
+        # set the text on tool_data_label after loading the object
+        sel_rows = list()
+        sel_items = self.ui.geo_tools_table.selectedItems()
+        for it in sel_items:
+            sel_rows.append(it.row())
+        if len(sel_rows) > 1:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
 
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)

@@ -121,6 +121,9 @@ class Excellon(Geometry):
         self.zeros_found = deepcopy(self.zeros)
         self.units_found = deepcopy(self.units)
 
+        # default set of data to be added to each tool in self.tools as self.tools[tool]['data'] = self.default_data
+        self.default_data = dict()
+
         # this will serve as a default if the Excellon file has no info regarding of tool diameters (this info may be
         # in another file like for PCB WIzard ECAD software
         self.toolless_diam = 1.0
@@ -260,6 +263,14 @@ class Excellon(Geometry):
             self.parse_lines(estr)
         except Exception:
             return "fail"
+
+        # fill in self.default_data values from self.options
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('excellon_') == 0:
+                self.default_data[opt_key] = deepcopy(opt_val)
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('geometry_') == 0:
+                self.default_data[opt_key] = deepcopy(opt_val)
 
     def parse_lines(self, elines):
         """
@@ -961,10 +972,8 @@ class Excellon(Geometry):
         try:
             # clear the solid_geometry in self.tools
             for tool in self.tools:
-                try:
-                    self.tools[tool]['solid_geometry'][:] = []
-                except KeyError:
-                    self.tools[tool]['solid_geometry'] = []
+                self.tools[tool]['solid_geometry'] = list()
+                self.tools[tool]['data'] = dict()
 
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
@@ -979,7 +988,10 @@ class Excellon(Geometry):
                 tooldia = self.tools[drill['tool']]['C']
                 poly = drill['point'].buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
-                self.tools[drill['tool']]['solid_geometry'].append(poly)
+
+                tool_in_drills = drill['tool']
+                self.tools[tool_in_drills]['solid_geometry'].append(poly)
+                self.tools[tool_in_drills]['data'] = deepcopy(self.default_data)
 
             for slot in self.slots:
                 slot_tooldia = self.tools[slot['tool']]['C']
@@ -989,8 +1001,10 @@ class Excellon(Geometry):
                 lines_string = LineString([start, stop])
                 poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
-                self.tools[slot['tool']]['solid_geometry'].append(poly)
 
+                tool_in_slots = slot['tool']
+                self.tools[tool_in_slots]['solid_geometry'].append(poly)
+                self.tools[tool_in_slots]['data'] = deepcopy(self.default_data)
         except Exception as e:
             log.debug("flatcamParsers.ParseExcellon.Excellon.create_geometry() -> "
                       "Excellon geometry creation failed due of ERROR: %s" % str(e))
