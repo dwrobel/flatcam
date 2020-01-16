@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.01.2020
+
+- updated/optimized the GUI in Preferences for Paint Tool and for NCC Tool
+- work in Paint Tool to bring it up to date with NCC Tool
+
 15.01.2020
 
 - added key shortcuts and toolbar icons for the new tools: Align Object Tool (ALT+A) and Extract Drills (ALT+I)

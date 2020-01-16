@@ -352,7 +352,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.grid3.addWidget(self.tool_data_label, 12, 0, 1, 2)
 
         # Overlap Entry
-        nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
+        nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
         nccoverlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
@@ -367,7 +367,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_overlap_entry.setWrapping(True)
         self.ncc_overlap_entry.setRange(0.000, 99.9999)
         self.ncc_overlap_entry.setSingleStep(0.1)
-        self.ncc_overlap_entry.setObjectName(_("Overlap Rate"))
+        self.ncc_overlap_entry.setObjectName(_("Overlap"))
 
         self.grid3.addWidget(nccoverlabel, 13, 0)
         self.grid3.addWidget(self.ncc_overlap_entry, 13, 1)
@@ -653,7 +653,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         }
 
         self.name2option = {
-            _('Overlap Rate'): "nccoverlap",
+            _('Overlap'): "nccoverlap",
             _('Margin'): "nccmargin",
             _('Method'): "nccmethod",
             _("Connect"): "nccconnect",
@@ -662,6 +662,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             _("Offset value"): "nccoffset_value",
             _('Milling Type'): "milling_type",
         }
+
+        self.old_tool_dia = None
 
         # #############################################################################
         # ############################ SIGNALS ########################################
@@ -900,6 +902,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tipdia_entry.set_value(self.app.defaults["tools_ncctipdia"])
         self.tipangle_entry.set_value(self.app.defaults["tools_ncctipangle"])
         self.addtool_entry.set_value(self.app.defaults["tools_nccnewdia"])
+
+        self.old_tool_dia = self.app.defaults["tools_nccnewdia"]
 
         self.on_tool_type(val=self.tool_type_radio.get_value())
 
@@ -1238,6 +1242,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.tipdia_entry.show()
             self.tipanglelabel.show()
             self.tipangle_entry.show()
+
+            self.on_calculate_tooldia()
         else:
             self.addtool_entry_lbl.setDisabled(False)
             self.addtool_entry.setDisabled(False)
@@ -1245,6 +1251,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.tipdia_entry.hide()
             self.tipanglelabel.hide()
             self.tipangle_entry.hide()
+
+            self.addtool_entry.set_value(self.old_tool_dia)
 
     def on_calculate_tooldia(self):
         if self.tool_type_radio.get_value() == 'V':
@@ -1332,7 +1340,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             })
 
         self.blockSignals(False)
-
         self.build_ui()
 
     def on_tool_edit(self):
@@ -1393,7 +1400,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         deleted_tools_list = []
 
         if all_tools:
-            self.paint_tools.clear()
+            self.ncc_tools.clear()
             self.blockSignals(False)
             self.build_ui()
             return

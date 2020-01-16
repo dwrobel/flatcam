@@ -329,7 +329,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.addLayout(grid4)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
+        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
@@ -344,7 +344,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintoverlap_entry.setWrapping(True)
         self.paintoverlap_entry.setRange(0.0000, 99.9999)
         self.paintoverlap_entry.setSingleStep(0.1)
-        self.paintoverlap_entry.setObjectName(_("Overlap Rate"))
+        self.paintoverlap_entry.setObjectName(_("Overlap"))
 
         grid4.addWidget(ovlabel, 1, 0)
         grid4.addWidget(self.paintoverlap_entry, 1, 1)
@@ -583,12 +583,14 @@ class ToolPaint(FlatCAMTool, Gerber):
         }
 
         self.name2option = {
-            _('Overlap Rate'): "paintoverlap",
+            _('Overlap'): "paintoverlap",
             _('Margin'): "paintmargin",
             _('Method'): "paintmethod",
             _("Connect"): "pathconnect",
             _("Contour"): "paintcontour",
         }
+
+        self.old_tool_dia = None
 
         # #############################################################################
         # ################################# Signals ###################################
@@ -833,6 +835,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.tipdia_entry.show()
             self.tipanglelabel.show()
             self.tipangle_entry.show()
+
+            self.on_calculate_tooldia()
         else:
             self.addtool_entry_lbl.setDisabled(False)
             self.addtool_entry.setDisabled(False)
@@ -840,6 +844,8 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.tipdia_entry.hide()
             self.tipanglelabel.hide()
             self.tipangle_entry.hide()
+
+            self.addtool_entry.set_value(self.old_tool_dia)
 
     def on_calculate_tooldia(self):
         if self.tool_type_radio.get_value() == 'V':
@@ -921,6 +927,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tipdia_entry.set_value(self.app.defaults["tools_painttipdia"])
         self.tipangle_entry.set_value(self.app.defaults["tools_painttipangle"])
         self.addtool_entry.set_value(self.app.defaults["tools_paintnewdia"])
+        self.rest_cb.set_value(self.app.defaults["tools_paintrest"])
+
+        self.old_tool_dia = self.app.defaults["tools_paintnewdia"]
 
         self.on_tool_type(val=self.tool_type_radio.get_value())
 
@@ -1080,21 +1089,16 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.box_combo.setCurrentIndex(0)
 
     def on_tool_add(self, dia=None, muted=None):
-
-        try:
-            self.tools_table.itemChanged.disconnect()
-        except TypeError:
-            pass
+        self.blockSignals(True)
 
         if dia:
             tool_dia = dia
         else:
-            tool_dia = float(self.addtool_entry.get_value())
+            tool_dia = self.on_calculate_tooldia()
 
             if tool_dia is None:
                 self.build_ui()
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Please enter a tool diameter to add, in Float format."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Please enter a tool diameter to add, in Float format."))
                 return
 
         # construct a list of all 'tooluid' in the self.tools
@@ -1136,15 +1140,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                 }
             })
 
+        self.blockSignals(False)
         self.build_ui()
 
     def on_tool_edit(self):
-        old_tool_dia = ''
+        self.blockSignals(True)
 
-        try:
-            self.tools_table.itemChanged.disconnect()
-        except TypeError:
-            pass
+        old_tool_dia = ''
 
         tool_dias = []
         for k, v in self.paint_tools.items():
@@ -1182,6 +1184,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 restore_dia_item.setText(str(old_tool_dia))
                 self.app.inform.emit('[WARNING_NOTCL] %s' %
                                      _("Edit cancelled. New diameter value is already in the Tool Table."))
+        self.blockSignals(False)
         self.build_ui()
 
     # def on_tool_copy(self, all=None):
@@ -1240,15 +1243,13 @@ class ToolPaint(FlatCAMTool, Gerber):
     #     self.app.inform.emit("[success] Tool was copied in the Tool Table.")
 
     def on_tool_delete(self, rows_to_delete=None, all=None):
-        try:
-            self.tools_table.itemChanged.disconnect()
-        except TypeError:
-            pass
+        self.blockSignals(True)
 
         deleted_tools_list = []
 
         if all:
             self.paint_tools.clear()
+            self.blockSignals(False)
             self.build_ui()
             return
 
@@ -1262,6 +1263,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             for t in deleted_tools_list:
                 self.paint_tools.pop(t, None)
+
+            self.blockSignals(False)
             self.build_ui()
             return
 
@@ -1278,14 +1281,14 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.paint_tools.pop(t, None)
 
         except AttributeError:
-            self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                 _("Delete failed. Select a tool to delete."))
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("Delete failed. Select a tool to delete."))
+            self.blockSignals(False)
             return
         except Exception as e:
             log.debug(str(e))
 
-        self.app.inform.emit('[success] %s' %
-                             _("Tool(s) deleted from Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tool(s) deleted from Tool Table."))
+        self.blockSignals(False)
         self.build_ui()
 
     def on_paint_button_click(self):

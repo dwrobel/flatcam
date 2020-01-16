@@ -163,6 +163,7 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI(decimals=self.decimals)
         self.tools_ncc_group.setMinimumWidth(220)
+
         self.tools_paint_group = ToolsPaintPrefGroupUI(decimals=self.decimals)
         self.tools_paint_group.setMinimumWidth(220)
 
@@ -192,26 +193,29 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
-        self.vlay.addWidget(self.tools_paint_group)
+        self.vlay.addWidget(self.tools_cutout_group)
 
         self.vlay1 = QtWidgets.QVBoxLayout()
-        self.vlay1.addWidget(self.tools_cutout_group)
-        self.vlay1.addWidget(self.tools_transform_group)
-        self.vlay1.addWidget(self.tools_2sided_group)
+        self.vlay1.addWidget(self.tools_paint_group)
+        self.vlay1.addWidget(self.tools_panelize_group)
 
         self.vlay2 = QtWidgets.QVBoxLayout()
-        self.vlay2.addWidget(self.tools_panelize_group)
+        self.vlay2.addWidget(self.tools_transform_group)
+        self.vlay2.addWidget(self.tools_2sided_group)
         self.vlay2.addWidget(self.tools_sub_group)
-        self.vlay2.addWidget(self.tools_film_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
-        self.vlay3.addWidget(self.tools_solderpaste_group)
+        self.vlay3.addWidget(self.tools_film_group)
         self.vlay3.addWidget(self.tools_calculators_group)
+
+        self.vlay4 = QtWidgets.QVBoxLayout()
+        self.vlay4.addWidget(self.tools_solderpaste_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
         self.layout.addLayout(self.vlay2)
         self.layout.addLayout(self.vlay3)
+        self.layout.addLayout(self.vlay4)
 
         self.layout.addStretch()
 
@@ -3562,8 +3566,8 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.sel_limit_label, 0, 0)
         grid0.addWidget(self.sel_limit_entry, 0, 1)
 
-        # New tool diameter
-        self.addtool_entry_lbl = QtWidgets.QLabel('%s:' % _('New Tool Dia'))
+        # New Diameter
+        self.addtool_entry_lbl = QtWidgets.QLabel('%s:' % _('New Dia'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool")
         )
@@ -5012,7 +5016,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
 
-        ncctdlabel = QtWidgets.QLabel('%s:' % _('Tools dia'))
+        ncctdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         ncctdlabel.setToolTip(
             _("Diameters of the cutting tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
@@ -5088,9 +5092,12 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cutz_entry, 4, 1)
 
         # New Diameter
-        self.newdialabel = QtWidgets.QLabel('%s:' % _('New Tool Dia'))
+        self.newdialabel = QtWidgets.QLabel('%s:' % _('New Dia'))
         self.newdialabel.setToolTip(
-            _("The new tool diameter (cut width) to add in the tool table."))
+            _("Diameter for the new tool to add in the Tool Table.\n"
+              "If the tool is V-shape type then this value is automatically\n"
+              "calculated from the other parameters.")
+        )
         self.newdia_entry = FCDoubleSpinner()
         self.newdia_entry.set_precision(self.decimals)
         self.newdia_entry.set_range(0.0001, 9999.9999)
@@ -5098,6 +5105,11 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.newdialabel, 5, 0)
         grid0.addWidget(self.newdia_entry, 5, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 6, 0, 1, 2)
 
         # Milling Type Radio Button
         self.milling_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
@@ -5115,8 +5127,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "- conventional / useful when there is no backlash compensation")
         )
 
-        grid0.addWidget(self.milling_type_label, 6, 0)
-        grid0.addWidget(self.milling_type_radio, 6, 1)
+        grid0.addWidget(self.milling_type_label, 7, 0)
+        grid0.addWidget(self.milling_type_radio, 7, 1)
 
         # Tool order Radio Button
         self.ncc_order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
@@ -5136,11 +5148,16 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
                                           "'Reverse' --> menas that the tools will ordered from big to small\n\n"
                                           "WARNING: using rest machining will automatically set the order\n"
                                           "in reverse and disable this control."))
-        grid0.addWidget(self.ncc_order_label, 7, 0)
-        grid0.addWidget(self.ncc_order_radio, 7, 1)
+        grid0.addWidget(self.ncc_order_label, 8, 0)
+        grid0.addWidget(self.ncc_order_radio, 8, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         # Overlap Entry
-        nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
+        nccoverlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
         nccoverlabel.setToolTip(
            _("How much (percentage) of the tool width to overlap each tool pass.\n"
              "Adjust the value starting with lower values\n"
@@ -5155,8 +5172,9 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_overlap_entry.setWrapping(True)
         self.ncc_overlap_entry.setRange(0.0000, 99.9999)
         self.ncc_overlap_entry.setSingleStep(0.1)
-        grid0.addWidget(nccoverlabel, 8, 0)
-        grid0.addWidget(self.ncc_overlap_entry, 8, 1)
+
+        grid0.addWidget(nccoverlabel, 10, 0)
+        grid0.addWidget(self.ncc_overlap_entry, 10, 1)
 
         # Margin entry
         nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
@@ -5168,8 +5186,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_margin_entry.set_range(-10000, 10000)
         self.ncc_margin_entry.setSingleStep(0.1)
 
-        grid0.addWidget(nccmarginlabel, 9, 0)
-        grid0.addWidget(self.ncc_margin_entry, 9, 1)
+        grid0.addWidget(nccmarginlabel, 11, 0)
+        grid0.addWidget(self.ncc_margin_entry, 11, 1)
 
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
@@ -5186,8 +5204,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
 
-        grid0.addWidget(methodlabel, 10, 0)
-        grid0.addWidget(self.ncc_method_radio, 10, 1)
+        grid0.addWidget(methodlabel, 12, 0)
+        grid0.addWidget(self.ncc_method_radio, 12, 1)
 
         # Connect lines
         self.ncc_connect_cb = FCCheckBox('%s' % _("Connect"))
@@ -5196,7 +5214,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "segments to minimize tool lifts.")
         )
 
-        grid0.addWidget(self.ncc_connect_cb, 11, 0, 1, 2)
+        grid0.addWidget(self.ncc_connect_cb, 13, 0)
 
         # Contour Checkbox
         self.ncc_contour_cb = FCCheckBox('%s' % _("Contour"))
@@ -5205,21 +5223,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
              "to trim rough edges.")
         )
 
-        grid0.addWidget(self.ncc_contour_cb, 12, 0, 1, 2)
-
-        # Rest machining CheckBox
-        self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
-        self.ncc_rest_cb.setToolTip(
-            _("If checked, use 'rest machining'.\n"
-              "Basically it will clear copper outside PCB features,\n"
-              "using the biggest tool and continue with the next tools,\n"
-              "from bigger to smaller, to clear areas of copper that\n"
-              "could not be cleared by previous tool, until there is\n"
-              "no more copper to clear or there are no more tools.\n"
-              "If not checked, use the standard algorithm.")
-        )
-
-        grid0.addWidget(self.ncc_rest_cb, 13, 0, 1, 2)
+        grid0.addWidget(self.ncc_contour_cb, 13, 1)
 
         # ## NCC Offset choice
         self.ncc_choice_offset_cb = FCCheckBox('%s' % _("Offset"))
@@ -5249,10 +5253,31 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_offset_label, 15, 0)
         grid0.addWidget(self.ncc_offset_spinner, 15, 1)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 16, 0, 1, 2)
+
+        # Rest machining CheckBox
+        self.ncc_rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.ncc_rest_cb.setToolTip(
+            _("If checked, use 'rest machining'.\n"
+              "Basically it will clear copper outside PCB features,\n"
+              "using the biggest tool and continue with the next tools,\n"
+              "from bigger to smaller, to clear areas of copper that\n"
+              "could not be cleared by previous tool, until there is\n"
+              "no more copper to clear or there are no more tools.\n"
+              "If not checked, use the standard algorithm.")
+        )
+
+        grid0.addWidget(self.ncc_rest_cb, 17, 0, 1, 2)
+
         # ## Reference
         self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
-                                         {"label": _("Area"), "value": "area"},
-                                         {'label': _('Ref'), 'value': 'box'}])
+                                         {"label": _("Area Selection"), "value": "area"},
+                                         {'label': _('Reference Object'), 'value': 'box'}],
+                                        orientation='vertical',
+                                        stretch=None)
         reference_label = QtWidgets.QLabel('%s:' % _("Reference"))
         reference_label.setToolTip(
             _("- 'Itself' -  the non copper clearing extent\n"
@@ -5263,8 +5288,13 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "specified by another object.")
         )
 
-        grid0.addWidget(reference_label, 16, 0)
-        grid0.addWidget(self.reference_radio, 16, 1)
+        grid0.addWidget(reference_label, 18, 0)
+        grid0.addWidget(self.reference_radio, 18, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 19, 0, 1, 2)
 
         # ## Plotting type
         self.ncc_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
@@ -5274,8 +5304,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
             _("- 'Normal' -  normal plotting, done at the end of the NCC job\n"
               "- 'Progressive' - after each shape is generated it will be plotted.")
         )
-        grid0.addWidget(plotting_label, 17, 0)
-        grid0.addWidget(self.ncc_plotting_radio, 17, 1)
+        grid0.addWidget(plotting_label, 20, 0)
+        grid0.addWidget(self.ncc_plotting_radio, 20, 1)
 
         self.layout.addStretch()
 
@@ -5520,10 +5550,12 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.paint_label)
 
         grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
         # Tool dia
-        ptdlabel = QtWidgets.QLabel('%s:' % _('Tool dia'))
+        ptdlabel = QtWidgets.QLabel('<b><font color="green">%s:</font></b>' % _('Tools Dia'))
         ptdlabel.setToolTip(
             _("Diameters of the cutting tools, separated by comma.\n"
               "The value of the diameter has to use the dot decimals separator.\n"
@@ -5536,7 +5568,88 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.painttooldia_entry, 0, 1)
 
-        self.paint_order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
+        # Tool Type Radio Button
+        self.tool_type_label = QtWidgets.QLabel('%s:' % _('Tool Type'))
+        self.tool_type_label.setToolTip(
+            _("Default tool type:\n"
+              "- 'V-shape'\n"
+              "- Circular")
+        )
+
+        self.tool_type_radio = RadioSet([{'label': _('V-shape'), 'value': 'V'},
+                                         {'label': _('Circular'), 'value': 'C1'}])
+
+        self.tool_type_radio.setObjectName(_("Tool Type"))
+
+        grid0.addWidget(self.tool_type_label, 1, 0)
+        grid0.addWidget(self.tool_type_radio, 1, 1)
+
+        # Tip Dia
+        self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
+        self.tipdialabel.setToolTip(
+            _("The tip diameter for V-Shape Tool"))
+        self.tipdia_entry = FCDoubleSpinner()
+        self.tipdia_entry.set_precision(self.decimals)
+        self.tipdia_entry.set_range(0.0000, 9999.9999)
+        self.tipdia_entry.setSingleStep(0.1)
+        self.tipdia_entry.setObjectName(_("V-Tip Dia"))
+
+        grid0.addWidget(self.tipdialabel, 2, 0)
+        grid0.addWidget(self.tipdia_entry, 2, 1)
+
+        # Tip Angle
+        self.tipanglelabel = QtWidgets.QLabel('%s:' % _('V-Tip Angle'))
+        self.tipanglelabel.setToolTip(
+            _("The tip angle for V-Shape Tool.\n"
+              "In degree."))
+        self.tipangle_entry = FCDoubleSpinner()
+        self.tipangle_entry.set_precision(self.decimals)
+        self.tipangle_entry.set_range(0.0000, 180.0000)
+        self.tipangle_entry.setSingleStep(5)
+        self.tipangle_entry.setObjectName(_("V-Tip Angle"))
+
+        grid0.addWidget(self.tipanglelabel, 3, 0)
+        grid0.addWidget(self.tipangle_entry, 3, 1)
+
+        # Cut Z entry
+        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        cutzlabel.setToolTip(
+            _("Depth of cut into material. Negative value.\n"
+              "In FlatCAM units.")
+        )
+        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry.set_precision(self.decimals)
+        self.cutz_entry.set_range(-99999.9999, 0.0000)
+        self.cutz_entry.setObjectName(_("Cut Z"))
+
+        self.cutz_entry.setToolTip(
+            _("Depth of cut into material. Negative value.\n"
+              "In FlatCAM units.")
+        )
+        grid0.addWidget(cutzlabel, 4, 0)
+        grid0.addWidget(self.cutz_entry, 4, 1)
+
+        # ### Tool Diameter ####
+        self.newdialabel = QtWidgets.QLabel('%s:' % _('New Dia'))
+        self.newdialabel.setToolTip(
+            _("Diameter for the new tool to add in the Tool Table.\n"
+              "If the tool is V-shape type then this value is automatically\n"
+              "calculated from the other parameters.")
+        )
+        self.newdia_entry = FCDoubleSpinner()
+        self.newdia_entry.set_precision(self.decimals)
+        self.newdia_entry.set_range(0.000, 9999.9999)
+        self.newdia_entry.setObjectName(_("Tool Dia"))
+
+        grid0.addWidget(self.newdialabel, 5, 0)
+        grid0.addWidget(self.newdia_entry, 5, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 6, 0, 1, 2)
+
+        self.paint_order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
         self.paint_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                             "'No' --> means that the used order is the one in the tool table\n"
                                             "'Forward' --> means that the tools will be ordered from small to big\n"
@@ -5547,17 +5660,17 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.paint_order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
                                            {'label': _('Forward'), 'value': 'fwd'},
                                            {'label': _('Reverse'), 'value': 'rev'}])
-        self.paint_order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
-                                            "'No' --> means that the used order is the one in the tool table\n"
-                                            "'Forward' --> means that the tools will be ordered from small to big\n"
-                                            "'Reverse' --> menas that the tools will ordered from big to small\n\n"
-                                            "WARNING: using rest machining will automatically set the order\n"
-                                            "in reverse and disable this control."))
-        grid0.addWidget(self.paint_order_label, 1, 0)
-        grid0.addWidget(self.paint_order_radio, 1, 1)
+
+        grid0.addWidget(self.paint_order_label, 7, 0)
+        grid0.addWidget(self.paint_order_radio, 7, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 8, 0, 1, 2)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
+        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap'))
         ovlabel.setToolTip(
             _("How much (percentage) of the tool width to overlap each tool pass.\n"
               "Adjust the value starting with lower values\n"
@@ -5573,8 +5686,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.paintoverlap_entry.setRange(0.0000, 99.9999)
         self.paintoverlap_entry.setSingleStep(0.1)
 
-        grid0.addWidget(ovlabel, 2, 0)
-        grid0.addWidget(self.paintoverlap_entry, 2, 1)
+        grid0.addWidget(ovlabel, 9, 0)
+        grid0.addWidget(self.paintoverlap_entry, 9, 1)
 
         # Margin
         marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
@@ -5583,13 +5696,13 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "the edges of the polygon to\n"
               "be painted.")
         )
-        grid0.addWidget(marginlabel, 3, 0)
         self.paintmargin_entry = FCDoubleSpinner()
         self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
         self.paintmargin_entry.set_precision(self.decimals)
         self.paintmargin_entry.setSingleStep(0.1)
 
-        grid0.addWidget(self.paintmargin_entry, 3, 1)
+        grid0.addWidget(marginlabel, 10, 0)
+        grid0.addWidget(self.paintmargin_entry, 10, 1)
 
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
@@ -5599,13 +5712,15 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "<B>Seed-based</B>: Outwards from seed.<BR>"
               "<B>Line-based</B>: Parallel lines.")
         )
-        grid0.addWidget(methodlabel, 4, 0)
+
         self.paintmethod_combo = RadioSet([
             {"label": _("Standard"), "value": "standard"},
             {"label": _("Seed-based"), "value": "seed"},
             {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
-        grid0.addWidget(self.paintmethod_combo, 4, 1)
+
+        grid0.addWidget(methodlabel, 11, 0)
+        grid0.addWidget(self.paintmethod_combo, 11, 1)
 
         # Connect lines
         self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
@@ -5613,7 +5728,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        grid0.addWidget(self.pathconnect_cb, 5, 0, 1, 2)
+        grid0.addWidget(self.pathconnect_cb, 12, 0)
 
         # Paint contour
         self.contour_cb = FCCheckBox('%s' % _("Contour"))
@@ -5621,7 +5736,25 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        grid0.addWidget(self.contour_cb, 6, 0, 1, 2)
+        grid0.addWidget(self.contour_cb, 12, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 13, 0, 1, 2)
+
+        self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
+        self.rest_cb.setObjectName(_("Rest Machining"))
+        self.rest_cb.setToolTip(
+            _("If checked, use 'rest machining'.\n"
+              "Basically it will clear copper outside PCB features,\n"
+              "using the biggest tool and continue with the next tools,\n"
+              "from bigger to smaller, to clear areas of copper that\n"
+              "could not be cleared by previous tool, until there is\n"
+              "no more copper to clear or there are no more tools.\n\n"
+              "If not checked, use the standard algorithm.")
+        )
+        grid0.addWidget(self.rest_cb, 14, 0, 1, 2)
 
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
@@ -5634,14 +5767,23 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "- 'Reference Object' - will do non copper clearing within the area\n"
               "specified by another object.")
         )
-        self.selectmethod_combo = RadioSet([
-            {"label": _("Sel"), "value": "single"},
-            {"label": _("Area"), "value": "area"},
-            {"label": _("All"), "value": "all"},
-            {"label": _("Ref"), "value": "ref"}
-        ])
-        grid0.addWidget(selectlabel, 7, 0)
-        grid0.addWidget(self.selectmethod_combo, 7, 1)
+        self.selectmethod_combo = RadioSet(
+            [
+                {"label": _("Polygon Selection"), "value": "single"},
+                {"label": _("Area Selection"), "value": "area"},
+                {"label": _("All Polygons"), "value": "all"},
+                {"label": _("Reference Object"), "value": "ref"}
+            ],
+            orientation='vertical',
+            stretch=None
+        )
+        grid0.addWidget(selectlabel, 15, 0)
+        grid0.addWidget(self.selectmethod_combo, 15, 1)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 16, 0, 1, 2)
 
         # ## Plotting type
         self.paint_plotting_radio = RadioSet([{'label': _('Normal'), 'value': 'normal'},
@@ -5651,8 +5793,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("- 'Normal' -  normal plotting, done at the end of the Paint job\n"
               "- 'Progressive' - after each shape is generated it will be plotted.")
         )
-        grid0.addWidget(plotting_label, 8, 0)
-        grid0.addWidget(self.paint_plotting_radio, 8, 1)
+        grid0.addWidget(plotting_label, 17, 0)
+        grid0.addWidget(self.paint_plotting_radio, 17, 1)
 
         self.layout.addStretch()
 

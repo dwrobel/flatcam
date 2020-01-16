@@ -776,11 +776,11 @@ class App(QtCore.QObject):
             "tools_nccref": 'itself',
             "tools_ncc_plotting": 'normal',
             "tools_nccmilling_type": 'cl',
-            "tools_ncctool_type": 'V',
+            "tools_ncctool_type": 'C1',
             "tools_ncccutz": -0.05,
             "tools_ncctipdia": 0.1,
             "tools_ncctipangle": 30,
-            "tools_nccnewdia": 1.0,
+            "tools_nccnewdia": 0.1,
 
             # Cutout Tool
             "tools_cutouttooldia": 2.4,
@@ -804,11 +804,11 @@ class App(QtCore.QObject):
             "tools_paintcontour": True,
             "tools_paint_plotting": 'normal',
             "tools_paintrest": False,
-            "tools_painttool_type": 'V',
+            "tools_painttool_type": 'C1',
             "tools_paintcutz": -0.05,
             "tools_painttipdia": 0.1,
             "tools_painttipangle": 30,
-            "tools_paintnewdia": 1.0,
+            "tools_paintnewdia": 0.1,
 
             # 2-Sided Tool
             "tools_2sided_mirror_axis": "X",
@@ -1452,6 +1452,13 @@ class App(QtCore.QObject):
             "tools_pathconnect": self.ui.tools_defaults_form.tools_paint_group.pathconnect_cb,
             "tools_paintcontour": self.ui.tools_defaults_form.tools_paint_group.contour_cb,
             "tools_paint_plotting": self.ui.tools_defaults_form.tools_paint_group.paint_plotting_radio,
+
+            "tools_paintrest": self.ui.tools_defaults_form.tools_paint_group.rest_cb,
+            "tools_painttool_type": self.ui.tools_defaults_form.tools_paint_group.tool_type_radio,
+            "tools_paintcutz": self.ui.tools_defaults_form.tools_paint_group.cutz_entry,
+            "tools_painttipdia": self.ui.tools_defaults_form.tools_paint_group.tipdia_entry,
+            "tools_painttipangle": self.ui.tools_defaults_form.tools_paint_group.tipangle_entry,
+            "tools_paintnewdia": self.ui.tools_defaults_form.tools_paint_group.newdia_entry,
 
             # 2-sided Tool
             "tools_2sided_mirror_axis": self.ui.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
