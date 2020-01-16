@@ -6241,6 +6241,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.vshape_tool_label)
 
         grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
         # ## Tip Diameter
@@ -6291,10 +6293,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
               "using a method like grahite ink or calcium hypophosphite ink or palladium chloride.")
         )
-        self.layout.addWidget(self.plate_title_label)
-
-        grid1 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid1)
+        grid0.addWidget(self.plate_title_label, 3, 0, 1, 2)
 
         # ## PCB Length
         self.pcblength_entry = FCDoubleSpinner()
@@ -6305,8 +6304,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.pcblengthlabel = QtWidgets.QLabel('%s:' % _("Board Length"))
 
         self.pcblengthlabel.setToolTip(_('This is the board length. In centimeters.'))
-        grid1.addWidget(self.pcblengthlabel, 0, 0)
-        grid1.addWidget(self.pcblength_entry, 0, 1)
+        grid0.addWidget(self.pcblengthlabel, 4, 0)
+        grid0.addWidget(self.pcblength_entry, 4, 1)
 
         # ## PCB Width
         self.pcbwidth_entry = FCDoubleSpinner()
@@ -6317,8 +6316,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.pcbwidthlabel = QtWidgets.QLabel('%s:' % _("Board Width"))
 
         self.pcbwidthlabel.setToolTip(_('This is the board width.In centimeters.'))
-        grid1.addWidget(self.pcbwidthlabel, 1, 0)
-        grid1.addWidget(self.pcbwidth_entry, 1, 1)
+        grid0.addWidget(self.pcbwidthlabel, 5, 0)
+        grid0.addWidget(self.pcbwidth_entry, 5, 1)
 
         # ## Current Density
         self.cdensity_label = QtWidgets.QLabel('%s:' % _("Current Density"))
@@ -6329,8 +6328,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
 
         self.cdensity_label.setToolTip(_("Current density to pass through the board. \n"
                                          "In Amps per Square Feet ASF."))
-        grid1.addWidget(self.cdensity_label, 2, 0)
-        grid1.addWidget(self.cdensity_entry, 2, 1)
+        grid0.addWidget(self.cdensity_label, 6, 0)
+        grid0.addWidget(self.cdensity_entry, 6, 1)
 
         # ## PCB Copper Growth
         self.growth_label = QtWidgets.QLabel('%s:' % _("Copper Growth"))
@@ -6341,8 +6340,8 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
 
         self.growth_label.setToolTip(_("How thick the copper growth is intended to be.\n"
                                        "In microns."))
-        grid1.addWidget(self.growth_label, 3, 0)
-        grid1.addWidget(self.growth_entry, 3, 1)
+        grid0.addWidget(self.growth_label, 7, 0)
+        grid0.addWidget(self.growth_entry, 7, 1)
 
         self.layout.addStretch()
 
