@@ -121,9 +121,6 @@ class Excellon(Geometry):
         self.zeros_found = deepcopy(self.zeros)
         self.units_found = deepcopy(self.units)
 
-        # default set of data to be added to each tool in self.tools as self.tools[tool]['data'] = self.default_data
-        self.default_data = dict()
-
         # this will serve as a default if the Excellon file has no info regarding of tool diameters (this info may be
         # in another file like for PCB WIzard ECAD software
         self.toolless_diam = 1.0
@@ -263,14 +260,6 @@ class Excellon(Geometry):
             self.parse_lines(estr)
         except Exception:
             return "fail"
-
-        # fill in self.default_data values from self.options
-        for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('excellon_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
-        for opt_key, opt_val in self.app.options.items():
-            if opt_key.find('geometry_') == 0:
-                self.default_data[opt_key] = deepcopy(opt_val)
 
     def parse_lines(self, elines):
         """

@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - put bases for future changes to Excellon Object UI such that each tool will hold it's own parameters
 - in ParseExcellon.Excellon the self.tools dict has now a key 'data' which holds a dict with all the default values for Excellon and Geometry
 - Excellon and Geometry objects, when started with multiple tools selected, the parameters tool name reflect this situation
+- moved default_data data update from Excellon parser to the Excellon object constructor
 
 15.01.2020
 

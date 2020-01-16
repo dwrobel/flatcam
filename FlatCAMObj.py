@@ -2269,6 +2269,17 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # dict to hold the tool number as key and tool offset as value
         self.tool_offset = dict()
 
+        # default set of data to be added to each tool in self.tools as self.tools[tool]['data'] = self.default_data
+        self.default_data = dict()
+
+        # fill in self.default_data values from self.options
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('excellon_') == 0:
+                self.default_data[opt_key] = deepcopy(opt_val)
+        for opt_key, opt_val in self.app.options.items():
+            if opt_key.find('geometry_') == 0:
+                self.default_data[opt_key] = deepcopy(opt_val)
+
         # variable to store the total amount of drills per job
         self.tot_drill_cnt = 0
         self.tool_row = 0
