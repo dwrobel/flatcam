@@ -2775,21 +2775,91 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
     def ui_connect(self):
 
+        # selective plotting
         for row in range(self.ui.tools_table.rowCount() - 2):
             self.ui.tools_table.cellWidget(row, 5).clicked.connect(self.on_plot_cb_click_table)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
+        # rows selected
+        self.ui.tools_table.clicked.connect(self.on_row_selection_change)
+        self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
+
     def ui_disconnect(self):
+        # selective plotting
         for row in range(self.ui.tools_table.rowCount()):
             try:
                 self.ui.tools_table.cellWidget(row, 5).clicked.disconnect()
             except (TypeError, AttributeError):
                 pass
-
         try:
             self.ui.plot_cb.stateChanged.disconnect()
         except (TypeError, AttributeError):
             pass
+
+        # rows selected
+        try:
+            self.ui.tools_table.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.tools_table.horizontalHeader().sectionClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+    def on_row_selection_change(self):
+        self.update_ui()
+
+    def update_ui(self, row=None):
+        self.ui.blockSignals(True)
+
+        if row is None:
+            sel_rows = list()
+            sel_items = self.ui.tools_table.selectedItems()
+            for it in sel_items:
+                sel_rows.append(it.row())
+        else:
+            sel_rows = row if type(row) == list else [row]
+
+        if not sel_rows:
+            sel_rows = [0]
+
+        if len(sel_rows) == 1:
+            # update the QLabel that shows for which Tool we have the parameters in the UI form
+            tooluid = int(self.ui.tools_table.item(sel_rows[0], 0).text())
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
+            )
+        else:
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+            )
+
+        for c_row in sel_rows:
+            # populate the form with the data from the tool associated with the row parameter
+            try:
+                item = self.ui.tools_table.item(c_row, 0)
+                if type(item) is not None:
+                    tooluid = int(item.text())
+                else:
+                    self.ui.blockSignals(False)
+                    return
+            except Exception as e:
+                log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+                self.ui.blockSignals(False)
+                return
+
+            # try:
+            #     # set the form with data from the newly selected tool
+            #     for tooluid_key, tooluid_value in list(self.tools.items()):
+            #         if int(tooluid_key) == tooluid:
+            #             for key, value in tooluid_value.items():
+            #                 if key == 'data':
+            #                     form_value_storage = tooluid_value[key]
+            #                     self.update_form(form_value_storage)
+            # except Exception as e:
+            #     log.debug("FlatCAMObj ---> update_ui() " + str(e))
+
+        self.ui.blockSignals(False)
 
     def on_tool_offset_edit(self):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
@@ -4056,7 +4126,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
 
-        self.ui.geo_tools_table.currentItemChanged.connect(self.on_row_selection_change)
+        # self.ui.geo_tools_table.currentItemChanged.connect(self.on_row_selection_change)
+        self.ui.geo_tools_table.clicked.connect(self.on_row_selection_change)
+        self.ui.geo_tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
+
         self.ui.geo_tools_table.itemChanged.connect(self.on_tool_edit)
         self.ui.tool_offset_entry.returnPressed.connect(self.on_offset_value_edited)
 
@@ -4115,7 +4188,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
 
         try:
-            self.ui.geo_tools_table.currentItemChanged.disconnect()
+            self.ui.geo_tools_table.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.ui.geo_tools_table.horizontalHeader().sectionClicked.disconnect()
         except (TypeError, AttributeError):
             pass
 
@@ -4140,8 +4217,84 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except (TypeError, AttributeError):
             pass
 
+    def on_row_selection_change(self):
+        self.update_ui()
+
+    def update_ui(self, row=None):
+        self.ui.blockSignals(True)
+
+        if row is None:
+            sel_rows = list()
+            sel_items = self.ui.geo_tools_table.selectedItems()
+            for it in sel_items:
+                sel_rows.append(it.row())
+        else:
+            sel_rows = row if type(row) == list else [row]
+
+        if not sel_rows:
+            sel_rows = [0]
+
+        for current_row in sel_rows:
+            self.set_tool_offset_visibility(current_row)
+
+            # populate the form with the data from the tool associated with the row parameter
+            try:
+                item = self.ui.geo_tools_table.item(current_row, 5)
+                if type(item) is not None:
+                    tooluid = int(item.text())
+                else:
+                    self.ui.blockSignals(False)
+                    return
+            except Exception as e:
+                log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+                self.ui.blockSignals(False)
+                return
+
+            # update the QLabel that shows for which Tool we have the parameters in the UI form
+            if len(sel_rows) == 1:
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
+                )
+            else:
+                self.ui.tool_data_label.setText(
+                    "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("Multiple Tools"))
+                )
+
+            # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
+            # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
+            try:
+                item = self.ui.geo_tools_table.cellWidget(current_row, 4)
+                if item is not None:
+                    tool_type_txt = item.currentText()
+                    self.ui_update_v_shape(tool_type_txt=tool_type_txt)
+                else:
+                    self.ui.blockSignals(False)
+                    return
+            except Exception as e:
+                log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
+                return
+
+            try:
+                # set the form with data from the newly selected tool
+                for tooluid_key, tooluid_value in list(self.tools.items()):
+                    if int(tooluid_key) == tooluid:
+                        for key, value in tooluid_value.items():
+                            if key == 'data':
+                                form_value_storage = tooluid_value[key]
+                                self.update_form(form_value_storage)
+                            if key == 'offset_value':
+                                # update the offset value in the entry even if the entry is hidden
+                                self.ui.tool_offset_entry.set_value(tooluid_value[key])
+
+                            if key == 'tool_type' and value == 'V':
+                                self.update_cutz()
+            except Exception as e:
+                log.debug("FlatCAMObj ---> update_ui() " + str(e))
+
+        self.ui.blockSignals(False)
+
     def on_tool_add(self, dia=None):
-        self.ui_disconnect()
+        self.ui.blockSignals(True)
 
         self.units = self.app.defaults['units'].upper()
 
@@ -4214,6 +4367,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ser_attrs.append('tools')
 
         self.app.inform.emit('[success] %s' % _("Tool added in Tool Table."))
+        self.ui.blockSignals(False)
         self.build_ui()
 
         # if there is no tool left in the Tools Table, enable the parameters GUI
@@ -4244,7 +4398,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :return: None
         """
 
-        self.ui_disconnect()
+        self.ui.blockSignals(True)
         self.units = self.app.defaults['units'].upper()
 
         tooldia = float(tool['tooldia'])
@@ -4288,6 +4442,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
+        self.ui.blockSignals(False)
         self.build_ui()
 
         # if there is no tool left in the Tools Table, enable the parameters GUI
@@ -4295,7 +4450,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_param_frame.setDisabled(False)
 
     def on_tool_copy(self, all=None):
-        self.ui_disconnect()
+        self.ui.blockSignals(True)
 
         # find the tool_uid maximum value in the self.tools
         uid_list = []
@@ -4319,8 +4474,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         max_uid += 1
                         self.tools[int(max_uid)] = deepcopy(self.tools[tooluid_copy])
                     except AttributeError:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Failed. Select a tool to copy."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
+                        self.ui.blockSignals(False)
                         self.build_ui()
                         return
                     except Exception as e:
@@ -4328,8 +4483,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Failed. Select a tool to copy."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to copy."))
+                self.ui.blockSignals(False)
                 self.build_ui()
                 return
         else:
@@ -4355,12 +4510,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
+        self.ui.blockSignals(False)
         self.build_ui()
         self.app.inform.emit('[success] %s' % _("Tool was copied in Tool Table."))
 
     def on_tool_edit(self, current_item):
-
-        self.ui_disconnect()
+        self.ui.blockSignals(True)
 
         current_row = current_item.row()
         try:
@@ -4385,10 +4540,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
 
         self.app.inform.emit('[success] %s' % _("Tool was edited in Tool Table."))
+        self.ui.blockSignals(False)
         self.build_ui()
 
     def on_tool_delete(self, all=None):
-        self.ui_disconnect()
+        self.ui.blockSignals(True)
 
         if all is None:
             if self.ui.geo_tools_table.selectedItems():
@@ -4412,8 +4568,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         self.tools = deepcopy(temp_tools)
                         temp_tools.clear()
                     except AttributeError:
-                        self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                             _("Failed. Select a tool to delete."))
+                        self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
+                        self.ui.blockSignals(False)
                         self.build_ui()
                         return
                     except Exception as e:
@@ -4421,8 +4577,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %
-                                     _("Failed. Select a tool to delete."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Failed. Select a tool to delete."))
+                self.ui.blockSignals(False)
                 self.build_ui()
                 return
         else:
@@ -4443,9 +4599,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
+        self.ui.blockSignals(False)
         self.build_ui()
-        self.app.inform.emit('[success] %s' %
-                             _("Tool was deleted in Tool Table."))
+        self.app.inform.emit('[success] %s' % _("Tool was deleted in Tool Table."))
 
         obj_active = self.app.collection.get_active()
         # if the object was MultiGeo and now it has no tool at all (therefore no geometry)
@@ -4473,72 +4629,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # if there is no tool left in the Tools Table, disable the parameters GUI
         if self.ui.geo_tools_table.rowCount() == 0:
             self.ui.geo_param_frame.setDisabled(True)
-
-    def on_row_selection_change(self):
-        self.update_ui()
-
-    def update_ui(self, row=None):
-        self.ui_disconnect()
-
-        if row is None:
-            try:
-                current_row = self.ui.geo_tools_table.currentRow()
-            except Exception:
-                current_row = 0
-        else:
-            current_row = row
-
-        if current_row < 0:
-            current_row = 0
-
-        self.set_tool_offset_visibility(current_row)
-
-        # populate the form with the data from the tool associated with the row parameter
-        try:
-            item = self.ui.geo_tools_table.item(current_row, 5)
-            if type(item) is not None:
-                tooluid = int(item.text())
-            else:
-                return
-        except Exception as e:
-            log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
-            return
-
-        # update the QLabel that shows for which Tool we have the parameters in the UI form
-        self.ui.tool_data_label.setText(
-            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), tooluid)
-        )
-
-        # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
-        # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
-        try:
-            item = self.ui.geo_tools_table.cellWidget(current_row, 4)
-            if item is not None:
-                tool_type_txt = item.currentText()
-                self.ui_update_v_shape(tool_type_txt=tool_type_txt)
-            else:
-                return
-        except Exception as e:
-            log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
-            return
-
-        try:
-            # set the form with data from the newly selected tool
-            for tooluid_key, tooluid_value in list(self.tools.items()):
-                if int(tooluid_key) == tooluid:
-                    for key, value in tooluid_value.items():
-                        if key == 'data':
-                            form_value_storage = tooluid_value[key]
-                            self.update_form(form_value_storage)
-                        if key == 'offset_value':
-                            # update the offset value in the entry even if the entry is hidden
-                            self.ui.tool_offset_entry.set_value(tooluid_value[key])
-
-                        if key == 'tool_type' and value == 'V':
-                            self.update_cutz()
-        except Exception as e:
-            log.debug("FlatCAMObj ---> update_ui() " + str(e))
-        self.ui_connect()
 
     def ui_update_v_shape(self, tool_type_txt):
         if tool_type_txt == 'V':
@@ -4643,7 +4733,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             log.debug("FlatCAMGeometry.gui_form_to_storage() --> no tool in Tools Table, aborting.")
             return
 
-        self.ui_disconnect()
+        self.ui.blockSignals(True)
 
         row = self.ui.geo_tools_table.currentRow()
         if row < 0:
@@ -4698,7 +4788,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.tools = deepcopy(temp_tools)
         temp_tools.clear()
 
-        self.ui_connect()
+        self.ui.blockSignals(False)
 
     def gui_form_to_storage(self):
         if self.ui.geo_tools_table.rowCount() == 0:
@@ -4706,7 +4796,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             log.debug("FlatCAMGeometry.gui_form_to_storage() --> no tool in Tools Table, aborting.")
             return
 
-        self.ui_disconnect()
+        self.ui.blockSignals(True)
         widget_changed = self.sender()
         try:
             widget_idx = self.ui.grid3.indexOf(widget_changed)
@@ -4785,7 +4875,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.tools.clear()
         self.tools = deepcopy(temp_tools)
         temp_tools.clear()
-        self.ui_connect()
+        self.ui.blockSignals(False)
 
     def select_tools_table_row(self, row, clearsel=None):
         if clearsel:
@@ -5813,7 +5903,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.read_form_item('plot')
         self.plot()
 
-        self.ui_disconnect()
+        self.ui.blockSignals(True)
         cb_flag = self.ui.plot_cb.isChecked()
         for row in range(self.ui.geo_tools_table.rowCount()):
             table_cb = self.ui.geo_tools_table.cellWidget(row, 6)
@@ -5821,11 +5911,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 table_cb.setChecked(True)
             else:
                 table_cb.setChecked(False)
-        self.ui_connect()
+        self.ui.blockSignals(False)
 
     def on_plot_cb_click_table(self):
         # self.ui.cnc_tools_table.cellWidget(row, 2).widget().setCheckState(QtCore.Qt.Unchecked)
-        self.ui_disconnect()
+        self.ui.blockSignals(True)
         # cw = self.sender()
         # cw_index = self.ui.geo_tools_table.indexAt(cw.pos())
         # cw_row = cw_index.row()
@@ -5858,7 +5948,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.plot_cb.setChecked(False)
         else:
             self.ui.plot_cb.setChecked(True)
-        self.ui_connect()
+        self.ui.blockSignals(False)
 
     def merge(self, geo_list, geo_final, multigeo=None):
         """

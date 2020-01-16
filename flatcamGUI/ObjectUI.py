@@ -800,16 +800,26 @@ class ExcellonObjectUI(ObjectUI):
             _("Toggle display of the drills for the current tool.\n"
               "This does not select the tools for G-code generation."))
 
-        self.empty_label = QtWidgets.QLabel('')
-        self.tools_box.addWidget(self.empty_label)
+        self.tools_box.addWidget(QtWidgets.QLabel(''))
 
-        # ### Create CNC Job ####
-        self.cncjob_label = QtWidgets.QLabel('<b>%s</b>' % _('Create CNC Job'))
-        self.cncjob_label.setToolTip(
-            _("Create a CNC Job object\n"
-              "for this drill object.")
+        # ###########################################################
+        # ############# Create CNC Job ##############################
+        # ###########################################################
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.tools_box.addWidget(separator_line)
+
+        self.tool_data_label = QtWidgets.QLabel(
+            "<b>%s: <font color='#0000FF'>%s %d</font></b>" % (_('Parameters for'), _("Tool"), int(1)))
+        self.tool_data_label.setToolTip(
+            _(
+                "The data used for creating GCode.\n"
+                "Each tool store it's own set of such data."
+            )
         )
-        self.tools_box.addWidget(self.cncjob_label)
+        self.tools_box.addWidget(self.tool_data_label)
 
         grid1 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid1)
@@ -855,32 +865,28 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(self.travelz_entry, 1, 1)
 
         # Tool change:
-        self.toolchange_cb = FCCheckBox('%s' % _("Tool change"))
+        self.toolchange_cb = FCCheckBox('%s:' % _("Tool change Z"))
         self.toolchange_cb.setToolTip(
             _("Include tool-change sequence\n"
               "in G-Code (Pause for tool change).")
         )
-        grid1.addWidget(self.toolchange_cb, 2, 0, 1, 2)
 
-        # Tool change Z:
-        toolchzlabel = QtWidgets.QLabel('%s:' % _("Tool change Z"))
-        toolchzlabel.setToolTip(
+        self.toolchangez_entry = FCDoubleSpinner()
+        self.toolchangez_entry.set_precision(self.decimals)
+        self.toolchangez_entry.setToolTip(
             _("Z-axis position (height) for\n"
               "tool change.")
         )
-        grid1.addWidget(toolchzlabel, 3, 0)
-        self.toolchangez_entry = FCDoubleSpinner()
-        self.toolchangez_entry.set_precision(self.decimals)
-
         if machinist_setting == 0:
             self.toolchangez_entry.set_range(0.0, 9999.9999)
         else:
             self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
 
         self.toolchangez_entry.setSingleStep(0.1)
-
-        grid1.addWidget(self.toolchangez_entry, 3, 1)
         self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
+
+        grid1.addWidget(self.toolchange_cb, 2, 0)
+        grid1.addWidget(self.toolchangez_entry, 2, 1)
 
         # Start move Z:
         self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
@@ -1021,6 +1027,11 @@ class ExcellonObjectUI(ObjectUI):
 
         self.feedrate_probe_label.hide()
         self.feedrate_probe_entry.setVisible(False)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid1.addWidget(separator_line, 13, 0, 1, 2)
 
         grid2 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid2)
@@ -1349,9 +1360,9 @@ class GeometryObjectUI(ObjectUI):
         self.empty_label = QtWidgets.QLabel('')
         self.geo_tools_box.addWidget(self.empty_label)
 
-        # ##################
-        # Create CNC Job ###
-        # ##################
+        # ###########################################################
+        # ############# Create CNC Job ##############################
+        # ###########################################################
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -1477,15 +1488,8 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(travelzlabel, 5, 0)
         self.grid3.addWidget(self.travelz_entry, 5, 1)
 
-        # Tool change:
-        self.toolchzlabel = QtWidgets.QLabel('%s:' % _("Tool change Z"))
-        self.toolchzlabel.setToolTip(
-            _(
-                "Z-axis position (height) for\n"
-                "tool change."
-            )
-        )
-        self.toolchangeg_cb = FCCheckBox('%s' % _("Tool change"))
+        # Tool change
+        self.toolchangeg_cb = FCCheckBox('%s:' % _("Tool change Z"))
         self.toolchangeg_cb.setToolTip(
             _(
                 "Include tool-change sequence\n"
@@ -1494,6 +1498,12 @@ class GeometryObjectUI(ObjectUI):
         )
         self.toolchangez_entry = FCDoubleSpinner()
         self.toolchangez_entry.set_precision(self.decimals)
+        self.toolchangez_entry.setToolTip(
+            _(
+                "Z-axis position (height) for\n"
+                "tool change."
+            )
+        )
 
         if machinist_setting == 0:
             self.toolchangez_entry.set_range(0, 9999.9999)
@@ -1501,11 +1511,10 @@ class GeometryObjectUI(ObjectUI):
             self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
 
         self.toolchangez_entry.setSingleStep(0.1)
-
-        self.grid3.addWidget(self.toolchangeg_cb, 6, 0, 1, 2)
-        self.grid3.addWidget(self.toolchzlabel, 7, 0)
-        self.grid3.addWidget(self.toolchangez_entry, 7, 1)
         self.ois_tcz_geo = OptionalInputSection(self.toolchangeg_cb, [self.toolchangez_entry])
+
+        self.grid3.addWidget(self.toolchangeg_cb, 6, 0)
+        self.grid3.addWidget(self.toolchangez_entry, 6, 1)
 
         # The Z value for the start move
         # startzlabel = QtWidgets.QLabel('Start move Z:')
