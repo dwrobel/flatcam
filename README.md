@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.01.2020
+
+- more changes to Excellon UI
+
 16.01.2020
 
 - updated/optimized the GUI in Preferences for Paint Tool and for NCC Tool
