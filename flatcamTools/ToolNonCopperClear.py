@@ -1796,7 +1796,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             if empty.is_empty:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                    _("Could not get the extent of the area to be non copper cleared."))
+                                     _("Could not get the extent of the area to be non copper cleared."))
                 return 'fail'
         elif ncc_obj.kind == 'gerber' and isotooldia:
             isolated_geo = []
@@ -1824,7 +1824,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 else:
                     if ncc_margin < tool_iso:
                         self.app.inform.emit('[WARNING_NOTCL] %s' % _("Isolation geometry is broken. Margin is less "
-                                                                     "than isolation tool diameter."))
+                                                                      "than isolation tool diameter."))
                     try:
                         for geo_elem in isolated_geo:
                             # provide the app with a way to process the GUI events when in a blocking loop
@@ -1901,7 +1901,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             if empty.is_empty:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                    _("Isolation geometry is broken. Margin is less than isolation tool diameter."))
+                                     _("Isolation geometry is broken. Margin is less than isolation tool diameter."))
                 return 'fail'
         elif ncc_obj.kind == 'geometry':
             sol_geo = cascaded_union(ncc_obj.solid_geometry)
@@ -1915,7 +1915,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             if empty.is_empty:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                    _("Could not get the extent of the area to be non copper cleared."))
+                                     _("Could not get the extent of the area to be non copper cleared."))
                 return 'fail'
         else:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _('The selected object is not suitable for copper clearing.'))
@@ -1941,10 +1941,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         Clear the excess copper from the entire object.
 
         :param ncc_obj: ncc cleared object
+        :param sel_obj:
         :param ncctooldia: a tuple or single element made out of diameters of the tools to be used to ncc clear
         :param isotooldia: a tuple or single element made out of diameters of the tools to be used for isolation
         :param outname: name of the resulting object
-
+        :param order:
         :param tools_storage: whether to use the current tools_storage self.ncc_tools or a different one.
         Usage of the different one is related to when this function is called from a TcL command.
 
@@ -2035,7 +2036,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 tool = eval(self.app.defaults["tools_ncctools"])
 
             # COPPER CLEARING #
-            cp = None
             for tool in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
                 if self.app.abort_flag:
@@ -2604,6 +2604,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         Clear the excess copper from the entire object. To be used only in a TCL command.
 
         :param ncc_obj: ncc cleared object
+        :param sel_obj:
         :param ncctooldia: a tuple or single element made out of diameters of the tools to be used to ncc clear
         :param isotooldia: a tuple or single element made out of diameters of the tools to be used for isolation
         :param overlap: value by which the paths will overlap
@@ -2946,7 +2947,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     return 'fail'
 
             else:
-                app_obj.inform.emit('[ERROR_NOTCL] %s' %  _('The selected object is not suitable for copper clearing.'))
+                app_obj.inform.emit('[ERROR_NOTCL] %s' % _('The selected object is not suitable for copper clearing.'))
                 return 'fail'
 
             if type(empty) is Polygon:
@@ -2956,7 +2957,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.app.inform.emit(_("NCC Tool. Finished calculation of 'empty' area."))
 
             # COPPER CLEARING #
-            cp = None
             for tool in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
                 if self.app.abort_flag:
@@ -3279,7 +3279,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                         new_geo = line_elem.intersection(bounding_box)
                                         if new_geo and not new_geo.is_empty:
                                             new_geometry.append(new_geo)
-                            except Exception as e:
+                            except Exception:
                                 pass
 
                         # a MultiLineString geometry element will show that the isolation is broken for this tool
@@ -3424,8 +3424,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                                      overlap=overlap, contour=contour, connect=connect,
                                                                      prog_plot=False)
                                         cleared_geo.append(list(cp.get_objects()))
-                                    except Exception as e:
-                                        log.warning("Polygon can't be cleared. %s" % str(e))
+                                    except Exception as ee:
+                                        log.warning("Polygon can't be cleared. %s" % str(ee))
                                         # this polygon should be added to a list and then try clear it with
                                         # a smaller tool
                                         rest_geo.append(p)
@@ -3456,8 +3456,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                                                              connect=connect,
                                                                              prog_plot=False)
                                                 cleared_geo.append(list(cp.get_objects()))
-                                            except Exception as e:
-                                                log.warning("Polygon can't be cleared. %s" % str(e))
+                                            except Exception as eee:
+                                                log.warning("Polygon can't be cleared. %s" % str(eee))
                                                 # this polygon should be added to a list and then try clear it with
                                                 # a smaller tool
                                                 rest_geo.append(poly)
@@ -3598,7 +3598,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             boundary = boundary
         try:
             ret_val = boundary.difference(target)
-        except Exception as e:
+        except Exception:
             try:
                 for el in target:
                     # provide the app with a way to process the GUI events when in a blocking loop
@@ -3615,7 +3615,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         self.app.proc_container.update_view_text(' %d%%' % disp_number)
                         old_disp_number = disp_number
                 return boundary
-            except Exception as e:
+            except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s' %
                                      _("Try to use the Buffering Type = Full in Preferences -> Gerber General. "
                                        "Reload the Gerber file after this change."))
