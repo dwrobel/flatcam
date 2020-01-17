@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - changes to Geometry UI
 - more work in NCC Tool upgrade; each tool now work with it's own set of parameters
 - some updates in NCC Tool
+- optimized the object envelope generation in the redesigned NCC Tool
 
 16.01.2020
 

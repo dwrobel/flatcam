@@ -1698,33 +1698,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
                                                  coords=(curr_pos[0], curr_pos[1]))
 
-    def get_tool_bounding_box(self, ncc_obj, sel_obj, ncc_select, ncc_margin):
-        """
-        Prepare non-copper polygons.
-        Create the bounding box area from which the copper features will be subtracted
-
-        :param ncc_obj:     the Gerber object to be non-copper cleared
-        :param sel_obj:     the FlatCAM object to be used as a area delimitator
-        :param ncc_select:  the kind of area to be copper cleared
-        :param ncc_margin:  the margin around the area to be copper cleared
-        :return:            an geometric element (Polygon or MultiPolygon) that specify the area to be copper cleared
+    def envelope_object(self, ncc_obj, ncc_select, box_obj=None):
         """
 
-        log.debug("NCC Tool. Preparing non-copper polygons.")
-        self.app.inform.emit(_("NCC Tool. Preparing non-copper polygons."))
+        :param ncc_obj:
+        :param box_obj:
+        :param ncc_select:
+        :return:
+        """
+        box_kind = box_obj.kind if box_obj is not None else None
 
-        try:
-            if sel_obj is None or sel_obj == 'itself':
-                ncc_sel_obj = ncc_obj
-            else:
-                ncc_sel_obj = sel_obj
-        except Exception as e:
-            log.debug("NonCopperClear.clear_copper() --> %s" % str(e))
-            return 'fail'
-
-        bounding_box = None
+        env_obj = None
         if ncc_select == 'itself':
-            geo_n = ncc_sel_obj.solid_geometry
+            geo_n = ncc_obj.solid_geometry
 
             try:
                 if isinstance(geo_n, MultiPolygon):
@@ -1735,51 +1721,85 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 else:
                     env_obj = cascaded_union(geo_n)
                     env_obj = env_obj.convex_hull
-
-                bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             except Exception as e:
-                log.debug("NonCopperClear.clear_copper() 'itself'  --> %s" % str(e))
+                log.debug("NonCopperClear.envelope_object() 'itself'  --> %s" % str(e))
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
+                return None
+        elif ncc_select == 'area':
+            env_obj = cascaded_union(self.sel_rect)
+            try:
+                __ = iter(env_obj)
+            except Exception:
+                env_obj = [env_obj]
+        elif ncc_select == 'box':
+            if box_obj is None:
+                return None, None
+
+            box_geo = box_obj.solid_geometry
+            if box_kind == 'geometry':
+                try:
+                    __ = iter(box_geo)
+                    env_obj = box_geo
+                except Exception:
+                    env_obj = [box_geo]
+
+            elif box_kind == 'gerber':
+                box_geo = cascaded_union(box_obj.solid_geometry).convex_hull
+                ncc_geo = cascaded_union(ncc_obj.solid_geometry).convex_hull
+                env_obj = ncc_geo.intersection(box_geo)
+            else:
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
                 return 'fail'
 
-        elif ncc_select == 'area':
-            geo_n = cascaded_union(self.sel_rect)
-            try:
-                __ = iter(geo_n)
-            except Exception as e:
-                log.debug("NonCopperClear.clear_copper() 'area' --> %s" % str(e))
-                geo_n = [geo_n]
+        return env_obj, box_kind
 
+    def envelope_object_to_tool_bounding_box(self, env_obj, box_kind, ncc_select, ncc_margin):
+        """
+        Prepare non-copper polygons.
+        Create the bounding box area from which the copper features will be subtracted
+
+        :param env_obj:     the Geometry to be used as bounding box after applying the ncc_margin
+        :param box_kind:    "geometry" or "gerber"
+        :param ncc_select:  the kind of area to be copper cleared
+        :param ncc_margin:  the margin around the area to be copper cleared
+        :return:            an geometric element (Polygon or MultiPolygon) that specify the area to be copper cleared
+        """
+
+        log.debug("NCC Tool. Preparing non-copper polygons.")
+        self.app.inform.emit(_("NCC Tool. Preparing non-copper polygons."))
+
+        if env_obj is None:
+            log.debug("NonCopperClear.envelope_object_to_tool_bounding_box() --> The object is None")
+            return 'fail'
+
+        bounding_box = None
+        if ncc_select == 'itself':
+            try:
+                bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
+            except Exception as e:
+                log.debug("NonCopperClear.envelope_object_to_tool_bounding_box() 'itself'  --> %s" % str(e))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("No object available."))
+                return 'fail'
+        elif ncc_select == 'area':
             geo_buff_list = []
-            for poly in geo_n:
+            for poly in env_obj:
                 if self.app.abort_flag:
                     # graceful abort requested by the user
                     raise FlatCAMApp.GracefulException
                 geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
-
             bounding_box = cascaded_union(geo_buff_list)
-
         elif ncc_select == 'box':
-            geo_n = ncc_sel_obj.solid_geometry
-            if ncc_sel_obj.kind == 'geometry':
-                try:
-                    __ = iter(geo_n)
-                except Exception as e:
-                    log.debug("NonCopperClear.clear_copper() 'box' --> %s" % str(e))
-                    geo_n = [geo_n]
-
-                geo_buff_list = []
-                for poly in geo_n:
+            if box_kind == 'geometry':
+                geo_buff_list = list()
+                for poly in env_obj:
                     if self.app.abort_flag:
                         # graceful abort requested by the user
                         raise FlatCAMApp.GracefulException
                     geo_buff_list.append(poly.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre))
 
                 bounding_box = cascaded_union(geo_buff_list)
-            elif ncc_sel_obj.kind == 'gerber':
-                geo_n = cascaded_union(geo_n).convex_hull
-                bounding_box = cascaded_union(self.ncc_obj.solid_geometry).convex_hull.intersection(geo_n)
-                bounding_box = bounding_box.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
+            elif box_kind == 'gerber':
+                bounding_box = env_obj.buffer(distance=ncc_margin, join_style=base.JOIN_STYLE.mitre)
             else:
                 self.app.inform.emit('[ERROR_NOTCL] %s' % _("The reference object type is not supported."))
                 return 'fail'
@@ -2071,6 +2091,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
             except TypeError:
                 tool = eval(self.app.defaults["tools_ncctools"])
 
+            if ncc_select == 'box':
+                env_obj, box_obj_kind = self.envelope_object(ncc_obj=ncc_obj, box_obj=sel_obj, ncc_select=ncc_select)
+            else:
+                env_obj, box_obj_kind = self.envelope_object(ncc_obj=ncc_obj, ncc_select=ncc_select)
+
+            if env_obj is None and box_obj_kind is None:
+                self.app.inform.emit("[ERROR_NOTCL] %s" % _("NCC Tool failed creating bounding box."))
+                return "fail"
+
             # COPPER CLEARING #
             for tool in sorted_tools:
                 log.debug("Starting geometry processing for tool: %s" % str(tool))
@@ -2106,8 +2135,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 offset -= (tool - 1e-12)
 
                 # Bounding box for current tool
-                bbox = self.get_tool_bounding_box(ncc_obj=ncc_obj, sel_obj=sel_obj, ncc_select=ncc_select,
-                                                  ncc_margin=ncc_margin)
+                bbox = self.envelope_object_to_tool_bounding_box(env_obj=env_obj, box_kind=box_obj_kind,
+                                                                 ncc_select=ncc_select, ncc_margin=ncc_margin)
 
                 # Area to clear
                 empty, warning_flag = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj,
@@ -2342,6 +2371,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
             app_obj.poly_not_cleared = True
 
+            if ncc_select == 'box':
+                env_obj, box_obj_kind = self.envelope_object(ncc_obj=ncc_obj, box_obj=sel_obj, ncc_select=ncc_select)
+            else:
+                env_obj, box_obj_kind = self.envelope_object(ncc_obj=ncc_obj, ncc_select=ncc_select)
+
+            if env_obj is None and box_obj_kind is None:
+                self.app.inform.emit("[ERROR_NOTCL] %s" % _("NCC Tool failed creating bounding box."))
+                return "fail"
+
             log.debug("NCC Tool. Calculate 'empty' area.")
             app_obj.inform.emit("NCC Tool. Calculate 'empty' area.")
 
@@ -2380,8 +2418,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 cleared_geo[:] = []
 
                 # Bounding box for current tool
-                bbox = self.get_tool_bounding_box(ncc_obj=ncc_obj, sel_obj=sel_obj, ncc_select=ncc_select,
-                                                  ncc_margin=ncc_margin)
+                bbox = self.envelope_object_to_tool_bounding_box(env_obj=env_obj, box_kind=box_obj_kind,
+                                                                 ncc_select=ncc_select, ncc_margin=ncc_margin)
 
                 # Area to clear
                 empty, warning_flag = self.get_tool_empty_area(name=name, ncc_obj=ncc_obj, geo_obj=geo_obj,
