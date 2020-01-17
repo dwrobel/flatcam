@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - more changes to Excellon UI
 - changes to Geometry UI
+- more work in NCC Tool upgrade; each tool now work with it's own set of parameters
 
 16.01.2020
 

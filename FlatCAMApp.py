@@ -4306,12 +4306,12 @@ class App(QtCore.QObject):
 
             try:
                 if kind == 'excellon':
-                    obj.fill_color = self.app.defaults["excellon_plot_fill"]
-                    obj.outline_color = self.app.defaults["excellon_plot_line"]
+                    obj.fill_color = self.defaults["excellon_plot_fill"]
+                    obj.outline_color = self.defaults["excellon_plot_line"]
 
                 if kind == 'gerber':
-                    obj.fill_color = self.app.defaults["gerber_plot_fill"]
-                    obj.outline_color = self.app.defaults["gerber_plot_line"]
+                    obj.fill_color = self.defaults["gerber_plot_fill"]
+                    obj.outline_color = self.defaults["gerber_plot_line"]
             except Exception as e:
                 log.warning("App.new_object() -> setting colors error. %s" % str(e))
 
