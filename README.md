@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 17.01.2020
 
 - more changes to Excellon UI
+- changes to Geometry UI
 
 16.01.2020
 

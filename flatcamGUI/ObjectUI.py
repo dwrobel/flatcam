@@ -1503,6 +1503,14 @@ class GeometryObjectUI(ObjectUI):
         self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
         self.grid1.addWidget(self.tool_offset_entry, 0, 1, 1, 2)
 
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid1.addWidget(separator_line, 1, 0, 1, 3)
+
+        self.tool_sel_label = QtWidgets.QLabel('<b>%s</b>' % _("New Tool"))
+        self.grid1.addWidget(self.tool_sel_label, 2, 0, 1, 3)
+
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool")
@@ -1518,16 +1526,21 @@ class GeometryObjectUI(ObjectUI):
               "with the specified diameter.")
         )
 
-        self.grid1.addWidget(self.addtool_entry_lbl, 1, 0)
-        self.grid1.addWidget(self.addtool_entry, 1, 1)
-        self.grid1.addWidget(self.addtool_btn, 1, 2)
+        self.grid1.addWidget(self.addtool_entry_lbl, 3, 0)
+        self.grid1.addWidget(self.addtool_entry, 3, 1)
+        self.grid1.addWidget(self.addtool_btn, 3, 2)
 
         self.addtool_from_db_btn = QtWidgets.QPushButton(_('Add from DB'))
         self.addtool_from_db_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
               "from the Tool DataBase.")
         )
-        self.grid1.addWidget(self.addtool_from_db_btn, 2, 0, 1, 3)
+        self.grid1.addWidget(self.addtool_from_db_btn, 4, 0, 1, 3)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.grid1.addWidget(separator_line, 5, 0, 1, 3)
 
         grid2 = QtWidgets.QGridLayout()
         self.geo_tools_box.addLayout(grid2)
