@@ -669,7 +669,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ############################ SIGNALS ########################################
         # #############################################################################
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        self.addtool_entry.returnPressed.connect(self.on_tool_add)
+        self.addtool_entry.returnPressed.connect(self.on_tooldia_updated)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.generate_ncc_button.clicked.connect(self.on_ncc_click)
 
@@ -685,8 +685,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         self.reset_button.clicked.connect(self.set_tool_ui)
-
-        self.tools_table.currentItemChanged.connect(self.on_row_selection_change)
 
     def on_type_obj_index_changed(self, index):
         obj_type = self.type_obj_combo.currentIndex()
@@ -760,6 +758,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         option_changed = self.name2option[wdg_objname]
 
         row = self.tools_table.currentRow()
+
         if row < 0:
             row = 0
         tooluid_item = int(self.tools_table.item(row, 3).text())
@@ -882,6 +881,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units'].upper()
+        self.old_tool_dia = self.app.defaults["tools_nccnewdia"]
 
         self.tools_frame.show()
 
@@ -1079,6 +1079,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
     def ui_connect(self):
         self.tools_table.itemChanged.connect(self.on_tool_edit)
 
+        # rows selected
+        self.tools_table.clicked.connect(self.on_row_selection_change)
+        self.tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
+
         for row in range(self.tools_table.rowCount()):
             try:
                 self.tools_table.cellWidget(row, 2).currentIndexChanged.connect(self.on_tooltable_cellwidget_change)
@@ -1111,6 +1115,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 except (TypeError, ValueError):
                     pass
 
+        try:
+            self.ncc_rest_cb.stateChanged.disconnect()
+        except (TypeError, ValueError):
+            pass
+        try:
+            self.ncc_order_radio.activated_custom[str].disconnect()
+        except (TypeError, ValueError):
+            pass
+
         # then reconnect
         for opt in self.form_fields:
             current_widget = self.form_fields[opt]
@@ -1121,11 +1134,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
             elif isinstance(current_widget, FCDoubleSpinner):
                 current_widget.returnPressed.connect(self.form_to_storage)
 
-        self.ncc_choice_offset_cb.stateChanged.connect(self.on_offset_choice)
         self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
         self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
     def ui_disconnect(self):
+
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table.itemChanged.disconnect()
@@ -1162,6 +1175,29 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     current_widget.returnPressed.disconnect()
                 except (TypeError, ValueError):
                     pass
+
+        try:
+            self.ncc_rest_cb.stateChanged.disconnect()
+        except (TypeError, ValueError):
+            pass
+        try:
+            self.ncc_order_radio.activated_custom[str].disconnect()
+        except (TypeError, ValueError):
+            pass
+
+        # rows selected
+        try:
+            self.tools_table.clicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.tools_table.horizontalHeader().sectionClicked.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+    def on_tooldia_updated(self):
+        if self.tool_type_radio.get_value() == 'C1':
+            self.old_tool_dia = self.addtool_entry.get_value()
 
     def on_combo_box_type(self):
         obj_type = self.box_combo_type.currentIndex()
