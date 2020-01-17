@@ -1255,7 +1255,7 @@ class ExcellonObjectUI(ObjectUI):
         self.grid6.addWidget(QtWidgets.QLabel(''), 1, 0, 1, 3)
         self.grid6.addWidget(warning_lbl, 2, 0, 1, 3)
 
-        self.generate_cnc_button = QtWidgets.QPushButton(_('Generate GCode'))
+        self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
         self.generate_cnc_button.setToolTip(
             _("Generate the CNC Job.\n"
               "If milling then an additional Geometry object will be created")
