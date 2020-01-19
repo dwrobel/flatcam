@@ -12465,24 +12465,39 @@ class App(QtCore.QObject):
         if not sel_obj_list:
             return
 
+        # a default value, I just chose this one
+        alpha_level = 'BF'
+        for sel_obj in sel_obj_list:
+            if sel_obj.kind == 'excellon':
+                alpha_level = str(hex(
+                    self.ui.excellon_defaults_form.excellon_gen_group.color_alpha_slider.value())[2:])
+            elif sel_obj.kind == 'gerber':
+                alpha_level = str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            elif sel_obj.kind == 'geometry':
+                alpha_level = 'FF'
+            else:
+                log.debug(
+                    "App.on_set_color_action_triggered() --> Default alpfa for this object type not supported yet")
+                continue
+            sel_obj.alpha_level = alpha_level
+
         if act_name == _('Red'):
-            new_color = '#FF0000' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            new_color = '#FF0000' + alpha_level
         if act_name == _('Blue'):
-            new_color = '#0000FF' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            new_color = '#0000FF' + alpha_level
+
         if act_name == _('Yellow'):
-            new_color = '#FFDF00' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            new_color = '#FFDF00' + alpha_level
         if act_name == _('Green'):
-            new_color = '#00FF00' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            new_color = '#00FF00' + alpha_level
         if act_name == _('Purple'):
-            new_color = '#FF00FF' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            new_color = '#FF00FF' + alpha_level
         if act_name == _('Brown'):
-            new_color = '#A52A2A' + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            new_color = '#A52A2A' + alpha_level
+        if act_name == _('White'):
+            new_color = '#FFFFFF' + alpha_level
+        if act_name == _('Black'):
+            new_color = '#000000' + alpha_level
 
         if act_name == _('Custom'):
             new_color = QtGui.QColor(self.defaults['gerber_plot_fill'][:7])
@@ -12492,10 +12507,51 @@ class App(QtCore.QObject):
             if plot_fill_color.isValid() is False:
                 return
 
-            new_color = str(plot_fill_color.name()) + \
-                        str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
+            new_color = str(plot_fill_color.name()) + alpha_level
+
+        if act_name == _("Default"):
+            for sel_obj in sel_obj_list:
+                if sel_obj.kind == 'excellon':
+                    new_color = self.defaults['excellon_plot_fill']
+                    new_line_color = self.defaults['excellon_plot_line']
+                elif sel_obj.kind == 'gerber':
+                    new_color = self.defaults['gerber_plot_fill']
+                    new_line_color = self.defaults['gerber_plot_line']
+                elif sel_obj.kind == 'geometry':
+                    new_color = self.defaults['geometry_plot_line']
+                    new_line_color = self.defaults['geometry_plot_line']
+                else:
+                    log.debug(
+                        "App.on_set_color_action_triggered() --> Default color for this object type not supported yet")
+                    continue
+
+                sel_obj.fill_color = new_color
+                sel_obj.outline_color = new_line_color
+
+                sel_obj.shapes.redraw(
+                    update_colors=(new_color, new_line_color)
+                )
+            return
+
+        if act_name == _("Transparency"):
+            alpha_level, ok_button = QtWidgets.QInputDialog.getInt(
+                self.ui, _("Set alpha level ..."), '%s:' % _("Value"), min=0, max=255, step=1, value=191)
+
+            if ok_button:
+
+                alpha_str = str(hex(alpha_level)[2:]) if alpha_level != 0 else '00'
+                for sel_obj in sel_obj_list:
+                    sel_obj.fill_color = sel_obj.fill_color[:-2] + alpha_str
+
+                    sel_obj.shapes.redraw(
+                        update_colors=(sel_obj.fill_color, sel_obj.outline_color)
+                    )
+
+            return
 
         new_line_color = color_variant(new_color[:7], 0.7)
+        if act_name == _("White"):
+            new_line_color = color_variant("#dedede", 0.7)
 
         for sel_obj in sel_obj_list:
             sel_obj.fill_color = new_color

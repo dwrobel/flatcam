@@ -14,6 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 - fixed some bugs that are visible in Linux regarding the ArgsThread class: on app close we need to quit the QThread running the ArgsThread class and also close the opened Socket
 - make sure that the fixes above apply when rebooting app for theme change or for language change
 - fixed and issue that made setting colors for the Gerber file not possible if using a translation
+- made possible to set the colors for Excellon objects too
+- added to the possible colors the fundamentals: black and white
+- in the project context menu for setting colors added the option to set the transparency and also a default option which revert the color to the default value set in the Preferences
 
 17.01.2020
 

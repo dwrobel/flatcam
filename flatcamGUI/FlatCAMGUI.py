@@ -686,8 +686,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuproject_brown = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/brown32.png'), _('Brown'))
 
+        self.menuproject_brown = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/white32.png'), _('White'))
+
+        self.menuproject_brown = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/black32.png'), _('Black'))
+
+        self.menuprojectcolor.addSeparator()
+
         self.menuproject_custom = self.menuprojectcolor.addAction(
             QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Custom'))
+
+        self.menuprojectcolor.addSeparator()
+
+        self.menuproject_custom = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Transparency'))
+
+        self.menuproject_custom = self.menuprojectcolor.addAction(
+            QtGui.QIcon(self.app.resource_location + '/set_color32.png'), _('Default'))
 
         self.menuproject.addSeparator()
 

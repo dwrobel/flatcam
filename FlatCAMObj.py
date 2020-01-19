@@ -661,6 +661,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.fill_color = self.app.defaults['gerber_plot_fill']
         self.outline_color = self.app.defaults['gerber_plot_line']
+        self.alpha_level = 'bf'
 
         # keep track if the UI is built so we don't have to build it every time
         self.ui_build = False
@@ -671,7 +672,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind', 'fill_color', 'outline_color']
+        self.ser_attrs += ['options', 'kind', 'fill_color', 'outline_color', 'alpha_level']
 
     def set_ui(self, ui):
         """
@@ -2297,10 +2298,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.multigeo = False
         self.units_found = self.app.defaults['units']
 
+        self.fill_color = self.app.defaults['excellon_plot_fill']
+        self.outline_color = self.app.defaults['excellon_plot_line']
+        self.alpha_level = 'bf'
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind']
+        self.ser_attrs += ['options', 'kind',]
 
     def merge(self, exc_list, exc_final):
         """
@@ -3752,6 +3757,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # save here the old value for the Cut Z before it is changed by selecting a V-shape type tool in the tool table
         self.old_cutz = self.app.defaults["geometry_cutz"]
+
+        self.fill_color = self.app.defaults['geometry_plot_line']
+        self.outline_color = self.app.defaults['geometry_plot_line']
+        self.alpha_level = 'FF'
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents

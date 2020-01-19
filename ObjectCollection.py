@@ -338,7 +338,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.ui.menuprojectcolor.setEnabled(False)
 
             for obj in self.get_selected():
-                if type(obj) == FlatCAMGerber:
+                if type(obj) == FlatCAMGerber or type(obj) == FlatCAMExcellon:
                     self.app.ui.menuprojectcolor.setEnabled(True)
 
                 if type(obj) != FlatCAMGeometry:
