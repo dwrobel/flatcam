@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed some bugs that are visible in Linux regarding the ArgsThread class: on app close we need to quit the QThread running the ArgsThread class and also close the opened Socket
 - make sure that the fixes above apply when rebooting app for theme change or for language change
+- fixed and issue that made setting colors for the Gerber file not possible if using a translation
 
 17.01.2020
 

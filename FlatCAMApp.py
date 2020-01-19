@@ -12459,33 +12459,32 @@ class App(QtCore.QObject):
 
     def on_set_color_action_triggered(self):
         new_color = self.defaults['gerber_plot_fill']
-        act_name = self.sender().text().lower()
-
+        act_name = self.sender().text()
         sel_obj_list = self.collection.get_selected()
 
         if not sel_obj_list:
             return
 
-        if act_name == 'red':
+        if act_name == _('Red'):
             new_color = '#FF0000' + \
                         str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'blue':
+        if act_name == _('Blue'):
             new_color = '#0000FF' + \
                         str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'yellow':
+        if act_name == _('Yellow'):
             new_color = '#FFDF00' + \
                         str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'green':
+        if act_name == _('Green'):
             new_color = '#00FF00' + \
                         str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'purple':
+        if act_name == _('Purple'):
             new_color = '#FF00FF' + \
                         str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
-        if act_name == 'brown':
+        if act_name == _('Brown'):
             new_color = '#A52A2A' + \
                         str(hex(self.ui.gerber_defaults_form.gerber_gen_group.pf_color_alpha_slider.value())[2:])
 
-        if act_name == 'custom':
+        if act_name == _('Custom'):
             new_color = QtGui.QColor(self.defaults['gerber_plot_fill'][:7])
             c_dialog = QtWidgets.QColorDialog()
             plot_fill_color = c_dialog.getColor(initial=new_color)
