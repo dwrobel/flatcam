@@ -5203,7 +5203,20 @@ class App(QtCore.QObject):
             del stgs
 
         log.debug("App.final_save() --> App UI state saved.")
-        self.th.quit()
+
+        # try to quit the QThread that run ArgsThread class
+        try:
+            self.th.quit()
+        except Exception:
+            pass
+
+        # try to quit the Socket opened by ArgsThread class
+        try:
+            self.new_launch.listener.close()
+        except Exception:
+            pass
+
+        # quit app by signalling for self.kill_app() method
         self.close_app_signal.emit()
 
     def kill_app(self):
@@ -12644,13 +12657,15 @@ class ArgsThread(QtCore.QObject):
 
     def __init__(self):
         super(ArgsThread, self).__init__()
+        self.listener = None
+
         self.start.connect(self.run)
 
     def my_loop(self, address):
         try:
-            listener = Listener(*address)
+            self.listener = Listener(*address)
             while True:
-                conn = listener.accept()
+                conn = self.listener.accept()
                 self.serve(conn)
         except socket.error:
             conn = Client(*address)
@@ -12659,7 +12674,7 @@ class ArgsThread(QtCore.QObject):
             # close the current instance only if there are args
             if len(sys.argv) > 1:
                 try:
-                    listener.close()
+                    self.listener.close()
                 except Exception:
                     pass
                 sys.exit()

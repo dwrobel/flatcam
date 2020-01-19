@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 19.01.2020
 
 - fixed some bugs that are visible in Linux regarding the ArgsThread class: on app close we need to quit the QThread running the ArgsThread class and also close the opened Socket
+- make sure that the fixes above apply when rebooting app for theme change or for language change
 
 15.01.2020
 
