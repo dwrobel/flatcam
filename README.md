@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.01.2020
+
+- fixed some bugs that are visible in Linux regarding the ArgsThread class: on app close we need to quit the QThread running the ArgsThread class and also close the opened Socket
+
 15.01.2020
 
 - added key shortcuts and toolbar icons for the new tools: Align Object Tool (ALT+A) and Extract Drills (ALT+I)

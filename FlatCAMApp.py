@@ -2681,6 +2681,9 @@ class App(QtCore.QObject):
             from flatcamGUI.PlotCanvasLegacy import ShapeCollectionLegacy
             self.tool_shapes = ShapeCollectionLegacy(obj=self, app=self, name="tool")
 
+        # used in the delayed shutdown self.start_delayed_quit() method
+        self.save_timer = None
+
         # ###############################################################################
         # ################# ADDING FlatCAM EDITORS section ##############################
         # ###############################################################################
@@ -5200,6 +5203,7 @@ class App(QtCore.QObject):
             del stgs
 
         log.debug("App.final_save() --> App UI state saved.")
+        self.th.quit()
         self.close_app_signal.emit()
 
     def kill_app(self):
@@ -12654,6 +12658,10 @@ class ArgsThread(QtCore.QObject):
             conn.send('close')
             # close the current instance only if there are args
             if len(sys.argv) > 1:
+                try:
+                    listener.close()
+                except Exception:
+                    pass
                 sys.exit()
 
     def serve(self, conn):
