@@ -1022,6 +1022,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry)
+
+            if isinstance(self.solid_geometry, list):
+                self.solid_geometry = MultiPolygon(self.solid_geometry)
+
             # Bounding box with rounded corners
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))
             if not self.options["bboxrounded"]:  # Remove rounded corners
