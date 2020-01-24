@@ -119,6 +119,7 @@ M0
 G00 Z{z_toolchange}
 (MSG, Now the tool can be tightened more securely.)
 M0
+(MSG, Drilling with Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
            y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
            z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
@@ -139,6 +140,7 @@ M0
 G00 Z{z_toolchange}
 (MSG, Now the tool can be tightened more securely.)
 M0
+(MSG, Milling with Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 """.format(
            z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
            tool=int(p.tool),

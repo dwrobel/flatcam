@@ -43,8 +43,7 @@ class ToolExtractDrills(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
-        self.empty_lb = QtWidgets.QLabel("")
-        self.layout.addWidget(self.empty_lb)
+        self.layout.addWidget(QtWidgets.QLabel(""))
 
         # ## Grid Layout
         grid_lay = QtWidgets.QGridLayout()
@@ -128,7 +127,7 @@ class ToolExtractDrills(FlatCAMTool):
         self.method_label = QtWidgets.QLabel('<b>%s</b>' % _("Method"))
         grid1.addWidget(self.method_label, 2, 0, 1, 2)
 
-        # ## Axis
+        # ## Holes Size
         self.hole_size_radio = RadioSet(
             [
                 {'label': _("Fixed Diameter"), 'value': 'fixed'},

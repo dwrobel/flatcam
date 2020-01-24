@@ -1004,15 +1004,21 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry)
             if isinstance(self.solid_geometry, list):
-                self.solid_geometry = cascaded_union(self.solid_geometry)
+                try:
+                    self.solid_geometry = MultiPolygon(self.solid_geometry)
+                except Exception:
+                    self.solid_geometry = cascaded_union(self.solid_geometry)
 
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["noncoppermargin"]))
             if not self.options["noncopperrounded"]:
                 bounding_box = bounding_box.envelope
             non_copper = bounding_box.difference(self.solid_geometry)
+
+            if non_copper is None or non_copper.is_empty:
+                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
+                return "fail"
             geo_obj.solid_geometry = non_copper
 
-        # TODO: Check for None
         self.app.new_object("geometry", name, geo_init)
 
     def on_generatebb_button_click(self, *args):
@@ -1024,12 +1030,19 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             assert isinstance(geo_obj, FlatCAMGeometry)
 
             if isinstance(self.solid_geometry, list):
-                self.solid_geometry = MultiPolygon(self.solid_geometry)
+                try:
+                    self.solid_geometry = MultiPolygon(self.solid_geometry)
+                except Exception:
+                    self.solid_geometry = cascaded_union(self.solid_geometry)
 
             # Bounding box with rounded corners
             bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))
             if not self.options["bboxrounded"]:  # Remove rounded corners
                 bounding_box = bounding_box.envelope
+
+            if bounding_box is None or bounding_box.is_empty:
+                self.app.inform.emit("[ERROR_NOTCL] %s" % _("Operation could not be done."))
+                return "fail"
             geo_obj.solid_geometry = bounding_box
 
         self.app.new_object("geometry", name, geo_init)
@@ -3641,8 +3654,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             if self.options["solid"]:
                 for geo in self.solid_geometry:
                     self.add_shape(shape=geo,
-                                   color=self.app.defaults["excellon_plot_line"],
-                                   face_color=self.app.defaults["excellon_plot_fill"],
+                                   color=self.outline_color,
+                                   face_color=self.fill_color,
                                    visible=visible,
                                    layer=2)
             else:

@@ -2517,6 +2517,7 @@ class App(QtCore.QObject):
         self.fiducial_tool = None
         self.edrills_tool = None
         self.align_objects_tool = None
+        self.punch_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         try:
@@ -3150,6 +3151,9 @@ class App(QtCore.QObject):
         self.qrcode_tool.install(icon=QtGui.QIcon(self.resource_location + '/qrcode32.png'),
                                  pos=self.ui.menutool)
 
+        self.punch_tool = ToolPunchGerber(self)
+        self.punch_tool.install(icon=QtGui.QIcon(self.resource_location + '/punch32.png'), pos=self.ui.menutool)
+
         self.transform_tool = ToolTransform(self)
         self.transform_tool.install(icon=QtGui.QIcon(self.resource_location + '/transform.png'),
                                     pos=self.ui.menuoptions, separator=True)
@@ -3291,6 +3295,7 @@ class App(QtCore.QObject):
         self.ui.qrcode_btn.triggered.connect(lambda: self.qrcode_tool.run(toggle=True))
         self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
         self.ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
+        self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
 
     def object2editor(self):
         """

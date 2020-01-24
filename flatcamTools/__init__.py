@@ -38,3 +38,4 @@ from flatcamTools.ToolSolderPaste import SolderPaste
 from flatcamTools.ToolSub import ToolSub
 
 from flatcamTools.ToolTransform import ToolTransform
+from flatcamTools.ToolPunchGerber import ToolPunchGerber
