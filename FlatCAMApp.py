@@ -1967,7 +1967,7 @@ class App(QtCore.QObject):
 
         self.ui.menueditdelete.triggered.connect(self.on_delete)
 
-        self.ui.menueditcopyobject.triggered.connect(self.on_copy_object)
+        self.ui.menueditcopyobject.triggered.connect(self.on_copy_command)
         self.ui.menueditconvert_any2geo.triggered.connect(self.convert_any2geo)
         self.ui.menueditconvert_any2gerber.triggered.connect(self.convert_any2gerber)
 
@@ -2030,7 +2030,7 @@ class App(QtCore.QObject):
         self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
         self.ui.menuprojectviewsource.triggered.connect(self.on_view_source)
 
-        self.ui.menuprojectcopy.triggered.connect(self.on_copy_object)
+        self.ui.menuprojectcopy.triggered.connect(self.on_copy_command)
         self.ui.menuprojectedit.triggered.connect(self.object2editor)
 
         self.ui.menuprojectdelete.triggered.connect(self.on_delete)
@@ -2061,7 +2061,7 @@ class App(QtCore.QObject):
         self.ui.clearplot.triggered.connect(self.clear_plots)
         self.ui.replot.triggered.connect(self.plot_all)
 
-        self.ui.popmenu_copy.triggered.connect(self.on_copy_object)
+        self.ui.popmenu_copy.triggered.connect(self.on_copy_command)
         self.ui.popmenu_delete.triggered.connect(self.on_delete)
         self.ui.popmenu_edit.triggered.connect(self.object2editor)
         self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
@@ -3259,7 +3259,7 @@ class App(QtCore.QObject):
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
-        self.ui.copy_btn.triggered.connect(self.on_copy_object)
+        self.ui.copy_btn.triggered.connect(self.on_copy_command)
         self.ui.delete_btn.triggered.connect(self.on_delete)
 
         self.ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
@@ -7540,8 +7540,8 @@ class App(QtCore.QObject):
         self.inform.emit('[success] %s' % _("Done."))
         return location
 
-    def on_copy_object(self):
-        self.report_usage("on_copy_object()")
+    def on_copy_command(self):
+        self.report_usage("on_copy_command()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = deepcopy(obj.solid_geometry)
@@ -7559,7 +7559,7 @@ class App(QtCore.QObject):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as e:
-                log.debug("App.on_copy_object() --> %s" % str(e))
+                log.debug("App.on_copy_command() --> %s" % str(e))
 
             try:
                 obj_init.source_file = deepcopy(obj.source_file)
@@ -7599,6 +7599,9 @@ class App(QtCore.QObject):
                     self.new_object("document", str(obj_name) + "_copy", initialize_document)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
+
+    def on_paste_command(self):
+        pass
 
     def on_copy_object2(self, custom_name):
 

@@ -2815,7 +2815,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.tools_db_tab.on_tool_copy()
                         return
 
-                    self.app.on_copy_object()
+                    self.app.on_copy_command()
 
                 # Copy an FlatCAM object
                 if key == QtCore.Qt.Key_D:

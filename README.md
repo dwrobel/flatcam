@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - small changes to the Toolchange manual preprocessor
 - fix for plotting Excellon objects if the color is changed and then the object is moved
 - laying the GUI for a new Tool: Punch Gerber Tool which will add holes in the Gerber apertures
+- fixed bugs in Minimum Distance Tool
 
 22.01.2020
 

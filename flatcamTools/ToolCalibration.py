@@ -1275,7 +1275,7 @@ class ToolCalibration(FlatCAMTool):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as ee:
-                log.debug("App.on_copy_object() --> %s" % str(ee))
+                log.debug("ToolCalibration.new_calibrated_object.initialize_geometry() --> %s" % str(ee))
 
             obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))
@@ -1301,7 +1301,7 @@ class ToolCalibration(FlatCAMTool):
                 if obj.tools:
                     obj_init.tools = deepcopy(obj.tools)
             except Exception as err:
-                log.debug("App.on_copy_object() --> %s" % str(err))
+                log.debug("ToolCalibration.new_calibrated_object.initialize_gerber() --> %s" % str(err))
 
             obj_init.scale(xfactor=scalex, yfactor=scaley, point=(origin_x, origin_y))
             obj_init.skew(angle_x=skewx, angle_y=skewy, point=(origin_x, origin_y))

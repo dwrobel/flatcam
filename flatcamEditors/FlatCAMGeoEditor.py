@@ -3553,7 +3553,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
+        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_command)
         self.app.ui.popmenu_delete.triggered.connect(self.app.on_delete)
         self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
 

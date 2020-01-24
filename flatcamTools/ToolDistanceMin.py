@@ -11,7 +11,8 @@ from flatcamGUI.VisPyVisuals import *
 from flatcamGUI.GUIElements import FCEntry
 
 from shapely.ops import nearest_points
-from shapely.geometry import Point
+from shapely.geometry import Point, MultiPolygon
+from shapely.ops import cascaded_union
 
 import math
 import logging
@@ -205,6 +206,17 @@ class DistanceMin(FlatCAMTool):
                                      str(len(selected_objs))))
                 return
             else:
+                if isinstance(selected_objs[0].solid_geometry, list):
+                    try:
+                        selected_objs[0].solid_geometry = MultiPolygon(selected_objs[0].solid_geometry)
+                    except Exception:
+                        selected_objs[0].solid_geometry = cascaded_union(selected_objs[0].solid_geometry)
+
+                    try:
+                        selected_objs[1].solid_geometry = MultiPolygon(selected_objs[1].solid_geometry)
+                    except Exception:
+                        selected_objs[1].solid_geometry = cascaded_union(selected_objs[1].solid_geometry)
+
                 first_pos, last_pos = nearest_points(selected_objs[0].solid_geometry, selected_objs[1].solid_geometry)
 
         elif self.app.call_source == 'geo_editor':
@@ -278,7 +290,7 @@ class DistanceMin(FlatCAMTool):
             )
 
         if d != 0:
-            self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | (tx3} = {d_z}".format(
+            self.app.inform.emit("{tx1}: {tx2} D(x) = {d_x} | D(y) = {d_y} | {tx3} = {d_z}".format(
                 tx1=_("MEASURING"),
                 tx2=_("Result"),
                 tx3=_("Distance"),
