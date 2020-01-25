@@ -125,6 +125,11 @@ class ToolExtractDrills(FlatCAMTool):
         grid1.setColumnStretch(1, 1)
 
         self.method_label = QtWidgets.QLabel('<b>%s</b>' % _("Method"))
+        self.method_label.setToolTip(
+            _("The selected method of extracting the drills. Can be:\n"
+              "- Fixed Diameter -> all holes will have a set size\n"
+              "- Fixed Annular Ring -> all holes will have a set annular ring\n"
+              "- Proportional -> each hole size will be a fraction of the pad size"))
         grid1.addWidget(self.method_label, 2, 0, 1, 2)
 
         # ## Holes Size
@@ -137,15 +142,7 @@ class ToolExtractDrills(FlatCAMTool):
             orientation='vertical',
             stretch=False)
 
-        self.hole_size_label = QtWidgets.QLabel('%s:' % _("Hole Size"))
-        self.hole_size_label.setToolTip(
-            _("The selected method of extracting the drills. Can be:\n"
-              "- Fixed Diameter -> all holes will have a set size\n"
-              "- Fixed Annular Ring -> all holes will have a set annular ring\n"
-              "- Proportional -> each hole size will be a fraction of the pad size"))
-
-        grid1.addWidget(self.hole_size_label, 3, 0)
-        grid1.addWidget(self.hole_size_radio, 3, 1)
+        grid1.addWidget(self.hole_size_radio, 3, 0, 1, 2)
 
         # grid_lay1.addWidget(QtWidgets.QLabel(''))
 
