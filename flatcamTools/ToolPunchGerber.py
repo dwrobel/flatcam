@@ -92,10 +92,10 @@ class ToolPunchGerber(FlatCAMTool):
         self.method_label = QtWidgets.QLabel('%s:' % _("Method"))
         self.method_label.setToolTip(
             _("The punch hole source can be:\n"
-              "- Excellon -> an Excellon holes center will serve as reference.\n"
-              "- Fixed Diameter -> will try to use the pads center as reference.\n"
-              "- Fixed Annular Ring -> will try to use the pads center as reference.\n"
-              "- Proportional -> will try to use the pads center as reference.\n")
+              "- Excellon Object-> the Excellon object drills center will serve as reference.\n"
+              "- Fixed Diameter -> will try to use the pads center as reference adding fixed diameter holes.\n"
+              "- Fixed Annular Ring -> will try to keep a set annular ring.\n"
+              "- Proportional -> will make a Gerber punch hole having the diameter a percentage of the pad diameter.\n")
         )
         self.method_punch = RadioSet(
             [
@@ -162,12 +162,6 @@ class ToolPunchGerber(FlatCAMTool):
         self.ring_box.setContentsMargins(0, 0, 0, 0)
         self.ring_frame.setLayout(self.ring_box)
 
-        # ## Grid Layout
-        grid1 = QtWidgets.QGridLayout()
-        grid1.setColumnStretch(0, 0)
-        grid1.setColumnStretch(1, 1)
-        self.ring_box.addLayout(grid1)
-
         # Annular Ring value
         self.ring_label = QtWidgets.QLabel('<b>%s</b>' % _("Fixed Annular Ring"))
         self.ring_label.setToolTip(
@@ -175,11 +169,21 @@ class ToolPunchGerber(FlatCAMTool):
               "The copper sliver between the drill hole exterior\n"
               "and the margin of the copper pad.")
         )
-        grid1.addWidget(self.ring_label, 0, 0, 1, 2)
+        self.ring_box.addWidget(self.ring_label)
+
+        # Select all
+        self.select_all_cb = FCCheckBox('%s' % _("ALL"))
+        self.ring_box.addWidget(self.select_all_cb)
+
+        # ## Grid Layout
+        self.grid1 = QtWidgets.QGridLayout()
+        self.grid1.setColumnStretch(0, 0)
+        self.grid1.setColumnStretch(1, 1)
+        self.ring_box.addLayout(self.grid1)
 
         # Circular Annular Ring Value
-        self.circular_ring_label = QtWidgets.QLabel('%s:' % _("Circular"))
-        self.circular_ring_label.setToolTip(
+        self.circular_ring_cb = FCCheckBox('%s:' % _("Circular"))
+        self.circular_ring_cb.setToolTip(
             _("The size of annular ring for circular pads.")
         )
 
@@ -187,12 +191,14 @@ class ToolPunchGerber(FlatCAMTool):
         self.circular_ring_entry.set_precision(self.decimals)
         self.circular_ring_entry.set_range(0.0000, 9999.9999)
 
-        grid1.addWidget(self.circular_ring_label, 1, 0)
-        grid1.addWidget(self.circular_ring_entry, 1, 1)
+        self.c_ois = OptionalInputSection(self.circular_ring_cb, [self.circular_ring_entry])
+
+        self.grid1.addWidget(self.circular_ring_cb, 3, 0)
+        self.grid1.addWidget(self.circular_ring_entry, 3, 1)
 
         # Oblong Annular Ring Value
-        self.oblong_ring_label = QtWidgets.QLabel('%s:' % _("Oblong"))
-        self.oblong_ring_label.setToolTip(
+        self.oblong_ring_cb= FCCheckBox('%s:' % _("Oblong"))
+        self.oblong_ring_cb.setToolTip(
             _("The size of annular ring for oblong pads.")
         )
 
@@ -200,12 +206,14 @@ class ToolPunchGerber(FlatCAMTool):
         self.oblong_ring_entry.set_precision(self.decimals)
         self.oblong_ring_entry.set_range(0.0000, 9999.9999)
 
-        grid1.addWidget(self.oblong_ring_label, 2, 0)
-        grid1.addWidget(self.oblong_ring_entry, 2, 1)
+        self.o_ois = OptionalInputSection(self.oblong_ring_cb, [self.oblong_ring_entry])
+
+        self.grid1.addWidget(self.oblong_ring_cb, 4, 0)
+        self.grid1.addWidget(self.oblong_ring_entry, 4, 1)
 
         # Square Annular Ring Value
-        self.square_ring_label = QtWidgets.QLabel('%s:' % _("Square"))
-        self.square_ring_label.setToolTip(
+        self.square_ring_cb = FCCheckBox('%s:' % _("Square"))
+        self.square_ring_cb.setToolTip(
             _("The size of annular ring for square pads.")
         )
 
@@ -213,12 +221,14 @@ class ToolPunchGerber(FlatCAMTool):
         self.square_ring_entry.set_precision(self.decimals)
         self.square_ring_entry.set_range(0.0000, 9999.9999)
 
-        grid1.addWidget(self.square_ring_label, 3, 0)
-        grid1.addWidget(self.square_ring_entry, 3, 1)
+        self.s_ois = OptionalInputSection(self.square_ring_cb, [self.square_ring_entry])
+
+        self.grid1.addWidget(self.square_ring_cb, 5, 0)
+        self.grid1.addWidget(self.square_ring_entry, 5, 1)
 
         # Rectangular Annular Ring Value
-        self.rectangular_ring_label = QtWidgets.QLabel('%s:' % _("Rectangular"))
-        self.rectangular_ring_label.setToolTip(
+        self.rectangular_ring_cb = FCCheckBox('%s:' % _("Rectangular"))
+        self.rectangular_ring_cb.setToolTip(
             _("The size of annular ring for rectangular pads.")
         )
 
@@ -226,12 +236,14 @@ class ToolPunchGerber(FlatCAMTool):
         self.rectangular_ring_entry.set_precision(self.decimals)
         self.rectangular_ring_entry.set_range(0.0000, 9999.9999)
 
-        grid1.addWidget(self.rectangular_ring_label, 4, 0)
-        grid1.addWidget(self.rectangular_ring_entry, 4, 1)
+        self.r_ois = OptionalInputSection(self.rectangular_ring_cb, [self.rectangular_ring_entry])
+
+        self.grid1.addWidget(self.rectangular_ring_cb, 6, 0)
+        self.grid1.addWidget(self.rectangular_ring_entry, 6, 1)
 
         # Others Annular Ring Value
-        self.other_ring_label = QtWidgets.QLabel('%s:' % _("Others"))
-        self.other_ring_label.setToolTip(
+        self.other_ring_cb = FCCheckBox('%s:' % _("Others"))
+        self.other_ring_cb.setToolTip(
             _("The size of annular ring for other pads.")
         )
 
@@ -239,8 +251,10 @@ class ToolPunchGerber(FlatCAMTool):
         self.other_ring_entry.set_precision(self.decimals)
         self.other_ring_entry.set_range(0.0000, 9999.9999)
 
-        grid1.addWidget(self.other_ring_label, 5, 0)
-        grid1.addWidget(self.other_ring_entry, 5, 1)
+        self.ot_ois = OptionalInputSection(self.other_ring_cb, [self.other_ring_entry])
+
+        self.grid1.addWidget(self.other_ring_cb, 7, 0)
+        self.grid1.addWidget(self.other_ring_entry, 7, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -302,8 +316,12 @@ class ToolPunchGerber(FlatCAMTool):
 
         self.units = self.app.defaults['units']
 
-        # ## Signals
+        self.cb_items = [
+            self.grid1.itemAt(w).widget() for w in range(self.grid1.count())
+            if isinstance(self.grid1.itemAt(w).widget(), FCCheckBox)
+        ]
 
+        # ## Signals
         self.method_punch.activated_custom.connect(self.on_method)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
@@ -341,7 +359,25 @@ class ToolPunchGerber(FlatCAMTool):
     def set_tool_ui(self):
         self.reset_fields()
 
+        self.ui_connect()
         self.method_punch.set_value('exc')
+        self.select_all_cb.set_value(True)
+
+    def on_select_all(self, state):
+        self.ui_disconnect()
+        if state:
+            self.circular_ring_cb.setChecked(True)
+            self.oblong_ring_cb.setChecked(True)
+            self.square_ring_cb.setChecked(True)
+            self.rectangular_ring_cb.setChecked(True)
+            self.other_ring_cb.setChecked(True)
+        else:
+            self.circular_ring_cb.setChecked(False)
+            self.oblong_ring_cb.setChecked(False)
+            self.square_ring_cb.setChecked(False)
+            self.rectangular_ring_cb.setChecked(False)
+            self.other_ring_cb.setChecked(False)
+        self.ui_connect()
 
     def on_method(self, val):
         self.exc_label.setEnabled(False)
@@ -368,6 +404,42 @@ class ToolPunchGerber(FlatCAMTool):
             self.factor_label.setEnabled(True)
             self.factor_entry.setEnabled(True)
 
+    def on_ring_cb_toggled(self):
+        sum_cb = 0
+        for it in self.cb_items:
+            if it.get_value():
+                sum_cb += 1
+
+        self.ui_disconnect()
+        if sum_cb == 5:
+            self.select_all_cb.set_value(True)
+        else:
+            self.select_all_cb.set_value(False)
+        self.ui_connect()
+
+    def ui_connect(self):
+        self.select_all_cb.stateChanged.connect(self.on_select_all)
+
+        for it in self.cb_items:
+            try:
+                it.stateChanged.connect(self.on_ring_cb_toggled)
+            except (AttributeError, TypeError):
+                pass
+
+    def ui_disconnect(self):
+        try:
+            self.select_all_cb.stateChanged.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+        for it in self.cb_items:
+            try:
+                it.stateChanged.disconnect()
+            except (AttributeError, TypeError):
+                pass
+
     def reset_fields(self):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.ui_disconnect()
+
