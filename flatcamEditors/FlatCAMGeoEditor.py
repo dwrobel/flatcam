@@ -23,7 +23,7 @@ from flatcamParsers.ParseFont import *
 import FlatCAMApp
 
 from shapely.geometry import LineString, LinearRing, MultiLineString, Polygon, MultiPolygon
-from shapely.ops import cascaded_union, unary_union
+from shapely.ops import cascaded_union, unary_union, linemerge
 import shapely.affinity as affinity
 from shapely.geometry.polygon import orient
 
@@ -2498,6 +2498,9 @@ class FCSelect(DrawTool):
             raise
         return ""
 
+    def clean_up(self):
+        pass
+
 
 class FCExplode(FCShapeTool):
     def __init__(self, draw_app):
@@ -3739,8 +3742,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 )
             )
         else:
-            geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry,
-                                       orient_val=milling_type)
+            geo_to_edit = self.flatten(geometry=fcgeometry.solid_geometry, orient_val=milling_type)
 
         for shape in geo_to_edit:
             if shape is not None:  # TODO: Make flatten never create a None
@@ -4396,13 +4398,24 @@ class FlatCAMGeoEditor(QtCore.QObject):
             fcgeometry.tools[self.multigeo_tool]['solid_geometry'] = []
             # for shape in self.shape_buffer:
             for shape in self.storage.get_objects():
-                fcgeometry.tools[self.multigeo_tool]['solid_geometry'].append(shape.geo)
+                new_geo = shape.geo
+
+                # simplify the MultiLineString
+                if isinstance(new_geo, MultiLineString):
+                    new_geo = linemerge(new_geo)
+
+                fcgeometry.tools[self.multigeo_tool]['solid_geometry'].append(new_geo)
             self.multigeo_tool = None
 
         fcgeometry.solid_geometry = []
         # for shape in self.shape_buffer:
         for shape in self.storage.get_objects():
-            fcgeometry.solid_geometry.append(shape.geo)
+            new_geo = shape.geo
+
+            # simplify the MultiLineString
+            if isinstance(new_geo, MultiLineString):
+                new_geo = linemerge(new_geo)
+            fcgeometry.solid_geometry.append(new_geo)
 
     def update_options(self, obj):
         if self.paint_tooldia:

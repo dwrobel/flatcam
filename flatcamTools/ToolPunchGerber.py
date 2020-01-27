@@ -379,6 +379,7 @@ class ToolPunchGerber(FlatCAMTool):
         # ## Signals
         self.method_punch.activated_custom.connect(self.on_method)
         self.reset_button.clicked.connect(self.set_tool_ui)
+        self.punch_object_button.clicked.connect(self.on_generate_object)
 
         self.circular_cb.stateChanged.connect(
             lambda state:
@@ -491,6 +492,142 @@ class ToolPunchGerber(FlatCAMTool):
         try:
             self.select_all_cb.stateChanged.disconnect()
         except (AttributeError, TypeError):
+            pass
+
+    def on_generate_object(self):
+
+        # get the Gerber file who is the source of the punched Gerber
+        selection_index = self.gerber_object_combo.currentIndex()
+        model_index = self.app.collection.index(selection_index, 0, self.gerber_object_combo.rootModelIndex())
+
+        try:
+            grb_obj = model_index.internalPointer().obj
+        except Exception:
+            self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Gerber object loaded ..."))
+            return
+
+        name = grb_obj.options['name'].rpartition('.')[0]
+        outname = name + "_punched"
+
+        punch_method = self.method_punch.get_value()
+
+        if punch_method == 'exc':
+
+            # get the Excellon file whose geometry will create the punch holes
+            selection_index = self.exc_combo.currentIndex()
+            model_index = self.app.collection.index(selection_index, 0, self.exc_combo.rootModelIndex())
+
+            try:
+                exc_obj = model_index.internalPointer().obj
+            except Exception:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("There is no Excellon object loaded ..."))
+                return
+
+            # this is the punching geometry
+            exc_solid_geometry = MultiPolygon(exc_obj.solid_geometry)
+            if isinstance(grb_obj.solid_geometry, list):
+                grb_solid_geometry = MultiPolygon(grb_obj.solid_geometry)
+            else:
+                grb_solid_geometry = grb_obj.solid_geometry
+
+                # create the punched Gerber solid_geometry
+            punched_solid_geometry = grb_solid_geometry.difference(exc_solid_geometry)
+
+            new_apertures = dict()
+            new_apertures = deepcopy(grb_obj.apertures)
+
+            holes_apertures = dict()
+
+            for apid, val in new_apertures.items():
+                for elem in val['geometry']:
+                    # make it work only for Gerber Flashes who are Points in 'follow'
+                    if 'solid' in elem and isinstance(elem['follow'], Point):
+                        for drill in exc_obj.drills:
+                            clear_apid = exc_obj.tools[drill['tool']]['C']
+                            exc_poly = drill['point'].buffer(clear_apid / 2.0)
+                            if exc_poly.within(elem['solid']):
+
+                                if clear_apid not in holes_apertures or holes_apertures[clear_apid]['type'] != 'C':
+                                    holes_apertures[clear_apid] = dict()
+                                    holes_apertures[clear_apid]['type'] = 'C'
+                                    holes_apertures[clear_apid]['size'] = clear_apid
+                                    holes_apertures[clear_apid]['geometry'] = list()
+                                geo_elem = dict()
+                                geo_elem['clear'] = exc_poly
+                                geo_elem['follow'] = exc_poly.centroid
+                                holes_apertures[clear_apid]['geometry'].append(deepcopy(geo_elem))
+
+                                elem['clear'] = exc_poly.centroid
+
+            for apid, val in new_apertures.items():
+                for clear_apid, clear_val in holes_apertures.items():
+                    if round(clear_apid, self.decimals) == round(val['size'], self.decimals):
+                        geo_elem = dict()
+
+                        val['geometry'].append(geo_elem)
+
+            def init_func(new_obj, app_obj):
+                new_obj.options.update(grb_obj.options)
+                new_obj.options['name'] = outname
+                new_obj.fill_color = deepcopy(grb_obj.fill_color)
+                new_obj.outline_color = deepcopy(grb_obj.outline_color)
+
+                new_obj.apertures = deepcopy(new_apertures)
+
+                new_obj.solid_geometry = deepcopy(punched_solid_geometry)
+                new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
+                                                             local_use=new_obj, use_thread=False)
+
+            self.app.new_object('gerber', outname, init_func)
+        elif punch_method == 'fixed':
+            punch_size = float(self.dia_entry.get_value())
+
+            punching_geo = list()
+            for apid in grb_obj.apertures:
+                if grb_obj.apertures[apid]['type'] == 'C':
+                    if punch_size >= float(grb_obj.apertures[apid]['size']):
+                        self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                             _(" Could not generate punched hole Gerber because the punch hole size"
+                                               "is bigger than some of the apertures in the Gerber object."))
+                        return 'fail'
+                    else:
+                        for elem in grb_obj.apertures[apid]['geometry']:
+                            if 'follow' in elem:
+                                if isinstance(elem['follow'], Point):
+                                    punching_geo.append(elem['follow'].buffer(punch_size / 2))
+                else:
+                    if punch_size >= float(grb_obj.apertures[apid]['width']) or \
+                            punch_size >= float(grb_obj.apertures[apid]['height']):
+                        self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                             _("Could not generate punched hole Gerber because the punch hole size"
+                                               "is bigger than some of the apertures in the Gerber object."))
+                        return 'fail'
+                    else:
+                        for elem in grb_obj.apertures[apid]['geometry']:
+                            if 'follow' in elem:
+                                if isinstance(elem['follow'], Point):
+                                    punching_geo.append(elem['follow'].buffer(punch_size / 2))
+
+            punching_geo = MultiPolygon(punching_geo)
+            if isinstance(grb_obj.solid_geometry, list):
+                temp_solid_geometry = MultiPolygon(grb_obj.solid_geometry)
+            else:
+                temp_solid_geometry = grb_obj.solid_geometry
+            punched_solid_geometry = temp_solid_geometry.difference(punching_geo)
+
+            if punched_solid_geometry == temp_solid_geometry:
+                self.app.inform.emit('[WARNING_NOTCL] %s' %
+                                     _("Could not generate punched hole Gerber because the newly created object "
+                                       "geometry is the same as the one in the source object geometry..."))
+                return 'fail'
+
+            def init_func(new_obj, app_obj):
+                new_obj.solid_geometry = deepcopy(punched_solid_geometry)
+
+            self.app.new_object('gerber', outname, init_func)
+        elif punch_method == 'ring':
+            pass
+        elif punch_method == 'prop':
             pass
 
     def reset_fields(self):
