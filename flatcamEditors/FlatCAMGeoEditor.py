@@ -3341,10 +3341,25 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.delete_selected()
         self.replot()
 
+    def set_ui(self):
+        # updated units
+        self.units = self.app.defaults['units'].upper()
+        self.decimals = self.app.decimals
+
+    def build_ui(self, first_run=None):
+
+        # try:
+        #     # if connected, disconnect the signal from the slot on item_changed as it creates issues
+        #     self.apertures_table.itemChanged.disconnect()
+        # except (TypeError, AttributeError):
+        #     pass
+        pass
+
     def activate(self):
         # adjust the status of the menu entries related to the editor
         self.app.ui.menueditedit.setDisabled(True)
         self.app.ui.menueditok.setDisabled(False)
+
         # adjust the visibility of some of the canvas context menu
         self.app.ui.popmenu_edit.setVisible(False)
         self.app.ui.popmenu_save.setVisible(True)
@@ -3382,9 +3397,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.menuAction().setVisible(True)
 
         # prevent the user to change anything in the Selected Tab while the Geo Editor is active
-        sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
-        for w in sel_tab_widget_list:
-            w.setEnabled(False)
+        # sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        # for w in sel_tab_widget_list:
+        #     w.setEnabled(False)
 
         # Tell the App that the editor is active
         self.editor_active = True
@@ -3399,6 +3414,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # adjust the status of the menu entries related to the editor
         self.app.ui.menueditedit.setDisabled(False)
         self.app.ui.menueditok.setDisabled(True)
+
         # adjust the visibility of some of the canvas context menu
         self.app.ui.popmenu_edit.setVisible(True)
         self.app.ui.popmenu_save.setVisible(False)
@@ -3456,13 +3472,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.e_editor_cmenu.menuAction().setVisible(False)
         self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
 
-        try:
-            # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
-            sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
-            for w in sel_tab_widget_list:
-                w.setEnabled(True)
-        except Exception as e:
-            log.debug("FlatCAMGeoEditor.deactivate() --> %s" % str(e))
+        # try:
+        #     # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
+        #     sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        #     for w in sel_tab_widget_list:
+        #         w.setEnabled(True)
+        # except Exception as e:
+        #     log.debug("FlatCAMGeoEditor.deactivate() --> %s" % str(e))
 
         # Show original geometry
         if self.fcgeometry:

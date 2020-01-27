@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - more work in Punch Gerber Tool
 - the Jump To popup window will now autoselect the LineEdit therefore no more need for an extra click after launching the function
 - made some structural changes in Properties Tool
+- started t omake some changs in Geometry Editor
 
 24.02.2020
 

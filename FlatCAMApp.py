@@ -3314,8 +3314,7 @@ class App(QtCore.QObject):
                 isinstance(edited_object, FlatCAMExcellon):
             pass
         else:
-            self.inform.emit('[WARNING_NOTCL] %s' %
-                             _("Select a Geometry, Gerber or Excellon Object to edit."))
+            self.inform.emit('[WARNING_NOTCL] %s' % _("Select a Geometry, Gerber or Excellon Object to edit."))
             return
 
         if isinstance(edited_object, FlatCAMGeometry):
@@ -3323,7 +3322,7 @@ class App(QtCore.QObject):
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
 
             # we set the notebook to hidden
-            self.ui.splitter.setSizes([0, 1])
+            # self.ui.splitter.setSizes([0, 1])
 
             if edited_object.multigeo is True:
                 sel_rows = [item.row() for item in edited_object.ui.geo_tools_table.selectedItems()]
