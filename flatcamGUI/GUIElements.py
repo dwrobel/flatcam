@@ -152,6 +152,40 @@ class RadioSet(QtWidgets.QWidget):
 #             wgt.show()
 
 
+class FCTree(QtWidgets.QTreeWidget):
+
+    def __init__(self, parent=None, columns=2, header_hidden=True):
+        super(FCTree, self).__init__(parent)
+
+        self.setColumnCount(columns)
+        self.setHeaderHidden(header_hidden)
+        self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
+
+    def addParent(self, parent, title, expanded=False, color=None, font=None):
+        item = QtWidgets.QTreeWidgetItem(parent, [title])
+        item.setChildIndicatorPolicy(QtWidgets.QTreeWidgetItem.ShowIndicator)
+        item.setExpanded(expanded)
+        if color is not None:
+            # item.setTextColor(0, color) # PyQt4
+            item.setForeground(0, QtGui.QBrush(color))
+        if font is not None:
+            item.setFont(0, font)
+        return item
+
+    def addChild(self, parent, title, column1=None, font=None, font_items=None):
+        item = QtWidgets.QTreeWidgetItem(parent)
+        item.setText(0, str(title[0]))
+        if column1 is not None:
+            item.setText(1, str(title[1]))
+        if font and font_items:
+            try:
+                for fi in font_items:
+                    item.setFont(fi, font)
+            except TypeError:
+                item.setFont(font_items, font)
+
+
 class LengthEntry(QtWidgets.QLineEdit):
     def __init__(self, output_units='IN', decimals=None, parent=None):
         super(LengthEntry, self).__init__(parent)
