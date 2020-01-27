@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - in Geometry Editor made sure that on final save, for MultiLineString geometry all the connected lines are merged into one LineString to minimize the number of vertical movements in GCode
 - more work in Punch Gerber Tool
+- the Jump To popup window will now autoselect the LineEdit therefore no more need for an extra click after launching the function
 
 24.02.2020
 

@@ -2278,7 +2278,7 @@ class Dialog_box(QtWidgets.QWidget):
 
 
 class DialogBoxRadio(QtWidgets.QDialog):
-    def __init__(self, title=None, label=None, icon=None, initial_text=None, reference='abs'):
+    def __init__(self, title=None, label=None, icon=None, initial_text=None, reference='abs', parent=None):
         """
 
         :param title: string with the window title
@@ -2322,8 +2322,10 @@ class DialogBoxRadio(QtWidgets.QDialog):
               "If the reference is Relative then the Jump will be at the (x,y) distance\n"
               "from the current mouse location point.")
         )
-        self.lineEdit = EvalEntry()
+        self.lineEdit = EvalEntry(self)
         self.lineEdit.setText(str(self.location).replace('(', '').replace(')', ''))
+        self.lineEdit.selectAll()
+        self.lineEdit.setFocus()
         self.form.addRow(self.loc_label, self.lineEdit)
 
         self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,

@@ -249,7 +249,7 @@ class ToolPunchGerber(FlatCAMTool):
         self.grid1.addWidget(self.circular_ring_entry, 3, 1)
 
         # Oblong Annular Ring Value
-        self.oblong_ring_label= QtWidgets.QLabel('%s:' % _("Oblong"))
+        self.oblong_ring_label = QtWidgets.QLabel('%s:' % _("Oblong"))
         self.oblong_ring_label.setToolTip(
             _("The size of annular ring for oblong pads.")
         )
@@ -634,4 +634,3 @@ class ToolPunchGerber(FlatCAMTool):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.exc_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
         self.ui_disconnect()
-
