@@ -15,17 +15,6 @@ from copy import deepcopy
 import logging
 from shapely.geometry import Polygon, MultiPolygon, Point
 
-from reportlab.graphics import renderPDF
-from reportlab.pdfgen import canvas
-from reportlab.graphics import renderPM
-from reportlab.lib.units import inch, mm
-from reportlab.lib.pagesizes import landscape, portrait
-
-from svglib.svglib import svg2rlg
-from xml.dom.minidom import parseString as parse_xml_string
-from lxml import etree as ET
-from io import StringIO
-
 import gettext
 import FlatCAMTranslation as fcTranslate
 import builtins

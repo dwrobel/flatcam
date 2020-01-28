@@ -3448,8 +3448,6 @@ class App(QtCore.QObject):
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
                         self.ui.tool_scroll_area.takeWidget()
-                        # Switch notebook to Selected page
-                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
 
                     elif isinstance(edited_obj, FlatCAMGerber):
                         obj_type = "Gerber"
@@ -3473,14 +3471,12 @@ class App(QtCore.QObject):
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
                         self.ui.selected_scroll_area.takeWidget()
-                        # Switch notebook to Selected page
-                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
 
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         obj_type = "Excellon"
                         if cleanup is None:
                             self.exc_editor.update_fcexcellon(edited_obj)
-                            self.exc_editor.update_options(edited_obj)
+                            # self.exc_editor.update_options(edited_obj)
 
                         self.exc_editor.deactivate()
 
@@ -3493,8 +3489,6 @@ class App(QtCore.QObject):
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
                         self.ui.tool_scroll_area.takeWidget()
-                        # Switch notebook to Selected page
-                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
 
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
@@ -3519,11 +3513,13 @@ class App(QtCore.QObject):
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry or Excellon Object to update."))
                         return
-                    edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
-                    edited_obj.build_ui()
-                    self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
                 elif response == bt_cancel:
                     return
+
+                edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
+                edited_obj.build_ui()
+                # Switch notebook to Selected page
+                self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
             else:
                 if isinstance(edited_obj, FlatCAMGeometry):
                     self.geo_editor.deactivate()

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.01.2020
+
+- some changes in Excellon Editor
+
 27.01.2020
 
 - in Geometry Editor made sure that on final save, for MultiLineString geometry all the connected lines are merged into one LineString to minimize the number of vertical movements in GCode
