@@ -5972,7 +5972,7 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
         self.objects.append(obj)
         idx = len(self.objects) - 1
 
-        # Note: Shapely objects are not hashable any more, althought
+        # Note: Shapely objects are not hashable any more, although
         # there seem to be plans to re-introduce the feature in
         # version 2.0. For now, we will index using the object's id,
         # but it's important to remember that shapely geometry is

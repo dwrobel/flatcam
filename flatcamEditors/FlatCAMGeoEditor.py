@@ -18,7 +18,7 @@ from camlib import distance, arc, three_point_circle, Geometry, FlatCAMRTreeStor
 from FlatCAMTool import FlatCAMTool
 from flatcamGUI.ObjectUI import RadioSet
 from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
-    FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog
+    FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog, FCTree
 from flatcamParsers.ParseFont import *
 import FlatCAMApp
 
@@ -2494,8 +2494,29 @@ class FCSelect(DrawTool):
                     self.draw_app.selected = []
                     self.draw_app.selected.append(obj_to_add)
         except Exception as e:
-            log.error("[ERROR] Something went bad. %s" % str(e))
-            raise
+            log.error("[ERROR] FlatCAMGeoEditor.FCSelect.click_release() -> Something went bad. %s" % str(e))
+
+        # if selection is done on canvas update the Tree in Selected Tab with the selection
+        try:
+            self.draw_app.tw.itemSelectionChanged.disconnect(self.draw_app.on_tree_selection_change)
+        except (AttributeError, TypeError):
+            pass
+
+        self.draw_app.tw.selectionModel().clearSelection()
+        for sel_shape in self.draw_app.selected:
+            iterator = QtWidgets.QTreeWidgetItemIterator(self.draw_app.tw)
+            while iterator.value():
+                item = iterator.value()
+                try:
+                    if int(item.text(1)) == id(sel_shape):
+                        item.setSelected(True)
+                except ValueError:
+                    pass
+
+                iterator += 1
+
+        self.draw_app.tw.itemSelectionChanged.connect(self.draw_app.on_tree_selection_change)
+
         return ""
 
     def clean_up(self):
@@ -3126,6 +3147,9 @@ class FCTransform(FCShapeTool):
 # ###############################################
 class FlatCAMGeoEditor(QtCore.QObject):
 
+    # will emit the name of the object that was just selected
+    item_selected = QtCore.pyqtSignal(str)
+
     transform_complete = QtCore.pyqtSignal()
 
     draw_shape_idx = -1
@@ -3139,6 +3163,47 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app = app
         self.canvas = app.plotcanvas
         self.decimals = app.decimals
+
+        self.geo_edit_widget = QtWidgets.QWidget()
+        # ## Box for custom widgets
+        # This gets populated in offspring implementations.
+        layout = QtWidgets.QVBoxLayout()
+        self.geo_edit_widget.setLayout(layout)
+
+        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
+        # this way I can hide/show the frame
+        self.geo_frame = QtWidgets.QFrame()
+        self.geo_frame.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.geo_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.geo_frame.setLayout(self.tools_box)
+
+        # ## Page Title box (spacing between children)
+        self.title_box = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(self.title_box)
+
+        # ## Page Title icon
+        pixmap = QtGui.QPixmap(self.app.resource_location + '/flatcam_icon32.png')
+        self.icon = QtWidgets.QLabel()
+        self.icon.setPixmap(pixmap)
+        self.title_box.addWidget(self.icon, stretch=0)
+
+        # ## Title label
+        self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % _('Geometry Editor'))
+        self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.title_box.addWidget(self.title_label, stretch=1)
+        self.title_box.addWidget(QtWidgets.QLabel(''))
+
+        self.tw = FCTree(extended_sel=True)
+        self.tools_box.addWidget(self.tw)
+
+        self.geo_font = QtGui.QFont()
+        self.geo_font.setBold(True)
+
+        parent = self.tw.invisibleRootItem()
+        self.geo_parent = self.tw.addParent(
+            parent, _('Geometry Elements'), expanded=True, color=QtGui.QColor("#000000"), font=self.geo_font)
 
         # ## Toolbar events and properties
         self.tools = {
@@ -3346,6 +3411,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.units = self.app.defaults['units'].upper()
         self.decimals = self.app.decimals
 
+        # Remove anything else in the GUI Selected Tab
+        self.app.ui.selected_scroll_area.takeWidget()
+        # Put ourselves in the GUI Selected Tab
+        self.app.ui.selected_scroll_area.setWidget(self.geo_edit_widget)
+        # Switch notebook to Selected page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+
     def build_ui(self, first_run=None):
 
         # try:
@@ -3353,7 +3425,55 @@ class FlatCAMGeoEditor(QtCore.QObject):
         #     self.apertures_table.itemChanged.disconnect()
         # except (TypeError, AttributeError):
         #     pass
+
+        iterator = QtWidgets.QTreeWidgetItemIterator(self.geo_parent)
+        to_delete = list()
+        while iterator.value():
+            item = iterator.value()
+            to_delete.append(item)
+            iterator += 1
+        for it in to_delete:
+            self.geo_parent.removeChild(it)
+
+        for elem in self.storage.get_objects():
+            geo_type = type(elem.geo)
+            title = None
+            if geo_type is LinearRing:
+                title = _('ID Ring')
+            elif geo_type is LineString:
+                title = _('ID Line')
+            elif geo_type is Polygon:
+                title = _('ID Polygon')
+            elif geo_type is MultiLineString:
+                title = _('ID Multi-Line')
+            elif geo_type is MultiPolygon:
+                title = _('ID Multi-Polygon')
+
+            self.tw.addChild(
+                self.geo_parent,
+                [
+                    '%s:' % title,
+                    str(id(elem))
+                ],
+                True,
+                font=self.geo_font,
+                font_items=1
+            )
+
+    def on_geo_elem_selected(self):
         pass
+
+    def on_tree_selection_change(self):
+        self.selected = list()
+        selected_tree_items = self.tw.selectedItems()
+        for sel in selected_tree_items:
+            for obj_shape in self.storage.get_objects():
+                try:
+                    if id(obj_shape) == int(sel.text(1)):
+                        self.selected.append(obj_shape)
+                except ValueError:
+                    pass
+        self.replot()
 
     def activate(self):
         # adjust the status of the menu entries related to the editor
@@ -3403,12 +3523,22 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # Tell the App that the editor is active
         self.editor_active = True
+
+        self.item_selected.connect(self.on_geo_elem_selected)
+
+        # ## GUI Events
+        self.tw.itemSelectionChanged.connect(self.on_tree_selection_change)
+        # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
+        # self.tw.customContextMenuRequested.connect(self.on_menu_request)
+
+        self.geo_frame.show()
+
         log.debug("Finished activating the Geometry Editor...")
 
     def deactivate(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except Exception as e:
+        except Exception:
             pass
 
         # adjust the status of the menu entries related to the editor
@@ -3472,6 +3602,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.e_editor_cmenu.menuAction().setVisible(False)
         self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
 
+        try:
+            self.item_selected.disconnect()
+        except (AttributeError, TypeError):
+            pass
+
+        try:
+            # ## GUI Events
+            self.tw.itemSelectionChanged.disconnect(self.on_tree_selection_change)
+            # self.tw.keyPressed.connect(self.app.ui.keyPressEvent)
+            # self.tw.customContextMenuRequested.connect(self.on_menu_request)
+        except (AttributeError, TypeError):
+            pass
+
         # try:
         #     # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
         #     sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
@@ -3483,6 +3626,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Show original geometry
         if self.fcgeometry:
             self.fcgeometry.visible = True
+
+        # hide the UI
+        self.geo_frame.hide()
+
         log.debug("Finished deactivating the Geometry Editor...")
 
     def connect_canvas_event_handlers(self):
@@ -3684,6 +3831,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.utility.append(shape)
         else:
             self.storage.insert(shape)  # TODO: Check performance
+            self.build_ui()
 
     def delete_utility_geometry(self):
         # for_deletion = [shape for shape in self.shape_buffer if shape.utility]
@@ -3723,6 +3871,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.deactivate()
         self.activate()
+
+        self.set_ui()
 
         # Hide original geometry
         self.fcgeometry = fcgeometry
@@ -3845,7 +3995,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.pos = self.canvas.translate_coords(event_pos)
 
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
         else:
             self.pos = (self.pos[0], self.pos[1])
@@ -3925,7 +4075,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
 
         # ### Snap coordinates ###
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             x, y = self.snap(x, y)
 
             # Update cursor
@@ -3939,7 +4089,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # update the position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f" % (x, y))
+                                           "<b>Y</b>: %.4f" % (x, y))
 
         if self.pos is None:
             self.pos = (0, 0)
@@ -3948,7 +4098,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # update the reference position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
         if event.button == 1 and event_is_dragging and isinstance(self.active_tool, FCEraser):
             pass
@@ -3961,8 +4111,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.app.delete_selection_shape()
             if dx < 0:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
-                     color=self.app.defaults["global_alt_sel_line"],
-                     face_color=self.app.defaults['global_alt_sel_fill'])
+                                                     color=self.app.defaults["global_alt_sel_line"],
+                                                     face_color=self.app.defaults['global_alt_sel_fill'])
                 self.app.selection_type = False
             else:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y))
@@ -4011,19 +4161,18 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     # self.app.inform.emit(msg)
                     self.replot()
             elif event.button == right_button:  # right click
-                if self.app.ui.popMenu.mouse_is_panning == False:
+                if self.app.ui.popMenu.mouse_is_panning is False:
                     if self.in_action is False:
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
-                        except Exception as e:
+                        except Exception:
                             pass
 
                         if self.active_tool.complete is False and not isinstance(self.active_tool, FCSelect):
                             self.active_tool.complete = True
                             self.in_action = False
                             self.delete_utility_geometry()
-                            self.app.inform.emit('[success] %s' %
-                                                 _("Done."))
+                            self.app.inform.emit('[success] %s' % _("Done."))
                             self.select_tool('select')
                         else:
                             self.app.cursor = QtGui.QCursor()
@@ -4037,8 +4186,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             self.active_tool.make()
                             if self.active_tool.complete:
                                 self.on_shape_complete()
-                                self.app.inform.emit('[success] %s' %
-                                                     _("Done."))
+                                self.app.inform.emit('[success] %s' % _("Done."))
                                 self.select_tool(self.active_tool.name)
         except Exception as e:
             log.warning("FLatCAMGeoEditor.on_geo_click_release() --> Error: %s" % str(e))
@@ -4081,6 +4229,27 @@ class FlatCAMGeoEditor(QtCore.QObject):
         else:
             self.selected = []
             self.selected = sel_objects_list
+
+        # if selection is done on canvas update the Tree in Selected Tab with the selection
+        try:
+            self.tw.itemSelectionChanged.disconnect(self.on_tree_selection_change)
+        except (AttributeError, TypeError):
+            pass
+
+        self.tw.selectionModel().clearSelection()
+        for sel_shape in self.selected:
+            iterator = QtWidgets.QTreeWidgetItemIterator(self.tw)
+            while iterator.value():
+                item = iterator.value()
+                try:
+                    if int(item.text(1)) == id(sel_shape):
+                        item.setSelected(True)
+                except ValueError:
+                    pass
+
+                iterator += 1
+
+        self.tw.itemSelectionChanged.connect(self.on_tree_selection_change)
 
         self.replot()
 
@@ -4131,6 +4300,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         for shape in tempref:
             self.delete_shape(shape)
         self.selected = []
+        self.build_ui()
 
     def delete_shape(self, shape):
 

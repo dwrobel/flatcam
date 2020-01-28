@@ -154,13 +154,16 @@ class RadioSet(QtWidgets.QWidget):
 
 class FCTree(QtWidgets.QTreeWidget):
 
-    def __init__(self, parent=None, columns=2, header_hidden=True):
+    def __init__(self, parent=None, columns=2, header_hidden=True, extended_sel=False):
         super(FCTree, self).__init__(parent)
 
         self.setColumnCount(columns)
         self.setHeaderHidden(header_hidden)
         self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
+
+        if extended_sel:
+            self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
     def addParent(self, parent, title, expanded=False, color=None, font=None):
         item = QtWidgets.QTreeWidgetItem(parent, [title])
