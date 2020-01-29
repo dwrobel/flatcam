@@ -4008,7 +4008,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
             if modifiers == QtCore.Qt.ShiftModifier:
                 self.app.clipboard.setText(
-                    self.app.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
+                    self.app.defaults["global_point_clipboard_format"] %
+                    (self.decimals, self.pos[0], self.decimals, self.pos[1])
+                )
                 return
 
             # Selection with left mouse button

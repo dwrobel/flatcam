@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - changes in how the Editor exit is handled
 - small fix in some pywin32 imports
 - remade the GUI + small fixes in 2Sided Tool
+- updated 2Sided Tool
 
 28.01.2020
 

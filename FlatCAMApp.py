@@ -516,7 +516,7 @@ class App(QtCore.QObject):
             "zoom_in_key": '=',
             "grid_toggle_key": 'G',
             "global_zoom_ratio": 1.5,
-            "global_point_clipboard_format": "(%.4f, %.4f)",
+            "global_point_clipboard_format": "(%.*f, %.*f)",
             "global_zdownrate": None,
 
             # General GUI Settings
@@ -814,6 +814,7 @@ class App(QtCore.QObject):
             "tools_2sided_mirror_axis": "X",
             "tools_2sided_axis_loc": "point",
             "tools_2sided_drilldia": 3.125,
+            "tools_2sided_allign_axis": "X",
 
             # Film Tool
             "tools_film_type": 'neg',
@@ -1464,6 +1465,7 @@ class App(QtCore.QObject):
             "tools_2sided_mirror_axis": self.ui.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
             "tools_2sided_axis_loc": self.ui.tools_defaults_form.tools_2sided_group.axis_location_radio,
             "tools_2sided_drilldia": self.ui.tools_defaults_form.tools_2sided_group.drill_dia_entry,
+            "tools_2sided_allign_axis": self.ui.tools_defaults_form.tools_2sided_group.align_axis_radio,
 
             # Film Tool
             "tools_film_type": self.ui.tools_defaults_form.tools_film_group.film_type_radio,
@@ -8799,7 +8801,10 @@ class App(QtCore.QObject):
                 # do not auto open the Project Tab
                 self.click_noproject = True
 
-                self.clipboard.setText(self.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
+                self.clipboard.setText(
+                    self.defaults["global_point_clipboard_format"] %
+                    (self.decimals, self.pos[0], self.decimals, self.pos[1])
+                )
                 self.inform.emit('[success] %s' % _("Coordinates copied to clipboard."))
                 return
 

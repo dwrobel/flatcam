@@ -5500,6 +5500,17 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.dd_label, 0, 0)
         grid0.addWidget(self.drill_dia_entry, 0, 1)
 
+        # ## Alignment Axis
+        self.align_ax_label = QtWidgets.QLabel('%s:' % _("Align Axis"))
+        self.align_ax_label.setToolTip(
+            _("Mirror vertically (X) or horizontally (Y).")
+        )
+        self.align_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
+                                          {'label': 'Y', 'value': 'Y'}])
+
+        grid0.addWidget(self.align_ax_label, 1, 0)
+        grid0.addWidget(self.align_axis_radio, 1, 1)
+
         # ## Axis
         self.mirror_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
                                            {'label': 'Y', 'value': 'Y'}])
@@ -5507,11 +5518,11 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         self.mirax_label.setToolTip(
             _("Mirror vertically (X) or horizontally (Y).")
         )
-        # grid_lay.addRow("Mirror Axis:", self.mirror_axis)
+
         self.empty_lb1 = QtWidgets.QLabel("")
-        grid0.addWidget(self.empty_lb1, 1, 0)
-        grid0.addWidget(self.mirax_label, 2, 0)
-        grid0.addWidget(self.mirror_axis_radio, 2, 1)
+        grid0.addWidget(self.empty_lb1, 2, 0)
+        grid0.addWidget(self.mirax_label, 3, 0)
+        grid0.addWidget(self.mirror_axis_radio, 3, 1)
 
         # ## Axis Location
         self.axis_location_radio = RadioSet([{'label': _('Point'), 'value': 'point'},
@@ -5522,9 +5533,9 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
               "a specified <b>box</b> (in a FlatCAM object) through \n"
               "the center.")
         )
-        # grid_lay.addRow("Axis Location:", self.axis_location)
-        grid0.addWidget(self.axloc_label, 3, 0)
-        grid0.addWidget(self.axis_location_radio, 3, 1)
+
+        grid0.addWidget(self.axloc_label, 4, 0)
+        grid0.addWidget(self.axis_location_radio, 4, 1)
 
         self.layout.addStretch()
 
