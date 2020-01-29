@@ -3270,6 +3270,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                                               self.new_slots,
                                               self.new_tools]})
 
+        return self.edited_obj_name
+
     def update_options(self, obj):
         try:
             if not obj.options:

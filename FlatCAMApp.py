@@ -279,7 +279,7 @@ class App(QtCore.QObject):
 
         # Folder for user settings.
         if sys.platform == 'win32':
-            from win32com.shell import shell, shellcon
+            from win32comext.shell import shell, shellcon
             if platform.architecture()[0] == '32bit':
                 App.log.debug("Win32!")
             else:
@@ -3430,8 +3430,13 @@ class App(QtCore.QObject):
                         obj_type = "Geometry"
                         if cleanup is None:
                             self.geo_editor.update_fcgeometry(edited_obj)
-                            self.geo_editor.update_options(edited_obj)
+                            # self.geo_editor.update_options(edited_obj)
+
                         self.geo_editor.deactivate()
+
+                        # restore GUI to the Selected TAB
+                        # Remove anything else in the GUI
+                        self.ui.tool_scroll_area.takeWidget()
 
                         # update the geo object options so it is including the bounding box values
                         try:
@@ -3441,13 +3446,11 @@ class App(QtCore.QObject):
                             edited_obj.options['xmax'] = xmax
                             edited_obj.options['ymax'] = ymax
                         except AttributeError as e:
-                            self.inform.emit('[WARNING] %s' %
-                                             _("Object empty after edit."))
+                            self.inform.emit('[WARNING] %s' %  _("Object empty after edit."))
                             log.debug("App.editor2object() --> Geometry --> %s" % str(e))
 
-                        # restore GUI to the Selected TAB
-                        # Remove anything else in the GUI
-                        self.ui.tool_scroll_area.takeWidget()
+                        edited_obj.build_ui()
+                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
                     elif isinstance(edited_obj, FlatCAMGerber):
                         obj_type = "Gerber"
@@ -3468,6 +3471,8 @@ class App(QtCore.QObject):
                             # a single Polygon, therefore we pass this
                             pass
 
+                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
+
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
                         self.ui.selected_scroll_area.takeWidget()
@@ -3480,15 +3485,15 @@ class App(QtCore.QObject):
 
                         self.exc_editor.deactivate()
 
-                        # delete the old object (the source object) if it was an empty one
-                        if len(edited_obj.drills) == 0 and len(edited_obj.slots) == 0:
-                            old_name = edited_obj.options['name']
-                            self.collection.set_active(old_name)
-                            self.collection.delete_active()
-
                         # restore GUI to the Selected TAB
                         # Remove anything else in the GUI
                         self.ui.tool_scroll_area.takeWidget()
+
+                        # delete the old object (the source object) if it was an empty one
+                        if len(edited_obj.drills) == 0 and len(edited_obj.slots) == 0:
+                            old_name = edited_obj.options['name']
+                            self.collection.delete_by_name(name=old_name)
+                        self.inform.emit('[success] %s' % _("Editor exited. Editor content saved."))
 
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
@@ -3502,13 +3507,17 @@ class App(QtCore.QObject):
                     self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
                     self.ui.notebook.setTabText(2, "Tool")
 
+                    self.inform.emit('[WARNING_NOTCL] %s' % _("Editor exited. Editor content was not saved."))
+
                     if isinstance(edited_obj, FlatCAMGeometry):
                         self.geo_editor.deactivate()
+                        edited_obj.build_ui()
                     elif isinstance(edited_obj, FlatCAMGerber):
                         self.grb_editor.deactivate_grb_editor()
+                        edited_obj.build_ui()
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         self.exc_editor.deactivate()
-                        # set focus on the project tab
+                        edited_obj.build_ui()
                     else:
                         self.inform.emit('[WARNING_NOTCL] %s' %
                                          _("Select a Gerber, Geometry or Excellon Object to update."))
@@ -3516,8 +3525,8 @@ class App(QtCore.QObject):
                 elif response == bt_cancel:
                     return
 
-                edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
-                edited_obj.build_ui()
+                # edited_obj.set_ui(edited_obj.ui_type(decimals=self.decimals))
+                # edited_obj.build_ui()
                 # Switch notebook to Selected page
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
             else:
@@ -3926,7 +3935,8 @@ class App(QtCore.QObject):
                     json.dump(self.defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
                     f_f_def_s.close()
 
-                    # and then make the  factory_defaults.FlatConfig file read_only so it can't be modified after creation.
+                    # and then make the factory_defaults.FlatConfig file read_only
+                    # so it can't be modified after creation.
                     os.chmod(fact_def_file_path, S_IREAD | S_IRGRP | S_IROTH)
                 except Exception as e:
                     log.debug("App.load_defaults() -> deleting old factory defaults file -> %s" % str(e))
@@ -10362,7 +10372,7 @@ class App(QtCore.QObject):
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Project As ..."),
                 directory=('{l_save}/{proj}_{date}').format(l_save=str(self.get_last_save_folder()), date=self.date,
-                                                             proj=_("Project")),
+                                                            proj=_("Project")),
                 filter=filter_
             )
         except TypeError:
@@ -10416,8 +10426,8 @@ class App(QtCore.QObject):
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Object as PDF ..."),
                 directory=('{l_save}/{obj_name}_{date}').format(l_save=str(self.get_last_save_folder()),
-                                                                 obj_name=obj_name,
-                                                                 date=self.date),
+                                                                obj_name=obj_name,
+                                                                date=self.date),
                 filter=filter_
             )
         except TypeError:
@@ -11204,7 +11214,7 @@ class App(QtCore.QObject):
             # # ## Object creation # ##
             ret = self.new_object("gerber", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL]%s' %  _(' Open Gerber failed. Probable not a Gerber file.'))
+                self.inform.emit('[ERROR_NOTCL]%s' % _(' Open Gerber failed. Probable not a Gerber file.'))
                 return 'fail'
 
             # Register recent file
@@ -11218,11 +11228,11 @@ class App(QtCore.QObject):
         Opens an Excellon file, parses it and creates a new object for
         it in the program. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the
-            name to be that of the file.
-        :param filename: Excellon file filename
-        :type filename: str
-        :return: None
+        :param outname:     Name of the resulting object. None causes the name to be that of the file.
+        :param filename:    Excellon file filename
+        :type filename:     str
+        :param plot:        boolean, to plot or not the resulting object
+        :return:            None
         """
 
         App.log.debug("open_excellon()")

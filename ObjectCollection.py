@@ -645,6 +645,59 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if not self.get_list():
                 self.app.ui.splitter.setSizes([0, 1])
 
+    def delete_by_name(self, name, select_project=True):
+        obj = self.get_by_name(name=name)
+        item = obj.item
+        group = self.group_items[obj.kind]
+
+        group_index = self.index(group.row(), 0, QtCore.QModelIndex())
+        item_index = self.index(item.row(), 0, group_index)
+
+        deleted = item_index.internalPointer()
+        group = deleted.parent_item
+
+        # some objects add a Tab on creation, close it here
+        for idx in range(self.app.ui.plot_tab_area.count()):
+            if self.app.ui.plot_tab_area.widget(idx).objectName() == deleted.obj.options['name']:
+                self.app.ui.plot_tab_area.removeTab(idx)
+                break
+
+        # update the SHELL auto-completer model data
+        name = deleted.obj.options['name']
+        try:
+            self.app.myKeywords.remove(name)
+            self.app.shell._edit.set_model_data(self.app.myKeywords)
+            # this is not needed any more because now the code editor is created on demand
+            # self.app.ui.code_editor.set_model_data(self.app.myKeywords)
+        except Exception as e:
+            log.debug(
+                "delete_active() --> Could not remove the old object name from auto-completer model list. %s" % str(e))
+
+        self.app.object_status_changed.emit(deleted.obj, 'delete', name)
+
+        # ############ OBJECT DELETION FROM MODEL STARTS HERE ####################
+        self.beginRemoveRows(self.index(group.row(), 0, QtCore.QModelIndex()), deleted.row(), deleted.row())
+        group.remove_child(deleted)
+        # after deletion of object store the current list of objects into the self.app.all_objects_list
+        self.app.all_objects_list = self.get_list()
+        self.endRemoveRows()
+        # ############ OBJECT DELETION FROM MODEL STOPS HERE ####################
+
+        if self.app.is_legacy is False:
+            self.app.plotcanvas.redraw()
+
+        if select_project:
+            # always go to the Project Tab after object deletion as it may be done with a shortcut key
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
+        self.app.should_we_save = True
+
+        # decide if to show or hide the Notebook side of the screen
+        if self.app.defaults["global_project_autohide"] is True:
+            # hide the notebook if there are no objects in the collection
+            if not self.get_list():
+                self.app.ui.splitter.setSizes([0, 1])
+
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
 

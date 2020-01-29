@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+29.01.2020
+
+- changes in how the Editor exit is handled
+- small fix in some pywin32 imports
+
 28.01.2020
 
 - some changes in Excellon Editor
