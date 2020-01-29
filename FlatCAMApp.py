@@ -7152,12 +7152,11 @@ class App(QtCore.QObject):
                                 pass
                         self.delete_first_selected()
 
-                    self.inform.emit('%s...' %
-                                     _("Object(s) deleted"))
+                    self.inform.emit('%s...' % _("Object(s) deleted"))
                     # make sure that the selection shape is deleted, too
                     self.delete_selection_shape()
                 else:
-                    self.inform.emit(_("Failed. No object(s) selected..."))
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
         else:
             self.inform.emit(_("Save the work in Editor and try again ..."))
 
