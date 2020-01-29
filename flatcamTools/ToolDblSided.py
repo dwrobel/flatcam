@@ -159,7 +159,7 @@ class DblSidedTool(FlatCAMTool):
         grid_lay1.addWidget(self.param_label, 0, 0, 1, 3)
 
         # ## Axis
-        self.mirax_label = QtWidgets.QLabel('%s:' % _("Axis"))
+        self.mirax_label = QtWidgets.QLabel('%s:' % _("Mirror Axis"))
         self.mirax_label.setToolTip(_("Mirror vertically (X) or horizontally (Y)."))
         self.mirror_axis = RadioSet([{'label': 'X', 'value': 'X'},
                                      {'label': 'Y', 'value': 'Y'}])
@@ -787,6 +787,8 @@ class DblSidedTool(FlatCAMTool):
             self.box_type_label.hide()
             self.box_type_radio.hide()
             self.box_combo.hide()
+
+            self.align_ref_label_val.set_value(self.point_entry.get_value())
         else:
             self.point_entry.hide()
             self.add_point_button.hide()
