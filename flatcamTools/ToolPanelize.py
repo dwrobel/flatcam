@@ -49,6 +49,18 @@ class Panelize(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
+        self.layout.addWidget(QtWidgets.QLabel(''))
+
+        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Source Object"))
+        self.object_label.setToolTip(
+            _("Specify the type of object to be panelized\n"
+              "It can be of type: Gerber, Excellon or Geometry.\n"
+              "The selection here decide the type of objects that will be\n"
+              "in the Object combobox.")
+        )
+
+        self.layout.addWidget(self.object_label)
+
         # Form Layout
         form_layout_0 = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout_0)
@@ -63,14 +75,9 @@ class Panelize(FlatCAMTool):
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
-        self.type_obj_combo_label.setToolTip(
-            _("Specify the type of object to be panelized\n"
-              "It can be of type: Gerber, Excellon or Geometry.\n"
-              "The selection here decide the type of objects that will be\n"
-              "in the Object combobox.")
-        )
-        form_layout_0.addRow(self.type_obj_combo_label, self.type_obj_combo)
+        self.type_object_label = QtWidgets.QLabel('%s:' % _("Object Type"))
+
+        form_layout_0.addRow(self.type_object_label, self.type_obj_combo)
 
         # Object to be panelized
         self.object_combo = QtWidgets.QComboBox()
@@ -78,12 +85,11 @@ class Panelize(FlatCAMTool):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(1)
 
-        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
-        self.object_label.setToolTip(
+        self.object_combo.setToolTip(
             _("Object to be panelized. This means that it will\n"
               "be duplicated in an array of rows and columns.")
         )
-        form_layout_0.addRow(self.object_label, self.object_combo)
+        form_layout_0.addRow(self.object_combo)
         form_layout_0.addRow(QtWidgets.QLabel(""))
 
         # Form Layout
@@ -133,12 +139,11 @@ class Panelize(FlatCAMTool):
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(1)
 
-        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Box Object"))
-        self.box_combo_label.setToolTip(
+        self.box_combo.setToolTip(
             _("The actual object that is used a container for the\n "
               "selected object that is to be panelized.")
         )
-        form_layout.addRow(self.box_combo_label, self.box_combo)
+        form_layout.addRow(self.box_combo)
         form_layout.addRow(QtWidgets.QLabel(""))
 
         panel_data_label = QtWidgets.QLabel("<b>%s:</b>" % _("Panel Data"))
@@ -382,12 +387,10 @@ class Panelize(FlatCAMTool):
             self.type_box_combo.setDisabled(False)
             self.type_box_combo_label.setDisabled(False)
             self.box_combo.setDisabled(False)
-            self.box_combo_label.setDisabled(False)
         else:
             self.type_box_combo.setDisabled(True)
             self.type_box_combo_label.setDisabled(True)
             self.box_combo.setDisabled(True)
-            self.box_combo_label.setDisabled(True)
 
     def on_panelize(self):
         name = self.object_combo.currentText()

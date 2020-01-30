@@ -7,7 +7,7 @@
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection
+from flatcamGUI.GUIElements import FCDoubleSpinner, FCCheckBox, RadioSet, FCComboBox, OptionalInputSection, FCButton
 from FlatCAMObj import FlatCAMGerber
 
 from shapely.geometry import box, MultiPolygon, Polygon, LineString, LinearRing
@@ -59,46 +59,18 @@ class CutOut(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
+        self.layout.addWidget(QtWidgets.QLabel(''))
+
         # Form Layout
         grid0 = QtWidgets.QGridLayout()
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
         self.layout.addLayout(grid0)
 
-        # Type of object to be cutout
-        self.type_obj_combo = QtWidgets.QComboBox()
-        self.type_obj_combo.addItem("Gerber")
-        self.type_obj_combo.addItem("Excellon")
-        self.type_obj_combo.addItem("Geometry")
-
-        # we get rid of item1 ("Excellon") as it is not suitable for creating film
-        self.type_obj_combo.view().setRowHidden(1, True)
-        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        # self.type_obj_combo.setItemIcon(1, QtGui.QIcon(self.app.resource_location + "/drill16.png"))
-        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
-
-        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
-        self.type_obj_combo_label.setToolTip(
-            _("Specify the type of object to be cutout.\n"
-              "It can be of type: Gerber or Geometry.\n"
-              "What is selected here will dictate the kind\n"
-              "of objects that will populate the 'Object' combobox.")
-        )
-        self.type_obj_combo_label.setMinimumWidth(60)
-        grid0.addWidget(self.type_obj_combo_label, 0, 0)
-        grid0.addWidget(self.type_obj_combo, 0, 1)
-
-        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Object to be cutout"))
+        self.object_label = QtWidgets.QLabel('<b>%s:</b>' % _("Source Object"))
         self.object_label.setToolTip('%s.' % _("Object to be cutout"))
 
-        # Object to be cutout
-        self.obj_combo = QtWidgets.QComboBox()
-        self.obj_combo.setModel(self.app.collection)
-        self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.setCurrentIndex(1)
-
-        grid0.addWidget(self.object_label, 1, 0, 1, 2)
-        grid0.addWidget(self.obj_combo, 2, 0, 1, 2)
+        grid0.addWidget(self.object_label, 0, 0, 1, 2)
 
         # Object kind
         self.kindlabel = QtWidgets.QLabel('%s:' % _('Object kind'))
@@ -112,8 +84,43 @@ class CutOut(FlatCAMTool):
             {"label": _("Single"), "value": "single"},
             {"label": _("Panel"), "value": "panel"},
         ])
-        grid0.addWidget(self.kindlabel, 3, 0)
-        grid0.addWidget(self.obj_kind_combo, 3, 1)
+        grid0.addWidget(self.kindlabel, 1, 0)
+        grid0.addWidget(self.obj_kind_combo, 1, 1)
+
+        # Type of object to be cutout
+        self.type_obj_radio = RadioSet([
+            {"label": _("Gerber"), "value": "grb"},
+            {"label": _("Geometry"), "value": "geo"},
+        ])
+
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
+        self.type_obj_combo_label.setToolTip(
+            _("Specify the type of object to be cutout.\n"
+              "It can be of type: Gerber or Geometry.\n"
+              "What is selected here will dictate the kind\n"
+              "of objects that will populate the 'Object' combobox.")
+        )
+
+        grid0.addWidget(self.type_obj_combo_label, 2, 0)
+        grid0.addWidget(self.type_obj_radio, 2, 1)
+
+        # Object to be cutout
+        self.obj_combo = QtWidgets.QComboBox()
+        self.obj_combo.setModel(self.app.collection)
+        self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.obj_combo.setCurrentIndex(1)
+
+        grid0.addWidget(self.obj_combo, 3, 0, 1, 2)
+
+        separator_line = QtWidgets.QFrame()
+        separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid0.addWidget(separator_line, 4, 0, 1, 2)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 5, 0, 1, 2)
+
+        self.param_label = QtWidgets.QLabel('<b>%s:</b>' % _("Tool Parameters"))
+        grid0.addWidget(self.param_label, 6, 0, 1, 2)
 
         # Tool Diameter
         self.dia = FCDoubleSpinner()
@@ -125,8 +132,8 @@ class CutOut(FlatCAMTool):
            _("Diameter of the tool used to cutout\n"
              "the PCB shape out of the surrounding material.")
         )
-        grid0.addWidget(self.dia_label, 4, 0)
-        grid0.addWidget(self.dia, 4, 1)
+        grid0.addWidget(self.dia_label, 8, 0)
+        grid0.addWidget(self.dia, 8, 1)
 
         # Cut Z
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
@@ -146,8 +153,8 @@ class CutOut(FlatCAMTool):
 
         self.cutz_entry.setSingleStep(0.1)
 
-        grid0.addWidget(cutzlabel, 5, 0)
-        grid0.addWidget(self.cutz_entry, 5, 1)
+        grid0.addWidget(cutzlabel, 9, 0)
+        grid0.addWidget(self.cutz_entry, 9, 1)
 
         # Multi-pass
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -172,8 +179,8 @@ class CutOut(FlatCAMTool):
         )
         self.ois_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
-        grid0.addWidget(self.mpass_cb, 6, 0)
-        grid0.addWidget(self.maxdepth_entry, 6, 1)
+        grid0.addWidget(self.mpass_cb, 10, 0)
+        grid0.addWidget(self.maxdepth_entry, 10, 1)
 
         # Margin
         self.margin = FCDoubleSpinner()
@@ -187,8 +194,8 @@ class CutOut(FlatCAMTool):
              "will make the cutout of the PCB further from\n"
              "the actual PCB border")
         )
-        grid0.addWidget(self.margin_label, 7, 0)
-        grid0.addWidget(self.margin, 7, 1)
+        grid0.addWidget(self.margin_label, 11, 0)
+        grid0.addWidget(self.margin, 11, 1)
 
         # Gapsize
         self.gapsize = FCDoubleSpinner()
@@ -201,8 +208,8 @@ class CutOut(FlatCAMTool):
              "the surrounding material (the one \n"
              "from which the PCB is cutout).")
         )
-        grid0.addWidget(self.gapsize_label, 8, 0)
-        grid0.addWidget(self.gapsize, 8, 1)
+        grid0.addWidget(self.gapsize_label, 13, 0)
+        grid0.addWidget(self.gapsize, 13, 1)
 
         # How gaps wil be rendered:
         # lr    - left + right
@@ -219,12 +226,14 @@ class CutOut(FlatCAMTool):
             _("Create a convex shape surrounding the entire PCB.\n"
               "Used only if the source object type is Gerber.")
         )
-        grid0.addWidget(self.convex_box, 9, 0, 1, 2)
+        grid0.addWidget(self.convex_box, 15, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 10, 0, 1, 2)
+        grid0.addWidget(separator_line, 16, 0, 1, 2)
+
+        grid0.addWidget(QtWidgets.QLabel(''), 17, 0, 1, 2)
 
         # Title2
         title_param_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('A. Automatic Bridge Gaps'))
@@ -398,13 +407,13 @@ class CutOut(FlatCAMTool):
         self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
         self.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
 
-        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+        self.type_obj_radio.activated_custom.connect(self.on_type_obj_changed)
         self.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
         self.man_gaps_creation_btn.clicked.connect(self.on_manual_gap_click)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
-    def on_type_obj_index_changed(self, index):
-        obj_type = self.type_obj_combo.currentIndex()
+    def on_type_obj_changed(self, val):
+        obj_type = {'grb': 0, 'geo': 2}[val]
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(0)
 
@@ -451,6 +460,7 @@ class CutOut(FlatCAMTool):
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
         self.gaps.set_value(self.app.defaults["tools_gaps_ff"])
         self.convex_box.set_value(self.app.defaults['tools_cutout_convexshape'])
+        self.type_obj_radio.set_value('grb')
 
     def on_freeform_cutout(self):
 

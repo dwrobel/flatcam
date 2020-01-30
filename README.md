@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.01.2020
+
+- remade GUI in Tool Cutout, Tool Align Objects, Tool Panelize
+
 29.01.2020
 
 - changes in how the Editor exit is handled
