@@ -2695,20 +2695,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
 
         if not self.drills:
-            self.ui.tdlabel.hide()
             self.ui.tooldia_entry.hide()
             self.ui.generate_milling_button.hide()
         else:
-            self.ui.tdlabel.show()
             self.ui.tooldia_entry.show()
             self.ui.generate_milling_button.show()
 
         if not self.slots:
-            self.ui.stdlabel.hide()
             self.ui.slot_tooldia_entry.hide()
             self.ui.generate_milling_slots_button.hide()
         else:
-            self.ui.stdlabel.show()
             self.ui.slot_tooldia_entry.show()
             self.ui.generate_milling_slots_button.show()
 

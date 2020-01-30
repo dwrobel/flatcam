@@ -95,28 +95,31 @@ class ObjectUI(QtWidgets.QWidget):
         # ###########################
         if common is True:
             self.common_grid = QtWidgets.QGridLayout()
+            self.common_grid.setColumnStretch(0, 1)
+            self.common_grid.setColumnStretch(1, 0)
             layout.addLayout(self.common_grid)
-            self.common_grid.setColumnStretch(0, 0)
-            self.common_grid.setColumnStretch(1, 1)
 
-            # ### Scale ####
-            self.scale_label = QtWidgets.QLabel('<b>%s</b>' % _('Scale'))
-            self.scale_label.setToolTip(
-                _("Change the size of the object.")
+            # self.common_grid.addWidget(QtWidgets.QLabel(''), 1, 0, 1, 2)
+            separator_line = QtWidgets.QFrame()
+            separator_line.setFrameShape(QtWidgets.QFrame.HLine)
+            separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+            self.common_grid.addWidget(separator_line, 1, 0, 1, 2)
+
+            self.transform_label = QtWidgets.QLabel('<b>%s</b>' % _('Transformations'))
+            self.transform_label.setToolTip(
+                _("Geometrical transformations of the current object.")
             )
 
-            self.common_grid.addWidget(self.scale_label, 0, 0, 1, 3)
+            self.common_grid.addWidget(self.transform_label, 2, 0, 1, 2)
 
-            # Factor
-            faclabel = QtWidgets.QLabel('%s:' % _('Factor'))
-            faclabel.setToolTip(
+            # ### Scale ####
+            self.scale_entry = FCEntry()
+            self.scale_entry.set_value(1.0)
+            self.scale_entry.setToolTip(
                 _("Factor by which to multiply\n"
                   "geometric features of this object.\n"
                   "Expressions are allowed. E.g: 1/25.4")
             )
-            self.scale_entry = FCEntry()
-            self.scale_entry.set_value(1.0)
-
             # GO Button
             self.scale_button = QtWidgets.QPushButton(_('Scale'))
             self.scale_button.setToolTip(
@@ -124,26 +127,17 @@ class ObjectUI(QtWidgets.QWidget):
             )
             self.scale_button.setMinimumWidth(70)
 
-            self.common_grid.addWidget(faclabel, 1, 0)
-            self.common_grid.addWidget(self.scale_entry, 1, 1)
-            self.common_grid.addWidget(self.scale_button, 1, 2)
+            self.common_grid.addWidget(self.scale_entry, 3, 0)
+            self.common_grid.addWidget(self.scale_button, 3, 1)
 
             # ### Offset ####
-            self.offset_label = QtWidgets.QLabel('<b>%s</b>' % _('Offset'))
-            self.offset_label.setToolTip(
-                _("Change the position of this object.")
-            )
-
-            self.common_grid.addWidget(self.offset_label, 2, 0, 1, 3)
-
-            self.offset_vectorlabel = QtWidgets.QLabel('%s:' % _('Vector'))
-            self.offset_vectorlabel.setToolTip(
+            self.offsetvector_entry = EvalEntry2()
+            self.offsetvector_entry.setText("(0.0, 0.0)")
+            self.offsetvector_entry.setToolTip(
                 _("Amount by which to move the object\n"
                   "in the x and y axes in (x, y) format.\n"
                   "Expressions are allowed. E.g: (1/3.2, 0.5*3)")
             )
-            self.offsetvector_entry = EvalEntry2()
-            self.offsetvector_entry.setText("(0.0, 0.0)")
 
             self.offset_button = QtWidgets.QPushButton(_('Offset'))
             self.offset_button.setToolTip(
@@ -151,9 +145,8 @@ class ObjectUI(QtWidgets.QWidget):
             )
             self.offset_button.setMinimumWidth(70)
 
-            self.common_grid.addWidget(self.offset_vectorlabel, 3, 0)
-            self.common_grid.addWidget(self.offsetvector_entry, 3, 1)
-            self.common_grid.addWidget(self.offset_button, 3, 2)
+            self.common_grid.addWidget(self.offsetvector_entry, 4, 0)
+            self.common_grid.addWidget(self.offset_button, 4, 1)
 
         layout.addStretch()
 
@@ -1156,6 +1149,21 @@ class ExcellonObjectUI(ObjectUI):
         self.feedrate_probe_label.hide()
         self.feedrate_probe_entry.setVisible(False)
 
+        # Tool Offset
+        self.tool_offset_label = QtWidgets.QLabel('%s:' % _('Offset Z'))
+        self.tool_offset_label.setToolTip(
+            _("Some drill bits (the larger ones) need to drill deeper\n"
+              "to create the desired exit hole diameter due of the tip shape.\n"
+              "The value here can compensate the Cut Z parameter.")
+        )
+
+        self.offset_entry = FCDoubleSpinner()
+        self.offset_entry.set_precision(self.decimals)
+        self.offset_entry.set_range(-9999.9999, 9999.9999)
+
+        self.grid3.addWidget(self.tool_offset_label, 25, 0)
+        self.grid3.addWidget(self.offset_entry, 25, 1)
+
         # #################################################################
         # ################# GRID LAYOUT 4   ###############################
         # #################################################################
@@ -1271,10 +1279,10 @@ class ExcellonObjectUI(ObjectUI):
         separator_line2 = QtWidgets.QFrame()
         separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid6.addWidget(separator_line2, 4, 0, 1, 2)
+        self.grid6.addWidget(separator_line2, 4, 0, 1, 3)
 
         # ### Milling Holes Drills ####
-        self.mill_hole_label = QtWidgets.QLabel('<b>%s</b>' % _('Mill Holes'))
+        self.mill_hole_label = QtWidgets.QLabel('<b>%s</b>' % _('Milling Geometry'))
         self.mill_hole_label.setToolTip(
             _("Create Geometry for milling holes.\n"
               "Select from the Tools Table above the hole dias to be\n"
@@ -1282,16 +1290,19 @@ class ExcellonObjectUI(ObjectUI):
         )
         self.grid6.addWidget(self.mill_hole_label, 5, 0, 1, 3)
 
-        self.tdlabel = QtWidgets.QLabel('%s:' % _('Drill Tool dia'))
+        self.tdlabel = QtWidgets.QLabel('%s:' % _('Tool Dia'))
         self.tdlabel.setToolTip(
             _("Diameter of the cutting tool.")
         )
+
+        self.grid6.addWidget(self.tdlabel, 6, 0, 1, 3)
+
         self.tooldia_entry = FCDoubleSpinner()
         self.tooldia_entry.set_precision(self.decimals)
         self.tooldia_entry.set_range(0.0, 9999.9999)
         self.tooldia_entry.setSingleStep(0.1)
 
-        self.generate_milling_button = QtWidgets.QPushButton(_('Mill Drills Geo'))
+        self.generate_milling_button = QtWidgets.QPushButton(_('Mill Drills'))
         self.generate_milling_button.setToolTip(
             _("Create the Geometry Object\n"
               "for milling DRILLS toolpaths.")
@@ -1303,22 +1314,15 @@ class ExcellonObjectUI(ObjectUI):
                         }
                         """)
 
-        self.grid6.addWidget(self.tdlabel, 6, 0)
-        self.grid6.addWidget(self.tooldia_entry, 6, 1)
-        self.grid6.addWidget(self.generate_milling_button, 6, 2)
-
-        self.stdlabel = QtWidgets.QLabel('%s:' % _('Slot Tool dia'))
-        self.stdlabel.setToolTip(
-            _("Diameter of the cutting tool\n"
-              "when milling slots.")
-        )
+        self.grid6.addWidget(self.tooldia_entry, 7, 0, 1, 2)
+        self.grid6.addWidget(self.generate_milling_button, 7, 2)
 
         self.slot_tooldia_entry = FCDoubleSpinner()
         self.slot_tooldia_entry.set_precision(self.decimals)
         self.slot_tooldia_entry.set_range(0.0, 9999.9999)
         self.slot_tooldia_entry.setSingleStep(0.1)
 
-        self.generate_milling_slots_button = QtWidgets.QPushButton(_('Mill Slots Geo'))
+        self.generate_milling_slots_button = QtWidgets.QPushButton(_('Mill Slots'))
         self.generate_milling_slots_button.setToolTip(
             _("Create the Geometry Object\n"
               "for milling SLOTS toolpaths.")
@@ -1330,9 +1334,8 @@ class ExcellonObjectUI(ObjectUI):
                         }
                         """)
 
-        self.grid6.addWidget(self.stdlabel, 7, 0)
-        self.grid6.addWidget(self.slot_tooldia_entry, 7, 1)
-        self.grid6.addWidget(self.generate_milling_slots_button, 7, 2)
+        self.grid6.addWidget(self.slot_tooldia_entry, 8, 0, 1, 2)
+        self.grid6.addWidget(self.generate_milling_slots_button, 8, 2)
 
     def hide_drills(self, state=True):
         if state is True:
