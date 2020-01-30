@@ -2868,7 +2868,18 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             sel_rows = row if type(row) == list else [row]
 
         if not sel_rows:
-            sel_rows = [0]
+            self.ui.tool_data_label.setText(
+                "<b>%s: <font color='#0000FF'>%s</font></b>" % (_('Parameters for'), _("No Tool Selected"))
+            )
+            self.ui.generate_cnc_button.setDisabled(True)
+            self.ui.generate_milling_button.setDisabled(True)
+            self.ui.generate_milling_slots_button.setDisabled(True)
+            self.ui_connect()
+            return
+        else:
+            self.ui.generate_cnc_button.setDisabled(False)
+            self.ui.generate_milling_button.setDisabled(False)
+            self.ui.generate_milling_slots_button.setDisabled(False)
 
         if len(sel_rows) == 1:
             # update the QLabel that shows for which Tool we have the parameters in the UI form

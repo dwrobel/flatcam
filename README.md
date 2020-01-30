@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 30.01.2020
 
 - remade GUI in Tool Cutout, Tool Align Objects, Tool Panelize
+- some changed in the Excellon UI
 
 29.01.2020
 

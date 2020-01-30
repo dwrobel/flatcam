@@ -1248,7 +1248,7 @@ class ExcellonObjectUI(ObjectUI):
         warning_lbl = QtWidgets.QLabel(
             _(
                 "Add / Select at least one tool in the tool-table.\n"
-                "Click the header to select all, or Ctrl + LMB\n"
+                "Click the # header to select all, or Ctrl + LMB\n"
                 "for custom selection of tools."
             ))
 
@@ -1946,7 +1946,7 @@ class GeometryObjectUI(ObjectUI):
         warning_lbl = QtWidgets.QLabel(
             _(
                 "Add / Select at least one tool in the tool-table.\n"
-                "Click the header to select all, or Ctrl + LMB\n"
+                "Click the # header to select all, or Ctrl + LMB\n"
                 "for custom selection of tools."
             ))
         self.grid4.addWidget(warning_lbl, 6, 0, 1, 2)
