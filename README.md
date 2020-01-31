@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+31.01.2020
+
+- added a new functionality, a variation of Set Origin named Move to Origin. It will move a selection of objects to origin such as the bottom left corner of the bounding box that fit them all is in origin.
+
 30.01.2020
 
 - remade GUI in Tool Cutout, Tool Align Objects, Tool Panelize

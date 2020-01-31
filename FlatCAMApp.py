@@ -1974,6 +1974,8 @@ class App(QtCore.QObject):
         self.ui.menueditconvert_any2gerber.triggered.connect(self.convert_any2gerber)
 
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
+        self.ui.menuedit_move2origin.triggered.connect(self.on_move2origin)
+
         self.ui.menueditjump.triggered.connect(self.on_jump_to)
         self.ui.menueditlocate.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
@@ -3267,6 +3269,8 @@ class App(QtCore.QObject):
         self.ui.distance_btn.triggered.connect(lambda: self.distance_tool.run(toggle=True))
         self.ui.distance_min_btn.triggered.connect(lambda: self.distance_min_tool.run(toggle=True))
         self.ui.origin_btn.triggered.connect(self.on_set_origin)
+        self.ui.move2origin_btn.triggered.connect(self.on_move2origin)
+
         self.ui.jmp_btn.triggered.connect(self.on_jump_to)
         self.ui.locate_btn.triggered.connect(lambda: self.on_locate(obj=self.collection.get_active()))
 
@@ -7275,7 +7279,7 @@ class App(QtCore.QObject):
                 event_pos = (event.xdata, event.ydata)
             pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
-            if self.grid_status() == True:
+            if self.grid_status():
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
             else:
                 pos = pos_canvas
@@ -7288,6 +7292,53 @@ class App(QtCore.QObject):
             else:
                 worker_task()
             self.should_we_save = True
+
+    def on_move2origin(self, use_thread=True):
+        """
+
+        :param event:
+        :param location:
+        :param noplot:
+        :param use_thread:
+        :return:
+        """
+
+        def worker_task():
+            with self.proc_container.new(_("Moving to Origin...")):
+                obj_list = self.collection.get_selected()
+                xminlist = list()
+                yminlist = list()
+
+                # first get a bounding box to fit all
+                for obj in obj_list:
+                    xmin, ymin, xmax, ymax = obj.bounds()
+                    xminlist.append(xmin)
+                    yminlist.append(ymin)
+
+                # get the minimum x,y for all objects selected
+                x = min(xminlist)
+                y = min(yminlist)
+
+                for obj in obj_list:
+                    obj.offset((-x, -y))
+                    self.object_changed.emit(obj)
+
+                    # Update the object bounding box options
+                    a, b, c, d = obj.bounds()
+                    obj.options['xmin'] = a
+                    obj.options['ymin'] = b
+                    obj.options['xmax'] = c
+                    obj.options['ymax'] = d
+
+                for obj in obj_list:
+                    obj.plot()
+                self.inform.emit('[success] %s...' % _('Origin set'))
+
+        if use_thread is True:
+            self.worker_task.emit({'fcn': worker_task, 'params': []})
+        else:
+            worker_task()
+        self.should_we_save = True
 
     def on_jump_to(self, custom_location=None, fit_center=True):
         """

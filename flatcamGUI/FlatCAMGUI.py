@@ -371,6 +371,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuedit.addSeparator()
         self.menueditorigin = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin16.png'), _('Se&t Origin\tO'))
+        self.menuedit_move2origin = self.menuedit.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin2_16.png'), _('Move to Origin\tSHIFT+O'))
+
         self.menueditjump = self.menuedit.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location\tJ'))
         self.menueditlocate = self.menuedit.addAction(
@@ -841,6 +844,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/distance_min32.png'), _("Distance Min Tool"))
         self.origin_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/origin32.png'), _('Set Origin'))
+        self.move2origin_btn = self.toolbargeo.addAction(
+            QtGui.QIcon(self.app.resource_location + '/origin2_32.png'), _('Move to Origin'))
+
         self.jmp_btn = self.toolbargeo.addAction(
             QtGui.QIcon(self.app.resource_location + '/jump_to16.png'), _('Jump to Location'))
         self.locate_btn = self.toolbargeo.addAction(
