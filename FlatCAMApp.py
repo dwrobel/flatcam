@@ -7193,8 +7193,7 @@ class App(QtCore.QObject):
         # Clear form
         self.setup_component_editor()
 
-        self.inform.emit('%s: %s' %
-                         (_("Object deleted"), name))
+        self.inform.emit('%s: %s' % (_("Object deleted"), name))
 
     def on_set_origin(self):
         """
@@ -7306,6 +7305,11 @@ class App(QtCore.QObject):
         def worker_task():
             with self.proc_container.new(_("Moving to Origin...")):
                 obj_list = self.collection.get_selected()
+
+                if not obj_list:
+                    self.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No object(s) selected..."))
+                    return
+
                 xminlist = list()
                 yminlist = list()
 

@@ -4756,7 +4756,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             return
         tooldia = float(tool_dia_item.text())
 
-        new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
+        try:
+            new_cutz = (tooldia - vdia) / (2 * math.tan(math.radians(half_vangle)))
+        except ZeroDivisionError:
+            new_cutz = self.old_cutz
+
         new_cutz = float('%.*f' % (self.decimals, new_cutz)) * -1.0   # this value has to be negative
 
         self.ui.cutz_entry.set_value(new_cutz)
