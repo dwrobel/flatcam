@@ -4229,6 +4229,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
 
+        # common parameters update
+        self.ui.pp_geometry_name_cb.currentIndexChanged.connect(self.update_common_param_in_storage)
+
     def ui_disconnect(self):
 
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
@@ -4969,6 +4972,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         temp_tools.clear()
         self.ui_connect()
 
+    def update_common_param_in_storage(self):
+        for tooluid_value in self.tools.values():
+            tooluid_value['data']['ppname_g'] = self.ui.pp_geometry_name_cb.get_value()
+
     def select_tools_table_row(self, row, clearsel=None):
         if clearsel:
             self.ui.geo_tools_table.clearSelection()
@@ -5117,16 +5124,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # this reads the values in the UI form to the self.options dictionary
         self.read_form()
 
-        self.sel_tools = {}
+        self.sel_tools = dict()
 
         try:
             if self.special_group:
-                self.app.inform.emit('[WARNING_NOTCL] %s %s %s.' %
-                                     (_("This Geometry can't be processed because it is"),
-                                      str(self.special_group),
-                                      _("geometry")
-                                      )
-                                     )
+                self.app.inform.emit(
+                    '[WARNING_NOTCL] %s %s %s.' %
+                    (_("This Geometry can't be processed because it is"), str(self.special_group), _("geometry"))
+                )
                 return
         except AttributeError:
             pass
@@ -5166,8 +5171,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.clearSelection()
 
         else:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Failed. No tool selected in the tool table ..."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed. No tool selected in the tool table ..."))
 
     def mtool_gen_cncjob(self, outname=None, tools_dict=None, tools_in_use=None, segx=None, segy=None,
                          plot=True, use_thread=True):
@@ -5261,15 +5265,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         try:
                             offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.'))
                         except ValueError:
-                            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                                 _("Wrong value format entered, use a number."))
+                            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                             return
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
-                        self.app.inform.emit('[WARNING] %s' % _("Tool Offset is selected in Tool Table but "
-                                                                "no value is provided.\n"
-                                                                "Add a Tool Offset or change the Offset Type."))
+                        self.app.inform.emit(
+                            '[WARNING] %s' % _("Tool Offset is selected in Tool Table but no value is provided.\n"
+                                               "Add a Tool Offset or change the Offset Type.")
+                        )
                         return
                 else:
                     tool_offset = 0.0

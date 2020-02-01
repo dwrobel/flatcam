@@ -313,7 +313,7 @@ class TextEditor(QtWidgets.QWidget):
                     if qc.hasSelection():
                         qc.insertText(new)
                 else:
-                    self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+                    self.code_editor.moveCursor(QtGui.QTextCursor.Start)
                     break
             # Mark end of undo block
             cursor.endEditBlock()

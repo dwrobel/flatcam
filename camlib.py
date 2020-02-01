@@ -2876,7 +2876,7 @@ class CNCjob(Geometry):
 
                             # Tool change sequence (optional)
                             if toolchange:
-                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                                gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                                 gcode += self.doformat(p.spindle_code)  # Spindle start)
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -3419,7 +3419,7 @@ class CNCjob(Geometry):
             self.app.inform.emit('[ERROR] %s: %s' %
                                  (_("Expected a Geometry, got"), type(geometry)))
             return 'fail'
-        log.debug("Generate_from_geometry_2()")
+        log.debug("Executing camlib.CNCJob.generate_from_geometry_2()")
 
         # if solid_geometry is empty raise an exception
         if not geometry.solid_geometry:
@@ -3470,7 +3470,7 @@ class CNCjob(Geometry):
                     return 'fail'
                 # hack: make offset smaller by 0.0000000001 which is insignificant difference but allow the job
                 # to continue
-                elif  -offset == ((c - a) / 2) or -offset == ((d - b) / 2):
+                elif -offset == ((c - a) / 2) or -offset == ((d - b) / 2):
                     offset_for_use = offset - 0.0000000001
 
             for it in geometry.solid_geometry:
@@ -3487,11 +3487,12 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        if type(self.app.defaults["geometry_cnctooldia"]) == float:
+        default_dia = 0.01
+        if isinstance(self.app.defaults["geometry_cnctooldia"], float):
             default_dia = self.app.defaults["geometry_cnctooldia"]
         else:
             try:
-                tools_string = self.defaults["geometry_cnctooldia"].split(",")
+                tools_string = self.app.defaults["geometry_cnctooldia"].split(",")
                 tools_diameters = [eval(a) for a in tools_string if a != '']
                 default_dia = tools_diameters[0] if tools_diameters else 0.0
             except Exception as e:
