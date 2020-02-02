@@ -2847,6 +2847,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.level.setText('<span style="color:green;"><b>%s</b></span>' % _('Basic'))
 
             self.ui.tools_table.setColumnHidden(4, True)
+            self.ui.tools_table.setColumnHidden(5, True)
             self.ui.estartz_label.hide()
             self.ui.estartz_entry.hide()
             self.ui.feedrate_rapid_label.hide()

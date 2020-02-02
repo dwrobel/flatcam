@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 2.02.2020
 
 - fixed issue #376 where the V-Shape parameters from Gerber UI are not transfered to the resulting Geometry object if the 'combine' checkbox is not checked in the Gerber UI
+- in Excellon UI, if Basic application mode is selected in Preferences, the Plot column 'P' is hidden now because some inexperienced users mistake this column checkboxes for tool selection
 
 31.01.2020
 
