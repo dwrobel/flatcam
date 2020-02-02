@@ -160,8 +160,6 @@ class GerberObjectUI(ObjectUI):
         ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, decimals=decimals)
         self.decimals = decimals
 
-        self.custom_box.addWidget(QtWidgets.QLabel(''))
-
         # Plot options
         grid0 = QtWidgets.QGridLayout()
         grid0.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
@@ -169,20 +167,10 @@ class GerberObjectUI(ObjectUI):
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
 
-        # Plot CB
-        self.plot_cb = FCCheckBox()
-        self.plot_cb.setToolTip(
-            _("Plot (show) this object.")
-        )
-        plot_label = QtWidgets.QLabel('<b>%s:</b>' % _("Plot"))
-
-        grid0.addWidget(plot_label, 0, 0)
-        grid0.addWidget(self.plot_cb, 0, 1)
-
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.plot_options_label.setMinimumWidth(90)
 
-        grid0.addWidget(self.plot_options_label, 1, 0)
+        grid0.addWidget(self.plot_options_label, 0, 0)
 
         # Solid CB
         self.solid_cb = FCCheckBox(label=_('Solid'))
@@ -190,7 +178,7 @@ class GerberObjectUI(ObjectUI):
             _("Solid color polygons.")
         )
         self.solid_cb.setMinimumWidth(50)
-        grid0.addWidget(self.solid_cb, 1, 1)
+        grid0.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label=_('Multi-Color'))
@@ -198,7 +186,14 @@ class GerberObjectUI(ObjectUI):
             _("Draw polygons in different colors.")
         )
         self.multicolored_cb.setMinimumWidth(55)
-        grid0.addWidget(self.multicolored_cb, 1, 2)
+        grid0.addWidget(self.multicolored_cb, 0, 2)
+
+        # Plot CB
+        self.plot_cb = FCCheckBox('%s' % _("Plot"))
+        # self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.plot_cb.setToolTip(_("Plot (show) this object."))
+
+        grid0.addWidget(self.plot_cb, 1, 0, 1, 2)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
@@ -526,7 +521,7 @@ class GerberObjectUI(ObjectUI):
               "Clicking this will create the buffered geometry\n"
               "required for isolation.")
         )
-        grid1.addWidget(self.create_buffer_button, 13, 0, 1, 2)
+        grid1.addWidget(self.create_buffer_button, 13, 0, 1, 3)
 
         self.ohis_iso = OptionalHideInputSection(
             self.except_cb,
@@ -534,7 +529,11 @@ class GerberObjectUI(ObjectUI):
             logic=True
         )
 
-        grid1.addWidget(QtWidgets.QLabel(''), 14, 0)
+        separator_line2 = QtWidgets.QFrame()
+        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
+        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        grid1.addWidget(separator_line2, 14, 0, 1, 3)
+        # grid1.addWidget(QtWidgets.QLabel(''), 15, 0)
 
         # ###########################################
         # ########## NEW GRID #######################
@@ -680,11 +679,6 @@ class GerberObjectUI(ObjectUI):
         )
         grid2.addWidget(self.bbrounded_cb, 10, 0)
         grid2.addWidget(self.generate_bb_button, 10, 1)
-
-        separator_line2 = QtWidgets.QFrame()
-        separator_line2.setFrameShape(QtWidgets.QFrame.HLine)
-        separator_line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid2.addWidget(separator_line2, 11, 0, 1, 2)
 
 
 class ExcellonObjectUI(ObjectUI):

@@ -3627,6 +3627,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if self.fcgeometry:
             self.fcgeometry.visible = True
 
+        # clear the Tree
+        self.tw.clear()
+        parent = self.tw.invisibleRootItem()
+        self.geo_parent = self.tw.addParent(
+            parent, _('Geometry Elements'), expanded=True, color=QtGui.QColor("#000000"), font=self.geo_font)
+
         # hide the UI
         self.geo_frame.hide()
 

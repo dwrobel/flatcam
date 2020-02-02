@@ -11,10 +11,12 @@ CAD program, and create G-Code for Isolation routing.
 
 2.02.2020
 
-- fixed issue #376 where the V-Shape parameters from Gerber UI are not transfered to the resulting Geometry object if the 'combine' checkbox is not checked in the Gerber UI
+- fixed issue #376 where the V-Shape parameters from Gerber UI are not transferred to the resulting Geometry object if the 'combine' checkbox is not checked in the Gerber UI
 - in Excellon UI, if Basic application mode is selected in Preferences, the Plot column 'P' is hidden now because some inexperienced users mistake this column checkboxes for tool selection
-- fixed an error in Gerber Parser; the initial values for currnet_x, current_y were None but should have been 0.0
+- fixed an error in Gerber Parser; the initial values for current_x, current_y were None but should have been 0.0
 - limited the lower limit of angle of V-tip to a value of 1 because 0 makes no sense 
+- small changes in Gerber UI
+- in Geometry Editor make sure that after an edit is finished (correctly or forced) the QTree in the Editor UI is cleared of items
 
 31.01.2020
 
