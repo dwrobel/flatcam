@@ -394,10 +394,10 @@ class Gerber(Geometry):
         current_operation_code = None
 
         # Current coordinates
-        current_x = None
-        current_y = None
-        previous_x = None
-        previous_y = None
+        current_x = 0
+        current_y = 0
+        previous_x = 0
+        previous_y = 0
 
         current_d = None
 

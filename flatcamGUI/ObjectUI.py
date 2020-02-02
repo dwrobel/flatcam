@@ -327,7 +327,7 @@ class GerberObjectUI(ObjectUI):
               "In degree.")
         )
         self.tipangle_spinner = FCDoubleSpinner()
-        self.tipangle_spinner.set_range(0, 180)
+        self.tipangle_spinner.set_range(1, 180)
         self.tipangle_spinner.set_precision(self.decimals)
         self.tipangle_spinner.setSingleStep(5)
         self.tipangle_spinner.setWrapping(True)
@@ -1628,7 +1628,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.tipangle_entry = FCDoubleSpinner()
         self.tipangle_entry.set_precision(self.decimals)
-        self.tipangle_entry.set_range(0.0, 180.0)
+        self.tipangle_entry.set_range(1.0, 180.0)
         self.tipangle_entry.setSingleStep(1)
 
         self.grid3.addWidget(self.tipanglelabel, 2, 0)

@@ -2235,7 +2235,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
               "In degree.")
         )
         self.tipangle_spinner = FCSpinner()
-        self.tipangle_spinner.set_range(0, 180)
+        self.tipangle_spinner.set_range(1, 180)
         self.tipangle_spinner.setSingleStep(5)
         self.tipangle_spinner.setWrapping(True)
         grid0.addWidget(self.tipanglelabel, 5, 0)
@@ -5065,7 +5065,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "In degree."))
         self.tipangle_entry = FCDoubleSpinner()
         self.tipangle_entry.set_precision(self.decimals)
-        self.tipangle_entry.set_range(-360, 360)
+        self.tipangle_entry.set_range(1, 180)
         self.tipangle_entry.setSingleStep(5)
         self.tipangle_entry.setWrapping(True)
 
@@ -5615,7 +5615,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "In degree."))
         self.tipangle_entry = FCDoubleSpinner()
         self.tipangle_entry.set_precision(self.decimals)
-        self.tipangle_entry.set_range(0.0000, 180.0000)
+        self.tipangle_entry.set_range(1.0000, 180.0000)
         self.tipangle_entry.setSingleStep(5)
         self.tipangle_entry.setObjectName(_("V-Tip Angle"))
 
