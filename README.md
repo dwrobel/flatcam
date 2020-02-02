@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+2.02.2020
+
+- fixed issue #376 where the V-Shape parameters from Gerber UI are not transfered to the resulting Geometry object if the 'combine' checkbox is not checked in the Gerber UI
+
 31.01.2020
 
 - added a new functionality, a variation of Set Origin named Move to Origin. It will move a selection of objects to origin such as the bottom left corner of the bounding box that fit them all is in origin.

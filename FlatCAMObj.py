@@ -1156,8 +1156,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                                         visible=True)
                     self.poly_dict[shape_id] = clicked_poly
                     self.app.inform.emit(
-                        '%s: %d. %s' % (_("Added polygon"),
-                                        int(len(self.poly_dict)),
+                        '%s: %d. %s' % (_("Added polygon"), int(len(self.poly_dict)),
                                         _("Click to add next polygon or right click to start isolation."))
                     )
                 else:
@@ -1330,7 +1329,61 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
                 geo_obj.tool_type = self.ui.tool_type_radio.get_value().upper()
 
-                geo_obj.solid_geometry = []
+                geo_obj.solid_geometry = list()
+
+                # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                if self.ui.tool_type_radio.get_value() == 'v':
+                    new_cutz = self.ui.cutz_spinner.get_value()
+                    new_vtipdia = self.ui.tipdia_spinner.get_value()
+                    new_vtipangle = self.ui.tipangle_spinner.get_value()
+                    tool_type = 'V'
+                else:
+                    new_cutz = self.app.defaults['geometry_cutz']
+                    new_vtipdia = self.app.defaults['geometry_vtipdia']
+                    new_vtipangle = self.app.defaults['geometry_vtipangle']
+                    tool_type = 'C1'
+
+                # store here the default data for Geometry Data
+                default_data = {}
+                default_data.update({
+                    "name": iso_name,
+                    "plot": self.app.defaults['geometry_plot'],
+                    "cutz": new_cutz,
+                    "vtipdia": new_vtipdia,
+                    "vtipangle": new_vtipangle,
+                    "travelz": self.app.defaults['geometry_travelz'],
+                    "feedrate": self.app.defaults['geometry_feedrate'],
+                    "feedrate_z": self.app.defaults['geometry_feedrate_z'],
+                    "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
+                    "dwell": self.app.defaults['geometry_dwell'],
+                    "dwelltime": self.app.defaults['geometry_dwelltime'],
+                    "multidepth": self.app.defaults['geometry_multidepth'],
+                    "ppname_g": self.app.defaults['geometry_ppname_g'],
+                    "depthperpass": self.app.defaults['geometry_depthperpass'],
+                    "extracut": self.app.defaults['geometry_extracut'],
+                    "extracut_length": self.app.defaults['geometry_extracut_length'],
+                    "toolchange": self.app.defaults['geometry_toolchange'],
+                    "toolchangez": self.app.defaults['geometry_toolchangez'],
+                    "endz": self.app.defaults['geometry_endz'],
+                    "spindlespeed": self.app.defaults['geometry_spindlespeed'],
+                    "toolchangexy": self.app.defaults['geometry_toolchangexy'],
+                    "startz": self.app.defaults['geometry_startz']
+                })
+
+                geo_obj.tools = dict()
+                geo_obj.tools['1'] = dict()
+                geo_obj.tools.update({
+                    '1': {
+                        'tooldia': float(self.options["isotooldia"]),
+                        'offset': 'Path',
+                        'offset_value': 0.0,
+                        'type': _('Rough'),
+                        'tool_type': tool_type,
+                        'data': default_data,
+                        'solid_geometry': geo_obj.solid_geometry
+                    }
+                })
+
                 for i in range(passes):
                     iso_offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
 
@@ -1344,58 +1397,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         return 'fail'
                     geo_obj.solid_geometry.append(geom)
 
-                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
-                    if self.ui.tool_type_radio.get_value() == 'v':
-                        new_cutz = self.ui.cutz_spinner.get_value()
-                        new_vtipdia = self.ui.tipdia_spinner.get_value()
-                        new_vtipangle = self.ui.tipangle_spinner.get_value()
-                        tool_type = 'V'
-                    else:
-                        new_cutz = self.app.defaults['geometry_cutz']
-                        new_vtipdia = self.app.defaults['geometry_vtipdia']
-                        new_vtipangle = self.app.defaults['geometry_vtipangle']
-                        tool_type = 'C1'
-
-                    # store here the default data for Geometry Data
-                    default_data = {}
-                    default_data.update({
-                        "name": iso_name,
-                        "plot": self.app.defaults['geometry_plot'],
-                        "cutz": new_cutz,
-                        "vtipdia": new_vtipdia,
-                        "vtipangle": new_vtipangle,
-                        "travelz": self.app.defaults['geometry_travelz'],
-                        "feedrate": self.app.defaults['geometry_feedrate'],
-                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
-                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
-                        "dwell": self.app.defaults['geometry_dwell'],
-                        "dwelltime": self.app.defaults['geometry_dwelltime'],
-                        "multidepth": self.app.defaults['geometry_multidepth'],
-                        "ppname_g": self.app.defaults['geometry_ppname_g'],
-                        "depthperpass": self.app.defaults['geometry_depthperpass'],
-                        "extracut": self.app.defaults['geometry_extracut'],
-                        "extracut_length": self.app.defaults['geometry_extracut_length'],
-                        "toolchange": self.app.defaults['geometry_toolchange'],
-                        "toolchangez": self.app.defaults['geometry_toolchangez'],
-                        "endz": self.app.defaults['geometry_endz'],
-                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
-                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
-                        "startz": self.app.defaults['geometry_startz']
-                    })
-
-                    geo_obj.tools = dict()
-                    geo_obj.tools['1'] = dict()
-                    geo_obj.tools.update({
-                        '1': {
-                            'tooldia': float(self.options["isotooldia"]),
-                            'offset': 'Path',
-                            'offset_value': 0.0,
-                            'type': _('Rough'),
-                            'tool_type': tool_type,
-                            'data': default_data,
-                            'solid_geometry': geo_obj.solid_geometry
-                        }
-                    })
+                    # update the geometry in the tools
+                    geo_obj.tools['1']['solid_geometry'] = geo_obj.solid_geometry
 
                 # detect if solid_geometry is empty and this require list flattening which is "heavy"
                 # or just looking in the lists (they are one level depth) and if any is not empty
@@ -1415,8 +1418,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
                 else:
-                    app_obj.inform.emit('[success] %s" %s' %
-                                        (_("Isolation geometry created"), geo_obj.options["name"]))
+                    app_obj.inform.emit('[success] %s" %s' % (_("Isolation geometry created"), geo_obj.options["name"]))
 
                 # even if combine is checked, one pass is still single-geo
                 geo_obj.multigeo = True if passes > 1 else False
@@ -1470,11 +1472,65 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                                   nr_passes=i)
 
                     if geom == 'fail':
-                        app_obj.inform.emit('[ERROR_NOTCL] %s' %
-                                            _("Isolation geometry could not be generated."))
+                        app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
                         return 'fail'
 
                     geo_obj.solid_geometry = geom
+
+                    # transfer the Cut Z and Vtip and VAngle values in case that we use the V-Shape tool in Gerber UI
+                    # even if the resulting geometry is not multigeo we add the tools dict which will hold the data
+                    # required to be transfered to the Geometry object
+                    if self.ui.tool_type_radio.get_value() == 'v':
+                        new_cutz = self.ui.cutz_spinner.get_value()
+                        new_vtipdia = self.ui.tipdia_spinner.get_value()
+                        new_vtipangle = self.ui.tipangle_spinner.get_value()
+                        tool_type = 'V'
+                    else:
+                        new_cutz = self.app.defaults['geometry_cutz']
+                        new_vtipdia = self.app.defaults['geometry_vtipdia']
+                        new_vtipangle = self.app.defaults['geometry_vtipangle']
+                        tool_type = 'C1'
+
+                    # store here the default data for Geometry Data
+                    default_data = {}
+                    default_data.update({
+                        "name": iso_name,
+                        "plot": self.app.defaults['geometry_plot'],
+                        "cutz": new_cutz,
+                        "vtipdia": new_vtipdia,
+                        "vtipangle": new_vtipangle,
+                        "travelz": self.app.defaults['geometry_travelz'],
+                        "feedrate": self.app.defaults['geometry_feedrate'],
+                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
+                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
+                        "dwell": self.app.defaults['geometry_dwell'],
+                        "dwelltime": self.app.defaults['geometry_dwelltime'],
+                        "multidepth": self.app.defaults['geometry_multidepth'],
+                        "ppname_g": self.app.defaults['geometry_ppname_g'],
+                        "depthperpass": self.app.defaults['geometry_depthperpass'],
+                        "extracut": self.app.defaults['geometry_extracut'],
+                        "extracut_length": self.app.defaults['geometry_extracut_length'],
+                        "toolchange": self.app.defaults['geometry_toolchange'],
+                        "toolchangez": self.app.defaults['geometry_toolchangez'],
+                        "endz": self.app.defaults['geometry_endz'],
+                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
+                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
+                        "startz": self.app.defaults['geometry_startz']
+                    })
+
+                    geo_obj.tools = dict()
+                    geo_obj.tools['1'] = dict()
+                    geo_obj.tools.update({
+                        '1': {
+                            'tooldia': float(self.options["isotooldia"]),
+                            'offset': 'Path',
+                            'offset_value': 0.0,
+                            'type': _('Rough'),
+                            'tool_type': tool_type,
+                            'data': default_data,
+                            'solid_geometry': geo_obj.solid_geometry
+                        }
+                    })
 
                     # detect if solid_geometry is empty and this require list flattening which is "heavy"
                     # or just looking in the lists (they are one level depth) and if any is not empty
