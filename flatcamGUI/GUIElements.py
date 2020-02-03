@@ -575,12 +575,16 @@ class EvalEntry2(QtWidgets.QLineEdit):
 class FCSpinner(QtWidgets.QSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
+    confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
-    def __init__(self, suffix=None, alignment=None, parent=None):
+    def __init__(self, suffix=None, alignment=None, parent=None, callback=None):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
 
         self.editingFinished.connect(self.on_edit_finished)
+        if callback:
+            self.confirmation_signal.connect(callback)
+
         self.lineEdit().installEventFilter(self)
 
         if suffix:
@@ -650,6 +654,21 @@ class FCSpinner(QtWidgets.QSpinBox):
             return
         self.setValue(k)
 
+    def validate(self, p_str, p_int):
+        text = p_str
+
+        min_val = self.minimum()
+        max_val = self.maximum()
+        try:
+            if int(text) < min_val or int(text) > max_val:
+                self.confirmation_signal.emit(False, min_val, max_val)
+                return QtGui.QValidator.Intermediate, text, p_int
+        except ValueError:
+            pass
+
+        self.confirmation_signal.emit(True, min_val, max_val)
+        return QtGui.QValidator.Acceptable, p_str, p_int
+
     def set_range(self, min_val, max_val):
         self.setRange(min_val, max_val)
 
@@ -661,12 +680,23 @@ class FCSpinner(QtWidgets.QSpinBox):
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     returnPressed = QtCore.pyqtSignal()
+    confirmation_signal = QtCore.pyqtSignal(bool, float, float)
 
-    def __init__(self, suffix=None, alignment=None, parent=None):
+    def __init__(self, suffix=None, alignment=None, parent=None, callback=None):
+        """
+
+        :param suffix:      a char added to the end of the value in the LineEdit; like a '%' or '$' etc
+        :param alignment:   the value is aligned to left or right
+        :param parent:
+        :param callback:    called when the entered value is outside limits; the min and max value will be passed to it
+        """
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
 
         self.editingFinished.connect(self.on_edit_finished)
+        if callback:
+            self.confirmation_signal.connect(callback)
+
         self.lineEdit().installEventFilter(self)
 
         # by default don't allow the minus sign to be entered as the default for QDoubleSpinBox is the positive range
@@ -736,11 +766,17 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     def validate(self, p_str, p_int):
         text = p_str.replace(',', '.')
+
+        min_val = self.minimum()
+        max_val = self.maximum()
         try:
-            if float(text) < self.minimum() or float(text) > self.maximum():
+            if float(text) < min_val or float(text) > max_val:
+                self.confirmation_signal.emit(False, min_val, max_val)
                 return QtGui.QValidator.Intermediate, text, p_int
         except ValueError:
             pass
+
+        self.confirmation_signal.emit(True, min_val, max_val)
         return QtGui.QValidator.Acceptable, p_str, p_int
 
     def get_value(self):

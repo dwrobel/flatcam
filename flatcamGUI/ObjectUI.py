@@ -35,11 +35,11 @@ class ObjectUI(QtWidgets.QWidget):
     put UI elements in ObjectUI.custom_box (QtWidgets.QLayout).
     """
 
-    def __init__(self, icon_file='share/flatcam_icon32.png', title=_('FlatCAM Object'), parent=None, common=True, 
-                 decimals=4):
+    def __init__(self, app, icon_file='share/flatcam_icon32.png', title=_('FlatCAM Object'), parent=None, common=True):
         QtWidgets.QWidget.__init__(self, parent=parent)
-
-        self.decimals = decimals
+        
+        self.app = app
+        self.decimals = app.decimals
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -149,6 +149,20 @@ class ObjectUI(QtWidgets.QWidget):
             self.common_grid.addWidget(self.offset_button, 4, 1)
 
         layout.addStretch()
+    
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform.emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' %
+                                 (_("Edited value is out of range"), self.decimals, minval, self.decimals, maxval))
+        else:
+            self.app.inform.emit('[success] %s' % _("Edited value is within limits."))
+
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform.emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                 (_("Edited value is out of range"), minval, maxval))
+        else:
+            self.app.inform.emit('[success] %s' % _("Edited value is within limits."))
 
 
 class GerberObjectUI(ObjectUI):
@@ -156,9 +170,11 @@ class GerberObjectUI(ObjectUI):
     User interface for Gerber objects.
     """
 
-    def __init__(self, decimals, parent=None):
-        ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, decimals=decimals)
-        self.decimals = decimals
+    def __init__(self, app, parent=None):
+        self.decimals = app.decimals
+        self.app = app
+
+        ObjectUI.__init__(self, title=_('Gerber Object'), parent=parent, app=self.app)
 
         # Plot options
         grid0 = QtWidgets.QGridLayout()
@@ -307,7 +323,7 @@ class GerberObjectUI(ObjectUI):
         self.tipdialabel.setToolTip(
             _("The tip diameter for V-Shape Tool")
         )
-        self.tipdia_spinner = FCDoubleSpinner()
+        self.tipdia_spinner = FCDoubleSpinner(callback=self.confirmation_message)
         self.tipdia_spinner.set_range(-99.9999, 99.9999)
         self.tipdia_spinner.set_precision(self.decimals)
         self.tipdia_spinner.setSingleStep(0.1)
@@ -321,7 +337,7 @@ class GerberObjectUI(ObjectUI):
             _("The tip angle for V-Shape Tool.\n"
               "In degree.")
         )
-        self.tipangle_spinner = FCDoubleSpinner()
+        self.tipangle_spinner = FCDoubleSpinner(callback=self.confirmation_message)
         self.tipangle_spinner.set_range(1, 180)
         self.tipangle_spinner.set_precision(self.decimals)
         self.tipangle_spinner.setSingleStep(5)
@@ -335,7 +351,7 @@ class GerberObjectUI(ObjectUI):
             _("Cutting depth (negative)\n"
               "below the copper surface.")
         )
-        self.cutz_spinner = FCDoubleSpinner()
+        self.cutz_spinner = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_spinner.set_range(-9999.9999, 0.0000)
         self.cutz_spinner.set_precision(self.decimals)
         self.cutz_spinner.setSingleStep(0.1)
@@ -353,7 +369,7 @@ class GerberObjectUI(ObjectUI):
               "this parameter.")
         )
         tdlabel.setMinimumWidth(90)
-        self.iso_tool_dia_entry = FCDoubleSpinner()
+        self.iso_tool_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.iso_tool_dia_entry.set_range(-9999.9999, 9999.9999)
         self.iso_tool_dia_entry.set_precision(self.decimals)
         self.iso_tool_dia_entry.setSingleStep(0.1)
@@ -368,7 +384,7 @@ class GerberObjectUI(ObjectUI):
               "number (integer) of tool widths.")
         )
         passlabel.setMinimumWidth(90)
-        self.iso_width_entry = FCSpinner()
+        self.iso_width_entry = FCSpinner(callback=self.confirmation_message_int)
         self.iso_width_entry.set_range(1, 999)
         grid1.addWidget(passlabel, 5, 0)
         grid1.addWidget(self.iso_width_entry, 5, 1, 1, 2)
@@ -379,7 +395,7 @@ class GerberObjectUI(ObjectUI):
             _("How much (percentage) of the tool width to overlap each tool pass.")
         )
         overlabel.setMinimumWidth(90)
-        self.iso_overlap_entry = FCDoubleSpinner(suffix='%')
+        self.iso_overlap_entry = FCDoubleSpinner(suffix='%', callback=self.confirmation_message)
         self.iso_overlap_entry.set_precision(self.decimals)
         self.iso_overlap_entry.setWrapping(True)
         self.iso_overlap_entry.set_range(0.0000, 99.9999)
@@ -617,7 +633,7 @@ class GerberObjectUI(ObjectUI):
               "distance.")
         )
         bmlabel.setMinimumWidth(90)
-        self.noncopper_margin_entry = FCDoubleSpinner()
+        self.noncopper_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.noncopper_margin_entry.set_range(-9999.9999, 9999.9999)
         self.noncopper_margin_entry.set_precision(self.decimals)
         self.noncopper_margin_entry.setSingleStep(0.1)
@@ -656,7 +672,7 @@ class GerberObjectUI(ObjectUI):
               "to the nearest polygon.")
         )
         bbmargin.setMinimumWidth(90)
-        self.bbmargin_entry = FCDoubleSpinner()
+        self.bbmargin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.bbmargin_entry.set_range(-9999.9999, 9999.9999)
         self.bbmargin_entry.set_precision(self.decimals)
         self.bbmargin_entry.setSingleStep(0.1)
@@ -686,7 +702,10 @@ class ExcellonObjectUI(ObjectUI):
     User interface for Excellon objects.
     """
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, app, parent=None):
+
+        self.decimals = app.decimals
+        self.app = app
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -702,9 +721,7 @@ class ExcellonObjectUI(ObjectUI):
         ObjectUI.__init__(self, title=_('Excellon Object'),
                           icon_file=self.resource_loc + '/drill32.png',
                           parent=parent,
-                          decimals=decimals)
-
-        self.decimals = decimals
+                          app=self.app)
 
         # ### Plot options ####
         hlay_plot = QtWidgets.QHBoxLayout()
@@ -870,7 +887,7 @@ class ExcellonObjectUI(ObjectUI):
             _("The diameter of the tool who will do the milling")
         )
 
-        self.mill_dia_entry = FCDoubleSpinner()
+        self.mill_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.mill_dia_entry.set_precision(self.decimals)
         self.mill_dia_entry.set_range(0.0000, 9999.9999)
 
@@ -884,7 +901,7 @@ class ExcellonObjectUI(ObjectUI):
               "below the copper surface.")
         )
 
-        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
@@ -908,7 +925,7 @@ class ExcellonObjectUI(ObjectUI):
             )
         )
 
-        self.maxdepth_entry = FCDoubleSpinner()
+        self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
         self.maxdepth_entry.set_range(0, 9999.9999)
         self.maxdepth_entry.setSingleStep(0.1)
@@ -930,7 +947,7 @@ class ExcellonObjectUI(ObjectUI):
               "across the XY plane.")
         )
 
-        self.travelz_entry = FCDoubleSpinner()
+        self.travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.travelz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
@@ -950,7 +967,7 @@ class ExcellonObjectUI(ObjectUI):
               "in G-Code (Pause for tool change).")
         )
 
-        self.toolchangez_entry = FCDoubleSpinner()
+        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setToolTip(
             _("Z-axis position (height) for\n"
@@ -984,7 +1001,7 @@ class ExcellonObjectUI(ObjectUI):
             _("Height of the tool after\n"
               "the last move at the end of the job.")
         )
-        self.eendz_entry = FCDoubleSpinner()
+        self.eendz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.eendz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
@@ -1003,7 +1020,7 @@ class ExcellonObjectUI(ObjectUI):
             _("Cutting speed in the XY\n"
               "plane in units per minute")
         )
-        self.xyfeedrate_entry = FCDoubleSpinner()
+        self.xyfeedrate_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.xyfeedrate_entry.set_precision(self.decimals)
         self.xyfeedrate_entry.set_range(0, 9999.9999)
         self.xyfeedrate_entry.setSingleStep(0.1)
@@ -1019,7 +1036,7 @@ class ExcellonObjectUI(ObjectUI):
               "So called 'Plunge' feedrate.\n"
               "This is for linear move G01.")
         )
-        self.feedrate_entry = FCDoubleSpinner()
+        self.feedrate_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_entry.set_precision(self.decimals)
         self.feedrate_entry.set_range(0.0, 9999.9999)
         self.feedrate_entry.setSingleStep(0.1)
@@ -1036,7 +1053,7 @@ class ExcellonObjectUI(ObjectUI):
               "It is useful only for Marlin,\n"
               "ignore for any other cases.")
         )
-        self.feedrate_rapid_entry = FCDoubleSpinner()
+        self.feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_rapid_entry.set_precision(self.decimals)
         self.feedrate_rapid_entry.set_range(0.0, 9999.9999)
         self.feedrate_rapid_entry.setSingleStep(0.1)
@@ -1057,7 +1074,7 @@ class ExcellonObjectUI(ObjectUI):
               "extended cut over the first cut section.")
         )
 
-        self.e_cut_entry = FCDoubleSpinner()
+        self.e_cut_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.e_cut_entry.set_range(0, 99999)
         self.e_cut_entry.set_precision(self.decimals)
         self.e_cut_entry.setSingleStep(0.1)
@@ -1081,7 +1098,7 @@ class ExcellonObjectUI(ObjectUI):
               "in RPM (optional)")
         )
 
-        self.spindlespeed_entry = FCSpinner()
+        self.spindlespeed_entry = FCSpinner(callback=self.confirmation_message_int)
         self.spindlespeed_entry.set_range(0, 1000000)
         self.spindlespeed_entry.setSingleStep(100)
 
@@ -1094,7 +1111,7 @@ class ExcellonObjectUI(ObjectUI):
             _("Pause to allow the spindle to reach its\n"
               "speed before cutting.")
         )
-        self.dwelltime_entry = FCDoubleSpinner()
+        self.dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.set_range(0.0, 9999.9999)
         self.dwelltime_entry.setSingleStep(0.1)
@@ -1115,7 +1132,7 @@ class ExcellonObjectUI(ObjectUI):
               "to probe. Negative value, in current units.")
         )
 
-        self.pdepth_entry = FCDoubleSpinner()
+        self.pdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-9999.9999, 9999.9999)
         self.pdepth_entry.setSingleStep(0.1)
@@ -1132,7 +1149,7 @@ class ExcellonObjectUI(ObjectUI):
             _("The feedrate used while the probe is probing.")
         )
 
-        self.feedrate_probe_entry = FCDoubleSpinner()
+        self.feedrate_probe_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0.0, 9999.9999)
         self.feedrate_probe_entry.setSingleStep(0.1)
@@ -1151,7 +1168,7 @@ class ExcellonObjectUI(ObjectUI):
               "The value here can compensate the Cut Z parameter.")
         )
 
-        self.offset_entry = FCDoubleSpinner()
+        self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
         self.offset_entry.set_range(-9999.9999, 9999.9999)
 
@@ -1291,7 +1308,7 @@ class ExcellonObjectUI(ObjectUI):
 
         self.grid6.addWidget(self.tdlabel, 6, 0, 1, 3)
 
-        self.tooldia_entry = FCDoubleSpinner()
+        self.tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tooldia_entry.set_precision(self.decimals)
         self.tooldia_entry.set_range(0.0, 9999.9999)
         self.tooldia_entry.setSingleStep(0.1)
@@ -1311,7 +1328,7 @@ class ExcellonObjectUI(ObjectUI):
         self.grid6.addWidget(self.tooldia_entry, 7, 0, 1, 2)
         self.grid6.addWidget(self.generate_milling_button, 7, 2)
 
-        self.slot_tooldia_entry = FCDoubleSpinner()
+        self.slot_tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.slot_tooldia_entry.set_precision(self.decimals)
         self.slot_tooldia_entry.set_range(0.0, 9999.9999)
         self.slot_tooldia_entry.setSingleStep(0.1)
@@ -1343,7 +1360,10 @@ class GeometryObjectUI(ObjectUI):
     User interface for Geometry objects.
     """
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, app, parent=None):
+
+        self.decimals = app.decimals
+        self.app = app
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -1358,10 +1378,8 @@ class GeometryObjectUI(ObjectUI):
 
         super(GeometryObjectUI, self).__init__(
             title=_('Geometry Object'),
-            icon_file=self.resource_loc + '/geometry32.png', parent=parent, decimals=decimals
+            icon_file=self.resource_loc + '/geometry32.png', parent=parent,  app=self.app
         )
-
-        self.decimals = decimals
 
         # Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
@@ -1492,7 +1510,7 @@ class GeometryObjectUI(ObjectUI):
                 "cut and negative for 'inside' cut."
             )
         )
-        self.tool_offset_entry = FCDoubleSpinner()
+        self.tool_offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tool_offset_entry.set_precision(self.decimals)
         self.tool_offset_entry.set_range(-9999.9999, 9999.9999)
         self.tool_offset_entry.setSingleStep(0.1)
@@ -1512,7 +1530,7 @@ class GeometryObjectUI(ObjectUI):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool")
         )
-        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.addtool_entry.set_precision(self.decimals)
         self.addtool_entry.set_range(0.00001, 9999.9999)
         self.addtool_entry.setSingleStep(0.1)
@@ -1604,7 +1622,7 @@ class GeometryObjectUI(ObjectUI):
                 "The tip diameter for V-Shape Tool"
             )
         )
-        self.tipdia_entry = FCDoubleSpinner()
+        self.tipdia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tipdia_entry.set_precision(self.decimals)
         self.tipdia_entry.set_range(0.00001, 9999.9999)
         self.tipdia_entry.setSingleStep(0.1)
@@ -1620,7 +1638,7 @@ class GeometryObjectUI(ObjectUI):
                 "In degree."
             )
         )
-        self.tipangle_entry = FCDoubleSpinner()
+        self.tipangle_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tipangle_entry.set_precision(self.decimals)
         self.tipangle_entry.set_range(1.0, 180.0)
         self.tipangle_entry.setSingleStep(1)
@@ -1636,7 +1654,7 @@ class GeometryObjectUI(ObjectUI):
                 "below the copper surface."
             )
         )
-        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
@@ -1660,7 +1678,7 @@ class GeometryObjectUI(ObjectUI):
             )
         )
 
-        self.maxdepth_entry = FCDoubleSpinner()
+        self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
         self.maxdepth_entry.set_range(0, 9999.9999)
         self.maxdepth_entry.setSingleStep(0.1)
@@ -1681,7 +1699,7 @@ class GeometryObjectUI(ObjectUI):
             _("Height of the tool when\n"
               "moving without cutting.")
         )
-        self.travelz_entry = FCDoubleSpinner()
+        self.travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.travelz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
@@ -1702,7 +1720,7 @@ class GeometryObjectUI(ObjectUI):
                 "in the Machine Code (Pause for tool change)."
             )
         )
-        self.toolchangez_entry = FCDoubleSpinner()
+        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setToolTip(
             _(
@@ -1739,7 +1757,7 @@ class GeometryObjectUI(ObjectUI):
             _("Height of the tool after\n"
               "the last move at the end of the job.")
         )
-        self.gendz_entry = FCDoubleSpinner()
+        self.gendz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.gendz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
@@ -1758,7 +1776,7 @@ class GeometryObjectUI(ObjectUI):
             _("Cutting speed in the XY\n"
               "plane in units per minute")
         )
-        self.cncfeedrate_entry = FCDoubleSpinner()
+        self.cncfeedrate_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cncfeedrate_entry.set_precision(self.decimals)
         self.cncfeedrate_entry.set_range(0, 9999.9999)
         self.cncfeedrate_entry.setSingleStep(0.1)
@@ -1773,7 +1791,7 @@ class GeometryObjectUI(ObjectUI):
               "plane in units per minute.\n"
               "It is called also Plunge.")
         )
-        self.cncplunge_entry = FCDoubleSpinner()
+        self.cncplunge_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cncplunge_entry.set_precision(self.decimals)
         self.cncplunge_entry.set_range(0, 9999.9999)
         self.cncplunge_entry.setSingleStep(0.1)
@@ -1790,7 +1808,7 @@ class GeometryObjectUI(ObjectUI):
               "It is useful only for Marlin,\n"
               "ignore for any other cases.")
         )
-        self.cncfeedrate_rapid_entry = FCDoubleSpinner()
+        self.cncfeedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cncfeedrate_rapid_entry.set_precision(self.decimals)
         self.cncfeedrate_rapid_entry.set_range(0, 9999.9999)
         self.cncfeedrate_rapid_entry.setSingleStep(0.1)
@@ -1810,7 +1828,7 @@ class GeometryObjectUI(ObjectUI):
               "extended cut over the first cut section.")
         )
 
-        self.e_cut_entry = FCDoubleSpinner()
+        self.e_cut_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.e_cut_entry.set_range(0, 99999)
         self.e_cut_entry.set_precision(self.decimals)
         self.e_cut_entry.setSingleStep(0.1)
@@ -1833,7 +1851,7 @@ class GeometryObjectUI(ObjectUI):
                 "this value is the power of laser."
             )
         )
-        self.cncspindlespeed_entry = FCSpinner()
+        self.cncspindlespeed_entry = FCSpinner(callback=self.confirmation_message_int)
         self.cncspindlespeed_entry.set_range(0, 1000000)
         self.cncspindlespeed_entry.setSingleStep(100)
 
@@ -1848,7 +1866,7 @@ class GeometryObjectUI(ObjectUI):
                 "speed before cutting."
             )
         )
-        self.dwelltime_entry = FCDoubleSpinner()
+        self.dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.set_range(0, 9999.9999)
         self.dwelltime_entry.setSingleStep(0.1)
@@ -1867,7 +1885,7 @@ class GeometryObjectUI(ObjectUI):
             _("The maximum depth that the probe is allowed\n"
               "to probe. Negative value, in current units.")
         )
-        self.pdepth_entry = FCDoubleSpinner()
+        self.pdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.pdepth_entry.set_precision(self.decimals)
         self.pdepth_entry.set_range(-9999.9999, 9999.9999)
         self.pdepth_entry.setSingleStep(0.1)
@@ -1883,7 +1901,7 @@ class GeometryObjectUI(ObjectUI):
         self.feedrate_probe_label.setToolTip(
             _("The feedrate used while the probe is probing.")
         )
-        self.feedrate_probe_entry = FCDoubleSpinner()
+        self.feedrate_probe_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.set_range(0.0, 9999.9999)
         self.feedrate_probe_entry.setSingleStep(0.1)
@@ -2010,11 +2028,14 @@ class CNCObjectUI(ObjectUI):
     User interface for CNCJob objects.
     """
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, app, parent=None):
         """
         Creates the user interface for CNCJob objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
         """
+
+        self.decimals = app.decimals
+        self.app = app
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -2030,8 +2051,7 @@ class CNCObjectUI(ObjectUI):
         ObjectUI.__init__(
             self, title=_('CNC Job Object'),
             icon_file=self.resource_loc + '/cnc32.png', parent=parent,
-            decimals=decimals)
-        self.decimals = decimals
+            app=self.app)
 
         for i in range(0, self.common_grid.count()):
             self.common_grid.itemAt(i).widget().hide()
@@ -2172,7 +2192,7 @@ class CNCObjectUI(ObjectUI):
                                                             _('P')])
         self.exc_cnc_tools_table.setColumnHidden(4, True)
 
-        self.tooldia_entry = FCDoubleSpinner()
+        self.tooldia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tooldia_entry.set_range(0, 9999.9999)
         self.tooldia_entry.set_precision(self.decimals)
         self.tooldia_entry.setSingleStep(0.1)
@@ -2341,11 +2361,14 @@ class ScriptObjectUI(ObjectUI):
     User interface for Script  objects.
     """
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, app, parent=None):
         """
         Creates the user interface for Script objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
         """
+
+        self.decimals = app.decimals
+        self.app = app
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -2362,9 +2385,7 @@ class ScriptObjectUI(ObjectUI):
                           icon_file=self.resource_loc + '/script_new24.png',
                           parent=parent,
                           common=False,
-                          decimals=decimals)
-
-        self.decimals = decimals
+                          app=self.app)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
@@ -2407,11 +2428,14 @@ class DocumentObjectUI(ObjectUI):
     User interface for Notes objects.
     """
 
-    def __init__(self, decimals, parent=None):
+    def __init__(self, app, parent=None):
         """
         Creates the user interface for Notes objects. GUI elements should
         be placed in ``self.custom_box`` to preserve the layout.
         """
+
+        self.decimals = app.decimals
+        self.app = app
 
         theme_settings = QtCore.QSettings("Open Source", "FlatCAM")
         if theme_settings.contains("theme"):
@@ -2428,9 +2452,7 @@ class DocumentObjectUI(ObjectUI):
                           icon_file=self.resource_loc + '/notes16_1.png',
                           parent=parent,
                           common=False,
-                          decimals=decimals)
-
-        self.decimals = decimals
+                          app=self.app)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
@@ -2589,7 +2611,7 @@ class DocumentObjectUI(ObjectUI):
         self.tab_size_label.setToolTip(
             _("Set the tab size. In pixels. Default value is 80 pixels.")
         )
-        self.tab_size_spinner = FCSpinner()
+        self.tab_size_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.tab_size_spinner.set_range(0, 1000)
 
         self.form_box.addRow(self.tab_size_label, self.tab_size_spinner)

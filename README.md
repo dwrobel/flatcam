@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+3.02.2020
+
+- modified Spinbox and DoubleSpinbox Custom UI elements such that they issue a warning status message when the typed value is out of range
+
 2.02.2020
 
 - fixed issue #376 where the V-Shape parameters from Gerber UI are not transferred to the resulting Geometry object if the 'combine' checkbox is not checked in the Gerber UI

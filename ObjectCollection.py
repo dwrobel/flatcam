@@ -504,7 +504,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 name += "_1"
         obj.options["name"] = name
 
-        obj.set_ui(obj.ui_type(decimals=self.app.decimals))
+        obj.set_ui(obj.ui_type(app=self.app))
 
         # Required before appending (Qt MVC)
         group = self.group_items[obj.kind]
