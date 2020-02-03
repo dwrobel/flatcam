@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 3.02.2020
 
 - modified Spinbox and DoubleSpinbox Custom UI elements such that they issue a warning status message when the typed value is out of range
+- fixed the preprocessors with 'laser' in the name to use the spindle direction set in the Preferences
+- increased the upper limit for feedrates by an order of magnitude
 
 2.02.2020
 

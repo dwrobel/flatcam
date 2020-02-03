@@ -117,11 +117,11 @@ M6
 M0
 G00 Z{z_toolchange}
 """.format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
-             y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
-             z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
-             tool=int(p.tool),
-             t_drills=no_drills,
-             toolC=toolC_formatted)
+           y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+           z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
+           tool=int(p.tool),
+           t_drills=no_drills,
+           toolC=toolC_formatted)
             else:
                 gcode = """
 M5       

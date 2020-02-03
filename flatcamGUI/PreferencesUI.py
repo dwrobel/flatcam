@@ -3154,7 +3154,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         self.feedrate_entry = FCDoubleSpinner()
         self.feedrate_entry.set_precision(self.decimals)
-        self.feedrate_entry.set_range(0, 999)
+        self.feedrate_entry.set_range(0, 99999.9999)
 
         grid2.addWidget(frlabel, 5, 0)
         grid2.addWidget(self.feedrate_entry, 5, 1)
@@ -3316,7 +3316,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.feedrate_rapid_entry = FCDoubleSpinner()
         self.feedrate_rapid_entry.set_precision(self.decimals)
-        self.feedrate_rapid_entry.set_range(0, 9999999.9999)
+        self.feedrate_rapid_entry.set_range(0, 99999.9999)
 
         grid1.addWidget(fr_rapid_label, 3, 0)
         grid1.addWidget(self.feedrate_rapid_entry, 3, 1)
@@ -3341,7 +3341,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.feedrate_probe_entry = FCDoubleSpinner()
         self.feedrate_probe_entry.set_precision(self.decimals)
-        self.feedrate_probe_entry.set_range(0, 9999999.9999)
+        self.feedrate_probe_entry.set_range(0, 99999.9999)
 
         grid1.addWidget(self.feedrate_probe_label, 5, 0)
         grid1.addWidget(self.feedrate_probe_entry, 5, 1)
@@ -4081,7 +4081,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "plane in units per minute")
         )
         self.cncfeedrate_entry = FCDoubleSpinner()
-        self.cncfeedrate_entry.set_range(0, 99999)
+        self.cncfeedrate_entry.set_range(0, 99999.9999)
         self.cncfeedrate_entry.set_precision(self.decimals)
         self.cncfeedrate_entry.setSingleStep(0.1)
         self.cncfeedrate_entry.setWrapping(True)
@@ -4097,7 +4097,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "It is called also Plunge.")
         )
         self.cncplunge_entry = FCDoubleSpinner()
-        self.cncplunge_entry.set_range(0, 99999)
+        self.cncplunge_entry.set_range(0, 99999.9999)
         self.cncplunge_entry.set_precision(self.decimals)
         self.cncplunge_entry.setSingleStep(0.1)
         self.cncplunge_entry.setWrapping(True)
@@ -4208,7 +4208,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "ignore for any other cases.")
         )
         self.cncfeedrate_rapid_entry = FCDoubleSpinner()
-        self.cncfeedrate_rapid_entry.set_range(0, 99999)
+        self.cncfeedrate_rapid_entry.set_range(0, 99999.9999)
         self.cncfeedrate_rapid_entry.set_precision(self.decimals)
         self.cncfeedrate_rapid_entry.setSingleStep(0.1)
         self.cncfeedrate_rapid_entry.setWrapping(True)
@@ -4260,7 +4260,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
             _("The feedrate used while the probe is probing.")
         )
         self.feedrate_probe_entry = FCDoubleSpinner()
-        self.feedrate_probe_entry.set_range(0, 99999)
+        self.feedrate_probe_entry.set_range(0, 99999.9999)
         self.feedrate_probe_entry.set_precision(self.decimals)
         self.feedrate_probe_entry.setSingleStep(0.1)
         self.feedrate_probe_entry.setWrapping(True)
@@ -6709,7 +6709,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         # Feedrate X-Y
         self.frxy_entry = FCDoubleSpinner()
         self.frxy_entry.set_precision(self.decimals)
-        self.frxy_entry.set_range(0.0000001, 9999.9999)
+        self.frxy_entry.set_range(0.0000001, 99999.9999)
         self.frxy_entry.setSingleStep(0.1)
 
         self.frxy_label = QtWidgets.QLabel('%s:' % _("Feedrate X-Y"))
@@ -6722,7 +6722,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         # Feedrate Z
         self.frz_entry = FCDoubleSpinner()
         self.frz_entry.set_precision(self.decimals)
-        self.frz_entry.set_range(0.0000001, 9999.9999)
+        self.frz_entry.set_range(0.0000001, 99999.9999)
         self.frz_entry.setSingleStep(0.1)
 
         self.frz_label = QtWidgets.QLabel('%s:' % _("Feedrate Z"))
@@ -6736,7 +6736,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         # Feedrate Z Dispense
         self.frz_dispense_entry = FCDoubleSpinner()
         self.frz_dispense_entry.set_precision(self.decimals)
-        self.frz_dispense_entry.set_range(0.0000001, 9999.9999)
+        self.frz_dispense_entry.set_range(0.0000001, 99999.9999)
         self.frz_dispense_entry.setSingleStep(0.1)
 
         self.frz_dispense_label = QtWidgets.QLabel('%s:' % _("Feedrate Z Dispense"))
@@ -6749,7 +6749,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
 
         # Spindle Speed Forward
         self.speedfwd_entry = FCSpinner()
-        self.speedfwd_entry.set_range(0, 999999)
+        self.speedfwd_entry.set_range(0, 99999)
         self.speedfwd_entry.setSingleStep(1000)
 
         self.speedfwd_label = QtWidgets.QLabel('%s:' % _("Spindle Speed FWD"))

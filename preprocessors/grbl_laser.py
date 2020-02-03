@@ -54,10 +54,11 @@ class grbl_laser(FlatCAMPostProc):
         return 'M05 S0'
 
     def down_code(self, p):
+        sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
         if p.spindlespeed:
-            return 'M03 S%d' % p.spindlespeed
+            return '%s S%s' % (sdir, str(p.spindlespeed))
         else:
-            return 'M03'
+            return sdir
 
     def toolchange_code(self, p):
         return ''

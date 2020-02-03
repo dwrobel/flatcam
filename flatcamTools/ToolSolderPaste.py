@@ -245,7 +245,7 @@ class SolderPaste(FlatCAMTool):
 
         # Feedrate X-Y
         self.frxy_entry = FCDoubleSpinner()
-        self.frxy_entry.set_range(0.0000001, 9999.9999)
+        self.frxy_entry.set_range(0.0000, 99999.9999)
         self.frxy_entry.set_precision(self.decimals)
         self.frxy_entry.setSingleStep(0.1)
 
@@ -257,7 +257,7 @@ class SolderPaste(FlatCAMTool):
 
         # Feedrate Z
         self.frz_entry = FCDoubleSpinner()
-        self.frz_entry.set_range(0.0000001, 9999.9999)
+        self.frz_entry.set_range(0.0000, 99999.9999)
         self.frz_entry.set_precision(self.decimals)
         self.frz_entry.setSingleStep(0.1)
 
@@ -270,7 +270,7 @@ class SolderPaste(FlatCAMTool):
 
         # Feedrate Z Dispense
         self.frz_dispense_entry = FCDoubleSpinner()
-        self.frz_dispense_entry.set_range(0.0000001, 9999.9999)
+        self.frz_dispense_entry.set_range(0.0000, 99999.9999)
         self.frz_dispense_entry.set_precision(self.decimals)
         self.frz_dispense_entry.setSingleStep(0.1)
 
@@ -491,6 +491,8 @@ class SolderPaste(FlatCAMTool):
         self.units = ''
         self.name = ""
 
+        self.obj = None
+
         self.text_editor_tab = None
 
         # this will be used in the combobox context menu, for delete entry
@@ -652,10 +654,10 @@ class SolderPaste(FlatCAMTool):
             for tooluid_key, tooluid_value in self.tooltable_tools.items():
                 if float('%.*f' % (self.decimals, tooluid_value['tooldia'])) == tool_sorted:
                     tool_id += 1
-                    id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-                    id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                    id_item = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
+                    id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
                     row_no = tool_id - 1
-                    self.tools_table.setItem(row_no, 0, id)  # Tool name/id
+                    self.tools_table.setItem(row_no, 0, id_item)  # Tool name/id
 
                     # Make sure that the drill diameter when in MM is with no more than 2 decimals
                     # There are no drill bits in MM with more than 2 decimals diameter
@@ -1295,7 +1297,7 @@ class SolderPaste(FlatCAMTool):
             if obj.tools[tooluid_key]['solid_geometry'] is None:
                 a += 1
         if a == len(obj.tools):
-            self.app.inform.emit('[ERROR_NOTCL] %s...' %  _('Cancelled. Empty file, it has no geometry'))
+            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('Cancelled. Empty file, it has no geometry'))
             return 'fail'
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
@@ -1333,8 +1335,6 @@ class SolderPaste(FlatCAMTool):
         def job_init(job_obj, app_obj):
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
-
-            tool_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True

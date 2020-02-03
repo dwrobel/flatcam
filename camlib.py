@@ -3105,7 +3105,9 @@ class CNCjob(Geometry):
         :param feedrate_z:
         :param feedrate_rapid:
         :param spindlespeed:
-        :param spindledir:
+        :param spindledir:          Direction of rotation for the spindle. If using GRBL laser mode will
+        adjust the laser mode
+
         :param dwell:
         :param dwelltime:
         :param multidepth:          If True, use multiple passes to reach the desired depth.
@@ -4055,14 +4057,14 @@ class CNCjob(Geometry):
                 else:
                     command['Z'] = 0
 
-        elif 'grbl_laser' in self.pp_excellon_name or 'grbl_laser' in self.pp_geometry_name or \
-                (self.pp_solderpaste_name is not None and 'Paste' in self.pp_solderpaste_name):
+        elif 'laser' in self.pp_excellon_name.lower() or 'laser' in self.pp_geometry_name.lower() or \
+                (self.pp_solderpaste_name is not None and 'paste' in self.pp_solderpaste_name.lower()):
             match_lsr = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)
             if match_lsr:
                 command['X'] = float(match_lsr.group(1).replace(" ", ""))
                 command['Y'] = float(match_lsr.group(2).replace(" ", ""))
 
-            match_lsr_pos = re.search(r"^(M0[3|5])", gline)
+            match_lsr_pos = re.search(r"^(M0[3-5])", gline)
             if match_lsr_pos:
                 if 'M05' in match_lsr_pos.group(1):
                     # the value does not matter, only that it is positive so the gcode_parse() know it is > 0,

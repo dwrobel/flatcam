@@ -1038,7 +1038,7 @@ class ExcellonObjectUI(ObjectUI):
         )
         self.feedrate_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_entry.set_precision(self.decimals)
-        self.feedrate_entry.set_range(0.0, 9999.9999)
+        self.feedrate_entry.set_range(0.0, 99999.9999)
         self.feedrate_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(frlabel, 14, 0)
@@ -1055,7 +1055,7 @@ class ExcellonObjectUI(ObjectUI):
         )
         self.feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.feedrate_rapid_entry.set_precision(self.decimals)
-        self.feedrate_rapid_entry.set_range(0.0, 9999.9999)
+        self.feedrate_rapid_entry.set_range(0.0, 99999.9999)
         self.feedrate_rapid_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.feedrate_rapid_label, 16, 0)
@@ -1778,7 +1778,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.cncfeedrate_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cncfeedrate_entry.set_precision(self.decimals)
-        self.cncfeedrate_entry.set_range(0, 9999.9999)
+        self.cncfeedrate_entry.set_range(0, 99999.9999)
         self.cncfeedrate_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(frlabel, 10, 0)
@@ -1793,7 +1793,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.cncplunge_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cncplunge_entry.set_precision(self.decimals)
-        self.cncplunge_entry.set_range(0, 9999.9999)
+        self.cncplunge_entry.set_range(0, 99999.9999)
         self.cncplunge_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(frzlabel, 11, 0)
@@ -1810,7 +1810,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.cncfeedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cncfeedrate_rapid_entry.set_precision(self.decimals)
-        self.cncfeedrate_rapid_entry.set_range(0, 9999.9999)
+        self.cncfeedrate_rapid_entry.set_range(0, 99999.9999)
         self.cncfeedrate_rapid_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.fr_rapidlabel, 12, 0)
