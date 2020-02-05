@@ -9,6 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.02.2020
+
+- Modified the Distance Tool such that the Measure button can't be clicked while measuring is in progress
+- optimized selection of drills in the Excellon Editor
+- fixed bugs in multiple selection in Excellon Editor
+- fixed selection problems in Gerber Editor
+- in Distance Tool, when run in the Excellon or Gerber Editor, added a new option to snap to center of the geometry (drill for Excellon, pad for Gerber)
+
 3.02.2020
 
 - modified Spinbox and DoubleSpinbox Custom UI elements such that they issue a warning status message when the typed value is out of range

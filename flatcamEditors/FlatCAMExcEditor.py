@@ -1334,8 +1334,8 @@ class FCDrillCopy(FCDrillMove):
 
 
 class FCDrillSelect(DrawTool):
-    def __init__(self, exc_editor_app):
-        DrawTool.__init__(self, exc_editor_app)
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
         self.name = 'drill_select'
 
         try:
@@ -1343,7 +1343,7 @@ class FCDrillSelect(DrawTool):
         except Exception as e:
             pass
 
-        self.exc_editor_app = exc_editor_app
+        self.exc_editor_app = draw_app
         self.storage = self.exc_editor_app.storage_dict
         # self.selected = self.exc_editor_app.selected
 
@@ -1368,10 +1368,10 @@ class FCDrillSelect(DrawTool):
         else:
             mod_key = None
 
-        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+        if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
             pass
         else:
-            self.exc_editor_app.selected = []
+            self.exc_editor_app.selected = list()
 
     def click_release(self, pos):
         self.exc_editor_app.tools_table_exc.clearSelection()
@@ -1379,8 +1379,10 @@ class FCDrillSelect(DrawTool):
 
         try:
             for storage in self.exc_editor_app.storage_dict:
-                for sh in self.exc_editor_app.storage_dict[storage].get_objects():
-                    self.sel_storage.insert(sh)
+                # for sh in self.exc_editor_app.storage_dict[storage].get_objects():
+                #     self.sel_storage.insert(sh)
+                _, st_closest_shape = self.exc_editor_app.storage_dict[storage].nearest(pos)
+                self.sel_storage.insert(st_closest_shape)
 
             _, closest_shape = self.sel_storage.nearest(pos)
 
@@ -1417,37 +1419,41 @@ class FCDrillSelect(DrawTool):
             else:
                 mod_key = None
 
-            if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
                 if closest_shape in self.exc_editor_app.selected:
                     self.exc_editor_app.selected.remove(closest_shape)
                 else:
                     self.exc_editor_app.selected.append(closest_shape)
             else:
-                self.draw_app.selected = []
-                self.draw_app.selected.append(closest_shape)
+                self.exc_editor_app.selected = list()
+                self.exc_editor_app.selected.append(closest_shape)
 
             # select the diameter of the selected shape in the tool table
             try:
-                self.draw_app.tools_table_exc.cellPressed.disconnect()
+                self.exc_editor_app.tools_table_exc.cellPressed.disconnect()
             except (TypeError, AttributeError):
                 pass
 
-            self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            # if mod_key == self.exc_editor_app.app.defaults["global_mselect_key"]:
+            #     self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            self.sel_tools.clear()
+
             for shape_s in self.exc_editor_app.selected:
                 for storage in self.exc_editor_app.storage_dict:
                     if shape_s in self.exc_editor_app.storage_dict[storage].get_objects():
                         self.sel_tools.add(storage)
 
+            self.exc_editor_app.tools_table_exc.clearSelection()
             for storage in self.sel_tools:
-                for k, v in self.draw_app.tool2tooldia.items():
+                for k, v in self.exc_editor_app.tool2tooldia.items():
                     if v == storage:
                         self.exc_editor_app.tools_table_exc.selectRow(int(k) - 1)
-                        self.draw_app.last_tool_selected = int(k)
+                        self.exc_editor_app.last_tool_selected = int(k)
                         break
 
-            self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            # self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
-            self.draw_app.tools_table_exc.cellPressed.connect(self.draw_app.on_row_selected)
+            self.exc_editor_app.tools_table_exc.cellPressed.connect(self.exc_editor_app.on_row_selected)
 
         # delete whatever is in selection storage, there is no longer need for those shapes
         self.sel_storage = FlatCAMExcEditor.make_storage()
@@ -2054,32 +2060,32 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.in_action = False
 
-        self.storage_dict = {}
+        self.storage_dict = dict()
 
-        self.current_storage = []
+        self.current_storage = list()
 
         # build the data from the Excellon point into a dictionary
         #  {tool_dia: [geometry_in_points]}
-        self.points_edit = {}
-        self.slot_points_edit = {}
+        self.points_edit = dict()
+        self.slot_points_edit = dict()
 
-        self.sorted_diameters = []
+        self.sorted_diameters = list()
 
-        self.new_drills = []
-        self.new_tools = {}
-        self.new_slots = []
-        self.new_tool_offset = {}
+        self.new_drills = list()
+        self.new_tools = dict()
+        self.new_slots = list()
+        self.new_tool_offset = dict()
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
-        self.olddia_newdia = {}
+        self.olddia_newdia = dict()
 
-        self.tool2tooldia = {}
+        self.tool2tooldia = dict()
 
         # this will store the value for the last selected tool, for use after clicking on canvas when the selection
         # is cleared but as a side effect also the selected tool is cleared
         self.last_tool_selected = None
-        self.utility = []
+        self.utility = list()
 
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False

@@ -2300,10 +2300,10 @@ class FCApertureSelect(DrawTool):
 
         # since FCApertureSelect tool is activated whenever a tool is exited I place here the reinitialization of the
         # bending modes using in FCRegion and FCTrack
-        self.draw_app.bend_mode = 1
+        self.grb_editor_app.bend_mode = 1
 
         # here store the selected apertures
-        self.sel_aperture = set()
+        self.sel_aperture = list()
 
         try:
             self.grb_editor_app.apertures_table.clearSelection()
@@ -2332,7 +2332,7 @@ class FCApertureSelect(DrawTool):
         else:
             mod_key = None
 
-        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+        if mod_key == self.grb_editor_app.app.defaults["global_mselect_key"]:
             pass
         else:
             self.grb_editor_app.selected = []
@@ -2348,46 +2348,53 @@ class FCApertureSelect(DrawTool):
         else:
             mod_key = None
 
+        if mod_key != self.grb_editor_app.app.defaults["global_mselect_key"]:
+            self.grb_editor_app.selected.clear()
+            self.sel_aperture.clear()
+
         for storage in self.grb_editor_app.storage_dict:
             try:
-                for geo_el in self.grb_editor_app.storage_dict[storage]['geometry']:
-                    if 'solid' in geo_el.geo:
-                        geometric_data = geo_el.geo['solid']
+                for shape_stored in self.grb_editor_app.storage_dict[storage]['geometry']:
+                    if 'solid' in shape_stored.geo:
+                        geometric_data = shape_stored.geo['solid']
                         if Point(point).within(geometric_data):
-                            if mod_key == self.grb_editor_app.app.defaults["global_mselect_key"]:
-                                if geo_el in self.draw_app.selected:
-                                    self.draw_app.selected.remove(geo_el)
-                                    self.sel_aperture.remove(storage)
-                                else:
-                                    # add the object to the selected shapes
-                                    self.draw_app.selected.append(geo_el)
-                                    self.sel_aperture.add(storage)
+                            if shape_stored in self.grb_editor_app.selected:
+                                self.grb_editor_app.selected.remove(shape_stored)
                             else:
-                                self.draw_app.selected.append(geo_el)
-                                self.sel_aperture.add(storage)
+                                # add the object to the selected shapes
+                                self.grb_editor_app.selected.append(shape_stored)
             except KeyError:
                 pass
 
         # select the aperture in the Apertures Table that is associated with the selected shape
+        self.sel_aperture.clear()
+
+        self.grb_editor_app.apertures_table.clearSelection()
         try:
-            self.draw_app.apertures_table.cellPressed.disconnect()
+            self.grb_editor_app.apertures_table.cellPressed.disconnect()
         except Exception as e:
             log.debug("FlatCAMGrbEditor.FCApertureSelect.click_release() --> %s" % str(e))
 
-        self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        for shape_s in self.grb_editor_app.selected:
+            for storage in self.grb_editor_app.storage_dict:
+                if shape_s in self.grb_editor_app.storage_dict[storage]['geometry']:
+                    self.sel_aperture.append(storage)
+
+        # self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in self.sel_aperture:
             for row in range(self.grb_editor_app.apertures_table.rowCount()):
                 if str(aper) == self.grb_editor_app.apertures_table.item(row, 1).text():
-                    self.grb_editor_app.apertures_table.selectRow(row)
-                    self.draw_app.last_aperture_selected = aper
-        self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+                    if not self.grb_editor_app.apertures_table.item(row, 0).isSelected():
+                        self.grb_editor_app.apertures_table.selectRow(row)
+                        self.grb_editor_app.last_aperture_selected = aper
+        # self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
-        self.draw_app.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
+        self.grb_editor_app.apertures_table.cellPressed.connect(self.grb_editor_app.on_row_selected)
 
         return ""
 
     def clean_up(self):
-        self.draw_app.plot_all()
+        self.grb_editor_app.plot_all()
 
 
 class FCTransform(FCShapeTool):
