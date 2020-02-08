@@ -633,6 +633,8 @@ class App(QtCore.QObject):
 
             # Excellon Options
             "excellon_drillz": -1.7,
+            "excellon_multidepth": False,
+            "excellon_depthperpass": 0.7,
             "excellon_travelz": 2,
             "excellon_endz": 0.5,
             "excellon_feedrate": 300,
@@ -1289,6 +1291,8 @@ class App(QtCore.QObject):
 
             # Excellon Options
             "excellon_drillz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
+            "excellon_multidepth": self.ui.excellon_defaults_form.excellon_opt_group.mpass_cb,
+            "excellon_depthperpass":self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
             "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
             "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
             "excellon_feedrate": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,

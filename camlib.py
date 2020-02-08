@@ -2230,7 +2230,7 @@ class CNCjob(Geometry):
                  z_cut=-0.002, z_move=0.1,
                  feedrate=3.0, feedrate_z=3.0, feedrate_rapid=3.0, feedrate_probe=3.0,
                  pp_geometry_name='default', pp_excellon_name='default',
-                 depthpercut=0.1,z_pdepth=-0.02,
+                 depthpercut=0.1, z_pdepth=-0.02,
                  spindlespeed=None, spindledir='CW', dwell=True, dwelltime=1000,
                  toolchangez=0.787402, toolchange_xy=[0.0, 0.0],
                  endz=2.0,
@@ -2265,7 +2265,10 @@ class CNCjob(Geometry):
 
         self.toolC = tooldia
 
+        self.startz = None
         self.z_end = endz
+
+        self.multidepth = False
         self.z_depthpercut = depthpercut
 
         self.unitcode = {"IN": "G20", "MM": "G21"}
@@ -2566,8 +2569,6 @@ class CNCjob(Geometry):
                             [it[0], it[1], drill_no, slot_no]
                         )
 
-        print(self.options['Tools_in_use'])
-
         self.app.inform.emit(_("Creating a list of points to drill..."))
         # Points (Group by tool)
         points = dict()
@@ -2777,18 +2778,43 @@ class CNCjob(Geometry):
                                     locy = locations[k][1]
 
                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                    if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+                                        doc = deepcopy(self.z_cut)
+                                        self.z_cut = 0.0
 
-                                    if self.f_retract is False:
-                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                        measured_up_to_zero_distance += abs(self.z_cut)
-                                        measured_lift_distance += abs(self.z_move)
+                                        while abs(self.z_cut) < abs(doc):
+
+                                            self.z_cut -= self.z_depthpercut
+                                            if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+                                                self.z_cut = doc
+                                            gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                            if self.f_retract is False:
+                                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                                measured_up_to_zero_distance += abs(self.z_cut)
+                                                measured_lift_distance += abs(self.z_move)
+                                            else:
+                                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                     else:
-                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                        gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        if self.f_retract is False:
+                                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                            measured_up_to_zero_distance += abs(self.z_cut)
+                                            measured_lift_distance += abs(self.z_move)
+                                        else:
+                                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                     measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                     self.oldx = locx
                                     self.oldy = locy
@@ -2920,18 +2946,43 @@ class CNCjob(Geometry):
                                     locy = locations[k][1]
 
                                     gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                    if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+                                        doc = deepcopy(self.z_cut)
+                                        self.z_cut = 0.0
 
-                                    if self.f_retract is False:
-                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                                        measured_up_to_zero_distance += abs(self.z_cut)
-                                        measured_lift_distance += abs(self.z_move)
+                                        while abs(self.z_cut) < abs(doc):
+
+                                            self.z_cut -= self.z_depthpercut
+                                            if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+                                                self.z_cut = doc
+                                            gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                            if self.f_retract is False:
+                                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                                measured_up_to_zero_distance += abs(self.z_cut)
+                                                measured_lift_distance += abs(self.z_move)
+                                            else:
+                                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                     else:
-                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                        gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        if self.f_retract is False:
+                                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                            measured_up_to_zero_distance += abs(self.z_cut)
+                                            measured_lift_distance += abs(self.z_move)
+                                        else:
+                                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                     measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                     self.oldx = locx
                                     self.oldy = locy
@@ -3023,22 +3074,50 @@ class CNCjob(Geometry):
                                     # graceful abort requested by the user
                                     raise FlatCAMApp.GracefulException
 
-                                gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
-                                gcode += self.doformat(p.down_code, x=point[0], y=point[1])
+                                locx = point[0]
+                                locy = point[1]
 
-                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
 
-                                if self.f_retract is False:
-                                    gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
-                                    measured_up_to_zero_distance += abs(self.z_cut)
-                                    measured_lift_distance += abs(self.z_move)
+                                if self.multidepth and abs(self.z_cut) > abs(self.z_depthpercut):
+                                    doc = deepcopy(self.z_cut)
+                                    self.z_cut = 0.0
+
+                                    while abs(self.z_cut) < abs(doc):
+
+                                        self.z_cut -= self.z_depthpercut
+                                        if abs(doc) < abs(self.z_cut) < (abs(doc) + self.z_depthpercut):
+                                            self.z_cut = doc
+                                        gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                        measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        if self.f_retract is False:
+                                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                            measured_up_to_zero_distance += abs(self.z_cut)
+                                            measured_lift_distance += abs(self.z_move)
+                                        else:
+                                            measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                        gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
                                 else:
-                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+                                    gcode += self.doformat(p.down_code, x=locx, y=locy)
 
-                                gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
-                                measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
-                                self.oldx = point[0]
-                                self.oldy = point[1]
+                                    measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                    if self.f_retract is False:
+                                        gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                        measured_up_to_zero_distance += abs(self.z_cut)
+                                        measured_lift_distance += abs(self.z_move)
+                                    else:
+                                        measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
+                                    gcode += self.doformat(p.lift_code, x=locx, y=locy)
+
+                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                self.oldx = locx
+                                self.oldy = locy
 
                                 loc_nr += 1
                                 disp_number = int(np.interp(loc_nr, [0, geo_len], [0, 100]))

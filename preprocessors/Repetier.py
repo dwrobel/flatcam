@@ -37,10 +37,9 @@ class Repetier(FlatCAMPostProc):
         gcode += ';Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + '\n' + '\n'
         gcode += ';Z_Cut: ' + str(p['z_cut']) + units + '\n'
 
-        if str(p['options']['type']) == 'Geometry':
-            if p['multidepth'] is True:
-                gcode += ';DepthPerCut: ' + str(p['z_depthpercut']) + units + ' <=>' + \
-                         str(math.ceil(abs(p['z_cut']) / p['z_depthpercut'])) + ' passes' + '\n'
+        if p['multidepth'] is True:
+            gcode += ';DepthPerCut: ' + str(p['z_depthpercut']) + units + ' <=>' + \
+                     str(math.ceil(abs(p['z_cut']) / p['z_depthpercut'])) + ' passes' + '\n'
 
         gcode += ';Z_Move: ' + str(p['z_move']) + units + '\n'
         gcode += ';Z Toolchange: ' + str(p['z_toolchange']) + units + '\n'

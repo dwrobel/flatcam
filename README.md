@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a new preprocessor for using laser on a Marlin 3D printer named 'Marlin_laser_use_Spindle_pin'
 - modified the Geometry UI when using laser preprocessors
 - added a new preprocessor file for using laser on a Marlin motion controller but with the laser connected to one of the FAN pins, named 'Marlin_laser_use_FAN_pin'
+- modified the Excellon GCode generation so now it can use multi depth drilling; modified the preprocessors to show the number of passes
 
 5.02.2020
 

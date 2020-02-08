@@ -2317,6 +2317,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "plot": True,
             "solid": False,
             "drillz": -0.1,
+            "multidepth": False,
+            "depthperpass": 0.7,
             "travelz": 0.1,
             "feedrate": 5.0,
             "feedrate_rapid": 5.0,
@@ -2803,6 +2805,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "plot": self.ui.plot_cb,
             "solid": self.ui.solid_cb,
             "drillz": self.ui.cutz_entry,
+            "multidepth": self.ui.mpass_cb,
+            "depthperpass": self.ui.maxdepth_entry,
             "travelz": self.ui.travelz_entry,
             "feedrate": self.ui.feedrate_z_entry,
             "feedrate_rapid": self.ui.feedrate_rapid_entry,
@@ -2983,16 +2987,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.extracut_cb.show()
             self.ui.e_cut_entry.show()
 
-            if 'laser' not in self.ui.pp_excellon_name_cb.get_value().lower():
-                self.ui.mpass_cb.show()
-                self.ui.maxdepth_entry.show()
+            # if 'laser' not in self.ui.pp_excellon_name_cb.get_value().lower():
+            #     self.ui.mpass_cb.show()
+            #     self.ui.maxdepth_entry.show()
         else:
             self.ui.mill_type_label.hide()
             self.ui.mill_type_radio.hide()
             self.ui.mill_dia_label.hide()
             self.ui.mill_dia_entry.hide()
-            self.ui.mpass_cb.hide()
-            self.ui.maxdepth_entry.hide()
+            # self.ui.mpass_cb.hide()
+            # self.ui.maxdepth_entry.hide()
             self.ui.frxylabel.hide()
             self.ui.xyfeedrate_entry.hide()
             self.ui.extracut_cb.hide()
@@ -3580,6 +3584,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.options['ppname_e'] = pp_excellon_name
 
             job_obj.z_cut = float(self.options["drillz"])
+
+            job_obj.multidepth = self.options["multidepth"]
+            job_obj.z_depthpercut = self.options["depthperpass"]
+
             job_obj.tool_offset = self.tool_offset
             job_obj.z_move = float(self.options["travelz"])
             job_obj.feedrate = float(self.options["feedrate"])
