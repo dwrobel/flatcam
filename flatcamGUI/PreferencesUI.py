@@ -3152,12 +3152,12 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "So called 'Plunge' feedrate.\n"
               "This is for linear move G01.")
         )
-        self.feedrate_entry = FCDoubleSpinner()
-        self.feedrate_entry.set_precision(self.decimals)
-        self.feedrate_entry.set_range(0, 99999.9999)
+        self.feedrate_z_entry = FCDoubleSpinner()
+        self.feedrate_z_entry.set_precision(self.decimals)
+        self.feedrate_z_entry.set_range(0, 99999.9999)
 
         grid2.addWidget(frlabel, 5, 0)
-        grid2.addWidget(self.feedrate_entry, 5, 1)
+        grid2.addWidget(self.feedrate_z_entry, 5, 1)
 
         # Spindle speed
         spdlabel = QtWidgets.QLabel('%s:' % _('Spindle Speed'))
@@ -4096,14 +4096,14 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "plane in units per minute.\n"
               "It is called also Plunge.")
         )
-        self.cncplunge_entry = FCDoubleSpinner()
-        self.cncplunge_entry.set_range(0, 99999.9999)
-        self.cncplunge_entry.set_precision(self.decimals)
-        self.cncplunge_entry.setSingleStep(0.1)
-        self.cncplunge_entry.setWrapping(True)
+        self.feedrate_z_entry = FCDoubleSpinner()
+        self.feedrate_z_entry.set_range(0, 99999.9999)
+        self.feedrate_z_entry.set_precision(self.decimals)
+        self.feedrate_z_entry.setSingleStep(0.1)
+        self.feedrate_z_entry.setWrapping(True)
 
         grid1.addWidget(frz_label, 8, 0)
-        grid1.addWidget(self.cncplunge_entry, 8, 1)
+        grid1.addWidget(self.feedrate_z_entry, 8, 1)
 
         # Spindle Speed
         spdlabel = QtWidgets.QLabel('%s:' % _('Spindle speed'))

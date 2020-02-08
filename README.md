@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.02.2020
+
+- added a new preprocessor for using laser on a Marlin 3D printer named 'Marlin_laser'
+- modified the Geometry UI when using laser preprocessors
+
 5.02.2020
 
 - Modified the Distance Tool such that the Measure button can't be clicked while measuring is in progress
@@ -583,7 +588,7 @@ CAD program, and create G-Code for Isolation routing.
 
 16.11.2019
 
-- fixed issue #341 that affected both postprocessors that have inlined feedrate: marlin and repetier. THe used feedrate was the Feedrate X-Y and instead had to be Feedrate Z.
+- fixed issue #341 that affected both postprocessors that have inlined feedrate: marlin and repetier. The used feedrate was the Feedrate X-Y and instead had to be Feedrate Z.
 
 15.11.2019
 

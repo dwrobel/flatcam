@@ -2804,7 +2804,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "solid": self.ui.solid_cb,
             "drillz": self.ui.cutz_entry,
             "travelz": self.ui.travelz_entry,
-            "feedrate": self.ui.feedrate_entry,
+            "feedrate": self.ui.feedrate_z_entry,
             "feedrate_rapid": self.ui.feedrate_rapid_entry,
             "tooldia": self.ui.tooldia_entry,
             "slot_tooldia": self.ui.slot_tooldia_entry,
@@ -2978,12 +2978,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.mill_type_radio.show()
             self.ui.mill_dia_label.show()
             self.ui.mill_dia_entry.show()
-            self.ui.mpass_cb.show()
-            self.ui.maxdepth_entry.show()
             self.ui.frxylabel.show()
             self.ui.xyfeedrate_entry.show()
             self.ui.extracut_cb.show()
             self.ui.e_cut_entry.show()
+
+            if 'laser' not in self.ui.pp_excellon_name_cb.get_value().lower():
+                self.ui.mpass_cb.show()
+                self.ui.maxdepth_entry.show()
         else:
             self.ui.mill_type_label.hide()
             self.ui.mill_type_radio.hide()
@@ -3463,6 +3465,59 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         else:
             self.ui.feedrate_rapid_label.hide()
             self.ui.feedrate_rapid_entry.hide()
+
+        if 'laser' in current_pp.lower():
+            self.ui.cutzlabel.hide()
+            self.ui.cutz_entry.hide()
+            try:
+                self.ui.mpass_cb.hide()
+                self.ui.maxdepth_entry.hide()
+            except AttributeError:
+                pass
+
+            self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+
+            try:
+                self.ui.frzlabel.hide()
+                self.ui.feedrate_z_entry.hide()
+            except AttributeError:
+                pass
+            self.ui.dwell_cb.hide()
+            self.ui.dwelltime_entry.hide()
+
+            self.ui.spindle_label.setText('%s:' % _("Laser Power"))
+
+            try:
+                self.ui.tool_offset_label.hide()
+                self.ui.offset_entry.hide()
+            except AttributeError:
+                pass
+        else:
+            self.ui.cutzlabel.show()
+            self.ui.cutz_entry.show()
+            try:
+                self.ui.mpass_cb.show()
+                self.ui.maxdepth_entry.show()
+            except AttributeError:
+                pass
+
+            self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
+
+            try:
+                self.ui.frzlabel.show()
+                self.ui.feedrate_z_entry.show()
+            except AttributeError:
+                pass
+            self.ui.dwell_cb.show()
+            self.ui.dwelltime_entry.show()
+
+            self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
+
+            try:
+                self.ui.tool_offset_lbl.show()
+                self.ui.offset_entry.show()
+            except AttributeError:
+                pass
 
     def on_create_cncjob_button_click(self, *args):
         self.app.report_usage("excellon_on_create_cncjob_button")
@@ -4026,7 +4081,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "vtipangle": self.ui.tipangle_entry,
             "travelz": self.ui.travelz_entry,
             "feedrate": self.ui.cncfeedrate_entry,
-            "feedrate_z": self.ui.cncplunge_entry,
+            "feedrate_z": self.ui.feedrate_z_entry,
             "feedrate_rapid": self.ui.cncfeedrate_rapid_entry,
             "spindlespeed": self.ui.cncspindlespeed_entry,
             "dwell": self.ui.dwell_cb,
@@ -5177,6 +5232,59 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.ui.fr_rapidlabel.hide()
             self.ui.cncfeedrate_rapid_entry.hide()
+
+        if 'laser' in current_pp.lower():
+            self.ui.cutzlabel.hide()
+            self.ui.cutz_entry.hide()
+            try:
+                self.ui.mpass_cb.hide()
+                self.ui.maxdepth_entry.hide()
+            except AttributeError:
+                pass
+
+            self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+
+            try:
+                self.ui.frzlabel.hide()
+                self.ui.feedrate_z_entry.hide()
+            except AttributeError:
+                pass
+            self.ui.dwell_cb.hide()
+            self.ui.dwelltime_entry.hide()
+
+            self.ui.spindle_label.setText('%s:' % _("Laser Power"))
+
+            try:
+                self.ui.tool_offset_label.hide()
+                self.ui.offset_entry.hide()
+            except AttributeError:
+                pass
+        else:
+            self.ui.cutzlabel.show()
+            self.ui.cutz_entry.show()
+            try:
+                self.ui.mpass_cb.show()
+                self.ui.maxdepth_entry.show()
+            except AttributeError:
+                pass
+
+            self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
+
+            try:
+                self.ui.frzlabel.show()
+                self.ui.feedrate_z_entry.show()
+            except AttributeError:
+                pass
+            self.ui.dwell_cb.show()
+            self.ui.dwelltime_entry.show()
+
+            self.ui.spindle_label.setText('%s:' % _('Spindle speed'))
+
+            try:
+                self.ui.tool_offset_lbl.show()
+                self.ui.offset_entry.show()
+            except AttributeError:
+                pass
 
     def on_generatecnc_button_click(self, *args):
         log.debug("Generating CNCJob from Geometry ...")
@@ -6783,7 +6891,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         try:
             for key in self.cnc_tools:
                 ppg = self.cnc_tools[key]['data']['ppname_g']
-                if ppg == 'marlin' or ppg == 'Repetier':
+                if 'marlin' in ppg.lower() or 'repetier' in ppg.lower() :
                     marlin = True
                     break
                 if ppg == 'hpgl':
@@ -6797,7 +6905,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             pass
 
         try:
-            if self.options['ppname_e'] == 'marlin' or self.options['ppname_e'] == 'Repetier':
+            if 'marlin' in self.options['ppname_e'].lower() or 'repetier' in self.options['ppname_e'].lower():
                 marlin = True
         except KeyError:
             # log.debug("FlatCAMCNCJob.gcode_header(): --> There is no such self.option: %s" % str(e))
@@ -7150,8 +7258,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                                                  _("The used preprocessor file has to have in it's name: "
                                                    "'toolchange_custom'"))
             except KeyError:
-                self.app.inform.emit('[ERROR] %s' %
-                                     _("There is no preprocessor file."))
+                self.app.inform.emit('[ERROR] %s' % _("There is no preprocessor file."))
 
     def get_gcode(self, preamble='', postamble=''):
         # we need this to be able get_gcode separatelly for shell command export_gcode

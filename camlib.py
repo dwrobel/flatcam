@@ -3299,7 +3299,7 @@ class CNCjob(Geometry):
 
         # ## Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
-        self.app.inform.emit(_("Starting G-Code..."))
+        self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         path_count = 0
         current_pt = (0, 0)
@@ -3381,12 +3381,9 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.spindle_stop_code)
         self.gcode += self.doformat(p.lift_code, x=current_pt[0], y=current_pt[1])
         self.gcode += self.doformat(p.end_code, x=0, y=0)
-        self.app.inform.emit('%s... %s %s.' %
-                             (_("Finished G-Code generation"),
-                              str(path_count),
-                              _("paths traced")
-                              )
-                             )
+        self.app.inform.emit(
+            '%s... %s %s.' % (_("Finished G-Code generation"), str(path_count), _("paths traced"))
+        )
         return self.gcode
 
     def generate_from_geometry_2(
@@ -3418,8 +3415,7 @@ class CNCjob(Geometry):
         """
 
         if not isinstance(geometry, Geometry):
-            self.app.inform.emit('[ERROR] %s: %s' %
-                                 (_("Expected a Geometry, got"), type(geometry)))
+            self.app.inform.emit('[ERROR] %s: %s' % (_("Expected a Geometry, got"), type(geometry)))
             return 'fail'
         log.debug("Executing camlib.CNCJob.generate_from_geometry_2()")
 
@@ -3465,10 +3461,11 @@ class CNCjob(Geometry):
                 # if the offset is less than half of the total length or less than half of the total width of the
                 # solid geometry it's obvious we can't do the offset
                 if -offset > ((c - a) / 2) or -offset > ((d - b) / 2):
-                    self.app.inform.emit('[ERROR_NOTCL] %s' % _(
-                        "The Tool Offset value is too negative to use "
-                        "for the current_geometry.\n"
-                        "Raise the value (in module) and try again."))
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL] %s' %
+                        _("The Tool Offset value is too negative to use for the current_geometry.\n"
+                          "Raise the value (in module) and try again.")
+                    )
                     return 'fail'
                 # hack: make offset smaller by 0.0000000001 which is insignificant difference but allow the job
                 # to continue
@@ -3532,9 +3529,11 @@ class CNCjob(Geometry):
             else:
                 self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
                 if len(self.xy_toolchange) < 2:
-                    self.app.inform.emit('[ERROR] %s' %
-                                         _("The Toolchange X,Y field in Edit -> Preferences has to be "
-                                           "in the format (x, y) \nbut now there is only one value, not two. "))
+                    self.app.inform.emit(
+                        '[ERROR] %s' %
+                        _("The Toolchange X,Y field in Edit -> Preferences has to be in the format (x, y) \n"
+                          "but now there is only one value, not two. ")
+                    )
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
@@ -3545,9 +3544,10 @@ class CNCjob(Geometry):
 
         if self.machinist_setting == 0:
             if self.z_cut is None:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                       "other parameters."))
+                self.app.inform.emit(
+                    '[ERROR_NOTCL] %s' % _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                           "other parameters.")
+                )
                 return 'fail'
 
             if self.z_cut > 0:
@@ -3559,14 +3559,14 @@ class CNCjob(Geometry):
                                        "Check the resulting CNC code (Gcode etc)."))
                 self.z_cut = -self.z_cut
             elif self.z_cut == 0:
-                self.app.inform.emit('[WARNING] %s: %s' %
-                                     (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
-                                      geometry.options['name']))
+                self.app.inform.emit(
+                    '[WARNING] %s: %s' % (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                          geometry.options['name'])
+                )
                 return 'fail'
 
             if self.z_move is None:
-                self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                     _("Travel Z parameter is None or zero."))
+                self.app.inform.emit('[ERROR_NOTCL] %s' % _("Travel Z parameter is None or zero."))
                 return 'fail'
 
             if self.z_move < 0:
@@ -3578,9 +3578,10 @@ class CNCjob(Geometry):
                                        "Check the resulting CNC code (Gcode etc)."))
                 self.z_move = -self.z_move
             elif self.z_move == 0:
-                self.app.inform.emit('[WARNING] %s: %s' %
-                                     (_("The Z Travel parameter is zero. "
-                                       "This is dangerous, skipping file"), self.options['name']))
+                self.app.inform.emit(
+                    '[WARNING] %s: %s' % (_("The Z Travel parameter is zero. This is dangerous, skipping file"),
+                                          self.options['name'])
+                )
                 return 'fail'
 
         # made sure that depth_per_cut is no more then the z_cut
@@ -3663,7 +3664,7 @@ class CNCjob(Geometry):
 
         # Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
-        self.app.inform.emit(_("Starting G-Code..."))
+        self.app.inform.emit('%s...' % _("Starting G-Code"))
 
         # variables to display the percentage of work done
         geo_len = len(flat_geometry)
@@ -3674,9 +3675,7 @@ class CNCjob(Geometry):
         current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
         self.app.inform.emit(
-            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                           str(current_tooldia),
-                           str(self.units))
+            '%s: %s%s.' % (_("Starting G-Code for tool with diameter"), str(current_tooldia), str(self.units))
         )
 
         path_count = 0
@@ -3859,13 +3858,9 @@ class CNCjob(Geometry):
             pass
 
         log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
-        self.app.inform.emit('%s... %s %s' %
-                             (_("Finished SolderPste G-Code generation"),
-                              str(path_count),
-                              _("paths traced.")
-                              )
-                             )
-
+        self.app.inform.emit(
+            '%s... %s %s' % (_("Finished SolderPste G-Code generation"), str(path_count), _("paths traced."))
+        )
 
         # Finish
         self.gcode += self.doformat(p.lift_code)
@@ -4064,9 +4059,9 @@ class CNCjob(Geometry):
                 command['X'] = float(match_lsr.group(1).replace(" ", ""))
                 command['Y'] = float(match_lsr.group(2).replace(" ", ""))
 
-            match_lsr_pos = re.search(r"^(M0[3-5])", gline)
+            match_lsr_pos = re.search(r"^(M0?[3-5])", gline)
             if match_lsr_pos:
-                if 'M05' in match_lsr_pos.group(1):
+                if 'M05' in match_lsr_pos.group(1) or 'M5' in match_lsr_pos.group(1):
                     # the value does not matter, only that it is positive so the gcode_parse() know it is > 0,
                     # therefore the move is of kind T (travel)
                     command['Z'] = 1

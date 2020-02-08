@@ -895,8 +895,8 @@ class ExcellonObjectUI(ObjectUI):
         self.grid3.addWidget(self.mill_dia_entry, 3, 1)
 
         # Cut Z
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
-        cutzlabel.setToolTip(
+        self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        self.cutzlabel.setToolTip(
             _("Drill depth (negative)\n"
               "below the copper surface.")
         )
@@ -911,7 +911,7 @@ class ExcellonObjectUI(ObjectUI):
 
         self.cutz_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(cutzlabel, 4, 0)
+        self.grid3.addWidget(self.cutzlabel, 4, 0)
         self.grid3.addWidget(self.cutz_entry, 4, 1)
 
         # Multi-Depth
@@ -930,19 +930,15 @@ class ExcellonObjectUI(ObjectUI):
         self.maxdepth_entry.set_range(0, 9999.9999)
         self.maxdepth_entry.setSingleStep(0.1)
 
-        self.maxdepth_entry.setToolTip(
-            _(
-                "Depth of each pass (positive)."
-            )
-        )
+        self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
         self.mis_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
         self.grid3.addWidget(self.mpass_cb, 5, 0)
         self.grid3.addWidget(self.maxdepth_entry, 5, 1)
 
         # Travel Z (z_move)
-        travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
-        travelzlabel.setToolTip(
+        self.travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        self.travelzlabel.setToolTip(
             _("Tool height when travelling\n"
               "across the XY plane.")
         )
@@ -957,7 +953,7 @@ class ExcellonObjectUI(ObjectUI):
 
         self.travelz_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(travelzlabel, 6, 0)
+        self.grid3.addWidget(self.travelzlabel, 6, 0)
         self.grid3.addWidget(self.travelz_entry, 6, 1)
 
         # Tool change:
@@ -1029,20 +1025,20 @@ class ExcellonObjectUI(ObjectUI):
         self.grid3.addWidget(self.xyfeedrate_entry, 12, 1)
 
         # Excellon Feedrate Z
-        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
-        frlabel.setToolTip(
+        self.frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
+        self.frzlabel.setToolTip(
             _("Tool speed while drilling\n"
               "(in units per minute).\n"
               "So called 'Plunge' feedrate.\n"
               "This is for linear move G01.")
         )
-        self.feedrate_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.feedrate_entry.set_precision(self.decimals)
-        self.feedrate_entry.set_range(0.0, 99999.9999)
-        self.feedrate_entry.setSingleStep(0.1)
+        self.feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.feedrate_z_entry.set_precision(self.decimals)
+        self.feedrate_z_entry.set_range(0.0, 99999.9999)
+        self.feedrate_z_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(frlabel, 14, 0)
-        self.grid3.addWidget(self.feedrate_entry, 14, 1)
+        self.grid3.addWidget(self.frzlabel, 14, 0)
+        self.grid3.addWidget(self.feedrate_z_entry, 14, 1)
 
         # Excellon Rapid Feedrate
         self.feedrate_rapid_label = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
@@ -1092,8 +1088,8 @@ class ExcellonObjectUI(ObjectUI):
         self.grid3.addWidget(self.e_cut_entry, 17, 1)
 
         # Spindlespeed
-        spdlabel = QtWidgets.QLabel('%s:' % _('Spindle speed'))
-        spdlabel.setToolTip(
+        self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
+        self.spindle_label.setToolTip(
             _("Speed of the spindle\n"
               "in RPM (optional)")
         )
@@ -1102,7 +1098,7 @@ class ExcellonObjectUI(ObjectUI):
         self.spindlespeed_entry.set_range(0, 1000000)
         self.spindlespeed_entry.setSingleStep(100)
 
-        self.grid3.addWidget(spdlabel, 19, 0)
+        self.grid3.addWidget(self.spindle_label, 19, 0)
         self.grid3.addWidget(self.spindlespeed_entry, 19, 1)
 
         # Dwell
@@ -1647,8 +1643,8 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.tipangle_entry, 2, 1)
 
         # Cut Z
-        cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
-        cutzlabel.setToolTip(
+        self.cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
+        self.cutzlabel.setToolTip(
             _(
                 "Cutting depth (negative)\n"
                 "below the copper surface."
@@ -1664,7 +1660,7 @@ class GeometryObjectUI(ObjectUI):
 
         self.cutz_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(cutzlabel, 3, 0)
+        self.grid3.addWidget(self.cutzlabel, 3, 0)
         self.grid3.addWidget(self.cutz_entry, 3, 1)
 
         # Multi-pass
@@ -1694,8 +1690,8 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.maxdepth_entry, 4, 1)
 
         # Travel Z
-        travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
-        travelzlabel.setToolTip(
+        self.travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
+        self.travelzlabel.setToolTip(
             _("Height of the tool when\n"
               "moving without cutting.")
         )
@@ -1709,7 +1705,7 @@ class GeometryObjectUI(ObjectUI):
 
         self.travelz_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(travelzlabel, 5, 0)
+        self.grid3.addWidget(self.travelzlabel, 5, 0)
         self.grid3.addWidget(self.travelz_entry, 5, 1)
 
         # Tool change
@@ -1771,8 +1767,8 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.gendz_entry, 9, 1)
 
         # Feedrate X-Y
-        frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
-        frlabel.setToolTip(
+        self.frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
+        self.frlabel.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute")
         )
@@ -1781,23 +1777,23 @@ class GeometryObjectUI(ObjectUI):
         self.cncfeedrate_entry.set_range(0, 99999.9999)
         self.cncfeedrate_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(frlabel, 10, 0)
+        self.grid3.addWidget(self.frlabel, 10, 0)
         self.grid3.addWidget(self.cncfeedrate_entry, 10, 1)
 
         # Feedrate Z (Plunge)
-        frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
-        frzlabel.setToolTip(
+        self.frzlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
+        self.frzlabel.setToolTip(
             _("Cutting speed in the XY\n"
               "plane in units per minute.\n"
               "It is called also Plunge.")
         )
-        self.cncplunge_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cncplunge_entry.set_precision(self.decimals)
-        self.cncplunge_entry.set_range(0, 99999.9999)
-        self.cncplunge_entry.setSingleStep(0.1)
+        self.feedrate_z_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.feedrate_z_entry.set_precision(self.decimals)
+        self.feedrate_z_entry.set_range(0, 99999.9999)
+        self.feedrate_z_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(frzlabel, 11, 0)
-        self.grid3.addWidget(self.cncplunge_entry, 11, 1)
+        self.grid3.addWidget(self.frzlabel, 11, 0)
+        self.grid3.addWidget(self.feedrate_z_entry, 11, 1)
 
         # Feedrate rapids
         self.fr_rapidlabel = QtWidgets.QLabel('%s:' % _('Feedrate Rapids'))
@@ -1843,8 +1839,8 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.e_cut_entry, 13, 1)
 
         # Spindlespeed
-        spdlabel = QtWidgets.QLabel('%s:' % _('Spindle speed'))
-        spdlabel.setToolTip(
+        self.spindle_label = QtWidgets.QLabel('%s:' % _('Spindle speed'))
+        self.spindle_label.setToolTip(
             _(
                 "Speed of the spindle in RPM (optional).\n"
                 "If LASER preprocessor is used,\n"
@@ -1855,7 +1851,7 @@ class GeometryObjectUI(ObjectUI):
         self.cncspindlespeed_entry.set_range(0, 1000000)
         self.cncspindlespeed_entry.setSingleStep(100)
 
-        self.grid3.addWidget(spdlabel, 14, 0)
+        self.grid3.addWidget(self.spindle_label, 14, 0)
         self.grid3.addWidget(self.cncspindlespeed_entry, 14, 1)
 
         # Dwell

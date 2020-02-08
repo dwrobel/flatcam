@@ -28,7 +28,9 @@ class grbl_laser(FlatCAMPostProc):
         ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
         gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
-        gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
+        gcode += '(Feedrate rapids: ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
+
+        gcode += '(Z Focus: ' + str(p['z_move']) + units + ')\n'
 
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
@@ -40,10 +42,12 @@ class grbl_laser(FlatCAMPostProc):
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
+        gcode += '(Laser Power (Spindle Speed): ' + str(p['spindlespeed']) + ')\n\n'
+
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G90\n'
         gcode += 'G17\n'
-        gcode += 'G94\n'
+        gcode += 'G94'
 
         return gcode
 

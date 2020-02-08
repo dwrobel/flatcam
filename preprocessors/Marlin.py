@@ -9,7 +9,7 @@
 from FlatCAMPostProc import *
 
 
-class marlin(FlatCAMPostProc):
+class Marlin(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -34,7 +34,7 @@ class marlin(FlatCAMPostProc):
         if str(p['options']['type']) == 'Geometry':
             gcode += ';Feedrate_Z: ' + str(p['z_feedrate']) + units + '/min' + '\n'
 
-        gcode += ';Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + '\n' + '\n'
+        gcode += ';Feedrate rapids: ' + str(p['feedrate_rapid']) + units + '/min' + '\n' + '\n'
         gcode += ';Z_Cut: ' + str(p['z_cut']) + units + '\n'
 
         if str(p['options']['type']) == 'Geometry':
