@@ -3128,21 +3128,21 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.toolchangez_entry, 3, 1)
 
         # End Move Z
-        endzlabel = QtWidgets.QLabel('%s:' % _('End move Z'))
-        endzlabel.setToolTip(
+        endz_label = QtWidgets.QLabel('%s:' % _('End move Z'))
+        endz_label.setToolTip(
             _("Height of the tool after\n"
               "the last move at the end of the job.")
         )
-        self.eendz_entry = FCDoubleSpinner()
-        self.eendz_entry.set_precision(self.decimals)
+        self.endz_entry = FCDoubleSpinner()
+        self.endz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.eendz_entry.set_range(0.0000, 9999.9999)
+            self.endz_entry.set_range(0.0000, 9999.9999)
         else:
-            self.eendz_entry.set_range(-9999.9999, 9999.9999)
+            self.endz_entry.set_range(-9999.9999, 9999.9999)
 
-        grid2.addWidget(endzlabel, 4, 0)
-        grid2.addWidget(self.eendz_entry, 4, 1)
+        grid2.addWidget(endz_label, 4, 0)
+        grid2.addWidget(self.endz_entry, 4, 1)
 
         # Feedrate Z
         frlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
@@ -4055,24 +4055,24 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.toolchangez_entry, 5, 1)
 
         # End move Z
-        endzlabel = QtWidgets.QLabel('%s:' % _('End move Z'))
-        endzlabel.setToolTip(
+        endz_label = QtWidgets.QLabel('%s:' % _('End move Z'))
+        endz_label.setToolTip(
             _("Height of the tool after\n"
               "the last move at the end of the job.")
         )
-        self.gendz_entry = FCDoubleSpinner()
+        self.endz_entry = FCDoubleSpinner()
 
         if machinist_setting == 0:
-            self.gendz_entry.set_range(0.000, 9999.9999)
+            self.endz_entry.set_range(0.000, 9999.9999)
         else:
-            self.gendz_entry.set_range(-9999.9999, 9999.9999)
+            self.endz_entry.set_range(-9999.9999, 9999.9999)
 
-        self.gendz_entry.set_precision(self.decimals)
-        self.gendz_entry.setSingleStep(0.1)
-        self.gendz_entry.setWrapping(True)
+        self.endz_entry.set_precision(self.decimals)
+        self.endz_entry.setSingleStep(0.1)
+        self.endz_entry.setWrapping(True)
 
-        grid1.addWidget(endzlabel, 6, 0)
-        grid1.addWidget(self.gendz_entry, 6, 1)
+        grid1.addWidget(endz_label, 6, 0)
+        grid1.addWidget(self.endz_entry, 6, 1)
 
         # Feedrate X-Y
         frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
@@ -4207,14 +4207,14 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "It is useful only for Marlin,\n"
               "ignore for any other cases.")
         )
-        self.cncfeedrate_rapid_entry = FCDoubleSpinner()
-        self.cncfeedrate_rapid_entry.set_range(0, 99999.9999)
-        self.cncfeedrate_rapid_entry.set_precision(self.decimals)
-        self.cncfeedrate_rapid_entry.setSingleStep(0.1)
-        self.cncfeedrate_rapid_entry.setWrapping(True)
+        self.feedrate_rapid_entry = FCDoubleSpinner()
+        self.feedrate_rapid_entry.set_range(0, 99999.9999)
+        self.feedrate_rapid_entry.set_precision(self.decimals)
+        self.feedrate_rapid_entry.setSingleStep(0.1)
+        self.feedrate_rapid_entry.setWrapping(True)
 
         grid1.addWidget(fr_rapid_label, 4, 0)
-        grid1.addWidget(self.cncfeedrate_rapid_entry, 4, 1)
+        grid1.addWidget(self.feedrate_rapid_entry, 4, 1)
 
         # End move extra cut
         self.extracut_cb = FCCheckBox('%s' % _('Re-cut'))

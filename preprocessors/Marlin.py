@@ -66,8 +66,7 @@ class Marlin(FlatCAMPostProc):
         gcode += ';Spindle Speed: ' + str(p['spindlespeed']) + ' RPM' + '\n' + '\n'
 
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
-        gcode += 'G90\n'
-        gcode += 'G94\n'
+        gcode += 'G90'
 
         return gcode
 
@@ -219,8 +218,11 @@ G0 Z{z_toolchange}
             return sdir
 
     def dwell_code(self, p):
+        gcode = 'G4 P' + str(p.dwelltime)
         if p.dwelltime:
-            return 'G4 P' + str(p.dwelltime)
+            return gcode
 
     def spindle_stop_code(self, p):
-        return 'M5'
+        gcode = 'M400\n'
+        gcode += 'M5'
+        return gcode

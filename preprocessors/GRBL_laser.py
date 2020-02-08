@@ -12,7 +12,7 @@ from FlatCAMPostProc import *
 # is compatible with almost any version of Grbl.
 
 
-class grbl_laser(FlatCAMPostProc):
+class GRBL_laser(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -20,7 +20,8 @@ class grbl_laser(FlatCAMPostProc):
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
-        gcode = ''
+        gcode = '(This preprocessor is used with a motion controller loaded with GRBL firmware. )\n'
+        gcode += '(It is for the case when it is used together with a LASER connected on the SPINDLE connector.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -55,7 +56,7 @@ class grbl_laser(FlatCAMPostProc):
         return ''
 
     def lift_code(self, p):
-        return 'M05 S0'
+        return 'M5'
 
     def down_code(self, p):
         sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
@@ -68,7 +69,7 @@ class grbl_laser(FlatCAMPostProc):
         return ''
 
     def up_to_zero_code(self, p):
-        return 'M05'
+        return 'M5'
 
     def position_code(self, p):
         return ('X' + self.coordinate_format + ' Y' + self.coordinate_format) % \
@@ -106,4 +107,4 @@ class grbl_laser(FlatCAMPostProc):
         return ''
 
     def spindle_stop_code(self, p):
-        return 'M05'
+        return 'M5'

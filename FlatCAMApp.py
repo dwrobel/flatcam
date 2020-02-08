@@ -1001,7 +1001,7 @@ class App(QtCore.QObject):
                                           'box, center_x, center_y, columns, combine, connect, contour, default, '
                                           'depthperpass, dia, diatol, dist, drilled_dias, drillz, dwelltime, '
                                           'extracut_length, '
-                                          'feedrate_z, grbl_11, grbl_laser, gridoffsety, gridx, gridy, has_offset, '
+                                          'feedrate_z, grbl_11, GRBL_laser, gridoffsety, gridx, gridy, has_offset, '
                                           'holes, hpgl, iso_type, line_xyz, margin, marlin, method, milled_dias, '
                                           'minoffset, name, offset, opt_type, order, outname, overlap, '
                                           'passes, postamble, pp, ppname_e, ppname_g, preamble, radius, ref, rest, '
@@ -1290,7 +1290,7 @@ class App(QtCore.QObject):
             # Excellon Options
             "excellon_drillz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
             "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
-            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.eendz_entry,
+            "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
             "excellon_feedrate": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
             "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
             "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
@@ -1368,14 +1368,14 @@ class App(QtCore.QObject):
             "geometry_ppname_g": self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
             "geometry_toolchange": self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
             "geometry_toolchangez": self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
-            "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.gendz_entry,
+            "geometry_endz": self.ui.geometry_defaults_form.geometry_opt_group.endz_entry,
             "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
             "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
 
             # Geometry Advanced Options
             "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
             "geometry_startz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
-            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.cncfeedrate_rapid_entry,
+            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_rapid_entry,
             "geometry_extracut": self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
             "geometry_extracut_length": self.ui.geometry_defaults_form.geometry_adv_opt_group.e_cut_entry,
             "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
@@ -2263,7 +2263,7 @@ class App(QtCore.QObject):
                                  'box', 'center_x', 'center_y', 'columns', 'combine', 'connect', 'contour', 'default',
                                  'depthperpass', 'dia', 'diatol', 'dist', 'drilled_dias', 'drillz',
                                  'dwelltime', 'extracut_length',
-                                 'feedrate_z', 'grbl_11', 'grbl_laser', 'gridoffsety', 'gridx', 'gridy',
+                                 'feedrate_z', 'grbl_11', 'GRBL_laser', 'gridoffsety', 'gridx', 'gridy',
                                  'has_offset', 'holes', 'hpgl', 'iso_type', 'line_xyz', 'margin', 'marlin', 'method',
                                  'milled_dias', 'minoffset', 'name', 'offset', 'opt_type', 'order',
                                  'outname', 'overlap', 'passes', 'postamble', 'pp', 'ppname_e', 'ppname_g',

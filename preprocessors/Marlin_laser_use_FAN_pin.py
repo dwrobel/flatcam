@@ -9,7 +9,7 @@
 from FlatCAMPostProc import *
 
 
-class Marlin_laser(FlatCAMPostProc):
+class Marlin_laser_use_FAN_pin(FlatCAMPostProc):
 
     include_header = True
     coordinate_format = "%.*f"
@@ -19,7 +19,8 @@ class Marlin_laser(FlatCAMPostProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
-        gcode = ''
+        gcode = ';This preprocessor is used with a motion controller loaded with MARLIN firmware.\n'
+        gcode += ';It is for the case when it is used together with a LASER connected on one of the FAN pins.\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -27,7 +28,7 @@ class Marlin_laser(FlatCAMPostProc):
         ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
         gcode += ';Feedrate: ' + str(p['feedrate']) + units + '/min' + '\n'
-        gcode += ';Feedrate rapids: ' + str(p['feedrate_rapid']) + units + '/min' + '\n' + '\n'
+        gcode += ';Feedrate rapids: ' + str(p['feedrate_rapid']) + units + '/min' + '\n\n'
 
         gcode += ';Z Focus: ' + str(p['z_move']) + units + '\n'
 
@@ -44,8 +45,7 @@ class Marlin_laser(FlatCAMPostProc):
         gcode += ';Laser Power (Spindle Speed): ' + str(p['spindlespeed']) + '\n' + '\n'
 
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
-        gcode += 'G90\n'
-        gcode += 'G94'
+        gcode += 'G90'
 
         return gcode
 
@@ -57,22 +57,21 @@ class Marlin_laser(FlatCAMPostProc):
 
     def lift_code(self, p):
         gcode = 'M400\n'
-        gcode += 'M5 S0'
+        gcode += 'M107'
         return gcode
 
     def down_code(self, p):
-        sdir = {'CW': 'M3', 'CCW': 'M4'}[p.spindledir]
         if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
+            return '%s S%s' % ('M106', str(p.spindlespeed))
         else:
-            return sdir
+            return 'M106'
 
     def toolchange_code(self, p):
         return ''
 
     def up_to_zero_code(self, p):
         gcode = 'M400\n'
-        gcode += 'M5'
+        gcode += 'M107'
         return gcode
 
     def position_code(self, p):
@@ -107,16 +106,15 @@ class Marlin_laser(FlatCAMPostProc):
         return 'F' + self.feedrate_rapid_format % (p.fr_decimals, p.feedrate_rapid)
 
     def spindle_code(self, p):
-        sdir = {'CW': 'M3', 'CCW': 'M4'}[p.spindledir]
         if p.spindlespeed:
-            return '%s S%s' % (sdir, str(p.spindlespeed))
+            return '%s S%s' % ('M106 ', str(p.spindlespeed))
         else:
-            return sdir
+            return 'M106'
 
     def dwell_code(self, p):
         return ''
 
     def spindle_stop_code(self, p):
         gcode = 'M400\n'
-        gcode += 'M5'
+        gcode += 'M107'
         return gcode

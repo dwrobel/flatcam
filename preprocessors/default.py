@@ -18,7 +18,8 @@ class default(FlatCAMPostProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
-        gcode = ''
+        gcode = '(This preprocessor is the default preprocessor used by FlatCAM.)\n'
+        gcode += '(It is made to work with MACH3 compatible motion controllers.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -66,7 +67,7 @@ class default(FlatCAMPostProc):
 
         gcode += ('G20\n' if p.units.upper() == 'IN' else 'G21\n')
         gcode += 'G90\n'
-        gcode += 'G94\n'
+        gcode += 'G94'
 
         return gcode
 

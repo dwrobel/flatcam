@@ -2814,7 +2814,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry,
             "startz": self.ui.estartz_entry,
-            "endz": self.ui.eendz_entry,
+            "endz": self.ui.endz_entry,
             "ppname_e": self.ui.pp_excellon_name_cb,
             "z_pdepth": self.ui.pdepth_entry,
             "feedrate_probe": self.ui.feedrate_probe_entry,
@@ -3475,13 +3475,23 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             except AttributeError:
                 pass
 
-            self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+            if 'marlin' in current_pp.lower():
+                self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+                self.ui.endz_label.show()
+                self.ui.endz_entry.show()
+            else:
+                self.ui.travelzlabel.hide()
+                self.ui.travelz_entry.hide()
+
+                self.ui.endz_label.hide()
+                self.ui.endz_entry.hide()
 
             try:
                 self.ui.frzlabel.hide()
                 self.ui.feedrate_z_entry.hide()
             except AttributeError:
                 pass
+
             self.ui.dwell_cb.hide()
             self.ui.dwelltime_entry.hide()
 
@@ -3502,6 +3512,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 pass
 
             self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
+
+            self.ui.travelzlabel.show()
+            self.ui.travelz_entry.show()
+
+            self.ui.endz_label.show()
+            self.ui.endz_entry.show()
 
             try:
                 self.ui.frzlabel.show()
@@ -4082,7 +4098,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "travelz": self.ui.travelz_entry,
             "feedrate": self.ui.cncfeedrate_entry,
             "feedrate_z": self.ui.feedrate_z_entry,
-            "feedrate_rapid": self.ui.cncfeedrate_rapid_entry,
+            "feedrate_rapid": self.ui.feedrate_rapid_entry,
             "spindlespeed": self.ui.cncspindlespeed_entry,
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry,
@@ -4095,7 +4111,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "extracut_length": self.ui.e_cut_entry,
             "toolchange": self.ui.toolchangeg_cb,
             "toolchangez": self.ui.toolchangez_entry,
-            "endz": self.ui.gendz_entry,
+            "endz": self.ui.endz_entry,
             "cnctooldia": self.ui.addtool_entry
         })
 
@@ -4225,10 +4241,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.addtool_btn.hide()
             self.ui.copytool_btn.hide()
             self.ui.deltool_btn.hide()
-            # self.ui.endzlabel.hide()
-            # self.ui.gendz_entry.hide()
+            # self.ui.endz_label.hide()
+            # self.ui.endz_entry.hide()
             self.ui.fr_rapidlabel.hide()
-            self.ui.cncfeedrate_rapid_entry.hide()
+            self.ui.feedrate_rapid_entry.hide()
             self.ui.extracut_cb.hide()
             self.ui.e_cut_entry.hide()
             self.ui.pdepth_label.hide()
@@ -5228,10 +5244,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         if 'marlin' in current_pp.lower() or 'custom' in current_pp.lower():
             self.ui.fr_rapidlabel.show()
-            self.ui.cncfeedrate_rapid_entry.show()
+            self.ui.feedrate_rapid_entry.show()
         else:
             self.ui.fr_rapidlabel.hide()
-            self.ui.cncfeedrate_rapid_entry.hide()
+            self.ui.feedrate_rapid_entry.hide()
 
         if 'laser' in current_pp.lower():
             self.ui.cutzlabel.hide()
@@ -5242,13 +5258,23 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             except AttributeError:
                 pass
 
-            self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+            if 'marlin' in current_pp.lower():
+                self.ui.travelzlabel.setText('%s:' % _("Focus Z"))
+                self.ui.endz_label.show()
+                self.ui.endz_entry.show()
+            else:
+                self.ui.travelzlabel.hide()
+                self.ui.travelz_entry.hide()
+
+                self.ui.endz_label.hide()
+                self.ui.endz_entry.hide()
 
             try:
                 self.ui.frzlabel.hide()
                 self.ui.feedrate_z_entry.hide()
             except AttributeError:
                 pass
+
             self.ui.dwell_cb.hide()
             self.ui.dwelltime_entry.hide()
 
@@ -5269,6 +5295,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 pass
 
             self.ui.travelzlabel.setText('%s:' % _('Travel Z'))
+
+            self.ui.travelzlabel.show()
+            self.ui.travelz_entry.show()
+
+            self.ui.endz_label.show()
+            self.ui.endz_entry.show()
 
             try:
                 self.ui.frzlabel.show()

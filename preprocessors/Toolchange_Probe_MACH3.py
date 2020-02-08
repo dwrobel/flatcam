@@ -18,7 +18,7 @@ class Toolchange_Probe_MACH3(FlatCAMPostProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
-        gcode = ''
+        gcode = '(This preprocessor is used with MACH3 with probing height.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])

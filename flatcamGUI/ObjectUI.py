@@ -992,23 +992,23 @@ class ExcellonObjectUI(ObjectUI):
         self.grid3.addWidget(self.estartz_entry, 9, 1)
 
         # End move Z:
-        self.eendz_label = QtWidgets.QLabel('%s:' % _("End move Z"))
-        self.eendz_label.setToolTip(
+        self.endz_label = QtWidgets.QLabel('%s:' % _("End move Z"))
+        self.endz_label.setToolTip(
             _("Height of the tool after\n"
               "the last move at the end of the job.")
         )
-        self.eendz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.eendz_entry.set_precision(self.decimals)
+        self.endz_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.endz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.eendz_entry.set_range(0.0, 9999.9999)
+            self.endz_entry.set_range(0.0, 9999.9999)
         else:
-            self.eendz_entry.set_range(-9999.9999, 9999.9999)
+            self.endz_entry.set_range(-9999.9999, 9999.9999)
 
-        self.eendz_entry.setSingleStep(0.1)
+        self.endz_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(self.eendz_label, 11, 0)
-        self.grid3.addWidget(self.eendz_entry, 11, 1)
+        self.grid3.addWidget(self.endz_label, 11, 0)
+        self.grid3.addWidget(self.endz_entry, 11, 1)
 
         # Feedrate X-Y
         self.frxylabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
@@ -1748,23 +1748,23 @@ class GeometryObjectUI(ObjectUI):
         # self.grid3.addWidget(self.gstartz_entry, 8, 1)
 
         # The Z value for the end move
-        self.endzlabel = QtWidgets.QLabel('%s:' % _('End move Z'))
-        self.endzlabel.setToolTip(
+        self.endz_label = QtWidgets.QLabel('%s:' % _('End move Z'))
+        self.endz_label.setToolTip(
             _("Height of the tool after\n"
               "the last move at the end of the job.")
         )
-        self.gendz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.gendz_entry.set_precision(self.decimals)
+        self.endz_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.endz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
-            self.gendz_entry.set_range(0, 9999.9999)
+            self.endz_entry.set_range(0, 9999.9999)
         else:
-            self.gendz_entry.set_range(-9999.9999, 9999.9999)
+            self.endz_entry.set_range(-9999.9999, 9999.9999)
 
-        self.gendz_entry.setSingleStep(0.1)
+        self.endz_entry.setSingleStep(0.1)
 
-        self.grid3.addWidget(self.endzlabel, 9, 0)
-        self.grid3.addWidget(self.gendz_entry, 9, 1)
+        self.grid3.addWidget(self.endz_label, 9, 0)
+        self.grid3.addWidget(self.endz_entry, 9, 1)
 
         # Feedrate X-Y
         self.frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
@@ -1804,16 +1804,16 @@ class GeometryObjectUI(ObjectUI):
               "It is useful only for Marlin,\n"
               "ignore for any other cases.")
         )
-        self.cncfeedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.cncfeedrate_rapid_entry.set_precision(self.decimals)
-        self.cncfeedrate_rapid_entry.set_range(0, 99999.9999)
-        self.cncfeedrate_rapid_entry.setSingleStep(0.1)
+        self.feedrate_rapid_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.feedrate_rapid_entry.set_precision(self.decimals)
+        self.feedrate_rapid_entry.set_range(0, 99999.9999)
+        self.feedrate_rapid_entry.setSingleStep(0.1)
 
         self.grid3.addWidget(self.fr_rapidlabel, 12, 0)
-        self.grid3.addWidget(self.cncfeedrate_rapid_entry, 12, 1)
+        self.grid3.addWidget(self.feedrate_rapid_entry, 12, 1)
         # default values is to hide
         self.fr_rapidlabel.hide()
-        self.cncfeedrate_rapid_entry.hide()
+        self.feedrate_rapid_entry.hide()
 
         # Cut over 1st point in path
         self.extracut_cb = FCCheckBox('%s:' % _('Re-cut'))

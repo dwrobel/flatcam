@@ -11,8 +11,9 @@ CAD program, and create G-Code for Isolation routing.
 
 8.02.2020
 
-- added a new preprocessor for using laser on a Marlin 3D printer named 'Marlin_laser'
+- added a new preprocessor for using laser on a Marlin 3D printer named 'Marlin_laser_use_Spindle_pin'
 - modified the Geometry UI when using laser preprocessors
+- added a new preprocessor file for using laser on a Marlin motion controller but with the laser connected to one of the FAN pins, named 'Marlin_laser_use_FAN_pin'
 
 5.02.2020
 
@@ -2772,7 +2773,7 @@ CAD program, and create G-Code for Isolation routing.
 - added options for trace segmentation that can be useful for auto-levelling (code snippet from Lei Zheng from a rejected pull request on FlatCAM https://bitbucket.org/realthunder/ )
 - added shortcut key 'L' for creating 'New Excellon' 
 - added shortcut key combo 'SHIFT+S' for Running a Script.
-- modified grbl_laser postprocessor file so it includes a Sxxxx command on the line with M03 (laser active) whenever a value is enter in the Spindlespeed entry field
+- modified GRBL_laser postprocessor file so it includes a Sxxxx command on the line with M03 (laser active) whenever a value is enter in the Spindlespeed entry field
 - remade the EDIT -> PREFERENCES window, the Excellon and Gerber sections. Created a new section named TOOLS
 
 26.01.2019
@@ -2780,7 +2781,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed grbl_11 postprocessor in linear_code() function
 - added icons to the Project Tab context menu
 - added new entries to the Canvas context menu (Copy, Delete, Edit/Save, Move, New Excellon, New Geometry, New Project)
-- fixed grbl_laser postprocessor file
+- fixed GRBL_laser postprocessor file
 - updated function for copy of an Excellon object for the case when the object has slots
 - updated FlatCAMExcellon.merge() function to work in case some (or all) of the merged objects have slots  
 
@@ -2800,8 +2801,8 @@ CAD program, and create G-Code for Isolation routing.
 - added the Copy entry to the Project context menu
 - made the functions behind Disable and Enable project context menu entries, non-threaded to fix a possible issue
 - added multiple object selection on Open ... and Import ... (idea and code snippet came from Travers Carter, BitBucket user https://bitbucket.org/travc/)
-- fixed 'grbl_laser' postprocessor bugs (missing functions)
-- fixed display geometry for 'grbl_laser' postprocessor
+- fixed 'GRBL_laser' postprocessor bugs (missing functions)
+- fixed display geometry for 'GRBL_laser' postprocessor
 - Excellon Editor - added possibility to create an linear drill array rotated at an custom angle
 - added the Edit and Properties entries to the Project context menu
 

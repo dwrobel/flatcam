@@ -18,7 +18,8 @@ class grbl_11(FlatCAMPostProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
-        gcode = ''
+        gcode = '(This preprocessor is used with a motion controller loaded with GRBL firmware.)\n'
+        gcode += '(It is configured to be compatible with almost any version of GRBL firmware.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])

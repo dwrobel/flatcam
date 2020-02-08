@@ -4067,6 +4067,13 @@ class CNCjob(Geometry):
                     command['Z'] = 1
                 else:
                     command['Z'] = 0
+
+            match_lsr_pos_2 = re.search(r"^(M10[6|7])", gline)
+            if match_lsr_pos_2:
+                if 'M107' in match_lsr_pos_2.group(1):
+                    command['Z'] = 1
+                else:
+                    command['Z'] = 0
         elif self.pp_solderpaste_name is not None:
             if 'Paste' in self.pp_solderpaste_name:
                 match_paste = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)

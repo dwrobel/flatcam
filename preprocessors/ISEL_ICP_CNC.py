@@ -15,7 +15,7 @@ class ISEL_ICP_CNC(FlatCAMPostProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
-        gcode = ''
+        gcode = '; This preprocessor is used with a ISEL ICP CNC router.\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])

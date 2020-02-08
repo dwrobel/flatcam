@@ -22,7 +22,7 @@ class Berta_CNC(FlatCAMPostProc):
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
         coords_xy = p['xy_toolchange']
-        gcode = ''
+        gcode = '(This preprocessor is used with a BERTA CNC router.)\n\n'
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
         xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
@@ -80,7 +80,7 @@ class Berta_CNC(FlatCAMPostProc):
         gcode += 'G54\n'
         gcode += 'G0\n'
         gcode += '(Berta)\n'
-        gcode += 'G94\n'
+        gcode += 'G94'
 
         return gcode
 
