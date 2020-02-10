@@ -542,7 +542,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.bound_obj_name = ""
         self.bound_obj = None
 
-        self.tooldia_list = []
+        self.tooldia_list = list()
+        self.tooldia = None
+
         self.sel_rect = None
         self.o_name = None
         self.overlap = None
@@ -1122,7 +1124,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         if float('%.*f' % (self.decimals, tool_dia)) in tool_dias:
             if muted is None:
-                self.app.inform.emit('[WARNING_NOTCL] %s' %  _("Adding tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("Adding tool cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
@@ -1242,12 +1244,12 @@ class ToolPaint(FlatCAMTool, Gerber):
     #
     #     self.app.inform.emit("[success] Tool was copied in the Tool Table.")
 
-    def on_tool_delete(self, rows_to_delete=None, all=None):
+    def on_tool_delete(self, rows_to_delete=None, all_tools=None):
         self.blockSignals(True)
 
         deleted_tools_list = []
 
-        if all:
+        if all_tools:
             self.paint_tools.clear()
             self.blockSignals(False)
             self.build_ui()
@@ -1316,25 +1318,20 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.paint_obj = self.app.collection.get_by_name(str(self.obj_name))
         except Exception as e:
             log.debug("ToolPaint.on_paint_button_click() --> %s" % str(e))
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Could not retrieve object: %s"),
-                                  self.obj_name))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object: %s"), self.obj_name))
             return
 
         if self.paint_obj is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s: %s' %
-                                 (_("Object not found"),
-                                  self.paint_obj))
+            self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), self.paint_obj))
             return
 
         # test if the Geometry Object is multigeo and return Fail if True because
         # for now Paint don't work on MultiGeo
         if self.paint_obj.multigeo is True:
-            self.app.inform.emit('[ERROR_NOTCL] %s...' %
-                                 _("Can't do Paint on MultiGeo geometries"))
+            self.app.inform.emit('[ERROR_NOTCL] %s...' % _("Can't do Paint on MultiGeo geometries"))
             return 'Fail'
 
-        o_name = '%s_multitool_paint' % self.obj_name
+        self.o_name = '%s_mt_paint' % self.obj_name
 
         # use the selected tools in the tool table; get diameters
         self.tooldia_list = list()
@@ -1347,8 +1344,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     try:
                         self.tooldia = float(self.tools_table.item(x.row(), 1).text().replace(',', '.'))
                     except ValueError:
-                        self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                             _("Wrong value format entered, use a number."))
+                        self.app.inform.emit('[ERROR_NOTCL] %s' % _("Wrong value format entered, use a number."))
                         continue
                 self.tooldia_list.append(self.tooldia)
         else:
@@ -1401,7 +1397,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # Get source object.
             try:
                 self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
-            except Exception as e:
+            except Exception:
                 self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Could not retrieve object"), self.obj_name))
                 return "Could not retrieve object: %s" % self.obj_name
 
@@ -1525,14 +1521,14 @@ class ToolPaint(FlatCAMTool, Gerber):
                                      _("Click the end point of the paint area."))
 
                 self.cursor_pos = self.app.plotcanvas.translate_coords(event_pos)
-                if self.app.grid_status() == True:
+                if self.app.grid_status():
                     self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
             else:
                 self.app.inform.emit(_("Zone added. Click to start adding next zone or right click to finish."))
                 self.app.delete_selection_shape()
 
                 curr_pos = self.app.plotcanvas.translate_coords(event_pos)
-                if self.app.grid_status() == True:
+                if self.app.grid_status():
                     curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
                 x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
@@ -1608,7 +1604,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.mouse_is_dragging = False
 
         # update the cursor position
-        if self.app.grid_status() == True:
+        if self.app.grid_status():
             # Update cursor
             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
@@ -1768,14 +1764,14 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                    prog_plot=prog_plot)
                 except FlatCAMApp.GracefulException:
                     return "fail"
-                except Exception as e:
-                    log.debug("ToolPaint.paint_poly().gen_paintarea().paint_p() --> %s" % str(e))
+                except Exception as ee:
+                    log.debug("ToolPaint.paint_poly().gen_paintarea().paint_p() --> %s" % str(ee))
 
                 if cpoly is not None:
                     geo_obj.solid_geometry += list(cpoly.get_objects())
                     return cpoly
                 else:
-                    app_obj.inform.emit('[ERROR_NOTCL] %s' %  _('Geometry could not be painted completely'))
+                    app_obj.inform.emit('[ERROR_NOTCL] %s' % _('Geometry could not be painted completely'))
                     return None
 
             current_uid = int(1)
@@ -1843,7 +1839,11 @@ class ToolPaint(FlatCAMTool, Gerber):
             geo_obj.solid_geometry = cascaded_union(tools_storage[current_uid]['solid_geometry'])
 
             try:
-                a, b, c, d = geo_obj.solid_geometry.bounds
+                if isinstance(geo_obj.solid_geometry, list):
+                    a, b, c, d = MultiPolygon(geo_obj.solid_geometry).bounds
+                else:
+                    a, b, c, d = geo_obj.solid_geometry.bounds
+
                 geo_obj.options['xmin'] = a
                 geo_obj.options['ymin'] = b
                 geo_obj.options['xmax'] = c
@@ -2194,7 +2194,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                             continue
 
                     # try:
-                    #     # Polygons are the only really paintable geometries, lines in theory have no area to be painted
+                    #     # Polygons are the only really paintable geometries,
+                    #     # lines in theory have no area to be painted
                     #     if not isinstance(geo, Polygon):
                     #         continue
                     #     poly_buf = geo.buffer(-paint_margin)
@@ -3113,7 +3114,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.mouse_is_dragging = False
 
         self.sel_rect = []
-
 
     @staticmethod
     def paint_bounds(geometry):
