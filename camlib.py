@@ -1445,37 +1445,71 @@ class Geometry(object):
             log.debug("camlib.Geometry.clear_polygon3() --> Could not buffer the Polygon")
             return None
 
-        # First line
-        try:
-            y = top - tooldia / 1.99999999
-            while y > bot + tooldia / 1.999999999:
-                if self.app.abort_flag:
-                    # graceful abort requested by the user
-                    raise FlatCAMApp.GracefulException
+        # decide the direction of the lines
+        if abs(left - right) >= abs(top  -bot):
+            # First line
+            try:
+                y = top - tooldia / 1.99999999
+                while y > bot + tooldia / 1.999999999:
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise FlatCAMApp.GracefulException
 
-                # provide the app with a way to process the GUI events when in a blocking loop
-                QtWidgets.QApplication.processEvents()
+                    # provide the app with a way to process the GUI events when in a blocking loop
+                    QtWidgets.QApplication.processEvents()
 
+                    line = LineString([(left, y), (right, y)])
+                    line = line.intersection(margin_poly)
+                    lines_trimmed.append(line)
+                    y -= tooldia * (1 - overlap)
+                    if prog_plot:
+                        self.plot_temp_shapes(line)
+                        self.temp_shapes.redraw()
+
+                # Last line
+                y = bot + tooldia / 2
                 line = LineString([(left, y), (right, y)])
                 line = line.intersection(margin_poly)
-                lines_trimmed.append(line)
-                y -= tooldia * (1 - overlap)
-                if prog_plot:
-                    self.plot_temp_shapes(line)
-                    self.temp_shapes.redraw()
 
-            # Last line
-            y = bot + tooldia / 2
-            line = LineString([(left, y), (right, y)])
-            line = line.intersection(margin_poly)
+                for ll in line:
+                    lines_trimmed.append(ll)
+                    if prog_plot:
+                        self.plot_temp_shapes(line)
+            except Exception as e:
+                log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                return None
+        else:
+            # First line
+            try:
+                x = left + tooldia / 1.99999999
+                while x < right - tooldia / 1.999999999:
+                    if self.app.abort_flag:
+                        # graceful abort requested by the user
+                        raise FlatCAMApp.GracefulException
 
-            for ll in line:
-                lines_trimmed.append(ll)
-                if prog_plot:
-                    self.plot_temp_shapes(line)
-        except Exception as e:
-            log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
-            return None
+                    # provide the app with a way to process the GUI events when in a blocking loop
+                    QtWidgets.QApplication.processEvents()
+
+                    line = LineString([(x, top), (x, bot)])
+                    line = line.intersection(margin_poly)
+                    lines_trimmed.append(line)
+                    x += tooldia * (1 - overlap)
+                    if prog_plot:
+                        self.plot_temp_shapes(line)
+                        self.temp_shapes.redraw()
+
+                # Last line
+                x = right + tooldia / 2
+                line = LineString([(x, top), (x, bot)])
+                line = line.intersection(margin_poly)
+
+                for ll in line:
+                    lines_trimmed.append(ll)
+                    if prog_plot:
+                        self.plot_temp_shapes(line)
+            except Exception as e:
+                log.debug('camlib.Geometry.clear_polygon3() Processing poly --> %s' % str(e))
+                return None
 
         if prog_plot:
             self.temp_shapes.redraw()

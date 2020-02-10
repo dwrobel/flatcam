@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.02.2020
+
+- optimized the Paint and NCC Tools. When the Lines type of painting/clearing is used, the lines will try to arrange themselves on the direction that the lines length clearing the polygon are bigger
+
 8.02.2020
 
 - added a new preprocessor for using laser on a Marlin 3D printer named 'Marlin_laser_use_Spindle_pin'
