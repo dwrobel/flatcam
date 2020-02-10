@@ -1446,7 +1446,7 @@ class Geometry(object):
             return None
 
         # decide the direction of the lines
-        if abs(left - right) >= abs(top  -bot):
+        if abs(left - right) >= abs(top - bot):
             # First line
             try:
                 y = top - tooldia / 1.99999999
@@ -1523,6 +1523,145 @@ class Geometry(object):
                     geoms.insert(line)
                 else:
                     log.debug("camlib.Geometry.clear_polygon3(). Not a line: %s" % str(type(line)))
+        except TypeError:
+            # in case lines_trimmed are not iterable (Linestring, LinearRing)
+            geoms.insert(lines_trimmed)
+
+        # Add margin (contour) to storage
+        if contour:
+            try:
+                for poly in margin_poly:
+                    if isinstance(poly, Polygon) and not poly.is_empty:
+                        geoms.insert(poly.exterior)
+                        if prog_plot:
+                            self.plot_temp_shapes(poly.exterior)
+                        for ints in poly.interiors:
+                            geoms.insert(ints)
+                            if prog_plot:
+                                self.plot_temp_shapes(ints)
+            except TypeError:
+                if isinstance(margin_poly, Polygon) and not margin_poly.is_empty:
+                    marg_ext = margin_poly.exterior
+                    geoms.insert(marg_ext)
+                    if prog_plot:
+                        self.plot_temp_shapes(margin_poly.exterior)
+                    for ints in margin_poly.interiors:
+                        geoms.insert(ints)
+                        if prog_plot:
+                            self.plot_temp_shapes(ints)
+
+        if prog_plot:
+            self.temp_shapes.redraw()
+
+        # Optimization: Reduce lifts
+        if connect:
+            # log.debug("Reducing tool lifts...")
+            geoms_conn = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
+            if geoms_conn:
+                return geoms_conn
+
+        return geoms
+
+    def fill_with_lines(self, line, aperture_size, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
+                        prog_plot=False):
+        """
+        Creates geometry of lines inside a polygon for a tool to cover
+        the whole area.
+
+        This algorithm draws parallel lines inside the polygon.
+
+        :param line: The target line that create painted polygon.
+        :type line: shapely.geometry.LineString or shapely.geometry.MultiLineString
+        :param tooldia: Tool diameter.
+        :param steps_per_circle: how many linear segments to use to approximate a circle
+        :param overlap: Tool path overlap percentage.
+        :param connect: Connect lines to avoid tool lifts.
+        :param contour: Paint around the edges.
+        :param prog_plot: boolean; if to use the progressive plotting
+        :return:
+        """
+
+        # log.debug("camlib.fill_with_lines()")
+        if not isinstance(line, LineString) or not isinstance(line, MultiLineString):
+            log.debug("camlib.Geometry.fill_with_lines() --> Not a LineString/MultiLineString but %s" % str(type(line)))
+            return None
+
+        # ## The toolpaths
+        # Index first and last points in paths
+        def get_pts(o):
+            return [o.coords[0], o.coords[-1]]
+
+        geoms = FlatCAMRTreeStorage()
+        geoms.get_points = get_pts
+
+        lines_trimmed = []
+
+        polygon = line.buffer(aperture_size / 1.99999999999999999, int(steps_per_circle))
+
+        try:
+            margin_poly = polygon.buffer(-tooldia / 1.99999999, int(steps_per_circle))
+        except Exception:
+            log.debug("camlib.Geometry.fill_with_lines() --> Could not buffer the Polygon, tool diameter too high")
+            return None
+
+        # First line
+        try:
+            delta = 0
+            while delta < aperture_size / 2:
+                if self.app.abort_flag:
+                    # graceful abort requested by the user
+                    raise FlatCAMApp.GracefulException
+
+                # provide the app with a way to process the GUI events when in a blocking loop
+                QtWidgets.QApplication.processEvents()
+
+                line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
+                line = line.intersection(margin_poly)
+                lines_trimmed.append(line)
+
+                line = line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
+                line = line.intersection(margin_poly)
+                lines_trimmed.append(line)
+
+                delta += tooldia * (1 - overlap)
+                if prog_plot:
+                    self.plot_temp_shapes(line)
+                    self.temp_shapes.redraw()
+
+            # Last line
+            delta = aperture_size / 2
+
+            line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
+            line = line.intersection(margin_poly)
+
+            for ll in line:
+                lines_trimmed.append(ll)
+                if prog_plot:
+                    self.plot_temp_shapes(line)
+
+            line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
+            line = line.intersection(margin_poly)
+
+            for ll in line:
+                lines_trimmed.append(ll)
+                if prog_plot:
+                    self.plot_temp_shapes(line)
+        except Exception as e:
+            log.debug('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
+            return None
+
+        if prog_plot:
+            self.temp_shapes.redraw()
+
+        lines_trimmed = unary_union(lines_trimmed)
+
+        # Add lines to storage
+        try:
+            for line in lines_trimmed:
+                if isinstance(line, LineString) or isinstance(line, LinearRing):
+                    geoms.insert(line)
+                else:
+                    log.debug("camlib.Geometry.fill_with_lines(). Not a line: %s" % str(type(line)))
         except TypeError:
             # in case lines_trimmed are not iterable (Linestring, LinearRing)
             geoms.insert(lines_trimmed)
