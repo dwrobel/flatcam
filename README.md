@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - optimized the Paint and NCC Tools. When the Lines type of painting/clearing is used, the lines will try to arrange themselves on the direction that the lines length clearing the polygon are bigger
 - solved bug that made drilling with Marlin preprocessor very slow
+- applied the fix for above bug to the TclCommand Drillcncjob too
 
 8.02.2020
 

@@ -185,7 +185,10 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             opt_type = args["opt_type"] if "opt_type" in args and args["opt_type"] else 'B'
 
             job_obj.z_move = args["travelz"] if "travelz" in args and args["travelz"] else obj.options["travelz"]
+
             job_obj.feedrate = args["feedrate"] if "feedrate" in args and args["feedrate"] else obj.options["feedrate"]
+            job_obj.z_feedrate = args["feedrate"] if "feedrate" in args and args["feedrate"] else \
+                obj.options["feedrate"]
             job_obj.feedrate_rapid = args["feedrate_rapid"] \
                 if "feedrate_rapid" in args and args["feedrate_rapid"] else obj.options["feedrate_rapid"]
 
