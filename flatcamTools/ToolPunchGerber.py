@@ -522,38 +522,41 @@ class ToolPunchGerber(FlatCAMTool):
                 # create the punched Gerber solid_geometry
             punched_solid_geometry = grb_solid_geometry.difference(exc_solid_geometry)
 
-            new_apertures = dict()
+            # update the gerber apertures to include the clear geometry so it can be exported successfully
             new_apertures = deepcopy(grb_obj.apertures)
+            new_apertures_items = new_apertures.items()
 
+            # find maximum aperture id
+            new_apid = max([int(x) for x, __ in new_apertures_items])
+
+            # store here the clear geometry, the key is the drill size
             holes_apertures = dict()
 
-            for apid, val in new_apertures.items():
+            for apid, val in new_apertures_items:
                 for elem in val['geometry']:
                     # make it work only for Gerber Flashes who are Points in 'follow'
                     if 'solid' in elem and isinstance(elem['follow'], Point):
                         for drill in exc_obj.drills:
-                            clear_apid = exc_obj.tools[drill['tool']]['C']
-                            exc_poly = drill['point'].buffer(clear_apid / 2.0)
-                            if exc_poly.within(elem['solid']):
+                            clear_apid_size = exc_obj.tools[drill['tool']]['C']
 
-                                if clear_apid not in holes_apertures or holes_apertures[clear_apid]['type'] != 'C':
-                                    holes_apertures[clear_apid] = dict()
-                                    holes_apertures[clear_apid]['type'] = 'C'
-                                    holes_apertures[clear_apid]['size'] = clear_apid
-                                    holes_apertures[clear_apid]['geometry'] = list()
+                            # since there may be drills that do not drill into a pad we test only for drills in a pad
+                            if drill['point'].within(elem['solid']):
                                 geo_elem = dict()
-                                geo_elem['clear'] = exc_poly
-                                geo_elem['follow'] = exc_poly.centroid
-                                holes_apertures[clear_apid]['geometry'].append(deepcopy(geo_elem))
+                                geo_elem['clear'] = drill['point']
 
-                                elem['clear'] = exc_poly.centroid
+                                if clear_apid_size not in holes_apertures:
+                                    holes_apertures[clear_apid_size] = dict()
+                                    holes_apertures[clear_apid_size]['type'] = 'C'
+                                    holes_apertures[clear_apid_size]['size'] = clear_apid_size
+                                    holes_apertures[clear_apid_size]['geometry'] = list()
 
-            for apid, val in new_apertures.items():
-                for clear_apid, clear_val in holes_apertures.items():
-                    if round(clear_apid, self.decimals) == round(val['size'], self.decimals):
-                        geo_elem = dict()
+                                holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
 
-                        val['geometry'].append(geo_elem)
+            # add the clear geometry to new apertures; it's easier than to test if there are apertures with the same
+            # size and add there the clear geometry
+            for hole_size, ap_val in holes_apertures.items():
+                new_apid += 1
+                new_apertures[str(new_apid)] = deepcopy(ap_val)
 
             def init_func(new_obj, app_obj):
                 new_obj.options.update(grb_obj.options)

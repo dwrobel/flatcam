@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.02.2020
+
+- working on Tool Punch; finished the geometry update with the clear geometry for the case of Excellon method
+
 10.02.2020
 
 - optimized the Paint and NCC Tools. When the Lines type of painting/clearing is used, the lines will try to arrange themselves on the direction that the lines length clearing the polygon are bigger
