@@ -3591,6 +3591,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.tool_offset = self.tool_offset
             job_obj.z_move = float(self.options["travelz"])
             job_obj.feedrate = float(self.options["feedrate"])
+            job_obj.z_feedrate = float(self.options["feedrate"])
             job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
 
             job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] != 0 else None
