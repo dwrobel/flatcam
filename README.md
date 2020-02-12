@@ -465,7 +465,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Excellon UI fixed bug that did not allow editing of the Offset Z parameter from the Tool table
 - in Properties Tool added new information's for the tools in the CNCjob objects
 - few bugs solved regarding the newly created empty objects
-- changed everywhere the name "postprocessor" with "preprocessor"
+- changed everywhere the name "preprocessor" with "preprocessor"
 - updated the preprocessor files in the toolchange section in order to avoid a graphical representation of travel lines glitch
 - fixed a GUI glitch in the Excellon tool table
 - added units to some of the parameters in the Properties Tool
@@ -604,7 +604,7 @@ CAD program, and create G-Code for Isolation routing.
 
 16.11.2019
 
-- fixed issue #341 that affected both postprocessors that have inlined feedrate: marlin and repetier. The used feedrate was the Feedrate X-Y and instead had to be Feedrate Z.
+- fixed issue #341 that affected both preprocessors that have inlined feedrate: marlin and repetier. The used feedrate was the Feedrate X-Y and instead had to be Feedrate Z.
 
 15.11.2019
 
@@ -614,7 +614,7 @@ CAD program, and create G-Code for Isolation routing.
 
 14.11.2019
 
-- made sure that the 'default' postprocessor file is always loaded first such that this name is always first in the GUI comboboxes
+- made sure that the 'default' preprocessor file is always loaded first such that this name is always first in the GUI comboboxes
 - added a class in GUIElements for a TextEdit box with line numbers and highlight
 
 13.11.2019
@@ -626,7 +626,7 @@ CAD program, and create G-Code for Isolation routing.
 
 12.11.2019
 
-- added two new postprocessor files for ISEL CNC and for BERTA CNC
+- added two new preprocessor files for ISEL CNC and for BERTA CNC
 - clicking on a FCTable GUI element empty space will also clear the focus now
 
 11.11.2019
@@ -1156,7 +1156,7 @@ CAD program, and create G-Code for Isolation routing.
 - more GUI optimizations related to being part of the Advanced category or not
 - added possibility to change the positive SVG exported file color in Tool Film
 - fixed some issues recently introduced in the TclCommands CNCJob, DrillCNCJob and write_gcode; changed some parameters names
-- fixed issue in the Laser postprocessor where the laser was turned on as soon as the GCode started creating an unwanted cut up until the job start
+- fixed issue in the Laser preprocessor where the laser was turned on as soon as the GCode started creating an unwanted cut up until the job start
 - added new links in Menu -> Help (Excellon, Gerber specifications and a Report Bug)
 - made the splashscreen to be showed on the current monitor on systems with multiple monitors
 - added a new entry in Menu -> View -> Redraw All which is doing what the name says: redraw all loaded objects
@@ -1369,7 +1369,7 @@ CAD program, and create G-Code for Isolation routing.
 - remade the NCC Tool in preparation for the newly added TclCommand CopperClear
 - finished adding the TclCommandCopperClear that can be called with alias: 'ncc'
 - added new capability in NCC Tool when the reference object is of Gerber type and fixed some newly introduced errors
-- fixed issue #298. The changes in postprocessors done in Preferences dis not update the object UI layout as it was supposed to. The selection of Marlin postproc. did not unhidden the Feedrate Rapids entry.
+- fixed issue #298. The changes in preprocessors done in Preferences dis not update the object UI layout as it was supposed to. The selection of Marlin postproc. did not unhidden the Feedrate Rapids entry.
 - fixed minor issues
 - fixed Tcl Command AddPolygon, AddPolyline
 - fixed Tcl Command CncJob
@@ -1895,7 +1895,7 @@ CAD program, and create G-Code for Isolation routing.
 11.05.2019
 
 - fixed issue in camlib.CNCjob.generate_from_excellon_by_tool() in the drill path optimization algorithm selection when selecting the MH algorithm. The new API's for Google OR-tools required some changes and also the time parameter can be now just an integer therefore I modified the GUI
-- made the Feedrate Rapids parameter to depend on the type of postprocessor choosed. It will be showed only for a postprocessor which the name contain 'marlin' and for any postprocessor's that have 'custom' in the name
+- made the Feedrate Rapids parameter to depend on the type of preprocessor choosed. It will be showed only for a preprocessor which the name contain 'marlin' and for any preprocessor's that have 'custom' in the name
 - fixed the camlib.Gerber functions of mirror, scale, offset, skew and rotate to work with the new data structure for apertures geometry
 - fixed Gerber Editor selection to work with the new Gerber data structure in self.apertures
 - fixed Gerber Editor FCPad class to work with the new Gerber data structure in self.apertures
@@ -2325,7 +2325,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - added a fix in the Gerber parser when adding the geometry in the self.apertures dict for the case that the current aperture is None (Allegro does that)
 - finished support for internationalization by adding a set of .po/.mo files for the English language. Unfortunately the final action can be done only when Beta will be out of Beta (no more changes) or when I will decide to stop working on this app.
-- changed the tooltip for 'feedrate_rapids' parameter to point out that this parameter is useful only for the Marlin postprocessor
+- changed the tooltip for 'feedrate_rapids' parameter to point out that this parameter is useful only for the Marlin preprocessor
 - fix app crash for the case that there are no translation files
 - fixed some forgotten strings to be prepared for internationalization in ToolCalculators
 - fixed Tools menu no longer working due of changes
@@ -2364,7 +2364,7 @@ CAD program, and create G-Code for Isolation routing.
 
 5.03.2019
 
-- modified the grbl-laser postprocessor lift_code()
+- modified the grbl-laser preprocessor lift_code()
 - treated an error created by Z_Cut parameter being None
 - changed the hover and selection box transparency
 
@@ -2417,7 +2417,7 @@ CAD program, and create G-Code for Isolation routing.
 - because adding shapes to the shapes collection (when doing Mark or Mark All) is time consuming I made the plot_aperture() threaded.
 - made the polygon fusing in modified Gerber creation, a list comprehension in an attempt for optimization
 - when right clicking the files in Project tab, the Save option for Excellon no longer export it but really save the original. 
-- in ToolChange Custom Code replacement, the Text Box in the CNCJob Selected tab will be active only if there is a 'toolchange_custom' in the name of the postprocessor file. This assume that it is, or was created having as template the Toolchange Custom postprocessor file.
+- in ToolChange Custom Code replacement, the Text Box in the CNCJob Selected tab will be active only if there is a 'toolchange_custom' in the name of the preprocessor file. This assume that it is, or was created having as template the Toolchange Custom preprocessor file.
 
 
 25.02.2019
@@ -2444,7 +2444,7 @@ CAD program, and create G-Code for Isolation routing.
 - added all the Tools in a new ToolBar
 - fixed bug that after changing the layout all the toolbar actions are no longer working
 - fixed bug in Set Origin function
-- fixed a typo in Toolchange_Probe_MACH3 postprocessor
+- fixed a typo in Toolchange_Probe_MACH3 preprocessor
 
 23.02.2019
 
@@ -2455,7 +2455,7 @@ CAD program, and create G-Code for Isolation routing.
 
 22.02.2019
 
-- added Repetier postprocessor file
+- added Repetier preprocessor file
 - removed "added ability to regenerate objects (it's actually deletion followed by recreation)" because of the way Python pass parameters to functions by reference instead of copy
 - added ability to toggle globally the display of ToolTips. Edit -> Preferences -> General -> Enable ToolTips checkbox.
 - added true fullscreen support (for Windows OS)
@@ -2484,7 +2484,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished added a Tool Table for Tool SolderPaste
 - working on multi tool solder paste dispensing
 - finished the Edit -> Preferences defaults section
-- finished the UI, created the postprocessor file template
+- finished the UI, created the preprocessor file template
 - finished the multi-tool solder paste dispensing: it will start using the biggest nozzle, fill the pads it can, and then go to the next smaller nozzle until there are no pads without solder.
 
 19.02.2019
@@ -2607,12 +2607,12 @@ CAD program, and create G-Code for Isolation routing.
 - the SELECTED type of messages are no longer printed to shell from 2 reasons: first, too much spam and second, issue with displaying html
 - on set_zero function and creation of new geometry or new excellon there is no longer a zoom fit 
 - repurposed shortcut key 'Delete' to delete tools in tooltable when the mouse is over the Seleted tab (with Geometry inside) or in Tools tab (when NCC Tool or Paint Tool is inside). Or in Excellon Editor when mouse is hovering the Selected tab selecting a tool, 'Delete' key will delete that tool, if on canvas 'Delete' key will delete a selected shape (drill). In rest, will delete selected objects.
-- adjusted the postprocessor files so the Spindle Off command (M5) is done before the move to Toolchange Z
-- adjusted the Toolchange Manual postprocessor file to have more descriptive messages on the toolchange event
+- adjusted the preprocessor files so the Spindle Off command (M5) is done before the move to Toolchange Z
+- adjusted the Toolchange Manual preprocessor file to have more descriptive messages on the toolchange event
 - added a strong focus to the object_name entry in the Selected tab
 - the keypad keyPressed are now detected correctly
-- added a pause and message/warning to do a rough zero for the Z axis, in case of Toolchange_Probe_MACH3 postprocessor file
-- changes in Toolchange_Probe_MACH3 postprocessor file
+- added a pause and message/warning to do a rough zero for the Z axis, in case of Toolchange_Probe_MACH3 preprocessor file
+- changes in Toolchange_Probe_MACH3 preprocessor file
 
 9.02.2019
 
@@ -2678,16 +2678,16 @@ CAD program, and create G-Code for Isolation routing.
 - added a text in the Selected Tab which is showed whenever the Selected Tab is selected but without having an object selected to display it's properties
 - added an initial text in the Tools tab
 - added possibility to use the shortcut key for shortcut list in the Notebook tabs
-- added a way to set the Probe depth if Toolchange_Probe postprocessors are selected
-- finished the postprocessor file for MACH3 tool probing on toolchange event
-- added a new parameter to set the feedrate of the probing in case the used postprocessor does probing (has toolchange_probe in it's name)
-- fixed bug in Marlin postprocessor for the Excellon files; the header and toolchange event always used the parenthesis witch is not compatible with GCode for Marlin
+- added a way to set the Probe depth if Toolchange_Probe preprocessors are selected
+- finished the preprocessor file for MACH3 tool probing on toolchange event
+- added a new parameter to set the feedrate of the probing in case the used preprocessor does probing (has toolchange_probe in it's name)
+- fixed bug in Marlin preprocessor for the Excellon files; the header and toolchange event always used the parenthesis witch is not compatible with GCode for Marlin
 - fixed a issue with a move to Z_move before any toolchange
 
 4.02.2019
 
-- modified the Toolchange_Probe_general postprocessor file to remove any Z moves before the actual toolchange event
-- created a prototype postprocessor file for usage with tool probing in MACH3
+- modified the Toolchange_Probe_general preprocessor file to remove any Z moves before the actual toolchange event
+- created a prototype preprocessor file for usage with tool probing in MACH3
 - added the default values for Tool Film and Tool Panelize to the Edit -> Preferences
 - added a new parameter in the Tool Film which control the thickness of the stroke width in the resulting SVG. It's a scale parameter.
 - whatever was the visibility of the corresponding toolbar when we enter in the Editor, it will be set after exit from the Editor (either Geometry Editor or Excellon Editor).
@@ -2714,14 +2714,14 @@ CAD program, and create G-Code for Isolation routing.
 - some GUI structure optimization's
 - added protection against entering float numbers with comma separator instead of decimal dot separator in key points of FlatCAM (not everywhere)
 - added a choice of plotting the kind of geometry for the CNC plot (all, travel and cut kind of geometries) in CNCJob Selected Tab
-- added a new postprocessor file named: 'probe_from_zmove' which allow probing to be done from z_move position on toolchange event 
+- added a new preprocessor file named: 'probe_from_zmove' which allow probing to be done from z_move position on toolchange event 
 - fixed the snap magnet button in Geometry Editor, restored the checkable property to True
 - some more changes in the Editors GUI in deactivate() function
 - a fix for saving as empty an edited new and empty Excellon Object
 
 1.02.2019
 
-- fixed postprocessor files so now the bounds values are right aligned (assuming max string length of 9 chars which means 4 digits and 4 decimals)
+- fixed preprocessor files so now the bounds values are right aligned (assuming max string length of 9 chars which means 4 digits and 4 decimals)
 - corrected small type in list_sys Tcl command; added a protection of the Plot Area Tab after a successful edit.
 - remade the way FlatCAM saves the GUI position data from a file (previously) to use PyQt QSettings
 - added a 'theme' combo selection in Edit -> Preferences. Two themes are available: standard and compact.
@@ -2745,7 +2745,7 @@ CAD program, and create G-Code for Isolation routing.
 
 30.01.2019
 
-- added a space before Y coordinate in end_code() function in some of the postprocessor files
+- added a space before Y coordinate in end_code() function in some of the preprocessor files
 - added in Calculators Tool an Electroplating Calculator.
 - remade the App Menu for Editors: now they will be showed only when the respective Editor is active and hidden when the Editor is closed.
 - added a traceback report in the TCL Shell for the errors that don't allow creation of an object; useful to trace exceptions/errors
@@ -2753,9 +2753,9 @@ CAD program, and create G-Code for Isolation routing.
 - fixed an issue in camlib.CNCJob where tha variable self.toolchange_xy was used for 2 different purposes which created loss of information.
 - fixed unit conversion functions in case the toolchange_xy parameter is None
 - more fixes in camlib.CNCJob regarding usage of toolchange (in case it is None)
-- fixed postprocessor files to work with toolchange_xy parameter value = None (no values in Edit - Preferences fields)
+- fixed preprocessor files to work with toolchange_xy parameter value = None (no values in Edit - Preferences fields)
 - fixed Tcl commands CncJob and DrillCncJob to work with toolchange
-- added to the postprocessor files the command after toolchange to go with G00 (fastest) to "Z Move" value of Z pozition.
+- added to the preprocessor files the command after toolchange to go with G00 (fastest) to "Z Move" value of Z pozition.
 
 29.01.2019
 
@@ -2788,15 +2788,15 @@ CAD program, and create G-Code for Isolation routing.
 - added options for trace segmentation that can be useful for auto-levelling (code snippet from Lei Zheng from a rejected pull request on FlatCAM https://bitbucket.org/realthunder/ )
 - added shortcut key 'L' for creating 'New Excellon' 
 - added shortcut key combo 'SHIFT+S' for Running a Script.
-- modified GRBL_laser postprocessor file so it includes a Sxxxx command on the line with M03 (laser active) whenever a value is enter in the Spindlespeed entry field
+- modified GRBL_laser preprocessor file so it includes a Sxxxx command on the line with M03 (laser active) whenever a value is enter in the Spindlespeed entry field
 - remade the EDIT -> PREFERENCES window, the Excellon and Gerber sections. Created a new section named TOOLS
 
 26.01.2019
 
-- fixed grbl_11 postprocessor in linear_code() function
+- fixed grbl_11 preprocessor in linear_code() function
 - added icons to the Project Tab context menu
 - added new entries to the Canvas context menu (Copy, Delete, Edit/Save, Move, New Excellon, New Geometry, New Project)
-- fixed GRBL_laser postprocessor file
+- fixed GRBL_laser preprocessor file
 - updated function for copy of an Excellon object for the case when the object has slots
 - updated FlatCAMExcellon.merge() function to work in case some (or all) of the merged objects have slots  
 
@@ -2816,14 +2816,14 @@ CAD program, and create G-Code for Isolation routing.
 - added the Copy entry to the Project context menu
 - made the functions behind Disable and Enable project context menu entries, non-threaded to fix a possible issue
 - added multiple object selection on Open ... and Import ... (idea and code snippet came from Travers Carter, BitBucket user https://bitbucket.org/travc/)
-- fixed 'GRBL_laser' postprocessor bugs (missing functions)
-- fixed display geometry for 'GRBL_laser' postprocessor
+- fixed 'GRBL_laser' preprocessor bugs (missing functions)
+- fixed display geometry for 'GRBL_laser' preprocessor
 - Excellon Editor - added possibility to create an linear drill array rotated at an custom angle
 - added the Edit and Properties entries to the Project context menu
 
 23.01.2019
 
-- added a new postprocessor file named 'line_xyz' which have x, y, z values on the same GCode line
+- added a new preprocessor file named 'line_xyz' which have x, y, z values on the same GCode line
 - fixed calculation of total path for Excellon Gcode file
 - modified the way FlatCAM preferences are saved. Now they can be saved as new files with .FlatConfig extension by the user and shared.
 - added possibility to open the folder where FlatCAM is saving the preferences files
@@ -2840,19 +2840,19 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed the HPGL code geometry rendering when travel
 - fixed the message box layout when asking to save the current work
-- made sure that whenever the HPGL postprocessor is selected the Toolchange is always ON and the MultiDepth is OFF
-- the HPGL postprocessor entry is not allowed in Excellon Object postprocessor selection combobox as it is only applicable for Geometry
+- made sure that whenever the HPGL preprocessor is selected the Toolchange is always ON and the MultiDepth is OFF
+- the HPGL preprocessor entry is not allowed in Excellon Object preprocessor selection combobox as it is only applicable for Geometry
 - when saving HPGL code it will be saved as a file with extension .plt
 - the units mentioned in HPGL format are only METRIC therefore if FlatCAM units are in INCH they will be transform to METRIC
 - the minimum unit in HPGL is 0.025mm therefore the coordinates are rounded to a multiple of 0.025mm
 - removed the raise statement in do_worker_task() function as this is fatal in conjunction with PyQt5
 - added a try - except clause for the situations when for a font can't be determined the family and name
 - moved font parsing to the Geometry Editor: it is done everytime the Text tool is invoked
-- made sure that the HPGL postprocessor is not populated in the Excellon postprocessors in Preferences as it make no sense (HPGL is useful only for Geometries)
+- made sure that the HPGL preprocessor is not populated in the Excellon preprocessors in Preferences as it make no sense (HPGL is useful only for Geometries)
 
 19.01.2019
 
-- added initial implementation of HPGL postprocessor
+- added initial implementation of HPGL preprocessor
 - fixed display HPGL code geometry on canvas
 
 11.01.2019
@@ -2876,9 +2876,9 @@ CAD program, and create G-Code for Isolation routing.
 
 6.01.2019
 
-- fixed the Marlin postprocessor detection in GCode header
+- fixed the Marlin preprocessor detection in GCode header
 - the version date in GCode header is now the one set in FlatCAMApp.App.version_date
-- fixed bug in postprocessor files: number of drills is now calculated only for the Excellon objects in toolchange function (only Excellon objects have drills) 
+- fixed bug in preprocessor files: number of drills is now calculated only for the Excellon objects in toolchange function (only Excellon objects have drills) 
 
 5.01.2019
 
@@ -3042,8 +3042,8 @@ now there is a Tool Table in CNC Object UI and each tool GCode can be enabled or
 - Geometry Tool Table: new tool added copy all the form fields (data) from the last tool
 - finished work on generation of a single CNC Job file (therefore a single GCODE file) even for multiple tools in Geo Tool Table
 - GCode header is added only on saving the file therefore the time generation will be reflected in the file
-- modified postprocessors to accommodate the new CNC Job file with multiple tools
-- modified postprocessors so the last X,Y move will be to the toolchange X,Y pos (set in Preferences)
+- modified preprocessors to accommodate the new CNC Job file with multiple tools
+- modified preprocessors so the last X,Y move will be to the toolchange X,Y pos (set in Preferences)
 - save_project and load_project now work with the new type of multitool geometry and cncjob objects
 
 10.12.2018
@@ -3112,7 +3112,7 @@ now there is a Tool Table in CNC Object UI and each tool GCode can be enabled or
 
 - added checks for using a Z Cut with positive value. The Z Cut parameter has to be negative so if the app will detect a positive value it will automatically convert it to negative
 - started to implement rest-machining for Non Copper clearing Tool - for now the results are not great
-- added Toolchange X,Y position parameters and modified the default and manual_toolchange postprocessor file to use them
+- added Toolchange X,Y position parameters and modified the default and manual_toolchange preprocessor file to use them
 For now they are used only for Excellon objects who do have toolchange events
 - added Toolchange event selection for Geometry objects; for now it is as before, single tool on each file
 - remade the GUI for objects and in Preferences to have uniformity
@@ -3120,14 +3120,14 @@ For now they are used only for Excellon objects who do have toolchange events
 - fixed some bugs in Tool Add feature of the new Non Copper Clear Tool
 - added some messages in the Non Copper Clear Tool
 - added parameters for coordinates no of decimals and for feedrate no of decimals used in the resulting GCODE. They are in EDIT -> Preferences -> CNC Job Options
-- modified the postprocessors to use the "decimals" parameters
+- modified the preprocessors to use the "decimals" parameters
 
 28.11.2018
 
 - added different methods of copper clearing (standard, seed, line_based) and "connect", "contour" options found in Paint function
 - remake of the non-copper clearing tool as a separate tool
 - modified the "About" menu entry to mention the main contributors to FlatCAM 3000 
-- modified Marlin postprocessor according to modifications made by @redbull0174 user from FlatCAM.org forum
+- modified Marlin preprocessor according to modifications made by @redbull0174 user from FlatCAM.org forum
 - modified Move Tool so it will detect if there is no object to move and issue a message
 
 27.11.2018
@@ -3146,7 +3146,7 @@ For now they are used only for Excellon objects who do have toolchange events
 
 - restored the selection method in Geometry Editor to the original one found in FlatCAM 8.5
 - minor changes in Clear Copper function
-- minor changes in some postprocessors
+- minor changes in some preprocessors
 - change Join Geometry menu entry to Join Geo/Gerber
 - added menu entry for Toggle Axis in Menu -> View
 - added menu entry for Toggle Workspace in Menu -> View
@@ -3162,7 +3162,7 @@ For now they are used only for Excellon objects who do have toolchange events
 
 19.11.2018
 
-- fixed issue with nested comment in postprocessors
+- fixed issue with nested comment in preprocessors
 - fixed issue in Paint All; reverted changes
 
 18.11.2018
@@ -3179,13 +3179,13 @@ For now they are used only for Excellon objects who do have toolchange events
 12.11.2018
 
 - fixed bug in Paint Single Polygon
-- added spindle speed in laser postprocessor
+- added spindle speed in laser preprocessor
 - added Z start move parameter. It controls the height at which the tool travel on the fist move in the job. Leave it blank if you don't need it.
 
 9.11.2018
 
 - fixed a reported bug generated by a typo for feedrate_z object in camlib.py. Because of that, the project could not be saved.
-- fixed a G01 usage (should be G1) in Marlin postprocessor.
+- fixed a G01 usage (should be G1) in Marlin preprocessor.
 - changed the position of the Tool Dia entry in the Object UI and in FlatCAMGUI
 - fixed issues in the installer
 
@@ -3404,9 +3404,9 @@ the setting in the Preferences) and drag the rectangle across the objects you wa
 - work on Excellon Editor. Excellon editor working functions are: loading an Excellon object into Editor, 
 saving an Excellon object from editor to FlatCAM, selecting drills by left click, selection of drills by dragging rectangle, deletion of drills.
 - fixed Excellon merge
-- added more Gcode details (depthperpass parameter in Gcode header) in postprocessors
-- deleted the Tool informations from header in postprocessors due to Mach3 not liking the lot of square brackets
-- more corrections in postprocessors
+- added more Gcode details (depthperpass parameter in Gcode header) in preprocessors
+- deleted the Tool informations from header in preprocessors due to Mach3 not liking the lot of square brackets
+- more corrections in preprocessors
 
 
 28.09.2018
@@ -3481,7 +3481,7 @@ an Excellon file, a G-Code file or a SVG file.
 
 - added new information's in the object properties: all used Tool-Table items
 are included in a new entry in self.options dictionary
-- modified the postprocessor files so they now include information's about
+- modified the preprocessor files so they now include information's about
 how many drills (or slots) are for each tool. The Gcode will have this
 information displayed on the message from ToolChange.
 - removed some log.debug and add new log.debug especially for moments when some process is finished
@@ -3519,7 +3519,7 @@ is faster
 17.09.2018
 
 - fixed Measuring Tool not working when grid is turned OFF
-- fixed Roland MDX20 postprocessor
+- fixed Roland MDX20 preprocessor
 - added a .GBR extension in the open_gerber filter
 - added ability to Scale and Offset (for all types of objects) to just
 press Enter after entering a value in the Entry just like in Tool Transform
@@ -3533,8 +3533,8 @@ to FlatCAM.py
 
 15.09.2018
 
-- removed dwell line generator and included dwell generation in the postprocessor files
-- added a proposed RML1 Roland_MDX20 postprocessor file.
+- removed dwell line generator and included dwell generation in the preprocessor files
+- added a proposed RML1 Roland_MDX20 preprocessor file.
 - added a limit of 15mm/sec (900mm/min) to the feedrate and to the feedrate_rapid. Anything faster than this
 will be capped to 900mm/min regardless what is entered in the program GUI. This is because Roland MDX-20 has
 a mechanical limit of the speed to 15mm/sec (900mm/min in GUI)
@@ -3915,7 +3915,7 @@ total number of drills
 - modified generate_milling method which had issues from the Python3 port
 (it could not sort the tools due of dict to dict comparison no longer
 possible).
-- modified the 'default' postprocessor in order to include a space
+- modified the 'default' preprocessor in order to include a space
 between the value of Xcoord and the following Y
 - made optional the using of threads for the milling command; by default
 it is OFF (False) because in the current configuration it creates issues
@@ -3935,7 +3935,7 @@ clicked and Options Combo was in Project Options
 - fixed issue with Tcl Shell loosing focus after each command, therefore
 needing to click in the edit line before we type a new command (borrowed
 from @brainstorm
-- added a header in the postprocessor files mentioning that the GCODE
+- added a header in the preprocessor files mentioning that the GCODE
 files were generated by FlatCAM.
 - modified the number of decimals in some of the line entries to 4.
 - added an alias for the millholes Tcl Command: 'mill'
@@ -4038,14 +4038,14 @@ Delete:  Delete Obj
 
 22.05.2018
 
-- Added Marlin postprocessor
+- Added Marlin preprocessor
 - Added a new entry into the Geometry and Excellon Object's UI:
 Feedrate rapid: the purpose is to set a feedrate for the G0
 command that some firmwares like Marlin don't intepret as
 'move with highest speed'
 - FlatCAM was not making the conversion from one type of units to
 another for a lot of parameters. Corrected that.
-- Modified the Marlin Postprocessor so it will generate the required
+- Modified the Marlin preprocessor so it will generate the required
 GCODE.
 
 21.05.2018
@@ -4125,7 +4125,7 @@ make a board cutout from a "any shape" Gerber or Geometry file
 parameter value as the toolchangez parameter value and for the endz value
 used a default value = 1
 
-- added postprocessor name into the TCL command "drillcncjob" parameters
+- added preprocessor name into the TCL command "drillcncjob" parameters
 
 - when adding a new geometry the default name is now: "New_Geometry" instead
 of "New Geometry". TCL commands don't handle the spaces inside the name and
@@ -4212,19 +4212,19 @@ is less than 6 then the software will multiply by 10 the coordinates
 
 - fixed bug in Geometry CNCJob generation that prevented generating 
 the object
-- added GRBL 1.1 postprocessor and Laser postprocessor (adapted from 
+- added GRBL 1.1 preprocessor and Laser preprocessor (adapted from 
 the work of MARCO A QUEZADA)
 
 
 13.05.2018
 
 - added postprocessing in correct form
-- added the possibility to select an postprocessor for Excellon Object
-- added a new postprocessor, manual_toolchange.py. It allows to change 
+- added the possibility to select an preprocessor for Excellon Object
+- added a new preprocessor, manual_toolchange.py. It allows to change 
 the tools and adjust the drill tip to touch the surface manually, always
 in the X=0, Y=0, Z = toolchangeZ coordinates.
 - fixed drillcncjob TCL command by adding toolchangeZ parameter
-- fixed the posprocessor file template 'default.py' in the toolchange
+- fixed the preprocessor file template 'default.py' in the toolchange
 command section
 - after I created a feature that the message in infobar is cleared by
 moving mouse on canvas, it generated a bug in TCL shell: everytime 
