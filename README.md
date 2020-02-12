@@ -12,8 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 12.02.2020
 
 
-- working on fixing a bug in FlatCAMGeometry.merge() - FIXED
-- fixed bug: when deleting a FlatCAMCNCJob with annotations enabled, the annotations are not deleted from canvas;
+- working on fixing a bug in FlatCAMGeometry.merge() - FIXED issue #380
+- fixed bug: when deleting a FlatCAMCNCJob with annotations enabled, the annotations are not deleted from canvas; fixed issue #379
 - fixed bug: creating a new project while a project is open and it contain CNCJob annotations and/or Gerber mark shapes, did not delete them from canvas
 
 
