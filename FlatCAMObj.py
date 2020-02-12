@@ -6283,7 +6283,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             for option in geo_obj.options:
                 if option is not 'name':
                     try:
-                        new_options[option] = geo_obj.options[option]
+                        new_options[option] = deepcopy(geo_obj.options[option])
                     except Exception as e:
                         log.warning("Failed to copy option %s. Error: %s" % (str(option), str(e)))
 
@@ -6298,7 +6298,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     geo_final.multigeo = True
 
                 try:
-                    new_solid_geometry.append(geo_obj.solid_geometry)
+                    new_solid_geometry += deepcopy(geo_obj.solid_geometry)
                 except Exception as e:
                     log.debug("FlatCAMGeometry.merge() --> %s" % str(e))
 
@@ -6313,11 +6313,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if not isinstance(geo_obj, FlatCAMGerber) and not isinstance(geo_obj, FlatCAMExcellon):
                     for tool_uid in geo_obj.tools:
                         max_uid += 1
-                        new_tools[max_uid] = geo_obj.tools[tool_uid]
+                        new_tools[max_uid] = deepcopy(geo_obj.tools[tool_uid])
 
-        geo_final.options.update(deepcopy(new_options))
-        geo_final.solid_geometry = deepcopy(list(geo_final.flatten_list(new_solid_geometry)))
-        geo_final.tools = deepcopy(new_tools)
+        geo_final.options.update(new_options)
+        geo_final.solid_geometry = new_solid_geometry
+        geo_final.tools = new_tools
 
     @staticmethod
     def get_pts(o):

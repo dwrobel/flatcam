@@ -7149,8 +7149,7 @@ class App(QtCore.QObject):
                 if self.collection.get_active():
                     self.log.debug("App.on_delete()")
 
-                    while self.collection.get_active():
-                        obj_active = self.collection.get_active()
+                    for obj_active in  self.collection.get_selected():
                         # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
                         if isinstance(obj_active, FlatCAMGerber):
                             for el in obj_active.mark_shapes:
@@ -7160,12 +7159,16 @@ class App(QtCore.QObject):
                                 del el
                         elif isinstance(obj_active, FlatCAMCNCjob):
                             try:
+                                obj_active.text_col.enabled = False
+                                del obj_active.text_col
                                 obj_active.annotation.clear(update=True)
-                                obj_active.annotation.enabled = False
+                                del obj_active.annotation
                             except AttributeError as e:
                                 log.debug(
                                     "App.on_delete() --> delete annotations on a FlatCAMCNCJob object. %s" % str(e)
                                 )
+
+                    while self.collection.get_selected():
                         self.delete_first_selected()
 
                     self.inform.emit('%s...' % _("Object(s) deleted"))
@@ -9280,8 +9283,7 @@ class App(QtCore.QObject):
                 self.on_file_new()
         else:
             self.on_file_new()
-        self.inform.emit('[success] %s...' %
-                         _("New Project created"))
+        self.inform.emit('[success] %s...' % _("New Project created"))
 
     def on_file_new(self, cli=None):
         """
@@ -9310,16 +9312,20 @@ class App(QtCore.QObject):
             # delete shapes left drawn from mark shape_collections, if any
             if isinstance(obj, FlatCAMGerber):
                 try:
-                    obj.mark_shapes.enabled = False
-                    obj.mark_shapes.clear(update=True)
+                    for el in obj.mark_shapes:
+                        obj.mark_shapes[el].clear(update=True)
+                        obj.mark_shapes[el].enabled = False
+                        del el
                 except AttributeError:
                     pass
 
             # also delete annotation shapes, if any
             elif isinstance(obj, FlatCAMCNCjob):
                 try:
-                    obj.annotation.enabled = False
+                    obj.text_col.enabled = False
+                    del obj.text_col
                     obj.annotation.clear(update=True)
+                    del obj.annotation
                 except AttributeError:
                     pass
 

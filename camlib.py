@@ -948,7 +948,7 @@ class Geometry(object):
                 pol_nr += 1
                 disp_number = int(np.interp(pol_nr, [0, geo_len], [0, 100]))
 
-                if  old_disp_number < disp_number <= 100:
+                if old_disp_number < disp_number <= 100:
                     self.app.proc_container.update_view_text(' %s %d: %d%%' %
                                                              (_("Pass"), int(passes + 1), int(disp_number)))
                     old_disp_number = disp_number
@@ -979,8 +979,8 @@ class Geometry(object):
             log.debug("Geometry.isolation_geometry() --> Type of isolation not supported")
             return "fail"
 
-    def flatten_list(self, list):
-        for item in list:
+    def flatten_list(self, obj_list):
+        for item in obj_list:
             if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
                 yield from self.flatten_list(item)
             else:
@@ -1187,7 +1187,6 @@ class Geometry(object):
         if boundary is None:
             boundary = self.solid_geometry.envelope
         return boundary.difference(self.solid_geometry)
-        
 
     def clear_polygon(self, polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True,
                       prog_plot=False):
@@ -1441,7 +1440,7 @@ class Geometry(object):
 
         try:
             margin_poly = polygon.buffer(-tooldia / 1.99999999, (int(steps_per_circle)))
-        except Exception as e:
+        except Exception:
             log.debug("camlib.Geometry.clear_polygon3() --> Could not buffer the Polygon")
             return None
 
@@ -1571,6 +1570,7 @@ class Geometry(object):
         This algorithm draws parallel lines inside the polygon.
 
         :param line: The target line that create painted polygon.
+        :param aperture_size:   the size of the aperture that is used to draw the 'line' as a polygon
         :type line: shapely.geometry.LineString or shapely.geometry.MultiLineString
         :param tooldia: Tool diameter.
         :param steps_per_circle: how many linear segments to use to approximate a circle
@@ -1758,7 +1758,7 @@ class Geometry(object):
         # storage.get_points = get_pts
         #
         # for shape in geolist:
-        #     if shape is not None:  # TODO: This shouldn't have happened.
+        #     if shape is not None:
         #         # Make LlinearRings into linestrings otherwise
         #         # When chaining the coordinates path is messed up.
         #         storage.insert(LineString(shape))
@@ -2268,8 +2268,7 @@ class Geometry(object):
                 # variables to display the percentage of work done
                 self.geo_len = 0
                 try:
-                    for g in self.solid_geometry:
-                        self.geo_len += 1
+                    self.geo_len = len(self.solid_geometry)
                 except TypeError:
                     self.geo_len = 1
                 self.old_disp_number = 0
@@ -2355,7 +2354,7 @@ class Geometry(object):
 
             self.solid_geometry = buffer_geom(self.solid_geometry)
 
-            self.app.inform.emit('[success] %s...' %  _('Object was buffered'))
+            self.app.inform.emit('[success] %s...' % _('Object was buffered'))
         except AttributeError:
             self.app.inform.emit('[ERROR_NOTCL] %s' % _("Failed to buffer. No object selected"))
 
@@ -2387,8 +2386,8 @@ class CNCjob(Geometry):
 
     defaults = {
         "global_zdownrate": None,
-        "pp_geometry_name":'default',
-        "pp_excellon_name":'default',
+        "pp_geometry_name": 'default',
+        "pp_excellon_name": 'default',
         "excellon_optimization_type": "B",
     }
 
@@ -2591,7 +2590,7 @@ class CNCjob(Geometry):
             must_visit.remove(nearest)
         return path
 
-    def generate_from_excellon_by_tool(self, exobj, tools="all", drillz = 3.0, toolchange=False, toolchangez=0.1,
+    def generate_from_excellon_by_tool(self, exobj, tools="all", drillz=3.0, toolchange=False, toolchangez=0.1,
                                        toolchangexy='', endz=2.0, startz=None, excellon_optimization_type='B'):
         """
         Creates gcode for this object from an Excellon object
@@ -2675,7 +2674,7 @@ class CNCjob(Geometry):
         sort = []
         for k, v in list(exobj.tools.items()):
             sort.append((k, v.get('C')))
-        sorted_tools = sorted(sort,key=lambda t1: t1[1])
+        sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]   # we get a array of ordered tools
@@ -2783,7 +2782,7 @@ class CNCjob(Geometry):
                 """Initialize distance array."""
                 locations = create_data_array()
                 size = len(locations)
-                self.matrix = {}
+                self.matrix = dict()
 
                 for from_node in range(size):
                     self.matrix[from_node] = {}
@@ -2833,7 +2832,7 @@ class CNCjob(Geometry):
                 log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
                 if exobj.drills:
                     for tool in tools:
-                        self.tool=tool
+                        self.tool = tool
                         self.postdata['toolC'] = exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
@@ -3019,7 +3018,7 @@ class CNCjob(Geometry):
                             # graceful abort requested by the user
                             raise FlatCAMApp.GracefulException
 
-                        self.tool=tool
+                        self.tool = tool
                         self.postdata['toolC']=exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
@@ -3105,7 +3104,6 @@ class CNCjob(Geometry):
                                 # Drillling! for Absolute coordinates type G90
                                 # variables to display the percentage of work done
                                 geo_len = len(node_list)
-                                disp_number = 0
                                 old_disp_number = 0
                                 log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
@@ -3237,7 +3235,6 @@ class CNCjob(Geometry):
                             node_list = self.optimized_travelling_salesman(altPoints)
                             # variables to display the percentage of work done
                             geo_len = len(node_list)
-                            disp_number = 0
                             old_disp_number = 0
                             log.warning("Number of drills for which to generate GCode: %s" % str(geo_len))
 
@@ -3299,7 +3296,7 @@ class CNCjob(Geometry):
                                     self.app.proc_container.update_view_text(' %d%%' % disp_number)
                                     old_disp_number = disp_number
                         else:
-                            self.app.inform.emit('[ERROR_NOTCL] %s...' %  _('G91 coordinates not implemented'))
+                            self.app.inform.emit('[ERROR_NOTCL] %s...' % _('G91 coordinates not implemented'))
                             return 'fail'
                     else:
                         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
@@ -3564,9 +3561,9 @@ class CNCjob(Geometry):
 
         current_tooldia = float('%.*f' % (self.decimals, float(self.tooldia)))
 
-        self.app.inform.emit( '%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
-                                             str(current_tooldia),
-                                             str(self.units)))
+        self.app.inform.emit('%s: %s%s.' % (_("Starting G-Code for tool with diameter"),
+                                            str(current_tooldia),
+                                            str(self.units)))
 
         pt, geo = storage.nearest(current_pt)
 
@@ -3886,8 +3883,8 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
 
         if toolchange is False:
-            self.gcode += self.doformat(p.lift_code, x=self.oldx , y=self.oldy )  # Move (up) to travel height
-            self.gcode += self.doformat(p.startz_code, x=self.oldx , y=self.oldy )
+            self.gcode += self.doformat(p.lift_code, x=self.oldx, y=self.oldy)  # Move (up) to travel height
+            self.gcode += self.doformat(p.startz_code, x=self.oldx , y=self.oldy)
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:
@@ -3975,7 +3972,7 @@ class CNCjob(Geometry):
                 total_travel += abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
 
-                pt, geo = storage.nearest(current_pt) # Next
+                pt, geo = storage.nearest(current_pt)  # Next
 
                 disp_number = int(np.interp(path_count, [0, geo_len], [0, 100]))
                 if old_disp_number < disp_number <= 100:
@@ -4077,7 +4074,6 @@ class CNCjob(Geometry):
 
         # variables to display the percentage of work done
         geo_len = len(flat_geometry)
-        disp_number = 0
         old_disp_number = 0
 
         pt, geo = storage.nearest(current_pt)
@@ -4141,7 +4137,7 @@ class CNCjob(Geometry):
             # Move down to cutting depth
             gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.down_z_start_code)
-            gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
+            gcode += self.doformat(p.spindle_fwd_code)  # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)
             gcode += self.doformat(p.feedrate_z_dispense_code)
             gcode += self.doformat(p.lift_z_dispense_code)
@@ -4164,7 +4160,7 @@ class CNCjob(Geometry):
                 prev_y = next_y
 
             # Up to travelling height.
-            gcode += self.doformat(p.spindle_off_code) # Stop dispensing
+            gcode += self.doformat(p.spindle_off_code)  # Stop dispensing
             gcode += self.doformat(p.spindle_rev_code)
             gcode += self.doformat(p.down_z_stop_code)
             gcode += self.doformat(p.spindle_off_code)
@@ -4176,7 +4172,7 @@ class CNCjob(Geometry):
 
             gcode += self.doformat(p.feedrate_z_dispense_code)
             gcode += self.doformat(p.down_z_start_code)
-            gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
+            gcode += self.doformat(p.spindle_fwd_code)  # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)
             gcode += self.doformat(p.lift_z_dispense_code)
 
@@ -4191,7 +4187,6 @@ class CNCjob(Geometry):
 
     def create_gcode_single_pass(self, geometry, extracut, extracut_length, tolerance, old_point=(0, 0)):
         # G-code. Note: self.linear2gcode() and self.point2gcode() will lower and raise the tool every time.
-        gcode_single_pass = ''
 
         if type(geometry) == LineString or type(geometry) == LinearRing:
             if extracut is False:
@@ -4574,8 +4569,8 @@ class CNCjob(Geometry):
                     if geo['kind'][0] == 'C':
                         obj.add_shape(shape=geo['geom'], color=color['C'][1], visible=visible)
         else:
-            text = []
-            pos = []
+            text = list()
+            pos = list()
             self.coordinates_type = self.app.defaults["cncjob_coords_type"]
             if self.coordinates_type == "G90":
                 # For Absolute coordinates type G90
@@ -5084,10 +5079,10 @@ class CNCjob(Geometry):
 
         if self.z_feedrate is not None:
             gcode += self.doformat(p.z_feedrate_code)
-            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut = self.z_cut)
+            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut=self.z_cut)
             gcode += self.doformat(p.feedrate_code)
         else:
-            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut = self.z_cut)  # Start cutting
+            gcode += self.doformat(p.down_code, x=first_x, y=first_y, z_cut=self.z_cut)  # Start cutting
 
         gcode += self.doformat(p.lift_code, x=first_x, y=first_y)  # Stop cutting
         return gcode
@@ -5122,8 +5117,10 @@ class CNCjob(Geometry):
                 # graceful abort requested by the user
                 raise FlatCAMApp.GracefulException
 
-            if g['kind'][0] == 'C': cuts.append(g)
-            if g['kind'][0] == 'T': travels.append(g)
+            if g['kind'][0] == 'C':
+                cuts.append(g)
+            if g['kind'][0] == 'T':
+                travels.append(g)
 
         # Used to determine the overall board size
         self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
