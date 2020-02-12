@@ -425,7 +425,11 @@ class Properties(FlatCAMTool):
                     tools, str(tool), expanded=True, color=QtGui.QColor("#000000"), font=font)
                 for k, v in value.items():
                     if k == 'solid_geometry':
-                        printed_value = _('Present') if v else _('None')
+                        # printed_value = _('Present') if v else _('None')
+                        try:
+                            printed_value = str(len(v))
+                        except (TypeError, AttributeError):
+                            printed_value = '1'
                         self.treeWidget.addChild(geo_tool, [str(k), printed_value], True)
                     elif k == 'data':
                         tool_data = self.treeWidget.addParent(

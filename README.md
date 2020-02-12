@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+12.02.2020
+
+
+- working on fixing a bug in FlatCAMGeometry.merge()
+
+
 11.02.2020
 
 - working on Tool Punch; finished the geometry update with the clear geometry for the case of Excellon method

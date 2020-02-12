@@ -6268,53 +6268,58 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         """
 
         if geo_final.solid_geometry is None:
-            geo_final.solid_geometry = []
+            geo_final.solid_geometry = list()
 
-        if type(geo_final.solid_geometry) is not list:
+        try:
+            __ = iter(geo_final.solid_geometry)
+        except TypeError:
             geo_final.solid_geometry = [geo_final.solid_geometry]
 
-        for geo in geo_list:
-            for option in geo.options:
+        new_solid_geometry = list()
+        new_options = dict()
+        new_tools = dict()
+
+        for geo_obj in geo_list:
+            for option in geo_obj.options:
                 if option is not 'name':
                     try:
-                        geo_final.options[option] = deepcopy(geo.options[option])
+                        new_options[option] = geo_obj.options[option]
                     except Exception as e:
                         log.warning("Failed to copy option %s. Error: %s" % (str(option), str(e)))
 
             # Expand lists
-            if type(geo) is list:
-                FlatCAMGeometry.merge(self, geo_list=geo, geo_final=geo_final)
+            if type(geo_obj) is list:
+                FlatCAMGeometry.merge(self, geo_list=geo_obj, geo_final=geo_final)
             # If not list, just append
             else:
-                # merge solid_geometry, useful for singletool geometry, for multitool each is empty
                 if multigeo is None or multigeo is False:
                     geo_final.multigeo = False
-                    try:
-                        geo_final.solid_geometry.append(deepcopy(geo.solid_geometry))
-                    except Exception as e:
-                        log.debug("FlatCAMGeometry.merge() --> %s" % str(e))
                 else:
                     geo_final.multigeo = True
-                    # if multigeo the solid_geometry is empty in the object attributes because it now lives in the
-                    # tools object attribute, as a key value
-                    geo_final.solid_geometry = []
-
-                # find the tool_uid maximum value in the geo_final
-                geo_final_uid_list = []
-                for key in geo_final.tools:
-                    geo_final_uid_list.append(int(key))
 
                 try:
-                    max_uid = max(geo_final_uid_list, key=int)
+                    new_solid_geometry.append(geo_obj.solid_geometry)
+                except Exception as e:
+                    log.debug("FlatCAMGeometry.merge() --> %s" % str(e))
+
+                # find the tool_uid maximum value in the geo_final
+                try:
+                    max_uid = max([int(i) for i in new_tools.keys()])
                 except ValueError:
                     max_uid = 0
 
                 # add and merge tools. If what we try to merge as Geometry is Excellon's and/or Gerber's then don't try
                 # to merge the obj.tools as it is likely there is none to merge.
-                if not isinstance(geo, FlatCAMGerber) and not isinstance(geo, FlatCAMExcellon):
-                    for tool_uid in geo.tools:
+                if not isinstance(geo_obj, FlatCAMGerber) and not isinstance(geo_obj, FlatCAMExcellon):
+                    for tool_uid in geo_obj.tools:
                         max_uid += 1
-                        geo_final.tools[max_uid] = deepcopy(geo.tools[tool_uid])
+                        new_tools[max_uid] = geo_obj.tools[tool_uid]
+
+        geo_final.options.update(deepcopy(new_options))
+        geo_final.solid_geometry = deepcopy(list(geo_final.flatten_list(new_solid_geometry)))
+        geo_final.tools = deepcopy(new_tools)
+        for td in geo_final.tools:
+            print(td, geo_final.tools[td])
 
     @staticmethod
     def get_pts(o):

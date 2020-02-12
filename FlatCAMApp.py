@@ -5689,11 +5689,12 @@ class App(QtCore.QObject):
         if True in geo_type_set:
             def initialize(geo_obj, app):
                 FlatCAMGeometry.merge(self, geo_list=objs, geo_final=geo_obj, multigeo=True)
-                app.inform.emit('[success] %s.' % _("Multigeo. Geometry merging finished"))
+                app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
-                for v in obj.tools.values():
+                for v in geo_obj.tools.values():
                     v['data']['name'] = obj_name_multi
+
             self.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(geo_obj, app):
@@ -5701,7 +5702,7 @@ class App(QtCore.QObject):
                 app.inform.emit('[success] %s.' % _("Geometry merging finished"))
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
-                for v in obj.tools.values():
+                for v in geo_obj.tools.values():
                     v['data']['name'] = obj_name_single
             self.new_object("geometry", obj_name_single, initialize)
 
