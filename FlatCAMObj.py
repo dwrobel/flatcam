@@ -5618,10 +5618,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # find the tool_dia associated with the tooluid_key
                 # search in the self.tools for the sel_tool_dia and when found see what tooluid has
                 # on the found tooluid in self.tools we also have the solid_geometry that interest us
-                for k, v in self.tools.items():
-                    if float('%.*f' % (self.decimals, float(v['tooldia']))) == tooldia_val:
-                        current_uid = int(k)
-                        break
+                # for k, v in self.tools.items():
+                #     if float('%.*f' % (self.decimals, float(v['tooldia']))) == tooldia_val:
+                #         current_uid = int(k)
+                #         break
 
                 if dia_cnc_dict['offset'] == 'in':
                     tool_offset = -tooldia_val / 2
@@ -5664,7 +5664,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 pp_geometry_name = tools_dict[tooluid_key]['data']["ppname_g"]
 
                 spindledir = self.app.defaults['geometry_spindledir']
-                tool_solid_geometry = self.tools[current_uid]['solid_geometry']
+                tool_solid_geometry = self.tools[tooluid_key]['solid_geometry']
 
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
                 job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
@@ -6318,8 +6318,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         geo_final.options.update(deepcopy(new_options))
         geo_final.solid_geometry = deepcopy(list(geo_final.flatten_list(new_solid_geometry)))
         geo_final.tools = deepcopy(new_tools)
-        for td in geo_final.tools:
-            print(td, geo_final.tools[td])
 
     @staticmethod
     def get_pts(o):

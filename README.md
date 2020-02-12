@@ -12,7 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 12.02.2020
 
 
-- working on fixing a bug in FlatCAMGeometry.merge()
+- working on fixing a bug in FlatCAMGeometry.merge() - FIXED
 
 
 11.02.2020
