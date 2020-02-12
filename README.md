@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 11.02.2020
 
 - working on Tool Punch; finished the geometry update with the clear geometry for the case of Excellon method
+- working on Tool Punch; finished the geometry update with the clear geometry for the case of Fixed Diameter method
 
 10.02.2020
 

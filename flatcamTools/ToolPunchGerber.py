@@ -5,15 +5,14 @@
 # MIT Licence                                              #
 # ##########################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox, \
-    OptionalHideInputSection, OptionalInputSection, FCComboBox
+from flatcamGUI.GUIElements import RadioSet, FCDoubleSpinner, FCCheckBox
 
 from copy import deepcopy
 import logging
-from shapely.geometry import Polygon, MultiPolygon, Point
+from shapely.geometry import MultiPolygon, Point
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -574,9 +573,13 @@ class ToolPunchGerber(FlatCAMTool):
         elif punch_method == 'fixed':
             punch_size = float(self.dia_entry.get_value())
 
+            if punch_size == 0.0:
+                self.app.inform.emit('[WARNING_NOTCL] %s' % _("The value of the fixed diameter is 0.0. Aborting."))
+                return 'fail'
+
             punching_geo = list()
             for apid in grb_obj.apertures:
-                if grb_obj.apertures[apid]['type'] == 'C':
+                if grb_obj.apertures[apid]['type'] == 'C' and self.circular_cb.get_value():
                     if punch_size >= float(grb_obj.apertures[apid]['size']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
                                              _(" Could not generate punched hole Gerber because the punch hole size"
@@ -587,18 +590,37 @@ class ToolPunchGerber(FlatCAMTool):
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
                                     punching_geo.append(elem['follow'].buffer(punch_size / 2))
-                else:
+                elif grb_obj.apertures[apid]['type'] == 'R':
                     if punch_size >= float(grb_obj.apertures[apid]['width']) or \
                             punch_size >= float(grb_obj.apertures[apid]['height']):
                         self.app.inform.emit('[ERROR_NOTCL] %s' %
                                              _("Could not generate punched hole Gerber because the punch hole size"
                                                "is bigger than some of the apertures in the Gerber object."))
                         return 'fail'
-                    else:
+                    elif round(float(grb_obj.apertures[apid]['width']), self.decimals) == \
+                            round(float(grb_obj.apertures[apid]['height']), self.decimals) and \
+                            self.square_cb.get_value():
                         for elem in grb_obj.apertures[apid]['geometry']:
                             if 'follow' in elem:
                                 if isinstance(elem['follow'], Point):
                                     punching_geo.append(elem['follow'].buffer(punch_size / 2))
+                    elif round(float(grb_obj.apertures[apid]['width']), self.decimals) != \
+                            round(float(grb_obj.apertures[apid]['height']), self.decimals) and \
+                            self.rectangular_cb.get_value():
+                        for elem in grb_obj.apertures[apid]['geometry']:
+                            if 'follow' in elem:
+                                if isinstance(elem['follow'], Point):
+                                    punching_geo.append(elem['follow'].buffer(punch_size / 2))
+                elif grb_obj.apertures[apid]['type'] == 'O' and self.oblong_cb.get_value():
+                    for elem in grb_obj.apertures[apid]['geometry']:
+                        if 'follow' in elem:
+                            if isinstance(elem['follow'], Point):
+                                punching_geo.append(elem['follow'].buffer(punch_size / 2))
+                elif grb_obj.apertures[apid]['type'] not in ['C', 'R', 'O'] and self.other_cb.get_value():
+                    for elem in grb_obj.apertures[apid]['geometry']:
+                        if 'follow' in elem:
+                            if isinstance(elem['follow'], Point):
+                                punching_geo.append(elem['follow'].buffer(punch_size / 2))
 
             punching_geo = MultiPolygon(punching_geo)
             if isinstance(grb_obj.solid_geometry, list):
@@ -613,8 +635,53 @@ class ToolPunchGerber(FlatCAMTool):
                                        "geometry is the same as the one in the source object geometry..."))
                 return 'fail'
 
+            # update the gerber apertures to include the clear geometry so it can be exported successfully
+            new_apertures = deepcopy(grb_obj.apertures)
+            new_apertures_items = new_apertures.items()
+
+            # find maximum aperture id
+            new_apid = max([int(x) for x, __ in new_apertures_items])
+
+            # store here the clear geometry, the key is the drill size
+            holes_apertures = dict()
+
+            for apid, val in new_apertures_items:
+                for elem in val['geometry']:
+                    # make it work only for Gerber Flashes who are Points in 'follow'
+                    if 'solid' in elem and isinstance(elem['follow'], Point):
+                        for geo in punching_geo:
+                            clear_apid_size = punch_size
+
+                            # since there may be drills that do not drill into a pad we test only for drills in a pad
+                            if geo.within(elem['solid']):
+                                geo_elem = dict()
+                                geo_elem['clear'] = geo.centroid
+
+                                if clear_apid_size not in holes_apertures:
+                                    holes_apertures[clear_apid_size] = dict()
+                                    holes_apertures[clear_apid_size]['type'] = 'C'
+                                    holes_apertures[clear_apid_size]['size'] = clear_apid_size
+                                    holes_apertures[clear_apid_size]['geometry'] = list()
+
+                                holes_apertures[clear_apid_size]['geometry'].append(deepcopy(geo_elem))
+
+            # add the clear geometry to new apertures; it's easier than to test if there are apertures with the same
+            # size and add there the clear geometry
+            for hole_size, ap_val in holes_apertures.items():
+                new_apid += 1
+                new_apertures[str(new_apid)] = deepcopy(ap_val)
+
             def init_func(new_obj, app_obj):
+                new_obj.options.update(grb_obj.options)
+                new_obj.options['name'] = outname
+                new_obj.fill_color = deepcopy(grb_obj.fill_color)
+                new_obj.outline_color = deepcopy(grb_obj.outline_color)
+
+                new_obj.apertures = deepcopy(new_apertures)
+
                 new_obj.solid_geometry = deepcopy(punched_solid_geometry)
+                new_obj.source_file = self.app.export_gerber(obj_name=outname, filename=None,
+                                                             local_use=new_obj, use_thread=False)
 
             self.app.new_object('gerber', outname, init_func)
         elif punch_method == 'ring':
