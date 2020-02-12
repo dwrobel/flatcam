@@ -7162,8 +7162,10 @@ class App(QtCore.QObject):
                             try:
                                 obj_active.annotation.clear(update=True)
                                 obj_active.annotation.enabled = False
-                            except AttributeError:
-                                pass
+                            except AttributeError as e:
+                                log.debug(
+                                    "App.on_delete() --> delete annotations on a FlatCAMCNCJob object. %s" % str(e)
+                                )
                         self.delete_first_selected()
 
                     self.inform.emit('%s...' % _("Object(s) deleted"))
