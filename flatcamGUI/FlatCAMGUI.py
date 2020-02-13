@@ -1560,6 +1560,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;%s</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>ALT+H</strong></td>
+                        <td>&nbsp;%s</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>ALT+I</strong></td>
                         <td>&nbsp;%s</td>
                     </tr>
@@ -1688,7 +1692,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 _("Skew on Y axis"),
                 # ALT section
                 _("Align Objects Tool"), _("Calculators Tool"), _("2-Sided PCB Tool"), _("Transformations Tool"),
-                _("Extract Drills Tool"), _("Fiducials Tool"),
+                _("Punch Gerber Tool"), _("Extract Drills Tool"), _("Fiducials Tool"),
                 _("Solder Paste Dispensing Tool"),
                 _("Film PCB Tool"), _("Non-Copper Clearing Tool"), _("Optimal Tool"),
                 _("Paint Area Tool"), _("QRCode Tool"), _("Rules Check Tool"),
@@ -2974,6 +2978,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     return
 
                 # Align in Object Tool
+                if key == QtCore.Qt.Key_H:
+                    self.app.punch_tool.run(toggle=True)
+
+                # Extract Drills Tool
                 if key == QtCore.Qt.Key_I:
                     self.app.edrills_tool.run(toggle=True)
 

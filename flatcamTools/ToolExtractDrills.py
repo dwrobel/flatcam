@@ -76,7 +76,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Circular Aperture Selection
         self.circular_cb = FCCheckBox('%s' % _("Circular"))
         self.circular_cb.setToolTip(
-            _("Create drills from circular pads.")
+            _("Process Circular Pads.")
         )
 
         grid_lay.addWidget(self.circular_cb, 3, 0, 1, 2)
@@ -84,7 +84,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Oblong Aperture Selection
         self.oblong_cb = FCCheckBox('%s' % _("Oblong"))
         self.oblong_cb.setToolTip(
-            _("Create drills from oblong pads.")
+            _("Process Oblong Pads.")
         )
 
         grid_lay.addWidget(self.oblong_cb, 4, 0, 1, 2)
@@ -92,7 +92,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Square Aperture Selection
         self.square_cb = FCCheckBox('%s' % _("Square"))
         self.square_cb.setToolTip(
-            _("Create drills from square pads.")
+            _("Process Square Pads.")
         )
 
         grid_lay.addWidget(self.square_cb, 5, 0, 1, 2)
@@ -100,7 +100,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Rectangular Aperture Selection
         self.rectangular_cb = FCCheckBox('%s' % _("Rectangular"))
         self.rectangular_cb.setToolTip(
-            _("Create drills from rectangular pads.")
+            _("Process Rectangular Pads.")
         )
 
         grid_lay.addWidget(self.rectangular_cb, 6, 0, 1, 2)
@@ -108,7 +108,7 @@ class ToolExtractDrills(FlatCAMTool):
         # Others type of Apertures Selection
         self.other_cb = FCCheckBox('%s' % _("Others"))
         self.other_cb.setToolTip(
-            _("Create drills from other types of pad shape.")
+            _("Process pads not in the categories above.")
         )
 
         grid_lay.addWidget(self.other_cb, 7, 0, 1, 2)
@@ -126,7 +126,7 @@ class ToolExtractDrills(FlatCAMTool):
 
         self.method_label = QtWidgets.QLabel('<b>%s</b>' % _("Method"))
         self.method_label.setToolTip(
-            _("The selected method of extracting the drills. Can be:\n"
+            _("The method for processing pads. Can be:\n"
               "- Fixed Diameter -> all holes will have a set size\n"
               "- Fixed Annular Ring -> all holes will have a set annular ring\n"
               "- Proportional -> each hole size will be a fraction of the pad size"))
@@ -191,7 +191,7 @@ class ToolExtractDrills(FlatCAMTool):
         self.ring_label = QtWidgets.QLabel('<b>%s</b>' % _("Fixed Annular Ring"))
         self.ring_label.setToolTip(
             _("The size of annular ring.\n"
-              "The copper sliver between the drill hole exterior\n"
+              "The copper sliver between the hole exterior\n"
               "and the margin of the copper pad.")
         )
         grid2.addWidget(self.ring_label, 0, 0, 1, 2)
@@ -284,7 +284,7 @@ class ToolExtractDrills(FlatCAMTool):
         self.factor_label = QtWidgets.QLabel('%s:' % _("Value"))
         self.factor_label.setToolTip(
             _("Proportional Diameter.\n"
-              "The drill diameter will be a fraction of the pad size.")
+              "The hole diameter will be a fraction of the pad size.")
         )
 
         grid3.addWidget(self.factor_label, 3, 0)

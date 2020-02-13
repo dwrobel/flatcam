@@ -9,7 +9,6 @@
 import urllib.request
 import urllib.parse
 import urllib.error
-import webbrowser
 
 import getopt
 import random
@@ -141,7 +140,7 @@ class App(QtCore.QObject):
     # ################## Version and VERSION DATE ##############################
     # ##########################################################################
     version = 8.992
-    version_date = "2020/02/12"
+    version_date = "2020/02/22"
     beta = True
     engine = '3D'
 
@@ -985,6 +984,21 @@ class App(QtCore.QObject):
             "tools_edrills_rectangular": False,
             "tools_edrills_others": False,
 
+            # Punch Gerber Tool
+            "tools_punch_hole_type": 'exc',
+            "tools_punch_hole_fixed_dia": 0.5,
+            "tools_punch_hole_prop_factor": 80.0,
+            "tools_punch_circular_ring": 0.2,
+            "tools_punch_oblong_ring": 0.2,
+            "tools_punch_square_ring": 0.2,
+            "tools_punch_rectangular_ring": 0.2,
+            "tools_punch_others_ring": 0.2,
+            "tools_punch_circular": True,
+            "tools_punch_oblong": False,
+            "tools_punch_square": True,
+            "tools_punch_rectangular": False,
+            "tools_punch_others": False,
+
             # Align Objects Tool
             "tools_align_objects_align_type": 'sp',
 
@@ -1636,6 +1650,21 @@ class App(QtCore.QObject):
             "tools_edrills_square": self.ui.tools2_defaults_form.tools2_edrills_group.square_cb,
             "tools_edrills_rectangular": self.ui.tools2_defaults_form.tools2_edrills_group.rectangular_cb,
             "tools_edrills_others": self.ui.tools2_defaults_form.tools2_edrills_group.other_cb,
+
+            # Punch Gerber Tool
+            "tools_punch_hole_type": self.ui.tools2_defaults_form.tools2_punch_group.hole_size_radio,
+            "tools_punch_hole_fixed_dia": self.ui.tools2_defaults_form.tools2_punch_group.dia_entry,
+            "tools_punch_hole_prop_factor": self.ui.tools2_defaults_form.tools2_punch_group.factor_entry,
+            "tools_punch_circular_ring": self.ui.tools2_defaults_form.tools2_punch_group.circular_ring_entry,
+            "tools_punch_oblong_ring": self.ui.tools2_defaults_form.tools2_punch_group.oblong_ring_entry,
+            "tools_punch_square_ring": self.ui.tools2_defaults_form.tools2_punch_group.square_ring_entry,
+            "tools_punch_rectangular_ring": self.ui.tools2_defaults_form.tools2_punch_group.rectangular_ring_entry,
+            "tools_punch_others_ring": self.ui.tools2_defaults_form.tools2_punch_group.other_ring_entry,
+            "tools_punch_circular": self.ui.tools2_defaults_form.tools2_punch_group.circular_cb,
+            "tools_punch_oblong": self.ui.tools2_defaults_form.tools2_punch_group.oblong_cb,
+            "tools_punch_square": self.ui.tools2_defaults_form.tools2_punch_group.square_cb,
+            "tools_punch_rectangular": self.ui.tools2_defaults_form.tools2_punch_group.rectangular_cb,
+            "tools_punch_others": self.ui.tools2_defaults_form.tools2_punch_group.other_cb,
 
             # Utilities
             # File associations
@@ -3459,7 +3488,7 @@ class App(QtCore.QObject):
                             edited_obj.options['xmax'] = xmax
                             edited_obj.options['ymax'] = ymax
                         except AttributeError as e:
-                            self.inform.emit('[WARNING] %s' %  _("Object empty after edit."))
+                            self.inform.emit('[WARNING] %s' % _("Object empty after edit."))
                             log.debug("App.editor2object() --> Geometry --> %s" % str(e))
 
                         edited_obj.build_ui()
@@ -5972,7 +6001,6 @@ class App(QtCore.QObject):
                         tools_diameters[t] *= sfactor
                         self.defaults['geometry_cnctooldia'] += "%.*f," % (self.decimals, tools_diameters[t])
                 elif dim == 'tools_ncctools':
-                    ncctools = list()
                     if type(self.defaults["tools_ncctools"]) == float:
                         ncctools = [self.defaults["tools_ncctools"]]
                     else:
@@ -5988,7 +6016,6 @@ class App(QtCore.QObject):
                         ncctools[t] *= sfactor
                         self.defaults['tools_ncctools'] += "%.*f," % (self.decimals, ncctools[t])
                 elif dim == 'tools_solderpaste_tools':
-                    sptools = list()
                     if type(self.defaults["tools_solderpaste_tools"]) == float:
                         sptools = [self.defaults["tools_solderpaste_tools"]]
                     else:
@@ -6017,7 +6044,6 @@ class App(QtCore.QObject):
 
                 elif dim == 'global_gridx' or dim == 'global_gridy':
                     if new_units == 'IN':
-                        val = 0.1
                         try:
                             val = float(self.defaults[dim]) * sfactor
                         except Exception as e:
@@ -6026,7 +6052,6 @@ class App(QtCore.QObject):
 
                         self.defaults[dim] = float('%.*f' % (self.decimals, val))
                     else:
-                        val = 0.1
                         try:
                             val = float(self.defaults[dim]) * sfactor
                         except Exception as e:
@@ -6035,7 +6060,6 @@ class App(QtCore.QObject):
 
                         self.defaults[dim] = float('%.*f' % (self.decimals, val))
                 else:
-                    val = 0.1
                     if self.defaults[dim]:
                         try:
                             val = float(self.defaults[dim]) * sfactor
@@ -7149,7 +7173,7 @@ class App(QtCore.QObject):
                 if self.collection.get_active():
                     self.log.debug("App.on_delete()")
 
-                    for obj_active in  self.collection.get_selected():
+                    for obj_active in self.collection.get_selected():
                         # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
                         if isinstance(obj_active, FlatCAMGerber):
                             for el in obj_active.mark_shapes:
@@ -7692,6 +7716,7 @@ class App(QtCore.QObject):
                 obj_init.follow_geometry = deepcopy(obj.follow_geometry)
             except AttributeError:
                 pass
+
             try:
                 obj_init.apertures = deepcopy(obj.apertures)
             except AttributeError:
@@ -7725,8 +7750,8 @@ class App(QtCore.QObject):
                     self.new_object("gerber", str(obj_name) + custom_name, initialize_gerber)
                 elif isinstance(obj, FlatCAMGeometry):
                     self.new_object("geometry", str(obj_name) + custom_name, initialize_geometry)
-            except Exception as e:
-                return "Operation failed: %s" % str(e)
+            except Exception as er:
+                return "Operation failed: %s" % str(er)
 
     def on_rename_object(self, text):
         self.report_usage("on_rename_object()")
@@ -8761,7 +8786,7 @@ class App(QtCore.QObject):
             try:  # May fail in case mouse not within axes
                 pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
-                if self.grid_status() == True:
+                if self.grid_status():
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
 
                     # Update cursor
@@ -8847,7 +8872,7 @@ class App(QtCore.QObject):
             right_button = 3
 
         pos_canvas = self.plotcanvas.translate_coords(event_pos)
-        if self.grid_status() == True:
+        if self.grid_status():
             pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -10446,8 +10471,8 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Project As ..."),
-                directory=('{l_save}/{proj}_{date}').format(l_save=str(self.get_last_save_folder()), date=self.date,
-                                                            proj=_("Project")),
+                directory='{l_save}/{proj}_{date}'.format(l_save=str(self.get_last_save_folder()), date=self.date,
+                                                          proj=_("Project")),
                 filter=filter_
             )
         except TypeError:
@@ -10500,9 +10525,9 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Object as PDF ..."),
-                directory=('{l_save}/{obj_name}_{date}').format(l_save=str(self.get_last_save_folder()),
-                                                                obj_name=obj_name,
-                                                                date=self.date),
+                directory='{l_save}/{obj_name}_{date}'.format(l_save=str(self.get_last_save_folder()),
+                                                              obj_name=obj_name,
+                                                              date=self.date),
                 filter=filter_
             )
         except TypeError:
@@ -11484,7 +11509,7 @@ class App(QtCore.QObject):
             # # ## Object creation # ##
             ret = self.new_object("geometry", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit('[ERROR_NOTCL]%s' %  _(' Open HPGL2 failed. Probable not a HPGL2 file.'))
+                self.inform.emit('[ERROR_NOTCL]%s' % _(' Open HPGL2 failed. Probable not a HPGL2 file.'))
                 return 'fail'
 
             # Register recent file
