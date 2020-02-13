@@ -412,6 +412,19 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addStretch()
 
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.transform_lay.addWidget(self.reset_button)
+
         # ## Signals
         self.rotate_button.clicked.connect(self.on_rotate)
         self.skewx_button.clicked.connect(self.on_skewx)
@@ -425,6 +438,8 @@ class ToolTransform(FlatCAMTool):
         self.flip_ref_button.clicked.connect(self.on_flip_add_coords)
         self.buffer_button.clicked.connect(self.on_buffer_by_distance)
         self.buffer_factor_button.clicked.connect(self.on_buffer_by_factor)
+
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
         # self.rotate_entry.returnPressed.connect(self.on_rotate)
         # self.skewx_entry.returnPressed.connect(self.on_skewx)

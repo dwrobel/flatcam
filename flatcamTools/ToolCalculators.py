@@ -242,6 +242,19 @@ class ToolCalculator(FlatCAMTool):
 
         self.layout.addStretch()
 
+        # ## Reset Tool
+        self.reset_button = QtWidgets.QPushButton(_("Reset Tool"))
+        self.reset_button.setToolTip(
+            _("Will reset the tool parameters.")
+        )
+        self.reset_button.setStyleSheet("""
+                        QPushButton
+                        {
+                            font-weight: bold;
+                        }
+                        """)
+        self.layout.addWidget(self.reset_button)
+
         self.units = ''
 
         # ## Signals
@@ -255,6 +268,7 @@ class ToolCalculator(FlatCAMTool):
         self.inch_entry.editingFinished.connect(self.on_calculate_mm_units)
 
         self.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
+        self.reset_button.clicked.connect(self.set_tool_ui)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolCalculators()")

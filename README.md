@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 13.02.2020
 
 - finished Punch Gerber Tool
+- minor changes in the Tool Transform and Tool Calculators UI to bring them up2date with the other tools
 
 12.02.2020
 
