@@ -35,7 +35,9 @@ import FlatCAMApp
 from flatcamGUI.VisPyVisuals import ShapeCollection
 
 import tkinter as tk
-import os, sys, itertools
+import os
+import sys
+import itertools
 import ezdxf
 
 import math
@@ -246,7 +248,7 @@ class FlatCAMObj(QtCore.QObject):
                 self.app.myKeywords.append(new_name)
                 self.app.shell._edit.set_model_data(self.app.myKeywords)
                 self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-            except Exception as e:
+            except Exception:
                 log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
             self.options["name"] = self.ui.name_entry.get_value()
@@ -791,15 +793,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def on_calculate_tooldia(self):
         try:
             tdia = float(self.ui.tipdia_spinner.get_value())
-        except Exception as e:
+        except Exception:
             return
         try:
             dang = float(self.ui.tipangle_spinner.get_value())
-        except Exception as e:
+        except Exception:
             return
         try:
             cutz = float(self.ui.cutz_spinner.get_value())
-        except Exception as e:
+        except Exception:
             return
 
         cutz *= -1
@@ -1384,13 +1386,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     }
                 })
 
-                for i in range(passes):
-                    iso_offset = dia * ((2 * i + 1) / 2.0) - (i * overlap * dia)
+                for nr_pass in range(passes):
+                    iso_offset = dia * ((2 * nr_pass + 1) / 2.0) - (nr_pass * overlap * dia)
 
                     # if milling type is climb then the move is counter-clockwise around features
                     mill_dir = 1 if milling_type == 'cl' else 0
                     geom = self.generate_envelope(iso_offset, mill_dir, geometry=work_geo, env_iso_type=iso_t,
-                                                  follow=follow, nr_passes=i)
+                                                  follow=follow, nr_passes=nr_pass)
 
                     if geom == 'fail':
                         app_obj.inform.emit('[ERROR_NOTCL] %s' % _("Isolation geometry could not be generated."))
@@ -2380,7 +2382,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
-        self.ser_attrs += ['options', 'kind',]
+        self.ser_attrs += ['options', 'kind']
 
     def merge(self, exc_list, exc_final):
         """
@@ -2425,7 +2427,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 if option is not 'name':
                     try:
                         exc_final.options[option] = exc.options[option]
-                    except Exception as e:
+                    except Exception:
                         exc.app.log.warning("Failed to copy option.", option)
 
             for drill in exc.drills:
@@ -3934,7 +3936,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.units = self.app.defaults['units']
 
-        offset = 0
         tool_idx = 0
 
         n = len(self.tools)
@@ -4852,7 +4853,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 obj_active.options['ymin'] = ymin
                 obj_active.options['xmax'] = xmax
                 obj_active.options['ymax'] = ymax
-            except Exception as e:
+            except Exception:
                 obj_active.options['xmin'] = 0
                 obj_active.options['ymin'] = 0
                 obj_active.options['xmax'] = 0
@@ -5036,7 +5037,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         widget_changed = self.sender()
         try:
             widget_idx = self.ui.grid3.indexOf(widget_changed)
-        except Exception as e:
+        except Exception:
             return
 
         # those are the indexes for the V-Tip Dia and V-Tip Angle, if edited calculate the new Cut Z
@@ -5887,7 +5888,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         try:
             xfactor = float(xfactor)
         except Exception:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %  _("Scale factor has to be a number: integer or float."))
+            self.app.inform.emit('[ERROR_NOTCL] %s' % _("Scale factor has to be a number: integer or float."))
             return
 
         if yfactor is None:
@@ -6497,7 +6498,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui_connect()
 
     def build_cnc_tools_table(self):
-        offset = 0
         tool_idx = 0
 
         n = len(self.cnc_tools)
@@ -6508,9 +6508,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             tool_idx += 1
             row_no = tool_idx - 1
 
-            id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
             # id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.cnc_tools_table.setItem(row_no, 0, id)  # Tool name/id
+            self.ui.cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
 
             # Make sure that the tool diameter when in MM is with no more than 2 decimals.
             # There are no tool bits in MM with more than 2 decimals diameter.
@@ -6524,7 +6524,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             type_item = QtWidgets.QTableWidgetItem(str(dia_value['type']))
             tool_type_item = QtWidgets.QTableWidgetItem(str(dia_value['tool_type']))
 
-            id.setFlags(QtCore.Qt.ItemIsEnabled)
+            t_id.setFlags(QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
             offset_item.setFlags(QtCore.Qt.ItemIsEnabled)
             type_item.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -6606,13 +6606,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             tool_idx += 1
             row_no = tool_idx - 1
 
-            id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
+            t_id = QtWidgets.QTableWidgetItem('%d' % int(tool_idx))
             dia_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(tooldia_key)))
             nr_drills_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_drills']))
             nr_slots_item = QtWidgets.QTableWidgetItem('%d' % int(dia_value['nr_slots']))
             cutz_item = QtWidgets.QTableWidgetItem('%.*f' % (self.decimals, float(dia_value['offset_z']) + self.z_cut))
 
-            id.setFlags(QtCore.Qt.ItemIsEnabled)
+            t_id.setFlags(QtCore.Qt.ItemIsEnabled)
             dia_item.setFlags(QtCore.Qt.ItemIsEnabled)
             nr_drills_item.setFlags(QtCore.Qt.ItemIsEnabled)
             nr_slots_item.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -6638,7 +6638,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             # TODO until the feature of individual plot for an Excellon tool is implemented
             plot_item.setDisabled(True)
 
-            self.ui.exc_cnc_tools_table.setItem(row_no, 0, id)  # Tool name/id
+            self.ui.exc_cnc_tools_table.setItem(row_no, 0, t_id)  # Tool name/id
             self.ui.exc_cnc_tools_table.setItem(row_no, 1, dia_item)  # Diameter
             self.ui.exc_cnc_tools_table.setItem(row_no, 2, nr_drills_item)  # Nr of drills
             self.ui.exc_cnc_tools_table.setItem(row_no, 3, nr_slots_item)  # Nr of slots
@@ -6935,7 +6935,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         try:
             for key in self.cnc_tools:
                 ppg = self.cnc_tools[key]['data']['ppname_g']
-                if 'marlin' in ppg.lower() or 'repetier' in ppg.lower() :
+                if 'marlin' in ppg.lower() or 'repetier' in ppg.lower():
                     marlin = True
                     break
                 if ppg == 'hpgl':
@@ -7711,9 +7711,10 @@ class FlatCAMDocument(FlatCAMObj):
         self.source_file = ''
         self.doc_code = ''
 
+        self.font_name = None
         self.font_italic = None
         self.font_bold = None
-        self.font_underline =None
+        self.font_underline = None
 
         self.document_editor_tab = None
 
