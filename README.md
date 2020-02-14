@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.02.2020
+
+- adjusted the UI for Excellon and Geometry objects
+
 13.02.2020
 
 - finished Punch Gerber Tool

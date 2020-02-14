@@ -956,60 +956,6 @@ class ExcellonObjectUI(ObjectUI):
         self.grid3.addWidget(self.travelzlabel, 6, 0)
         self.grid3.addWidget(self.travelz_entry, 6, 1)
 
-        # Tool change:
-        self.toolchange_cb = FCCheckBox('%s:' % _("Tool change Z"))
-        self.toolchange_cb.setToolTip(
-            _("Include tool-change sequence\n"
-              "in G-Code (Pause for tool change).")
-        )
-
-        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.toolchangez_entry.set_precision(self.decimals)
-        self.toolchangez_entry.setToolTip(
-            _("Z-axis position (height) for\n"
-              "tool change.")
-        )
-        if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0.0, 9999.9999)
-        else:
-            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
-
-        self.toolchangez_entry.setSingleStep(0.1)
-        self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
-
-        self.grid3.addWidget(self.toolchange_cb, 8, 0)
-        self.grid3.addWidget(self.toolchangez_entry, 8, 1)
-
-        # Start move Z:
-        self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
-        self.estartz_label.setToolTip(
-            _("Height of the tool just after start.\n"
-              "Delete the value if you don't need this feature.")
-        )
-        self.estartz_entry = FloatEntry()
-
-        self.grid3.addWidget(self.estartz_label, 9, 0)
-        self.grid3.addWidget(self.estartz_entry, 9, 1)
-
-        # End move Z:
-        self.endz_label = QtWidgets.QLabel('%s:' % _("End move Z"))
-        self.endz_label.setToolTip(
-            _("Height of the tool after\n"
-              "the last move at the end of the job.")
-        )
-        self.endz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.endz_entry.set_precision(self.decimals)
-
-        if machinist_setting == 0:
-            self.endz_entry.set_range(0.0, 9999.9999)
-        else:
-            self.endz_entry.set_range(-9999.9999, 9999.9999)
-
-        self.endz_entry.setSingleStep(0.1)
-
-        self.grid3.addWidget(self.endz_label, 11, 0)
-        self.grid3.addWidget(self.endz_entry, 11, 1)
-
         # Feedrate X-Y
         self.frxylabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
         self.frxylabel.setToolTip(
@@ -1236,7 +1182,61 @@ class ExcellonObjectUI(ObjectUI):
         )
         self.grid5.addWidget(self.gen_param_label, 3, 0, 1, 2)
 
-        # preprocessor selection
+        # Tool change Z:
+        self.toolchange_cb = FCCheckBox('%s:' % _("Tool change Z"))
+        self.toolchange_cb.setToolTip(
+            _("Include tool-change sequence\n"
+              "in G-Code (Pause for tool change).")
+        )
+
+        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.toolchangez_entry.set_precision(self.decimals)
+        self.toolchangez_entry.setToolTip(
+            _("Z-axis position (height) for\n"
+              "tool change.")
+        )
+        if machinist_setting == 0:
+            self.toolchangez_entry.set_range(0.0, 9999.9999)
+        else:
+            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
+
+        self.toolchangez_entry.setSingleStep(0.1)
+        self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
+
+        self.grid5.addWidget(self.toolchange_cb, 8, 0)
+        self.grid5.addWidget(self.toolchangez_entry, 8, 1)
+
+        # Start move Z:
+        self.estartz_label = QtWidgets.QLabel('%s:' % _("Start Z"))
+        self.estartz_label.setToolTip(
+            _("Height of the tool just after start.\n"
+              "Delete the value if you don't need this feature.")
+        )
+        self.estartz_entry = FloatEntry()
+
+        self.grid5.addWidget(self.estartz_label, 9, 0)
+        self.grid5.addWidget(self.estartz_entry, 9, 1)
+
+        # End move Z:
+        self.endz_label = QtWidgets.QLabel('%s:' % _("End move Z"))
+        self.endz_label.setToolTip(
+            _("Height of the tool after\n"
+              "the last move at the end of the job.")
+        )
+        self.endz_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.endz_entry.set_precision(self.decimals)
+
+        if machinist_setting == 0:
+            self.endz_entry.set_range(0.0, 9999.9999)
+        else:
+            self.endz_entry.set_range(-9999.9999, 9999.9999)
+
+        self.endz_entry.setSingleStep(0.1)
+
+        self.grid5.addWidget(self.endz_label, 11, 0)
+        self.grid5.addWidget(self.endz_entry, 11, 1)
+
+        # Preprocessor selection
         pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_excellon_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
@@ -1244,13 +1244,13 @@ class ExcellonObjectUI(ObjectUI):
         )
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.grid5.addWidget(pp_excellon_label, 4, 0)
-        self.grid5.addWidget(self.pp_excellon_name_cb, 4, 1)
+        self.grid5.addWidget(pp_excellon_label, 12, 0)
+        self.grid5.addWidget(self.pp_excellon_name_cb, 12, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid5.addWidget(separator_line, 5, 0, 1, 2)
+        self.grid5.addWidget(separator_line, 13, 0, 1, 2)
 
         # #################################################################
         # ################# GRID LAYOUT 6   ###############################
@@ -1708,64 +1708,6 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.travelzlabel, 5, 0)
         self.grid3.addWidget(self.travelz_entry, 5, 1)
 
-        # Tool change
-        self.toolchangeg_cb = FCCheckBox('%s:' % _("Tool change Z"))
-        self.toolchangeg_cb.setToolTip(
-            _(
-                "Include tool-change sequence\n"
-                "in the Machine Code (Pause for tool change)."
-            )
-        )
-        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.toolchangez_entry.set_precision(self.decimals)
-        self.toolchangez_entry.setToolTip(
-            _(
-                "Z-axis position (height) for\n"
-                "tool change."
-            )
-        )
-
-        if machinist_setting == 0:
-            self.toolchangez_entry.set_range(0, 9999.9999)
-        else:
-            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
-
-        self.toolchangez_entry.setSingleStep(0.1)
-        self.ois_tcz_geo = OptionalInputSection(self.toolchangeg_cb, [self.toolchangez_entry])
-
-        self.grid3.addWidget(self.toolchangeg_cb, 6, 0)
-        self.grid3.addWidget(self.toolchangez_entry, 6, 1)
-
-        # The Z value for the start move
-        # startzlabel = QtWidgets.QLabel('Start move Z:')
-        # startzlabel.setToolTip(
-        #     "Tool height just before starting the work.\n"
-        #     "Delete the value if you don't need this feature."
-        #
-        # )
-        # self.grid3.addWidget(startzlabel, 8, 0)
-        # self.gstartz_entry = FloatEntry()
-        # self.grid3.addWidget(self.gstartz_entry, 8, 1)
-
-        # The Z value for the end move
-        self.endz_label = QtWidgets.QLabel('%s:' % _('End move Z'))
-        self.endz_label.setToolTip(
-            _("Height of the tool after\n"
-              "the last move at the end of the job.")
-        )
-        self.endz_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.endz_entry.set_precision(self.decimals)
-
-        if machinist_setting == 0:
-            self.endz_entry.set_range(0, 9999.9999)
-        else:
-            self.endz_entry.set_range(-9999.9999, 9999.9999)
-
-        self.endz_entry.setSingleStep(0.1)
-
-        self.grid3.addWidget(self.endz_label, 9, 0)
-        self.grid3.addWidget(self.endz_entry, 9, 1)
-
         # Feedrate X-Y
         self.frlabel = QtWidgets.QLabel('%s:' % _('Feedrate X-Y'))
         self.frlabel.setToolTip(
@@ -1941,6 +1883,64 @@ class GeometryObjectUI(ObjectUI):
         )
         self.grid4.addWidget(self.gen_param_label, 3, 0, 1, 2)
 
+        # Tool change Z
+        self.toolchangeg_cb = FCCheckBox('%s:' % _("Tool change Z"))
+        self.toolchangeg_cb.setToolTip(
+            _(
+                "Include tool-change sequence\n"
+                "in the Machine Code (Pause for tool change)."
+            )
+        )
+        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.toolchangez_entry.set_precision(self.decimals)
+        self.toolchangez_entry.setToolTip(
+            _(
+                "Z-axis position (height) for\n"
+                "tool change."
+            )
+        )
+
+        if machinist_setting == 0:
+            self.toolchangez_entry.set_range(0, 9999.9999)
+        else:
+            self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
+
+        self.toolchangez_entry.setSingleStep(0.1)
+        self.ois_tcz_geo = OptionalInputSection(self.toolchangeg_cb, [self.toolchangez_entry])
+
+        self.grid4.addWidget(self.toolchangeg_cb, 6, 0)
+        self.grid4.addWidget(self.toolchangez_entry, 6, 1)
+
+        # The Z value for the start move
+        # startzlabel = QtWidgets.QLabel('Start move Z:')
+        # startzlabel.setToolTip(
+        #     "Tool height just before starting the work.\n"
+        #     "Delete the value if you don't need this feature."
+        #
+        # )
+        # self.grid3.addWidget(startzlabel, 8, 0)
+        # self.gstartz_entry = FloatEntry()
+        # self.grid3.addWidget(self.gstartz_entry, 8, 1)
+
+        # The Z value for the end move
+        self.endz_label = QtWidgets.QLabel('%s:' % _('End move Z'))
+        self.endz_label.setToolTip(
+            _("Height of the tool after\n"
+              "the last move at the end of the job.")
+        )
+        self.endz_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.endz_entry.set_precision(self.decimals)
+
+        if machinist_setting == 0:
+            self.endz_entry.set_range(0, 9999.9999)
+        else:
+            self.endz_entry.set_range(-9999.9999, 9999.9999)
+
+        self.endz_entry.setSingleStep(0.1)
+
+        self.grid4.addWidget(self.endz_label, 9, 0)
+        self.grid4.addWidget(self.endz_entry, 9, 1)
+
         # preprocessor selection
         pp_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
         pp_label.setToolTip(
@@ -1950,17 +1950,17 @@ class GeometryObjectUI(ObjectUI):
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-        self.grid4.addWidget(pp_label, 4, 0)
-        self.grid4.addWidget(self.pp_geometry_name_cb, 4, 1)
+        self.grid4.addWidget(pp_label, 11, 0)
+        self.grid4.addWidget(self.pp_geometry_name_cb, 11, 1)
 
-        self.grid4.addWidget(QtWidgets.QLabel(''), 5, 0, 1, 2)
+        self.grid4.addWidget(QtWidgets.QLabel(''), 12, 0, 1, 2)
         warning_lbl = QtWidgets.QLabel(
             _(
                 "Add / Select at least one tool in the tool-table.\n"
                 "Click the # header to select all, or Ctrl + LMB\n"
                 "for custom selection of tools."
             ))
-        self.grid4.addWidget(warning_lbl, 6, 0, 1, 2)
+        self.grid4.addWidget(warning_lbl, 13, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton(_('Generate CNCJob object'))
@@ -1973,9 +1973,9 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        self.grid4.addWidget(self.generate_cnc_button, 7, 0, 1, 2)
+        self.grid4.addWidget(self.generate_cnc_button, 14, 0, 1, 2)
 
-        self.grid4.addWidget(QtWidgets.QLabel(''), 8, 0, 1, 2)
+        self.grid4.addWidget(QtWidgets.QLabel(''), 15, 0, 1, 2)
 
         # ##############
         # Paint area ##
@@ -1984,7 +1984,7 @@ class GeometryObjectUI(ObjectUI):
         self.tools_label.setToolTip(
             _("Launch Paint Tool in Tools Tab.")
         )
-        self.grid4.addWidget(self.tools_label, 10, 0, 1, 2)
+        self.grid4.addWidget(self.tools_label, 16, 0, 1, 2)
 
         # Paint Button
         self.paint_tool_button = QtWidgets.QPushButton(_('Paint Tool'))
@@ -2002,7 +2002,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        self.grid4.addWidget(self.paint_tool_button, 12, 0, 1, 2)
+        self.grid4.addWidget(self.paint_tool_button, 17, 0, 1, 2)
 
         # NCC Tool
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
@@ -2016,7 +2016,7 @@ class GeometryObjectUI(ObjectUI):
                             font-weight: bold;
                         }
                         """)
-        self.grid4.addWidget(self.generate_ncc_button, 13, 0, 1, 2)
+        self.grid4.addWidget(self.generate_ncc_button, 18, 0, 1, 2)
 
 
 class CNCObjectUI(ObjectUI):
