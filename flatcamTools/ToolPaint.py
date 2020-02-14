@@ -1630,25 +1630,17 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
                                                  coords=(curr_pos[0], curr_pos[1]))
 
-    def paint_poly(self, obj,
-                   inside_pt=None,
-                   poly_list=None,
-                   tooldia=None,
-                   overlap=None,
-                   order=None,
-                   margin=None,
-                   method=None,
-                   outname=None,
-                   connect=None,
-                   contour=None,
-                   tools_storage=None,
-                   plot=True,
-                   run_threaded=True):
+    def paint_poly(self, obj, inside_pt=None, poly_list=None, tooldia=None, overlap=None, order=None,
+                   margin=None, method=None, outname=None, connect=None, contour=None, tools_storage=None,
+                   plot=True, run_threaded=True):
         """
         Paints a polygon selected by clicking on its interior or by having a point coordinates given
 
         Note:
             * The margin is taken directly from the form.
+        :param run_threaded:
+        :param plot:
+        :param poly_list:
         :param obj: painted object
         :param inside_pt: [x, y]
         :param tooldia: Diameter of the painting tool
@@ -1909,21 +1901,13 @@ class ToolPaint(FlatCAMTool, Gerber):
         else:
             job_thread(app_obj=self.app)
 
-    def paint_poly_all(self, obj,
-                       tooldia=None,
-                       overlap=None,
-                       order=None,
-                       margin=None,
-                       method=None,
-                       outname=None,
-                       connect=None,
-                       contour=None,
-                       tools_storage=None,
-                       plot=True,
-                       run_threaded=True):
+    def paint_poly_all(self, obj, tooldia=None, overlap=None, order=None, margin=None, method=None, outname=None,
+                       connect=None, contour=None, tools_storage=None, plot=True, run_threaded=True):
         """
         Paints all polygons in this object.
 
+        :param run_threaded:
+        :param plot:
         :param obj: painted object
         :param tooldia: a tuple or single element made out of diameters of the tools to be used
         :param overlap: value by which the paths will overlap
@@ -2499,6 +2483,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         """
         Paints all polygons in this object that are within the sel_obj object
 
+        :param run_threaded:
+        :param plot:
         :param obj: painted object
         :param sel_obj: paint only what is inside this object bounds
         :param tooldia: a tuple or single element made out of diameters of the tools to be used
@@ -2974,6 +2960,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         """
         Paints all polygons in this object that are within the sel_obj object
 
+        :param run_threaded:
+        :param plot:
         :param obj: painted object
         :param sel_obj: paint only what is inside this object bounds
         :param tooldia: a tuple or single element made out of diameters of the tools to be used
