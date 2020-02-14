@@ -1414,9 +1414,12 @@ class Gerber(Geometry):
             self.follow_geometry = follow_buffer
 
             # this treats the case when we are storing geometry as solids
-
-            if len(poly_buffer) == 0 and len(self.solid_geometry) == 0:
-                log.error("Object is not Gerber file or empty. Aborting Object creation.")
+            try:
+                if len(poly_buffer) == 0 and len(self.solid_geometry) == 0:
+                    log.error("Object is not Gerber file or empty. Aborting Object creation.")
+                    return 'fail'
+            except TypeError as e:
+                log.error("Object is not Gerber file or empty. Aborting Object creation. %s" % str(e))
                 return 'fail'
 
             log.warning("Joining %d polygons." % len(poly_buffer))

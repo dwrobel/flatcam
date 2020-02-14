@@ -928,6 +928,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon(self.app.resource_location + '/calibrate_32.png'), _("Calibration Tool"))
         self.punch_btn = self.toolbartools.addAction(
             QtGui.QIcon(self.app.resource_location + '/punch32.png'), _("Punch Gerber Tool"))
+        self.invert_btn = self.toolbartools.addAction(
+            QtGui.QIcon(self.app.resource_location + '/invert32.png'), _("Invert Gerber Tool"))
 
         # ########################################################################
         # ########################## Excellon Editor Toolbar# ####################

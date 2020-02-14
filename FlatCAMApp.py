@@ -14,7 +14,7 @@ import getopt
 import random
 import simplejson as json
 import lzma
-import threading
+# import threading
 import shutil
 import stat
 
@@ -26,7 +26,7 @@ import ctypes
 
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
-from reportlab.graphics import renderPM
+# from reportlab.graphics import renderPM
 from reportlab.lib.units import inch, mm
 from reportlab.lib.pagesizes import landscape, portrait
 from svglib.svglib import svg2rlg
@@ -39,9 +39,9 @@ from xml.dom.minidom import parseString as parse_xml_string
 from multiprocessing.connection import Listener, Client
 from multiprocessing import Pool
 import socket
-from array import array
+# from array import array
 
-import vispy.scene as scene
+# import vispy.scene as scene
 
 # #######################################
 # #      Imports part of FlatCAM       ##
@@ -1306,7 +1306,7 @@ class App(QtCore.QObject):
             # Excellon Options
             "excellon_drillz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
             "excellon_multidepth": self.ui.excellon_defaults_form.excellon_opt_group.mpass_cb,
-            "excellon_depthperpass":self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
+            "excellon_depthperpass": self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
             "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
             "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
             "excellon_feedrate": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
@@ -2558,6 +2558,7 @@ class App(QtCore.QObject):
         self.edrills_tool = None
         self.align_objects_tool = None
         self.punch_tool = None
+        self.invert_tool = None
 
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         try:
@@ -2723,6 +2724,8 @@ class App(QtCore.QObject):
 
         # this holds a widget that is installed in the Plot Area when View Source option is used
         self.source_editor_tab = None
+
+        self.pagesize = dict()
 
         # Storage for shapes, storage that can be used by FlatCAm tools for utility geometry
         # VisPy visuals
@@ -3194,6 +3197,9 @@ class App(QtCore.QObject):
         self.punch_tool = ToolPunchGerber(self)
         self.punch_tool.install(icon=QtGui.QIcon(self.resource_location + '/punch32.png'), pos=self.ui.menutool)
 
+        self.invert_tool = ToolInvertGerber(self)
+        self.invert_tool.install(icon=QtGui.QIcon(self.resource_location + '/invert32.png'), pos=self.ui.menutool)
+
         self.transform_tool = ToolTransform(self)
         self.transform_tool.install(icon=QtGui.QIcon(self.resource_location + '/transform.png'),
                                     pos=self.ui.menuoptions, separator=True)
@@ -3338,6 +3344,7 @@ class App(QtCore.QObject):
         self.ui.copperfill_btn.triggered.connect(lambda: self.copper_thieving_tool.run(toggle=True))
         self.ui.fiducials_btn.triggered.connect(lambda: self.fiducial_tool.run(toggle=True))
         self.ui.punch_btn.triggered.connect(lambda: self.punch_tool.run(toggle=True))
+        self.ui.invert_btn.triggered.connect(lambda: self.invert_tool.run(toggle=True))
 
     def object2editor(self):
         """
@@ -8716,14 +8723,14 @@ class App(QtCore.QObject):
         else:
             event_pos = (event.xdata, event.ydata)
             # Matplotlib has the middle and right buttons mapped in reverse compared with VisPy
-            pan_button = 3 if self.defaults["global_pan_button"] == '2'else 2
+            pan_button = 3 if self.defaults["global_pan_button"] == '2' else 2
 
         # So it can receive key presses
         self.plotcanvas.native.setFocus()
 
         self.pos_canvas = self.plotcanvas.translate_coords(event_pos)
 
-        if self.grid_status() == True:
+        if self.grid_status():
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
         else:
             self.pos = (self.pos_canvas[0], self.pos_canvas[1])

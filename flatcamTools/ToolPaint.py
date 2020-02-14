@@ -358,6 +358,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         )
         self.paintmargin_entry = FCDoubleSpinner()
         self.paintmargin_entry.set_precision(self.decimals)
+        self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
         self.paintmargin_entry.setObjectName(_("Margin"))
 
         grid4.addWidget(marginlabel, 2, 0)

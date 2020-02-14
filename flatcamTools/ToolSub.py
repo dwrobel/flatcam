@@ -254,14 +254,14 @@ class ToolSub(FlatCAMTool):
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
+        self.app.ui.notebook.setTabText(2, _("Sub Tool"))
+
+    def set_tool_ui(self):
         self.new_apertures.clear()
         self.new_tools.clear()
         self.new_solid_geometry = []
         self.target_options.clear()
 
-        self.app.ui.notebook.setTabText(2, _("Sub Tool"))
-
-    def set_tool_ui(self):
         self.tools_frame.show()
         self.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
 

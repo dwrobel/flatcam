@@ -2164,14 +2164,17 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                 gerber_code += 'D02*\n'
                                 gerber_code += 'G37*\n'
                                 gerber_code += '%LPD*%\n'
+        except Exception as e:
+            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() '0' aperture --> %s" % str(e))
 
-            for apid in self.apertures:
-                if apid == '0':
-                    continue
-                else:
-                    gerber_code += 'D%s*\n' % str(apid)
-                    if 'geometry' in self.apertures[apid]:
-                        for geo_elem in self.apertures[apid]['geometry']:
+        for apid in self.apertures:
+            if apid == '0':
+                continue
+            else:
+                gerber_code += 'D%s*\n' % str(apid)
+                if 'geometry' in self.apertures[apid]:
+                    for geo_elem in self.apertures[apid]['geometry']:
+                        try:
                             if 'follow' in geo_elem:
                                 geo = geo_elem['follow']
                                 if not geo.is_empty:
@@ -2212,7 +2215,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                             prev_coord = coord
 
                                         # gerber_code += "D02*\n"
+                        except Exception as e:
+                            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() 'follow' --> %s" % str(e))
 
+                        try:
                             if 'clear' in geo_elem:
                                 gerber_code += '%LPC*%\n'
 
@@ -2256,9 +2262,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                             prev_coord = coord
                                         # gerber_code += "D02*\n"
                                     gerber_code += '%LPD*%\n'
-
-        except Exception as e:
-            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() --> %s" % str(e))
+                        except Exception as e:
+                            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() 'clear' --> %s" % str(e))
 
         if not self.apertures:
             log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() --> Gerber Object is empty: no apertures.")

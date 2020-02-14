@@ -515,6 +515,8 @@ class ToolPunchGerber(FlatCAMTool):
 
         punch_method = self.method_punch.get_value()
 
+        new_options = deepcopy(grb_obj.options)
+
         if punch_method == 'exc':
 
             # get the Excellon file whose geometry will create the punch holes
@@ -574,7 +576,7 @@ class ToolPunchGerber(FlatCAMTool):
                 new_apertures[str(new_apid)] = deepcopy(ap_val)
 
             def init_func(new_obj, app_obj):
-                new_obj.options.update(grb_obj.options)
+                new_obj.options.update(new_options)
                 new_obj.options['name'] = outname
                 new_obj.fill_color = deepcopy(grb_obj.fill_color)
                 new_obj.outline_color = deepcopy(grb_obj.outline_color)
@@ -688,7 +690,7 @@ class ToolPunchGerber(FlatCAMTool):
                 new_apertures[str(new_apid)] = deepcopy(ap_val)
 
             def init_func(new_obj, app_obj):
-                new_obj.options.update(grb_obj.options)
+                new_obj.options.update(new_options)
                 new_obj.options['name'] = outname
                 new_obj.fill_color = deepcopy(grb_obj.fill_color)
                 new_obj.outline_color = deepcopy(grb_obj.outline_color)
@@ -830,7 +832,7 @@ class ToolPunchGerber(FlatCAMTool):
                 new_apertures[str(new_apid)] = deepcopy(ap_val)
 
             def init_func(new_obj, app_obj):
-                new_obj.options.update(grb_obj.options)
+                new_obj.options.update(new_options)
                 new_obj.options['name'] = outname
                 new_obj.fill_color = deepcopy(grb_obj.fill_color)
                 new_obj.outline_color = deepcopy(grb_obj.outline_color)
@@ -969,7 +971,7 @@ class ToolPunchGerber(FlatCAMTool):
                 new_apertures[str(new_apid)] = deepcopy(ap_val)
 
             def init_func(new_obj, app_obj):
-                new_obj.options.update(grb_obj.options)
+                new_obj.options.update(new_options)
                 new_obj.options['name'] = outname
                 new_obj.fill_color = deepcopy(grb_obj.fill_color)
                 new_obj.outline_color = deepcopy(grb_obj.outline_color)

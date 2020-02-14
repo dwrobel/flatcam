@@ -39,3 +39,5 @@ from flatcamTools.ToolSub import ToolSub
 
 from flatcamTools.ToolTransform import ToolTransform
 from flatcamTools.ToolPunchGerber import ToolPunchGerber
+
+from flatcamTools.ToolInvertGerber import ToolInvertGerber
