@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.02.2020
+
+- in Paint Tool added a new method of painting named Combo who will pass through all the methods until the polygon is cleared
+- in Paint Tool attempting to add a new mode suitable for Laser usage
+
 14.02.2020
 
 - adjusted the UI for Excellon and Geometry objects

@@ -17,7 +17,7 @@ from camlib import Geometry
 from flatcamGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton
 import FlatCAMApp
 
-from shapely.geometry import base, Polygon, MultiPolygon, LinearRing
+from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
 from shapely.ops import cascaded_union
 
 import numpy as np
@@ -370,17 +370,27 @@ class ToolPaint(FlatCAMTool, Gerber):
             _("Algorithm for painting:\n"
               "- Standard: Fixed step inwards.\n"
               "- Seed-based: Outwards from seed.\n"
-              "- Line-based: Parallel lines.")
+              "- Line-based: Parallel lines.\n"
+              "- Laser-lines: Active only when Laser Mode is active and only for Gerber objects.\n"
+              "Will create lines that follow the traces.\n"
+              "- Combo: In case of failure a new method will be picked from the above\n"
+              "in the order specified.")
         )
         self.paintmethod_combo = RadioSet([
             {"label": _("Standard"), "value": "standard"},
             {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"}
+            {"label": _("Straight lines"), "value": "lines"},
+            {"label": _("Laser lines"), "value": "laser_lines"},
+            {"label": _("Combo"), "value": "combo"}
         ], orientation='vertical', stretch=False)
         self.paintmethod_combo.setObjectName(_("Method"))
 
-        grid4.addWidget(methodlabel, 3, 0)
-        grid4.addWidget(self.paintmethod_combo, 3, 1)
+        for choice in self.paintmethod_combo.choices:
+            if choice['value'] == "laser_lines":
+                choice["radio"].setEnabled(False)
+
+        grid4.addWidget(methodlabel, 7, 0)
+        grid4.addWidget(self.paintmethod_combo, 7, 1)
 
         # Connect lines
         self.pathconnect_cb = FCCheckBox('%s' % _("Connect"))
@@ -397,32 +407,32 @@ class ToolPaint(FlatCAMTool, Gerber):
               "to trim rough edges.")
         )
 
-        grid4.addWidget(self.pathconnect_cb, 4, 0)
-        grid4.addWidget(self.paintcontour_cb, 4, 1)
+        grid4.addWidget(self.pathconnect_cb, 10, 0)
+        grid4.addWidget(self.paintcontour_cb, 10, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid4.addWidget(separator_line, 5, 0, 1, 2)
+        grid4.addWidget(separator_line, 11, 0, 1, 2)
 
         self.apply_param_to_all = FCButton(_("Apply parameters to all tools"))
         self.apply_param_to_all.setToolTip(
             _("The parameters in the current form will be applied\n"
               "on all the tools from the Tool Table.")
         )
-        grid4.addWidget(self.apply_param_to_all, 7, 0, 1, 2)
+        grid4.addWidget(self.apply_param_to_all, 12, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid4.addWidget(separator_line, 8, 0, 1, 2)
+        grid4.addWidget(separator_line, 13, 0, 1, 2)
 
         # General Parameters
         self.gen_param_label = QtWidgets.QLabel('<b>%s</b>' % _("Common Parameters"))
         self.gen_param_label.setToolTip(
             _("Parameters that are common for all tools.")
         )
-        grid4.addWidget(self.gen_param_label, 10, 0, 1, 2)
+        grid4.addWidget(self.gen_param_label, 15, 0, 1, 2)
 
         self.rest_cb = FCCheckBox('%s' % _("Rest Machining"))
         self.rest_cb.setObjectName(_("Rest Machining"))
@@ -435,7 +445,17 @@ class ToolPaint(FlatCAMTool, Gerber):
               "no more copper to clear or there are no more tools.\n\n"
               "If not checked, use the standard algorithm.")
         )
-        grid4.addWidget(self.rest_cb, 11, 0, 1, 2)
+        grid4.addWidget(self.rest_cb, 16, 0, 1, 2)
+
+
+        # Laser Mode
+        self.laser_cb = FCCheckBox(_("Laser Mode"))
+        self.laser_cb.setToolTip(
+            _("This control is enabled only for Gerber objects.\n"
+              "If checked then a new method is shown in Methods,\n"
+              "and it is also added to the Combo Method sequence.")
+        )
+        grid4.addWidget(self.laser_cb, 17, 0, 1, 2)
 
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
@@ -467,11 +487,11 @@ class ToolPaint(FlatCAMTool, Gerber):
               "specified by another object.")
         )
 
-        grid4.addWidget(selectlabel, 13, 0, 1, 2)
-        grid4.addWidget(self.selectmethod_combo, 14, 0, 1, 2)
+        grid4.addWidget(selectlabel, 18, 0, 1, 2)
+        grid4.addWidget(self.selectmethod_combo, 19, 0, 1, 2)
 
         form1 = QtWidgets.QFormLayout()
-        grid4.addLayout(form1, 15, 0, 1, 2)
+        grid4.addLayout(form1, 20, 0, 1, 2)
 
         self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.box_combo_type_label.setToolTip(
@@ -617,6 +637,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+        self.laser_cb.stateChanged.connect(self.on_laser_mode_toggled)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
         # #############################################################################
@@ -639,6 +660,21 @@ class ToolPaint(FlatCAMTool, Gerber):
         obj_type = self.type_obj_combo.currentIndex()
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(0)
+
+        if self.type_obj_combo.currentText().lower() == 'gerber':
+            self.laser_cb.setEnabled(True)
+        else:
+            self.laser_cb.setEnabled(False)
+
+    def on_laser_mode_toggled(self, val):
+        for choice in self.paintmethod_combo.choices:
+            if choice['value'] == "laser_lines":
+                if val:
+                    choice["radio"].setEnabled(True)
+                else:
+                    choice["radio"].setEnabled(False)
+                    if self.paintmethod_combo.get_value() == "laser_lines":
+                        self.paintmethod_combo.set_value('lines')
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
@@ -938,6 +974,10 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # make the default object type, "Geometry"
         self.type_obj_combo.setCurrentIndex(2)
+
+        # make the Laser Mode disabled because the Geometry object is default
+        self.laser_cb.setEnabled(False)
+
         # updated units
         self.units = self.app.defaults['units'].upper()
 
@@ -1486,6 +1526,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             if self.poly_dict:
                 poly_list = deepcopy(list(self.poly_dict.values()))
                 self.paint_poly(self.paint_obj,
+                                inside_pt=(curr_pos[0], curr_pos[1]),
                                 poly_list=poly_list,
                                 tooldia=self.tooldia_list,
                                 overlap=self.overlap,
@@ -1746,7 +1787,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     connect=conn,
                                                     prog_plot=prog_plot)
 
-                    else:
+                    elif paint_method == "standard":
                         # Type(cp) == FlatCAMRTreeStorage | None
                         cpoly = self.clear_polygon(polyg,
                                                    tooldia=tooldiameter,
@@ -1755,12 +1796,73 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                    contour=cont,
                                                    connect=conn,
                                                    prog_plot=prog_plot)
+                    elif paint_method == "laser_lines":
+                        line = None
+                        aperture_size = None
+
+                        # determine the Gerber follow line
+                        for apid, apval in obj.apertures.items():
+                            for geo_el in apval['geometry']:
+                                if 'solid' in geo_el:
+                                    if Point(inside_pt).within(geo_el['solid']):
+                                        if not isinstance(geo_el['follow'], Point):
+                                            line = geo_el['follow']
+
+                                            if apval['type'] == 'C':
+                                                aperture_size = apval['size']
+                                            else:
+                                                if apval['width'] > apval['height']:
+                                                    aperture_size = apval['height']
+                                                else:
+                                                    aperture_size = apval['width']
+                        print(line, aperture_size)
+                        if line:
+                            cpoly = self.fill_with_lines(line, aperture_size,
+                                                         tooldia=tooldiameter,
+                                                         steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                         overlap=over,
+                                                         contour=cont,
+                                                         connect=conn,
+                                                         prog_plot=prog_plot)
+
+                    elif paint_method == "combo":
+                        self.app.inform.emit(_("Painting polygon with method: lines."))
+                        cpoly = self.clear_polygon3(polyg,
+                                                   tooldia=tooldiameter,
+                                                   steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                   overlap=over,
+                                                   contour=cont,
+                                                   connect=conn,
+                                                   prog_plot=prog_plot)
+
+                        if cpoly and cpoly.objects:
+                            pass
+                        else:
+                            self.app.inform.emit(_("Failed. Painting polygon with method: seed."))
+                            cpoly = self.clear_polygon2(polyg,
+                                                        tooldia=tooldiameter,
+                                                        steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                        overlap=over,
+                                                        contour=cont,
+                                                        connect=conn,
+                                                        prog_plot=prog_plot)
+                            if cpoly and cpoly.objects:
+                                pass
+                            else:
+                                self.app.inform.emit(_("Failed. Painting polygon with method: standard."))
+                                cpoly = self.clear_polygon(polyg,
+                                                            tooldia=tooldiameter,
+                                                            steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                            overlap=over,
+                                                            contour=cont,
+                                                            connect=conn,
+                                                            prog_plot=prog_plot)
                 except FlatCAMApp.GracefulException:
                     return "fail"
                 except Exception as ee:
                     log.debug("ToolPaint.paint_poly().gen_paintarea().paint_p() --> %s" % str(ee))
 
-                if cpoly is not None:
+                if cpoly and cpoly.objects:
                     geo_obj.solid_geometry += list(cpoly.get_objects())
                     return cpoly
                 else:
@@ -2095,6 +2197,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         try:
                             for pol in poly_buf:
                                 if pol is not None and isinstance(pol, Polygon):
+                                    cp = None
                                     if paint_method == 'standard':
                                         cp = self.clear_polygon(pol,
                                                                 tooldia=tool_dia,
@@ -2113,7 +2216,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                                  contour=cont,
                                                                  connect=conn,
                                                                  prog_plot=prog_plot)
-                                    else:
+                                    elif paint_method == "standard":
                                         cp = self.clear_polygon3(pol,
                                                                  tooldia=tool_dia,
                                                                  steps_per_circle=self.app.defaults[
@@ -2122,7 +2225,44 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                                  contour=cont,
                                                                  connect=conn,
                                                                  prog_plot=prog_plot)
-                                    if cp:
+                                    elif paint_method == "combo":
+                                        self.app.inform.emit(_("Painting polygons with method: lines."))
+                                        cp = self.clear_polygon3(pol,
+                                                                   tooldia=tool_dia,
+                                                                   steps_per_circle=self.app.defaults[
+                                                                       "geometry_circle_steps"],
+                                                                   overlap=over,
+                                                                   contour=cont,
+                                                                   connect=conn,
+                                                                   prog_plot=prog_plot)
+
+                                        if cp and cp.objects:
+                                            pass
+                                        else:
+                                            self.app.inform.emit(_("Failed. Painting polygons with method: seed."))
+                                            cp = self.clear_polygon2(pol,
+                                                                        tooldia=tool_dia,
+                                                                        steps_per_circle=self.app.defaults[
+                                                                            "geometry_circle_steps"],
+                                                                        overlap=over,
+                                                                        contour=cont,
+                                                                        connect=conn,
+                                                                        prog_plot=prog_plot)
+                                            if cp and cp.objects:
+                                                pass
+                                            else:
+                                                self.app.inform.emit(
+                                                    _("Failed. Painting polygons with method: standard."))
+
+                                                cp = self.clear_polygon(pol,
+                                                                            tooldia=tool_dia,
+                                                                            steps_per_circle=self.app.defaults[
+                                                                                "geometry_circle_steps"],
+                                                                            overlap=over,
+                                                                            contour=cont,
+                                                                            connect=conn,
+                                                                            prog_plot=prog_plot)
+                                    if cp and cp.objects:
                                         total_geometry += list(cp.get_objects())
                                         poly_processed.append(True)
                                     else:
@@ -2133,6 +2273,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                 "It is: %s" % str(type(pol)))
                         except TypeError:
                             if isinstance(poly_buf, Polygon):
+                                cp = None
                                 if paint_method == 'standard':
                                     cp = self.clear_polygon(poly_buf,
                                                             tooldia=tool_dia,
@@ -2151,7 +2292,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                              contour=cont,
                                                              connect=conn,
                                                              prog_plot=prog_plot)
-                                else:
+                                elif paint_method == 'standard':
                                     cp = self.clear_polygon3(poly_buf,
                                                              tooldia=tool_dia,
                                                              steps_per_circle=self.app.defaults[
@@ -2160,6 +2301,41 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                              contour=cont,
                                                              connect=conn,
                                                              prog_plot=prog_plot)
+                                elif paint_method == "combo":
+                                    self.app.inform.emit(_("Painting polygons with method: lines."))
+                                    cp = self.clear_polygon3(poly_buf,
+                                                            tooldia=tool_dia,
+                                                            steps_per_circle=self.app.defaults[
+                                                                "geometry_circle_steps"],
+                                                            overlap=over,
+                                                            contour=cont,
+                                                            connect=conn,
+                                                            prog_plot=prog_plot)
+
+                                    if cp and cp.objects:
+                                        pass
+                                    else:
+                                        self.app.inform.emit(_("Failed. Painting polygons with method: seed."))
+                                        cp = self.clear_polygon2(poly_buf,
+                                                                 tooldia=tool_dia,
+                                                                 steps_per_circle=self.app.defaults[
+                                                                     "geometry_circle_steps"],
+                                                                 overlap=over,
+                                                                 contour=cont,
+                                                                 connect=conn,
+                                                                 prog_plot=prog_plot)
+                                        if cp and cp.objects:
+                                            pass
+                                        else:
+                                            self.app.inform.emit(_("Failed. Painting polygons with method: standard."))
+                                            cp = self.clear_polygon(poly_buf,
+                                                                     tooldia=tool_dia,
+                                                                     steps_per_circle=self.app.defaults[
+                                                                         "geometry_circle_steps"],
+                                                                     overlap=over,
+                                                                     contour=cont,
+                                                                     connect=conn,
+                                                                     prog_plot=prog_plot)
                                 if cp:
                                     total_geometry += list(cp.get_objects())
                                     poly_processed.append(True)
@@ -2377,6 +2553,41 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over, contour=cont, connect=conn,
                                                      prog_plot=prog_plot)
+                        elif paint_method == "combo":
+                            self.app.inform.emit(_("Painting polygons with method: lines."))
+                            cp = self.clear_polygon3(poly_buf,
+                                                     tooldia=tool_dia,
+                                                     steps_per_circle=self.app.defaults[
+                                                         "geometry_circle_steps"],
+                                                     overlap=over,
+                                                     contour=cont,
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
+
+                            if cp and cp.objects:
+                                pass
+                            else:
+                                self.app.inform.emit(_("Failed. Painting polygons with method: seed."))
+                                cp = self.clear_polygon2(poly_buf,
+                                                         tooldia=tool_dia,
+                                                         steps_per_circle=self.app.defaults[
+                                                             "geometry_circle_steps"],
+                                                         overlap=over,
+                                                         contour=cont,
+                                                         connect=conn,
+                                                         prog_plot=prog_plot)
+                                if cp and cp.objects:
+                                    pass
+                                else:
+                                    self.app.inform.emit(_("Failed. Painting polygons with method: standard."))
+                                    cp = self.clear_polygon(poly_buf,
+                                                            tooldia=tool_dia,
+                                                            steps_per_circle=self.app.defaults[
+                                                                "geometry_circle_steps"],
+                                                            overlap=over,
+                                                            contour=cont,
+                                                            connect=conn,
+                                                            prog_plot=prog_plot)
 
                         if cp is not None:
                             cleared_geo += list(cp.get_objects())
@@ -2666,6 +2877,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                             continue
                         poly_buf = geo.buffer(-paint_margin)
 
+                        cp = None
                         if paint_method == "seed":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon2(poly_buf,
@@ -2686,7 +2898,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      connect=conn,
                                                      prog_plot=prog_plot)
 
-                        else:
+                        elif paint_method == 'standard':
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf,
                                                     tooldia=tool_dia,
@@ -2695,8 +2907,42 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     contour=cont,
                                                     connect=conn,
                                                     prog_plot=prog_plot)
+                        elif paint_method == "combo":
+                            self.app.inform.emit(_("Painting polygons with method: lines."))
+                            cp = self.clear_polygon3(poly_buf,
+                                                    tooldia=tool_dia,
+                                                    steps_per_circle=self.app.defaults[
+                                                        "geometry_circle_steps"],
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
-                        if cp is not None:
+                            if cp and cp.objects:
+                                pass
+                            else:
+                                self.app.inform.emit(_("Failed. Painting polygons with method: seed."))
+                                cp = self.clear_polygon2(poly_buf,
+                                                         tooldia=tool_dia,
+                                                         steps_per_circle=self.app.defaults[
+                                                             "geometry_circle_steps"],
+                                                         overlap=over,
+                                                         contour=cont,
+                                                         connect=conn,
+                                                         prog_plot=prog_plot)
+                                if cp and cp.objects:
+                                    pass
+                                else:
+                                    self.app.inform.emit(_("Failed. Painting polygons with method: standard."))
+                                    cp = self.clear_polygon(poly_buf,
+                                                             tooldia=tool_dia,
+                                                             steps_per_circle=self.app.defaults[
+                                                                 "geometry_circle_steps"],
+                                                             overlap=over,
+                                                             contour=cont,
+                                                             connect=conn,
+                                                             prog_plot=prog_plot)
+                        if cp and cp.objects:
                             total_geometry += list(cp.get_objects())
                     except FlatCAMApp.GracefulException:
                         return "fail"
@@ -2855,8 +3101,42 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over, contour=cont, connect=conn,
                                                      prog_plot=prog_plot)
+                        elif paint_method == "combo":
+                            self.app.inform.emit(_("Painting polygons with method: lines."))
+                            cp = self.clear_polygon3(poly_buf,
+                                                    tooldia=tool_dia,
+                                                    steps_per_circle=self.app.defaults[
+                                                        "geometry_circle_steps"],
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
-                        if cp is not None:
+                            if cp and cp.objects:
+                                pass
+                            else:
+                                self.app.inform.emit(_("Failed. Painting polygons with method: seed."))
+                                cp = self.clear_polygon2(poly_buf,
+                                                         tooldia=tool_dia,
+                                                         steps_per_circle=self.app.defaults[
+                                                             "geometry_circle_steps"],
+                                                         overlap=over,
+                                                         contour=cont,
+                                                         connect=conn,
+                                                         prog_plot=prog_plot)
+                                if cp and cp.objects:
+                                    pass
+                                else:
+                                    self.app.inform.emit(_("Failed. Painting polygons with method: standard."))
+                                    cp = self.clear_polygon(poly_buf,
+                                                             tooldia=tool_dia,
+                                                             steps_per_circle=self.app.defaults[
+                                                                 "geometry_circle_steps"],
+                                                             overlap=over,
+                                                             contour=cont,
+                                                             connect=conn,
+                                                             prog_plot=prog_plot)
+                        if cp and cp.objects:
                             cleared_geo += list(cp.get_objects())
                     except FlatCAMApp.GracefulException:
                         return "fail"
