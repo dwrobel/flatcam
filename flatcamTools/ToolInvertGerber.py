@@ -8,14 +8,12 @@
 from PyQt5 import QtWidgets, QtCore
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCButton, FCDoubleSpinner
+from flatcamGUI.GUIElements import FCButton, FCDoubleSpinner, RadioSet
 
-from shapely.geometry import Polygon, MultiPolygon, MultiLineString, LineString, box
-from shapely.ops import cascaded_union
+from shapely.geometry import box
 
-import traceback
 from copy import deepcopy
-import time
+
 import logging
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -30,7 +28,7 @@ log = logging.getLogger('base')
 
 class ToolInvertGerber(FlatCAMTool):
 
-    toolName = _("Invert Tool")
+    toolName = _("Invert Gerber Tool")
 
     def __init__(self, app):
         self.app = app
@@ -56,7 +54,7 @@ class ToolInvertGerber(FlatCAMTool):
                         """)
         self.tools_box.addWidget(title_label)
 
-        # Form Layout
+        # Grid Layout
         grid0 = QtWidgets.QGridLayout()
         grid0.setColumnStretch(0, 0)
         grid0.setColumnStretch(1, 1)
@@ -70,13 +68,20 @@ class ToolInvertGerber(FlatCAMTool):
         self.gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.gerber_combo.setCurrentIndex(1)
 
-        self.gerber_label = QtWidgets.QLabel('%s:' % _("Gerber Object"))
+        self.gerber_label = QtWidgets.QLabel('<b>%s:</b>' % _("GERBER"))
         self.gerber_label.setToolTip(
             _("Gerber object that will be inverted.")
         )
 
         grid0.addWidget(self.gerber_label, 1, 0, 1, 2)
         grid0.addWidget(self.gerber_combo, 2, 0, 1, 2)
+
+        grid0.addWidget(QtWidgets.QLabel(""), 3, 0, 1, 2)
+
+        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.param_label.setToolTip('%s.' % _("Parameters for this tool"))
+
+        grid0.addWidget(self.param_label, 4, 0, 1, 2)
 
         # Margin
         self.margin_label = QtWidgets.QLabel('%s:' % _('Margin'))
@@ -89,18 +94,35 @@ class ToolInvertGerber(FlatCAMTool):
         self.margin_entry.set_range(0.0000, 9999.9999)
         self.margin_entry.setObjectName(_("Margin"))
 
-        grid0.addWidget(self.margin_label, 3, 0)
-        grid0.addWidget(self.margin_entry, 3, 1)
+        grid0.addWidget(self.margin_label, 5, 0, 1, 2)
+        grid0.addWidget(self.margin_entry, 6, 0, 1, 2)
+
+        self.join_label = QtWidgets.QLabel('%s:' % _("Lines Join Style"))
+        self.join_label.setToolTip(
+            _("The way that the lines in the object outline will be joined.\n"
+              "Can be:\n"
+              "- rounded -> an arc is added between two joining lines\n"
+              "- square -> the lines meet in 90 degrees angle\n"
+              "- bevel -> the lines are joined by a third line")
+        )
+        self.join_radio = RadioSet([
+            {'label': 'Rounded', 'value': 'r'},
+            {'label': 'Square', 'value': 's'},
+            {'label': 'Bevel', 'value': 'b'}
+        ], orientation='vertical', stretch=False)
+
+        grid0.addWidget(self.join_label, 7, 0, 1, 2)
+        grid0.addWidget(self.join_radio, 8, 0, 1, 2)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        grid0.addWidget(separator_line, 4, 0, 1, 2)
+        grid0.addWidget(separator_line, 9, 0, 1, 2)
 
         self.invert_btn = FCButton(_('Invert Gerber'))
         self.invert_btn.setToolTip(
             _("Will invert the Gerber object: areas that have copper\n"
-              "will be emty of copper and previous empty area will be\n"
+              "will be empty of copper and previous empty area will be\n"
               "filled with copper.")
         )
         self.invert_btn.setStyleSheet("""
@@ -109,7 +131,7 @@ class ToolInvertGerber(FlatCAMTool):
                             font-weight: bold;
                         }
                         """)
-        grid0.addWidget(self.invert_btn, 5, 0, 1, 2)
+        grid0.addWidget(self.invert_btn, 10, 0, 1, 2)
 
         self.tools_box.addStretch()
 
@@ -161,12 +183,17 @@ class ToolInvertGerber(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Invert Tool"))
 
     def set_tool_ui(self):
-        self.margin_entry.set_value(0.0)
+        self.margin_entry.set_value(float(self.app.defaults["tools_invert_margin"]))
+        self.join_radio.set_value(self.app.defaults["tools_invert_join_style"])
 
     def on_grb_invert(self):
         margin = self.margin_entry.get_value()
         if round(margin, self.decimals) == 0.0:
             margin = 1E-10
+
+        join_style = {'r': 1, 'b': 3, 's': 2}[self.join_radio.get_value()]
+        if join_style is None:
+            join_style = 'r'
 
         grb_circle_steps = int(self.app.defaults["gerber_circle_steps"])
         obj_name = self.gerber_combo.currentText()
@@ -181,12 +208,14 @@ class ToolInvertGerber(FlatCAMTool):
             return "Could not retrieve object: %s with error: %s" % (obj_name, str(e))
 
         if grb_obj is None:
+            if obj_name == '':
+                obj_name = 'None'
             self.app.inform.emit('[ERROR_NOTCL] %s: %s' % (_("Object not found"), str(obj_name)))
             return
 
         xmin, ymin, xmax, ymax = grb_obj.bounds()
 
-        grb_box = box(xmin, ymin, xmax, ymax).buffer(margin, resolution=grb_circle_steps, join_style=2)
+        grb_box = box(xmin, ymin, xmax, ymax).buffer(margin, resolution=grb_circle_steps, join_style=join_style)
 
         try:
             __ = iter(grb_obj.solid_geometry)

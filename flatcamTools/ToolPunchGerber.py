@@ -515,7 +515,9 @@ class ToolPunchGerber(FlatCAMTool):
 
         punch_method = self.method_punch.get_value()
 
-        new_options = deepcopy(grb_obj.options)
+        new_options = dict()
+        for opt in grb_obj.options:
+            new_options[opt] = deepcopy(grb_obj.options[opt])
 
         if punch_method == 'exc':
 

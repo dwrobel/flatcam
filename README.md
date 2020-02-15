@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - adjusted the UI for Excellon and Geometry objects
 - added a new FlatCAM Tool: Gerber Invert Tool. It will invert the copper features in a Gerber file: where is copper there will be empty and where is empty it will be copper
+- added the Preferences entries for the Gerber Invert Tool
 
 13.02.2020
 

@@ -252,6 +252,9 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
         self.tools2_punch_group = Tools2PunchGerberPrefGroupUI(decimals=self.decimals)
         self.tools2_punch_group.setMinimumWidth(220)
 
+        self.tools2_invert_group = Tools2InvertPrefGroupUI(decimals=self.decimals)
+        self.tools2_invert_group.setMinimumWidth(220)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools2_checkrules_group)
         self.vlay.addWidget(self.tools2_optimal_group)
@@ -269,6 +272,7 @@ class Tools2PreferencesUI(QtWidgets.QWidget):
 
         self.vlay4 = QtWidgets.QVBoxLayout()
         self.vlay4.addWidget(self.tools2_punch_group)
+        self.vlay4.addWidget(self.tools2_invert_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
@@ -8235,6 +8239,62 @@ class Tools2PunchGerberPrefGroupUI(OptionsGroupUI):
 
         grid_lay.addWidget(self.factor_label, 20, 0)
         grid_lay.addWidget(self.factor_entry, 20, 1)
+
+        self.layout.addStretch()
+
+
+class Tools2InvertPrefGroupUI(OptionsGroupUI):
+    def __init__(self, decimals=4, parent=None):
+
+        super(Tools2InvertPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Invert Gerber Tool Options")))
+        self.decimals = decimals
+
+        # ## Subtractor Tool Parameters
+        self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
+        self.sublabel.setToolTip(
+            _("A tool to invert Gerber geometry from positive to negative\n"
+              "and in revers.")
+        )
+        self.layout.addWidget(self.sublabel)
+
+        # Grid Layout
+        grid0 = QtWidgets.QGridLayout()
+        grid0.setColumnStretch(0, 0)
+        grid0.setColumnStretch(1, 1)
+        self.layout.addLayout(grid0)
+
+        # Margin
+        self.margin_label = QtWidgets.QLabel('%s:' % _('Margin'))
+        self.margin_label.setToolTip(
+            _("Distance by which to avoid\n"
+              "the edges of the Gerber object.")
+        )
+        self.margin_entry = FCDoubleSpinner()
+        self.margin_entry.set_precision(self.decimals)
+        self.margin_entry.set_range(0.0000, 9999.9999)
+        self.margin_entry.setObjectName(_("Margin"))
+
+        grid0.addWidget(self.margin_label, 2, 0, 1, 2)
+        grid0.addWidget(self.margin_entry, 3, 0, 1, 2)
+
+        self.join_label = QtWidgets.QLabel('%s:' % _("Lines Join Style"))
+        self.join_label.setToolTip(
+            _("The way that the lines in the object outline will be joined.\n"
+              "Can be:\n"
+              "- rounded -> an arc is added between two joining lines\n"
+              "- square -> the lines meet in 90 degrees angle\n"
+              "- bevel -> the lines are joined by a third line")
+        )
+        self.join_radio = RadioSet([
+            {'label': 'Rounded', 'value': 'r'},
+            {'label': 'Square', 'value': 's'},
+            {'label': 'Bevel', 'value': 'b'}
+        ], orientation='vertical', stretch=False)
+
+        grid0.addWidget(self.join_label, 5, 0, 1, 2)
+        grid0.addWidget(self.join_radio, 7, 0, 1, 2)
 
         self.layout.addStretch()
 

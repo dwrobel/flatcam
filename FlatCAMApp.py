@@ -1002,6 +1002,10 @@ class App(QtCore.QObject):
             # Align Objects Tool
             "tools_align_objects_align_type": 'sp',
 
+            # Invert Gerber Tool
+            "tools_invert_margin": 0.1,
+            "tools_invert_join_style": 's',
+
             # Utilities
             # file associations
             "fa_excellon": 'drd, drl, exc, ncd, tap, xln',
@@ -1665,6 +1669,10 @@ class App(QtCore.QObject):
             "tools_punch_square": self.ui.tools2_defaults_form.tools2_punch_group.square_cb,
             "tools_punch_rectangular": self.ui.tools2_defaults_form.tools2_punch_group.rectangular_cb,
             "tools_punch_others": self.ui.tools2_defaults_form.tools2_punch_group.other_cb,
+
+            # Invert Gerber Tool
+            "tools_invert_margin": self.ui.tools2_defaults_form.tools2_invert_group.margin_entry,
+            "tools_invert_join_style": self.ui.tools2_defaults_form.tools2_invert_group.join_radio,
 
             # Utilities
             # File associations
