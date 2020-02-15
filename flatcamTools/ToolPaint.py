@@ -13,12 +13,12 @@ from copy import deepcopy
 # from ObjectCollection import *
 from flatcamParsers.ParseGerber import Gerber
 from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry
-from camlib import Geometry
+from camlib import Geometry, FlatCAMRTreeStorage
 from flatcamGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton
 import FlatCAMApp
 
-from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point
-from shapely.ops import cascaded_union
+from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point, MultiLineString
+from shapely.ops import cascaded_union, unary_union, linemerge
 
 import numpy as np
 import math
@@ -447,7 +447,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         )
         grid4.addWidget(self.rest_cb, 16, 0, 1, 2)
 
-
         # Laser Mode
         self.laser_cb = FCCheckBox(_("Laser Mode"))
         self.laser_cb.setToolTip(
@@ -681,6 +680,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def run(self, toggle=True):
         self.app.report_usage("ToolPaint()")
+        log.debug("ToolPaint().run() was launched ...")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -795,9 +795,9 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.blockSignals(True)
 
-        row = self.tools_table.currentRow()
-        if row < 0:
-            row = 0
+        # row = self.tools_table.currentRow()
+        # if row < 0:
+        #     row = 0
 
         # this new dict will hold the actual useful data, another dict that is the value of key 'data'
         temp_tools = {}
@@ -952,31 +952,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_frame.show()
         self.reset_fields()
 
-        # ## Init the GUI interface
-        self.order_radio.set_value(self.app.defaults["tools_paintorder"])
-        self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
-        self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
-        self.selectmethod_combo.set_value(self.app.defaults["tools_selectmethod"])
-        self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
-        self.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
-        self.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
-
-        self.cutz_entry.set_value(self.app.defaults["tools_paintcutz"])
-        self.tool_type_radio.set_value(self.app.defaults["tools_painttool_type"])
-        self.tipdia_entry.set_value(self.app.defaults["tools_painttipdia"])
-        self.tipangle_entry.set_value(self.app.defaults["tools_painttipangle"])
-        self.addtool_entry.set_value(self.app.defaults["tools_paintnewdia"])
-        self.rest_cb.set_value(self.app.defaults["tools_paintrest"])
-
         self.old_tool_dia = self.app.defaults["tools_paintnewdia"]
-
-        self.on_tool_type(val=self.tool_type_radio.get_value())
-
-        # make the default object type, "Geometry"
-        self.type_obj_combo.setCurrentIndex(2)
-
-        # make the Laser Mode disabled because the Geometry object is default
-        self.laser_cb.setEnabled(False)
 
         # updated units
         self.units = self.app.defaults['units'].upper()
@@ -1019,6 +995,30 @@ class ToolPaint(FlatCAMTool, Gerber):
             "paintoverlap": self.app.defaults["tools_paintoverlap"],
             "paintrest": self.app.defaults["tools_paintrest"],
         })
+
+        # ## Init the GUI interface
+        self.order_radio.set_value(self.app.defaults["tools_paintorder"])
+        self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
+        self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
+        self.selectmethod_combo.set_value(self.app.defaults["tools_selectmethod"])
+        self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
+        self.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
+        self.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
+
+        self.cutz_entry.set_value(self.app.defaults["tools_paintcutz"])
+        self.tool_type_radio.set_value(self.app.defaults["tools_painttool_type"])
+        self.tipdia_entry.set_value(self.app.defaults["tools_painttipdia"])
+        self.tipangle_entry.set_value(self.app.defaults["tools_painttipangle"])
+        self.addtool_entry.set_value(self.app.defaults["tools_paintnewdia"])
+        self.rest_cb.set_value(self.app.defaults["tools_paintrest"])
+
+        self.on_tool_type(val=self.tool_type_radio.get_value())
+
+        # make the default object type, "Geometry"
+        self.type_obj_combo.setCurrentIndex(2)
+
+        # make the Laser Mode disabled because the Geometry object is default
+        self.laser_cb.setEnabled(False)
 
         try:
             diameters = [float(self.app.defaults["tools_painttooldia"])]
@@ -1718,7 +1718,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         polygon_list = None
         if inside_pt and poly_list is None:
             polygon_list = [self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)]
-        elif inside_pt is None and poly_list:
+        elif (inside_pt is None and poly_list) or (inside_pt and poly_list):
             polygon_list = poly_list
 
         # No polygon?
@@ -1797,43 +1797,161 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                    connect=conn,
                                                    prog_plot=prog_plot)
                     elif paint_method == "laser_lines":
-                        line = None
-                        aperture_size = None
+                        # line = None
+                        # aperture_size = None
 
-                        # determine the Gerber follow line
+                        # the key is the aperture type and the val is a list of geo elements
+                        flash_el_dict = dict()
+                        # the key is the aperture size, the val is a list of geo elements
+                        traces_el_dict = dict()
+
+                        # find the flashes and the lines that are in the selected polygon and store them separately
                         for apid, apval in obj.apertures.items():
                             for geo_el in apval['geometry']:
-                                if 'solid' in geo_el:
-                                    if Point(inside_pt).within(geo_el['solid']):
-                                        if not isinstance(geo_el['follow'], Point):
-                                            line = geo_el['follow']
+                                if apval["size"] == 0.0:
+                                    if apval["size"] in traces_el_dict:
+                                        traces_el_dict[apval["size"]].append(geo_el)
+                                    else:
+                                        traces_el_dict[apval["size"]] = [geo_el]
 
-                                            if apval['type'] == 'C':
-                                                aperture_size = apval['size']
+                                if 'follow' in geo_el and geo_el['follow'].within(polyg):
+                                    if isinstance(geo_el['follow'], Point):
+                                        if apval["type"] == 'C':
+                                            if 'C' in flash_el_dict:
+                                                flash_el_dict['C'].append(geo_el)
                                             else:
-                                                if apval['width'] > apval['height']:
-                                                    aperture_size = apval['height']
-                                                else:
-                                                    aperture_size = apval['width']
-                        print(line, aperture_size)
-                        if line:
-                            cpoly = self.fill_with_lines(line, aperture_size,
-                                                         tooldia=tooldiameter,
-                                                         steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                         overlap=over,
-                                                         contour=cont,
-                                                         connect=conn,
-                                                         prog_plot=prog_plot)
+                                                flash_el_dict['C'] = [geo_el]
+                                        elif apval["type"] == 'O':
+                                            if 'O' in flash_el_dict:
+                                                flash_el_dict['O'].append(geo_el)
+                                            else:
+                                                flash_el_dict['O'] = [geo_el]
+                                        elif apval["type"] == 'R':
+                                            if 'R' in flash_el_dict:
+                                                flash_el_dict['R'].append(geo_el)
+                                            else:
+                                                flash_el_dict['R'] = [geo_el]
+                                    else:
+                                        aperture_size = apval['size']
+
+                                        if aperture_size in traces_el_dict:
+                                            traces_el_dict[aperture_size].append(geo_el)
+                                        else:
+                                            traces_el_dict[aperture_size] = [geo_el]
+
+                        cpoly = FlatCAMRTreeStorage()
+                        pads_lines_list = list()
+
+                        # process the flashes found in the selected polygon with the 'lines' method for rectangular
+                        # flashes and with 'seed' for oblong and circular flashes
+                        # and pads (flahes) need the contour therefore I override the GUI settings with always True
+                        for ap_type in flash_el_dict:
+                            for elem in flash_el_dict[ap_type]:
+                                if 'solid' in elem:
+                                    if ap_type == 'C':
+                                        f_o = self.clear_polygon2(elem['solid'],
+                                                                  tooldia=tooldiameter,
+                                                                  steps_per_circle=self.app.defaults[
+                                                                      "geometry_circle_steps"],
+                                                                  overlap=over,
+                                                                  contour=True,
+                                                                  connect=conn,
+                                                                  prog_plot=prog_plot)
+                                        pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                    elif ap_type == 'O':
+                                        f_o = self.clear_polygon2(elem['solid'],
+                                                                  tooldia=tooldiameter,
+                                                                  steps_per_circle=self.app.defaults[
+                                                                      "geometry_circle_steps"],
+                                                                  overlap=over,
+                                                                  contour=True,
+                                                                  connect=conn,
+                                                                  prog_plot=prog_plot)
+                                        pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                    elif ap_type == 'R':
+                                        f_o = self.clear_polygon3(elem['solid'],
+                                                                  tooldia=tooldiameter,
+                                                                  steps_per_circle=self.app.defaults[
+                                                                      "geometry_circle_steps"],
+                                                                  overlap=over,
+                                                                  contour=True,
+                                                                  connect=conn,
+                                                                  prog_plot=prog_plot)
+
+                                        pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                        # add the lines from pads to the storage
+                        try:
+                            for lin in pads_lines_list:
+                                if lin:
+                                    cpoly.insert(lin)
+                        except TypeError:
+                            cpoly.insert(pads_lines_list)
+
+                        copper_lines_list = list()
+                        # process the traces found in the selected polygon using the 'laser_lines' method,
+                        # method which will follow the 'follow' line therefore use the longer path possible for the
+                        # laser, therefore the acceleration will play a smaller factor
+                        for aperture_size in traces_el_dict:
+                            for elem in traces_el_dict[aperture_size]:
+                                line = elem['follow']
+                                if line:
+                                    t_o = self.fill_with_lines(line, aperture_size,
+                                                               tooldia=tooldiameter,
+                                                               steps_per_circle=self.app.defaults[
+                                                                   "geometry_circle_steps"],
+                                                               overlap=over,
+                                                               contour=cont,
+                                                               connect=conn,
+                                                               prog_plot=prog_plot)
+
+                                    copper_lines_list += [p for p in t_o.get_objects() if p]
+
+                        # add the lines from copper features to storage but first try to make as few lines as possible
+                        # by trying to fuse them
+                        lines_union = linemerge(unary_union(copper_lines_list))
+                        try:
+                            for lin in lines_union:
+                                if lin:
+                                    cpoly.insert(lin)
+                        except TypeError:
+                            cpoly.insert(lines_union)
+                        # # determine the Gerber follow line
+                        # for apid, apval in obj.apertures.items():
+                        #     for geo_el in apval['geometry']:
+                        #         if 'solid' in geo_el:
+                        #             if Point(inside_pt).within(geo_el['solid']):
+                        #                 if not isinstance(geo_el['follow'], Point):
+                        #                     line = geo_el['follow']
+                        #
+                        #                     if apval['type'] == 'C':
+                        #                         aperture_size = apval['size']
+                        #                     else:
+                        #                         if apval['width'] > apval['height']:
+                        #                             aperture_size = apval['height']
+                        #                         else:
+                        #                             aperture_size = apval['width']
+                        #
+                        # if line:
+                        #     cpoly = self.fill_with_lines(line, aperture_size,
+                        #                                  tooldia=tooldiameter,
+                        #                                  steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                        #                                  overlap=over,
+                        #                                  contour=cont,
+                        #                                  connect=conn,
+                        #                                  prog_plot=prog_plot)
 
                     elif paint_method == "combo":
                         self.app.inform.emit(_("Painting polygon with method: lines."))
                         cpoly = self.clear_polygon3(polyg,
-                                                   tooldia=tooldiameter,
-                                                   steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                   overlap=over,
-                                                   contour=cont,
-                                                   connect=conn,
-                                                   prog_plot=prog_plot)
+                                                    tooldia=tooldiameter,
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn,
+                                                    prog_plot=prog_plot)
 
                         if cpoly and cpoly.objects:
                             pass
@@ -1851,12 +1969,12 @@ class ToolPaint(FlatCAMTool, Gerber):
                             else:
                                 self.app.inform.emit(_("Failed. Painting polygon with method: standard."))
                                 cpoly = self.clear_polygon(polyg,
-                                                            tooldia=tooldiameter,
-                                                            steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                            overlap=over,
-                                                            contour=cont,
-                                                            connect=conn,
-                                                            prog_plot=prog_plot)
+                                                           tooldia=tooldiameter,
+                                                           steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                           overlap=over,
+                                                           contour=cont,
+                                                           connect=conn,
+                                                           prog_plot=prog_plot)
                 except FlatCAMApp.GracefulException:
                     return "fail"
                 except Exception as ee:
@@ -2225,29 +2343,155 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                                  contour=cont,
                                                                  connect=conn,
                                                                  prog_plot=prog_plot)
+                                    elif paint_method == "laser_lines":
+                                        # line = None
+                                        # aperture_size = None
+
+                                        # the key is the aperture type and the val is a list of geo elements
+                                        flash_el_dict = dict()
+                                        # the key is the aperture size, the val is a list of geo elements
+                                        traces_el_dict = dict()
+
+                                        # find the flashes and the lines that are in the selected polygon and store
+                                        # them separately
+                                        for apid, apval in obj.apertures.items():
+                                            for geo_el in apval['geometry']:
+                                                if apval["size"] == 0.0:
+                                                    if apval["size"] in traces_el_dict:
+                                                        traces_el_dict[apval["size"]].append(geo_el)
+                                                    else:
+                                                        traces_el_dict[apval["size"]] = [geo_el]
+
+                                                if 'follow' in geo_el and geo_el['follow'].within(pol):
+                                                    if isinstance(geo_el['follow'], Point):
+                                                        if apval["type"] == 'C':
+                                                            if 'C' in flash_el_dict:
+                                                                flash_el_dict['C'].append(geo_el)
+                                                            else:
+                                                                flash_el_dict['C'] = [geo_el]
+                                                        elif apval["type"] == 'O':
+                                                            if 'O' in flash_el_dict:
+                                                                flash_el_dict['O'].append(geo_el)
+                                                            else:
+                                                                flash_el_dict['O'] = [geo_el]
+                                                        elif apval["type"] == 'R':
+                                                            if 'R' in flash_el_dict:
+                                                                flash_el_dict['R'].append(geo_el)
+                                                            else:
+                                                                flash_el_dict['R'] = [geo_el]
+                                                    else:
+                                                        aperture_size = apval['size']
+
+                                                        if aperture_size in traces_el_dict:
+                                                            traces_el_dict[aperture_size].append(geo_el)
+                                                        else:
+                                                            traces_el_dict[aperture_size] = [geo_el]
+
+                                        cp = FlatCAMRTreeStorage()
+                                        pads_lines_list = list()
+
+                                        # process the flashes found in the selected polygon with the 'lines' method
+                                        # for rectangular flashes and with 'seed' for oblong and circular flashes
+                                        # and pads (flahes) need the contour therefore I override the GUI settings
+                                        # with always True
+                                        for ap_type in flash_el_dict:
+                                            for elem in flash_el_dict[ap_type]:
+                                                if 'solid' in elem:
+                                                    if ap_type == 'C':
+                                                        f_o = self.clear_polygon2(elem['solid'],
+                                                                                  tooldia=tool_dia,
+                                                                                  steps_per_circle=self.app.defaults[
+                                                                                      "geometry_circle_steps"],
+                                                                                  overlap=over,
+                                                                                  contour=True,
+                                                                                  connect=conn,
+                                                                                  prog_plot=prog_plot)
+                                                        pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                                    elif ap_type == 'O':
+                                                        f_o = self.clear_polygon2(elem['solid'],
+                                                                                  tooldia=tool_dia,
+                                                                                  steps_per_circle=self.app.defaults[
+                                                                                      "geometry_circle_steps"],
+                                                                                  overlap=over,
+                                                                                  contour=True,
+                                                                                  connect=conn,
+                                                                                  prog_plot=prog_plot)
+                                                        pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                                    elif ap_type == 'R':
+                                                        f_o = self.clear_polygon3(elem['solid'],
+                                                                                  tooldia=tool_dia,
+                                                                                  steps_per_circle=self.app.defaults[
+                                                                                      "geometry_circle_steps"],
+                                                                                  overlap=over,
+                                                                                  contour=True,
+                                                                                  connect=conn,
+                                                                                  prog_plot=prog_plot)
+
+                                                        pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                        # add the lines from pads to the storage
+                                        try:
+                                            for lin in pads_lines_list:
+                                                if lin:
+                                                    cp.insert(lin)
+                                        except TypeError:
+                                            cp.insert(pads_lines_list)
+
+                                        copper_lines_list = list()
+                                        # process the traces found in the selected polygon using the 'laser_lines'
+                                        # method, method which will follow the 'follow' line therefore use the longer
+                                        # path possible for the laser, therefore the acceleration will play
+                                        # a smaller factor
+                                        for aperture_size in traces_el_dict:
+                                            for elem in traces_el_dict[aperture_size]:
+                                                line = elem['follow']
+                                                if line:
+                                                    t_o = self.fill_with_lines(line, aperture_size,
+                                                                               tooldia=tool_dia,
+                                                                               steps_per_circle=self.app.defaults[
+                                                                                   "geometry_circle_steps"],
+                                                                               overlap=over,
+                                                                               contour=cont,
+                                                                               connect=conn,
+                                                                               prog_plot=prog_plot)
+
+                                                    copper_lines_list += [p for p in t_o.get_objects() if p]
+
+                                        # add the lines from copper features to storage but first try to make as few
+                                        # lines as possible
+                                        # by trying to fuse them
+                                        lines_union = linemerge(unary_union(copper_lines_list))
+                                        try:
+                                            for lin in lines_union:
+                                                if lin:
+                                                    cp.insert(lin)
+                                        except TypeError:
+                                            cp.insert(lines_union)
                                     elif paint_method == "combo":
                                         self.app.inform.emit(_("Painting polygons with method: lines."))
                                         cp = self.clear_polygon3(pol,
-                                                                   tooldia=tool_dia,
-                                                                   steps_per_circle=self.app.defaults[
-                                                                       "geometry_circle_steps"],
-                                                                   overlap=over,
-                                                                   contour=cont,
-                                                                   connect=conn,
-                                                                   prog_plot=prog_plot)
+                                                                 tooldia=tool_dia,
+                                                                 steps_per_circle=self.app.defaults[
+                                                                     "geometry_circle_steps"],
+                                                                 overlap=over,
+                                                                 contour=cont,
+                                                                 connect=conn,
+                                                                 prog_plot=prog_plot)
 
                                         if cp and cp.objects:
                                             pass
                                         else:
                                             self.app.inform.emit(_("Failed. Painting polygons with method: seed."))
                                             cp = self.clear_polygon2(pol,
-                                                                        tooldia=tool_dia,
-                                                                        steps_per_circle=self.app.defaults[
-                                                                            "geometry_circle_steps"],
-                                                                        overlap=over,
-                                                                        contour=cont,
-                                                                        connect=conn,
-                                                                        prog_plot=prog_plot)
+                                                                     tooldia=tool_dia,
+                                                                     steps_per_circle=self.app.defaults[
+                                                                         "geometry_circle_steps"],
+                                                                     overlap=over,
+                                                                     contour=cont,
+                                                                     connect=conn,
+                                                                     prog_plot=prog_plot)
                                             if cp and cp.objects:
                                                 pass
                                             else:
@@ -2255,13 +2499,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     _("Failed. Painting polygons with method: standard."))
 
                                                 cp = self.clear_polygon(pol,
-                                                                            tooldia=tool_dia,
-                                                                            steps_per_circle=self.app.defaults[
-                                                                                "geometry_circle_steps"],
-                                                                            overlap=over,
-                                                                            contour=cont,
-                                                                            connect=conn,
-                                                                            prog_plot=prog_plot)
+                                                                        tooldia=tool_dia,
+                                                                        steps_per_circle=self.app.defaults[
+                                                                            "geometry_circle_steps"],
+                                                                        overlap=over,
+                                                                        contour=cont,
+                                                                        connect=conn,
+                                                                        prog_plot=prog_plot)
                                     if cp and cp.objects:
                                         total_geometry += list(cp.get_objects())
                                         poly_processed.append(True)
@@ -2301,16 +2545,142 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                              contour=cont,
                                                              connect=conn,
                                                              prog_plot=prog_plot)
+                                elif paint_method == "laser_lines":
+                                    # line = None
+                                    # aperture_size = None
+
+                                    # the key is the aperture type and the val is a list of geo elements
+                                    flash_el_dict = dict()
+                                    # the key is the aperture size, the val is a list of geo elements
+                                    traces_el_dict = dict()
+
+                                    # find the flashes and the lines that are in the selected polygon and store
+                                    # them separately
+                                    for apid, apval in obj.apertures.items():
+                                        for geo_el in apval['geometry']:
+                                            if apval["size"] == 0.0:
+                                                if apval["size"] in traces_el_dict:
+                                                    traces_el_dict[apval["size"]].append(geo_el)
+                                                else:
+                                                    traces_el_dict[apval["size"]] = [geo_el]
+
+                                            if 'follow' in geo_el and geo_el['follow'].within(poly_buf):
+                                                if isinstance(geo_el['follow'], Point):
+                                                    if apval["type"] == 'C':
+                                                        if 'C' in flash_el_dict:
+                                                            flash_el_dict['C'].append(geo_el)
+                                                        else:
+                                                            flash_el_dict['C'] = [geo_el]
+                                                    elif apval["type"] == 'O':
+                                                        if 'O' in flash_el_dict:
+                                                            flash_el_dict['O'].append(geo_el)
+                                                        else:
+                                                            flash_el_dict['O'] = [geo_el]
+                                                    elif apval["type"] == 'R':
+                                                        if 'R' in flash_el_dict:
+                                                            flash_el_dict['R'].append(geo_el)
+                                                        else:
+                                                            flash_el_dict['R'] = [geo_el]
+                                                else:
+                                                    aperture_size = apval['size']
+
+                                                    if aperture_size in traces_el_dict:
+                                                        traces_el_dict[aperture_size].append(geo_el)
+                                                    else:
+                                                        traces_el_dict[aperture_size] = [geo_el]
+
+                                    cp = FlatCAMRTreeStorage()
+                                    pads_lines_list = list()
+
+                                    # process the flashes found in the selected polygon with the 'lines' method
+                                    # for rectangular flashes and with 'seed' for oblong and circular flashes
+                                    # and pads (flahes) need the contour therefore I override the GUI settings
+                                    # with always True
+                                    for ap_type in flash_el_dict:
+                                        for elem in flash_el_dict[ap_type]:
+                                            if 'solid' in elem:
+                                                if ap_type == 'C':
+                                                    f_o = self.clear_polygon2(elem['solid'],
+                                                                              tooldia=tool_dia,
+                                                                              steps_per_circle=self.app.defaults[
+                                                                                  "geometry_circle_steps"],
+                                                                              overlap=over,
+                                                                              contour=True,
+                                                                              connect=conn,
+                                                                              prog_plot=prog_plot)
+                                                    pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                                elif ap_type == 'O':
+                                                    f_o = self.clear_polygon2(elem['solid'],
+                                                                              tooldia=tool_dia,
+                                                                              steps_per_circle=self.app.defaults[
+                                                                                  "geometry_circle_steps"],
+                                                                              overlap=over,
+                                                                              contour=True,
+                                                                              connect=conn,
+                                                                              prog_plot=prog_plot)
+                                                    pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                                elif ap_type == 'R':
+                                                    f_o = self.clear_polygon3(elem['solid'],
+                                                                              tooldia=tool_dia,
+                                                                              steps_per_circle=self.app.defaults[
+                                                                                  "geometry_circle_steps"],
+                                                                              overlap=over,
+                                                                              contour=True,
+                                                                              connect=conn,
+                                                                              prog_plot=prog_plot)
+
+                                                    pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                    # add the lines from pads to the storage
+                                    try:
+                                        for lin in pads_lines_list:
+                                            if lin:
+                                                cp.insert(lin)
+                                    except TypeError:
+                                        cp.insert(pads_lines_list)
+
+                                    copper_lines_list = list()
+                                    # process the traces found in the selected polygon using the 'laser_lines'
+                                    # method, method which will follow the 'follow' line therefore use the longer
+                                    # path possible for the laser, therefore the acceleration will play
+                                    # a smaller factor
+                                    for aperture_size in traces_el_dict:
+                                        for elem in traces_el_dict[aperture_size]:
+                                            line = elem['follow']
+                                            if line:
+                                                t_o = self.fill_with_lines(line, aperture_size,
+                                                                           tooldia=tool_dia,
+                                                                           steps_per_circle=self.app.defaults[
+                                                                               "geometry_circle_steps"],
+                                                                           overlap=over,
+                                                                           contour=cont,
+                                                                           connect=conn,
+                                                                           prog_plot=prog_plot)
+
+                                                copper_lines_list += [p for p in t_o.get_objects() if p]
+
+                                    # add the lines from copper features to storage but first try to make as few
+                                    # lines as possible
+                                    # by trying to fuse them
+                                    lines_union = linemerge(unary_union(copper_lines_list))
+                                    try:
+                                        for lin in lines_union:
+                                            if lin:
+                                                cp.insert(lin)
+                                    except TypeError:
+                                        cp.insert(lines_union)
                                 elif paint_method == "combo":
                                     self.app.inform.emit(_("Painting polygons with method: lines."))
                                     cp = self.clear_polygon3(poly_buf,
-                                                            tooldia=tool_dia,
-                                                            steps_per_circle=self.app.defaults[
-                                                                "geometry_circle_steps"],
-                                                            overlap=over,
-                                                            contour=cont,
-                                                            connect=conn,
-                                                            prog_plot=prog_plot)
+                                                             tooldia=tool_dia,
+                                                             steps_per_circle=self.app.defaults[
+                                                                 "geometry_circle_steps"],
+                                                             overlap=over,
+                                                             contour=cont,
+                                                             connect=conn,
+                                                             prog_plot=prog_plot)
 
                                     if cp and cp.objects:
                                         pass
@@ -2329,13 +2699,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                                         else:
                                             self.app.inform.emit(_("Failed. Painting polygons with method: standard."))
                                             cp = self.clear_polygon(poly_buf,
-                                                                     tooldia=tool_dia,
-                                                                     steps_per_circle=self.app.defaults[
-                                                                         "geometry_circle_steps"],
-                                                                     overlap=over,
-                                                                     contour=cont,
-                                                                     connect=conn,
-                                                                     prog_plot=prog_plot)
+                                                                    tooldia=tool_dia,
+                                                                    steps_per_circle=self.app.defaults[
+                                                                        "geometry_circle_steps"],
+                                                                    overlap=over,
+                                                                    contour=cont,
+                                                                    connect=conn,
+                                                                    prog_plot=prog_plot)
                                 if cp:
                                     total_geometry += list(cp.get_objects())
                                     poly_processed.append(True)
@@ -2553,6 +2923,132 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over, contour=cont, connect=conn,
                                                      prog_plot=prog_plot)
+                        elif paint_method == "laser_lines":
+                            # line = None
+                            # aperture_size = None
+
+                            # the key is the aperture type and the val is a list of geo elements
+                            flash_el_dict = dict()
+                            # the key is the aperture size, the val is a list of geo elements
+                            traces_el_dict = dict()
+
+                            # find the flashes and the lines that are in the selected polygon and store
+                            # them separately
+                            for apid, apval in obj.apertures.items():
+                                for geo_el in apval['geometry']:
+                                    if apval["size"] == 0.0:
+                                        if apval["size"] in traces_el_dict:
+                                            traces_el_dict[apval["size"]].append(geo_el)
+                                        else:
+                                            traces_el_dict[apval["size"]] = [geo_el]
+
+                                    if 'follow' in geo_el and geo_el['follow'].within(poly_buf):
+                                        if isinstance(geo_el['follow'], Point):
+                                            if apval["type"] == 'C':
+                                                if 'C' in flash_el_dict:
+                                                    flash_el_dict['C'].append(geo_el)
+                                                else:
+                                                    flash_el_dict['C'] = [geo_el]
+                                            elif apval["type"] == 'O':
+                                                if 'O' in flash_el_dict:
+                                                    flash_el_dict['O'].append(geo_el)
+                                                else:
+                                                    flash_el_dict['O'] = [geo_el]
+                                            elif apval["type"] == 'R':
+                                                if 'R' in flash_el_dict:
+                                                    flash_el_dict['R'].append(geo_el)
+                                                else:
+                                                    flash_el_dict['R'] = [geo_el]
+                                        else:
+                                            aperture_size = apval['size']
+
+                                            if aperture_size in traces_el_dict:
+                                                traces_el_dict[aperture_size].append(geo_el)
+                                            else:
+                                                traces_el_dict[aperture_size] = [geo_el]
+
+                            cp = FlatCAMRTreeStorage()
+                            pads_lines_list = list()
+
+                            # process the flashes found in the selected polygon with the 'lines' method
+                            # for rectangular flashes and with 'seed' for oblong and circular flashes
+                            # and pads (flahes) need the contour therefore I override the GUI settings
+                            # with always True
+                            for ap_type in flash_el_dict:
+                                for elem in flash_el_dict[ap_type]:
+                                    if 'solid' in elem:
+                                        if ap_type == 'C':
+                                            f_o = self.clear_polygon2(elem['solid'],
+                                                                      tooldia=tool_dia,
+                                                                      steps_per_circle=self.app.defaults[
+                                                                          "geometry_circle_steps"],
+                                                                      overlap=over,
+                                                                      contour=True,
+                                                                      connect=conn,
+                                                                      prog_plot=prog_plot)
+                                            pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                        elif ap_type == 'O':
+                                            f_o = self.clear_polygon2(elem['solid'],
+                                                                      tooldia=tool_dia,
+                                                                      steps_per_circle=self.app.defaults[
+                                                                          "geometry_circle_steps"],
+                                                                      overlap=over,
+                                                                      contour=True,
+                                                                      connect=conn,
+                                                                      prog_plot=prog_plot)
+                                            pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                        elif ap_type == 'R':
+                                            f_o = self.clear_polygon3(elem['solid'],
+                                                                      tooldia=tool_dia,
+                                                                      steps_per_circle=self.app.defaults[
+                                                                          "geometry_circle_steps"],
+                                                                      overlap=over,
+                                                                      contour=True,
+                                                                      connect=conn,
+                                                                      prog_plot=prog_plot)
+
+                                            pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                            # add the lines from pads to the storage
+                            try:
+                                for lin in pads_lines_list:
+                                    if lin:
+                                        cp.insert(lin)
+                            except TypeError:
+                                cp.insert(pads_lines_list)
+
+                            copper_lines_list = list()
+                            # process the traces found in the selected polygon using the 'laser_lines'
+                            # method, method which will follow the 'follow' line therefore use the longer
+                            # path possible for the laser, therefore the acceleration will play
+                            # a smaller factor
+                            for aperture_size in traces_el_dict:
+                                for elem in traces_el_dict[aperture_size]:
+                                    line = elem['follow']
+                                    if line:
+                                        t_o = self.fill_with_lines(line, aperture_size,
+                                                                   tooldia=tool_dia,
+                                                                   steps_per_circle=self.app.defaults[
+                                                                       "geometry_circle_steps"],
+                                                                   overlap=over,
+                                                                   contour=cont,
+                                                                   connect=conn,
+                                                                   prog_plot=prog_plot)
+
+                                        copper_lines_list += [p for p in t_o.get_objects() if p]
+
+                            # add the lines from copper features to storage but first try to make as few
+                            # lines as possible
+                            # by trying to fuse them
+                            lines_union = linemerge(unary_union(copper_lines_list))
+                            try:
+                                for lin in lines_union:
+                                    if lin:
+                                        cp.insert(lin)
+                            except TypeError:
+                                cp.insert(lines_union)
                         elif paint_method == "combo":
                             self.app.inform.emit(_("Painting polygons with method: lines."))
                             cp = self.clear_polygon3(poly_buf,
@@ -2907,16 +3403,142 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                     contour=cont,
                                                     connect=conn,
                                                     prog_plot=prog_plot)
+                        elif paint_method == "laser_lines":
+                            # line = None
+                            # aperture_size = None
+
+                            # the key is the aperture type and the val is a list of geo elements
+                            flash_el_dict = dict()
+                            # the key is the aperture size, the val is a list of geo elements
+                            traces_el_dict = dict()
+
+                            # find the flashes and the lines that are in the selected polygon and store
+                            # them separately
+                            for apid, apval in obj.apertures.items():
+                                for geo_el in apval['geometry']:
+                                    if apval["size"] == 0.0:
+                                        if apval["size"] in traces_el_dict:
+                                            traces_el_dict[apval["size"]].append(geo_el)
+                                        else:
+                                            traces_el_dict[apval["size"]] = [geo_el]
+
+                                    if 'follow' in geo_el and geo_el['follow'].within(poly_buf):
+                                        if isinstance(geo_el['follow'], Point):
+                                            if apval["type"] == 'C':
+                                                if 'C' in flash_el_dict:
+                                                    flash_el_dict['C'].append(geo_el)
+                                                else:
+                                                    flash_el_dict['C'] = [geo_el]
+                                            elif apval["type"] == 'O':
+                                                if 'O' in flash_el_dict:
+                                                    flash_el_dict['O'].append(geo_el)
+                                                else:
+                                                    flash_el_dict['O'] = [geo_el]
+                                            elif apval["type"] == 'R':
+                                                if 'R' in flash_el_dict:
+                                                    flash_el_dict['R'].append(geo_el)
+                                                else:
+                                                    flash_el_dict['R'] = [geo_el]
+                                        else:
+                                            aperture_size = apval['size']
+
+                                            if aperture_size in traces_el_dict:
+                                                traces_el_dict[aperture_size].append(geo_el)
+                                            else:
+                                                traces_el_dict[aperture_size] = [geo_el]
+
+                            cp = FlatCAMRTreeStorage()
+                            pads_lines_list = list()
+
+                            # process the flashes found in the selected polygon with the 'lines' method
+                            # for rectangular flashes and with 'seed' for oblong and circular flashes
+                            # and pads (flahes) need the contour therefore I override the GUI settings
+                            # with always True
+                            for ap_type in flash_el_dict:
+                                for elem in flash_el_dict[ap_type]:
+                                    if 'solid' in elem:
+                                        if ap_type == 'C':
+                                            f_o = self.clear_polygon2(elem['solid'],
+                                                                      tooldia=tool_dia,
+                                                                      steps_per_circle=self.app.defaults[
+                                                                          "geometry_circle_steps"],
+                                                                      overlap=over,
+                                                                      contour=True,
+                                                                      connect=conn,
+                                                                      prog_plot=prog_plot)
+                                            pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                        elif ap_type == 'O':
+                                            f_o = self.clear_polygon2(elem['solid'],
+                                                                      tooldia=tool_dia,
+                                                                      steps_per_circle=self.app.defaults[
+                                                                          "geometry_circle_steps"],
+                                                                      overlap=over,
+                                                                      contour=True,
+                                                                      connect=conn,
+                                                                      prog_plot=prog_plot)
+                                            pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                        elif ap_type == 'R':
+                                            f_o = self.clear_polygon3(elem['solid'],
+                                                                      tooldia=tool_dia,
+                                                                      steps_per_circle=self.app.defaults[
+                                                                          "geometry_circle_steps"],
+                                                                      overlap=over,
+                                                                      contour=True,
+                                                                      connect=conn,
+                                                                      prog_plot=prog_plot)
+
+                                            pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                            # add the lines from pads to the storage
+                            try:
+                                for lin in pads_lines_list:
+                                    if lin:
+                                        cp.insert(lin)
+                            except TypeError:
+                                cp.insert(pads_lines_list)
+
+                            copper_lines_list = list()
+                            # process the traces found in the selected polygon using the 'laser_lines'
+                            # method, method which will follow the 'follow' line therefore use the longer
+                            # path possible for the laser, therefore the acceleration will play
+                            # a smaller factor
+                            for aperture_size in traces_el_dict:
+                                for elem in traces_el_dict[aperture_size]:
+                                    line = elem['follow']
+                                    if line:
+                                        t_o = self.fill_with_lines(line, aperture_size,
+                                                                   tooldia=tool_dia,
+                                                                   steps_per_circle=self.app.defaults[
+                                                                       "geometry_circle_steps"],
+                                                                   overlap=over,
+                                                                   contour=cont,
+                                                                   connect=conn,
+                                                                   prog_plot=prog_plot)
+
+                                        copper_lines_list += [p for p in t_o.get_objects() if p]
+
+                            # add the lines from copper features to storage but first try to make as few
+                            # lines as possible
+                            # by trying to fuse them
+                            lines_union = linemerge(unary_union(copper_lines_list))
+                            try:
+                                for lin in lines_union:
+                                    if lin:
+                                        cp.insert(lin)
+                            except TypeError:
+                                cp.insert(lines_union)
                         elif paint_method == "combo":
                             self.app.inform.emit(_("Painting polygons with method: lines."))
                             cp = self.clear_polygon3(poly_buf,
-                                                    tooldia=tool_dia,
-                                                    steps_per_circle=self.app.defaults[
-                                                        "geometry_circle_steps"],
-                                                    overlap=over,
-                                                    contour=cont,
-                                                    connect=conn,
-                                                    prog_plot=prog_plot)
+                                                     tooldia=tool_dia,
+                                                     steps_per_circle=self.app.defaults[
+                                                         "geometry_circle_steps"],
+                                                     overlap=over,
+                                                     contour=cont,
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                             if cp and cp.objects:
                                 pass
@@ -2935,13 +3557,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                                 else:
                                     self.app.inform.emit(_("Failed. Painting polygons with method: standard."))
                                     cp = self.clear_polygon(poly_buf,
-                                                             tooldia=tool_dia,
-                                                             steps_per_circle=self.app.defaults[
-                                                                 "geometry_circle_steps"],
-                                                             overlap=over,
-                                                             contour=cont,
-                                                             connect=conn,
-                                                             prog_plot=prog_plot)
+                                                            tooldia=tool_dia,
+                                                            steps_per_circle=self.app.defaults[
+                                                                "geometry_circle_steps"],
+                                                            overlap=over,
+                                                            contour=cont,
+                                                            connect=conn,
+                                                            prog_plot=prog_plot)
                         if cp and cp.objects:
                             total_geometry += list(cp.get_objects())
                     except FlatCAMApp.GracefulException:
@@ -3101,16 +3723,141 @@ class ToolPaint(FlatCAMTool, Gerber):
                                                      steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                                      overlap=over, contour=cont, connect=conn,
                                                      prog_plot=prog_plot)
+                        elif paint_method == "laser_lines":
+                            # line = None
+                            # aperture_size = None
+
+                            # the key is the aperture type and the val is a list of geo elements
+                            flash_el_dict = dict()
+                            # the key is the aperture size, the val is a list of geo elements
+                            copper_el_dict = dict()
+
+                            # find the flashes and the lines that are in the selected polygon and store
+                            # them separately
+                            for apid, apval in obj.apertures.items():
+                                for geo_el in apval['geometry']:
+                                    if apval["size"] == 0.0:
+                                        if apval["size"] in copper_el_dict:
+                                            copper_el_dict[apval["size"]].append(geo_el)
+                                        else:
+                                            copper_el_dict[apval["size"]] = [geo_el]
+
+                                    if 'follow' in geo_el and geo_el['follow'].within(poly_buf):
+                                        if isinstance(geo_el['follow'], Point):
+                                            if apval["type"] == 'C':
+                                                if 'C' in flash_el_dict:
+                                                    flash_el_dict['C'].append(geo_el)
+                                                else:
+                                                    flash_el_dict['C'] = [geo_el]
+                                            elif apval["type"] == 'O':
+                                                if 'O' in flash_el_dict:
+                                                    flash_el_dict['O'].append(geo_el)
+                                                else:
+                                                    flash_el_dict['O'] = [geo_el]
+                                            elif apval["type"] == 'R':
+                                                if 'R' in flash_el_dict:
+                                                    flash_el_dict['R'].append(geo_el)
+                                                else:
+                                                    flash_el_dict['R'] = [geo_el]
+                                        else:
+                                            aperture_size = apval['size']
+
+                                            if aperture_size in copper_el_dict:
+                                                copper_el_dict[aperture_size].append(geo_el)
+                                            else:
+                                                copper_el_dict[aperture_size] = [geo_el]
+
+                            cp = FlatCAMRTreeStorage()
+                            pads_lines_list = list()
+
+                            # process the flashes found in the selected polygon with the 'lines' method
+                            # for rectangular flashes and with 'seed' for oblong and circular flashes
+                            # and pads (flahes) need the contour therefore I override the GUI settings
+                            # with always True
+                            for ap_type in flash_el_dict:
+                                for elem in flash_el_dict[ap_type]:
+                                    if 'solid' in elem:
+                                        if ap_type == 'C':
+                                            f_o = self.clear_polygon2(elem['solid'],
+                                                                      tooldia=tool_dia,
+                                                                      steps_per_circle=self.app.defaults[
+                                                                          "geometry_circle_steps"],
+                                                                      overlap=over,
+                                                                      contour=True,
+                                                                      connect=conn,
+                                                                      prog_plot=prog_plot)
+                                            pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                        elif ap_type == 'O':
+                                            f_o = self.clear_polygon2(elem['solid'],
+                                                                      tooldia=tool_dia,
+                                                                      steps_per_circle=self.app.defaults[
+                                                                          "geometry_circle_steps"],
+                                                                      overlap=over,
+                                                                      contour=True,
+                                                                      connect=conn,
+                                                                      prog_plot=prog_plot)
+                                            pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                                        elif ap_type == 'R':
+                                            f_o = self.clear_polygon3(elem['solid'],
+                                                                      tooldia=tool_dia,
+                                                                      steps_per_circle=self.app.defaults[
+                                                                          "geometry_circle_steps"],
+                                                                      overlap=over,
+                                                                      contour=True,
+                                                                      connect=conn,
+                                                                      prog_plot=prog_plot)
+
+                                            pads_lines_list += [p for p in f_o.get_objects() if p]
+
+                            # add the lines from pads to the storage
+                            try:
+                                for lin in pads_lines_list:
+                                    if lin:
+                                        cp.insert(lin)
+                            except TypeError:
+                                cp.insert(pads_lines_list)
+
+                            copper_lines_list = list()
+                            # process the traces found in the selected polygon using the 'laser_lines'
+                            # method, method which will follow the 'follow' line therefore use the longer
+                            # path possible for the laser, therefore the acceleration will play
+                            # a smaller factor
+                            for aperture_size in copper_el_dict:
+                                for elem in copper_el_dict[aperture_size]:
+                                    line = elem['follow']
+                                    if line:
+                                        t_o = self.fill_with_lines(line, aperture_size,
+                                                                   tooldia=tool_dia,
+                                                                   steps_per_circle=self.app.defaults[
+                                                                       "geometry_circle_steps"],
+                                                                   overlap=over,
+                                                                   contour=cont,
+                                                                   connect=conn,
+                                                                   prog_plot=prog_plot)
+
+                                        copper_lines_list += [p for p in t_o.get_objects() if p]
+
+                            # add the lines from copper features to storage but first try to make as few
+                            # lines as possible
+                            # by trying to fuse them
+                            lines_union = linemerge(unary_union(copper_lines_list))
+                            try:
+                                for lin in lines_union:
+                                    if lin:
+                                        cp.insert(lin)
+                            except TypeError:
+                                cp.insert(lines_union)
                         elif paint_method == "combo":
                             self.app.inform.emit(_("Painting polygons with method: lines."))
                             cp = self.clear_polygon3(poly_buf,
-                                                    tooldia=tool_dia,
-                                                    steps_per_circle=self.app.defaults[
-                                                        "geometry_circle_steps"],
-                                                    overlap=over,
-                                                    contour=cont,
-                                                    connect=conn,
-                                                    prog_plot=prog_plot)
+                                                     tooldia=tool_dia,
+                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                     overlap=over,
+                                                     contour=cont,
+                                                     connect=conn,
+                                                     prog_plot=prog_plot)
 
                             if cp and cp.objects:
                                 pass
@@ -3129,13 +3876,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                                 else:
                                     self.app.inform.emit(_("Failed. Painting polygons with method: standard."))
                                     cp = self.clear_polygon(poly_buf,
-                                                             tooldia=tool_dia,
-                                                             steps_per_circle=self.app.defaults[
-                                                                 "geometry_circle_steps"],
-                                                             overlap=over,
-                                                             contour=cont,
-                                                             connect=conn,
-                                                             prog_plot=prog_plot)
+                                                            tooldia=tool_dia,
+                                                            steps_per_circle=self.app.defaults[
+                                                                "geometry_circle_steps"],
+                                                            overlap=over,
+                                                            contour=cont,
+                                                            connect=conn,
+                                                            prog_plot=prog_plot)
                         if cp and cp.objects:
                             cleared_geo += list(cp.get_objects())
                     except FlatCAMApp.GracefulException:

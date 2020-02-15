@@ -1582,7 +1582,7 @@ class Geometry(object):
         """
 
         # log.debug("camlib.fill_with_lines()")
-        if not isinstance(line, LineString) or not isinstance(line, MultiLineString):
+        if not isinstance(line, LineString) and not isinstance(line, MultiLineString):
             log.debug("camlib.Geometry.fill_with_lines() --> Not a LineString/MultiLineString but %s" % str(type(line)))
             return None
 
@@ -1596,10 +1596,10 @@ class Geometry(object):
 
         lines_trimmed = []
 
-        polygon = line.buffer(aperture_size / 1.99999999999999999, int(steps_per_circle))
+        polygon = line.buffer(aperture_size / 2.0, int(steps_per_circle))
 
         try:
-            margin_poly = polygon.buffer(-tooldia / 1.99999999, int(steps_per_circle))
+            margin_poly = polygon.buffer(-tooldia / 2.0, int(steps_per_circle))
         except Exception:
             log.debug("camlib.Geometry.fill_with_lines() --> Could not buffer the Polygon, tool diameter too high")
             return None
@@ -1615,40 +1615,50 @@ class Geometry(object):
                 # provide the app with a way to process the GUI events when in a blocking loop
                 QtWidgets.QApplication.processEvents()
 
-                line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
-                line = line.intersection(margin_poly)
-                lines_trimmed.append(line)
+                new_line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
+                new_line = new_line.intersection(margin_poly)
+                lines_trimmed.append(new_line)
 
-                line = line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
-                line = line.intersection(margin_poly)
-                lines_trimmed.append(line)
+                new_line = line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
+                new_line = new_line.intersection(margin_poly)
+                lines_trimmed.append(new_line)
 
                 delta += tooldia * (1 - overlap)
                 if prog_plot:
-                    self.plot_temp_shapes(line)
+                    self.plot_temp_shapes(new_line)
                     self.temp_shapes.redraw()
 
             # Last line
-            delta = aperture_size / 2
+            delta = (aperture_size / 2) - (tooldia / 2.00000001)
 
-            line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
-            line = line.intersection(margin_poly)
-
-            for ll in line:
-                lines_trimmed.append(ll)
-                if prog_plot:
-                    self.plot_temp_shapes(line)
-
-            line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
-            line = line.intersection(margin_poly)
-
-            for ll in line:
-                lines_trimmed.append(ll)
-                if prog_plot:
-                    self.plot_temp_shapes(line)
+            new_line = line.parallel_offset(distance=delta, side='left', resolution=int(steps_per_circle))
+            new_line = new_line.intersection(margin_poly)
         except Exception as e:
             log.debug('camlib.Geometry.fill_with_lines() Processing poly --> %s' % str(e))
             return None
+
+        try:
+            for ll in new_line:
+                lines_trimmed.append(ll)
+                if prog_plot:
+                    self.plot_temp_shapes(ll)
+        except TypeError:
+            lines_trimmed.append(new_line)
+            if prog_plot:
+                self.plot_temp_shapes(new_line)
+
+        new_line = line.parallel_offset(distance=delta, side='right', resolution=int(steps_per_circle))
+        new_line = new_line.intersection(margin_poly)
+
+        try:
+            for ll in new_line:
+                lines_trimmed.append(ll)
+                if prog_plot:
+                    self.plot_temp_shapes(ll)
+        except TypeError:
+            lines_trimmed.append(new_line)
+            if prog_plot:
+                self.plot_temp_shapes(new_line)
 
         if prog_plot:
             self.temp_shapes.redraw()
@@ -3434,10 +3444,13 @@ class CNCjob(Geometry):
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut is None:
-            self.app.inform.emit('[ERROR_NOTCL] %s' %
-                                 _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                   "other parameters."))
-            return 'fail'
+            if 'laser' not in self.pp_geometry_name:
+                self.app.inform.emit('[ERROR_NOTCL] %s' %
+                                     _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                       "other parameters."))
+                return 'fail'
+            else:
+                self.z_cut = 0
 
         if self.machinist_setting == 0:
             if self.z_cut > 0:
@@ -3448,7 +3461,7 @@ class CNCjob(Geometry):
                                        "therefore the app will convert the value to negative."
                                        "Check the resulting CNC code (Gcode etc)."))
                 self.z_cut = -self.z_cut
-            elif self.z_cut == 0:
+            elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
                 self.app.inform.emit('[WARNING] %s: %s' %
                                      (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
                                       self.options['name']))
@@ -3793,11 +3806,14 @@ class CNCjob(Geometry):
 
         if self.machinist_setting == 0:
             if self.z_cut is None:
-                self.app.inform.emit(
-                    '[ERROR_NOTCL] %s' % _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                           "other parameters.")
-                )
-                return 'fail'
+                if 'laser' not in self.pp_geometry_name:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL] %s' % _("Cut_Z parameter is None or zero. Most likely a bad combinations of "
+                                               "other parameters.")
+                    )
+                    return 'fail'
+                else:
+                    self.z_cut = 0.0
 
             if self.z_cut > 0:
                 self.app.inform.emit('[WARNING] %s' %
@@ -3807,7 +3823,7 @@ class CNCjob(Geometry):
                                        "therefore the app will convert the value to negative."
                                        "Check the resulting CNC code (Gcode etc)."))
                 self.z_cut = -self.z_cut
-            elif self.z_cut == 0:
+            elif self.z_cut == 0 and 'laser' not in self.pp_geometry_name:
                 self.app.inform.emit(
                     '[WARNING] %s: %s' % (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
                                           geometry.options['name'])
