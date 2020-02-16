@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Paint Tool added a new method of painting named Combo who will pass through all the methods until the polygon is cleared
 - in Paint Tool attempting to add a new mode suitable for Laser usage
 - more work in the new Laser Mode in the Paint Tool
+- modified the Paint Tool UI
 
 14.02.2020
 

@@ -14,7 +14,7 @@ from copy import deepcopy
 from flatcamParsers.ParseGerber import Gerber
 from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry
 from camlib import Geometry, FlatCAMRTreeStorage
-from flatcamGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton
+from flatcamGUI.GUIElements import FCTable, FCDoubleSpinner, FCCheckBox, FCInputDialog, RadioSet, FCButton, FCComboBox
 import FlatCAMApp
 
 from shapely.geometry import base, Polygon, MultiPolygon, LinearRing, Point, MultiLineString
@@ -75,15 +75,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         # ################################################
         # ##### Type of object to be painted #############
         # ################################################
-        self.type_obj_combo = QtWidgets.QComboBox()
-        self.type_obj_combo.addItem("Gerber")
-        self.type_obj_combo.addItem("Excellon")
-        self.type_obj_combo.addItem("Geometry")
-
-        # we get rid of item1 ("Excellon") as it is not suitable
-        self.type_obj_combo.view().setRowHidden(1, True)
-        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
@@ -93,6 +84,10 @@ class ToolPaint(FlatCAMTool, Gerber):
               "of objects that will populate the 'Object' combobox.")
         )
         self.type_obj_combo_label.setMinimumWidth(60)
+
+        self.type_obj_combo = RadioSet([{'label': "Geometry", 'value': 'geometry'},
+                                        {'label': "Gerber", 'value': 'gerber'}])
+
         grid0.addWidget(self.type_obj_combo_label, 1, 0)
         grid0.addWidget(self.type_obj_combo, 1, 1)
 
@@ -371,23 +366,38 @@ class ToolPaint(FlatCAMTool, Gerber):
               "- Standard: Fixed step inwards.\n"
               "- Seed-based: Outwards from seed.\n"
               "- Line-based: Parallel lines.\n"
-              "- Laser-lines: Active only when Laser Mode is active and only for Gerber objects.\n"
+              "- Laser-lines: Active only for Gerber objects.\n"
               "Will create lines that follow the traces.\n"
               "- Combo: In case of failure a new method will be picked from the above\n"
               "in the order specified.")
         )
-        self.paintmethod_combo = RadioSet([
-            {"label": _("Standard"), "value": "standard"},
-            {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"},
-            {"label": _("Laser lines"), "value": "laser_lines"},
-            {"label": _("Combo"), "value": "combo"}
-        ], orientation='vertical', stretch=False)
-        self.paintmethod_combo.setObjectName(_("Method"))
+        # self.paintmethod_combo = RadioSet([
+        #     {"label": _("Standard"), "value": "standard"},
+        #     {"label": _("Seed-based"), "value": "seed"},
+        #     {"label": _("Straight lines"), "value": "lines"},
+        #     {"label": _("Laser lines"), "value": "laser_lines"},
+        #     {"label": _("Combo"), "value": "combo"}
+        # ], orientation='vertical', stretch=False)
 
-        for choice in self.paintmethod_combo.choices:
-            if choice['value'] == "laser_lines":
-                choice["radio"].setEnabled(False)
+        # for choice in self.paintmethod_combo.choices:
+        #     if choice['value'] == "laser_lines":
+        #         choice["radio"].setEnabled(False)
+
+        self.paintmethod_combo = FCComboBox()
+        self.paintmethod_combo.addItems(
+            [_("Standard"), _("Seed-based"), _("Straight lines"), _("Laser lines"), _("Combo")]
+        )
+        self.p_mth = {
+            _("Standard"): "standard",
+            _("Seed-based"): "seed",
+            _("Straight lines"): "lines",
+            _("Laser lines"): "laser_lines",
+            _("Combo"): "combo"
+        }
+        idx = self.paintmethod_combo.findText(_("Laser lines"))
+        self.paintmethod_combo.model().item(idx).setEnabled(False)
+
+        self.paintmethod_combo.setObjectName(_("Method"))
 
         grid4.addWidget(methodlabel, 7, 0)
         grid4.addWidget(self.paintmethod_combo, 7, 1)
@@ -446,15 +456,6 @@ class ToolPaint(FlatCAMTool, Gerber):
               "If not checked, use the standard algorithm.")
         )
         grid4.addWidget(self.rest_cb, 16, 0, 1, 2)
-
-        # Laser Mode
-        self.laser_cb = FCCheckBox(_("Laser Mode"))
-        self.laser_cb.setToolTip(
-            _("This control is enabled only for Gerber objects.\n"
-              "If checked then a new method is shown in Methods,\n"
-              "and it is also added to the Combo Method sequence.")
-        )
-        grid4.addWidget(self.laser_cb, 17, 0, 1, 2)
 
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
@@ -635,8 +636,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.rest_cb.stateChanged.connect(self.on_rest_machining_check)
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
-        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
-        self.laser_cb.stateChanged.connect(self.on_laser_mode_toggled)
+        self.type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
         # #############################################################################
@@ -655,25 +655,18 @@ class ToolPaint(FlatCAMTool, Gerber):
             icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
         )
 
-    def on_type_obj_index_changed(self, index):
-        obj_type = self.type_obj_combo.currentIndex()
+    def on_type_obj_index_changed(self, val):
+        obj_type = 0 if val == 'gerber' else 2
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(0)
 
-        if self.type_obj_combo.currentText().lower() == 'gerber':
-            self.laser_cb.setEnabled(True)
+        idx = self.paintmethod_combo.findText(_("Laser lines"))
+        if self.type_obj_combo.get_value().lower() == 'gerber':
+            self.paintmethod_combo.model().item(idx).setEnabled(True)
         else:
-            self.laser_cb.setEnabled(False)
-
-    def on_laser_mode_toggled(self, val):
-        for choice in self.paintmethod_combo.choices:
-            if choice['value'] == "laser_lines":
-                if val:
-                    choice["radio"].setEnabled(True)
-                else:
-                    choice["radio"].setEnabled(False)
-                    if self.paintmethod_combo.get_value() == "laser_lines":
-                        self.paintmethod_combo.set_value('lines')
+            self.paintmethod_combo.model().item(idx).setEnabled(False)
+            if self.paintmethod_combo.get_value() == _("Laser lines"):
+                self.paintmethod_combo.set_value(_("Straight lines"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
@@ -1015,10 +1008,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.on_tool_type(val=self.tool_type_radio.get_value())
 
         # make the default object type, "Geometry"
-        self.type_obj_combo.setCurrentIndex(2)
-
-        # make the Laser Mode disabled because the Geometry object is default
-        self.laser_cb.setEnabled(False)
+        self.type_obj_combo.set_value("geometry")
 
         try:
             diameters = [float(self.app.defaults["tools_painttooldia"])]
@@ -1727,7 +1717,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.inform.emit('[WARNING] %s' % _('No polygon found.'))
             return
 
-        paint_method = method if method is not None else self.paintmethod_combo.get_value()
+        paint_method = method if method is not None else self.p_mth[self.paintmethod_combo.get_value()]
         paint_margin = float(self.paintmargin_entry.get_value()) if margin is None else margin
         # determine if to use the progressive plotting
         prog_plot = True if self.app.defaults["tools_paint_plotting"] == 'progressive' else False
@@ -2142,7 +2132,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         Usage of the different one is related to when this function is called from a TcL command.
         :return:
         """
-        paint_method = method if method is not None else self.paintmethod_combo.get_value()
+        paint_method = method if method is not None else self.p_mth[self.paintmethod_combo.get_value()]
 
         if margin is not None:
             paint_margin = margin
@@ -3207,7 +3197,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         Usage of the different one is related to when this function is called from a TcL command.
         :return:
         """
-        paint_method = method if method is not None else self.paintmethod_combo.get_value()
+        paint_method = method if method is not None else self.p_mth[self.paintmethod_combo.get_value()]
 
         if margin is not None:
             paint_margin = margin

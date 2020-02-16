@@ -5761,17 +5761,25 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
-            _("Algorithm for non-copper clearing:<BR>"
-              "<B>Standard</B>: Fixed step inwards.<BR>"
-              "<B>Seed-based</B>: Outwards from seed.<BR>"
-              "<B>Line-based</B>: Parallel lines.")
+            _("Algorithm for painting:\n"
+              "- Standard: Fixed step inwards.\n"
+              "- Seed-based: Outwards from seed.\n"
+              "- Line-based: Parallel lines.\n"
+              "- Laser-lines: Active only for Gerber objects.\n"
+              "Will create lines that follow the traces.\n"
+              "- Combo: In case of failure a new method will be picked from the above\n"
+              "in the order specified.")
         )
 
-        self.paintmethod_combo = RadioSet([
-            {"label": _("Standard"), "value": "standard"},
-            {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"}
-        ], orientation='vertical', stretch=False)
+        # self.paintmethod_combo = RadioSet([
+        #     {"label": _("Standard"), "value": "standard"},
+        #     {"label": _("Seed-based"), "value": "seed"},
+        #     {"label": _("Straight lines"), "value": "lines"}
+        # ], orientation='vertical', stretch=False)
+        self.paintmethod_combo = FCComboBox()
+        self.paintmethod_combo.addItems(
+            [_("Standard"), _("Seed-based"), _("Straight lines"), _("Laser lines"), _("Combo")]
+        )
 
         grid0.addWidget(methodlabel, 11, 0)
         grid0.addWidget(self.paintmethod_combo, 11, 1)
