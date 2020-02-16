@@ -8,7 +8,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from FlatCAMTool import FlatCAMTool
-from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton
+from flatcamGUI.GUIElements import FCCheckBox, FCDoubleSpinner, RadioSet, FCTable, FCInputDialog, FCButton, FCComboBox
 from flatcamParsers.ParseGerber import Gerber
 
 import FlatCAMApp
@@ -70,15 +70,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # ################################################
         # ##### Type of object to be copper cleaned ######
         # ################################################
-        self.type_obj_combo = QtWidgets.QComboBox()
-        self.type_obj_combo.addItem("Gerber")
-        self.type_obj_combo.addItem("Excellon")
-        self.type_obj_combo.addItem("Geometry")
-
-        # we get rid of item1 ("Excellon") as it is not suitable
-        self.type_obj_combo.view().setRowHidden(1, True)
-        self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
-        self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
+        # self.type_obj_combo = QtWidgets.QComboBox()
+        # self.type_obj_combo.addItem("Gerber")
+        # self.type_obj_combo.addItem("Excellon")
+        # self.type_obj_combo.addItem("Geometry")
+        #
+        # # we get rid of item1 ("Excellon") as it is not suitable
+        # self.type_obj_combo.view().setRowHidden(1, True)
+        # self.type_obj_combo.setItemIcon(0, QtGui.QIcon(self.app.resource_location + "/flatcam_icon16.png"))
+        # self.type_obj_combo.setItemIcon(2, QtGui.QIcon(self.app.resource_location + "/geometry16.png"))
 
         self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
@@ -88,6 +88,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "of objects that will populate the 'Object' combobox.")
         )
         self.type_obj_combo_label.setMinimumWidth(60)
+
+        self.type_obj_combo = RadioSet([{'label': "Geometry", 'value': 'geometry'},
+                                        {'label': "Gerber", 'value': 'gerber'}])
+
         form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
 
         # ################################################
@@ -683,11 +687,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
         self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
-        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+        self.type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
-    def on_type_obj_index_changed(self, index):
-        obj_type = self.type_obj_combo.currentIndex()
+    def on_type_obj_index_changed(self, val):
+        obj_type = 0 if val == 'gerber' else 2
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
 
@@ -884,6 +888,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.old_tool_dia = self.app.defaults["tools_nccnewdia"]
 
         self.tools_frame.show()
+
+        self.type_obj_combo.set_value('gerber')
 
         self.ncc_order_radio.set_value(self.app.defaults["tools_nccorder"])
         self.ncc_overlap_entry.set_value(self.app.defaults["tools_nccoverlap"])

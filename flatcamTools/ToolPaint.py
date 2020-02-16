@@ -636,7 +636,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.rest_cb.stateChanged.connect(self.on_rest_machining_check)
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
-        self.type_obj_combo.activated_custom.connect(self.on_type_obj_index_changed)
+        self.type_obj_combo.activated_custom.connect(self.on_type_obj_changed)
         self.reset_button.clicked.connect(self.set_tool_ui)
 
         # #############################################################################
@@ -655,7 +655,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             icon=QtGui.QIcon(self.app.resource_location + "/delete32.png")
         )
 
-    def on_type_obj_index_changed(self, val):
+    def on_type_obj_changed(self, val):
         obj_type = 0 if val == 'gerber' else 2
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(0)

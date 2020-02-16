@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.02.2020
+
+- small update to NCC Tool UI
+
 15.02.2020
 
 - in Paint Tool added a new method of painting named Combo who will pass through all the methods until the polygon is cleared
