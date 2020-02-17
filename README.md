@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the Excellon Editor to add for each tool a 'data' dictionary
 - updated all FlatCAM tools to use the new confirmation message that show if the entered value is within range or outside
 - updated all FlatCAM tools to use the new confirmation message for QSpinBoxes, too
+- in Excellon UI protected the values that are common parameters from change on tool selection change
 
 16.02.2020
 

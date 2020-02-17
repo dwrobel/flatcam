@@ -3028,7 +3028,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def storage_to_form(self, dict_storage):
         for form_key in self.form_fields:
             for storage_key in dict_storage:
-                if form_key == storage_key:
+                if form_key == storage_key and form_key not in \
+                        ["toolchangez", "startz", "endz", "ppname_e", "ppname_g"]:
                     try:
                         self.form_fields[form_key].set_value(dict_storage[form_key])
                     except Exception as e:
