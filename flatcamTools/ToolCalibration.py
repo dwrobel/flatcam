@@ -263,8 +263,6 @@ class ToolCalibration(FlatCAMTool):
         self.bottom_left_coordy_found = EvalEntry()
         self.points_table.setCellWidget(row, 3, self.bottom_left_coordy_found)
 
-        self.bottom_left_coordx_found.set_value(_("Origin"))
-        self.bottom_left_coordy_found.set_value(_("Origin"))
         self.bottom_left_coordx_found.setDisabled(True)
         self.bottom_left_coordy_found.setDisabled(True)
         row += 1
@@ -769,6 +767,9 @@ class ToolCalibration(FlatCAMTool):
 
         if self.local_connected is True:
             self.disconnect_cal_events()
+
+        self.bottom_left_coordx_found.set_value(_("Origin"))
+        self.bottom_left_coordy_found.set_value(_("Origin"))
 
         self.reset_calibration_points()
 

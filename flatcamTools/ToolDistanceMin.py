@@ -128,15 +128,6 @@ class DistanceMin(FlatCAMTool):
         form_layout.addRow(self.total_distance_label, self.total_distance_entry)
         form_layout.addRow(self.half_point_label, self.half_point_entry)
 
-        # initial view of the layout
-        self.start_entry.set_value('(0, 0)')
-        self.stop_entry.set_value('(0, 0)')
-        self.distance_x_entry.set_value('0.0')
-        self.distance_y_entry.set_value('0.0')
-        self.angle_entry.set_value('0.0')
-        self.total_distance_entry.set_value('0.0')
-        self.half_point_entry.set_value('(0, 0)')
-
         self.layout.addStretch()
 
         self.h_point = (0, 0)

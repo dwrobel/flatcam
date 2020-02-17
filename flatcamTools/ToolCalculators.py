@@ -105,7 +105,7 @@ class ToolCalculator(FlatCAMTool):
         self.tipAngle_label = QtWidgets.QLabel('%s:' % _("Tip Angle"))
         self.tipAngle_entry = FCSpinner(callback=self.confirmation_message_int)
         self.tipAngle_entry.set_range(0,180)
-        self.tipAngle_entry.setSingleStep(5)
+        self.tipAngle_entry.set_step(5)
 
         # self.tipAngle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.tipAngle_label.setToolTip(_("This is the angle of the tip of the tool.\n"

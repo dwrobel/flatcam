@@ -670,7 +670,14 @@ class FCSpinner(QtWidgets.QSpinBox):
         return QtGui.QValidator.Acceptable, p_str, p_int
 
     def set_range(self, min_val, max_val):
+        self.blockSignals(True)
         self.setRange(min_val, max_val)
+        self.blockSignals(False)
+
+    def set_step(self, p_int):
+        self.blockSignals(True)
+        self.setSingleStep(p_int)
+        self.blockSignals(False)
 
     # def sizeHint(self):
     #     default_hint_size = super(FCSpinner, self).sizeHint()

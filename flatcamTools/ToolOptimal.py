@@ -282,9 +282,6 @@ class ToolOptimal(FlatCAMTool):
     def run(self, toggle=True):
         self.app.report_usage("ToolOptimal()")
 
-        self.result_entry.set_value(0.0)
-        self.freq_entry.set_value('0')
-
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
             if self.app.ui.splitter.sizes()[0] == 0:
@@ -310,6 +307,9 @@ class ToolOptimal(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Optimal Tool"))
 
     def set_tool_ui(self):
+        self.result_entry.set_value(0.0)
+        self.freq_entry.set_value('0')
+
         self.precision_spinner.set_value(int(self.app.defaults["tools_opt_precision"]))
         self.locations_textb.clear()
         # new cursor - select all document

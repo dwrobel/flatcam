@@ -153,7 +153,6 @@ class QRCode(FlatCAMTool):
         self.border_size_entry = FCSpinner(callback=self.confirmation_message_int)
         self.border_size_entry.set_range(1, 9999)
         self.border_size_entry.setWrapping(True)
-        self.border_size_entry.set_value(4)
 
         grid_lay.addWidget(self.border_size_label, 4, 0)
         grid_lay.addWidget(self.border_size_entry, 4, 1)
@@ -386,6 +385,8 @@ class QRCode(FlatCAMTool):
 
     def set_tool_ui(self):
         self.units = self.app.defaults['units']
+        self.border_size_entry.set_value(4)
+
         self.version_entry.set_value(int(self.app.defaults["tools_qrcode_version"]))
         self.error_radio.set_value(self.app.defaults["tools_qrcode_error"])
         self.bsize_entry.set_value(int(self.app.defaults["tools_qrcode_box_size"]))

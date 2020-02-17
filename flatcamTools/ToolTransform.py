@@ -77,7 +77,6 @@ class ToolTransform(FlatCAMTool):
         # self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
         self.rotate_button = FCButton()
-        self.rotate_button.set_value(_("Rotate"))
         self.rotate_button.setToolTip(
             _("Rotate the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -109,7 +108,6 @@ class ToolTransform(FlatCAMTool):
         self.skewx_entry.set_range(-360, 360)
 
         self.skewx_button = FCButton()
-        self.skewx_button.set_value(_("Skew X"))
         self.skewx_button.setToolTip(
             _("Skew/shear the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -131,7 +129,6 @@ class ToolTransform(FlatCAMTool):
         self.skewy_entry.set_range(-360, 360)
 
         self.skewy_button = FCButton()
-        self.skewy_button.set_value(_("Skew Y"))
         self.skewy_button.setToolTip(
             _("Skew/shear the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -161,7 +158,6 @@ class ToolTransform(FlatCAMTool):
         self.scalex_entry.setMinimum(-1e6)
 
         self.scalex_button = FCButton()
-        self.scalex_button.set_value(_("Scale X"))
         self.scalex_button.setToolTip(
             _("Scale the selected object(s).\n"
               "The point of reference depends on \n"
@@ -182,7 +178,6 @@ class ToolTransform(FlatCAMTool):
         self.scaley_entry.setMinimum(-1e6)
 
         self.scaley_button = FCButton()
-        self.scaley_button.set_value(_("Scale Y"))
         self.scaley_button.setToolTip(
             _("Scale the selected object(s).\n"
               "The point of reference depends on \n"
@@ -194,7 +189,6 @@ class ToolTransform(FlatCAMTool):
         grid0.addWidget(self.scaley_button, 9, 2)
 
         self.scale_link_cb = FCCheckBox()
-        self.scale_link_cb.set_value(True)
         self.scale_link_cb.setText(_("Link"))
         self.scale_link_cb.setToolTip(
             _("Scale the selected object(s)\n"
@@ -202,7 +196,6 @@ class ToolTransform(FlatCAMTool):
         )
 
         self.scale_zero_ref_cb = FCCheckBox()
-        self.scale_zero_ref_cb.set_value(True)
         self.scale_zero_ref_cb.setText('%s' % _("Scale Reference"))
         self.scale_zero_ref_cb.setToolTip(
             _("Scale the selected object(s)\n"
@@ -234,7 +227,6 @@ class ToolTransform(FlatCAMTool):
         self.offx_entry.setMinimum(-1e6)
 
         self.offx_button = FCButton()
-        self.offx_button.set_value(_("Offset X"))
         self.offx_button.setToolTip(
             _("Offset the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -255,7 +247,6 @@ class ToolTransform(FlatCAMTool):
         self.offy_entry.setMinimum(-1e6)
 
         self.offy_button = FCButton()
-        self.offy_button.set_value(_("Offset Y"))
         self.offy_button.setToolTip(
             _("Offset the selected object(s).\n"
               "The point of reference is the middle of\n"
@@ -276,13 +267,11 @@ class ToolTransform(FlatCAMTool):
         grid0.addWidget(flip_title_label, 16, 0, 1, 3)
 
         self.flipx_button = FCButton()
-        self.flipx_button.set_value(_("Flip on X"))
         self.flipx_button.setToolTip(
             _("Flip the selected object(s) over the X axis.")
         )
 
         self.flipy_button = FCButton()
-        self.flipy_button.set_value(_("Flip on Y"))
         self.flipy_button.setToolTip(
             _("Flip the selected object(s) over the X axis.")
         )
@@ -294,7 +283,6 @@ class ToolTransform(FlatCAMTool):
         hlay0.addWidget(self.flipy_button)
 
         self.flip_ref_cb = FCCheckBox()
-        self.flip_ref_cb.set_value(True)
         self.flip_ref_cb.setText('%s' % _("Mirror Reference"))
         self.flip_ref_cb.setToolTip(
             _("Flip the selected object(s)\n"
@@ -320,7 +308,6 @@ class ToolTransform(FlatCAMTool):
         # self.flip_ref_entry.setFixedWidth(70)
 
         self.flip_ref_button = FCButton()
-        self.flip_ref_button.set_value(_("Add"))
         self.flip_ref_button.setToolTip(
             _("The point coordinates can be captured by\n"
               "left click on canvas together with pressing\n"
@@ -360,7 +347,6 @@ class ToolTransform(FlatCAMTool):
         self.buffer_entry.set_range(-9999.9999, 9999.9999)
 
         self.buffer_button = FCButton()
-        self.buffer_button.set_value(_("Buffer D"))
         self.buffer_button.setToolTip(
             _("Create the buffer effect on each geometry,\n"
               "element from the selected object, using the distance.")
@@ -387,7 +373,6 @@ class ToolTransform(FlatCAMTool):
         self.buffer_factor_entry.setSingleStep(1)
 
         self.buffer_factor_button = FCButton()
-        self.buffer_factor_button.set_value(_("Buffer F"))
         self.buffer_factor_button.setToolTip(
             _("Create the buffer effect on each geometry,\n"
               "element from the selected object, using the factor.")
@@ -481,6 +466,22 @@ class ToolTransform(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
 
     def set_tool_ui(self):
+        self.rotate_button.set_value(_("Rotate"))
+        self.skewx_button.set_value(_("Skew X"))
+        self.skewy_button.set_value(_("Skew Y"))
+        self.scalex_button.set_value(_("Scale X"))
+        self.scaley_button.set_value(_("Scale Y"))
+        self.scale_link_cb.set_value(True)
+        self.scale_zero_ref_cb.set_value(True)
+        self.offx_button.set_value(_("Offset X"))
+        self.offy_button.set_value(_("Offset Y"))
+        self.flipx_button.set_value(_("Flip on X"))
+        self.flipy_button.set_value(_("Flip on Y"))
+        self.flip_ref_cb.set_value(True)
+        self.flip_ref_button.set_value(_("Add"))
+        self.buffer_button.set_value(_("Buffer D"))
+        self.buffer_factor_button.set_value(_("Buffer F"))
+
         # ## Initialize form
         if self.app.defaults["tools_transform_rotate"]:
             self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])

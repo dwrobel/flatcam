@@ -386,6 +386,7 @@ class GerberObjectUI(ObjectUI):
         passlabel.setMinimumWidth(90)
         self.iso_width_entry = FCSpinner(callback=self.confirmation_message_int)
         self.iso_width_entry.set_range(1, 999)
+
         grid1.addWidget(passlabel, 5, 0)
         grid1.addWidget(self.iso_width_entry, 5, 1, 1, 2)
 
@@ -1054,7 +1055,7 @@ class ExcellonObjectUI(ObjectUI):
 
         self.spindlespeed_entry = FCSpinner(callback=self.confirmation_message_int)
         self.spindlespeed_entry.set_range(0, 1000000)
-        self.spindlespeed_entry.setSingleStep(100)
+        self.spindlespeed_entry.set_step(100)
         self.spindlespeed_entry.setObjectName("e_spindlespeed")
 
         self.grid3.addWidget(self.spindle_label, 19, 0)
@@ -1823,7 +1824,7 @@ class GeometryObjectUI(ObjectUI):
         )
         self.cncspindlespeed_entry = FCSpinner(callback=self.confirmation_message_int)
         self.cncspindlespeed_entry.set_range(0, 1000000)
-        self.cncspindlespeed_entry.setSingleStep(100)
+        self.cncspindlespeed_entry.set_step(100)
 
         self.grid3.addWidget(self.spindle_label, 14, 0)
         self.grid3.addWidget(self.cncspindlespeed_entry, 14, 1)

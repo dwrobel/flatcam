@@ -284,7 +284,7 @@ class SolderPaste(FlatCAMTool):
         # Spindle Speed Forward
         self.speedfwd_entry = FCSpinner(callback=self.confirmation_message_int)
         self.speedfwd_entry.set_range(0, 999999)
-        self.speedfwd_entry.setSingleStep(1000)
+        self.speedfwd_entry.set_step(1000)
 
         self.speedfwd_label = QtWidgets.QLabel('%s:' % _("Spindle Speed FWD"))
         self.speedfwd_label.setToolTip(
@@ -308,7 +308,7 @@ class SolderPaste(FlatCAMTool):
         # Spindle Speed Reverse
         self.speedrev_entry = FCSpinner(callback=self.confirmation_message_int)
         self.speedrev_entry.set_range(0, 999999)
-        self.speedrev_entry.setSingleStep(1000)
+        self.speedrev_entry.set_step(1000)
 
         self.speedrev_label = QtWidgets.QLabel('%s:' % _("Spindle Speed REV"))
         self.speedrev_label.setToolTip(

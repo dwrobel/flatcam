@@ -1133,7 +1133,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
 
         self.notebook_font_size_spinner = FCSpinner()
-        self.notebook_font_size_spinner.setRange(8, 40)
+        self.notebook_font_size_spinner.set_range(8, 40)
         self.notebook_font_size_spinner.setWrapping(True)
 
         settings = QSettings("Open Source", "FlatCAM")
@@ -1152,7 +1152,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
 
         self.axis_font_size_spinner = FCSpinner()
-        self.axis_font_size_spinner.setRange(0, 40)
+        self.axis_font_size_spinner.set_range(0, 40)
         self.axis_font_size_spinner.setWrapping(True)
 
         settings = QSettings("Open Source", "FlatCAM")
@@ -1172,7 +1172,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
         )
 
         self.textbox_font_size_spinner = FCSpinner()
-        self.textbox_font_size_spinner.setRange(8, 40)
+        self.textbox_font_size_spinner.set_range(8, 40)
         self.textbox_font_size_spinner.setWrapping(True)
 
         settings = QSettings("Open Source", "FlatCAM")
@@ -1342,6 +1342,7 @@ class GeneralAPPSetGroupUI(OptionsGroupUI):
 
         # Bookmarks Limit in the Help Menu
         self.bm_limit_spinner = FCSpinner()
+        self.bm_limit_spinner.set_range(0, 9999)
         self.bm_limit_label = QtWidgets.QLabel('%s:' % _('Bookmarks limit'))
         self.bm_limit_label.setToolTip(
             _("The maximum number of bookmarks that may be installed in the menu.\n"
@@ -2040,7 +2041,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "number (integer) of tool widths.")
         )
         self.iso_width_entry = FCSpinner()
-        self.iso_width_entry.setRange(1, 999)
+        self.iso_width_entry.set_range(1, 999)
 
         grid0.addWidget(passlabel, 1, 0)
         grid0.addWidget(self.iso_width_entry, 1, 1)
@@ -2247,7 +2248,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         )
         self.tipangle_spinner = FCSpinner()
         self.tipangle_spinner.set_range(1, 180)
-        self.tipangle_spinner.setSingleStep(5)
+        self.tipangle_spinner.set_step(5)
         self.tipangle_spinner.setWrapping(True)
         grid0.addWidget(self.tipanglelabel, 5, 0)
         grid0.addWidget(self.tipangle_spinner, 5, 1, 1, 2)
@@ -2379,7 +2380,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
 
         self.format_whole_entry = FCSpinner()
         self.format_whole_entry.set_range(0, 9)
-        self.format_whole_entry.setSingleStep(1)
+        self.format_whole_entry.set_step(1)
         self.format_whole_entry.setWrapping(True)
 
         self.format_whole_entry.setMinimumWidth(30)
@@ -2395,7 +2396,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
 
         self.format_dec_entry = FCSpinner()
         self.format_dec_entry.set_range(0, 9)
-        self.format_dec_entry.setSingleStep(1)
+        self.format_dec_entry.set_step(1)
         self.format_dec_entry.setWrapping(True)
 
         self.format_dec_entry.setMinimumWidth(30)
@@ -3252,7 +3253,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
         self.spindlespeed_entry = FCSpinner()
         self.spindlespeed_entry.set_range(0, 1000000)
-        self.spindlespeed_entry.setSingleStep(100)
+        self.spindlespeed_entry.set_step(100)
 
         grid2.addWidget(spdlabel, 10, 0)
         grid2.addWidget(self.spindlespeed_entry, 10, 1)
@@ -4207,7 +4208,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(spdlabel, 9, 0)
         self.cncspindlespeed_entry = FCSpinner()
         self.cncspindlespeed_entry.set_range(0, 1000000)
-        self.cncspindlespeed_entry.setSingleStep(100)
+        self.cncspindlespeed_entry.set_step(100)
 
         grid1.addWidget(self.cncspindlespeed_entry, 9, 1)
 
@@ -6258,7 +6259,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         # ## Columns
         self.pcolumns = FCSpinner()
         self.pcolumns.set_range(1, 1000)
-        self.pcolumns.setSingleStep(1)
+        self.pcolumns.set_step(1)
 
         self.columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
         self.columns_label.setToolTip(
@@ -6270,7 +6271,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         # ## Rows
         self.prows = FCSpinner()
         self.prows.set_range(1, 1000)
-        self.prows.setSingleStep(1)
+        self.prows.set_step(1)
 
         self.rows_label = QtWidgets.QLabel('%s:' % _("Rows"))
         self.rows_label.setToolTip(
@@ -6848,7 +6849,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         # Spindle Speed Forward
         self.speedfwd_entry = FCSpinner()
         self.speedfwd_entry.set_range(0, 99999)
-        self.speedfwd_entry.setSingleStep(1000)
+        self.speedfwd_entry.set_step(1000)
 
         self.speedfwd_label = QtWidgets.QLabel('%s:' % _("Spindle Speed FWD"))
         self.speedfwd_label.setToolTip(
@@ -6874,7 +6875,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         # Spindle Speed Reverse
         self.speedrev_entry = FCSpinner()
         self.speedrev_entry.set_range(0, 999999)
-        self.speedrev_entry.setSingleStep(1000)
+        self.speedrev_entry.set_step(1000)
 
         self.speedrev_label = QtWidgets.QLabel('%s:' % _("Spindle Speed REV"))
         self.speedrev_label.setToolTip(
@@ -7180,7 +7181,7 @@ class Tools2OptimalPrefGroupUI(OptionsGroupUI):
 
         self.precision_sp = FCSpinner()
         self.precision_sp.set_range(2, 10)
-        self.precision_sp.setSingleStep(1)
+        self.precision_sp.set_step(1)
         self.precision_sp.setWrapping(True)
 
         self.precision_lbl = QtWidgets.QLabel('%s:' % _("Precision"))
