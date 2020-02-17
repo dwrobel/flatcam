@@ -3673,20 +3673,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.z_pdepth = float(self.options["z_pdepth"])
             job_obj.feedrate_probe = float(self.options["feedrate_probe"])
 
-            # There could be more than one drill size...
-            # job_obj.tooldia =   # TODO: duplicate variable!
-            # job_obj.options["tooldia"] =
+            job_obj.z_cut = float(self.options['cutz'])
+            job_obj.toolchange = self.options["toolchange"]
+            job_obj.xy_toolchange = self.app.defaults["excellon_toolchangexy"]
+            job_obj.z_toolchange = float(self.options["toolchangez"])
+            job_obj.startz = float(self.options["startz"]) if self.options["startz"] else None
+            job_obj.endz = float(self.options["endz"])
+            job_obj.excellon_optimization_type = self.app.defaults["excellon_optimization_type"]
 
             tools_csv = ','.join(tools)
-            ret_val = job_obj.generate_from_excellon_by_tool(
-                self, tools_csv,
-                drillz=float(self.options['cutz']),
-                toolchange=self.options["toolchange"],
-                toolchangexy=self.app.defaults["excellon_toolchangexy"],
-                toolchangez=float(self.options["toolchangez"]),
-                startz=float(self.options["startz"]) if self.options["startz"] else None,
-                endz=float(self.options["endz"]),
-                excellon_optimization_type=self.app.defaults["excellon_optimization_type"])
+            ret_val = job_obj.generate_from_excellon_by_tool(self, tools_csv, use_ui=True)
 
             if ret_val == 'fail':
                 return 'fail'

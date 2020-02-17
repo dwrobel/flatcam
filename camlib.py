@@ -2428,11 +2428,9 @@ class CNCjob(Geometry):
         Geometry.__init__(self, geo_steps_per_circle=self.steps_per_circle)
 
         self.kind = kind
-
         self.units = units
 
         self.z_cut = z_cut
-
         self.z_move = z_move
 
         self.feedrate = feedrate
@@ -2440,6 +2438,7 @@ class CNCjob(Geometry):
         self.feedrate_rapid = feedrate_rapid
 
         self.tooldia = tooldia
+        self.toolchange = False
         self.z_toolchange = toolchangez
         self.xy_toolchange = toolchange_xy
         self.toolchange_xy_type = None
@@ -2451,6 +2450,11 @@ class CNCjob(Geometry):
 
         self.multidepth = False
         self.z_depthpercut = depthpercut
+
+        self.excellon_optimization_type = 'B'
+
+        # if set True then the GCode generation will use UI; used in Excellon GVode for now
+        self.use_ui = False
 
         self.unitcode = {"IN": "G20", "MM": "G21"}
 
@@ -2504,6 +2508,7 @@ class CNCjob(Geometry):
 
         # used for creating drill CCode geometry; will be updated in the generate_from_excellon_by_tool()
         self.exc_drills = None
+        # store here the Excellon source object tools to be accessible locally
         self.exc_tools = None
 
         # search for toolchange parameters in the Toolchange Custom Code
@@ -2599,8 +2604,7 @@ class CNCjob(Geometry):
             must_visit.remove(nearest)
         return path
 
-    def generate_from_excellon_by_tool(self, exobj, tools="all", drillz=3.0, toolchange=False, toolchangez=0.1,
-                                       toolchangexy='', endz=2.0, startz=None, excellon_optimization_type='B'):
+    def generate_from_excellon_by_tool(self, exobj, tools="all", use_ui=False):
         """
         Creates gcode for this object from an Excellon object
         for the specified tools.
@@ -2609,21 +2613,7 @@ class CNCjob(Geometry):
         :type exobj: Excellon
         :param tools: Comma separated tool names
         :type: tools: str
-        :param drillz: drill Z depth
-        :type drillz: float
-        :param toolchange: Use tool change sequence between tools.
-        :type toolchange: bool
-        :param toolchangez: Height at which to perform the tool change.
-        :type toolchangez: float
-        :param toolchangexy: Toolchange X,Y position
-        :type toolchangexy: String containing 2 floats separated by comma
-        :param startz: Z position just before starting the job
-        :type startz: float
-        :param endz: final Z position to move to at the end of the CNC job
-        :type endz: float
-        :param excellon_optimization_type: Single character that defines which drill re-ordering optimisation algorithm
-        is to be used: 'M' for meta-heuristic and 'B' for basic
-        :type excellon_optimization_type: string
+        :param use_ui: Bool, if True the method will use parameters set in UI
         :return: None
         :rtype: None
         """
@@ -2632,31 +2622,31 @@ class CNCjob(Geometry):
         self.exc_drills = deepcopy(exobj.drills)
         self.exc_tools = deepcopy(exobj.tools)
 
-        self.z_cut = deepcopy(drillz)
-        old_zcut = deepcopy(drillz)
+        # the Excellon GCode preprocessor will use this info in the start_code() method
+        self.use_ui = True if use_ui else False
+
+        old_zcut = deepcopy(self.z_cut)
 
         if self.machinist_setting == 0:
-            if drillz > 0:
+            if self.z_cut > 0:
                 self.app.inform.emit('[WARNING] %s' %
                                      _("The Cut Z parameter has positive value. "
                                        "It is the depth value to drill into material.\n"
                                        "The Cut Z parameter needs to have a negative value, assuming it is a typo "
                                        "therefore the app will convert the value to negative. "
                                        "Check the resulting CNC code (Gcode etc)."))
-                self.z_cut = -drillz
-            elif drillz == 0:
+                self.z_cut = -self.z_cut
+            elif self.z_cut == 0:
                 self.app.inform.emit('[WARNING] %s: %s' %
                                      (_("The Cut Z parameter is zero. There will be no cut, skipping file"),
                                       exobj.options['name']))
                 return 'fail'
 
-        self.z_toolchange = toolchangez
-
         try:
-            if toolchangexy == '':
+            if self.xy_toolchange == '':
                 self.xy_toolchange = None
             else:
-                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
+                self.xy_toolchange = [float(eval(a)) for a in self.xy_toolchange.split(",")]
                 if len(self.xy_toolchange) < 2:
                     self.app.inform.emit('[ERROR]%s' %
                                          _("The Toolchange X,Y field in Edit -> Preferences has to be "
@@ -2665,9 +2655,6 @@ class CNCjob(Geometry):
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
             pass
-
-        self.startz = startz
-        self.z_end = endz
 
         self.pp_excellon = self.app.preprocessors[self.pp_excellon_name]
         p = self.pp_excellon
@@ -2751,6 +2738,7 @@ class CNCjob(Geometry):
                         )
 
         self.app.inform.emit(_("Creating a list of points to drill..."))
+
         # Points (Group by tool)
         points = dict()
         for drill in exobj.drills:
@@ -2773,9 +2761,10 @@ class CNCjob(Geometry):
 
         # Initialization
         gcode = self.doformat(p.start_code)
-        gcode += self.doformat(p.feedrate_code)
+        if not use_ui:
+            gcode += self.doformat(p.z_feedrate_code)
 
-        if toolchange is False:
+        if self.toolchange is False:
             if self.xy_toolchange is not None:
                 gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
                 gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
@@ -2836,18 +2825,50 @@ class CNCjob(Geometry):
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
-            used_excellon_optimization_type = excellon_optimization_type
+            used_excellon_optimization_type = self.excellon_optimization_type
             if used_excellon_optimization_type == 'M':
                 log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
                 if exobj.drills:
                     for tool in tools:
+                        if self.app.abort_flag:
+                            # graceful abort requested by the user
+                            raise FlatCAMApp.GracefulException
+
                         self.tool = tool
                         self.postdata['toolC'] = exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
-                        if self.app.abort_flag:
-                            # graceful abort requested by the user
-                            raise FlatCAMApp.GracefulException
+                        if use_ui:
+                            self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
+                            self.feedrate = exobj.tools[tool]['data']['feedrate']
+                            gcode += self.doformat(p.z_feedrate_code)
+
+                            self.z_cut = exobj.tools[tool]['data']['cutz']
+
+                            if self.machinist_setting == 0:
+                                if self.z_cut > 0:
+                                    self.app.inform.emit('[WARNING] %s' %
+                                                         _("The Cut Z parameter has positive value. "
+                                                           "It is the depth value to drill into material.\n"
+                                                           "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                                           "therefore the app will convert the value to negative. "
+                                                           "Check the resulting CNC code (Gcode etc)."))
+                                    self.z_cut = -self.z_cut
+                                elif self.z_cut == 0:
+                                    self.app.inform.emit('[WARNING] %s: %s' %
+                                                         (_(
+                                                             "The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                                          exobj.options['name']))
+                                    return 'fail'
+
+                            old_zcut = deepcopy(self.z_cut)
+
+                            self.z_move = exobj.tools[tool]['data']['travelz']
+                            self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
+                            self.dwell = exobj.tools[tool]['data']['dwell']
+                            self.dwelltime = exobj.tools[tool]['data']['dwelltime']
+                            self.multidepth = exobj.tools[tool]['data']['multidepth']
+                            self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
 
                         # ###############################################
                         # ############ Create the data. #################
@@ -2914,7 +2935,7 @@ class CNCjob(Geometry):
                                 raise FlatCAMApp.GracefulException
 
                             # Tool change sequence (optional)
-                            if toolchange:
+                            if self.toolchange:
                                 gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                                 gcode += self.doformat(p.spindle_code)  # Spindle start
                                 if self.dwell is True:
@@ -3031,7 +3052,42 @@ class CNCjob(Geometry):
                         self.postdata['toolC']=exobj.tools[tool]["C"]
                         self.tooldia = exobj.tools[tool]["C"]
 
-                        # ############################################# ##
+                        if use_ui:
+                            self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
+                            self.feedrate = exobj.tools[tool]['data']['feedrate']
+                            gcode += self.doformat(p.z_feedrate_code)
+                            self.z_cut = exobj.tools[tool]['data']['cutz']
+
+                            if self.machinist_setting == 0:
+                                if self.z_cut > 0:
+                                    self.app.inform.emit('[WARNING] %s' %
+                                                         _("The Cut Z parameter has positive value. "
+                                                           "It is the depth value to drill into material.\n"
+                                                           "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                                           "therefore the app will convert the value to negative. "
+                                                           "Check the resulting CNC code (Gcode etc)."))
+                                    self.z_cut = -self.z_cut
+                                elif self.z_cut == 0:
+                                    self.app.inform.emit('[WARNING] %s: %s' %
+                                                         (_(
+                                                             "The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                                          exobj.options['name']))
+                                    return 'fail'
+
+                            old_zcut = deepcopy(self.z_cut)
+
+                            self.z_move = exobj.tools[tool]['data']['travelz']
+                            print(self.z_move)
+                            self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
+                            self.dwell = exobj.tools[tool]['data']['dwell']
+                            self.dwelltime = exobj.tools[tool]['data']['dwelltime']
+                            self.multidepth = exobj.tools[tool]['data']['multidepth']
+                            self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+
+                        # ###############################################
+                        # ############ Create the data. #################
+                        # ###############################################
+
                         node_list = []
                         locations = create_data_array()
                         tsp_size = len(locations)
@@ -3082,7 +3138,7 @@ class CNCjob(Geometry):
                                 raise FlatCAMApp.GracefulException
 
                             # Tool change sequence (optional)
-                            if toolchange:
+                            if self.toolchange:
                                 gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                                 gcode += self.doformat(p.spindle_code)  # Spindle start)
                                 if self.dwell is True:
@@ -3201,6 +3257,38 @@ class CNCjob(Geometry):
                     self.postdata['toolC'] = exobj.tools[tool]["C"]
                     self.tooldia = exobj.tools[tool]["C"]
 
+                    if use_ui:
+                        self.z_feedrate = exobj.tools[tool]['data']['feedrate_z']
+                        self.feedrate = exobj.tools[tool]['data']['feedrate']
+                        gcode += self.doformat(p.z_feedrate_code)
+
+                        self.z_cut = exobj.tools[tool]['data']['cutz']
+
+                        if self.machinist_setting == 0:
+                            if self.z_cut > 0:
+                                self.app.inform.emit('[WARNING] %s' %
+                                                     _("The Cut Z parameter has positive value. "
+                                                       "It is the depth value to drill into material.\n"
+                                                       "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                                       "therefore the app will convert the value to negative. "
+                                                       "Check the resulting CNC code (Gcode etc)."))
+                                self.z_cut = -self.z_cut
+                            elif self.z_cut == 0:
+                                self.app.inform.emit('[WARNING] %s: %s' %
+                                                     (_(
+                                                         "The Cut Z parameter is zero. There will be no cut, skipping file"),
+                                                      exobj.options['name']))
+                                return 'fail'
+
+                        old_zcut = deepcopy(self.z_cut)
+
+                        self.z_move = exobj.tools[tool]['data']['travelz']
+                        self.spindlespeed = exobj.tools[tool]['data']['spindlespeed']
+                        self.dwell = exobj.tools[tool]['data']['dwell']
+                        self.dwelltime = exobj.tools[tool]['data']['dwelltime']
+                        self.multidepth = exobj.tools[tool]['data']['multidepth']
+                        self.z_depthpercut = exobj.tools[tool]['data']['depthperpass']
+
                     # Only if tool has points.
                     if tool in points:
                         if self.app.abort_flag:
@@ -3208,7 +3296,7 @@ class CNCjob(Geometry):
                             raise FlatCAMApp.GracefulException
 
                         # Tool change sequence (optional)
-                        if toolchange:
+                        if self.toolchange:
                             gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start)
                             if self.dwell is True:

@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Excellon UI protected the values that are common parameters from change on tool selection change
 - fixed some issues realted to the usage of the new confirmation message in FlatCAM Tools
 - made sure that the FlatCAM Tools UI initialization is done only in set_tool_ui() method and not in the constructor
+- adapted the GCode generation from Excellon to work with multiple tools data and modified the preprocessors header
 
 16.02.2020
 

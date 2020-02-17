@@ -27,32 +27,63 @@ class line_xyz(FlatCAMPostProc):
 
         if str(p['options']['type']) == 'Geometry':
             gcode += '(TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + ')\n'
-
-        gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
-
-        if str(p['options']['type']) == 'Geometry':
+            gcode += '(Feedrate_XY: ' + str(p['feedrate']) + units + '/min' + ')\n'
             gcode += '(Feedrate_Z: ' + str(p['z_feedrate']) + units + '/min' + ')\n'
+            gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
+            gcode += '(Z_Cut: ' + str(p['z_cut']) + units + ')\n'
+            if p['multidepth'] is True:
+                gcode += '(DepthPerCut: ' + str(p['z_depthpercut']) + units + ' <=>' + \
+                         str(math.ceil(abs(p['z_cut']) / p['z_depthpercut'])) + ' passes' + ')\n'
+            gcode += '(Z_Move: ' + str(p['z_move']) + units + ')\n'
 
-        gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
-        gcode += '(Z_Cut: ' + str(p['z_cut']) + units + ')\n'
+        elif str(p['options']['type']) == 'Excellon' and p['use_ui'] is True:
+            gcode += '\n(TOOLS DIAMETER: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Dia: %s' % str(val["C"]) + ')\n'
 
-        if p['multidepth'] is True:
-            gcode += '(DepthPerCut: ' + str(p['z_depthpercut']) + units + ' <=>' + \
-                     str(math.ceil(abs(p['z_cut']) / p['z_depthpercut'])) + ' passes' + ')\n'
+            gcode += '\n(FEEDRATE Z: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate: %s' % str(val['data']["feedrate_z"]) + ')\n'
 
-        gcode += '(Z_Move: ' + str(p['z_move']) + units + ')\n'
-        gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
-        if coords_xy is not None:
-            gcode += '(X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
-                                                           p.decimals, coords_xy[1]) + units + ')\n'
-        else:
-            gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
+            gcode += '\n(FEEDRATE RAPIDS: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Feedrate Rapids: %s' % \
+                         str(val['data']["feedrate_rapid"]) + ')\n'
+
+            gcode += '\n(Z_CUT: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Z_Cut: %s' % str(val['data']["cutz"]) + ')\n'
+
+            gcode += '\n(Tools Offset: )\n'
+            for tool, val in p['exc_cnc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(val['tool']) + 'Offset Z: %s' % str(val['offset_z']) + ')\n'
+
+            if p['multidepth'] is True:
+                gcode += '\n(DEPTH_PER_CUT: )\n'
+                for tool, val in p['exc_tools'].items():
+                    gcode += '(Tool: %s -> ' % str(tool) + 'DeptPerCut: %s' % \
+                             str(val['data']["depthperpass"]) + ')\n'
+
+            gcode += '\n(Z_MOVE: )\n'
+            for tool, val in p['exc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(tool) + 'Z_Move: %s' % str(val['data']["travelz"]) + ')\n'
+            gcode += '\n'
+
+        if p['toolchange'] is True:
+            gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
+
+            if coords_xy is not None:
+                gcode += '(X,Y Toolchange: ' + "%.*f, %.*f" % (p.decimals, coords_xy[0],
+                                                               p.decimals, coords_xy[1]) + units + ')\n'
+            else:
+                gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
+
         gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
         gcode += '(Z End: ' + str(p['z_end']) + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
-            gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
+            gcode += '(Preprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n' + '\n'
         else:
             gcode += '(Preprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
 
