@@ -89,7 +89,7 @@ class ToolInvertGerber(FlatCAMTool):
             _("Distance by which to avoid\n"
               "the edges of the Gerber object.")
         )
-        self.margin_entry = FCDoubleSpinner()
+        self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.set_range(0.0000, 9999.9999)
         self.margin_entry.setObjectName(_("Margin"))

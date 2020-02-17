@@ -76,7 +76,7 @@ class ToolCalibration(FlatCAMTool):
             _("Height (Z) for travelling between the points.")
         )
 
-        self.travelz_entry = FCDoubleSpinner()
+        self.travelz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.travelz_entry.set_range(-9999.9999, 9999.9999)
         self.travelz_entry.set_precision(self.decimals)
         self.travelz_entry.setSingleStep(0.1)
@@ -90,7 +90,7 @@ class ToolCalibration(FlatCAMTool):
             _("Height (Z) for checking the point.")
         )
 
-        self.verz_entry = FCDoubleSpinner()
+        self.verz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.verz_entry.set_range(-9999.9999, 9999.9999)
         self.verz_entry.set_precision(self.decimals)
         self.verz_entry.setSingleStep(0.1)
@@ -113,7 +113,7 @@ class ToolCalibration(FlatCAMTool):
             _("Height (Z) for mounting the verification probe.")
         )
 
-        self.toolchangez_entry = FCDoubleSpinner()
+        self.toolchangez_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.toolchangez_entry.set_range(0.0000, 9999.9999)
         self.toolchangez_entry.set_precision(self.decimals)
         self.toolchangez_entry.setSingleStep(0.1)
@@ -471,7 +471,7 @@ class ToolCalibration(FlatCAMTool):
         self.scalex_label.setToolTip(
             _("Factor for Scale action over X axis.")
         )
-        self.scalex_entry = FCDoubleSpinner()
+        self.scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.scalex_entry.set_range(0, 9999.9999)
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setSingleStep(0.1)
@@ -483,7 +483,7 @@ class ToolCalibration(FlatCAMTool):
         self.scaley_label.setToolTip(
             _("Factor for Scale action over Y axis.")
         )
-        self.scaley_entry = FCDoubleSpinner()
+        self.scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.scaley_entry.set_range(0, 9999.9999)
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setSingleStep(0.1)
@@ -508,7 +508,7 @@ class ToolCalibration(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        self.skewx_entry = FCDoubleSpinner()
+        self.skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.skewx_entry.set_range(-360, 360)
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.setSingleStep(0.1)
@@ -521,7 +521,7 @@ class ToolCalibration(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        self.skewy_entry = FCDoubleSpinner()
+        self.skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.skewy_entry.set_range(-360, 360)
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.setSingleStep(0.1)
@@ -552,7 +552,7 @@ class ToolCalibration(FlatCAMTool):
         # self.fin_scalex_label.setToolTip(
         #     _("Final factor for Scale action over X axis.")
         # )
-        # self.fin_scalex_entry = FCDoubleSpinner()
+        # self.fin_scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.fin_scalex_entry.set_range(0, 9999.9999)
         # self.fin_scalex_entry.set_precision(self.decimals)
         # self.fin_scalex_entry.setSingleStep(0.1)
@@ -564,7 +564,7 @@ class ToolCalibration(FlatCAMTool):
         # self.fin_scaley_label.setToolTip(
         #     _("Final factor for Scale action over Y axis.")
         # )
-        # self.fin_scaley_entry = FCDoubleSpinner()
+        # self.fin_scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.fin_scaley_entry.set_range(0, 9999.9999)
         # self.fin_scaley_entry.set_precision(self.decimals)
         # self.fin_scaley_entry.setSingleStep(0.1)
@@ -577,7 +577,7 @@ class ToolCalibration(FlatCAMTool):
         #     _("Final value for angle for Skew action, in degrees.\n"
         #       "Float number between -360 and 359.")
         # )
-        # self.fin_skewx_entry = FCDoubleSpinner()
+        # self.fin_skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.fin_skewx_entry.set_range(-360, 360)
         # self.fin_skewx_entry.set_precision(self.decimals)
         # self.fin_skewx_entry.setSingleStep(0.1)
@@ -590,7 +590,7 @@ class ToolCalibration(FlatCAMTool):
         #     _("Final value for angle for Skew action, in degrees.\n"
         #       "Float number between -360 and 359.")
         # )
-        # self.fin_skewy_entry = FCDoubleSpinner()
+        # self.fin_skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.fin_skewy_entry.set_range(-360, 360)
         # self.fin_skewy_entry.set_precision(self.decimals)
         # self.fin_skewy_entry.setSingleStep(0.1)

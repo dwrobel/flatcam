@@ -183,7 +183,7 @@ class ToolPunchGerber(FlatCAMTool):
         grid0.addWidget(self.fixed_label, 6, 0, 1, 2)
 
         # Diameter value
-        self.dia_entry = FCDoubleSpinner()
+        self.dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dia_entry.set_precision(self.decimals)
         self.dia_entry.set_range(0.0000, 9999.9999)
 
@@ -229,7 +229,7 @@ class ToolPunchGerber(FlatCAMTool):
             _("The size of annular ring for circular pads.")
         )
 
-        self.circular_ring_entry = FCDoubleSpinner()
+        self.circular_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.circular_ring_entry.set_precision(self.decimals)
         self.circular_ring_entry.set_range(0.0000, 9999.9999)
 
@@ -242,7 +242,7 @@ class ToolPunchGerber(FlatCAMTool):
             _("The size of annular ring for oblong pads.")
         )
 
-        self.oblong_ring_entry = FCDoubleSpinner()
+        self.oblong_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.oblong_ring_entry.set_precision(self.decimals)
         self.oblong_ring_entry.set_range(0.0000, 9999.9999)
 
@@ -255,7 +255,7 @@ class ToolPunchGerber(FlatCAMTool):
             _("The size of annular ring for square pads.")
         )
 
-        self.square_ring_entry = FCDoubleSpinner()
+        self.square_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.square_ring_entry.set_precision(self.decimals)
         self.square_ring_entry.set_range(0.0000, 9999.9999)
 
@@ -268,7 +268,7 @@ class ToolPunchGerber(FlatCAMTool):
             _("The size of annular ring for rectangular pads.")
         )
 
-        self.rectangular_ring_entry = FCDoubleSpinner()
+        self.rectangular_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rectangular_ring_entry.set_precision(self.decimals)
         self.rectangular_ring_entry.set_range(0.0000, 9999.9999)
 
@@ -281,7 +281,7 @@ class ToolPunchGerber(FlatCAMTool):
             _("The size of annular ring for other pads.")
         )
 
-        self.other_ring_entry = FCDoubleSpinner()
+        self.other_ring_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.other_ring_entry.set_precision(self.decimals)
         self.other_ring_entry.set_range(0.0000, 9999.9999)
 

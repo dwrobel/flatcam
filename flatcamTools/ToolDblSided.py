@@ -254,7 +254,7 @@ class DblSidedTool(FlatCAMTool):
         grid_lay2.addWidget(self.bv_label, 6, 0, 1, 2)
 
         # Xmin value
-        self.xmin_entry = FCDoubleSpinner()
+        self.xmin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.xmin_entry.set_precision(self.decimals)
         self.xmin_entry.set_range(-9999.9999, 9999.9999)
 
@@ -268,7 +268,7 @@ class DblSidedTool(FlatCAMTool):
         grid_lay2.addWidget(self.xmin_entry, 7, 1)
 
         # Ymin value
-        self.ymin_entry = FCDoubleSpinner()
+        self.ymin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.ymin_entry.set_precision(self.decimals)
         self.ymin_entry.set_range(-9999.9999, 9999.9999)
 
@@ -282,7 +282,7 @@ class DblSidedTool(FlatCAMTool):
         grid_lay2.addWidget(self.ymin_entry, 8, 1)
 
         # Xmax value
-        self.xmax_entry = FCDoubleSpinner()
+        self.xmax_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.xmax_entry.set_precision(self.decimals)
         self.xmax_entry.set_range(-9999.9999, 9999.9999)
 
@@ -296,7 +296,7 @@ class DblSidedTool(FlatCAMTool):
         grid_lay2.addWidget(self.xmax_entry, 9, 1)
 
         # Ymax value
-        self.ymax_entry = FCDoubleSpinner()
+        self.ymax_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.ymax_entry.set_precision(self.decimals)
         self.ymax_entry.set_range(-9999.9999, 9999.9999)
 
@@ -359,7 +359,7 @@ class DblSidedTool(FlatCAMTool):
             _("Diameter of the drill for the alignment holes.")
         )
 
-        self.drill_dia = FCDoubleSpinner()
+        self.drill_dia = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_dia.setToolTip(
             _("Diameter of the drill for the alignment holes.")
         )

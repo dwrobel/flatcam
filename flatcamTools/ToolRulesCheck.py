@@ -260,7 +260,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.trace_size_cb)
 
         # Trace size value
-        self.trace_size_entry = FCDoubleSpinner()
+        self.trace_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.trace_size_entry.set_range(0.00001, 999.99999)
         self.trace_size_entry.set_precision(self.decimals)
         self.trace_size_entry.setSingleStep(0.1)
@@ -282,7 +282,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_copper2copper_cb)
 
         # Copper2copper clearance value
-        self.clearance_copper2copper_entry = FCDoubleSpinner()
+        self.clearance_copper2copper_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_copper2copper_entry.set_range(0.00001, 999.99999)
         self.clearance_copper2copper_entry.set_precision(self.decimals)
         self.clearance_copper2copper_entry.setSingleStep(0.1)
@@ -305,7 +305,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_copper2ol_cb)
 
         # Copper2outline clearance value
-        self.clearance_copper2ol_entry = FCDoubleSpinner()
+        self.clearance_copper2ol_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_copper2ol_entry.set_range(0.00001, 999.99999)
         self.clearance_copper2ol_entry.set_precision(self.decimals)
         self.clearance_copper2ol_entry.setSingleStep(0.1)
@@ -328,7 +328,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_silk2silk_cb)
 
         # Copper2silkscreen clearance value
-        self.clearance_silk2silk_entry = FCDoubleSpinner()
+        self.clearance_silk2silk_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_silk2silk_entry.set_range(0.00001, 999.99999)
         self.clearance_silk2silk_entry.set_precision(self.decimals)
         self.clearance_silk2silk_entry.setSingleStep(0.1)
@@ -351,7 +351,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_silk2sm_cb)
 
         # Silkscreen2soldermask clearance value
-        self.clearance_silk2sm_entry = FCDoubleSpinner()
+        self.clearance_silk2sm_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_silk2sm_entry.set_range(0.00001, 999.99999)
         self.clearance_silk2sm_entry.set_precision(self.decimals)
         self.clearance_silk2sm_entry.setSingleStep(0.1)
@@ -374,7 +374,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_silk2ol_cb)
 
         # Silk2outline clearance value
-        self.clearance_silk2ol_entry = FCDoubleSpinner()
+        self.clearance_silk2ol_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_silk2ol_entry.set_range(0.00001, 999.99999)
         self.clearance_silk2ol_entry.set_precision(self.decimals)
         self.clearance_silk2ol_entry.setSingleStep(0.1)
@@ -397,7 +397,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_sm2sm_cb)
 
         # Soldermask2soldermask clearance value
-        self.clearance_sm2sm_entry = FCDoubleSpinner()
+        self.clearance_sm2sm_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_sm2sm_entry.set_range(0.00001, 999.99999)
         self.clearance_sm2sm_entry.set_precision(self.decimals)
         self.clearance_sm2sm_entry.setSingleStep(0.1)
@@ -420,7 +420,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.ring_integrity_cb)
 
         # Ring integrity value
-        self.ring_integrity_entry = FCDoubleSpinner()
+        self.ring_integrity_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.ring_integrity_entry.set_range(0.00001, 999.99999)
         self.ring_integrity_entry.set_precision(self.decimals)
         self.ring_integrity_entry.setSingleStep(0.1)
@@ -445,7 +445,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.clearance_d2d_cb)
 
         # Hole2Hole clearance value
-        self.clearance_d2d_entry = FCDoubleSpinner()
+        self.clearance_d2d_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_d2d_entry.set_range(0.00001, 999.99999)
         self.clearance_d2d_entry.set_precision(self.decimals)
         self.clearance_d2d_entry.setSingleStep(0.1)
@@ -468,7 +468,7 @@ class RulesCheck(FlatCAMTool):
         self.form_layout_1.addRow(self.drill_size_cb)
 
         # Drile holes value
-        self.drill_size_entry = FCDoubleSpinner()
+        self.drill_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.drill_size_entry.set_range(0.00001, 999.99999)
         self.drill_size_entry.set_precision(self.decimals)
         self.drill_size_entry.setSingleStep(0.1)

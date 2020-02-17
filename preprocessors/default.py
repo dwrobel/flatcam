@@ -37,6 +37,13 @@ class default(FlatCAMPostProc):
         gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
         gcode += '(Z_Cut: ' + str(p['z_cut']) + units + ')\n'
 
+        if str(p['options']['type']) == 'Excellon':
+            gcode += '\n(Tools Offset: )\n'
+            for tool, val in p['exc_cnc_tools'].items():
+                gcode += '(Tool: %s -> ' % str(val['tool']) + 'Dia: %s -> ' % str(tool) + \
+                         'Offset Z: %s' % str(val['offset_z']) + ')\n'
+            gcode += '\n'
+
         if p['multidepth'] is True:
             gcode += '(DepthPerCut: ' + str(p['z_depthpercut']) + units + ' <=>' + \
                      str(math.ceil(abs(p['z_cut']) / p['z_depthpercut'])) + ' passes' + ')\n'

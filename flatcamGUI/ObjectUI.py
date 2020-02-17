@@ -779,7 +779,7 @@ class ExcellonObjectUI(ObjectUI):
 
         self.tools_table.setColumnCount(6)
         self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('Drills'), _('Slots'),
-                                                    _('Offset Z'), 'P'])
+                                                    "NOT USED", 'P'])
         self.tools_table.setSortingEnabled(False)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
@@ -796,13 +796,12 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_table.horizontalHeaderItem(3).setToolTip(
             _("The number of Slot holes. Holes that are created by\n"
               "milling them with an endmill bit."))
-        self.tools_table.horizontalHeaderItem(4).setToolTip(
-            _("Some drill bits (the larger ones) need to drill deeper\n"
-              "to create the desired exit hole diameter due of the tip shape.\n"
-              "The value here can compensate the Cut Z parameter."))
         self.tools_table.horizontalHeaderItem(5).setToolTip(
             _("Toggle display of the drills for the current tool.\n"
               "This does not select the tools for G-code generation."))
+
+        # this column is not used; reserved for future usage
+        self.tools_table.setColumnHidden(4, True)
 
         self.tools_box.addWidget(QtWidgets.QLabel(''))
 
@@ -855,6 +854,7 @@ class ExcellonObjectUI(ObjectUI):
                 {'label': _("Milling"), 'value': 'mill'}
             ]
         )
+        self.operation_radio.setObjectName("e_operation")
 
         self.grid3.addWidget(self.operation_label, 0, 0)
         self.grid3.addWidget(self.operation_radio, 0, 1)
@@ -871,16 +871,17 @@ class ExcellonObjectUI(ObjectUI):
               "- Slots -> will mill the slots associated with this tool\n"
               "- Both -> will mill both drills and mills or whatever is available")
         )
-        self.mill_type_radio = RadioSet(
+        self.milling_type_radio = RadioSet(
             [
                 {'label': _('Drills'), 'value': 'drills'},
                 {'label': _("Slots"), 'value': 'slots'},
                 {'label': _("Both"), 'value': 'both'},
             ]
         )
+        self.milling_type_radio.setObjectName("e_milling_type")
 
         self.grid3.addWidget(self.mill_type_label, 2, 0)
-        self.grid3.addWidget(self.mill_type_radio, 2, 1)
+        self.grid3.addWidget(self.milling_type_radio, 2, 1)
 
         self.mill_dia_label = QtWidgets.QLabel('%s:' % _('Milling Diameter'))
         self.mill_dia_label.setToolTip(
@@ -890,6 +891,7 @@ class ExcellonObjectUI(ObjectUI):
         self.mill_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.mill_dia_entry.set_precision(self.decimals)
         self.mill_dia_entry.set_range(0.0000, 9999.9999)
+        self.mill_dia_entry.setObjectName("e_milling_dia")
 
         self.grid3.addWidget(self.mill_dia_label, 3, 0)
         self.grid3.addWidget(self.mill_dia_entry, 3, 1)
@@ -910,6 +912,7 @@ class ExcellonObjectUI(ObjectUI):
             self.cutz_entry.set_range(-9999.9999, 9999.9999)
 
         self.cutz_entry.setSingleStep(0.1)
+        self.cutz_entry.setObjectName("e_cutz")
 
         self.grid3.addWidget(self.cutzlabel, 4, 0)
         self.grid3.addWidget(self.cutz_entry, 4, 1)
@@ -924,6 +927,7 @@ class ExcellonObjectUI(ObjectUI):
                 "reached."
             )
         )
+        self.mpass_cb.setObjectName("e_multidepth")
 
         self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
@@ -931,6 +935,8 @@ class ExcellonObjectUI(ObjectUI):
         self.maxdepth_entry.setSingleStep(0.1)
 
         self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
+        self.maxdepth_entry.setObjectName("e_depthperpass")
+
         self.mis_mpass_geo = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
 
         self.grid3.addWidget(self.mpass_cb, 5, 0)
@@ -952,6 +958,7 @@ class ExcellonObjectUI(ObjectUI):
             self.travelz_entry.set_range(-9999.9999, 9999.9999)
 
         self.travelz_entry.setSingleStep(0.1)
+        self.travelz_entry.setObjectName("e_travelz")
 
         self.grid3.addWidget(self.travelzlabel, 6, 0)
         self.grid3.addWidget(self.travelz_entry, 6, 1)
@@ -966,6 +973,7 @@ class ExcellonObjectUI(ObjectUI):
         self.xyfeedrate_entry.set_precision(self.decimals)
         self.xyfeedrate_entry.set_range(0, 9999.9999)
         self.xyfeedrate_entry.setSingleStep(0.1)
+        self.xyfeedrate_entry.setObjectName("e_feedratexy")
 
         self.grid3.addWidget(self.frxylabel, 12, 0)
         self.grid3.addWidget(self.xyfeedrate_entry, 12, 1)
@@ -982,6 +990,7 @@ class ExcellonObjectUI(ObjectUI):
         self.feedrate_z_entry.set_precision(self.decimals)
         self.feedrate_z_entry.set_range(0.0, 99999.9999)
         self.feedrate_z_entry.setSingleStep(0.1)
+        self.feedrate_z_entry.setObjectName("e_feedratez")
 
         self.grid3.addWidget(self.frzlabel, 14, 0)
         self.grid3.addWidget(self.feedrate_z_entry, 14, 1)
@@ -999,6 +1008,7 @@ class ExcellonObjectUI(ObjectUI):
         self.feedrate_rapid_entry.set_precision(self.decimals)
         self.feedrate_rapid_entry.set_range(0.0, 99999.9999)
         self.feedrate_rapid_entry.setSingleStep(0.1)
+        self.feedrate_rapid_entry.setObjectName("e_fr_rapid")
 
         self.grid3.addWidget(self.feedrate_rapid_label, 16, 0)
         self.grid3.addWidget(self.feedrate_rapid_entry, 16, 1)
@@ -1015,6 +1025,7 @@ class ExcellonObjectUI(ObjectUI):
               "meet with last cut, we generate an\n"
               "extended cut over the first cut section.")
         )
+        self.extracut_cb.setObjectName("e_extracut")
 
         self.e_cut_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.e_cut_entry.set_range(0, 99999)
@@ -1027,6 +1038,7 @@ class ExcellonObjectUI(ObjectUI):
               "meet with last cut, we generate an\n"
               "extended cut over the first cut section.")
         )
+        self.e_cut_entry.setObjectName("e_extracut_length")
 
         self.ois_recut = OptionalInputSection(self.extracut_cb, [self.e_cut_entry])
 
@@ -1043,6 +1055,7 @@ class ExcellonObjectUI(ObjectUI):
         self.spindlespeed_entry = FCSpinner(callback=self.confirmation_message_int)
         self.spindlespeed_entry.set_range(0, 1000000)
         self.spindlespeed_entry.setSingleStep(100)
+        self.spindlespeed_entry.setObjectName("e_spindlespeed")
 
         self.grid3.addWidget(self.spindle_label, 19, 0)
         self.grid3.addWidget(self.spindlespeed_entry, 19, 1)
@@ -1053,6 +1066,8 @@ class ExcellonObjectUI(ObjectUI):
             _("Pause to allow the spindle to reach its\n"
               "speed before cutting.")
         )
+        self.dwell_cb.setObjectName("e_dwell")
+
         self.dwelltime_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwelltime_entry.set_precision(self.decimals)
         self.dwelltime_entry.set_range(0.0, 9999.9999)
@@ -1061,46 +1076,12 @@ class ExcellonObjectUI(ObjectUI):
         self.dwelltime_entry.setToolTip(
             _("Number of time units for spindle to dwell.")
         )
+        self.dwelltime_entry.setObjectName("e_dwelltime")
 
         self.grid3.addWidget(self.dwell_cb, 20, 0)
         self.grid3.addWidget(self.dwelltime_entry, 20, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
-
-        # Probe depth
-        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
-        self.pdepth_label.setToolTip(
-            _("The maximum depth that the probe is allowed\n"
-              "to probe. Negative value, in current units.")
-        )
-
-        self.pdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.pdepth_entry.set_precision(self.decimals)
-        self.pdepth_entry.set_range(-9999.9999, 9999.9999)
-        self.pdepth_entry.setSingleStep(0.1)
-
-        self.grid3.addWidget(self.pdepth_label, 22, 0)
-        self.grid3.addWidget(self.pdepth_entry, 22, 1)
-
-        self.pdepth_label.hide()
-        self.pdepth_entry.setVisible(False)
-
-        # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
-        self.feedrate_probe_label.setToolTip(
-            _("The feedrate used while the probe is probing.")
-        )
-
-        self.feedrate_probe_entry = FCDoubleSpinner(callback=self.confirmation_message)
-        self.feedrate_probe_entry.set_precision(self.decimals)
-        self.feedrate_probe_entry.set_range(0.0, 9999.9999)
-        self.feedrate_probe_entry.setSingleStep(0.1)
-
-        self.grid3.addWidget(self.feedrate_probe_label, 24, 0)
-        self.grid3.addWidget(self.feedrate_probe_entry, 24, 1)
-
-        self.feedrate_probe_label.hide()
-        self.feedrate_probe_entry.setVisible(False)
 
         # Tool Offset
         self.tool_offset_label = QtWidgets.QLabel('%s:' % _('Offset Z'))
@@ -1113,6 +1094,7 @@ class ExcellonObjectUI(ObjectUI):
         self.offset_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.offset_entry.set_precision(self.decimals)
         self.offset_entry.set_range(-9999.9999, 9999.9999)
+        self.offset_entry.setObjectName("e_offset")
 
         self.grid3.addWidget(self.tool_offset_label, 25, 0)
         self.grid3.addWidget(self.offset_entry, 25, 1)
@@ -1121,37 +1103,38 @@ class ExcellonObjectUI(ObjectUI):
         # ################# GRID LAYOUT 4   ###############################
         # #################################################################
 
-        self.grid4 = QtWidgets.QGridLayout()
-        self.exc_tools_box.addLayout(self.grid4)
-        self.grid4.setColumnStretch(0, 0)
-        self.grid4.setColumnStretch(1, 1)
-
-        # choose_tools_label = QtWidgets.QLabel(
-        #     _("Select from the Tools Table above the hole dias to be\n"
-        #       "drilled. Use the # column to make the selection.")
+        # self.grid4 = QtWidgets.QGridLayout()
+        # self.exc_tools_box.addLayout(self.grid4)
+        # self.grid4.setColumnStretch(0, 0)
+        # self.grid4.setColumnStretch(1, 1)
+        #
+        # # choose_tools_label = QtWidgets.QLabel(
+        # #     _("Select from the Tools Table above the hole dias to be\n"
+        # #       "drilled. Use the # column to make the selection.")
+        # # )
+        # # grid2.addWidget(choose_tools_label, 0, 0, 1, 3)
+        #
+        # # ### Choose what to use for Gcode creation: Drills, Slots or Both
+        # gcode_type_label = QtWidgets.QLabel('<b>%s</b>' % _('Gcode'))
+        # gcode_type_label.setToolTip(
+        #     _("Choose what to use for GCode generation:\n"
+        #       "'Drills', 'Slots' or 'Both'.\n"
+        #       "When choosing 'Slots' or 'Both', slots will be\n"
+        #       "converted to a series of drills.")
         # )
-        # grid2.addWidget(choose_tools_label, 0, 0, 1, 3)
-
-        # ### Choose what to use for Gcode creation: Drills, Slots or Both
-        gcode_type_label = QtWidgets.QLabel('<b>%s</b>' % _('Gcode'))
-        gcode_type_label.setToolTip(
-            _("Choose what to use for GCode generation:\n"
-              "'Drills', 'Slots' or 'Both'.\n"
-              "When choosing 'Slots' or 'Both', slots will be\n"
-              "converted to a series of drills.")
-        )
-        self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
-                                                   {'label': 'Slots', 'value': 'slots'},
-                                                   {'label': 'Both', 'value': 'both'}])
-        self.grid4.addWidget(gcode_type_label, 1, 0)
-        self.grid4.addWidget(self.excellon_gcode_type_radio, 1, 1)
-        # temporary action until I finish the feature
-        self.excellon_gcode_type_radio.setVisible(False)
-        gcode_type_label.hide()
+        # self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
+        #                                            {'label': 'Slots', 'value': 'slots'},
+        #                                            {'label': 'Both', 'value': 'both'}])
+        # self.grid4.addWidget(gcode_type_label, 1, 0)
+        # self.grid4.addWidget(self.excellon_gcode_type_radio, 1, 1)
+        # # temporary action until I finish the feature
+        # self.excellon_gcode_type_radio.setVisible(False)
+        # gcode_type_label.hide()
 
         # #################################################################
         # ################# GRID LAYOUT 5   ###############################
         # #################################################################
+        # ################# COMMON PARAMETERS #############################
 
         self.grid5 = QtWidgets.QGridLayout()
         self.grid5.setColumnStretch(0, 0)
@@ -1236,21 +1219,70 @@ class ExcellonObjectUI(ObjectUI):
         self.grid5.addWidget(self.endz_label, 11, 0)
         self.grid5.addWidget(self.endz_entry, 11, 1)
 
-        # Preprocessor selection
-        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor"))
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel('%s:' % _("Probe Z depth"))
+        self.pdepth_label.setToolTip(
+            _("The maximum depth that the probe is allowed\n"
+              "to probe. Negative value, in current units.")
+        )
+
+        self.pdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.pdepth_entry.set_precision(self.decimals)
+        self.pdepth_entry.set_range(-9999.9999, 9999.9999)
+        self.pdepth_entry.setSingleStep(0.1)
+
+        self.grid5.addWidget(self.pdepth_label, 12, 0)
+        self.grid5.addWidget(self.pdepth_entry, 12, 1)
+
+        self.pdepth_label.hide()
+        self.pdepth_entry.setVisible(False)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel('%s:' % _("Feedrate Probe"))
+        self.feedrate_probe_label.setToolTip(
+            _("The feedrate used while the probe is probing.")
+        )
+
+        self.feedrate_probe_entry = FCDoubleSpinner(callback=self.confirmation_message)
+        self.feedrate_probe_entry.set_precision(self.decimals)
+        self.feedrate_probe_entry.set_range(0.0, 9999.9999)
+        self.feedrate_probe_entry.setSingleStep(0.1)
+        self.feedrate_probe_entry.setObjectName(_("e_fr_probe"))
+
+        self.grid5.addWidget(self.feedrate_probe_label, 13, 0)
+        self.grid5.addWidget(self.feedrate_probe_entry, 13, 1)
+
+        self.feedrate_probe_label.hide()
+        self.feedrate_probe_entry.setVisible(False)
+
+        # Preprocessor Excellon selection
+        pp_excellon_label = QtWidgets.QLabel('%s:' % _("Preprocessor E"))
         pp_excellon_label.setToolTip(
             _("The preprocessor JSON file that dictates\n"
-              "Gcode output.")
+              "Gcode output for Excellon Objects.")
         )
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.grid5.addWidget(pp_excellon_label, 12, 0)
-        self.grid5.addWidget(self.pp_excellon_name_cb, 12, 1)
+
+        self.grid5.addWidget(pp_excellon_label, 14, 0)
+        self.grid5.addWidget(self.pp_excellon_name_cb, 14, 1)
+
+        # Preprocessor Geometry selection
+        pp_geo_label = QtWidgets.QLabel('%s:' % _("Preprocessor G"))
+        pp_geo_label.setToolTip(
+            _("The preprocessor JSON file that dictates\n"
+              "Gcode output for Geometry (Milling) Objects.")
+        )
+        self.pp_geo_name_cb = FCComboBox()
+        self.pp_geo_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
+
+        self.grid5.addWidget(pp_geo_label, 15, 0)
+        self.grid5.addWidget(self.pp_geo_name_cb, 15, 1)
 
         separator_line = QtWidgets.QFrame()
         separator_line.setFrameShape(QtWidgets.QFrame.HLine)
         separator_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.grid5.addWidget(separator_line, 13, 0, 1, 2)
+        self.grid5.addWidget(separator_line, 16, 0, 1, 2)
 
         # #################################################################
         # ################# GRID LAYOUT 6   ###############################

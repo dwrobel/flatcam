@@ -11,6 +11,14 @@ from PyQt5.QtCore import Qt
 
 from shapely.geometry import Polygon
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
+
+fcTranslate.apply_language('strings')
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class FlatCAMTool(QtWidgets.QWidget):
 
@@ -138,3 +146,17 @@ class FlatCAMTool(QtWidgets.QWidget):
     def delete_tool_selection_shape(self):
         self.app.tool_shapes.clear()
         self.app.tool_shapes.redraw()
+
+    def confirmation_message(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform.emit('[WARNING_NOTCL] %s: [%.*f, %.*f]' %
+                                 (_("Edited value is out of range"), self.decimals, minval, self.decimals, maxval))
+        else:
+            self.app.inform.emit('[success] %s' % _("Edited value is within limits."))
+
+    def confirmation_message_int(self, accepted, minval, maxval):
+        if accepted is False:
+            self.app.inform.emit('[WARNING_NOTCL] %s: [%d, %d]' %
+                                 (_("Edited value is out of range"), minval, maxval))
+        else:
+            self.app.inform.emit('[success] %s' % _("Edited value is within limits."))

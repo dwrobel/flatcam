@@ -159,7 +159,7 @@ class ToolFiducials(FlatCAMTool):
               "otherwise is the size of the fiducial.\n"
               "The soldermask opening is double than that.")
         )
-        self.fid_size_entry = FCDoubleSpinner()
+        self.fid_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.fid_size_entry.set_range(1.0000, 3.0000)
         self.fid_size_entry.set_precision(self.decimals)
         self.fid_size_entry.setWrapping(True)
@@ -173,7 +173,7 @@ class ToolFiducials(FlatCAMTool):
         self.margin_label.setToolTip(
             _("Bounding box margin.")
         )
-        self.margin_entry = FCDoubleSpinner()
+        self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.margin_entry.set_range(-9999.9999, 9999.9999)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
@@ -236,7 +236,7 @@ class ToolFiducials(FlatCAMTool):
         self.line_thickness_label.setToolTip(
             _("Bounding box margin.")
         )
-        self.line_thickness_entry = FCDoubleSpinner()
+        self.line_thickness_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.line_thickness_entry.set_range(0.00001, 9999.9999)
         self.line_thickness_entry.set_precision(self.decimals)
         self.line_thickness_entry.setSingleStep(0.1)

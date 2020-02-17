@@ -2074,7 +2074,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.new_drills = list()
         self.new_tools = dict()
         self.new_slots = list()
-        self.new_tool_offset = dict()
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
@@ -2185,6 +2184,42 @@ class FlatCAMExcEditor(QtCore.QObject):
         for option in self.options:
             if option in self.app.options:
                 self.options[option] = self.app.options[option]
+
+        self.data_defaults = {
+            "plot": self.app.defaults["excellon_plot"],
+            "solid": self.app.defaults["excellon_solid"],
+
+            "operation": self.app.defaults["excellon_operation"],
+            "milling_type": self.app.defaults["excellon_milling_type"],
+
+            "milling_dia":self.app.defaults["excellon_milling_dia"],
+
+            "cutz": self.app.defaults["excellon_cutz"],
+            "multidepth": self.app.defaults["excellon_multidepth"],
+            "depthperpass": self.app.defaults["excellon_depthperpass"],
+            "travelz": self.app.defaults["excellon_travelz"],
+            "feedrate": self.app.defaults["geometry_feedrate"],
+            "feedrate_z": self.app.defaults["excellon_feedrate_z"],
+            "feedrate_rapid": self.app.defaults["excellon_feedrate_rapid"],
+            "tooldia": self.app.defaults["excellon_tooldia"],
+            "slot_tooldia": self.app.defaults["excellon_slot_tooldia"],
+            "toolchange": self.app.defaults["excellon_toolchange"],
+            "toolchangez": self.app.defaults["excellon_toolchangez"],
+            "toolchangexy": self.app.defaults["excellon_toolchangexy"],
+            "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length": self.app.defaults["geometry_extracut_length"],
+            "endz": self.app.defaults["excellon_endz"],
+            "startz": self.app.defaults["excellon_startz"],
+            "offset": self.app.defaults["excellon_offset"],
+            "spindlespeed": self.app.defaults["excellon_spindlespeed"],
+            "dwell": self.app.defaults["excellon_dwell"],
+            "dwelltime": self.app.defaults["excellon_dwelltime"],
+            "ppname_e": self.app.defaults["excellon_ppname_e"],
+            "ppname_g": self.app.defaults["geometry_ppname_g"],
+            "z_pdepth": self.app.defaults["excellon_z_pdepth"],
+            "feedrate_probe": self.app.defaults["excellon_feedrate_probe"],
+            "optimization_type": self.app.defaults["excellon_optimization_type"]
+        }
 
         self.rtree_exc_index = rtindex.Index()
         # flag to show if the object was modified
@@ -2592,9 +2627,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         for deleted_tool_dia in deleted_tool_dia_list:
 
-            # delete de tool offset
-            self.exc_obj.tool_offset.pop(float(deleted_tool_dia), None)
-
             # delete the storage used for that tool
             storage_elem = FlatCAMGeoEditor.make_storage()
             self.storage_dict[deleted_tool_dia] = storage_elem
@@ -2795,7 +2827,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.new_drills = []
         self.new_tools = {}
         self.new_slots = []
-        self.new_tool_offset = {}
+
         self.olddia_newdia = {}
 
         self.shapes.enabled = True
@@ -3036,8 +3068,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.exc_obj = exc_obj
         exc_obj.visible = False
 
-        self.points_edit = {}
-        self.slot_points_edit = {}
+        self.points_edit = dict()
+        self.slot_points_edit = dict()
 
         # Set selection tolerance
         # DrawToolShape.tolerance = fc_excellon.drawing_tolerance * 10
@@ -3268,7 +3300,6 @@ class FlatCAMExcEditor(QtCore.QObject):
                     self.edited_obj_name += "_1"
             else:
                 self.edited_obj_name += "_edit"
-        self.new_tool_offset = self.exc_obj.tool_offset
 
         self.app.worker_task.emit({'fcn': self.new_edited_excellon,
                                    'params': [self.edited_obj_name,
@@ -3316,8 +3347,13 @@ class FlatCAMExcEditor(QtCore.QObject):
             excellon_obj.drills = deepcopy(new_drills)
             excellon_obj.tools = deepcopy(new_tools)
             excellon_obj.slots = deepcopy(new_slots)
-            excellon_obj.tool_offset = self.new_tool_offset
+
             excellon_obj.options['name'] = outname
+
+            # add a 'data' dict for each tool with the default values
+            for tool in excellon_obj.tools:
+                excellon_obj.tools[tool]['data'] = dict()
+                excellon_obj.tools[tool]['data'].update(deepcopy(self.data_defaults))
 
             try:
                 excellon_obj.create_geometry()

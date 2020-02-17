@@ -68,7 +68,7 @@ class ToolTransform(FlatCAMTool):
               "Negative numbers for CCW motion.")
         )
 
-        self.rotate_entry = FCDoubleSpinner()
+        self.rotate_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rotate_entry.set_precision(self.decimals)
         self.rotate_entry.setSingleStep(45)
         self.rotate_entry.setWrapping(True)
@@ -103,7 +103,7 @@ class ToolTransform(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 360.")
         )
-        self.skewx_entry = FCDoubleSpinner()
+        self.skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.skewx_entry.set_precision(self.decimals)
         self.skewx_entry.set_range(-360, 360)
@@ -125,7 +125,7 @@ class ToolTransform(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 360.")
         )
-        self.skewy_entry = FCDoubleSpinner()
+        self.skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.skewy_entry.set_precision(self.decimals)
         self.skewy_entry.set_range(-360, 360)
@@ -155,7 +155,7 @@ class ToolTransform(FlatCAMTool):
         self.scalex_label.setToolTip(
             _("Factor for scaling on X axis.")
         )
-        self.scalex_entry = FCDoubleSpinner()
+        self.scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.scalex_entry.set_precision(self.decimals)
         self.scalex_entry.setMinimum(-1e6)
@@ -176,7 +176,7 @@ class ToolTransform(FlatCAMTool):
         self.scaley_label.setToolTip(
             _("Factor for scaling on Y axis.")
         )
-        self.scaley_entry = FCDoubleSpinner()
+        self.scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.scaley_entry.set_precision(self.decimals)
         self.scaley_entry.setMinimum(-1e6)
@@ -228,7 +228,7 @@ class ToolTransform(FlatCAMTool):
         self.offx_label.setToolTip(
             _("Distance to offset on X axis. In current units.")
         )
-        self.offx_entry = FCDoubleSpinner()
+        self.offx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.offx_entry.set_precision(self.decimals)
         self.offx_entry.setMinimum(-1e6)
@@ -249,7 +249,7 @@ class ToolTransform(FlatCAMTool):
         self.offy_label.setToolTip(
             _("Distance to offset on Y axis. In current units.")
         )
-        self.offy_entry = FCDoubleSpinner()
+        self.offy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         # self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.offy_entry.set_precision(self.decimals)
         self.offy_entry.setMinimum(-1e6)
@@ -353,7 +353,7 @@ class ToolTransform(FlatCAMTool):
               "or decreased with the 'distance'.")
         )
 
-        self.buffer_entry = FCDoubleSpinner()
+        self.buffer_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.buffer_entry.set_precision(self.decimals)
         self.buffer_entry.setSingleStep(0.1)
         self.buffer_entry.setWrapping(True)

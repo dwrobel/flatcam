@@ -3079,6 +3079,53 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.setColumnStretch(0, 0)
         grid2.setColumnStretch(1, 1)
 
+        # Operation Type
+        self.operation_label = QtWidgets.QLabel('<b>%s:</b>' % _('Operation'))
+        self.operation_label.setToolTip(
+            _("Operation type:\n"
+              "- Drilling -> will drill the drills/slots associated with this tool\n"
+              "- Milling -> will mill the drills/slots")
+        )
+        self.operation_radio = RadioSet(
+            [
+                {'label': _('Drilling'), 'value': 'drill'},
+                {'label': _("Milling"), 'value': 'mill'}
+            ]
+        )
+
+        grid2.addWidget(self.operation_label, 0, 0)
+        grid2.addWidget(self.operation_radio, 0, 1)
+
+        self.mill_type_label = QtWidgets.QLabel('%s:' % _('Milling Type'))
+        self.mill_type_label.setToolTip(
+            _("Milling type:\n"
+              "- Drills -> will mill the drills associated with this tool\n"
+              "- Slots -> will mill the slots associated with this tool\n"
+              "- Both -> will mill both drills and mills or whatever is available")
+        )
+        self.milling_type_radio = RadioSet(
+            [
+                {'label': _('Drills'), 'value': 'drills'},
+                {'label': _("Slots"), 'value': 'slots'},
+                {'label': _("Both"), 'value': 'both'},
+            ]
+        )
+
+        grid2.addWidget(self.mill_type_label, 1, 0)
+        grid2.addWidget(self.milling_type_radio, 1, 1)
+
+        self.mill_dia_label = QtWidgets.QLabel('%s:' % _('Milling Diameter'))
+        self.mill_dia_label.setToolTip(
+            _("The diameter of the tool who will do the milling")
+        )
+
+        self.mill_dia_entry = FCDoubleSpinner()
+        self.mill_dia_entry.set_precision(self.decimals)
+        self.mill_dia_entry.set_range(0.0000, 9999.9999)
+
+        grid2.addWidget(self.mill_dia_label, 2, 0)
+        grid2.addWidget(self.mill_dia_entry, 2, 1)
+
         # Cut Z
         cutzlabel = QtWidgets.QLabel('%s:' % _('Cut Z'))
         cutzlabel.setToolTip(
@@ -3096,8 +3143,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.cutz_entry.setSingleStep(0.1)
         self.cutz_entry.set_precision(self.decimals)
 
-        grid2.addWidget(cutzlabel, 0, 0)
-        grid2.addWidget(self.cutz_entry, 0, 1)
+        grid2.addWidget(cutzlabel, 3, 0)
+        grid2.addWidget(self.cutz_entry, 3, 1)
 
         # Multi-Depth
         self.mpass_cb = FCCheckBox('%s:' % _("Multi-Depth"))
@@ -3117,8 +3164,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
         self.maxdepth_entry.setToolTip(_("Depth of each pass (positive)."))
 
-        grid2.addWidget(self.mpass_cb, 1, 0)
-        grid2.addWidget(self.maxdepth_entry, 1, 1)
+        grid2.addWidget(self.mpass_cb, 4, 0)
+        grid2.addWidget(self.maxdepth_entry, 4, 1)
 
         # Travel Z
         travelzlabel = QtWidgets.QLabel('%s:' % _('Travel Z'))
@@ -3135,8 +3182,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         else:
             self.travelz_entry.set_range(-9999.9999, 9999.9999)
 
-        grid2.addWidget(travelzlabel, 2, 0)
-        grid2.addWidget(self.travelz_entry, 2, 1)
+        grid2.addWidget(travelzlabel, 5, 0)
+        grid2.addWidget(self.travelz_entry, 5, 1)
 
         # Tool change:
         self.toolchange_cb = FCCheckBox('%s' % _("Tool change"))
@@ -3144,7 +3191,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             _("Include tool-change sequence\n"
               "in G-Code (Pause for tool change).")
         )
-        grid2.addWidget(self.toolchange_cb, 3, 0, 1, 2)
+        grid2.addWidget(self.toolchange_cb, 6, 0, 1, 2)
 
         # Tool Change Z
         toolchangezlabel = QtWidgets.QLabel('%s:' % _('Toolchange Z'))
@@ -3161,8 +3208,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         else:
             self.toolchangez_entry.set_range(-9999.9999, 9999.9999)
 
-        grid2.addWidget(toolchangezlabel, 4, 0)
-        grid2.addWidget(self.toolchangez_entry, 4, 1)
+        grid2.addWidget(toolchangezlabel, 7, 0)
+        grid2.addWidget(self.toolchangez_entry, 7, 1)
 
         # End Move Z
         endz_label = QtWidgets.QLabel('%s:' % _('End move Z'))
@@ -3178,8 +3225,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         else:
             self.endz_entry.set_range(-9999.9999, 9999.9999)
 
-        grid2.addWidget(endz_label, 5, 0)
-        grid2.addWidget(self.endz_entry, 5, 1)
+        grid2.addWidget(endz_label, 8, 0)
+        grid2.addWidget(self.endz_entry, 8, 1)
 
         # Feedrate Z
         frlabel = QtWidgets.QLabel('%s:' % _('Feedrate Z'))
@@ -3193,8 +3240,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.feedrate_z_entry.set_precision(self.decimals)
         self.feedrate_z_entry.set_range(0, 99999.9999)
 
-        grid2.addWidget(frlabel, 6, 0)
-        grid2.addWidget(self.feedrate_z_entry, 6, 1)
+        grid2.addWidget(frlabel, 9, 0)
+        grid2.addWidget(self.feedrate_z_entry, 9, 1)
 
         # Spindle speed
         spdlabel = QtWidgets.QLabel('%s:' % _('Spindle Speed'))

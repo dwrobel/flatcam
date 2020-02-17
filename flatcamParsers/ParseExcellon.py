@@ -43,6 +43,7 @@ class Excellon(Geometry):
     ================  ====================================
     C                 Diameter of the tool
     solid_geometry    Geometry list for each tool
+    data              dictionary which holds the options for each tool
     Others            Not supported (Ignored).
     ================  ====================================
 

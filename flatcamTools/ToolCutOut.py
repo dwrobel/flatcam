@@ -123,7 +123,7 @@ class CutOut(FlatCAMTool):
         grid0.addWidget(self.param_label, 6, 0, 1, 2)
 
         # Tool Diameter
-        self.dia = FCDoubleSpinner()
+        self.dia = FCDoubleSpinner(callback=self.confirmation_message)
         self.dia.set_precision(self.decimals)
         self.dia.set_range(0.0000, 9999.9999)
 
@@ -143,7 +143,7 @@ class CutOut(FlatCAMTool):
                 "below the copper surface."
             )
         )
-        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_entry.set_precision(self.decimals)
 
         if machinist_setting == 0:
@@ -167,7 +167,7 @@ class CutOut(FlatCAMTool):
             )
         )
 
-        self.maxdepth_entry = FCDoubleSpinner()
+        self.maxdepth_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.maxdepth_entry.set_precision(self.decimals)
         self.maxdepth_entry.setRange(0, 9999.9999)
         self.maxdepth_entry.setSingleStep(0.1)
@@ -183,7 +183,7 @@ class CutOut(FlatCAMTool):
         grid0.addWidget(self.maxdepth_entry, 10, 1)
 
         # Margin
-        self.margin = FCDoubleSpinner()
+        self.margin = FCDoubleSpinner(callback=self.confirmation_message)
         self.margin.set_range(-9999.9999, 9999.9999)
         self.margin.setSingleStep(0.1)
         self.margin.set_precision(self.decimals)
@@ -198,7 +198,7 @@ class CutOut(FlatCAMTool):
         grid0.addWidget(self.margin, 11, 1)
 
         # Gapsize
-        self.gapsize = FCDoubleSpinner()
+        self.gapsize = FCDoubleSpinner(callback=self.confirmation_message)
         self.gapsize.set_precision(self.decimals)
 
         self.gapsize_label = QtWidgets.QLabel('%s:' % _("Gap size"))

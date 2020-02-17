@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.02.2020
+
+- updated the Excellon UI to hold data for each tool
+- in Excellon UI removed the tools table column for Offset Z and used the UI form parameter
+- updated the Excellon Editor to add for each tool a 'data' dictionary
+- updated all FlatCAM tools to use the new confirmation message that show if the entered value is within range or outside
+
 16.02.2020
 
 - small update to NCC Tool UI

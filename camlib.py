@@ -2432,7 +2432,6 @@ class CNCjob(Geometry):
         self.units = units
 
         self.z_cut = z_cut
-        self.tool_offset = dict()
 
         self.z_move = z_move
 
@@ -2728,7 +2727,7 @@ class CNCjob(Geometry):
                             )
 
                     try:
-                        z_off = float(self.tool_offset[it[1]]) * (-1)
+                        z_off = float(exobj.tools[it[0]]['data']['offset']) * (-1)
                     except KeyError:
                         z_off = 0
 
@@ -2936,7 +2935,7 @@ class CNCjob(Geometry):
                             # TODO apply offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
                             try:
-                                z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                                z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
                             except KeyError:
                                 z_offset = 0
                             self.z_cut = z_offset + old_zcut
@@ -3104,7 +3103,7 @@ class CNCjob(Geometry):
                             # TODO apply offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
                             try:
-                                z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                                z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
                             except KeyError:
                                 z_offset = 0
                             self.z_cut = z_offset + old_zcut
@@ -3230,7 +3229,7 @@ class CNCjob(Geometry):
                         # TODO apply offset only when using the GUI, for TclCommand this will create an error
                         # because the values for Z offset are created in build_ui()
                         try:
-                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            z_offset = float(exobj.tools[tool]['data']['offset']) * (-1)
                         except KeyError:
                             z_offset = 0
                         self.z_cut = z_offset + old_zcut

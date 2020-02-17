@@ -160,7 +160,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_scale_cb, 6, 0, 1, 2)
 
         self.film_scalex_label = QtWidgets.QLabel('%s:' % _("X factor"))
-        self.film_scalex_entry = FCDoubleSpinner()
+        self.film_scalex_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scalex_entry.set_range(-999.9999, 999.9999)
         self.film_scalex_entry.set_precision(self.decimals)
         self.film_scalex_entry.setSingleStep(0.01)
@@ -169,7 +169,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_scalex_entry, 7, 1)
 
         self.film_scaley_label = QtWidgets.QLabel('%s:' % _("Y factor"))
-        self.film_scaley_entry = FCDoubleSpinner()
+        self.film_scaley_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scaley_entry.set_range(-999.9999, 999.9999)
         self.film_scaley_entry.set_precision(self.decimals)
         self.film_scaley_entry.setSingleStep(0.01)
@@ -199,7 +199,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_skew_cb, 10, 0, 1, 2)
 
         self.film_skewx_label = QtWidgets.QLabel('%s:' % _("X angle"))
-        self.film_skewx_entry = FCDoubleSpinner()
+        self.film_skewx_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewx_entry.set_range(-999.9999, 999.9999)
         self.film_skewx_entry.set_precision(self.decimals)
         self.film_skewx_entry.setSingleStep(0.01)
@@ -208,7 +208,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_skewx_entry, 11, 1)
 
         self.film_skewy_label = QtWidgets.QLabel('%s:' % _("Y angle"))
-        self.film_skewy_entry = FCDoubleSpinner()
+        self.film_skewy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_skewy_entry.set_range(-999.9999, 999.9999)
         self.film_skewy_entry.set_precision(self.decimals)
         self.film_skewy_entry.setSingleStep(0.01)
@@ -275,7 +275,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_param_label, 18, 0, 1, 2)
 
         # Scale Stroke size
-        self.film_scale_stroke_entry = FCDoubleSpinner()
+        self.film_scale_stroke_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.film_scale_stroke_entry.set_range(-999.9999, 999.9999)
         self.film_scale_stroke_entry.setSingleStep(0.01)
         self.film_scale_stroke_entry.set_precision(self.decimals)
@@ -308,7 +308,7 @@ class Film(FlatCAMTool):
         grid0.addWidget(self.film_type, 21, 1)
 
         # Boundary for negative film generation
-        self.boundary_entry = FCDoubleSpinner()
+        self.boundary_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.boundary_entry.set_range(-999.9999, 999.9999)
         self.boundary_entry.setSingleStep(0.01)
         self.boundary_entry.set_precision(self.decimals)
@@ -378,7 +378,7 @@ class Film(FlatCAMTool):
 
         self.punch_size_label = QtWidgets.QLabel('%s:' % _("Punch Size"))
         self.punch_size_label.setToolTip(_("The value here will control how big is the punch hole in the pads."))
-        self.punch_size_spinner = FCDoubleSpinner()
+        self.punch_size_spinner = FCDoubleSpinner(callback=self.confirmation_message)
         self.punch_size_spinner.set_range(0, 999.9999)
         self.punch_size_spinner.setSingleStep(0.1)
         self.punch_size_spinner.set_precision(self.decimals)

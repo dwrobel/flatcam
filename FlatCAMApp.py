@@ -622,7 +622,9 @@ class App(QtCore.QObject):
             "excellon_zeros": "L",
             "excellon_units": "INCH",
             "excellon_update": True,
+
             "excellon_optimization_type": 'B',
+
             "excellon_search_time": 3,
             "excellon_save_filters": "Excellon File (*.txt);;Excellon File (*.drd);;Excellon File (*.drl);;"
                                      "Excellon File (*.exc);;Excellon File (*.ncd);;Excellon File (*.tap);;"
@@ -631,12 +633,17 @@ class App(QtCore.QObject):
             "excellon_plot_line": '#750000BF',
 
             # Excellon Options
-            "excellon_drillz": -1.7,
+            "excellon_operation": "drill",
+            "excellon_milling_type": "drills",
+
+            "excellon_milling_dia": 0.8,
+
+            "excellon_cutz": -1.7,
             "excellon_multidepth": False,
             "excellon_depthperpass": 0.7,
             "excellon_travelz": 2,
             "excellon_endz": 0.5,
-            "excellon_feedrate": 300,
+            "excellon_feedrate_z": 300,
             "excellon_spindlespeed": 0,
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
@@ -1308,12 +1315,17 @@ class App(QtCore.QObject):
             "excellon_plot_line": self.ui.excellon_defaults_form.excellon_gen_group.line_color_entry,
 
             # Excellon Options
-            "excellon_drillz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
+            "excellon_operation": self.ui.excellon_defaults_form.excellon_opt_group.operation_radio,
+            "excellon_milling_type": self.ui.excellon_defaults_form.excellon_opt_group.milling_type_radio,
+
+            "excellon_milling_dia": self.ui.excellon_defaults_form.excellon_opt_group.mill_dia_entry,
+
+            "excellon_cutz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
             "excellon_multidepth": self.ui.excellon_defaults_form.excellon_opt_group.mpass_cb,
             "excellon_depthperpass": self.ui.excellon_defaults_form.excellon_opt_group.maxdepth_entry,
             "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
             "excellon_endz": self.ui.excellon_defaults_form.excellon_opt_group.endz_entry,
-            "excellon_feedrate": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
+            "excellon_feedrate_z": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_z_entry,
             "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
             "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
             "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
@@ -5944,7 +5956,7 @@ class App(QtCore.QObject):
         dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin', "gerber_isooverlap",
                       "gerber_editor_newsize", "gerber_editor_lin_pitch", "gerber_editor_buff_f",
 
-                      'excellon_drillz',  'excellon_travelz', "excellon_toolchangexy",
+                      'excellon_cutz',  'excellon_travelz', "excellon_toolchangexy", 'excellon_offset',
                       'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
                       'excellon_tooldia', 'excellon_slot_tooldia', 'excellon_endz', "excellon_feedrate_probe",
                       "excellon_z_pdepth", "excellon_editor_newdia", "excellon_editor_lin_pitch",

@@ -158,7 +158,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(panel_data_label)
 
         # Spacing Columns
-        self.spacing_columns = FCDoubleSpinner()
+        self.spacing_columns = FCDoubleSpinner(callback=self.confirmation_message)
         self.spacing_columns.set_range(0, 9999)
         self.spacing_columns.set_precision(4)
 
@@ -170,7 +170,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_columns_label, self.spacing_columns)
 
         # Spacing Rows
-        self.spacing_rows = FCDoubleSpinner()
+        self.spacing_rows = FCDoubleSpinner(callback=self.confirmation_message)
         self.spacing_rows.set_range(0, 9999)
         self.spacing_rows.set_precision(4)
 
@@ -225,7 +225,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.constrain_cb)
 
-        self.x_width_entry = FCDoubleSpinner()
+        self.x_width_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.x_width_entry.set_precision(4)
         self.x_width_entry.set_range(0, 9999)
 
@@ -236,7 +236,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
-        self.y_height_entry = FCDoubleSpinner()
+        self.y_height_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.y_height_entry.set_range(0, 9999)
         self.y_height_entry.set_precision(4)
 

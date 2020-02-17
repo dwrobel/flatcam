@@ -2323,34 +2323,46 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.options.update({
             "plot": True,
             "solid": False,
-            "drillz": -0.1,
+
+            "operation": "drill",
+            "milling_type": "drills",
+
+            "milling_dia": 0.04,
+
+            "cutz": -0.1,
             "multidepth": False,
             "depthperpass": 0.7,
             "travelz": 0.1,
-            "feedrate": 5.0,
+            "feedrate": self.app.defaults["geometry_feedrate"],
+            "feedrate_z": 5.0,
             "feedrate_rapid": 5.0,
             "tooldia": 0.1,
             "slot_tooldia": 0.1,
             "toolchange": False,
             "toolchangez": 1.0,
             "toolchangexy": "0.0, 0.0",
+            "extracut": self.app.defaults["geometry_extracut"],
+            "extracut_length":self.app.defaults["geometry_extracut_length"],
             "endz": 2.0,
             "startz": None,
+            "offset": 0.0,
             "spindlespeed": 0,
             "dwell": True,
             "dwelltime": 1000,
-            "ppname_e": 'defaults',
+            "ppname_e": 'default',
+            "ppname_g": self.app.defaults["geometry_ppname_g"],
             "z_pdepth": -0.02,
             "feedrate_probe": 3.0,
-            "optimization_type": "R",
-            "gcode_type": "drills"
+            "optimization_type": "B",
         })
 
         # TODO: Document this.
         self.tool_cbs = dict()
 
-        # dict to hold the tool number as key and tool offset as value
-        self.tool_offset = dict()
+        # dict that holds the object names and the option name
+        # the key is the object name (defines in ObjectUI) for each UI element that is a parameter
+        # particular for a tool and the value is the actual name of the option that the UI element is changing
+        self.name2option = dict()
 
         # default set of data to be added to each tool in self.tools as self.tools[tool]['data'] = self.default_data
         self.default_data = dict()
@@ -2598,7 +2610,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         sorted_tools = sorted(sort, key=lambda t1: t1[1])
         tools = [i[0] for i in sorted_tools]
 
+        new_options = dict()
+        for opt in self.options:
+            new_options[opt] = self.options[opt]
+
         for tool_no in tools:
+
+            # add the data dictionary for each tool with the default values
+            self.tools[tool_no]['data'] = deepcopy(new_options)
+            # self.tools[tool_no]['data']["tooldia"] = self.tools[tool_no]["C"]
+            # self.tools[tool_no]['data']["slot_tooldia"] = self.tools[tool_no]["C"]
 
             drill_cnt = 0  # variable to store the nr of drills per tool
             slot_cnt = 0  # variable to store the nr of slots per tool
@@ -2631,18 +2652,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             slot_count_item = QtWidgets.QTableWidgetItem(slot_count_str)
             slot_count_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            try:
-                t_offset = self.tool_offset[float('%.*f' % (self.decimals, float(self.tools[tool_no]['C'])))]
-            except KeyError:
-                t_offset = self.app.defaults['excellon_offset']
-
-            tool_offset_item = FCDoubleSpinner()
-            tool_offset_item.set_precision(self.decimals)
-            tool_offset_item.set_range(-9999.9999, 9999.9999)
-            tool_offset_item.setWrapping(True)
-            tool_offset_item.setSingleStep(0.1) if self.units == 'MM' else tool_offset_item.setSingleStep(0.01)
-            tool_offset_item.set_value(t_offset)
-
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
             if self.ui.plot_cb.isChecked():
@@ -2652,7 +2661,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.tools_table.setItem(self.tool_row, 1, dia_item)  # Diameter
             self.ui.tools_table.setItem(self.tool_row, 2, drill_count_item)  # Number of drills per tool
             self.ui.tools_table.setItem(self.tool_row, 3, slot_count_item)  # Number of drills per tool
-            self.ui.tools_table.setCellWidget(self.tool_row, 4, tool_offset_item)  # Tool offset
             empty_plot_item = QtWidgets.QTableWidgetItem('')
             empty_plot_item.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(self.tool_row, 5, empty_plot_item)
@@ -2679,7 +2687,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
         self.ui.tools_table.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
         self.ui.tools_table.setItem(self.tool_row, 3, empty_1_1)
-        self.ui.tools_table.setItem(self.tool_row, 4, empty_1_2)
         self.ui.tools_table.setItem(self.tool_row, 5, empty_1_3)
 
         font = QtGui.QFont()
@@ -2711,7 +2718,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_slot_count)
         self.ui.tools_table.setItem(self.tool_row, 2, empty_2_1)
         self.ui.tools_table.setItem(self.tool_row, 3, tot_slot_count)  # Total number of slots
-        self.ui.tools_table.setItem(self.tool_row, 4, empty_2_2)
         self.ui.tools_table.setItem(self.tool_row, 5, empty_2_3)
 
         for kl in [1, 2, 3]:
@@ -2737,13 +2743,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         horizontal_header.setDefaultSectionSize(70)
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(0, 20)
-        if self.app.defaults["global_app_level"] == 'b':
-            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        else:
-            horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
         horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
         horizontal_header.resizeSection(5, 17)
         self.ui.tools_table.setColumnWidth(5, 17)
@@ -2772,14 +2776,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         else:
             self.ui.slot_tooldia_entry.show()
             self.ui.generate_milling_slots_button.show()
-
-        # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
-        for row in range(self.ui.tools_table.rowCount()):
-            try:
-                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
-                offset_spin_widget.valueChanged.connect(self.on_tool_offset_edit)
-            except (TypeError, AttributeError):
-                pass
 
         # set the text on tool_data_label after loading the object
         sel_rows = list()
@@ -2811,32 +2807,70 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "solid": self.ui.solid_cb,
-            "drillz": self.ui.cutz_entry,
+
+            "operation": self.ui.operation_radio,
+            "milling_type": self.ui.milling_type_radio,
+
+            "milling_dia": self.ui.mill_dia_entry,
+            "cutz": self.ui.cutz_entry,
             "multidepth": self.ui.mpass_cb,
             "depthperpass": self.ui.maxdepth_entry,
             "travelz": self.ui.travelz_entry,
-            "feedrate": self.ui.feedrate_z_entry,
+            "feedrate_z": self.ui.feedrate_z_entry,
+            "feedrate": self.ui.xyfeedrate_entry,
             "feedrate_rapid": self.ui.feedrate_rapid_entry,
             "tooldia": self.ui.tooldia_entry,
             "slot_tooldia": self.ui.slot_tooldia_entry,
             "toolchange": self.ui.toolchange_cb,
             "toolchangez": self.ui.toolchangez_entry,
+            "extracut": self.ui.extracut_cb,
+            "extracut_length": self.ui.e_cut_entry,
+
             "spindlespeed": self.ui.spindlespeed_entry,
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry,
+
             "startz": self.ui.estartz_entry,
             "endz": self.ui.endz_entry,
+            "offset": self.ui.offset_entry,
+
             "ppname_e": self.ui.pp_excellon_name_cb,
+            "ppname_g": self.ui.pp_geo_name_cb,
             "z_pdepth": self.ui.pdepth_entry,
             "feedrate_probe": self.ui.feedrate_probe_entry,
-            "gcode_type": self.ui.excellon_gcode_type_radio
+            # "gcode_type": self.ui.excellon_gcode_type_radio
         })
 
+        self.name2option = {
+            "e_operation": "operation",
+            "e_milling_type": "milling_type",
+            "e_milling_dia": "milling_dia",
+            "e_cutz" : "cutz",
+            "e_multidepth" : "multidepth",
+            "e_depthperpass" : "depthperpass",
+
+            "e_travelz" : "travelz",
+            "e_feedratexy" : "feedrate",
+            "e_feedratez" : "feedrate_z",
+            "e_fr_rapid" : "feedrate_rapid",
+            "e_extracut" : "extracut",
+            "e_extracut_length" : "extracut_length",
+            "e_spindlespeed" : "spindlespeed",
+            "e_dwell" : "dwell",
+            "e_dwelltime" : "dwelltime",
+            "e_offset" : "offset",
+        }
+
+        # populate Excellon preprocessor combobox list
         for name in list(self.app.preprocessors.keys()):
             # the HPGL preprocessor is only for Geometry not for Excellon job therefore don't add it
             if name == 'hpgl':
                 continue
             self.ui.pp_excellon_name_cb.addItem(name)
+
+        # populate Geometry (milling) preprocessor combobox list
+        for name in list(self.app.preprocessors.keys()):
+            self.ui.pp_geo_name_cb.addItem(name)
 
         # Fill form fields
         self.to_form()
@@ -2845,13 +2879,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
         # self.ui.pp_excellon_name_cb combobox
         self.on_pp_changed()
-
-        # initialize the dict that holds the tools offset
-        t_default_offset = self.app.defaults["excellon_offset"]
-        if not self.tool_offset:
-            for value in self.tools.values():
-                dia = float('%.*f' % (self.decimals, float(value['C'])))
-                self.tool_offset[dia] = t_default_offset
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -2895,6 +2922,17 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.clicked.connect(self.on_row_selection_change)
         self.ui.tools_table.horizontalHeader().sectionClicked.connect(self.on_row_selection_change)
 
+        # value changed in the particular parameters of a tool
+        for key, option in self.name2option.items():
+            current_widget = self.form_fields[option]
+
+            if isinstance(current_widget, FCCheckBox):
+                current_widget.stateChanged.connect(self.form_to_storage)
+            if isinstance(current_widget, RadioSet):
+                current_widget.activated_custom.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
+                current_widget.returnPressed.connect(self.form_to_storage)
+
     def ui_disconnect(self):
         # selective plotting
         for row in range(self.ui.tools_table.rowCount()):
@@ -2917,19 +2955,33 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         except (TypeError, AttributeError):
             pass
 
-    def on_row_selection_change(self):
-        self.update_ui()
+        # value changed in the particular parameters of a tool
+        for key, option in self.name2option.items():
+            current_widget = self.form_fields[option]
 
-    def update_ui(self, row=None):
+            if isinstance(current_widget, FCCheckBox):
+                try:
+                    current_widget.stateChanged.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+            if isinstance(current_widget, RadioSet):
+                try:
+                    current_widget.activated_custom.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(current_widget, FCDoubleSpinner) or isinstance(current_widget, FCSpinner):
+                try:
+                    current_widget.returnPressed.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+
+    def on_row_selection_change(self):
         self.ui_disconnect()
 
-        if row is None:
-            sel_rows = list()
-            sel_items = self.ui.tools_table.selectedItems()
-            for it in sel_items:
-                sel_rows.append(it.row())
-        else:
-            sel_rows = row if type(row) == list else [row]
+        sel_rows = list()
+        sel_items = self.ui.tools_table.selectedItems()
+        for it in sel_items:
+            sel_rows.append(it.row())
 
         if not sel_rows:
             self.ui.tool_data_label.setText(
@@ -2961,7 +3013,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             try:
                 item = self.ui.tools_table.item(c_row, 0)
                 if type(item) is not None:
-                    tooluid = int(item.text())
+                    tooluid = item.text()
+                    self.storage_to_form(self.tools[str(tooluid)]['data'])
                 else:
                     self.ui_connect()
                     return
@@ -2970,23 +3023,49 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 self.ui_connect()
                 return
 
-            # try:
-            #     # set the form with data from the newly selected tool
-            #     for tooluid_key, tooluid_value in list(self.tools.items()):
-            #         if int(tooluid_key) == tooluid:
-            #             for key, value in tooluid_value.items():
-            #                 if key == 'data':
-            #                     form_value_storage = tooluid_value[key]
-            #                     self.update_form(form_value_storage)
-            # except Exception as e:
-            #     log.debug("FlatCAMObj ---> update_ui() " + str(e))
+        self.ui_connect()
+
+    def storage_to_form(self, dict_storage):
+        for form_key in self.form_fields:
+            for storage_key in dict_storage:
+                if form_key == storage_key:
+                    try:
+                        self.form_fields[form_key].set_value(dict_storage[form_key])
+                    except Exception as e:
+                        log.debug("FlatCAMExcellon.storage_to_form() --> %s" % str(e))
+                        pass
+
+    def form_to_storage(self):
+        if self.ui.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            return
+
+        self.ui_disconnect()
+
+        widget_changed = self.sender()
+        wdg_objname = widget_changed.objectName()
+        option_changed = self.name2option[wdg_objname]
+
+        row = self.ui.tools_table.currentRow()
+
+        if row < 0:
+            row = 0
+        tooluid_item = int(self.ui.tools_table.item(row, 0).text())
+
+        for tooluid_key, tooluid_val in self.tools.items():
+            if int(tooluid_key) == tooluid_item:
+                new_option_value = self.form_fields[option_changed].get_value()
+                if option_changed in tooluid_val:
+                    tooluid_val[option_changed] = new_option_value
+                if option_changed in tooluid_val['data']:
+                    tooluid_val['data'][option_changed] = new_option_value
 
         self.ui_connect()
 
     def on_operation_type(self, val):
         if val == 'mill':
             self.ui.mill_type_label.show()
-            self.ui.mill_type_radio.show()
+            self.ui.milling_type_radio.show()
             self.ui.mill_dia_label.show()
             self.ui.mill_dia_entry.show()
             self.ui.frxylabel.show()
@@ -2999,7 +3078,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             #     self.ui.maxdepth_entry.show()
         else:
             self.ui.mill_type_label.hide()
-            self.ui.mill_type_radio.hide()
+            self.ui.milling_type_radio.hide()
             self.ui.mill_dia_label.hide()
             self.ui.mill_dia_entry.hide()
             # self.ui.mpass_cb.hide()
@@ -3008,32 +3087,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.xyfeedrate_entry.hide()
             self.ui.extracut_cb.hide()
             self.ui.e_cut_entry.hide()
-
-    def on_tool_offset_edit(self):
-        # if connected, disconnect the signal from the slot on item_changed as it creates issues
-        for row in range(self.ui.tools_table.rowCount()):
-            try:
-                # if connected, disconnect the signal from the slot on item_changed as it creates issues
-                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
-                offset_spin_widget.valueChanged.disconnect()
-            except (TypeError, AttributeError):
-                pass
-
-        self.units = self.app.defaults['units'].upper()
-        self.is_modified = True
-
-        row_of_item_changed = self.ui.tools_table.currentRow()
-        dia = float('%.*f' % (self.decimals, float(self.ui.tools_table.item(row_of_item_changed, 1).text())))
-
-        self.tool_offset[dia] = self.sender().get_value()
-
-        # we reactivate the signals after the after the tool editing
-        for row in range(self.ui.tools_table.rowCount()):
-            try:
-                offset_spin_widget = self.ui.tools_table.cellWidget(row, 4)
-                offset_spin_widget.valueChanged.connect(self.on_tool_offset_edit)
-            except (TypeError, AttributeError):
-                pass
 
     def get_selected_tools_list(self):
         """
@@ -3590,15 +3643,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.options['type'] = 'Excellon'
             job_obj.options['ppname_e'] = pp_excellon_name
 
-            job_obj.z_cut = float(self.options["drillz"])
+            job_obj.z_cut = float(self.options["cutz"])
 
             job_obj.multidepth = self.options["multidepth"]
             job_obj.z_depthpercut = self.options["depthperpass"]
 
-            job_obj.tool_offset = self.tool_offset
             job_obj.z_move = float(self.options["travelz"])
-            job_obj.feedrate = float(self.options["feedrate"])
-            job_obj.z_feedrate = float(self.options["feedrate"])
+            job_obj.feedrate = float(self.options["feedrate_z"])
+            job_obj.z_feedrate = float(self.options["feedrate_z"])
             job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
 
             job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] != 0 else None
@@ -3627,7 +3679,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             tools_csv = ','.join(tools)
             ret_val = job_obj.generate_from_excellon_by_tool(
                 self, tools_csv,
-                drillz=float(self.options['drillz']),
+                drillz=float(self.options['cutz']),
                 toolchange=self.options["toolchange"],
                 toolchangexy=self.app.defaults["excellon_toolchangexy"],
                 toolchangez=float(self.options["toolchangez"]),
@@ -3754,17 +3806,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.plot_cb.setChecked(True)
         self.ui_connect()
 
-    # def plot_element(self, element, color='red', visible=None, layer=None):
-    #
-    #     visible = visible if visible else self.options['plot']
-    #
-    #     try:
-    #         for sub_el in element:
-    #             self.plot_element(sub_el)
-    #
-    #     except TypeError:  # Element is not iterable...
-    #         self.add_shape(shape=element, color=color, visible=visible, layer=0)
-
     def plot(self, visible=None, kind=None):
 
         # Does all the required setup and returns False
@@ -3818,6 +3859,59 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
+
+    def on_apply_param_to_all_clicked(self):
+        if self.tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            log.debug("NonCopperClear.on_apply_param_to_all_clicked() --> no tool in Tools Table, aborting.")
+            return
+
+        self.blockSignals(True)
+
+        row = self.tools_table.currentRow()
+        if row < 0:
+            row = 0
+
+        # store all the data associated with the row parameter to the self.tools storage
+        tooldia_item = float(self.tools_table.item(row, 1).text())
+        type_item = self.tools_table.cellWidget(row, 2).currentText()
+        operation_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
+
+        nccoffset_item = self.ncc_choice_offset_cb.get_value()
+        nccoffset_value_item = float(self.ncc_offset_spinner.get_value())
+
+        # this new dict will hold the actual useful data, another dict that is the value of key 'data'
+        temp_tools = {}
+        temp_dia = {}
+        temp_data = {}
+
+        for tooluid_key, tooluid_value in self.ncc_tools.items():
+            for key, value in tooluid_value.items():
+                if key == 'data':
+                    # update the 'data' section
+                    for data_key in tooluid_value[key].keys():
+                        for form_key, form_value in self.form_fields.items():
+                            if form_key == data_key:
+                                temp_data[data_key] = form_value.get_value()
+                        # make sure we make a copy of the keys not in the form (we may use 'data' keys that are
+                        # updated from self.app.defaults
+                        if data_key not in self.form_fields:
+                            temp_data[data_key] = value[data_key]
+                    temp_dia[key] = deepcopy(temp_data)
+                    temp_data.clear()
+
+                elif key == 'solid_geometry':
+                    temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
+                else:
+                    temp_dia[key] = deepcopy(value)
+
+                temp_tools[tooluid_key] = deepcopy(temp_dia)
+
+        self.ncc_tools.clear()
+        self.ncc_tools = deepcopy(temp_tools)
+        temp_tools.clear()
+
+        self.blockSignals(False)
 
 
 class FlatCAMGeometry(FlatCAMObj, Geometry):

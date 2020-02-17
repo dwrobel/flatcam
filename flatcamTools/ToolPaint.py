@@ -214,7 +214,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tipdialabel = QtWidgets.QLabel('%s:' % _('V-Tip Dia'))
         self.tipdialabel.setToolTip(
             _("The tip diameter for V-Shape Tool"))
-        self.tipdia_entry = FCDoubleSpinner()
+        self.tipdia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tipdia_entry.set_precision(self.decimals)
         self.tipdia_entry.set_range(0.0000, 9999.9999)
         self.tipdia_entry.setSingleStep(0.1)
@@ -228,7 +228,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tipanglelabel.setToolTip(
             _("The tip angle for V-Shape Tool.\n"
               "In degree."))
-        self.tipangle_entry = FCDoubleSpinner()
+        self.tipangle_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.tipangle_entry.set_precision(self.decimals)
         self.tipangle_entry.set_range(0.0000, 180.0000)
         self.tipangle_entry.setSingleStep(5)
@@ -243,7 +243,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             _("Depth of cut into material. Negative value.\n"
               "In FlatCAM units.")
         )
-        self.cutz_entry = FCDoubleSpinner()
+        self.cutz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.cutz_entry.set_precision(self.decimals)
         self.cutz_entry.set_range(-99999.9999, 0.0000)
         self.cutz_entry.setObjectName(_("Cut Z"))
@@ -262,7 +262,7 @@ class ToolPaint(FlatCAMTool, Gerber):
               "If the tool is V-shape type then this value is automatically\n"
               "calculated from the other parameters.")
         )
-        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.addtool_entry.set_precision(self.decimals)
         self.addtool_entry.set_range(0.000, 9999.9999)
         self.addtool_entry.setObjectName(_("Tool Dia"))
@@ -351,7 +351,7 @@ class ToolPaint(FlatCAMTool, Gerber):
               "the edges of the polygon to\n"
               "be painted.")
         )
-        self.paintmargin_entry = FCDoubleSpinner()
+        self.paintmargin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.paintmargin_entry.set_precision(self.decimals)
         self.paintmargin_entry.set_range(-9999.9999, 9999.9999)
         self.paintmargin_entry.setObjectName(_("Margin"))

@@ -105,7 +105,7 @@ class SolderPaste(FlatCAMTool):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new Nozzle tool to add in the Tool Table")
         )
-        self.addtool_entry = FCDoubleSpinner()
+        self.addtool_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.addtool_entry.set_range(0.0000001, 9999.9999)
         self.addtool_entry.set_precision(self.decimals)
         self.addtool_entry.setSingleStep(0.1)
@@ -174,7 +174,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_box.addLayout(self.gcode_form_layout)
 
         # Z dispense start
-        self.z_start_entry = FCDoubleSpinner()
+        self.z_start_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_start_entry.set_range(0.0000001, 9999.9999)
         self.z_start_entry.set_precision(self.decimals)
         self.z_start_entry.setSingleStep(0.1)
@@ -186,7 +186,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_start_label, self.z_start_entry)
 
         # Z dispense
-        self.z_dispense_entry = FCDoubleSpinner()
+        self.z_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_dispense_entry.set_range(0.0000001, 9999.9999)
         self.z_dispense_entry.set_precision(self.decimals)
         self.z_dispense_entry.setSingleStep(0.1)
@@ -198,7 +198,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_dispense_label, self.z_dispense_entry)
 
         # Z dispense stop
-        self.z_stop_entry = FCDoubleSpinner()
+        self.z_stop_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_stop_entry.set_range(0.0000001, 9999.9999)
         self.z_stop_entry.set_precision(self.decimals)
         self.z_stop_entry.setSingleStep(0.1)
@@ -210,7 +210,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_stop_label, self.z_stop_entry)
 
         # Z travel
-        self.z_travel_entry = FCDoubleSpinner()
+        self.z_travel_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_travel_entry.set_range(0.0000001, 9999.9999)
         self.z_travel_entry.set_precision(self.decimals)
         self.z_travel_entry.setSingleStep(0.1)
@@ -223,7 +223,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.z_travel_label, self.z_travel_entry)
 
         # Z toolchange location
-        self.z_toolchange_entry = FCDoubleSpinner()
+        self.z_toolchange_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.z_toolchange_entry.set_range(0.0000001, 9999.9999)
         self.z_toolchange_entry.set_precision(self.decimals)
         self.z_toolchange_entry.setSingleStep(0.1)
@@ -244,7 +244,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.xy_toolchange_label, self.xy_toolchange_entry)
 
         # Feedrate X-Y
-        self.frxy_entry = FCDoubleSpinner()
+        self.frxy_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.frxy_entry.set_range(0.0000, 99999.9999)
         self.frxy_entry.set_precision(self.decimals)
         self.frxy_entry.setSingleStep(0.1)
@@ -256,7 +256,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.frxy_label, self.frxy_entry)
 
         # Feedrate Z
-        self.frz_entry = FCDoubleSpinner()
+        self.frz_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.frz_entry.set_range(0.0000, 99999.9999)
         self.frz_entry.set_precision(self.decimals)
         self.frz_entry.setSingleStep(0.1)
@@ -269,7 +269,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.frz_label, self.frz_entry)
 
         # Feedrate Z Dispense
-        self.frz_dispense_entry = FCDoubleSpinner()
+        self.frz_dispense_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.frz_dispense_entry.set_range(0.0000, 99999.9999)
         self.frz_dispense_entry.set_precision(self.decimals)
         self.frz_dispense_entry.setSingleStep(0.1)
@@ -294,7 +294,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.speedfwd_label, self.speedfwd_entry)
 
         # Dwell Forward
-        self.dwellfwd_entry = FCDoubleSpinner()
+        self.dwellfwd_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwellfwd_entry.set_range(0.0000001, 9999.9999)
         self.dwellfwd_entry.set_precision(self.decimals)
         self.dwellfwd_entry.setSingleStep(0.1)
@@ -318,7 +318,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.speedrev_label, self.speedrev_entry)
 
         # Dwell Reverse
-        self.dwellrev_entry = FCDoubleSpinner()
+        self.dwellrev_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dwellrev_entry.set_range(0.0000001, 9999.9999)
         self.dwellrev_entry.set_precision(self.decimals)
         self.dwellrev_entry.setSingleStep(0.1)

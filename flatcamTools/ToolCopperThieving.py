@@ -99,7 +99,7 @@ class ToolCopperThieving(FlatCAMTool):
               "(the polygon fill may be split in multiple polygons)\n"
               "and the copper traces in the Gerber file.")
         )
-        self.clearance_entry = FCDoubleSpinner()
+        self.clearance_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_entry.set_range(0.00001, 9999.9999)
         self.clearance_entry.set_precision(self.decimals)
         self.clearance_entry.setSingleStep(0.1)
@@ -112,7 +112,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.margin_label.setToolTip(
             _("Bounding box margin.")
         )
-        self.margin_entry = FCDoubleSpinner()
+        self.margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.margin_entry.set_range(0.0, 9999.9999)
         self.margin_entry.set_precision(self.decimals)
         self.margin_entry.setSingleStep(0.1)
@@ -221,7 +221,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.dotdia_label.setToolTip(
             _("Dot diameter in Dots Grid.")
         )
-        self.dot_dia_entry = FCDoubleSpinner()
+        self.dot_dia_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dot_dia_entry.set_range(0.0, 9999.9999)
         self.dot_dia_entry.set_precision(self.decimals)
         self.dot_dia_entry.setSingleStep(0.1)
@@ -234,7 +234,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.dotspacing_label.setToolTip(
             _("Distance between each two dots in Dots Grid.")
         )
-        self.dot_spacing_entry = FCDoubleSpinner()
+        self.dot_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.dot_spacing_entry.set_range(0.0, 9999.9999)
         self.dot_spacing_entry.set_precision(self.decimals)
         self.dot_spacing_entry.setSingleStep(0.1)
@@ -261,7 +261,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.square_size_label.setToolTip(
             _("Square side size in Squares Grid.")
         )
-        self.square_size_entry = FCDoubleSpinner()
+        self.square_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.square_size_entry.set_range(0.0, 9999.9999)
         self.square_size_entry.set_precision(self.decimals)
         self.square_size_entry.setSingleStep(0.1)
@@ -274,7 +274,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.squares_spacing_label.setToolTip(
             _("Distance between each two squares in Squares Grid.")
         )
-        self.squares_spacing_entry = FCDoubleSpinner()
+        self.squares_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.squares_spacing_entry.set_range(0.0, 9999.9999)
         self.squares_spacing_entry.set_precision(self.decimals)
         self.squares_spacing_entry.setSingleStep(0.1)
@@ -301,7 +301,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.line_size_label.setToolTip(
             _("Line thickness size in Lines Grid.")
         )
-        self.line_size_entry = FCDoubleSpinner()
+        self.line_size_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.line_size_entry.set_range(0.0, 9999.9999)
         self.line_size_entry.set_precision(self.decimals)
         self.line_size_entry.setSingleStep(0.1)
@@ -314,7 +314,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.lines_spacing_label.setToolTip(
             _("Distance between each two lines in Lines Grid.")
         )
-        self.lines_spacing_entry = FCDoubleSpinner()
+        self.lines_spacing_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.lines_spacing_entry.set_range(0.0, 9999.9999)
         self.lines_spacing_entry.set_precision(self.decimals)
         self.lines_spacing_entry.setSingleStep(0.1)
@@ -362,7 +362,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.rb_margin_label.setToolTip(
             _("Bounding box margin for robber bar.")
         )
-        self.rb_margin_entry = FCDoubleSpinner()
+        self.rb_margin_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rb_margin_entry.set_range(-9999.9999, 9999.9999)
         self.rb_margin_entry.set_precision(self.decimals)
         self.rb_margin_entry.setSingleStep(0.1)
@@ -375,7 +375,7 @@ class ToolCopperThieving(FlatCAMTool):
         self.rb_thickness_label.setToolTip(
             _("The robber bar thickness.")
         )
-        self.rb_thickness_entry = FCDoubleSpinner()
+        self.rb_thickness_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.rb_thickness_entry.set_range(0.0000, 9999.9999)
         self.rb_thickness_entry.set_precision(self.decimals)
         self.rb_thickness_entry.setSingleStep(0.1)
@@ -431,7 +431,7 @@ class ToolCopperThieving(FlatCAMTool):
             _("The distance between the possible copper thieving elements\n"
               "and/or robber bar and the actual openings in the mask.")
         )
-        self.clearance_ppm_entry = FCDoubleSpinner()
+        self.clearance_ppm_entry = FCDoubleSpinner(callback=self.confirmation_message)
         self.clearance_ppm_entry.set_range(-9999.9999, 9999.9999)
         self.clearance_ppm_entry.set_precision(self.decimals)
         self.clearance_ppm_entry.setSingleStep(0.1)
