@@ -78,7 +78,7 @@ class ToolOptimal(FlatCAMTool):
         self.precision_label = QtWidgets.QLabel('%s:' % _("Precision"))
         self.precision_label.setToolTip(_("Number of decimals kept for found distances."))
 
-        self.precision_spinner = FCSpinner()
+        self.precision_spinner = FCSpinner(callback=self.confirmation_message_int)
         self.precision_spinner.set_range(2, 10)
         self.precision_spinner.setWrapping(True)
         form_lay.addRow(self.precision_label, self.precision_spinner)

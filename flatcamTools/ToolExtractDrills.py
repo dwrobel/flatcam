@@ -276,7 +276,7 @@ class ToolExtractDrills(FlatCAMTool):
         grid3.addWidget(self.prop_label, 2, 0, 1, 2)
 
         # Diameter value
-        self.factor_entry = FCDoubleSpinner(suffix='%')
+        self.factor_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
         self.factor_entry.set_precision(self.decimals)
         self.factor_entry.set_range(0.0000, 100.0000)
         self.factor_entry.setSingleStep(0.1)

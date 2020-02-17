@@ -182,7 +182,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_rows_label, self.spacing_rows)
 
         # Columns
-        self.columns = FCSpinner()
+        self.columns = FCSpinner(callback=self.confirmation_message_int)
         self.columns.set_range(0, 9999)
 
         self.columns_label = QtWidgets.QLabel('%s:' % _("Columns"))
@@ -192,7 +192,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.columns_label, self.columns)
 
         # Rows
-        self.rows = FCSpinner()
+        self.rows = FCSpinner(callback=self.confirmation_message_int)
         self.rows.set_range(0, 9999)
 
         self.rows_label = QtWidgets.QLabel('%s:' % _("Rows"))

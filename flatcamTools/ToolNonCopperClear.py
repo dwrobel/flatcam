@@ -366,7 +366,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
-        self.ncc_overlap_entry = FCDoubleSpinner(suffix='%')
+        self.ncc_overlap_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
         self.ncc_overlap_entry.set_precision(self.decimals)
         self.ncc_overlap_entry.setWrapping(True)
         self.ncc_overlap_entry.setRange(0.000, 99.9999)

@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Excellon UI removed the tools table column for Offset Z and used the UI form parameter
 - updated the Excellon Editor to add for each tool a 'data' dictionary
 - updated all FlatCAM tools to use the new confirmation message that show if the entered value is within range or outside
+- updated all FlatCAM tools to use the new confirmation message for QSpinBoxes, too
 
 16.02.2020
 

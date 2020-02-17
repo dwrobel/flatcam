@@ -61,7 +61,7 @@ class ToolImage(FlatCAMTool):
         ti_form_layout.addRow(self.tf_type_obj_combo_label, self.tf_type_obj_combo)
 
         # DPI value of the imported image
-        self.dpi_entry = FCSpinner()
+        self.dpi_entry = FCSpinner(callback=self.confirmation_message_int)
         self.dpi_entry.set_range(0, 99999)
         self.dpi_label = QtWidgets.QLabel('%s:' % _("DPI value"))
         self.dpi_label.setToolTip(_("Specify a DPI value for the image.") )
@@ -87,7 +87,7 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.image_type_label, self.image_type)
 
         # Mask value of the imported image when image monochrome
-        self.mask_bw_entry = FCSpinner()
+        self.mask_bw_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_bw_entry.set_range(0, 255)
 
         self.mask_bw_label = QtWidgets.QLabel("%s <b>B/W</b>:" % _('Mask value'))
@@ -102,7 +102,7 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_bw_label, self.mask_bw_entry)
 
         # Mask value of the imported image for RED color when image color
-        self.mask_r_entry = FCSpinner()
+        self.mask_r_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_r_entry.set_range(0, 255)
 
         self.mask_r_label = QtWidgets.QLabel("%s <b>R:</b>" % _('Mask value'))
@@ -115,7 +115,7 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_r_label, self.mask_r_entry)
 
         # Mask value of the imported image for GREEN color when image color
-        self.mask_g_entry = FCSpinner()
+        self.mask_g_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_g_entry.set_range(0, 255)
 
         self.mask_g_label = QtWidgets.QLabel("%s <b>G:</b>" % _('Mask value'))
@@ -128,7 +128,7 @@ class ToolImage(FlatCAMTool):
         ti2_form_layout.addRow(self.mask_g_label, self.mask_g_entry)
 
         # Mask value of the imported image for BLUE color when image color
-        self.mask_b_entry = FCSpinner()
+        self.mask_b_entry = FCSpinner(callback=self.confirmation_message_int)
         self.mask_b_entry.set_range(0, 255)
 
         self.mask_b_label = QtWidgets.QLabel("%s <b>B:</b>" % _('Mask value'))

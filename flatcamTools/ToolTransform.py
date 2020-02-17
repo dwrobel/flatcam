@@ -380,7 +380,7 @@ class ToolTransform(FlatCAMTool):
               "of the initial dimension.")
         )
 
-        self.buffer_factor_entry = FCDoubleSpinner(suffix='%')
+        self.buffer_factor_entry = FCDoubleSpinner(callback=self.confirmation_message, suffix='%')
         self.buffer_factor_entry.set_range(-100.0000, 1000.0000)
         self.buffer_factor_entry.set_precision(self.decimals)
         self.buffer_factor_entry.setWrapping(True)

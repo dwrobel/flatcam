@@ -101,7 +101,7 @@ class QRCode(FlatCAMTool):
             _("QRCode version can have values from 1 (21x21 boxes)\n"
               "to 40 (177x177 boxes).")
         )
-        self.version_entry = FCSpinner()
+        self.version_entry = FCSpinner(callback=self.confirmation_message_int)
         self.version_entry.set_range(1, 40)
         self.version_entry.setWrapping(True)
 
@@ -137,7 +137,7 @@ class QRCode(FlatCAMTool):
             _("Box size control the overall size of the QRcode\n"
               "by adjusting the size of each box in the code.")
         )
-        self.bsize_entry = FCSpinner()
+        self.bsize_entry = FCSpinner(callback=self.confirmation_message_int)
         self.bsize_entry.set_range(1, 9999)
         self.bsize_entry.setWrapping(True)
 
@@ -150,7 +150,7 @@ class QRCode(FlatCAMTool):
             _("Size of the QRCode border. How many boxes thick is the border.\n"
               "Default value is 4. The width of the clearance around the QRCode.")
         )
-        self.border_size_entry = FCSpinner()
+        self.border_size_entry = FCSpinner(callback=self.confirmation_message_int)
         self.border_size_entry.set_range(1, 9999)
         self.border_size_entry.setWrapping(True)
         self.border_size_entry.set_value(4)

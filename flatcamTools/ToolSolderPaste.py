@@ -282,7 +282,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.frz_dispense_label, self.frz_dispense_entry)
 
         # Spindle Speed Forward
-        self.speedfwd_entry = FCSpinner()
+        self.speedfwd_entry = FCSpinner(callback=self.confirmation_message_int)
         self.speedfwd_entry.set_range(0, 999999)
         self.speedfwd_entry.setSingleStep(1000)
 
@@ -306,7 +306,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_form_layout.addRow(self.dwellfwd_label, self.dwellfwd_entry)
 
         # Spindle Speed Reverse
-        self.speedrev_entry = FCSpinner()
+        self.speedrev_entry = FCSpinner(callback=self.confirmation_message_int)
         self.speedrev_entry.set_range(0, 999999)
         self.speedrev_entry.setSingleStep(1000)
 
