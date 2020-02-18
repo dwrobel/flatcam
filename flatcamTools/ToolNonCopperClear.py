@@ -1108,35 +1108,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.tool_type_radio.activated_custom.connect(self.on_tool_type)
 
-        # first disconnect
-        for opt in self.form_fields:
-            current_widget = self.form_fields[opt]
-            if isinstance(current_widget, FCCheckBox):
-                try:
-                    current_widget.stateChanged.disconnect()
-                except (TypeError, ValueError):
-                    pass
-            if isinstance(current_widget, RadioSet):
-                try:
-                    current_widget.activated_custom.disconnect()
-                except (TypeError, ValueError):
-                    pass
-            elif isinstance(current_widget, FCDoubleSpinner):
-                try:
-                    current_widget.returnPressed.disconnect()
-                except (TypeError, ValueError):
-                    pass
-
-        try:
-            self.ncc_rest_cb.stateChanged.disconnect()
-        except (TypeError, ValueError):
-            pass
-        try:
-            self.ncc_order_radio.activated_custom[str].disconnect()
-        except (TypeError, ValueError):
-            pass
-
-        # then reconnect
         for opt in self.form_fields:
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
@@ -1145,6 +1116,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 current_widget.activated_custom.connect(self.form_to_storage)
             elif isinstance(current_widget, FCDoubleSpinner):
                 current_widget.returnPressed.connect(self.form_to_storage)
+            elif isinstance(current_widget, FCComboBox):
+                current_widget.currentIndexChanged.connect(self.form_to_storage)
 
         self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
         self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
@@ -1174,17 +1147,22 @@ class NonCopperClear(FlatCAMTool, Gerber):
             current_widget = self.form_fields[opt]
             if isinstance(current_widget, FCCheckBox):
                 try:
-                    current_widget.stateChanged.disconnect()
+                    current_widget.stateChanged.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
             if isinstance(current_widget, RadioSet):
                 try:
-                    current_widget.activated_custom.disconnect()
+                    current_widget.activated_custom.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
             elif isinstance(current_widget, FCDoubleSpinner):
                 try:
-                    current_widget.returnPressed.disconnect()
+                    current_widget.returnPressed.disconnect(self.form_to_storage)
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(current_widget, FCComboBox):
+                try:
+                    current_widget.currentIndexChanged.disconnect(self.form_to_storage)
                 except (TypeError, ValueError):
                     pass
 

@@ -23,6 +23,7 @@ CAD program, and create G-Code for Isolation routing.
 - when multiple tools are selected in Excellon UI and parameters are modified it will applied to all selected
 - in Excellon UI, Paint Tool and NCC Tool finished the "Apply parameters to all tools" functionality
 - updated Paint Tool and NCC Tool in the UI functionality
+- fixed the Offset spinbox not being controller by offset checkbox in NCC Tool
 
 16.02.2020
 
